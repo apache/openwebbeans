@@ -298,13 +298,12 @@ public abstract class TestContext implements ITestContext
      */
     protected <T> AbstractInjectionTargetBean<T> defineManagedBean(Class<T> clazz)
     {
-        ManagedBean<T> bean = null;
+        ManagedBean<T> bean;
 
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         bean = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.MANAGED);
         if (bean != null)
         {
-            manager.addBean(WebBeansUtil.createNewBean(bean));
             DecoratorUtil.checkManagedBeanDecoratorConditions(bean,null);
             WebBeansDecoratorConfig.configureDecorators(bean);
             webBeansContext.getDefinitionUtil().defineBeanInterceptorStack(bean);

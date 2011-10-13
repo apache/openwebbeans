@@ -63,7 +63,7 @@ public class ScopeAdapterTest extends TestContext
 
         List<AbstractOwbBean<?>> comps = getComponents();
 
-        Assert.assertEquals(7, getDeployedComponents());
+        Assert.assertEquals(4, getDeployedComponents());
 
         getManager().getInstance(comps.get(0));
         getManager().getInstance(comps.get(1));

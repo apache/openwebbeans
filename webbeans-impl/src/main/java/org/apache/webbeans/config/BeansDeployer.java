@@ -166,7 +166,7 @@ public class BeansDeployer
                 
                 //Deploy additional Annotated Types
                 deployAdditionalAnnotatedTypes();
-                
+
                 //Check Specialization
                 checkSpecializations(scanner);
                 
@@ -194,8 +194,7 @@ public class BeansDeployer
             WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
-    
-    
+
 
     /**
      * Configure Default Beans.
@@ -521,7 +520,7 @@ public class BeansDeployer
             deploySingleAnnotatedType(implClass, type);                           
         }
     }
-    
+
     /**
      * Common helper method used to deploy annotated types discovered through
      * scanning or during beforeBeanDiscovery.

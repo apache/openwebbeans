@@ -66,7 +66,7 @@ public class Producer1ConsumerComponentTest extends TestContext
         contextFactory.initRequestContext(null);
         contextFactory.initApplicationContext(null);
 
-        Assert.assertEquals(7, getDeployedComponents());
+        Assert.assertEquals(4, getDeployedComponents());
 
         Object obj = getManager().getInstance(comps.get(0));
         

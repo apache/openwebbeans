@@ -67,7 +67,7 @@ public class ProducerComponentTest extends TestContext
     {
         clear();
         defineManagedBean(Producer1.class);
-        Assert.assertEquals(3, getDeployedComponents());
+        Assert.assertEquals(2, getDeployedComponents());
 
     }
 
@@ -76,7 +76,7 @@ public class ProducerComponentTest extends TestContext
     {
         clear();
         defineManagedBean(Producer2.class);
-        Assert.assertEquals(4, getDeployedComponents());
+        Assert.assertEquals(3, getDeployedComponents());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class ProducerComponentTest extends TestContext
         clear();
         defineManagedBean(Producer3.class);
 
-        Assert.assertEquals(6, getDeployedComponents());
+        Assert.assertEquals(5, getDeployedComponents());
     }
 
     @Test
@@ -95,7 +95,7 @@ public class ProducerComponentTest extends TestContext
         defineManagedBean(ParametrizedProducer.class);
 
         WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
-        Assert.assertEquals(4, getDeployedComponents());
+        Assert.assertEquals(3, getDeployedComponents());
 
         TypeLiteral<List<ParametrizedModel1>> model1 = new TypeLiteral<List<ParametrizedModel1>>()
         {

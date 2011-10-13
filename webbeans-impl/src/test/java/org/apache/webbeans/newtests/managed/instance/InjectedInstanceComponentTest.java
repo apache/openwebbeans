@@ -38,7 +38,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
-public class InjectedInstanceComponentTest extends AbstractUnitTest {
+public class InjectedInstanceComponentTest extends AbstractUnitTest
+{
 
         @Test
     public void testInstanceInjectedComponent()
@@ -73,7 +74,8 @@ public class InjectedInstanceComponentTest extends AbstractUnitTest {
 
     @Ignore
     @Test
-    public void testManualInstanceBeanResolving() {
+    public void testManualInstanceBeanResolving()
+    {
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
 
         startContainer(beanClasses, null);

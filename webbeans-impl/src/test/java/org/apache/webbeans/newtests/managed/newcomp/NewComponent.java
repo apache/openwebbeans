@@ -16,34 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.test.component.newcomp;
+package org.apache.webbeans.newtests.managed.newcomp;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.New;
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
+import javax.inject.Inject;
 
-import org.apache.webbeans.test.component.CheckWithCheckPayment;
-import org.apache.webbeans.test.component.IPayment;
+import org.apache.webbeans.test.component.dependent.DependentOwnerComponent;
 
-@RequestScoped
-@Named
-public class ProducerNewComponent
+@Dependent
+public class NewComponent
 {
-    private IPayment component;
+    private @Inject @New DependentOwnerComponent owner;
 
-    @Produces
-    @Dependent
-    @Named("paymentProducer")
-    public IPayment create(@New CheckWithCheckPayment comp)
+    private @Inject @New(DependentOwnerComponent.class) DependentOwnerComponent grandParent;
+
+    public DependentOwnerComponent owner()
     {
-        this.component = comp;
-        return comp;
+        return owner;
     }
 
-    public IPayment getComponent()
+    public DependentOwnerComponent getGrandParent()
     {
-        return this.component;
+        return grandParent;
     }
 }

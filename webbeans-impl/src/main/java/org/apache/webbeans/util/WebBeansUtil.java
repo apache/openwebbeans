@@ -645,58 +645,6 @@ public final class WebBeansUtil
 
 
     /**
-     * Returns a new managed bean from given bean.
-     *
-     * @param <T> bean type parameter
-     * @param bean bean instance
-     * @return the new bean from given managed bean
-     */
-    public static <T> NewManagedBean<T> createNewBean(AbstractInjectionTargetBean<T> bean)
-    {
-        Asserts.assertNotNull(bean, "bean argument can not be null");
-
-        NewManagedBean<T> comp = null;
-
-        comp = new NewManagedBean<T>(bean.getReturnType(), WebBeansType.NEW, bean.getWebBeansContext());
-
-        comp.getTypes().addAll(bean.getTypes());
-
-        if(bean instanceof ManagedBean)
-        {
-            comp.setConstructor(((ManagedBean)bean).getConstructor());
-        }
-
-        for(Field injectedField : bean.getInjectedFields())
-        {
-            comp.addInjectedField(injectedField);
-        }
-
-        for(Method injectedMethod : bean.getInjectedMethods())
-        {
-            comp.addInjectedMethod(injectedMethod);
-        }
-
-        List<InterceptorData> interceptorList = bean.getInterceptorStack();
-        if(!interceptorList.isEmpty())
-        {
-            comp.getInterceptorStack().addAll(interceptorList);
-        }
-
-
-        comp.setImplScopeType(new DependentScopeLiteral());
-        comp.addQualifier(new NewLiteral(bean.getBeanClass()));
-        comp.setName(null);
-
-        Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
-        for(InjectionPoint injectionPoint : injectionPoints)
-        {
-            comp.addInjectionPoint(injectionPoint);
-        }
-
-        return comp;
-    }
-
-    /**
      * Creates a new manager bean instance.
      * @return new manager bean instance
      */
@@ -2732,7 +2680,6 @@ public final class WebBeansUtil
 
             if(!isAnnotatedTypeDecoratorOrInterceptor(annotatedType))
             {
-                beanManager.addBean(WebBeansUtil.createNewBean(managedBean));
                 beanManager.addBean(managedBean);
                 for (ProducerMethodBean<?> producerMethod : producerMethods)
                 {
@@ -2761,7 +2708,6 @@ public final class WebBeansUtil
                     "managed beans. Look at logs for further details");
             if(!isAnnotatedTypeDecoratorOrInterceptor(annotatedType))
             {
-                beanManager.addBean(WebBeansUtil.createNewBean(managedBean));
                 beanManager.addBean(managedBean);
             }
         }
