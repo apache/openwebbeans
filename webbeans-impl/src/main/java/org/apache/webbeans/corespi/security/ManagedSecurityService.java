@@ -90,14 +90,12 @@ public class ManagedSecurityService implements SecurityService
         }
     }
 
-    @Override
     public Principal getCurrentPrincipal()
     {
         // no pricipal by default
         return null;
     }
 
-    @Override
     public <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes)
     {
         Object obj = AccessController.doPrivileged(
@@ -109,7 +107,6 @@ public class ManagedSecurityService implements SecurityService
         return (Constructor<T>)obj;
     }
 
-    @Override
     public <T> Constructor<?>[] doPrivilegedGetDeclaredConstructors(Class<T> clazz)
     {
         Object obj = AccessController.doPrivileged(
@@ -117,7 +114,6 @@ public class ManagedSecurityService implements SecurityService
         return (Constructor<T>[])obj;
     }
 
-    @Override
     public <T> Method doPrivilegedGetDeclaredMethod(Class<T> clazz, String name, Class<?>... parameterTypes)
     {
         Object obj = AccessController.doPrivileged(
@@ -129,7 +125,6 @@ public class ManagedSecurityService implements SecurityService
         return (Method)obj;
     }
 
-    @Override
     public <T> Method[] doPrivilegedGetDeclaredMethods(Class<T> clazz)
     {
         Object obj = AccessController.doPrivileged(
@@ -137,7 +132,6 @@ public class ManagedSecurityService implements SecurityService
         return (Method[])obj;
     }
 
-    @Override
     public <T> Field doPrivilegedGetDeclaredField(Class<T> clazz, String name)
     {
         Object obj = AccessController.doPrivileged(
@@ -149,7 +143,6 @@ public class ManagedSecurityService implements SecurityService
         return (Field)obj;
     }
 
-    @Override
     public <T> Field[] doPrivilegedGetDeclaredFields(Class<T> clazz)
     {
         Object obj = AccessController.doPrivileged(
@@ -157,37 +150,31 @@ public class ManagedSecurityService implements SecurityService
         return (Field[])obj;
     }
 
-    @Override
     public void doPrivilegedSetAccessible(AccessibleObject obj, boolean flag)
     {
         AccessController.doPrivileged(new PrivilegedActionForSetAccessible(obj, flag));
     }
 
-    @Override
     public boolean doPrivilegedIsAccessible(AccessibleObject obj)
     {
         return (Boolean) AccessController.doPrivileged(new PrivilegedActionForIsAccessible(obj));
     }
 
-    @Override
     public <T> T doPrivilegedObjectCreate(Class<T> clazz) throws PrivilegedActionException, IllegalAccessException, InstantiationException
     {
         return (T) AccessController.doPrivileged(new PrivilegedActionForObjectCreation(clazz));
     }
 
-    @Override
     public void doPrivilegedSetSystemProperty(String propertyName, String value)
     {
         AccessController.doPrivileged(new PrivilegedActionForSetProperty(propertyName, value));
     }
 
-    @Override
     public String doPrivilegedGetSystemProperty(String propertyName, String defaultValue)
     {
         return AccessController.doPrivileged(new PrivilegedActionForProperty(propertyName, defaultValue));
     }
 
-    @Override
     public Properties doPrivilegedGetSystemProperties()
     {
         return AccessController.doPrivileged(SYSTEM_PROPERTY_ACTION);
@@ -292,7 +279,6 @@ public class ManagedSecurityService implements SecurityService
             this.defaultValue = defaultValue;
         }
 
-        @Override
         public String run()
         {
             return System.getProperty(propertyName, defaultValue);
@@ -312,7 +298,6 @@ public class ManagedSecurityService implements SecurityService
             this.value = value;
         }
 
-        @Override
         public String run()
         {
             System.setProperty(propertyName, value);
@@ -324,7 +309,6 @@ public class ManagedSecurityService implements SecurityService
     protected static class PrivilegedActionGetSystemProperties implements PrivilegedAction<Properties>
     {
 
-        @Override
         public Properties run()
         {
             return System.getProperties();
@@ -341,7 +325,6 @@ public class ManagedSecurityService implements SecurityService
             this.clazz = clazz;
         }
 
-        @Override
         public Object run() throws Exception
         {
             try

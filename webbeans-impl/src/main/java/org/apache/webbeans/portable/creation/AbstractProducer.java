@@ -55,7 +55,6 @@ public abstract class AbstractProducer<T> implements Producer<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public Set<InjectionPoint> getInjectionPoints()
     {
         return bean.getInjectionPoints();
@@ -64,7 +63,6 @@ public abstract class AbstractProducer<T> implements Producer<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     @SuppressWarnings("unchecked")
     public T produce(CreationalContext<T> creationalContext)
     {

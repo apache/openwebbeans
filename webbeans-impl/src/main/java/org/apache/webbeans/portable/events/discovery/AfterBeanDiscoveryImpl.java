@@ -62,7 +62,6 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     /**
      * {@inheritDoc}
      */
-    @Override
     @SuppressWarnings("unchecked")
     public void addBean(Bean<?> bean)
     {
@@ -151,7 +150,6 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     /**
      * {@inheritDoc}
      */
-    @Override
     public void addContext(Context context)
     {
         beanManager.addContext(context);
@@ -161,7 +159,6 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     /**
      * {@inheritDoc}
      */
-    @Override
     public void addDefinitionError(Throwable t)
     {
         beanManager.getErrorStack().pushError(t);
@@ -170,7 +167,6 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     /**
      * {@inheritDoc}
      */
-    @Override
     public void addObserverMethod(ObserverMethod<?> observerMethod)
     {
         ProcessObserverMethod<?, ?> event = new GProcessObservableMethod(null,observerMethod);

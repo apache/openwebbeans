@@ -102,7 +102,6 @@ abstract class AbstractAnnotated implements Annotated
     /**
      * {@inheritDoc}
      */
-    @Override
     @SuppressWarnings("unchecked")
     public <T extends Annotation> T getAnnotation(Class<T> annotationType)
     {
@@ -121,7 +120,6 @@ abstract class AbstractAnnotated implements Annotated
     /**
      * {@inheritDoc}
      */
-    @Override
     public Set<Annotation> getAnnotations()
     {
         return annotations;
@@ -130,7 +128,6 @@ abstract class AbstractAnnotated implements Annotated
     /**
      * {@inheritDoc}
      */
-    @Override
     public Type getBaseType()
     {
         return baseType;
@@ -139,7 +136,6 @@ abstract class AbstractAnnotated implements Annotated
     /**
      * {@inheritDoc}
      */
-    @Override
     public Set<Type> getTypeClosure()
     {
         if (typeClosures == null)
@@ -207,7 +203,6 @@ abstract class AbstractAnnotated implements Annotated
     /**
      * {@inheritDoc}
      */
-    @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationType)
     {
         for(Annotation ann : annotations)

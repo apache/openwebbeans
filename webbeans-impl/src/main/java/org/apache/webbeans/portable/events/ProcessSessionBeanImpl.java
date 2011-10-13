@@ -53,7 +53,6 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
     /**
      * {@inheritDoc}
      */
-    @Override
     public String getEjbName()
     {
         return ejbName;
@@ -62,7 +61,6 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
     /**
      * {@inheritDoc}
      */
-    @Override
     public SessionBeanType getSessionBeanType()
     {
         return type;
@@ -71,7 +69,6 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
     /**
      * {@inheritDoc}
      */
-    @Override
     public AnnotatedType<Object> getAnnotatedBeanClass()
     {
         return annotatedBeanClass;

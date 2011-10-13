@@ -69,7 +69,6 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
         this.ejbContext = ejbContext;
     }    
     
-    @Override
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         // Tuck away a reference to the bean being Decorated
@@ -214,7 +213,6 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
         decorators = dec;
     }
 
-    @Override
     public void writeExternal(ObjectOutput out) throws IOException 
     {
         String id = WebBeansUtil.isPassivationCapable(bean);
@@ -232,7 +230,6 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
         //from the env.
     }
 
-    @Override
     public void readExternal(ObjectInput in) throws IOException,
             ClassNotFoundException 
     {

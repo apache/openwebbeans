@@ -466,7 +466,6 @@ public class InvocationContextImpl implements InvocationContext
     /**
      * {@inheritDoc}
      */
-    @Override
     public Object getTimer()
     {
         // TODO Auto-generated method stub

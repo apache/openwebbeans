@@ -109,7 +109,6 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
     /**
      * {@inheritDoc}
      */
-    @Override
     public Class<X> getJavaClass()
     {
         return annotatedClass;
@@ -161,7 +160,6 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
     /**
      * {@inheritDoc}
      */
-    @Override
     public Set<AnnotatedConstructor<X>> getConstructors()
     {
         if (constructors == null)
@@ -175,7 +173,6 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
     /**
      * {@inheritDoc}
      */    
-    @Override
     public Set<AnnotatedField<? super X>> getFields()
     {
         if (constructors == null)
@@ -189,7 +186,6 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
     /**
      * {@inheritDoc}
      */    
-    @Override
     public Set<AnnotatedMethod<? super X>> getMethods()
     {
         if (constructors == null)

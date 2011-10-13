@@ -56,13 +56,11 @@ public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void addDefinitionError(Throwable t)
     {
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
     }
 
-    @Override
     public AnnotatedType<X> getAnnotatedType()
     {
         return annotatedType;
@@ -71,7 +69,6 @@ public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
     /**
      * {@inheritDoc}
      */
-    @Override
     public InjectionTarget<X> getInjectionTarget()
     {
         return injectionTarget;
@@ -80,7 +77,6 @@ public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void setInjectionTarget(InjectionTarget<X> injectionTarget)
     {
         this.injectionTarget = injectionTarget;

@@ -72,7 +72,6 @@ public class InjectionTargetWrapper<T> implements InjectionTarget<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void inject(T instance, CreationalContext<T> ctx)
     {
         if(wrapped != null)
@@ -84,7 +83,6 @@ public class InjectionTargetWrapper<T> implements InjectionTarget<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void postConstruct(T instance)
     {
         if(wrapped != null)
@@ -96,7 +94,6 @@ public class InjectionTargetWrapper<T> implements InjectionTarget<T>
     /**
      * {@inheritDoc}
      */    
-    @Override
     public void preDestroy(T instance)
     {
         if(wrapped != null)
@@ -108,7 +105,6 @@ public class InjectionTargetWrapper<T> implements InjectionTarget<T>
     /**
      * {@inheritDoc}
      */    
-    @Override
     public void dispose(T instance)
     {
         if(wrappedProducer != null)
@@ -120,7 +116,6 @@ public class InjectionTargetWrapper<T> implements InjectionTarget<T>
     /**
      * {@inheritDoc}
      */    
-    @Override
     public Set<InjectionPoint> getInjectionPoints()
     {
         if(wrappedProducer != null)
@@ -134,7 +129,6 @@ public class InjectionTargetWrapper<T> implements InjectionTarget<T>
     /**
      * {@inheritDoc}
      */    
-    @Override
     public T produce(CreationalContext<T> creationalContext)
     {
         if(wrappedProducer != null)

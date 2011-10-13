@@ -38,7 +38,6 @@ public class ProvidedBeansProxyHandler implements MethodHandler
         this.bean = bean;
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable
     {

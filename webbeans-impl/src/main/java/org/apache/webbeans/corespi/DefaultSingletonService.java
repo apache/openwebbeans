@@ -103,7 +103,6 @@ public class DefaultSingletonService implements SingletonService<WebBeansContext
     /**
      * {@inheritDoc}
      */
-    @Override
     public void clear(Object classLoader)
     {
         assertClassLoaderKey(classLoader);

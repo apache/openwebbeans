@@ -56,7 +56,6 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
     /**
      * {@inheritDoc}
      */
-    @Override
     public AnnotatedType<X> getAnnotatedType()
     {
         return annotatedType;
@@ -65,7 +64,6 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void setAnnotatedType(AnnotatedType<X> type)
     {
         annotatedType = type;
@@ -85,7 +83,6 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void veto()
     {
         veto = true;

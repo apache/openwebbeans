@@ -36,37 +36,31 @@ public class DefaultInjectionTargetImpl<T> implements InjectionTarget<T>
         target = new InjectionTargetProducer<T>(WebBeansContext.getInstance().getWebBeansUtil().defineManagedBean(annotatedType));
     }
 
-    @Override
     public void inject(T instance, CreationalContext<T> ctx)
     {
         target.inject(instance, ctx);
     }
 
-    @Override
     public void postConstruct(T instance)
     {
         target.postConstruct(instance);
     }
 
-    @Override
     public void preDestroy(T instance)
     {
         target.preDestroy(instance);
     }
 
-    @Override
     public void dispose(T instance)
     {
         target.dispose(instance);
     }
 
-    @Override
     public Set<InjectionPoint> getInjectionPoints()
     {
         return target.getInjectionPoints();
     }
 
-    @Override
     public T produce(CreationalContext<T> creationalContext)
     {
         return target.produce(creationalContext);

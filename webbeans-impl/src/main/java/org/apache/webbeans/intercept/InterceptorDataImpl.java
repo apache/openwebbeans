@@ -394,7 +394,6 @@ public class InterceptorDataImpl implements InterceptorData
         return null;
     }
 
-    @Override
     public boolean isLifecycleInterceptor()
     {
         if (preDestroy != null || postConstruct != null || prePassivate != null || postActivate != null)
@@ -405,7 +404,6 @@ public class InterceptorDataImpl implements InterceptorData
         return false;
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     public Object createNewInstance(Object ownerInstance, CreationalContextImpl<?> ownerCreationalContext)
     {

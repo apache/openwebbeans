@@ -614,7 +614,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**
      * {@inheritDoc}
      */
-    @Override    
     public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
         webBeansContext.getAnnotationManager().checkDecoratorResolverParams(types, bindingTypes);
@@ -638,7 +637,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**
      * {@inheritDoc}
      */
-    @Override
     public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
     {
         webBeansContext.getAnnotationManager().checkInterceptorResolverParams(interceptorBindings);
@@ -735,7 +733,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**
      * {@inheritDoc}
      */
-    @Override
     public <T> AnnotatedType<T> createAnnotatedType(Class<T> type)
     {
         AnnotatedType<T> annotatedType = annotatedElementFactory.newAnnotatedType(type);
@@ -746,7 +743,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**
      * {@inheritDoc}
      */
-    @Override
     public <T> CreationalContext<T> createCreationalContext(Contextual<T> contextual)
     {
         if (contextual instanceof SerializableBean)
@@ -760,7 +756,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**
      * {@inheritDoc}
      */
-    @Override
     public Set<Bean<?>> getBeans(Type beanType, Annotation... bindings)
     {
         if(ClassUtil.isTypeVariable(beanType))
@@ -774,7 +769,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     }
 
-    @Override
     public Set<Bean<?>> getBeans(String name)
     {        
         Asserts.assertNotNull(name, "name parameter can not be null");
@@ -782,7 +776,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return injectionResolver.implResolveByName(name);
     }
 
-    @Override
     public ELResolver getELResolver()
     {
         ELAdaptor elAdaptor = webBeansContext.getService(ELAdaptor.class);
@@ -792,7 +785,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**
      * {@inheritDoc}
      */
-    @Override
     public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> ownerCreationalContext)
     {
         Asserts.assertNotNull(injectionPoint, "injectionPoint parameter can not be null");
@@ -860,7 +852,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**
      * {@inheritDoc}
      */
-    @Override
     public Set<Annotation> getInterceptorBindingDefinition(Class<? extends Annotation> binding)
     {
         Annotation[] annotations = binding.getDeclaredAnnotations();
@@ -885,7 +876,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return specialized;
     }
 
-    @Override
     public Bean<?> getPassivationCapableBean(String id)
     {
         return passivationBeans.get(id);
@@ -894,7 +884,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**
      * {@inheritDoc}
      */
-    @Override
     public Object getReference(Bean<?> bean, Type beanType, CreationalContext<?> creationalContext)
     {
         Asserts.assertNotNull(bean, "bean parameter can not be null");
@@ -1005,7 +994,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
     
-    @Override
     public Set<Annotation> getStereotypeDefinition(Class<? extends Annotation> stereotype)
     {
         Annotation[] annotations = stereotype.getDeclaredAnnotations();
@@ -1022,19 +1010,16 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return set;
     }
 
-    @Override
     public boolean isQualifier(Class<? extends Annotation> annotationType)
     {
         return webBeansContext.getAnnotationManager().isQualifierAnnotation(annotationType);
     }
 
-    @Override
     public boolean isInterceptorBinding(Class<? extends Annotation> annotationType)
     {
         return webBeansContext.getAnnotationManager().isInterceptorBindingAnnotation(annotationType);
     }
 
-    @Override
     public boolean isScope(Class<? extends Annotation> annotationType)
     {
         if(AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), Scope.class) ||
@@ -1054,7 +1039,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return false;
     }
     
-    @Override
     public boolean isNormalScope(Class<? extends Annotation> annotationType)
     {
         for (ExternalScope extScope : additionalScopes)
@@ -1068,7 +1052,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), NormalScope.class);
     }
     
-    @Override
     public boolean isPassivatingScope(Class<? extends Annotation> annotationType)
     {
         for (ExternalScope extScope : additionalScopes)
@@ -1089,13 +1072,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }    
     
 
-    @Override
     public boolean isStereotype(Class<? extends Annotation> annotationType)
     {
         return AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), Stereotype.class);
     }
 
-    @Override
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
     { 
         Set set = new HashSet<Bean<Object>>();
@@ -1122,7 +1103,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**
      * {@inheritDoc}
      */
-    @Override
     public void validate(InjectionPoint injectionPoint)
     {
         Bean<?> bean = injectionPoint.getBean();
@@ -1152,7 +1132,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**
      * {@inheritDoc}
      */
-    @Override
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
         InjectionTargetBean<T> bean = webBeansContext.getWebBeansUtil().defineManagedBean(type);
@@ -1165,7 +1144,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return new InjectionTargetProducer<T>(bean);
     }
 
-    @Override
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods( T event, Annotation... qualifiers ) 
     {
         if(ClassUtil.isDefinitionContainsTypeVariables(event.getClass()))
@@ -1176,7 +1154,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return notificationManager.resolveObservers(event, qualifiers);
     }
 
-    @Override
     public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)
     {
         ELAdaptor elAdaptor = webBeansContext.getService(ELAdaptor.class);

@@ -32,13 +32,11 @@ public class EL22Adaptor implements ELAdaptor
         
     }
 
-    @Override
     public ELResolver getOwbELResolver()
     {        
         return new WebBeansELResolver();
     }
 
-    @Override
     public ExpressionFactory getOwbWrappedExpressionFactory(ExpressionFactory expressionFactroy)
     {
         return new WrappedExpressionFactory(expressionFactroy);

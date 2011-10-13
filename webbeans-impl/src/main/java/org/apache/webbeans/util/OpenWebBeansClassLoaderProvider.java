@@ -45,7 +45,6 @@ public class OpenWebBeansClassLoaderProvider implements ProxyFactory.ClassLoader
         useCurrentClassLoader.remove();
     }
 
-    @Override
     public ClassLoader get(ProxyFactory proxyFactory)
     {
         if(!Boolean.TRUE.equals(useCurrentClassLoader.get()))

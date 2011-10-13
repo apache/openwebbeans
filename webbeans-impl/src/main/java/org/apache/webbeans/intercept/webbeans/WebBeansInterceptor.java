@@ -243,7 +243,6 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
         this.clazz = clazz;
     }
 
-    @Override
     public Set<Annotation> getInterceptorBindings()
     {
         Set<Annotation> set = new HashSet<Annotation>();
@@ -401,7 +400,6 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
         return delegateBean.getStereotypes();
     }
 
-    @Override
     public Object intercept(InterceptionType type, T instance,InvocationContext ctx)
     {
         Method method = getMethod(type);
@@ -418,7 +416,6 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
         return null;
     }
 
-    @Override
     public boolean intercepts(InterceptionType type)
     {
         Method method = getMethod(type);

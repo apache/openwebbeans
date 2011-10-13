@@ -125,7 +125,6 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     /**
      * {@inheritDoc}
      */
-    @Override
     public boolean isAmbiguous()
     {
         Set<Bean<?>> beans = resolveBeans();
@@ -136,7 +135,6 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     /**
      * {@inheritDoc}
      */
-    @Override
     public boolean isUnsatisfied()
     {
         Set<Bean<?>> beans = resolveBeans();
@@ -147,7 +145,6 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     /**
      * {@inheritDoc}
      */
-    @Override
     public Instance<T> select(Annotation... qualifiers)
     {
         Annotation[] newQualifiersArray = getAdditionalQualifiers(qualifiers);
@@ -190,7 +187,6 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     /**
      * {@inheritDoc}
      */
-    @Override
     public <U extends T> Instance<U> select(Class<U> subtype, Annotation... qualifiers)
     {
         webBeansContext.getAnnotationManager().checkQualifierConditions(qualifiers);
@@ -212,7 +208,6 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     /**
      * {@inheritDoc}
      */
-    @Override
     public <U extends T> Instance<U> select(TypeLiteral<U> subtype, Annotation... qualifiers)
     {        
         return select(subtype.getRawType(), qualifiers);
@@ -221,7 +216,6 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     /**
      * {@inheritDoc}
      */
-    @Override
     @SuppressWarnings("unchecked")
     public Iterator<T> iterator()
     {

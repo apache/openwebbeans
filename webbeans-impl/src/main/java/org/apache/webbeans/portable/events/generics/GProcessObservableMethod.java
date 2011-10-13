@@ -33,13 +33,11 @@ public class GProcessObservableMethod extends ProcessObserverMethodImpl implemen
         super(annotatedMethod, observerMethod);
     }
 
-    @Override
     public Class<?> getBeanClass()
     {
         return getObserverMethod().getBeanClass();
     }
 
-    @Override
     public Class<?> getProducerOrObserverType()
     {
         return ClassUtil.getClazz(getObserverMethod().getObservedType());

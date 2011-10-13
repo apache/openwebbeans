@@ -69,7 +69,6 @@ public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
     /**
      * {@inheritDoc}
      */
-    @Override
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         return super.invoke(actualInstance, method, proceed, arguments, (CreationalContextImpl<?>)creationalContext);

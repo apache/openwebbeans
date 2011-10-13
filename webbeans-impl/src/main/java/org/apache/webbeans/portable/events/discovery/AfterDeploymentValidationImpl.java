@@ -41,7 +41,6 @@ public class AfterDeploymentValidationImpl implements AfterDeploymentValidation
     /**
      * {@inheritDoc}
      */
-    @Override
     public void addDeploymentProblem(Throwable t)
     {
         beanManagerImpl.getErrorStack().pushError(t);

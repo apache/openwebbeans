@@ -74,7 +74,6 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
     /**
      * {@inheritDoc}
      */
-    @Override
     public void defineConstructor()
     {
         Constructor<T> constructor;

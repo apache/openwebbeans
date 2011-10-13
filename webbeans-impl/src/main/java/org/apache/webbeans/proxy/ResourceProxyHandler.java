@@ -53,7 +53,6 @@ public class ResourceProxyHandler implements MethodHandler, Serializable, Extern
         this.actualResource = actualResource;
     }
     
-    @Override
     public Object invoke(Object self, Method actualMethod, Method proceed, Object[] args) throws Throwable
     {
         try
@@ -72,7 +71,6 @@ public class ResourceProxyHandler implements MethodHandler, Serializable, Extern
      * 1. If actual object is serializable, then serialize it directly.
      * 2. If not, serialize the DUMMY_STRING.
      */
-    @Override
     public void writeExternal(ObjectOutput out) throws IOException 
     {        
         // write bean id first
@@ -89,7 +87,6 @@ public class ResourceProxyHandler implements MethodHandler, Serializable, Extern
      * 2. If the object is renote ejb stub, reconnect it.
      * 3. if the object is DUMMY_STRING, invoke ResourceBean.getActualInstance to get a new instance of the resource.
      */
-    @Override
     public void readExternal(ObjectInput in) throws IOException,
             ClassNotFoundException 
     {

@@ -72,7 +72,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void checkCreateConditions()
     {
         //Sub-class can override this
@@ -81,7 +80,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void defineApiType()
     {
         if(isDefaultMetaDataProvider())
@@ -107,7 +105,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void defineQualifier()
     {
         if(isDefaultMetaDataProvider())
@@ -124,7 +121,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void defineName(String defaultName)
     {
         if(isDefaultMetaDataProvider())
@@ -142,7 +138,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void defineScopeType(String errorMessage, boolean allowLazyInit)
     {
         if(isDefaultMetaDataProvider())
@@ -158,7 +153,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void defineSerializable()
     {
         definitionUtil.defineSerializable(bean);
@@ -167,7 +161,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void defineStereoTypes()
     {
         if(isDefaultMetaDataProvider())

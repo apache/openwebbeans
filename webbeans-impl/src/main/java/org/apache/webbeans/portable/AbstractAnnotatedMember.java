@@ -84,7 +84,6 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
    /**
      * {@inheritDoc}
      */    
-    @Override
     public AnnotatedType<X> getDeclaringType()
     {
         return declaringType;
@@ -93,7 +92,6 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
     /**
      * {@inheritDoc}
      */    
-    @Override
     public Member getJavaMember()
     {
         return javaMember;
@@ -102,7 +100,6 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
     /**
      * {@inheritDoc}
      */    
-    @Override
     public boolean isStatic()
     {
         return Modifier.isStatic(javaMember.getModifiers());

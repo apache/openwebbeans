@@ -103,7 +103,6 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
     /**
      * {@inheritDoc}
      */
-    @Override
     public Object invoke(Object proxyInstance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         Object result = null;
@@ -311,7 +310,6 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
         this.dependentEJB = s.readObject();
     }
 
-    @Override
     public void writeExternal(ObjectOutput out) throws IOException 
     {
         // we have to write the ids for all beans, not only PassivationCapable
@@ -336,7 +334,6 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
         out.writeObject(this.dependentEJB);
     }
 
-    @Override
     public void readExternal(ObjectInput in) throws IOException,
             ClassNotFoundException 
     {

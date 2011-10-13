@@ -51,7 +51,6 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
     /**
      * {@inheritDoc}
      */
-    @Override
     public void inject(T instance, CreationalContext<T> ctx)
     {
         if(!(ctx instanceof CreationalContextImpl))
@@ -114,7 +113,6 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
     /**
      * {@inheritDoc}
      */
-    @Override
     public void postConstruct(T instance)
     {
         InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);    
@@ -127,7 +125,6 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
     /**
      * {@inheritDoc}
      */
-    @Override
     public void preDestroy(T instance)
     {
         InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);

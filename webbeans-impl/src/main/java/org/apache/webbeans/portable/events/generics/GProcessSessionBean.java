@@ -44,7 +44,6 @@ public class GProcessSessionBean extends ProcessSessionBeanImpl implements Gener
      * @param eventClass the class of event we are treating this event as
      * @return X.class or Object.class
      */
-    @Override
     public Class<?> getBeanClassFor(Class<?> eventClass)
     {
         if (ProcessSessionBean.class.isAssignableFrom(eventClass))

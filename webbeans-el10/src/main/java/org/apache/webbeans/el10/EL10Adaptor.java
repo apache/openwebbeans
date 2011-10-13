@@ -26,13 +26,11 @@ import org.apache.webbeans.spi.adaptor.ELAdaptor;
 public class EL10Adaptor implements ELAdaptor
 {
 
-    @Override
     public ELResolver getOwbELResolver()
     {
         return new EL10Resolver();
     }
 
-    @Override
     public ExpressionFactory getOwbWrappedExpressionFactory(ExpressionFactory expressionFactory)
     {
         return new EL10WrappedExpressionFactory(expressionFactory);

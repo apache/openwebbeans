@@ -316,14 +316,12 @@ public final class WebBeansLogger implements Serializable, Externalizable
         return (logger.isLoggable(WebBeansLogger.WBL_TRACE));
     }
 
-    @Override
     public void writeExternal(ObjectOutput out) throws IOException 
     {
         out.writeObject(caller);
         out.writeObject(locale);
     }
 
-    @Override
     public void readExternal(ObjectInput in) throws IOException,
             ClassNotFoundException 
     {

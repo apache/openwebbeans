@@ -301,7 +301,6 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         return true;
     }
 
-    @Override
     public Set<Annotation> getDelegateQualifiers()
     {
         if(customDecorator != null)
@@ -312,7 +311,6 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         return delegateBindings;
     }
 
-    @Override
     public Type getDelegateType()
     {
         if(customDecorator != null)
@@ -557,7 +555,6 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         return wrappedBean.getStereotypes();
     }
 
-    @Override
     public Set<Type> getDecoratedTypes()
     {
         if(customDecorator != null)

@@ -75,7 +75,6 @@ abstract class AbstractAnnotatedCallable<X> extends AbstractAnnotatedMember<X> i
     /**
      * {@inheritDoc}
      */
-    @Override
     public List<AnnotatedParameter<X>> getParameters()
     {
         return annotatedParameters;

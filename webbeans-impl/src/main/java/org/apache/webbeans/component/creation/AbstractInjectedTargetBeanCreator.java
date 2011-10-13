@@ -50,7 +50,6 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     /**
      * {@inheritDoc}
      */
-    @Override
     public void defineDisposalMethods()
     {
         AbstractInjectionTargetBean bean = getBean();
@@ -69,7 +68,6 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     /**
      * {@inheritDoc}
      */
-    @Override
     public void defineInjectedFields()
     {
         AbstractInjectionTargetBean bean = getBean();
@@ -87,7 +85,6 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     /**
      * {@inheritDoc}
      */
-    @Override
     public void defineInjectedMethods()
     {
         AbstractInjectionTargetBean bean = getBean();
@@ -105,7 +102,6 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     /**
      * {@inheritDoc}
      */
-    @Override
     public Set<ObserverMethod<?>> defineObserverMethods()
     {   
         AbstractInjectionTargetBean bean = getBean();
@@ -122,7 +118,6 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     /**
      * {@inheritDoc}
      */
-    @Override
     public Set<ProducerFieldBean<?>> defineProducerFields()
     {
         AbstractInjectionTargetBean bean = getBean();
@@ -139,7 +134,6 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     /**
      * {@inheritDoc}
      */
-    @Override
     public Set<ProducerMethodBean<?>> defineProducerMethods()
     {
         AbstractInjectionTargetBean bean = getBean();
