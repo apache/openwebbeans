@@ -106,9 +106,9 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
     @Override
     public String getId()
     {
-        if(this.bean instanceof PassivationCapable)
+        if(bean instanceof PassivationCapable)
         {
-            PassivationCapable pc = (PassivationCapable)this.bean;
+            PassivationCapable pc = (PassivationCapable) bean;
             return pc.getId();
         }
         
@@ -120,7 +120,7 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
     @Override
     public boolean isPassivationCapable()
     {
-        return this.bean instanceof PassivationCapable ? true : false;
+        return bean instanceof PassivationCapable ? true : false;
     }
 
     @Override
@@ -141,19 +141,19 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
     @Override
     public Class<?> getBeanClass()
     {
-        return this.bean.getBeanClass();
+        return bean.getBeanClass();
     }
 
     @Override
     public Set<Class<? extends Annotation>> getStereotypes()
     {
-        return this.bean.getStereotypes();
+        return bean.getStereotypes();
     }
 
     @Override
     public boolean isAlternative()
     {
-        boolean alternative = this.bean.isAlternative();
+        boolean alternative = bean.isAlternative();
         if(alternative)
         {
             AlternativesManager manager = getWebBeansContext().getAlternativesManager();
@@ -163,7 +163,7 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
                 return true;
             }
             
-            Set<Class<? extends Annotation>> stereoTypes = this.bean.getStereotypes();
+            Set<Class<? extends Annotation>> stereoTypes = bean.getStereotypes();
             if(stereoTypes != null)
             {
                 for(Class<? extends Annotation> stereo : stereoTypes)
@@ -188,7 +188,7 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
     @Override
     public int hashCode()
     {
-        return 29 * this.bean.hashCode();
+        return 29 * bean.hashCode();
     }
 
     @Override

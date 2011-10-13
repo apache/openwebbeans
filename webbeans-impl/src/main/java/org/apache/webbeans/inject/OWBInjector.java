@@ -107,10 +107,10 @@ public final class OWBInjector implements Serializable
         BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
         try
         {
-            this.javaEEInstance = javaEeComponentInstance;
+            javaEEInstance = javaEeComponentInstance;
             if(creationalContext == null)
             {
-                this.ownerCreationalContext = (CreationalContextImpl<?>) beanManager.createCreationalContext(null);   
+                ownerCreationalContext = (CreationalContextImpl<?>) beanManager.createCreationalContext(null);
             }
 
             Class<Object> injectableComponentClass = (Class<Object>)javaEeComponentInstance.getClass();
@@ -119,7 +119,7 @@ public final class OWBInjector implements Serializable
             InjectionTargetWrapper<Object> wrapper = beanManager.getInjectionTargetWrapper(injectableComponentClass);
             if(wrapper != null)
             {
-                wrapper.inject(javaEeComponentInstance, (CreationalContext<Object>)this.ownerCreationalContext);
+                wrapper.inject(javaEeComponentInstance, (CreationalContext<Object>) ownerCreationalContext);
                 return this;
             }
             
@@ -178,16 +178,16 @@ public final class OWBInjector implements Serializable
         if(wrapper != null)
         {
            wrapper.dispose(javaEEInstance);
-           this.javaEEInstance = null;
-           this.ownerCreationalContext = null;
+            javaEEInstance = null;
+            ownerCreationalContext = null;
         }
         
         else
         {
-            if(this.ownerCreationalContext != null)
+            if(ownerCreationalContext != null)
             {
-                this.ownerCreationalContext.release();
-                this.ownerCreationalContext = null;
+                ownerCreationalContext.release();
+                ownerCreationalContext = null;
             }            
         }        
     }

@@ -70,7 +70,7 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
 
     public InjectableBeanManager()
     {
-        this.bm = WebBeansContext.getInstance().getBeanManagerImpl();
+        bm = WebBeansContext.getInstance().getBeanManagerImpl();
     }
     
     @Override
@@ -234,7 +234,7 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
             ClassNotFoundException 
     {
         //static lookup required for bean manager
-        this.bm = WebBeansContext.currentInstance().getBeanManagerImpl();
+        bm = WebBeansContext.currentInstance().getBeanManagerImpl();
     }
 
     @Override

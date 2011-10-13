@@ -38,7 +38,7 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
     @Override
     protected BeanManager createInstance(CreationalContext<BeanManager> creationalContext)
     {
-        if (this.manager == null)
+        if (manager == null)
         {
             manager = new InjectableBeanManager(getWebBeansContext().getBeanManagerImpl());
         }
@@ -49,7 +49,7 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
     @Override
     protected void destroyInstance(BeanManager instance,CreationalContext<BeanManager> creationalContext)
     {
-        this.manager = null;
+        manager = null;
     }
     
     /**

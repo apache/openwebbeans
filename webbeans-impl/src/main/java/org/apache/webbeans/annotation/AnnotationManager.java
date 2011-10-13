@@ -70,7 +70,7 @@ public final class AnnotationManager
 
     public AnnotationManager(WebBeansContext context)
     {
-        this.webBeansContext = context;
+        webBeansContext = context;
         beanManagerImpl = context.getBeanManagerImpl();
     }
 
@@ -577,7 +577,7 @@ public final class AnnotationManager
         Annotation old = null;
         for (Annotation interceptorBinding : interceptorBindings)
         {
-            if (!this.isInterceptorBindingAnnotation(interceptorBinding.annotationType()))
+            if (!isInterceptorBindingAnnotation(interceptorBinding.annotationType()))
             {
                 throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor" +
                         " bindings array can not contain other annotation that is not @InterceptorBinding");
@@ -612,7 +612,7 @@ public final class AnnotationManager
         Annotation old = null;
         for (Annotation qualifier : qualifiers)
         {
-            if (!this.isQualifierAnnotation(qualifier.annotationType()))
+            if (!isQualifierAnnotation(qualifier.annotationType()))
             {
                 throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers array " +
                         "can not contain other annotation that is not @Qualifier");
@@ -650,7 +650,7 @@ public final class AnnotationManager
         Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(annotations, "Annotations argument can not be null");
 
-        Annotation[] as = this.getQualifierAnnotations(annotations);
+        Annotation[] as = getQualifierAnnotations(annotations);
         for (Annotation a : annotations)
         {
             if (a.annotationType().equals(New.class))
@@ -699,7 +699,7 @@ public final class AnnotationManager
         }
         else
         {
-            Annotation[] anns = this.getStereotypeMetaAnnotations(superMethod.getAnnotations());
+            Annotation[] anns = getStereotypeMetaAnnotations(superMethod.getAnnotations());
             for(Annotation ann : anns)
             {
                 if(ann.annotationType().isAnnotationPresent(Stereotype.class))
@@ -756,7 +756,7 @@ public final class AnnotationManager
                     if(found)
                     {
                         Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Disposes.class);
-                        Annotation[] annots = this.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
+                        Annotation[] annots = getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
 
                         if(type.equals(beanType))
                         {

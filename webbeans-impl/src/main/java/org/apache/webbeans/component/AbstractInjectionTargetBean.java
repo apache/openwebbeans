@@ -446,7 +446,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public void addObservableMethod(Method observerMethod)
     {
-        this.observableMethods.add(observerMethod);
+        observableMethods.add(observerMethod);
     }
 
     /**
@@ -454,7 +454,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public Set<Method> getObservableMethods()
     {
-        return this.observableMethods;
+        return observableMethods;
     }
 
     /**
@@ -464,7 +464,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public Set<Field> getInjectedFields()
     {
-        return this.injectedFields;
+        return injectedFields;
     }
 
     /**
@@ -474,7 +474,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public void addInjectedField(Field field)
     {
-        this.injectedFields.add(field);
+        injectedFields.add(field);
     }
     
     /**
@@ -484,7 +484,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public Set<Field> getInjectedFromSuperFields()
     {
-        return this.injectedFromSuperFields;
+        return injectedFromSuperFields;
     }
 
     /**
@@ -494,7 +494,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public void addInjectedFieldToSuper(Field field)
     {
-        this.injectedFromSuperFields.add(field);
+        injectedFromSuperFields.add(field);
     }
     
 
@@ -505,7 +505,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public Set<Method> getInjectedMethods()
     {
-        return this.injectedMethods;
+        return injectedMethods;
     }
 
     /**
@@ -515,7 +515,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public void addInjectedMethod(Method method)
     {
-        this.injectedMethods.add(method);
+        injectedMethods.add(method);
     }
 
     /**
@@ -525,7 +525,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public Set<Method> getInjectedFromSuperMethods()
     {
-        return this.injectedFromSuperMethods;
+        return injectedFromSuperMethods;
     }
 
     /**
@@ -535,7 +535,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public void addInjectedMethodToSuper(Method method)
     {
-        this.injectedFromSuperMethods.add(method);
+        injectedFromSuperMethods.add(method);
     }
     
     /**
@@ -543,12 +543,12 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public List<InterceptorData> getInterceptorStack()
     {
-        return this.interceptorStack;
+        return interceptorStack;
     }
     
     public List<Decorator<?>> getDecoratorStack()
     {
-        return this.decorators;
+        return decorators;
     }
 
     /**
@@ -556,7 +556,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public IBeanInheritedMetaData getInheritedMetaData()
     {
-        return this.inheritedMetaData;
+        return inheritedMetaData;
     }
     
     /**
@@ -564,7 +564,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     protected void setInheritedMetaData()
     {
-        this.inheritedMetaData = new BeanInheritedMetaData<T>(this);
+        inheritedMetaData = new BeanInheritedMetaData<T>(this);
     }
 
     /**
@@ -579,16 +579,14 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     /**
      * {@inheritDoc}
      */
-    @Override
     public AnnotatedType<T> getAnnotatedType()
     {
-        return this.annotatedType;
+        return annotatedType;
     }
     
     /**
      * {@inheritDoc}
      */
-    @Override
     public void setAnnotatedType(AnnotatedType<T> annotatedType)
     {
         this.annotatedType = annotatedType;
@@ -603,7 +601,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         super.validatePassivationDependencies();
         
         //Check for interceptors and decorators
-        for(Decorator<?> dec : this.decorators)
+        for(Decorator<?> dec : decorators)
         {
             WebBeansDecorator<?> decorator = (WebBeansDecorator<?>)dec;
             if(!decorator.isPassivationCapable())
@@ -617,7 +615,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             }
         }
         
-        for(InterceptorData interceptorData : this.interceptorStack)
+        for(InterceptorData interceptorData : interceptorStack)
         {
             if(interceptorData.isDefinedWithWebBeansInterceptor())
             {

@@ -33,7 +33,7 @@ class WrappedCreationalContext<T> extends CreationalContextImpl<T> implements Cr
                              WebBeansContext webBeansContext)
     {
         super(contextual, webBeansContext);
-        this.wrapped = creationalContext;
+        wrapped = creationalContext;
     }
 
     @Override

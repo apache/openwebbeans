@@ -86,10 +86,10 @@ public class InvocationContextImpl implements InvocationContext
                                  Object[] parameters, List<InterceptorData> datas, InterceptorType type)
     {
         this.webBeansContext = webBeansContext;
-        this.owbBean = bean;
+        owbBean = bean;
         this.method = method;
         this.parameters = parameters;
-        this.interceptorDatas = datas;
+        interceptorDatas = datas;
         this.type = type;
         
         if(instance == null)
@@ -98,7 +98,7 @@ public class InvocationContextImpl implements InvocationContext
         }
         else
         {
-            this.target = instance;
+            target = instance;
         }
     }
     
@@ -108,7 +108,7 @@ public class InvocationContextImpl implements InvocationContext
      */
     public void setCreationalContext(CreationalContext<?> ownerCreationalContext)
     {
-        this.creationalContext = ownerCreationalContext;
+        creationalContext = ownerCreationalContext;
     }
 
     /**
@@ -117,7 +117,7 @@ public class InvocationContextImpl implements InvocationContext
      */
     public void setEJBInvocationContext(InvocationContext c)
     {
-        this.ejbInvocationContext = c;
+        ejbInvocationContext = c;
     }
 
     
@@ -129,8 +129,8 @@ public class InvocationContextImpl implements InvocationContext
     private void configureTarget(OwbBean<?> bean)
     {
         Context webbeansContext = bean.getWebBeansContext().getBeanManagerImpl().getContext(bean.getScope());
-        
-        this.target = webbeansContext.get((Contextual<Object>)bean, (CreationalContext<Object>)this.creationalContext);        
+
+        target = webbeansContext.get((Contextual<Object>)bean, (CreationalContext<Object>) creationalContext);
         
     }
     
@@ -139,54 +139,54 @@ public class InvocationContextImpl implements InvocationContext
      */
     public Map<String, Object> getContextData()
     {
-        return this.contextData;
+        return contextData;
     }
-    
+
     /**
-     * {@inheritDoc}
-     */
+    * {@inheritDoc}
+    */
     public Method getMethod()
     {
-        return this.method;
+        return method;
     }
-    
+
     /**
-     * {@inheritDoc}
-     */
+    * {@inheritDoc}
+    */
     public Object[] getParameters()
     {
-        return this.parameters;
+        return parameters;
     }
-    
+
     /**
-     * {@inheritDoc}
-     */
+    * {@inheritDoc}
+    */
     public Object getTarget()
     {
-        return this.target;
+        return target;
     }
-    
+
     /**
-     * {@inheritDoc}
-     */
+    * {@inheritDoc}
+    */
     public Object proceed() throws Exception
     {
         try
         {
             if (type.equals(InterceptorType.AROUND_INVOKE))
             {
-                return proceedAroundInvokes(this.interceptorDatas);
+                return proceedAroundInvokes(interceptorDatas);
             }
             else if (type.equals(InterceptorType.AROUND_TIMEOUT))
             {
-                return proceedAroundTimeouts(this.interceptorDatas);
+                return proceedAroundTimeouts(interceptorDatas);
             }
-            return proceedCommonAnnots(this.interceptorDatas, this.type);
+            return proceedCommonAnnots(interceptorDatas, type);
 
         }
         catch (InvocationTargetException ite)
         {
-            this.target = null; // destroy target instance
+            target = null; // destroy target instance
             
             // Try to provide the original exception to the interceptor stack, 
             // not the InvocationTargetException from Method.invoke
@@ -199,7 +199,7 @@ public class InvocationContextImpl implements InvocationContext
         }
         catch (Exception e)
         {
-            this.target = null; // destroy target instance
+            target = null; // destroy target instance
 
             throw e;
         }
@@ -226,9 +226,9 @@ public class InvocationContextImpl implements InvocationContext
                 owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(aroundInvokeMethod, true);
             }
             
-            Object t = intc.createNewInstance(this.ccKey != null ? this.ccKey : this.target,
-                    (CreationalContextImpl<?>)this.creationalContext);     
-            
+            Object t = intc.createNewInstance(ccKey != null ? ccKey : target,
+                    (CreationalContextImpl<?>) creationalContext);
+
             if (t == null)
             {
                 t = target;
@@ -241,18 +241,18 @@ public class InvocationContextImpl implements InvocationContext
         }
         else
         {
-            if(!(this.owbBean instanceof EnterpriseBeanMarker))
+            if(!(owbBean instanceof EnterpriseBeanMarker))
             {
-                if(!this.method.isAccessible())
+                if(!method.isAccessible())
                 {                
                     owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, true);
                 }
                 
-                result = this.method.invoke(target, parameters);
+                result = method.invoke(target, parameters);
             }
             else 
             { 
-                if (this.ejbInvocationContext != null)
+                if (ejbInvocationContext != null)
                 {
                     result = ejbInvocationContext.proceed();
                 }
@@ -283,9 +283,9 @@ public class InvocationContextImpl implements InvocationContext
                 owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(aroundTimeoutMethod, true);
             }
             
-            Object t = intc.createNewInstance(this.ccKey != null ? this.ccKey : this.target,
-                    (CreationalContextImpl<?>)this.creationalContext);      
-            
+            Object t = intc.createNewInstance(ccKey != null ? ccKey : target,
+                    (CreationalContextImpl<?>) creationalContext);
+
             if (t == null)
             {
                 t = target;
@@ -297,18 +297,18 @@ public class InvocationContextImpl implements InvocationContext
         }
         else
         {
-            if(!(this.owbBean instanceof EnterpriseBeanMarker))
+            if(!(owbBean instanceof EnterpriseBeanMarker))
             {
                 if(!method.isAccessible())
                 {                
                     owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, true);
                 }
                 
-                result = this.method.invoke(target, parameters);
-            }
-            else 
+                result = method.invoke(target, parameters);
+            } 
+            else
             { 
-                if (this.ejbInvocationContext != null)
+                if (ejbInvocationContext != null)
                 {
                     result = ejbInvocationContext.proceed();
                 }
@@ -368,13 +368,13 @@ public class InvocationContextImpl implements InvocationContext
 
             currentMethod++;
 
-            Object t = intc.createNewInstance(this.ccKey != null ? this.ccKey : this.target,
-                    (CreationalContextImpl<?>)this.creationalContext);      
-            
+            Object t = intc.createNewInstance(ccKey != null ? ccKey : target,
+                    (CreationalContextImpl<?>) creationalContext);
+
             //In bean class
             if (t == null)
             {
-                if(!(this.owbBean instanceof EnterpriseBeanMarker))
+                if(!(owbBean instanceof EnterpriseBeanMarker))
                 {
                     t = target;                
                     result = commonAnnMethod.invoke(t, new Object[] {});
@@ -395,7 +395,7 @@ public class InvocationContextImpl implements InvocationContext
             /* For EJB's, we do not call the "in bean class" interceptors --the container does, and only if
              * our last 299 interceptor called proceed (which takes us here).
              */
-            if ((this.owbBean instanceof EnterpriseBeanMarker) && (this.ejbInvocationContext != null))
+            if ((owbBean instanceof EnterpriseBeanMarker) && (ejbInvocationContext != null))
             {
                 result = ejbInvocationContext.proceed();
             }
@@ -412,20 +412,20 @@ public class InvocationContextImpl implements InvocationContext
         {
             if (params == null)
             {
-                if (this.parameters.length >= 0)
+                if (parameters.length >= 0)
                 {
                     throw new IllegalArgumentException("Gvien parameters is null but expected not null parameters");
                 }
             }
             else
             {
-                if (params.length != this.parameters.length)
+                if (params.length != parameters.length)
                 {
-                    throw new IllegalArgumentException("Expected " + this.parameters.length + " " +
+                    throw new IllegalArgumentException("Expected " + parameters.length + " " +
                             "parameters, but only got " + params.length + " parameters");
                 }
 
-                Class<?>[] methodParameters = this.method.getParameterTypes();
+                Class<?>[] methodParameters = method.getParameterTypes();
                 int i = 0;
                 for (Object obj : params)
                 {
@@ -456,7 +456,7 @@ public class InvocationContextImpl implements InvocationContext
                     }
                 }
 
-                System.arraycopy(params, 0, this.parameters, 0, params.length);
+                System.arraycopy(params, 0, parameters, 0, params.length);
 
             }
 

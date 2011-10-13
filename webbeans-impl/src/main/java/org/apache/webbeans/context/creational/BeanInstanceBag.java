@@ -72,7 +72,7 @@ public class BeanInstanceBag<T> implements Serializable
     {
         try
         {
-            this.lock.lock();
+            lock.lock();
             
             // we need to check again, maybe we got blocked by a previous invocation
             if (beanInstance == null)
@@ -83,7 +83,7 @@ public class BeanInstanceBag<T> implements Serializable
         }
         finally
         {
-            this.lock.unlock();
+            lock.unlock();
         }
         
         return beanInstance; 

@@ -57,7 +57,7 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
     public WebBeansAnnotation(Class<? extends Annotation> annotationType)
     {
         this.annotationType = annotationType;
-        this.members = SecurityUtil.doPrivilegedGetDeclaredMethods(annotationType);
+        members = SecurityUtil.doPrivilegedGetDeclaredMethods(annotationType);
 
         /* Set default method values */
         setDefaultValues();
@@ -98,7 +98,7 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
      */
     public Map<String, Object> getAnnotationMembersValueMap()
     {
-        return Collections.unmodifiableMap(this.annotationMembersValueMap);
+        return Collections.unmodifiableMap(annotationMembersValueMap);
     }
 
     public Class<? extends Annotation> annotationType()
@@ -111,7 +111,7 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
         Asserts.assertNotNull(memberName, "memberName parameter can not be null");
         Asserts.assertNotNull(memberValue, "memberValue parameter can not be null");
 
-        this.annotationMembersValueMap.put(memberName, memberValue);
+        annotationMembersValueMap.put(memberName, memberValue);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
         for (int i = 0; i < members.length; i++)
         {
             sb.append(members[i].getName()).append("=");
-            sb.append(this.invoke(members[i]));
+            sb.append(invoke(members[i]));
             if (i < members.length - 1)
             {
                 sb.append(",");
@@ -140,11 +140,11 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
         if (other instanceof Annotation)
         {
             Annotation that = (Annotation) other;
-            if (this.annotationType().equals(that.annotationType()))
+            if (annotationType().equals(that.annotationType()))
             {
                 for (Method member : members)
                 {
-                    Object thisValue = this.invoke(member);
+                    Object thisValue = invoke(member);
                     Object thatValue = callMethod(member, that);
                     
                     if (!thisValue.equals(thatValue))
@@ -158,11 +158,11 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
         else if (other instanceof WebBeansAnnotation)
         {
             WebBeansAnnotation that = (WebBeansAnnotation) other;
-            if (this.annotationType().equals(that.annotationType()))
+            if (annotationType().equals(that.annotationType()))
             {
                 for (Method member : members)
                 {
-                    Object thisValue = this.invoke(member);
+                    Object thisValue = invoke(member);
                     Object thatValue = that.invoke(member);
                     if (!thisValue.equals(thatValue))
                     {
@@ -193,7 +193,7 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
     {
         String memberName = method.getName();
 
-        return this.annotationMembersValueMap.get(memberName);
+        return annotationMembersValueMap.get(memberName);
     }
 
     private static Object callMethod(Method method, Object instance)
@@ -229,7 +229,7 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
             Object defValue = m.getDefaultValue();
             if (defValue != null)
             {
-                this.annotationMembersValueMap.put(m.getName(), defValue);
+                annotationMembersValueMap.put(m.getName(), defValue);
             }
         }
     }

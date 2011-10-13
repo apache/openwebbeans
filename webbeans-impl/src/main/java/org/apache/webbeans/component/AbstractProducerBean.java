@@ -57,7 +57,7 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
      */
     public InjectionTargetBean<?> getParent()
     {
-        return this.ownerComponent;
+        return ownerComponent;
     }
 
     /**
@@ -107,7 +107,7 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
         Object parentInstance;
 
         Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(),
-                (AbstractOwbBean<T>) this.ownerComponent);
+                (AbstractOwbBean<T>) ownerComponent);
 
         if (specialize != null)
         {
@@ -115,7 +115,7 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
         }
         else
         {
-            parentInstance = getManager().getReference(this.ownerComponent, null, creationalContext);
+            parentInstance = getManager().getReference(ownerComponent, null, creationalContext);
         }
 
         return parentInstance;
@@ -128,7 +128,7 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
         Object parentInstance;
 
         Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(),
-                (AbstractOwbBean<T>) this.ownerComponent);
+                (AbstractOwbBean<T>) ownerComponent);
 
         if (specialize != null)
         {

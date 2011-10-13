@@ -52,7 +52,7 @@ public class SessionContext extends AbstractContext implements Serializable, Ext
     @Override
     public void setComponentInstanceMap()
     {
-        this.componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
+        componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
     }
 
     public void readExternal(ObjectInput in) throws IOException,
@@ -60,8 +60,8 @@ public class SessionContext extends AbstractContext implements Serializable, Ext
     {
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
 
-        this.type = (ContextTypes) in.readObject();
-        this.scopeType = (Class<? extends Annotation>) in.readObject();
+        type = (ContextTypes) in.readObject();
+        scopeType = (Class<? extends Annotation>) in.readObject();
         Map<String, BeanInstanceBag<?>> map = (Map<String, BeanInstanceBag<?>>)in.readObject();
         setComponentInstanceMap();
         Iterator<String> it = map.keySet().iterator();
@@ -82,8 +82,8 @@ public class SessionContext extends AbstractContext implements Serializable, Ext
 
     public void writeExternal(ObjectOutput out) throws IOException 
     {
-        out.writeObject(this.type);
-        out.writeObject(this.scopeType);
+        out.writeObject(type);
+        out.writeObject(scopeType);
         Iterator<Contextual<?>> it = componentInstanceMap.keySet().iterator();
         Map<String, BeanInstanceBag<?>> map = new HashMap<String, BeanInstanceBag<?>>();
         while(it.hasNext()) 

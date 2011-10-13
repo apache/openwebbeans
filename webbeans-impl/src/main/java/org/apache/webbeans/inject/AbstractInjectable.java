@@ -121,7 +121,7 @@ public abstract class AbstractInjectable implements Injectable
             {
                 if(injectedBean instanceof AbstractProducerBean)
                 {
-                    if(this.injectionOwnerBean.isPassivationCapable())
+                    if(injectionOwnerBean.isPassivationCapable())
                     {
                         dependentProducer = true;   
                     }
@@ -130,7 +130,7 @@ public abstract class AbstractInjectable implements Injectable
         }        
         
         //Gets injectable reference for injected bean
-        injected = beanManager.getInjectableReference(injectionPoint, this.injectionOwnerCreationalContext);
+        injected = beanManager.getInjectableReference(injectionPoint, injectionOwnerCreationalContext);
 
         /*X TODO see spec issue CDI-140 */
         if(dependentProducer)
@@ -148,7 +148,7 @@ public abstract class AbstractInjectable implements Injectable
         {
             if(instanceUnderInjection.get() != null)
             {
-                ((CreationalContextImpl<?>)this.injectionOwnerCreationalContext).addDependent(instanceUnderInjection.get(),injectedBean, injected);
+                ((CreationalContextImpl<?>) injectionOwnerCreationalContext).addDependent(instanceUnderInjection.get(),injectedBean, injected);
             }
         }
 
@@ -163,7 +163,7 @@ public abstract class AbstractInjectable implements Injectable
      */
     protected List<InjectionPoint> getInjectedPoints(Member member)
     {
-        List<InjectionPoint> injectedFields = this.injectionOwnerBean.getInjectionPoint(member);
+        List<InjectionPoint> injectedFields = injectionOwnerBean.getInjectionPoint(member);
         
         return injectedFields;
 
@@ -213,7 +213,7 @@ public abstract class AbstractInjectable implements Injectable
      */
     public OwbBean<?> getInjectionOwnerComponent()
     {
-        return this.injectionOwnerBean;
+        return injectionOwnerBean;
     }
 
 }

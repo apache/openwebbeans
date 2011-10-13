@@ -211,7 +211,7 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
 
     public void setDecorators(List<Object> dec)
     {
-        this.decorators = dec;
+        decorators = dec;
     }
 
     @Override

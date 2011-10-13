@@ -53,29 +53,29 @@ public class ViolationMessageBuilder
 
     private void appendText(String[] text, boolean appendLineSeparator)
     {
-        if(this.violationMessage == null)
+        if(violationMessage == null)
         {
-            this.violationMessage = new StringBuilder();
+            violationMessage = new StringBuilder();
         }
         else if(appendLineSeparator)
         {
-            this.violationMessage.append(lineSeparator);
+            violationMessage.append(lineSeparator);
         }
 
         for(String t : text)
         {
-            this.violationMessage.append(t);
+            violationMessage.append(t);
         }
     }
 
     public boolean containsViolation()
     {
-        return this.violationMessage != null;
+        return violationMessage != null;
     }
 
     @Override
     public String toString()
     {
-        return containsViolation() ? this.violationMessage.toString() : "no violation recorded";
+        return containsViolation() ? violationMessage.toString() : "no violation recorded";
     }
 }

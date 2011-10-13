@@ -84,7 +84,7 @@ public class ManagedSecurityService implements SecurityService
 
         // we also need to make sure that this very class didn't get subclassed
         // to prevent man in the middle attacks
-        if (this.getClass() != ManagedSecurityService.class)
+        if (getClass() != ManagedSecurityService.class)
         {
             throw new SecurityException("ManagedSecurityService must not get subclassed!");
         }
@@ -295,7 +295,7 @@ public class ManagedSecurityService implements SecurityService
         @Override
         public String run()
         {
-            return System.getProperty(this.propertyName,this.defaultValue);
+            return System.getProperty(propertyName, defaultValue);
         }
 
     }

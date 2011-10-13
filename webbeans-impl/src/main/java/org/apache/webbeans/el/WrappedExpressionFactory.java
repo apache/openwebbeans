@@ -36,19 +36,19 @@ public class WrappedExpressionFactory extends ExpressionFactory
     @Override
     public Object coerceToType(Object arg0, Class<?> arg1) throws ELException
     {
-        return this.expressionFactory.coerceToType(arg0, arg1);
+        return expressionFactory.coerceToType(arg0, arg1);
     }
 
     @Override
     public MethodExpression createMethodExpression(ELContext arg0, String arg1, Class<?> arg2, Class<?>[] arg3) throws ELException, NullPointerException
     {
-        return this.expressionFactory.createMethodExpression(arg0, arg1, arg2, arg3);
+        return expressionFactory.createMethodExpression(arg0, arg1, arg2, arg3);
     }
 
     @Override
     public ValueExpression createValueExpression(Object arg0, Class<?> arg1)
     {
-        ValueExpression wrapped = this.expressionFactory.createValueExpression(arg0, arg1);
+        ValueExpression wrapped = expressionFactory.createValueExpression(arg0, arg1);
         
         return new WrappedValueExpression(wrapped);
     }
@@ -56,7 +56,7 @@ public class WrappedExpressionFactory extends ExpressionFactory
     @Override
     public ValueExpression createValueExpression(ELContext arg0, String arg1, Class<?> arg2) throws NullPointerException, ELException
     {   
-        ValueExpression wrapped = this.expressionFactory.createValueExpression(arg0, arg1, arg2);
+        ValueExpression wrapped = expressionFactory.createValueExpression(arg0, arg1, arg2);
                 
         return new WrappedValueExpression(wrapped);
     }

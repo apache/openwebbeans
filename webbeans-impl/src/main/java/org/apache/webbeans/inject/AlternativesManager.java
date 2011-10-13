@@ -63,14 +63,14 @@ public class AlternativesManager
                 {
                     boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());
                     if(isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addStereoType(stereo, fileName) ||
-                            (!isBDAScanningEnabled && this.stereoAlternatives.contains(stereo)) )
+                            (!isBDAScanningEnabled && stereoAlternatives.contains(stereo)) )
                     {
                         throw new WebBeansConfigurationException("Given alternative class : " + alternative.getName() + " is already added as @Alternative" );
                     }
                     
                     ok = true;
-                    
-                    this.stereoAlternatives.add(stereo);   
+
+                    stereoAlternatives.add(stereo);
                 }
             }
             
@@ -91,12 +91,12 @@ public class AlternativesManager
         {
             boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());
             if((isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addAlternative(alternative, fileName)) ||
-                    (!isBDAScanningEnabled && this.alternatives.contains(alternative)))
+                    (!isBDAScanningEnabled && alternatives.contains(alternative)))
             {
                 throw new WebBeansConfigurationException("Given class : " + alternative.getName() + " is already added as @Alternative" );
             }
-            
-            this.alternatives.add(alternative);
+
+            alternatives.add(alternative);
         }
         else
         {
@@ -106,7 +106,7 @@ public class AlternativesManager
     
     public boolean isClassAlternative(Class<?> clazz)
     {
-        if(this.alternatives.contains(clazz))
+        if(alternatives.contains(clazz))
         {
             return true;
         }
@@ -116,14 +116,14 @@ public class AlternativesManager
 
     public boolean isStereoAlternative(Class<? extends Annotation> stereo)
     {
-        return this.stereoAlternatives.contains(stereo);
+        return stereoAlternatives.contains(stereo);
     }
 
     public boolean isBeanHasAlternative(Bean<?> bean)
     {
         Class<?> returnType = bean.getBeanClass();
         
-        if(this.alternatives.contains(returnType))
+        if(alternatives.contains(returnType))
         {
             return true;
         }
@@ -131,7 +131,7 @@ public class AlternativesManager
         Set<Class<? extends Annotation>> set = bean.getStereotypes();
         for(Class<? extends Annotation> ann : set)
         {
-            if(this.stereoAlternatives.contains(ann))
+            if(stereoAlternatives.contains(ann))
             {
                 return true;
             }
@@ -142,7 +142,7 @@ public class AlternativesManager
     
     public void clear()
     {
-        this.alternatives.clear();
-        this.stereoAlternatives.clear();
+        alternatives.clear();
+        stereoAlternatives.clear();
     }
 }

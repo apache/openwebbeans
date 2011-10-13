@@ -35,13 +35,13 @@ public class WebBeansException extends RuntimeException
     public WebBeansException(Throwable e)
     {
         super(e);
-        this.cause = e;
+        cause = e;
     }
 
     public WebBeansException(String message, Throwable e)
     {
         super(message, e);
-        this.cause = e;
+        cause = e;
     }
 
     public Throwable getCause()

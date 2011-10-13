@@ -133,12 +133,12 @@ public class WebBeansContext
                 serviceMap.put(entry.getKey(), entry.getValue());
             }
         }
-        this.loaderService = getService(LoaderService.class);
-        this.securityService = getService(SecurityService.class);
+        loaderService = getService(LoaderService.class);
+        securityService = getService(SecurityService.class);
         WebBeansUtil.initProxyFactoryClassLoaderProvider();
 
         // Allow the WebBeansContext itself to be looked up
-        managerMap.put(this.getClass(), this);
+        managerMap.put(getClass(), this);
 
         // Add them all into the map for backwards compatibility
         managerMap.put(AlternativesManager.class, alternativesManager);
@@ -439,6 +439,6 @@ public class WebBeansContext
 
     public LoaderService getLoaderService()
     {
-        return this.loaderService;
+        return loaderService;
     }
 }

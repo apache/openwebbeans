@@ -53,7 +53,7 @@ class AnnotatedConstructorImpl<X> extends AbstractAnnotatedCallable<X> implement
     @SuppressWarnings("unchecked")
     public Constructor<X> getJavaMember()
     {
-        return Constructor.class.cast(this.javaMember);
+        return Constructor.class.cast(javaMember);
     }
     
     public String toString()

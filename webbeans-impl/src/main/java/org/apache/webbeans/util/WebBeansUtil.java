@@ -1326,7 +1326,7 @@ public final class WebBeansUtil
 
         if(clazzName.length() > 0)
         {
-            StringBuffer name = new StringBuffer(clazzName);
+            StringBuilder name = new StringBuilder(clazzName);
             name.setCharAt(0, Character.toLowerCase(name.charAt(0)));
 
             return name.toString();
@@ -1337,7 +1337,7 @@ public final class WebBeansUtil
 
     public static String getProducerDefaultName(String methodName)
     {
-        StringBuffer buffer = new StringBuffer(methodName);
+        StringBuilder buffer = new StringBuilder(methodName);
 
         if (buffer.length() > 3 &&  (buffer.substring(0, 3).equals("get") || buffer.substring(0, 3).equals("set")))
         {

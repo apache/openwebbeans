@@ -154,8 +154,8 @@ public class ELContextStore
      */
     public void addDependent(Bean<?> bean, Object dependent, CreationalContext<?> creationalContext)
     {
-        this.dependentObjects.put(bean, new CreationalStore(dependent,creationalContext));
-        this.beanNameToDependentBeanMapping.put(bean.getName(), bean);
+        dependentObjects.put(bean, new CreationalStore(dependent, creationalContext));
+        beanNameToDependentBeanMapping.put(bean.getName(), bean);
     }
 
     /**
@@ -165,7 +165,7 @@ public class ELContextStore
      */
     public Object getDependent(Bean<?> bean)
     {
-        CreationalStore sc = this.dependentObjects.get(bean);
+        CreationalStore sc = dependentObjects.get(bean);
 
         return sc != null ? sc.getObject() : null;
     }
@@ -197,16 +197,16 @@ public class ELContextStore
      */
     public void destroyDependents()
     {
-        Set<Bean<?>> beans = this.dependentObjects.keySet();
+        Set<Bean<?>> beans = dependentObjects.keySet();
         for(Bean<?> bean : beans)
         {
             Bean<Object> o = (Bean<Object>)bean;
-            CreationalStore store = this.dependentObjects.get(bean);
+            CreationalStore store = dependentObjects.get(bean);
             o.destroy(store.getObject(), (CreationalContext<Object>)store.getCreational());
         }
-        
-        this.dependentObjects.clear();
-        this.beanNameToDependentBeanMapping.clear();
+
+        dependentObjects.clear();
+        beanNameToDependentBeanMapping.clear();
     }
 
     /**

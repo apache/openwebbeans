@@ -221,33 +221,33 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         Asserts.assertNotNull(contextual);
         Asserts.assertNotNull(wrapper);
-        
-        this.injectionTargetWrappers.put(contextual, wrapper);
+
+        injectionTargetWrappers.put(contextual, wrapper);
     }
     
     public <T> InjectionTargetWrapper<T> getInjectionTargetWrapper(Contextual<T> contextual)
     {
         Asserts.assertNotNull(contextual);
-        return (InjectionTargetWrapper<T>)this.injectionTargetWrappers.get(contextual);
+        return (InjectionTargetWrapper<T>) injectionTargetWrappers.get(contextual);
     }
     
     public <T> void putInjectionTargetWrapperForJavaEeComponents(Class<T> javaEeComponentClass, InjectionTargetWrapper<T> wrapper)
     {
         Asserts.assertNotNull(javaEeComponentClass);
         Asserts.assertNotNull(wrapper);
-        
-        this.injectionTargetForJavaEeComponents.put(javaEeComponentClass, wrapper);
+
+        injectionTargetForJavaEeComponents.put(javaEeComponentClass, wrapper);
     }
     
     public <T> InjectionTargetWrapper<T> getInjectionTargetWrapper(Class<T> javaEeComponentClass)
     {
         Asserts.assertNotNull(javaEeComponentClass);
-        return (InjectionTargetWrapper<T>)this.injectionTargetForJavaEeComponents.get(javaEeComponentClass);
+        return (InjectionTargetWrapper<T>) injectionTargetForJavaEeComponents.get(javaEeComponentClass);
     }    
     
     public ErrorStack getErrorStack()
     {
-        return this.errorStack;
+        return errorStack;
     }
 
     /**
@@ -257,7 +257,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     public NotificationManager getNotificationManager()
     {
-        return this.notificationManager;
+        return notificationManager;
     }
     
     /**
@@ -267,7 +267,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     public InjectionResolver getInjectionResolver()
     {
-        return this.injectionResolver;
+        return injectionResolver;
     }
 
     /**
@@ -368,13 +368,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         if(newBean instanceof AbstractOwbBean)
         {
             addPassivationInfo((OwbBean)newBean);
-            this.deploymentBeans.add(newBean);
+            deploymentBeans.add(newBean);
         }
         else
         {
             ThirdpartyBeanImpl<?> bean = new ThirdpartyBeanImpl(newBean, webBeansContext);
             addPassivationInfo(bean);
-            this.deploymentBeans.add(bean);
+            deploymentBeans.add(bean);
         }
 
         return this;
@@ -413,25 +413,25 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public void addCustomInterceptorClass(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        this.additionalInterceptorClasses.add(clazz);
+        additionalInterceptorClasses.add(clazz);
     }
 
     public void addCustomDecoratorClass(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        this.additionalDecoratorClasses.add(clazz);
+        additionalDecoratorClasses.add(clazz);
     }
     
     public boolean containsCustomInterceptorClass(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        return this.additionalInterceptorClasses.contains(clazz);
+        return additionalInterceptorClasses.contains(clazz);
     }
 
     public boolean containsCustomDecoratorClass(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        return this.additionalDecoratorClasses.contains(clazz);
+        return additionalDecoratorClasses.contains(clazz);
     }
 
     public void addInterceptorBindingType(Class<? extends Annotation> bindingType, Annotation... inheritsArray)
@@ -470,7 +470,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             throw new IllegalArgumentException("Event class : " + event.getClass().getName() + " can not be defined as generic type");
         }
 
-        this.notificationManager.fireEvent(event, bindings);
+        notificationManager.fireEvent(event, bindings);
     }
     
     @Deprecated
@@ -479,7 +479,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         AbstractOwbBean<?> component = null;
         Object object = null;
 
-        Set<Bean<?>> set = this.injectionResolver.implResolveByName(name);
+        Set<Bean<?>> set = injectionResolver.implResolveByName(name);
         if (set.isEmpty())
         {
             return null;
@@ -540,7 +540,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Deprecated
     public Set<Bean<?>> resolveByName(String name)
     {
-        return this.injectionResolver.implResolveByName(name);
+        return injectionResolver.implResolveByName(name);
     }
 
     @Deprecated
@@ -548,7 +548,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         webBeansContext.getResolutionUtil().getInstanceByTypeConditions(bindingTypes);
 
-        return this.injectionResolver.implResolveByType(apiType, bindingTypes);
+        return injectionResolver.implResolveByType(apiType, bindingTypes);
     }
 
     @Deprecated
@@ -559,7 +559,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         webBeansContext.getResolutionUtil().getInstanceByTypeConditions(bindingTypes);
 
-        return this.injectionResolver.implResolveByType(apiType.getType(), bindingTypes);
+        return injectionResolver.implResolveByType(apiType.getType(), bindingTypes);
     }
 
     
@@ -578,7 +578,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             
             if(owbBean.isPassivationCapable())
             {
-                this.addPassivationInfo((OwbBean)decorator);   
+                addPassivationInfo((OwbBean)decorator);
             }
         }
         return this;
@@ -593,7 +593,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             OwbBean<?> owbBean = (OwbBean<?>)interceptor;
             if(owbBean.isPassivationCapable())
             {
-                this.addPassivationInfo((OwbBean)interceptor);    
+                addPassivationInfo((OwbBean)interceptor);
             }
             
         }       
@@ -666,20 +666,20 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     public Set<Bean<?>> getBeans()
     {
-        return this.deploymentBeans;
+        return deploymentBeans;
     }
-    
+
     public List<Interceptor<?>> getInterceptors()
     {
-        return this.webBeansInterceptors;
+        return webBeansInterceptors;
     }
 
     public Set<Decorator<?>> getDecorators()
     {
-        return this.webBeansDecorators;
+        return webBeansDecorators;
     }
 
-    
+
     private void addContext(Class<? extends Annotation> scopeType, javax.enterprise.context.spi.Context context)
     {
         Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
@@ -727,8 +727,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     public BeanManager parse(InputStream xmlStream)
     {
-        this.xmlConfigurator.configure(xmlStream);
-        
+        xmlConfigurator.configure(xmlStream);
+
         return this;
     }
     
@@ -770,8 +770,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         webBeansContext.getAnnotationManager().checkQualifierConditions(bindings);
 
-        return this.injectionResolver.implResolveByType(beanType, bindings);
-        
+        return injectionResolver.implResolveByType(beanType, bindings);
+
     }
 
     @Override
@@ -779,7 +779,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {        
         Asserts.assertNotNull(name, "name parameter can not be null");
         
-        return this.injectionResolver.implResolveByName(name);
+        return injectionResolver.implResolveByName(name);
     }
 
     @Override
@@ -974,9 +974,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             if(webBeansContext.getWebBeansUtil().isScopeTypeNormal(bean.getScope()))
             {
                 //Maybe it is cached
-                if(this.cacheProxies.containsKey(bean))
+                if(cacheProxies.containsKey(bean))
                 {
-                    return this.cacheProxies.get(bean);
+                    return cacheProxies.get(bean);
                 }
             }
 
@@ -1043,7 +1043,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             return true;
         }
         
-        for(ExternalScope ext : this.additionalScopes)
+        for(ExternalScope ext : additionalScopes)
         {
             if(ext.getScope().equals(annotationType))
             {
@@ -1104,11 +1104,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             set.add(obj);
         }
         
-        set = this.injectionResolver.findByAlternatives(set);
-        
+        set = injectionResolver.findByAlternatives(set);
+
         if(set.size() > 1)
         {
-            set = this.injectionResolver.findBySpecialization(set);
+            set = injectionResolver.findBySpecialization(set);
         }
         
         if(set.size() > 1)
@@ -1128,8 +1128,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         Bean<?> bean = injectionPoint.getBean();
                 
         //Check for correct injection type
-        this.injectionResolver.checkInjectionPointType(injectionPoint);
-        
+        injectionResolver.checkInjectionPointType(injectionPoint);
+
         Class<?> rawType = ClassUtil.getRawTypeForInjectionPoint(injectionPoint);
                 
         // check for InjectionPoint injection
@@ -1145,7 +1145,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
         else
         {
-            this.injectionResolver.checkInjectionPoints(injectionPoint);
+            injectionResolver.checkInjectionPoints(injectionPoint);
         }        
     }
 
@@ -1173,7 +1173,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             throw new IllegalArgumentException("Event type can not contain type variables. Event class is : " + event.getClass());
         }
         
-        return this.notificationManager.resolveObservers(event, qualifiers);
+        return notificationManager.resolveObservers(event, qualifiers);
     }
 
     @Override
@@ -1194,7 +1194,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public void addAdditionalAnnotatedType(AnnotatedType<?> annotatedType)
     {
         webBeansContext.getAnnotatedElementFactory().setAnnotatedType(annotatedType);
-        this.additionalAnnotatedTypes.add(annotatedType);
+        additionalAnnotatedTypes.add(annotatedType);
     }
 
     public List<Class<? extends Annotation>> getAdditionalQualifiers()
@@ -1225,22 +1225,22 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public void clear()
     {
-        this.additionalAnnotatedTypes.clear();
-        this.additionalDecoratorClasses.clear();
-        this.additionalInterceptorClasses.clear();
-        this.additionalInterceptorBindingTypes.clear();
-        this.additionalQualifiers.clear();
-        this.additionalScopes.clear();
-        this.cacheProxies.clear();
-        this.singleContextMap.clear();
-        this.contextMap.clear();
-        this.deploymentBeans.clear();
-        this.errorStack.clear();
-        this.injectionTargetForJavaEeComponents.clear();
-        this.injectionTargetWrappers.clear();
-        this.passivationBeans.clear();
-        this.webBeansDecorators.clear();
-        this.webBeansInterceptors.clear();
+        additionalAnnotatedTypes.clear();
+        additionalDecoratorClasses.clear();
+        additionalInterceptorClasses.clear();
+        additionalInterceptorBindingTypes.clear();
+        additionalQualifiers.clear();
+        additionalScopes.clear();
+        cacheProxies.clear();
+        singleContextMap.clear();
+        contextMap.clear();
+        deploymentBeans.clear();
+        errorStack.clear();
+        injectionTargetForJavaEeComponents.clear();
+        injectionTargetWrappers.clear();
+        passivationBeans.clear();
+        webBeansDecorators.clear();
+        webBeansInterceptors.clear();
     }
 
     public boolean isInUse()

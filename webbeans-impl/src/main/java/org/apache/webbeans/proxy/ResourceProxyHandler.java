@@ -58,7 +58,7 @@ public class ResourceProxyHandler implements MethodHandler, Serializable, Extern
     {
         try
         {
-            return actualMethod.invoke(this.actualResource, args);
+            return actualMethod.invoke(actualResource, args);
         }
         catch (InvocationTargetException e)
         {

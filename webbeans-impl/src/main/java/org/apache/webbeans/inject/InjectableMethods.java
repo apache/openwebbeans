@@ -64,9 +64,9 @@ public class InjectableMethods<T> extends AbstractInjectable
     public InjectableMethods(Method m, Object instance, OwbBean<?> owner,CreationalContext<?> creationalContext)
     {
         super(owner,creationalContext);
-        this.method = m;
+        method = m;
         this.instance = instance;
-        this.injectionMember = m;
+        injectionMember = m;
     }
 
     /*
@@ -75,7 +75,7 @@ public class InjectableMethods<T> extends AbstractInjectable
      */
     public T doInjection()
     {
-        List<InjectionPoint> injectedPoints = getInjectedPoints(this.method);        
+        List<InjectionPoint> injectedPoints = getInjectedPoints(method);
         List<Object> list = new ArrayList<Object>();
                 
         
@@ -87,15 +87,15 @@ public class InjectableMethods<T> extends AbstractInjectable
                 if(parameter.getPosition() == i)
                 {
                     boolean injectionPoint = false;
-                    if(this.injectionOwnerBean instanceof ProducerMethodBean)
+                    if(injectionOwnerBean instanceof ProducerMethodBean)
                     {
                         if(parameter.getBaseType().equals(InjectionPoint.class))
                         {
                             BeanManager manager = injectionOwnerBean.getWebBeansContext().getBeanManagerImpl();
                             Bean<?> injectionPointBean = manager.getBeans(InjectionPoint.class, new DefaultLiteral()).iterator().next();
                             Object reference = manager.getReference(injectionPointBean, InjectionPoint.class, manager.createCreationalContext(injectionPointBean));
-                            
-                            this.dependentParameters.put(injectionPointBean, reference);
+
+                            dependentParameters.put(injectionPointBean, reference);
                             list.add(reference);
                             
                             injectionPoint = true;
@@ -107,7 +107,7 @@ public class InjectableMethods<T> extends AbstractInjectable
                     {
                         if(isDisposable() && parameter.getAnnotation(Disposes.class) != null)
                         {
-                            list.add(this.producerMethodInstance);
+                            list.add(producerMethodInstance);
                         }
                         else
                         {
@@ -117,7 +117,7 @@ public class InjectableMethods<T> extends AbstractInjectable
                             Bean<?> injectedBean = (Bean<?>) injectionResolver.getInjectionPointBean(point);
                             if(injectedBean.getScope() == Dependent.class)
                             {
-                                this.dependentParameters.put(injectedBean, instance);
+                                dependentParameters.put(injectedBean, instance);
                             }
 
                             list.add(instance);    
@@ -147,7 +147,7 @@ public class InjectableMethods<T> extends AbstractInjectable
     
     public Map<Bean<?>,Object> getDependentBeanParameters()
     {
-        return this.dependentParameters;
+        return dependentParameters;
     }
 
     /**
@@ -168,6 +168,6 @@ public class InjectableMethods<T> extends AbstractInjectable
     
     public void setProducerMethodInstance(Object instance)
     {
-        this.producerMethodInstance = instance;
+        producerMethodInstance = instance;
     }
 }

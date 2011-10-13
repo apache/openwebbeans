@@ -76,7 +76,7 @@ public class StereoTypeModel implements IStereoTypeModel
     
     public StereoTypeModel(WebBeansContext webBeansContext, Class<? extends Annotation> clazz, Annotation[] annotationDefs)
     {
-        this.name = clazz.getName();
+        name = clazz.getName();
 
         configAnnotations(clazz, webBeansContext, annotationDefs);
         
@@ -116,12 +116,12 @@ public class StereoTypeModel implements IStereoTypeModel
         
         if (AnnotationUtil.hasMetaAnnotation(annotations, NormalScope.class))
         {
-            this.defaultScopeType = AnnotationUtil.getMetaAnnotations(annotations, NormalScope.class)[0];
+            defaultScopeType = AnnotationUtil.getMetaAnnotations(annotations, NormalScope.class)[0];
         }
 
         if (AnnotationUtil.hasMetaAnnotation(annotations, Scope.class))
         {
-            this.defaultScopeType = AnnotationUtil.getMetaAnnotations(annotations, Scope.class)[0];
+            defaultScopeType = AnnotationUtil.getMetaAnnotations(annotations, Scope.class)[0];
         }
 
         if (annotationManager.hasInterceptorBindingMetaAnnotation(annotations))
@@ -130,7 +130,7 @@ public class StereoTypeModel implements IStereoTypeModel
                 annotationManager.getInterceptorBindingMetaAnnotations(annotations);
             for (Annotation ann : ibs)
             {
-                this.interceptorBindingTypes.add(ann);
+                interceptorBindingTypes.add(ann);
             }
         }
 
@@ -173,7 +173,7 @@ public class StereoTypeModel implements IStereoTypeModel
                     }
                 }
 
-                this.inherits.add(is);
+                inherits.add(is);
             }
         }
     }
@@ -215,7 +215,7 @@ public class StereoTypeModel implements IStereoTypeModel
      */    
     public Set<Annotation> getInterceptorBindingTypes()
     {
-        return this.interceptorBindingTypes;
+        return interceptorBindingTypes;
     }
 
     /**
@@ -223,7 +223,7 @@ public class StereoTypeModel implements IStereoTypeModel
      */    
     public Set<Annotation> getInheritedStereoTypes()
     {
-        return this.inherits;
+        return inherits;
     }
 
     /**
@@ -249,7 +249,7 @@ public class StereoTypeModel implements IStereoTypeModel
         
         StereoTypeModel model = (StereoTypeModel) obj;
 
-        return model.name.equals(this.name);
+        return model.name.equals(name);
     }
     
     /**
@@ -258,6 +258,6 @@ public class StereoTypeModel implements IStereoTypeModel
     @Override
     public int hashCode()
     {
-        return this.name.hashCode();
+        return name.hashCode();
     }
 }

@@ -74,7 +74,7 @@ public class PluginLoader
      */
     public void startUp() throws WebBeansConfigurationException
     {
-        if(this.started.compareAndSet(false, true))
+        if(started.compareAndSet(false, true))
         {
             logger.debug("PluginLoader startUp called.");
             ArrayList<OpenWebBeansPlugin> ps = new ArrayList<OpenWebBeansPlugin>();
@@ -125,7 +125,7 @@ public class PluginLoader
      */
     public void shutDown() throws WebBeansConfigurationException
     {
-        if(this.started.compareAndSet(true, false))
+        if(started.compareAndSet(true, false))
         {
             logger.debug("PluginLoader shutDown called.");
             
@@ -183,7 +183,7 @@ public class PluginLoader
             return null;
         }
         
-        for(OpenWebBeansPlugin plugin : this.plugins)
+        for(OpenWebBeansPlugin plugin : plugins)
         {
             if(plugin instanceof OpenWebBeansEjbPlugin)
             {
@@ -206,7 +206,7 @@ public class PluginLoader
             return null;
         }
         
-        for(OpenWebBeansPlugin plugin : this.plugins)
+        for(OpenWebBeansPlugin plugin : plugins)
         {
             if(plugin instanceof OpenWebBeansEjbLCAPlugin)
             {
@@ -228,7 +228,7 @@ public class PluginLoader
             return null;
         }
         
-        for(OpenWebBeansPlugin plugin : this.plugins)
+        for(OpenWebBeansPlugin plugin : plugins)
         {
             if(plugin instanceof OpenWebBeansJmsPlugin)
             {
@@ -247,7 +247,7 @@ public class PluginLoader
             return null;
         }
         
-        for(OpenWebBeansPlugin plugin : this.plugins)
+        for(OpenWebBeansPlugin plugin : plugins)
         {
             if(plugin instanceof OpenWebBeansJavaEEPlugin)
             {
@@ -265,7 +265,7 @@ public class PluginLoader
             return null;
         }
         
-        for(OpenWebBeansPlugin plugin : this.plugins)
+        for(OpenWebBeansPlugin plugin : plugins)
         {
             if(plugin instanceof OpenWebBeansWebPlugin)
             {
@@ -278,7 +278,7 @@ public class PluginLoader
     
     private boolean pluginsExist()
     {
-        if(this.plugins == null)
+        if(plugins == null)
         {
             return false;
         }
@@ -288,6 +288,6 @@ public class PluginLoader
     
     public boolean isShowDown()
     {
-        return !this.started.get();
+        return !started.get();
     }
 }

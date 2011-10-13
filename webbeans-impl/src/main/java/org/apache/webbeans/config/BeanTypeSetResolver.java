@@ -44,20 +44,20 @@ public class BeanTypeSetResolver
      */
     public void startConfiguration()
     {
-        if(this.beanType == Object.class || (beanType instanceof Class && ((Class)beanType).isSynthetic()))
+        if(beanType == Object.class || (beanType instanceof Class && ((Class)beanType).isSynthetic()))
         {
             return;
         }
         
         else if(ClassUtil.isParametrizedType(beanType))
         {
-            parametrizedClassConfiguration((ParameterizedType)this.beanType);
+            parametrizedClassConfiguration((ParameterizedType) beanType);
         }
         else 
         {
             if(beanType instanceof Class)
             {
-                normalClassConfiguration((Class<?>)this.beanType);
+                normalClassConfiguration((Class<?>) beanType);
    
             }            
         }
@@ -78,14 +78,14 @@ public class BeanTypeSetResolver
             {
                 pt.addTypeArgument(tv);
             }
-            
-            this.hierarchy.add(pt);
+
+            hierarchy.add(pt);
         }
         //Normal Bean class
         else
         {
             //Add this normal class
-            this.hierarchy.add(beanClass);            
+            hierarchy.add(beanClass);
         }
         
         
@@ -98,7 +98,7 @@ public class BeanTypeSetResolver
             {
                 BeanTypeSetResolver superResolver = new BeanTypeSetResolver(superClass);
                 superResolver.startConfiguration();
-                this.hierarchy.addAll(superResolver.getHierarchy());
+                hierarchy.addAll(superResolver.getHierarchy());
             }            
         }
         
@@ -108,7 +108,7 @@ public class BeanTypeSetResolver
         {
             BeanTypeSetResolver superResolver = new BeanTypeSetResolver(interfaceType);
             superResolver.startConfiguration();
-            this.hierarchy.addAll(superResolver.getHierarchy());            
+            hierarchy.addAll(superResolver.getHierarchy());
         }
     }
     
@@ -119,7 +119,7 @@ public class BeanTypeSetResolver
     private void parametrizedClassConfiguration(ParameterizedType parametrizedClass)
     {
         //Add this parametrized type
-        this.hierarchy.add(parametrizedClass);
+        hierarchy.add(parametrizedClass);
         
         //Get raw type
         Class<?> rawType = (Class<?>)parametrizedClass.getRawType();
@@ -135,22 +135,22 @@ public class BeanTypeSetResolver
             if(ClassUtil.isParametrizedType(superClassGeneric))
             {
                 //Resolve Type Arguments
-                this.hierarchy.add(resolveTypeArguments(parametrizedClass , (ParameterizedType)superClassGeneric));
+                hierarchy.add(resolveTypeArguments(parametrizedClass, (ParameterizedType) superClassGeneric));
                 configured = true;
             }
             //Super class is a normal
             else
             {
-                this.hierarchy.add(superClassGeneric);
+                hierarchy.add(superClassGeneric);
             }
             
             //Get super class hiearchy
             BeanTypeSetResolver superResolver = new BeanTypeSetResolver(superClassGeneric);
             superResolver.startConfiguration();
-            this.hierarchy.addAll(superResolver.getHierarchy());     
+            hierarchy.addAll(superResolver.getHierarchy());
             if(configured)
             {
-                this.hierarchy.remove(superClassGeneric);
+                hierarchy.remove(superClassGeneric);
             }
         }
                 
@@ -165,21 +165,21 @@ public class BeanTypeSetResolver
             if(ClassUtil.isParametrizedType(superInterfaceGeneric))
             {
                 //Resolve Type Arguments
-                this.hierarchy.add(resolveTypeArguments(parametrizedClass , (ParameterizedType)superInterfaceGeneric));
+                hierarchy.add(resolveTypeArguments(parametrizedClass, (ParameterizedType) superInterfaceGeneric));
                 configured = true;
             }
             else
             {
-                this.hierarchy.add(superInterfaceGeneric);
+                hierarchy.add(superInterfaceGeneric);
             }   
             
             //Interface hierachy
             BeanTypeSetResolver superResolver = new BeanTypeSetResolver(superInterfaceGeneric);
             superResolver.startConfiguration();
-            this.hierarchy.addAll(superResolver.getHierarchy());
+            hierarchy.addAll(superResolver.getHierarchy());
             if(configured)
             {
-                this.hierarchy.remove(superInterfaceGeneric);
+                hierarchy.remove(superInterfaceGeneric);
             }            
         }        
     }
@@ -241,6 +241,6 @@ public class BeanTypeSetResolver
      */
     public Set<Type> getHierarchy()
     {
-        return this.hierarchy;
+        return hierarchy;
     }
 }

@@ -42,14 +42,14 @@ public class InjectableField extends AbstractInjectable
         super(owner,creationalContext);
         this.field = field;
         this.instance = instance;
-        this.injectionMember = field;
+        injectionMember = field;
     }
 
     public Object doInjection()
     {
         try
         {
-            InjectionPoint injectedField = getInjectedPoints(this.field).get(0);
+            InjectionPoint injectedField = getInjectedPoints(field).get(0);
             
             if (!field.isAccessible())
             {

@@ -47,7 +47,7 @@ public class DefaultScannerService extends AbstractMetaDataDiscovery
 
         try
         {
-            this.getAnnotationDB().scanArchives(urlPaths);
+            getAnnotationDB().scanArchives(urlPaths);
         }
         catch (IOException e)
         {

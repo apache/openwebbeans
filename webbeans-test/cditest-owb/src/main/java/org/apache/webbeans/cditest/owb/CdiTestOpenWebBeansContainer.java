@@ -50,7 +50,6 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
     private MockServletContext  servletContext = null;
     private MockHttpSession     session = null;
 
-    @Override
     public void bootContainer() throws Exception 
     {
         servletContext = new MockServletContext();
@@ -59,7 +58,6 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         lifecycle.startApplication(servletContext);
     }
 
-    @Override
     public void shutdownContainer() throws Exception 
     {
         if (lifecycle != null) 
@@ -68,7 +66,6 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         }
     }
 
-    @Override
     public void startContexts() throws Exception 
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
@@ -81,7 +78,6 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextFactory.initRequestContext(null);
     }
 
-    @Override
     public void startApplicationScope() throws Exception 
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
@@ -90,7 +86,6 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextFactory.initApplicationContext(servletContext);
     }
 
-    @Override
     public void startConversationScope() throws Exception 
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
@@ -99,13 +94,11 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextFactory.initConversationContext(null);
     }
 
-    @Override
     public void startCustomScope(Class<? extends Annotation> scopeClass) throws Exception 
     {
         //X TODO
     }
 
-    @Override
     public void startRequestScope() throws Exception 
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
@@ -114,7 +107,6 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextFactory.initRequestContext(null);
     }
 
-    @Override
     public void startSessionScope() throws Exception 
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
@@ -123,7 +115,6 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextFactory.initSessionContext(session);
     }
 
-    @Override
     public void stopContexts() throws Exception 
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
@@ -151,7 +142,6 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         //ContextFactory.cleanUpContextFactory();
     }
 
-    @Override
     public void stopApplicationScope() throws Exception 
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
@@ -171,7 +161,6 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         }
     }
 
-    @Override
     public void stopConversationScope() throws Exception 
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
@@ -191,13 +180,11 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         }
     }
 
-    @Override
     public void stopCustomScope(Class<? extends Annotation> scopeClass) throws Exception 
     {
         //X TODO
     }
 
-    @Override
     public void stopRequestScope() throws Exception 
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
@@ -217,7 +204,6 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         }
     }
 
-    @Override
     public void stopSessionScope() throws Exception 
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
@@ -242,7 +228,6 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         return lifecycle.getBeanManager();
     }
 
-    @Override
     public <T> T getInstance(Class<T> type, Annotation... qualifiers)
     throws ResolutionException 
     {
@@ -265,7 +250,6 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         return instance;
     }
 
-    @Override
     public Object getInstance(String name)
     throws ResolutionException 
     {

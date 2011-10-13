@@ -87,7 +87,7 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
     @Override
     public AnnotatedType<X> getDeclaringType()
     {
-        return this.declaringType;
+        return declaringType;
     }
 
     /**
@@ -96,7 +96,7 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
     @Override
     public Member getJavaMember()
     {
-        return this.javaMember;
+        return javaMember;
     }
 
     /**
@@ -105,14 +105,14 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
     @Override
     public boolean isStatic()
     {
-        return Modifier.isStatic(this.javaMember.getModifiers());
+        return Modifier.isStatic(javaMember.getModifiers());
     }
 
     public String toString()
     {
         StringBuilder builder = new StringBuilder(super.toString());
         builder.append(",");
-        builder.append("Java Member Name : " + this.javaMember.getName());
+        builder.append("Java Member Name : " + javaMember.getName());
         
         return builder.toString();
     }

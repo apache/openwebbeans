@@ -83,7 +83,7 @@ public class DefaultAnnotation implements InvocationHandler, Annotation
     @Override
     public String toString()
     {
-        Method[] methods = this.annotationClass.getDeclaredMethods();
+        Method[] methods = annotationClass.getDeclaredMethods();
 
         StringBuilder sb = new StringBuilder("@" + annotationType().getName() + "(");
         int lenght = methods.length;

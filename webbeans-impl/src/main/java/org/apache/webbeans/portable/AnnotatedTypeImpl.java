@@ -112,7 +112,7 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
     @Override
     public Class<X> getJavaClass()
     {
-        return this.annotatedClass;
+        return annotatedClass;
     }
 
 
@@ -127,7 +127,7 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
         {
             init();
         }
-        this.constructors.add(constructor);
+        constructors.add(constructor);
     }
     
     /**
@@ -141,7 +141,7 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
         {
             init();
         }
-        this.fields.add(field);
+        fields.add(field);
     }
 
     /**
@@ -155,7 +155,7 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
         {
             init();
         }
-        this.methods.add(method);
+        methods.add(method);
     }    
     
     /**
@@ -169,7 +169,7 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
             init();
         }
 
-        return Collections.unmodifiableSet(this.constructors);
+        return Collections.unmodifiableSet(constructors);
     }
 
     /**
@@ -183,7 +183,7 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
             init();
         }
 
-        return Collections.unmodifiableSet(this.fields);
+        return Collections.unmodifiableSet(fields);
     }
 
     /**
@@ -197,7 +197,7 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
             init();
         }
 
-        return Collections.unmodifiableSet(this.methods);
+        return Collections.unmodifiableSet(methods);
     }
 
 }

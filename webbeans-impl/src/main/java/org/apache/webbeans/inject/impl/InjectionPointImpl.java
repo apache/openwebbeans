@@ -67,8 +67,8 @@ class InjectionPointImpl implements InjectionPoint, Serializable
     InjectionPointImpl(Bean<?> ownerBean, Type type, Member member, Annotated annotated)
     {
         this.ownerBean = ownerBean;
-        this.injectionMember = member;
-        this.injectionType = type;
+        injectionMember = member;
+        injectionType = type;
         this.annotated = annotated;
     }
     
@@ -80,43 +80,40 @@ class InjectionPointImpl implements InjectionPoint, Serializable
     public Bean<?> getBean()
     {
         
-        return this.ownerBean;
+        return ownerBean;
     }
 
     public Set<Annotation> getQualifiers()
     {
         
-        return this.qualifierAnnotations;
+        return qualifierAnnotations;
     }
 
     public Member getMember()
     {
-        return this.injectionMember;
+        return injectionMember;
     }
 
     public Type getType()
     {
         
-        return this.injectionType;
+        return injectionType;
     }
 
     
-    @Override
     public Annotated getAnnotated()
     {
         return annotated;
     }
 
-    @Override
     public boolean isDelegate()
     {
-        return this.delegate;
+        return delegate;
     }
 
-    @Override
     public boolean isTransient()
     {
-        return this.transientt;
+        return transientt;
     }
     
     void setDelegate(boolean delegate)
@@ -134,9 +131,9 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         ObjectOutputStream out = new ObjectOutputStream(op);
 
         //Write the owning bean class
-        out.writeObject(this.ownerBean.getBeanClass());
+        out.writeObject(ownerBean.getBeanClass());
 
-        Set<Annotation> qualifiers = this.ownerBean.getQualifiers();
+        Set<Annotation> qualifiers = ownerBean.getQualifiers();
         for(Annotation qualifier : qualifiers)
         {
             out.writeObject(Character.valueOf('-')); // throw-away delimiter so alternating annotations don't get swallowed in the read.
@@ -146,39 +143,39 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         
         out.writeObject(Character.valueOf('~'));
         
-        if(this.injectionMember instanceof Field)
+        if(injectionMember instanceof Field)
         {
             out.writeByte(0);
-            out.writeUTF(this.injectionMember.getName()); 
+            out.writeUTF(injectionMember.getName());
         }
         
-        if(this.injectionMember instanceof Method)
+        if(injectionMember instanceof Method)
         {
             out.writeByte(1);
-            out.writeUTF(this.injectionMember.getName());
-            Method method = (Method)this.injectionMember;
+            out.writeUTF(injectionMember.getName());
+            Method method = (Method) injectionMember;
             Class<?>[] parameters = method.getParameterTypes();
             out.writeObject(parameters);
             
-            AnnotatedParameter<?> ap = (AnnotatedParameter<?>)this.annotated;
+            AnnotatedParameter<?> ap = (AnnotatedParameter<?>) annotated;
             out.writeByte(ap.getPosition());
             
         }
         
-        if(this.injectionMember instanceof Constructor)
+        if(injectionMember instanceof Constructor)
         {
             out.writeByte(2);
-            Constructor<?> constr = (Constructor<?>)this.injectionMember;
+            Constructor<?> constr = (Constructor<?>) injectionMember;
             Class<?>[] parameters = constr.getParameterTypes();
             out.writeObject(parameters);
             
-            AnnotatedParameter<?> ap = (AnnotatedParameter<?>)this.annotated;
+            AnnotatedParameter<?> ap = (AnnotatedParameter<?>) annotated;
             out.writeByte(ap.getPosition());
             
         }
         
-        out.writeBoolean(this.delegate);
-        out.writeBoolean(this.transientt);
+        out.writeBoolean(delegate);
+        out.writeBoolean(transientt);
         out.flush();
         
     }
@@ -195,7 +192,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         
         protected Class<?> resolveClass(ObjectStreamClass desc) throws ClassNotFoundException
         {
-            return Class.forName(desc.getName(), false, this.classLoader);
+            return Class.forName(desc.getName(), false, classLoader);
         }
     }
 
@@ -210,15 +207,15 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
         AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
 
-        while(!in.readObject().equals(Character.valueOf('~')))   // read throw-away '-' or '~' terminal delimiter.
+        while(!in.readObject().equals('~'))   // read throw-away '-' or '~' terminal delimiter.
         {
             Annotation ann = (Annotation) in.readObject();  // now read the annotation.
             anns.add(ann);
         }
         
         //process annotations
-        this.ownerBean = webBeansContext.getBeanManagerImpl().getBeans(beanClass, anns.toArray(new Annotation[anns.size()])).iterator().next();
-        this.qualifierAnnotations = anns;
+        ownerBean = webBeansContext.getBeanManagerImpl().getBeans(beanClass, anns.toArray(new Annotation[anns.size()])).iterator().next();
+        qualifierAnnotations = anns;
         
         // determine type of injection point member (0=field, 1=method, 2=constructor) and read...
         int c = in.readByte();
@@ -226,12 +223,12 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         {
             String fieldName = in.readUTF();
             Field field = webBeansContext.getSecurityService().doPrivilegedGetDeclaredField(beanClass, fieldName);
-            
-            this.injectionMember = field;
+
+            injectionMember = field;
             
             AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(beanClass);
-            this.annotated = annotatedElementFactory.newAnnotatedField(field, annotatedType);
-            this.injectionType = field.getGenericType();
+            annotated = annotatedElementFactory.newAnnotatedField(field, annotatedType);
+            injectionType = field.getGenericType();
             
         }
         else if(c == 1)
@@ -240,15 +237,15 @@ class InjectionPointImpl implements InjectionPoint, Serializable
             Class<?>[] parameters = (Class<?>[])in.readObject();
             
             Method method = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(beanClass, methodName, parameters);
-            this.injectionMember = method;
+            injectionMember = method;
             
             AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(beanClass);
             AnnotatedMethod<Object> am =  (AnnotatedMethod<Object>)annotatedElementFactory.
-                                    newAnnotatedMethod((Method)this.injectionMember ,annotatedType);
+                                    newAnnotatedMethod((Method) injectionMember,annotatedType);
             List<AnnotatedParameter<Object>> annParameters = am.getParameters();
-            
-            this.annotated = annParameters.get(in.readByte());            
-            this.injectionType = this.annotated.getBaseType();
+
+            annotated = annParameters.get(in.readByte());
+            injectionType = annotated.getBaseType();
             
         }
         else if(c == 2)
@@ -256,46 +253,46 @@ class InjectionPointImpl implements InjectionPoint, Serializable
             Class<?>[] parameters = (Class<?>[])in.readObject();            
             try
             {
-                this.injectionMember = beanClass.getConstructor(parameters);
+                injectionMember = beanClass.getConstructor(parameters);
 
             }
             catch(NoSuchMethodException e)
             {
-                this.injectionMember = null;
+                injectionMember = null;
             }
 
             AnnotatedType<Object> annotatedType = (AnnotatedType<Object>)annotatedElementFactory.newAnnotatedType(beanClass);
             AnnotatedConstructor<Object> am =  annotatedElementFactory
-                                            .newAnnotatedConstructor((Constructor<Object>)this.injectionMember,annotatedType);
+                                            .newAnnotatedConstructor((Constructor<Object>) injectionMember,annotatedType);
             List<AnnotatedParameter<Object>> annParameters = am.getParameters();
-            
-            this.annotated = annParameters.get(in.readByte());            
-            this.injectionType = this.annotated.getBaseType();
+
+            annotated = annParameters.get(in.readByte());
+            injectionType = annotated.getBaseType();
         }
-        
-        this.delegate = in.readBoolean();
-        this.transientt = in.readBoolean();
+
+        delegate = in.readBoolean();
+        transientt = in.readBoolean();
          
     }
 
 
     public String toString()
     {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if(injectionMember instanceof Constructor)
         {
-            Constructor<?> constructor = (Constructor<?>) this.injectionMember;
+            Constructor<?> constructor = (Constructor<?>) injectionMember;
             buffer.append("Constructor Injection Point, constructor name :  " + constructor.getName() + ", Bean Owner : ["+ ownerBean.toString() + "]");
         }
         else if(injectionMember instanceof Method)
         {
-            Method method = (Method)this.injectionMember;
+            Method method = (Method) injectionMember;
             buffer.append("Method Injection Point, method name :  " + method.getName() + ", Bean Owner : ["+ ownerBean.toString() + "]");
             
         }
         else if(injectionMember instanceof Field)
         {
-            Field field = (Field) this.injectionMember;
+            Field field = (Field) injectionMember;
             buffer.append("Field Injection Point, field name :  " + field.getName() + ", Bean Owner : ["+ ownerBean.toString() + "]");            
         }
         

@@ -54,7 +54,7 @@ class AnnotatedMethodImpl<X> extends AbstractAnnotatedCallable<X> implements Ann
      */
     public Method getJavaMember()
     {
-        return Method.class.cast(this.javaMember);
+        return Method.class.cast(javaMember);
     }
     
     public String toString()

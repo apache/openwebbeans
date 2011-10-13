@@ -93,7 +93,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         super(WebBeansType.DECORATOR,wrappedBean.getReturnType(), wrappedBean.getWebBeansContext());
         this.wrappedBean = wrappedBean;
         this.customDecorator = customDecorator;
-        this.ignoredDecoratorInterfaces = getIgnoredDecoratorInterfaces(wrappedBean);
+        ignoredDecoratorInterfaces = getIgnoredDecoratorInterfaces(wrappedBean);
         initDelegate();
     }
 
@@ -106,8 +106,8 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         super(WebBeansType.DECORATOR,wrappedBean.getReturnType(), wrappedBean.getWebBeansContext());
         
         this.wrappedBean = wrappedBean;
-        this.clazz = wrappedBean.getReturnType();
-        this.ignoredDecoratorInterfaces = getIgnoredDecoratorInterfaces(wrappedBean);
+        clazz = wrappedBean.getReturnType();
+        ignoredDecoratorInterfaces = getIgnoredDecoratorInterfaces(wrappedBean);
 
         init();
     }
@@ -121,9 +121,9 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
 
     protected void init()
     {
-        ClassUtil.setInterfaceTypeHierarchy(this.decoratedTypes, this.clazz);
+        ClassUtil.setInterfaceTypeHierarchy(decoratedTypes, clazz);
 
-        for (Iterator<Type> i = this.decoratedTypes.iterator(); i.hasNext(); )
+        for (Iterator<Type> i = decoratedTypes.iterator(); i.hasNext(); )
         {
             Type t = i.next();
             if (t instanceof Class<?> && ignoredDecoratorInterfaces.contains(((Class) t).getName()))
@@ -183,25 +183,25 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     @Override
     public boolean isPassivationCapable()
     {
-        return this.wrappedBean.isPassivationCapable();
+        return wrappedBean.isPassivationCapable();
     }
 
     private void initDelegateInternal(InjectionPoint ip)
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            this.delegateType = this.customDecorator.getDelegateType();
-            this.delegateBindings = this.customDecorator.getDelegateQualifiers();
+            delegateType = customDecorator.getDelegateType();
+            delegateBindings = customDecorator.getDelegateQualifiers();
         }
         else
         {
-            this.delegateType = ip.getType();
-            this.delegateBindings = ip.getQualifiers();    
+            delegateType = ip.getType();
+            delegateBindings = ip.getQualifiers();
         }
                 
         if(ip.getMember() instanceof Field)
         {
-            this.delegateField = (Field)ip.getMember();
+            delegateField = (Field)ip.getMember();
         }
         else
         {
@@ -215,11 +215,11 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
             {
                 throw new WebBeansConfigurationException("More than one delegate injection field is found for decorator : " + toString());
             }
-            
-            this.delegateField = fields[0];
+
+            delegateField = fields[0];
         }
         
-        Type fieldType = this.delegateField.getGenericType();
+        Type fieldType = delegateField.getGenericType();
 
         for (Type decType : getDecoratedTypes())
         {
@@ -304,9 +304,9 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     @Override
     public Set<Annotation> getDelegateQualifiers()
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            return this.customDecorator.getDelegateQualifiers();
+            return customDecorator.getDelegateQualifiers();
         }
         
         return delegateBindings;
@@ -315,9 +315,9 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     @Override
     public Type getDelegateType()
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            return this.customDecorator.getDelegateType();
+            return customDecorator.getDelegateType();
         }        
         
         return delegateType;
@@ -352,24 +352,24 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     @SuppressWarnings("unchecked")    
     protected  T createInstance(CreationalContext<T> creationalContext)
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            return this.customDecorator.create(creationalContext);
+            return customDecorator.create(creationalContext);
         }
 
         WebBeansContext webBeansContext = wrappedBean.getWebBeansContext();
         Context context = webBeansContext.getBeanManagerImpl().getContext(getScope());
-        Object actualInstance = context.get((Bean<Object>)this.wrappedBean, (CreationalContext<Object>)creationalContext);
-        T proxy = (T) webBeansContext.getJavassistProxyFactory().createDependentScopedBeanProxy(this.wrappedBean, actualInstance, creationalContext);
+        Object actualInstance = context.get((Bean<Object>) wrappedBean, (CreationalContext<Object>)creationalContext);
+        T proxy = (T) webBeansContext.getJavassistProxyFactory().createDependentScopedBeanProxy(wrappedBean, actualInstance, creationalContext);
         
         return proxy;        
     }
 
     public void setInjections(Object proxy, CreationalContext<?> cretionalContext)
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            Set<InjectionPoint> injections = this.customDecorator.getInjectionPoints();
+            Set<InjectionPoint> injections = customDecorator.getInjectionPoints();
             if(injections != null)
             {
                 for(InjectionPoint ip : injections)
@@ -392,7 +392,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         else
         {
             // Set injected fields
-            ManagedBean<T> delegate = (ManagedBean<T>) this.wrappedBean;
+            ManagedBean<T> delegate = (ManagedBean<T>) wrappedBean;
 
             Set<Field> injectedFields = delegate.getInjectedFromSuperFields();
             for (Field injectedField : injectedFields)
@@ -432,23 +432,23 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     
     private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableField f = new InjectableField(field, instance, this.wrappedBean, creationalContext);
+        InjectableField f = new InjectableField(field, instance, wrappedBean, creationalContext);
         f.doInjection();        
     }
 
     @SuppressWarnings("unchecked")
     private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableMethods m = new InjectableMethods(method, instance, this.wrappedBean, creationalContext);
+        InjectableMethods m = new InjectableMethods(method, instance, wrappedBean, creationalContext);
         m.doInjection();        
     }
         
     @Override
     public Set<Annotation> getQualifiers()
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            return this.customDecorator.getQualifiers();
+            return customDecorator.getQualifiers();
         }
         
         return wrappedBean.getQualifiers();
@@ -457,9 +457,9 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     @Override
     public String getName()
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            return this.customDecorator.getName();
+            return customDecorator.getName();
         }
         
         return wrappedBean.getName();
@@ -468,9 +468,9 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     @Override
     public Class<? extends Annotation> getScope()
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            return this.customDecorator.getScope();
+            return customDecorator.getScope();
         }
         
         return wrappedBean.getScope();
@@ -479,9 +479,9 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     
     public Set<Type> getTypes()
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            return this.customDecorator.getTypes();
+            return customDecorator.getTypes();
         }
         
         return wrappedBean.getTypes();
@@ -490,9 +490,9 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     @Override
     public boolean isNullable()
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            return this.customDecorator.isNullable();
+            return customDecorator.isNullable();
         }
         
         return wrappedBean.isNullable();
@@ -514,9 +514,9 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     
     public Set<InjectionPoint> getInjectionPoints()
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            return this.customDecorator.getInjectionPoints();
+            return customDecorator.getInjectionPoints();
         }
         
         return wrappedBean.getInjectionPoints();
@@ -527,9 +527,9 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
      */
     public Class<?> getClazz()
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            return this.customDecorator.getBeanClass();
+            return customDecorator.getBeanClass();
         }
         
         return clazz;
@@ -538,51 +538,51 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     @Override
     public Class<?> getBeanClass()
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            return this.customDecorator.getBeanClass();
+            return customDecorator.getBeanClass();
         }
         
-        return this.wrappedBean.getBeanClass();
+        return wrappedBean.getBeanClass();
     }
 
     @Override
     public Set<Class<? extends Annotation>> getStereotypes()
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            return this.customDecorator.getStereotypes();
+            return customDecorator.getStereotypes();
         }
 
-        return this.wrappedBean.getStereotypes();
+        return wrappedBean.getStereotypes();
     }
 
     @Override
     public Set<Type> getDecoratedTypes()
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            return this.customDecorator.getDecoratedTypes();
+            return customDecorator.getDecoratedTypes();
         }
 
-        return this.decoratedTypes;
+        return decoratedTypes;
     }
 
     @Override
     public boolean isAlternative()
     {
-        if(this.customDecorator != null)
+        if(customDecorator != null)
         {
-            return this.customDecorator.isAlternative();
+            return customDecorator.isAlternative();
         }
 
-        return this.wrappedBean.isAlternative();
+        return wrappedBean.isAlternative();
     }
 
     @Override
     public void validatePassivationDependencies()
     {
-        this.wrappedBean.validatePassivationDependencies();
+        wrappedBean.validatePassivationDependencies();
     }
 
 }

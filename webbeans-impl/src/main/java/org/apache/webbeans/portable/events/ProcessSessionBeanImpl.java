@@ -44,8 +44,8 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
     public ProcessSessionBeanImpl(Bean<Object> bean, AnnotatedType<Object> annotatedType, String name, SessionBeanType type)
     {
         super(bean, annotatedType);
-        this.annotatedBeanClass = annotatedType;
-        this.ejbName = name;
+        annotatedBeanClass = annotatedType;
+        ejbName = name;
         this.type = type;
     }
     
@@ -56,7 +56,7 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
     @Override
     public String getEjbName()
     {
-        return this.ejbName;
+        return ejbName;
     }
     
     /**
@@ -65,7 +65,7 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
     @Override
     public SessionBeanType getSessionBeanType()
     {
-        return this.type;
+        return type;
     }
 
     /**

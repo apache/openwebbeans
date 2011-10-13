@@ -54,7 +54,7 @@ public class AnnotatedFieldImpl<X> extends AbstractAnnotatedMember<X> implements
      */
     public Field getJavaMember()
     {
-        return Field.class.cast(this.javaMember);
+        return Field.class.cast(javaMember);
     }
     
     public String toString()

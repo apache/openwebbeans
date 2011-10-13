@@ -69,7 +69,7 @@ abstract class AbstractAnnotatedCallable<X> extends AbstractAnnotatedMember<X> i
      */
     void addAnnotatedParameter(AnnotatedParameter<X> parameter)
     {
-        this.annotatedParameters.add(parameter);
+        annotatedParameters.add(parameter);
     }
     
     /**
@@ -78,7 +78,7 @@ abstract class AbstractAnnotatedCallable<X> extends AbstractAnnotatedMember<X> i
     @Override
     public List<AnnotatedParameter<X>> getParameters()
     {
-        return this.annotatedParameters;
+        return annotatedParameters;
     }
     
     public String toString()

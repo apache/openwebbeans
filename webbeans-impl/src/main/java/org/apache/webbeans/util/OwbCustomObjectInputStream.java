@@ -35,7 +35,7 @@ public class OwbCustomObjectInputStream extends ObjectInputStream
     
     protected Class<?> resolveClass(ObjectStreamClass desc) throws ClassNotFoundException
     {
-        return Class.forName(desc.getName(), false, this.classLoader);
+        return Class.forName(desc.getName(), false, classLoader);
     }
 
 }

@@ -60,7 +60,7 @@ public  class ProcessBeanImpl<X> implements ProcessBean<X>
     @Override
     public Annotated getAnnotated()
     {
-        return this.annotated;
+        return annotated;
     }
 
     /**
@@ -69,7 +69,7 @@ public  class ProcessBeanImpl<X> implements ProcessBean<X>
     @Override
     public Bean<X> getBean()
     {
-        return this.bean;
+        return bean;
     }
 
 }

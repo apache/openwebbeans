@@ -85,7 +85,7 @@ public class ExtensionLoader
      */
     public void loadExtensionServices(ClassLoader classLoader)
     {
-        List<Extension> loader = this.webBeansContext.getLoaderService().load(Extension.class, classLoader);
+        List<Extension> loader = webBeansContext.getLoaderService().load(Extension.class, classLoader);
         for (Extension extension : loader)
         {
             if (!extensionClasses.contains(extension.getClass()))
@@ -114,9 +114,9 @@ public class ExtensionLoader
     {
         Asserts.assertNotNull(bean,"bean parameter cannot be null");
         
-        if(this.extensions.containsKey(bean))
+        if(extensions.containsKey(bean))
         {
-            return (T)this.extensions.get(bean);
+            return (T) extensions.get(bean);
         }
         
         return null;
@@ -130,7 +130,7 @@ public class ExtensionLoader
     public void addExtension(Extension ext)
     {
         Bean<?> bean = webBeansContext.getWebBeansUtil().createExtensionComponent(ext.getClass());
-        this.extensions.put(bean, ext);
+        extensions.put(bean, ext);
 
         manager.addBean(bean);
     }
@@ -141,7 +141,7 @@ public class ExtensionLoader
      */
     public void clear()
     {
-        this.extensions.clear();
-        this.extensionClasses.clear();
+        extensions.clear();
+        extensionClasses.clear();
     }
 }

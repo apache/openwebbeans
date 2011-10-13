@@ -56,7 +56,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
     {
         if(!(ctx instanceof CreationalContextImpl))
         {
-            ctx = bean.getWebBeansContext().getCreationalContextFactory().wrappedCreationalContext(ctx, this.bean);
+            ctx = bean.getWebBeansContext().getCreationalContextFactory().wrappedCreationalContext(ctx, bean);
         }
         
         Object oldInstanceUnderInjection = AbstractInjectable.instanceUnderInjection.get();
@@ -120,7 +120,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
         InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);    
         if(!(bean instanceof EnterpriseBeanMarker))
         {
-            bean.postConstruct(instance,this.creationalContext);   
+            bean.postConstruct(instance, creationalContext);
         }
     }
 
@@ -131,7 +131,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
     public void preDestroy(T instance)
     {
         InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);
-        bean.destroyCreatedInstance(instance, this.creationalContext);
+        bean.destroyCreatedInstance(instance, creationalContext);
     }
 
 }

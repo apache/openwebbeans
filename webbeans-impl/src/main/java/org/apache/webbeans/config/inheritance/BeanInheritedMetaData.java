@@ -41,17 +41,17 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
     
     protected void setInheritedQualifiers()
     {
-        if(this.inheritedClazz != null && this.inheritedClazz != Object.class)
+        if(inheritedClazz != null && inheritedClazz != Object.class)
         {
-            setInheritedTypes(getInheritedQualifiers(), this.inheritedClazz, Qualifier.class);
+            setInheritedTypes(getInheritedQualifiers(), inheritedClazz, Qualifier.class);
         }        
     }
     
     protected void setInheritedInterceptorBindings()
     {
-        if(this.inheritedClazz != null && this.inheritedClazz != Object.class)
+        if(inheritedClazz != null && inheritedClazz != Object.class)
         {
-            setInheritedTypes(getInheritedInterceptorBindings(), this.inheritedClazz, InterceptorBinding.class);
+            setInheritedTypes(getInheritedInterceptorBindings(), inheritedClazz, InterceptorBinding.class);
         }        
         
     }
@@ -59,10 +59,10 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
     
     protected void setInheritedScopeType()
     {
-        if(this.inheritedClazz != null && this.inheritedClazz != Object.class)
+        if(inheritedClazz != null && inheritedClazz != Object.class)
         {
-            setInheritedType(this.inheritedClazz, NormalScope.class);
-            setInheritedType(this.inheritedClazz, Scope.class);
+            setInheritedType(inheritedClazz, NormalScope.class);
+            setInheritedType(inheritedClazz, Scope.class);
             
         }
     }
@@ -70,9 +70,9 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
     
     protected void setInheritedStereoTypes()
     {
-        if(this.inheritedClazz != null && this.inheritedClazz != Object.class)
+        if(inheritedClazz != null && inheritedClazz != Object.class)
         {
-            setInheritedTypes(getInheritedStereoTypes(), this.inheritedClazz, Stereotype.class);
+            setInheritedTypes(getInheritedStereoTypes(), inheritedClazz, Stereotype.class);
         }        
         
     }
@@ -94,7 +94,7 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
                 
                 if(annotationType.equals(NormalScope.class) || annotationType.equals(Scope.class))
                 {
-                    this.inheritedScopeType = annotation;
+                    inheritedScopeType = annotation;
                 }
             }
         }

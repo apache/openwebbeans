@@ -161,7 +161,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     protected InterceptorHandler(OwbBean<?> bean)
     {
         this.bean = bean;
-        this.webBeansContext = bean.getWebBeansContext();
+        webBeansContext = bean.getWebBeansContext();
     }
 
     /**
@@ -222,7 +222,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             if (!isNotInterceptedOrDecoratedMethod &&
                 !ClassUtil.isObjectMethod(methodName) && bean instanceof InjectionTargetBean<?>)
             {
-                InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) this.bean;
+                InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) bean;
                 DelegateHandler delegateHandler = null;
                 InterceptorDataImpl decoratorInterceptorDataImpl = null;
                 
@@ -240,7 +240,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                             webBeansContext.getJavassistProxyFactory().getInterceptorProxyClasses().put(bean, proxyClass);
                         }
                         Object delegate = proxyClass.newInstance();
-                        delegateHandler = new DelegateHandler(this.bean);
+                        delegateHandler = new DelegateHandler(bean);
                         ((ProxyObject)delegate).setHandler(delegateHandler);
 
                         // Gets component decorator stack
@@ -253,10 +253,10 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                     List<InterceptorData> interceptorStack = injectionTarget.getInterceptorStack();
                     if (!interceptorStack.isEmpty())
                     {
-                        if (this.interceptedMethodMap == null)
+                        if (interceptedMethodMap == null)
                         {
                             // lazy initialisation, because creating a WeakHashMap is expensive!
-                            this.interceptedMethodMap = new ConcurrentHashMap<Method, List<InterceptorData>>();
+                            interceptedMethodMap = new ConcurrentHashMap<Method, List<InterceptorData>>();
                         }
                         
                         if (decorators != null)
@@ -271,7 +271,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                                             new Class[] {InvocationContext.class}));
                         }
 
-                        List<InterceptorData> interceptorMethods = this.interceptedMethodMap.get(method);
+                        List<InterceptorData> interceptorMethods = interceptedMethodMap.get(method);
                         if (interceptorMethods == null)
                         {
                             //Holds filtered interceptor stack
@@ -288,7 +288,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                             InterceptorUtil interceptorUtil = webBeansContext.getInterceptorUtil();
                             interceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);
                             interceptorUtil.filterOverridenAroundInvokeInterceptor(bean.getBeanClass(), filteredInterceptorStack);
-                            this.interceptedMethodMap.put(method, filteredInterceptorStack);
+                            interceptedMethodMap.put(method, filteredInterceptorStack);
                             interceptorMethods = filteredInterceptorStack;
                         }
                         
@@ -376,7 +376,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         s.writeLong(serialVersionUID);
         // we have to write the ids for all beans, not only PassivationCapable
         // since this gets serialized along with the Bean proxy.
-        String passivationId = this.bean.getId();
+        String passivationId = bean.getId();
         if (passivationId!= null)
         {
             s.writeObject(passivationId);
@@ -384,7 +384,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         else
         {
             s.writeObject(null);
-            logger.warn(OWBLogConst.WARN_0010, this.bean);
+            logger.warn(OWBLogConst.WARN_0010, bean);
         }
     }
     
@@ -398,16 +398,16 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     {
         if(s.readLong() == serialVersionUID)
         {
-            this.webBeansContext = WebBeansContext.currentInstance();
+            webBeansContext = WebBeansContext.currentInstance();
             String passivationId = (String) s.readObject();
             if (passivationId != null)
             {
-                this.bean = (OwbBean<?>) webBeansContext.getBeanManagerImpl().getPassivationCapableBean(passivationId);
+                bean = (OwbBean<?>) webBeansContext.getBeanManagerImpl().getPassivationCapableBean(passivationId);
             }
         }
         else
         {
-            logger.warn(OWBLogConst.WARN_0011, this.bean);
+            logger.warn(OWBLogConst.WARN_0011, bean);
         }
     }
 

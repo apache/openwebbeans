@@ -100,7 +100,7 @@ public final class NotificationManager
 
         if (observers.containsKey(eventType))
         {
-            Set<ObserverMethod<?>> set = this.observers.get(eventType);
+            Set<ObserverMethod<?>> set = observers.get(eventType);
             for (ObserverMethod<?> ob : set)
             {
                 Set<Annotation> evenBindings = ob.getObservedQualifiers();
@@ -162,7 +162,7 @@ public final class NotificationManager
             }            
         }
 
-        Set<Type> keySet = this.observers.keySet();
+        Set<Type> keySet = observers.keySet();
 
         for (Type type : keySet)
         {
@@ -170,7 +170,7 @@ public final class NotificationManager
             {
                 if (ClassUtil.checkEventTypeAssignability(check, type))
                 {
-                    Set<ObserverMethod<?>> wrappers = this.observers.get(type);
+                    Set<ObserverMethod<?>> wrappers = observers.get(type);
 
                     for (ObserverMethod<?> wrapper : wrappers)
                     {
@@ -186,7 +186,7 @@ public final class NotificationManager
     private <T> Set<ObserverMethod<? super T>> filterByExtensionEventType(T event, Class<T> eventType)
     {
         Set<ObserverMethod<? super T>> matching = new HashSet<ObserverMethod<? super T>>();        
-        Set<Type> keySet = this.observers.keySet();
+        Set<Type> keySet = observers.keySet();
         for (Type type : keySet)
         {
             Class<?> beanClass = null;
@@ -311,7 +311,7 @@ public final class NotificationManager
     
     private <T> void addToMatching(Type type, Set<ObserverMethod<? super T>> matching)
     {
-        Set<ObserverMethod<?>> wrappers = this.observers.get(type);
+        Set<ObserverMethod<?>> wrappers = observers.get(type);
 
         for (ObserverMethod<?> wrapper : wrappers)
         {

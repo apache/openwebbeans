@@ -79,7 +79,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
         CreationalContext<?> parentCreational = null;
         try
         {
-            parentCreational = getManager().createCreationalContext(this.ownerComponent);
+            parentCreational = getManager().createCreationalContext(ownerComponent);
             
             if (!producerField.isAccessible())
             {
@@ -103,9 +103,9 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
         }
         finally
         {
-            if (this.ownerComponent.getScope().equals(Dependent.class))
+            if (ownerComponent.getScope().equals(Dependent.class))
             {
-                destroyBean(this.ownerComponent, parentInstance, parentCreational);
+                destroyBean(ownerComponent, parentInstance, parentCreational);
             }
         }
 
@@ -120,7 +120,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
      */
     public Field getCreatorField()
     {
-        return this.producerField;
+        return producerField;
     }
 
     /**
@@ -151,7 +151,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
      */
     public void setProducerField(Field field)
     {
-        this.producerField = field;
+        producerField = field;
     }
 
     /**
@@ -163,9 +163,9 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
     {
         String errorMessage = "WebBeans producer field : " + producerField.getName() +
                               " return type in the component implementation class : " +
-                              this.ownerComponent.getReturnType().getName() +
+                ownerComponent.getReturnType().getName() +
                               " scope must be @Dependent to create null instance";
-        WebBeansUtil.checkNullInstance(instance, this.getScope(), errorMessage);
+        WebBeansUtil.checkNullInstance(instance, getScope(), errorMessage);
     }
 
     /**
@@ -175,16 +175,16 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
     {
         String errorMessage = "WebBeans producer method : " + producerField.getName() +
                               " return type in the component implementation class : " +
-                              this.ownerComponent.getReturnType().getName() + " with passivating scope @" +
-                              this.getScope().getName() + " must be Serializable";
-        getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(this.getScope(),
-                                                                                    this.isSerializable(), errorMessage);
+                ownerComponent.getReturnType().getName() + " with passivating scope @" +
+                getScope().getName() + " must be Serializable";
+        getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(getScope(),
+                isSerializable(), errorMessage);
     }
     
     @Override
     public boolean isPassivationCapable()
     {
-        return isPassivationCapable(this.producerField.getType(),this.producerField.getModifiers());
+        return isPassivationCapable(producerField.getType(), producerField.getModifiers());
     }
     
     @Override

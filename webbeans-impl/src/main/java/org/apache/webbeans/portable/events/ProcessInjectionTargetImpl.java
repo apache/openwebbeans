@@ -65,7 +65,7 @@ public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
     @Override
     public AnnotatedType<X> getAnnotatedType()
     {
-        return this.annotatedType;
+        return annotatedType;
     }
 
     /**
@@ -74,7 +74,7 @@ public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
     @Override
     public InjectionTarget<X> getInjectionTarget()
     {
-        return this.injectionTarget;
+        return injectionTarget;
     }
 
     /**
@@ -84,7 +84,7 @@ public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
     public void setInjectionTarget(InjectionTarget<X> injectionTarget)
     {
         this.injectionTarget = injectionTarget;
-        this.set = true;
+        set = true;
     }
 
     /**
@@ -94,6 +94,6 @@ public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
      */
     public boolean isSet()
     {
-        return this.set;
+        return set;
     }
 }

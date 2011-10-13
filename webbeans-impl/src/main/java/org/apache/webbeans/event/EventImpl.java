@@ -72,7 +72,7 @@ public class EventImpl<T> implements Event<T>, Serializable
      */
     public void fire(T event)
     {
-        this.webBeansContext.getBeanManagerImpl().fireEvent(event, this.injectedBindings);
+        webBeansContext.getBeanManagerImpl().fireEvent(event, injectedBindings);
     }
 
     /**
@@ -87,7 +87,7 @@ public class EventImpl<T> implements Event<T>, Serializable
 
         Set<Annotation> eventBindings = new HashSet<Annotation>();
         
-        for(Annotation ann : this.injectedBindings)
+        for(Annotation ann : injectedBindings)
         {
             eventBindings.add(ann);
         }
@@ -112,7 +112,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public Event<T> select(Annotation... bindings)
     {
-        Event<T> sub = new EventImpl<T>(getEventBindings(bindings),this.eventType, webBeansContext);
+        Event<T> sub = new EventImpl<T>(getEventBindings(bindings), eventType, webBeansContext);
         
         return sub;
     }
@@ -132,7 +132,7 @@ public class EventImpl<T> implements Event<T>, Serializable
         
         if(sub == null)
         {
-            sub = this.eventType;
+            sub = eventType;
         }
         
         Event<U> subEvent = new EventImpl<U>(getEventBindings(bindings),sub, webBeansContext);
@@ -152,8 +152,8 @@ public class EventImpl<T> implements Event<T>, Serializable
     private void writeObject(java.io.ObjectOutputStream op) throws IOException
     {
         ObjectOutputStream oos = new ObjectOutputStream(op);
-        oos.writeObject(this.eventType);
-        oos.writeObject(this.injectedBindings);
+        oos.writeObject(eventType);
+        oos.writeObject(injectedBindings);
         
         oos.flush();
     }
@@ -161,9 +161,9 @@ public class EventImpl<T> implements Event<T>, Serializable
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
     {
         final ObjectInputStream inputStream = new OwbCustomObjectInputStream(in, WebBeansUtil.getCurrentClassLoader());
-        this.eventType = (Type)inputStream.readObject();
-        this.injectedBindings = (Annotation[])inputStream.readObject();
+        eventType = (Type)inputStream.readObject();
+        injectedBindings = (Annotation[])inputStream.readObject();
 
-        this.webBeansContext = WebBeansContext.currentInstance();
+        webBeansContext = WebBeansContext.currentInstance();
     }
 }

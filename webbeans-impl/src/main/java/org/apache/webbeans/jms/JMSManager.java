@@ -39,7 +39,7 @@ public class JMSManager
     
     public void clear()
     {
-        this.jmsModels.clear();
+        jmsModels.clear();
     }
 
     @Deprecated
@@ -51,13 +51,13 @@ public class JMSManager
     public void addJmsModel(JMSModel model)
     {
         Asserts.assertNotNull(model,"model parameter can not be null");
-        
-        this.jmsModels.add(model);
+
+        jmsModels.add(model);
     }
     
     public JMSModel getModel(JMSType type, Annotation...bindingTypes)
     {
-        Iterator<JMSModel> models = this.jmsModels.iterator();
+        Iterator<JMSModel> models = jmsModels.iterator();
         
         while(models.hasNext())
         {

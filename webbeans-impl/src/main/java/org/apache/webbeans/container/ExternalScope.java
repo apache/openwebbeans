@@ -41,7 +41,7 @@ public class ExternalScope
         this.scope = scope;
         this.normal = normal;
         this.passivating = passivating;
-        this.scopeAnnotation = DefaultAnnotation.of(scope);
+        scopeAnnotation = DefaultAnnotation.of(scope);
     }
 
     public Class<? extends Annotation> getScope() 

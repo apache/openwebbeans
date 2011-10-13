@@ -111,7 +111,7 @@ public class BeansDeployer
         this.xmlConfigurator = xmlConfigurator;
         this.webBeansContext = webBeansContext;
         String usage = this.webBeansContext.getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_EJB_DISCOVERY);
-        this.discoverEjb = Boolean.parseBoolean(usage);
+        discoverEjb = Boolean.parseBoolean(usage);
     }
 
     /**
@@ -545,7 +545,7 @@ public class BeansDeployer
         boolean isDefined = defineManagedBean((Class<Object>) implClass, (ProcessAnnotatedTypeImpl<Object>) processAnnotatedEvent);
 
         // Try class is EJB bean
-        if (!isDefined && this.discoverEjb)
+        if (!isDefined && discoverEjb)
         {
             if (EJBWebBeansConfigurator.isSessionBean(implClass, webBeansContext))
             {
@@ -583,7 +583,7 @@ public class BeansDeployer
             {
                 fis = url.openStream();
 
-                this.xmlConfigurator.configure(fis, url.toExternalForm(), scanner);
+                xmlConfigurator.configure(fis, url.toExternalForm(), scanner);
             }
             catch (IOException e)
             {

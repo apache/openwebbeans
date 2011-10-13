@@ -74,7 +74,7 @@ class ManualImplementationLoaderService<T>
             loadConfiguredServices(configFile);
         }
 
-        return this.foundServiceClasses;
+        return foundServiceClasses;
     }
 
     private List<URL> getConfigFileList()
@@ -83,7 +83,7 @@ class ManualImplementationLoaderService<T>
 
         try
         {
-            Enumeration<URL> serviceFileEnumerator = this.currentClassLoader.getResources(getConfigFileLocation());
+            Enumeration<URL> serviceFileEnumerator = currentClassLoader.getResources(getConfigFileLocation());
 
             while (serviceFileEnumerator.hasMoreElements())
             {
@@ -93,14 +93,14 @@ class ManualImplementationLoaderService<T>
         catch (Exception e)
         {
             throw new IllegalStateException(
-                    "Failed to load " + this.serviceType.getName() + " configured in " + getConfigFileLocation(), e);
+                    "Failed to load " + serviceType.getName() + " configured in " + getConfigFileLocation(), e);
         }
         return serviceFiles;
     }
 
     private String getConfigFileLocation()
     {
-        return SERVICE_CONFIG + this.serviceType.getName();
+        return SERVICE_CONFIG + serviceType.getName();
     }
 
     private void loadConfiguredServices(URL serviceFile)
@@ -157,9 +157,9 @@ class ManualImplementationLoaderService<T>
     {
         Class<T> serviceClass = (Class<T>) loadClass(serviceClassName);
 
-        if (serviceClass != null && !this.foundServiceClasses.contains(serviceClass))
+        if (serviceClass != null && !foundServiceClasses.contains(serviceClass))
         {
-            this.foundServiceClasses.add(serviceClass);
+            foundServiceClasses.add(serviceClass);
         }
         else if (serviceClass == null)
         {
@@ -175,7 +175,7 @@ class ManualImplementationLoaderService<T>
 
         if (targetClass == null)
         {
-            targetClass = loadClassForName(serviceClassName, this.currentClassLoader);
+            targetClass = loadClassForName(serviceClassName, currentClassLoader);
 
             if (targetClass == null)
             {
@@ -183,7 +183,7 @@ class ManualImplementationLoaderService<T>
             }
         }
 
-        return targetClass.asSubclass(this.serviceType);
+        return targetClass.asSubclass(serviceType);
     }
 
     private static Class<?> loadClassForName(String serviceClassName, ClassLoader classLoader)

@@ -44,7 +44,7 @@ public class JMSModel
         if(jndiName != null)
         {
             this.jndiName = jndiName;
-            this.isJndiNameDefined = true;
+            isJndiNameDefined = true;
         }
         
         this.mappedName = mappedName;
@@ -52,7 +52,7 @@ public class JMSModel
 
     public void addBinding(Annotation annotation)
     {
-        this.bindings.add(annotation);
+        bindings.add(annotation);
     }
     
     public Annotation[] getBindings()

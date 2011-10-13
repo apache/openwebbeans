@@ -50,8 +50,8 @@ public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
      */
     public DependentScopedBeanInterceptorHandler(OwbBean<?> bean, Object instance, CreationalContext<?> creationalContext)
     {
-        super(bean);        
-        this.actualInstance = instance;
+        super(bean);
+        actualInstance = instance;
         this.creationalContext = creationalContext;
         
         if(creationalContext instanceof CreationalContextImpl)
@@ -72,7 +72,7 @@ public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
     @Override
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
-        return super.invoke(this.actualInstance, method, proceed, arguments, (CreationalContextImpl<?>)creationalContext);
+        return super.invoke(actualInstance, method, proceed, arguments, (CreationalContextImpl<?>)creationalContext);
     }
     
     /**
@@ -80,7 +80,7 @@ public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
      */
     protected Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
     {
-        InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, this.bean, this.actualInstance ,proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
+        InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, bean, actualInstance,proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
         impl.setCreationalContext(creationalContext);
         
         return impl.proceed();

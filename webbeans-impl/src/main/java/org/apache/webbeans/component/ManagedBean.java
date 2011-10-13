@@ -163,9 +163,9 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
         {
             return isPassivationCapable.booleanValue();
         }
-        if(Serializable.class.isAssignableFrom(this.returnType))
+        if(Serializable.class.isAssignableFrom(returnType))
         {
-            for(Decorator<?> dec : this.decorators)
+            for(Decorator<?> dec : decorators)
             {
                 if(dec.getBeanClass() != null && !Serializable.class.isAssignableFrom(dec.getBeanClass()))
                 {
@@ -174,7 +174,7 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
                 }
             }
 
-            for(InterceptorData interceptorData : this.interceptorStack)
+            for(InterceptorData interceptorData : interceptorStack)
             {
                 if(interceptorData.isDefinedInInterceptorClass())
                 {

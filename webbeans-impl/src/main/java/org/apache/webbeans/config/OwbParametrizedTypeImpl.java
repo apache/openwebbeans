@@ -48,10 +48,9 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
     public OwbParametrizedTypeImpl(Type owner, Type raw)
     {
         this.owner = owner;
-        this.rawType = raw;
+        rawType = raw;
     }
     
-    @Override
     public Type[] getActualTypeArguments()
     {
         return types.toArray(new Type[types.size()]);
@@ -59,19 +58,17 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
     
     public void addTypeArgument(Type type)
     {
-        this.types.add(type);
+        types.add(type);
     }
 
-    @Override
     public Type getOwnerType()
     {
-        return this.owner;
+        return owner;
     }
 
-    @Override
     public Type getRawType()
     {
-        return this.rawType;
+        return rawType;
     }
 
     
@@ -141,8 +138,8 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
 
     public String toString()
     {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(((Class<?>)this.rawType).getSimpleName());
+        StringBuilder buffer = new StringBuilder();
+        buffer.append(((Class<?>) rawType).getSimpleName());
         Type[] actualTypes = getActualTypeArguments();
         if(actualTypes.length > 0)
         {

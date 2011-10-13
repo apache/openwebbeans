@@ -83,19 +83,19 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
         super(WebBeansType.INTERCEPTOR,delegateBean.getReturnType(), delegateBean.getWebBeansContext());
         
         this.delegateBean = delegateBean;
-        this.clazz = getDelegate().getReturnType();
+        clazz = getDelegate().getReturnType();
 
         webBeansContext = delegateBean.getWebBeansContext();
     }
 
     public AbstractOwbBean<T> getDelegate()
     {
-        return this.delegateBean;
+        return delegateBean;
     }
     
     public AnnotatedType<T> getAnnotatedType()
     {
-        return this.delegateBean.getAnnotatedType();
+        return delegateBean.getAnnotatedType();
     }
     
 
@@ -247,12 +247,12 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
     public Set<Annotation> getInterceptorBindings()
     {
         Set<Annotation> set = new HashSet<Annotation>();
-        Set<Class<? extends Annotation>> keySet = this.interceptorBindingSet.keySet();
+        Set<Class<? extends Annotation>> keySet = interceptorBindingSet.keySet();
         Iterator<Class<? extends Annotation>> itSet = keySet.iterator();
 
         while (itSet.hasNext())
         {
-            set.add(this.interceptorBindingSet.get(itSet.next()));
+            set.add(interceptorBindingSet.get(itSet.next()));
         }
 
         return set;
@@ -289,8 +289,8 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
     protected T createInstance(CreationalContext<T> creationalContext)
     {
         Context context = webBeansContext.getBeanManagerImpl().getContext(getScope());
-        Object actualInstance = context.get((Bean<Object>)this.delegateBean, (CreationalContext<Object>)creationalContext);
-        T proxy = (T) webBeansContext.getJavassistProxyFactory().createDependentScopedBeanProxy(this.delegateBean, actualInstance, creationalContext);
+        Object actualInstance = context.get((Bean<Object>) delegateBean, (CreationalContext<Object>)creationalContext);
+        T proxy = (T) webBeansContext.getJavassistProxyFactory().createDependentScopedBeanProxy(delegateBean, actualInstance, creationalContext);
         
         return proxy;
     }
@@ -298,7 +298,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
     public void setInjections(Object proxy, CreationalContext<?> creationalContext)
     {
         // Set injected fields
-        ManagedBean<T> delegate = (ManagedBean<T>) this.delegateBean;
+        ManagedBean<T> delegate = (ManagedBean<T>) delegateBean;
 
         Set<Field> injectedFields = delegate.getInjectedFromSuperFields();
         for (Field injectedField : injectedFields)
@@ -328,14 +328,14 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
     
     private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableField f = new InjectableField(field, instance, this.delegateBean, creationalContext);
+        InjectableField f = new InjectableField(field, instance, delegateBean, creationalContext);
         f.doInjection();        
     }
 
     @SuppressWarnings("unchecked")
     private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableMethods m = new InjectableMethods(method, instance, this.delegateBean, creationalContext);
+        InjectableMethods m = new InjectableMethods(method, instance, delegateBean, creationalContext);
         m.doInjection();        
     }
     
@@ -374,7 +374,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
     @Override
     public String toString()
     {
-        return "WebBeans Interceptor with class : " + "[" + this.clazz.getName() + "]";
+        return "WebBeans Interceptor with class : " + "[" + clazz.getName() + "]";
     }
 
     @Override
@@ -392,13 +392,13 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
     @Override
     public Class<?> getBeanClass()
     {
-        return this.delegateBean.getBeanClass();
+        return delegateBean.getBeanClass();
     }
 
     @Override
     public Set<Class<? extends Annotation>> getStereotypes()
     {
-        return this.delegateBean.getStereotypes();
+        return delegateBean.getStereotypes();
     }
 
     @Override
@@ -429,19 +429,19 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
     @Override
     public boolean isAlternative()
     {
-        return this.delegateBean.isAlternative();
+        return delegateBean.isAlternative();
     }
     
     @Override
     public boolean isPassivationCapable()
     {
-        return this.delegateBean.isPassivationCapable();
+        return delegateBean.isPassivationCapable();
     }
 
     @Override
     public void validatePassivationDependencies()
     {
-        this.delegateBean.validatePassivationDependencies();
+        delegateBean.validatePassivationDependencies();
     }    
     
     

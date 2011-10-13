@@ -43,8 +43,8 @@ public class ProcessProducerMethodImpl<X,T> extends ProcessBeanImpl<T> implement
     public ProcessProducerMethodImpl(ProducerMethodBean<T> bean, AnnotatedMethod<X> method, AnnotatedParameter<X> disposeParameter)
     {
         super(bean, method);
-        this.annotatedProducerMethod = method;
-        this.annotatedDisposedParameter = disposeParameter;
+        annotatedProducerMethod = method;
+        annotatedDisposedParameter = disposeParameter;
     }
     
     /**
@@ -53,7 +53,7 @@ public class ProcessProducerMethodImpl<X,T> extends ProcessBeanImpl<T> implement
     @Override
     public AnnotatedParameter<X> getAnnotatedDisposedParameter()
     {
-        return this.annotatedDisposedParameter;
+        return annotatedDisposedParameter;
     }
 
     /**
@@ -62,7 +62,7 @@ public class ProcessProducerMethodImpl<X,T> extends ProcessBeanImpl<T> implement
     @Override
     public AnnotatedMethod<X> getAnnotatedProducerMethod()
     {
-        return this.annotatedProducerMethod;
+        return annotatedProducerMethod;
     }
     
 }

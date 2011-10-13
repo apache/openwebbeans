@@ -71,7 +71,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
         T instance;
         if(!(creationalContext instanceof CreationalContextImpl))
         {
-            creationalContext = bean.getWebBeansContext().getCreationalContextFactory().wrappedCreationalContext(creationalContext, this.bean);
+            creationalContext = bean.getWebBeansContext().getCreationalContextFactory().wrappedCreationalContext(creationalContext, bean);
         }
         
         //Save it
@@ -88,7 +88,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
      */
     public void dispose(T instance)
     {
-        this.bean.destroyCreatedInstance(instance, this.creationalContext);
+        bean.destroyCreatedInstance(instance, creationalContext);
     }
 
     /**
@@ -100,6 +100,6 @@ public abstract class AbstractProducer<T> implements Producer<T>
      */
     protected <X> X getBean(Class<X> clazz)
     {
-        return clazz.cast(this.bean);
+        return clazz.cast(bean);
     }
 }

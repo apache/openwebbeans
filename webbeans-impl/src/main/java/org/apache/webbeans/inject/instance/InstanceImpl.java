@@ -91,12 +91,12 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     {
         T instance = null;
 
-        Annotation[] anns = new Annotation[this.qualifierAnnotations.size()];
-        anns = this.qualifierAnnotations.toArray(anns);
+        Annotation[] anns = new Annotation[qualifierAnnotations.size()];
+        anns = qualifierAnnotations.toArray(anns);
         
         Set<Bean<?>> beans = resolveBeans();
 
-        webBeansContext.getResolutionUtil().checkResolvedBeans(beans, ClassUtil.getClazz(this.injectionClazz), anns);
+        webBeansContext.getResolutionUtil().checkResolvedBeans(beans, ClassUtil.getClazz(injectionClazz), anns);
 
         Bean<?> bean = beans.iterator().next();
         instance = (T) webBeansContext.getBeanManagerImpl().getInstance(bean, null);
@@ -111,14 +111,14 @@ class InstanceImpl<T> implements Instance<T>, Serializable
      */
     private Set<Bean<?>> resolveBeans()
     {
-        Annotation[] anns = new Annotation[this.qualifierAnnotations.size()];
-        anns = this.qualifierAnnotations.toArray(anns);
+        Annotation[] anns = new Annotation[qualifierAnnotations.size()];
+        anns = qualifierAnnotations.toArray(anns);
 
         InjectionResolver injectionResolver = webBeansContext.getBeanManagerImpl().getInjectionResolver();
 
         InjectionResolver resolver = injectionResolver;
         Set<Bean<?>> beans = resolver.implResolveByType(
-                this.injectionClazz,this.injectionPointClazz, anns);
+                injectionClazz, injectionPointClazz, anns);
         return beans;
     }
     
@@ -151,7 +151,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     public Instance<T> select(Annotation... qualifiers)
     {
         Annotation[] newQualifiersArray = getAdditionalQualifiers(qualifiers);
-        InstanceImpl<T> newInstance = new InstanceImpl<T>(this.injectionClazz, this.injectionPointClazz,
+        InstanceImpl<T> newInstance = new InstanceImpl<T>(injectionClazz, injectionPointClazz,
                                                           webBeansContext, newQualifiersArray);
 
         return newInstance;
@@ -166,7 +166,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     private Annotation[] getAdditionalQualifiers(Annotation[] qualifiers)
     {
         webBeansContext.getAnnotationManager().checkQualifierConditions(qualifiers);
-        Set<Annotation> newQualifiers = new HashSet<Annotation>(this.qualifierAnnotations);
+        Set<Annotation> newQualifiers = new HashSet<Annotation>(qualifierAnnotations);
 
         if (qualifiers != null && qualifiers.length > 0)
         {
@@ -174,7 +174,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
             {
                 if (newQualifiers.contains(annot))
                 {
-                    throw new IllegalArgumentException("Duplicate Qualifier Exception, " + this.toString());
+                    throw new IllegalArgumentException("Duplicate Qualifier Exception, " + toString());
                 }
 
                 newQualifiers.add(annot);
@@ -199,12 +199,12 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         
         if(sub == null)
         {
-            sub = this.injectionClazz;
+            sub = injectionClazz;
         }
         
         Annotation[] newQualifiers = getAdditionalQualifiers(qualifiers);
         
-        InstanceImpl<U> newInstance = new InstanceImpl<U>(sub, this.injectionPointClazz, webBeansContext, newQualifiers);
+        InstanceImpl<U> newInstance = new InstanceImpl<U>(sub, injectionPointClazz, webBeansContext, newQualifiers);
                     
         return newInstance;
     }
@@ -239,20 +239,20 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     private void writeObject(java.io.ObjectOutputStream op) throws IOException
     {
         ObjectOutputStream oos = new ObjectOutputStream(op);
-        oos.writeObject(this.injectionClazz);
-        oos.writeObject(this.qualifierAnnotations);
-        oos.writeObject(this.injectionPointClazz);
+        oos.writeObject(injectionClazz);
+        oos.writeObject(qualifierAnnotations);
+        oos.writeObject(injectionPointClazz);
         
         oos.flush();
     }
     
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
     {
-        this.webBeansContext = WebBeansContext.currentInstance();
+        webBeansContext = WebBeansContext.currentInstance();
         final ObjectInputStream inputStream = new OwbCustomObjectInputStream(in, WebBeansUtil.getCurrentClassLoader());
-        this.injectionClazz = (Type)inputStream.readObject();
-        this.qualifierAnnotations = (Set<Annotation>)inputStream.readObject();
-        this.injectionPointClazz = (Class<?>) inputStream.readObject();        
+        injectionClazz = (Type)inputStream.readObject();
+        qualifierAnnotations = (Set<Annotation>)inputStream.readObject();
+        injectionPointClazz = (Class<?>) inputStream.readObject();
     }
     
 
@@ -260,12 +260,12 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     {
         StringBuilder builder = new StringBuilder();
         builder.append("Instance<");
-        builder.append(ClassUtil.getClazz(this.injectionClazz).getName());
+        builder.append(ClassUtil.getClazz(injectionClazz).getName());
         builder.append("> injectionPointClazz=").append(injectionPointClazz);
         
         builder.append(",with qualifier annotations {");
         int i = 0;
-        for (Annotation qualifier : this.qualifierAnnotations)
+        for (Annotation qualifier : qualifierAnnotations)
         {
             if (i != 0)
             {

@@ -35,22 +35,22 @@ class CustomContextImpl implements Context
     
     public Class<? extends Annotation> getScope()
     {
-        return this.context.getScope();
+        return context.getScope();
     }
 
     public <T> T get(Contextual<T> component, CreationalContext<T> crreationalContext)
     {
-        return this.context.get(component, crreationalContext);
+        return context.get(component, crreationalContext);
     }
 
     public <T> T get(Contextual<T> component)
     {
-        return this.context.get(component);
+        return context.get(component);
     }
 
     public boolean isActive()
     {
-        return this.context.isActive();
+        return context.isActive();
     }
 
 }

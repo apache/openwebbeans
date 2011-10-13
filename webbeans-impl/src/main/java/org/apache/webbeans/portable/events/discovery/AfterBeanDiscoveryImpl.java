@@ -56,7 +56,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     public AfterBeanDiscoveryImpl(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-        this.beanManager = this.webBeansContext.getBeanManagerImpl();
+        beanManager = this.webBeansContext.getBeanManagerImpl();
     }
     
     /**
@@ -70,7 +70,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         
         //Fire Event
         ProcessBean<?> processBeanEvent = new GProcessBean(bean,annotatedType);
-        this.beanManager.fireEvent(processBeanEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        beanManager.fireEvent(processBeanEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         
         if(bean instanceof Interceptor)
         {
@@ -103,8 +103,8 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
                     logger.warn(OWBLogConst.WARN_0005_3, interceptor.getBeanClass().getName());
                 }                
             }
-            
-            this.beanManager.addInterceptor(interceptor);
+
+            beanManager.addInterceptor(interceptor);
             webBeansContext.getBeanManagerImpl().addCustomInterceptorClass(bean.getBeanClass());
         }
         
@@ -136,15 +136,15 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
                 {
                     logger.warn(OWBLogConst.WARN_0005_3, managedBean.getBeanClass().getName());
                 }                
-            }            
-            
-            
-            this.beanManager.addDecorator(new WebBeansDecorator(managedBean, (Decorator)bean));
+            }
+
+
+            beanManager.addDecorator(new WebBeansDecorator(managedBean, (Decorator) bean));
             webBeansContext.getBeanManagerImpl().addCustomDecoratorClass(bean.getBeanClass());
         }
         else
         {
-            this.beanManager.addBean(bean);    
+            beanManager.addBean(bean);
         }                
     }
 
@@ -154,8 +154,8 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @Override
     public void addContext(Context context)
     {
-        this.beanManager.addContext(context);
-        
+        beanManager.addContext(context);
+
     }
 
     /**
@@ -164,7 +164,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @Override
     public void addDefinitionError(Throwable t)
     {
-        this.beanManager.getErrorStack().pushError(t);
+        beanManager.getErrorStack().pushError(t);
     }
 
     /**
@@ -174,8 +174,8 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     public void addObserverMethod(ObserverMethod<?> observerMethod)
     {
         ProcessObserverMethod<?, ?> event = new GProcessObservableMethod(null,observerMethod);
-        this.beanManager.fireEvent(event, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-        this.beanManager.getNotificationManager().addObserver(observerMethod, observerMethod.getObservedType());
+        beanManager.fireEvent(event, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        beanManager.getNotificationManager().addObserver(observerMethod, observerMethod.getObservedType());
     }
 
 }

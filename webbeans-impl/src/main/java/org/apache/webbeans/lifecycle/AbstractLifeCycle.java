@@ -78,13 +78,13 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         beforeInitApplication(properties);
 
         this.webBeansContext = webBeansContext;
-        this.beanManager = this.webBeansContext.getBeanManagerImpl();
-        this.xmlDeployer = new WebBeansXMLConfigurator();
-        this.deployer = new BeansDeployer(xmlDeployer, this.webBeansContext);
-        this.jndiService = this.webBeansContext.getService(JNDIService.class);
-        this.beanManager.setXMLConfigurator(this.xmlDeployer);
-        this.scannerService = this.webBeansContext.getScannerService();
-        this.contextsService = this.webBeansContext.getService(ContextsService.class);
+        beanManager = this.webBeansContext.getBeanManagerImpl();
+        xmlDeployer = new WebBeansXMLConfigurator();
+        deployer = new BeansDeployer(xmlDeployer, this.webBeansContext);
+        jndiService = this.webBeansContext.getService(JNDIService.class);
+        beanManager.setXMLConfigurator(xmlDeployer);
+        scannerService = this.webBeansContext.getScannerService();
+        contextsService = this.webBeansContext.getService(ContextsService.class);
         initApplication(properties);
     }
 
@@ -95,7 +95,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
 
     public BeanManager getBeanManager()
     {        
-        return this.beanManager;
+        return beanManager;
     }
     
     public void startApplication(Object startupObject)
@@ -112,19 +112,19 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         webBeansContext.getPluginLoader().startUp();
         
         //Initialize contexts
-        this.contextsService.init(startupObject);
+        contextsService.init(startupObject);
         
         //Scanning process
         logger.debug("Scanning classpaths for beans artifacts.");
 
         //Scan
-        this.scannerService.scan();
+        scannerService.scan();
         
         //Deploy beans
         logger.debug("Deploying scanned beans.");
 
         //Deploy
-        deployer.deploy(this.scannerService);
+        deployer.deploy(scannerService);
 
         //Start actual starting on sub-classes
         afterStartApplication(startupObject);
@@ -142,13 +142,13 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             beforeStopApplication(endObject);
 
             //Set up the thread local for Application scoped as listeners will be App scoped.
-            this.contextsService.startContext(ApplicationScoped.class, endObject);
+            contextsService.startContext(ApplicationScoped.class, endObject);
             
             //Fire shut down
-            this.beanManager.fireEvent(new BeforeShutdownImpl() );
+            beanManager.fireEvent(new BeforeShutdownImpl());
             
             //Destroys context
-            this.contextsService.destroy(endObject);
+            contextsService.destroy(endObject);
             
             //Unbind BeanManager
             jndiService.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);
@@ -177,7 +177,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             afterStopApplication(endObject);
 
             // Clear BeanManager
-            this.beanManager.clear();
+            beanManager.clear();
 
             // Clear singleton list
             WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());

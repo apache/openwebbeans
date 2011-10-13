@@ -77,7 +77,7 @@ abstract class AbstractAnnotated implements Annotated
      */
     protected void addAnnotation(Annotation annotation)
     {
-        this.annotations.add(annotation);
+        annotations.add(annotation);
     }
 
     protected WebBeansContext getWebBeansContext()
@@ -106,7 +106,7 @@ abstract class AbstractAnnotated implements Annotated
     @SuppressWarnings("unchecked")
     public <T extends Annotation> T getAnnotation(Class<T> annotationType)
     {
-        for(Annotation ann : this.annotations)
+        for(Annotation ann : annotations)
         {
             if(ann.annotationType().equals(annotationType))
             {
@@ -124,7 +124,7 @@ abstract class AbstractAnnotated implements Annotated
     @Override
     public Set<Annotation> getAnnotations()
     {
-        return this.annotations;
+        return annotations;
     }
 
     /**
@@ -133,7 +133,7 @@ abstract class AbstractAnnotated implements Annotated
     @Override
     public Type getBaseType()
     {
-        return this.baseType;
+        return baseType;
     }
 
     /**
@@ -154,10 +154,10 @@ abstract class AbstractAnnotated implements Annotated
         if (typeClosures == null)
         {
             typeClosures = new HashSet<Type>();
-            this.typeClosures.add(Object.class);
-            ClassUtil.setTypeHierarchy(this.typeClosures, this.baseType);
+            typeClosures.add(Object.class);
+            ClassUtil.setTypeHierarchy(typeClosures, baseType);
             Set<String> ignoredInterfaces = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
-            for (Iterator<Type> i = this.typeClosures.iterator(); i.hasNext(); )
+            for (Iterator<Type> i = typeClosures.iterator(); i.hasNext(); )
             {
                 Type t = i.next();
                 if (t instanceof Class && ignoredInterfaces.contains(((Class<?>)t).getName()))
@@ -210,7 +210,7 @@ abstract class AbstractAnnotated implements Annotated
     @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationType)
     {
-        for(Annotation ann : this.annotations)
+        for(Annotation ann : annotations)
         {
             if(ann.annotationType().equals(annotationType))
             {

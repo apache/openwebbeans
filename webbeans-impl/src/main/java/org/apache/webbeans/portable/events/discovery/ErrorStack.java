@@ -46,17 +46,17 @@ public class ErrorStack
 
     public Throwable[] popErrors()
     {
-        Throwable[] list = new Throwable[this.errorStack.size()];
-        list = this.errorStack.toArray(list);
+        Throwable[] list = new Throwable[errorStack.size()];
+        list = errorStack.toArray(list);
         
         return list;
     }
     
     public void logErrors()
     {
-        if(!this.errorStack.isEmpty())
+        if(!errorStack.isEmpty())
         {
-            Iterator<Throwable> it = this.errorStack.iterator();
+            Iterator<Throwable> it = errorStack.iterator();
             while(it.hasNext())
             {
                 Throwable t = it.next();
@@ -67,11 +67,11 @@ public class ErrorStack
     
     public void clear()
     {
-        this.errorStack.clear();
+        errorStack.clear();
     }
     
     public boolean hasErrors()
     {
-        return !this.errorStack.isEmpty();
+        return !errorStack.isEmpty();
     }
 }

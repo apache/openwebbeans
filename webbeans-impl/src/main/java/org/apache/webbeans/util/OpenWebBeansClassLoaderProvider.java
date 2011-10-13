@@ -31,7 +31,7 @@ public class OpenWebBeansClassLoaderProvider implements ProxyFactory.ClassLoader
 
     OpenWebBeansClassLoaderProvider()
     {
-        this.wrapped = ProxyFactory.classLoaderProvider;
+        wrapped = ProxyFactory.classLoaderProvider;
     }
 
     public void useCurrentClassLoader()

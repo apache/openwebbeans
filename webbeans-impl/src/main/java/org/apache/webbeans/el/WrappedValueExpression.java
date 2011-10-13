@@ -50,13 +50,13 @@ public class WrappedValueExpression extends ValueExpression
     @Override
     public Class<?> getExpectedType()
     {
-        return this.valueExpression.getExpectedType();
+        return valueExpression.getExpectedType();
     }
 
     @Override
     public Class<?> getType(ELContext arg0) throws NullPointerException, PropertyNotFoundException, ELException
     {        
-        return this.valueExpression.getType(arg0);
+        return valueExpression.getType(arg0);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class WrappedValueExpression extends ValueExpression
         Object value = null;
         try
         {
-           value = this.valueExpression.getValue(context);           
+           value = valueExpression.getValue(context);
             
         }
         finally
@@ -84,37 +84,37 @@ public class WrappedValueExpression extends ValueExpression
     @Override
     public boolean isReadOnly(ELContext arg0) throws NullPointerException, PropertyNotFoundException, ELException
     {        
-        return this.valueExpression.isReadOnly(arg0);
+        return valueExpression.isReadOnly(arg0);
     }
 
     @Override
     public void setValue(ELContext arg0, Object arg1) throws NullPointerException, PropertyNotFoundException, PropertyNotWritableException, ELException
     {
-        this.valueExpression.setValue(arg0, arg1);        
+        valueExpression.setValue(arg0, arg1);
     }
 
     @Override
     public boolean equals(Object arg0)
     {        
-        return this.valueExpression.equals(arg0);
+        return valueExpression.equals(arg0);
     }
 
     @Override
     public String getExpressionString()
     {       
-        return this.valueExpression.getExpressionString();
+        return valueExpression.getExpressionString();
     }
 
     @Override
     public int hashCode()
     {        
-        return this.valueExpression.hashCode();
+        return valueExpression.hashCode();
     }
 
     @Override
     public boolean isLiteralText()
     {        
-        return this.valueExpression.isLiteralText();
+        return valueExpression.isLiteralText();
     }
 
 }

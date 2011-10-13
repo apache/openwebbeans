@@ -39,6 +39,6 @@ public class SingletonContext extends AbstractContext
     @Override
     public void setComponentInstanceMap()
     {
-        this.componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
+        componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
     }
 }

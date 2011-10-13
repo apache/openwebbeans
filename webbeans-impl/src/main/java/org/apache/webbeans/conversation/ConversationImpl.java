@@ -83,12 +83,12 @@ public class ConversationImpl implements Conversation, Serializable
         this.webBeansContext = webBeansContext;
         try
         {
-            this.timeout = Long.parseLong(this.webBeansContext.getOpenWebBeansConfiguration().
+            timeout = Long.parseLong(this.webBeansContext.getOpenWebBeansConfiguration().
                     getProperty(OpenWebBeansConfiguration.CONVERSATION_TIMEOUT_INTERVAL, "1800000"));   
         }
         catch(NumberFormatException e)
         {
-            this.timeout = 30 * 60 * 1000;
+            timeout = 30 * 60 * 1000;
         }
     }
 
@@ -106,12 +106,12 @@ public class ConversationImpl implements Conversation, Serializable
 
         try
         {
-            this.timeout = Long.parseLong(this.webBeansContext.getOpenWebBeansConfiguration().
+            timeout = Long.parseLong(this.webBeansContext.getOpenWebBeansConfiguration().
                     getProperty(OpenWebBeansConfiguration.CONVERSATION_TIMEOUT_INTERVAL, "1800000"));   
         }
         catch(NumberFormatException e)
         {
-            this.timeout = 30 * 60 * 1000;
+            timeout = 30 * 60 * 1000;
         }
         
         this.sessionId = sessionId;
@@ -125,11 +125,11 @@ public class ConversationImpl implements Conversation, Serializable
     public void begin()
     {
         //Transient state
-        if(this.isTransient)
+        if(isTransient)
         {
-            this.isTransient = false;
-            this.id = Integer.toString(conversationIdGenerator.incrementAndGet());
-            this.updateTimeOut();
+            isTransient = false;
+            id = Integer.toString(conversationIdGenerator.incrementAndGet());
+            updateTimeOut();
 
             //Conversation manager
             ConversationManager manager = webBeansContext.getConversationManager();
@@ -170,11 +170,11 @@ public class ConversationImpl implements Conversation, Serializable
         }
         
         //Transient state
-        if(this.isTransient)
+        if(isTransient)
         {
-            this.isTransient = false;
+            isTransient = false;
             this.id = id;
-            this.updateTimeOut();
+            updateTimeOut();
             conversationManager.addConversationContext(this, (ConversationContext) webBeansContext.getBeanManagerImpl().getContext(ConversationScoped.class));
         }
     }
@@ -185,16 +185,16 @@ public class ConversationImpl implements Conversation, Serializable
     @Override
     public void end()
     {
-        if(!this.isTransient)
+        if(!isTransient)
         {
-            this.isTransient = true;
+            isTransient = true;
 
             webBeansContext.getConversationManager().removeConversation(this);
         }
         else
         {
             logger.warn(OWBLogConst.WARN_0004, id);
-            throw new IllegalStateException(this.toString() + " has already ended");
+            throw new IllegalStateException(toString() + " has already ended");
         }
     }
     
@@ -221,7 +221,7 @@ public class ConversationImpl implements Conversation, Serializable
      */
     public void setTransient(boolean value)
     {
-        this.isTransient = value;
+        isTransient = value;
     }
     
     /**
@@ -230,7 +230,7 @@ public class ConversationImpl implements Conversation, Serializable
     @Override
     public String getId()
     {
-        return this.id;
+        return id;
     }
 
     /**
@@ -239,7 +239,7 @@ public class ConversationImpl implements Conversation, Serializable
     @Override
     public long getTimeout()
     {
-        return this.timeout;
+        return timeout;
     }
 
     /**
@@ -257,7 +257,7 @@ public class ConversationImpl implements Conversation, Serializable
     @Override
     public void setTimeout(long milliseconds)
     {
-        this.timeout = milliseconds;
+        timeout = milliseconds;
     }
 
     /**
@@ -266,7 +266,7 @@ public class ConversationImpl implements Conversation, Serializable
      */
     public String getSessionId()
     {
-        return this.sessionId;
+        return sessionId;
     }
 
     /**
@@ -283,7 +283,7 @@ public class ConversationImpl implements Conversation, Serializable
      */
     public void updateTimeOut()
     {
-        this.activeTime = System.currentTimeMillis();
+        activeTime = System.currentTimeMillis();
     }
 
     /*
@@ -354,7 +354,7 @@ public class ConversationImpl implements Conversation, Serializable
     {
         StringBuilder builder = new StringBuilder();
         builder.append("Conversation with id [ ");
-        builder.append(this.id);
+        builder.append(id);
         builder.append(" ]");
         
         return builder.toString();

@@ -64,7 +64,7 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     @Override
     public AnnotatedMember<X> getAnnotatedMember()
     {
-        return this.annotateMember;
+        return annotateMember;
     }
 
     /**
@@ -73,7 +73,7 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     @Override
     public Producer<T> getProducer()
     {
-        return this.producer;
+        return producer;
     }
 
     /**
@@ -83,7 +83,7 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     public void setProducer(Producer<T> producer)
     {
         this.producer = producer;
-        this.set = true;
+        set = true;
     }
     
     /**
@@ -93,7 +93,7 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
      */
     public boolean isProducerSet()
     {
-        return this.set;
+        return set;
     }
     
     public void setProducerSet(boolean set)

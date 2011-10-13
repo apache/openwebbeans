@@ -104,12 +104,12 @@ public class InterceptorDataImpl implements InterceptorData
 
     public Class<?> getInterceptorClass()
     {
-        return this.interceptorClass;
+        return interceptorClass;
     }
 
     public void setInterceptorClass(Class<?> clazz)
     {
-        this.interceptorClass = clazz;
+        interceptorClass = clazz;
     }
 
     /*
@@ -165,7 +165,7 @@ public class InterceptorDataImpl implements InterceptorData
      */
     public void setAroundInvoke(Method m)
     {
-        this.aroundInvoke = m;
+        aroundInvoke = m;
     }
 
     /*
@@ -176,7 +176,7 @@ public class InterceptorDataImpl implements InterceptorData
      */
     public void setAroundTimeout(Method m)
     {
-        this.aroundTimeout = m;
+        aroundTimeout = m;
     }
     
     /*
@@ -187,7 +187,7 @@ public class InterceptorDataImpl implements InterceptorData
      */
     protected void setPostConstruct(Method m)
     {
-        this.postConstruct = m;
+        postConstruct = m;
     }
 
     /*
@@ -198,7 +198,7 @@ public class InterceptorDataImpl implements InterceptorData
      */
     protected void setPostActivate(Method m)
     {
-        this.postActivate = m;
+        postActivate = m;
     }
     
     /*
@@ -209,7 +209,7 @@ public class InterceptorDataImpl implements InterceptorData
      */
     protected void setPreDestroy(Method m)
     {
-        this.preDestroy = m;
+        preDestroy = m;
     }
 
     /*
@@ -220,7 +220,7 @@ public class InterceptorDataImpl implements InterceptorData
      */
     protected void setPrePassivate(Method m)
     {
-        this.prePassivate = m;
+        prePassivate = m;
     }
     
     /*
@@ -229,7 +229,7 @@ public class InterceptorDataImpl implements InterceptorData
      */
     public Method getPostConstruct()
     {
-        return this.postConstruct;
+        return postConstruct;
     }
 
     /*
@@ -238,7 +238,7 @@ public class InterceptorDataImpl implements InterceptorData
      */
     public Method getPostActivate()
     {
-        return this.postActivate;
+        return postActivate;
     }
     
     /*
@@ -247,7 +247,7 @@ public class InterceptorDataImpl implements InterceptorData
      */
     public Method getPreDestroy()
     {
-        return this.preDestroy;
+        return preDestroy;
     }
 
     /*
@@ -256,7 +256,7 @@ public class InterceptorDataImpl implements InterceptorData
      */
     public Method getPrePassivate()
     {
-        return this.prePassivate;
+        return prePassivate;
     }
     
     /*
@@ -265,7 +265,7 @@ public class InterceptorDataImpl implements InterceptorData
      */
     public Method getAroundInvoke()
     {
-        return this.aroundInvoke;
+        return aroundInvoke;
     }
 
     /*
@@ -274,7 +274,7 @@ public class InterceptorDataImpl implements InterceptorData
      */
     public Method getAroundTimeout()
     {
-        return this.aroundTimeout;
+        return aroundTimeout;
     }
     
     /*
@@ -397,7 +397,7 @@ public class InterceptorDataImpl implements InterceptorData
     @Override
     public boolean isLifecycleInterceptor()
     {
-        if (this.preDestroy != null || this.postConstruct != null || this.prePassivate != null || this.postActivate != null)
+        if (preDestroy != null || postConstruct != null || prePassivate != null || postActivate != null)
         {
             return true;
         }
@@ -410,29 +410,29 @@ public class InterceptorDataImpl implements InterceptorData
     public Object createNewInstance(Object ownerInstance, CreationalContextImpl<?> ownerCreationalContext)
     {
         // check for this InterceptorData is defined by interceptor class
-        if (this.isDefinedWithWebBeansInterceptor && this.definedInInterceptorClass)
+        if (isDefinedWithWebBeansInterceptor && definedInInterceptorClass)
         {
             Object interceptor;
 
             // Means that it is the last interceptor added by InterceptorHandler
-            if (this.webBeansInterceptor == null)
+            if (webBeansInterceptor == null)
             {
-                return this.decoratorInterceptor;
+                return decoratorInterceptor;
             }
 
-            interceptor = ownerCreationalContext.getDependentInterceptor(ownerInstance, this.webBeansInterceptor);
+            interceptor = ownerCreationalContext.getDependentInterceptor(ownerInstance, webBeansInterceptor);
             // There is no define interceptor, define and add it into dependent
             if (interceptor == null)
             {
                 BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
 
-                WebBeansInterceptor<Object> actualInterceptor = (WebBeansInterceptor<Object>) this.webBeansInterceptor;
+                WebBeansInterceptor<Object> actualInterceptor = (WebBeansInterceptor<Object>) webBeansInterceptor;
                 CreationalContext<Object> creationalContext = manager.createCreationalContext(actualInterceptor);
                 interceptor = manager.getReference(actualInterceptor, actualInterceptor.getBeanClass(), creationalContext);
 
                 actualInterceptor.setInjections(interceptor, creationalContext);
 
-                ownerCreationalContext.addDependent(ownerInstance, (WebBeansInterceptor<Object>) this.webBeansInterceptor, interceptor);
+                ownerCreationalContext.addDependent(ownerInstance, (WebBeansInterceptor<Object>) webBeansInterceptor, interceptor);
             }
             return interceptor;
         }
@@ -440,12 +440,12 @@ public class InterceptorDataImpl implements InterceptorData
         EjbInterceptorContext ctx ;
         Object interceptor = null;
         // control for this InterceptorData is defined by interceptor class
-        if (this.definedInInterceptorClass)
+        if (definedInInterceptorClass)
         {
-            ctx = ownerCreationalContext.getEjbInterceptor(ownerInstance, this.interceptorClass);
+            ctx = ownerCreationalContext.getEjbInterceptor(ownerInstance, interceptorClass);
             if (ctx == null)
             {
-                interceptor = webBeansContext.getWebBeansUtil().newInstanceForced(this.interceptorClass);
+                interceptor = webBeansContext.getWebBeansUtil().newInstanceForced(interceptorClass);
                 try
                 {
                     OWBInjector injector = new OWBInjector(webBeansContext);

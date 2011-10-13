@@ -99,8 +99,8 @@ public class InjectionResolver
      */
     public void clearCaches()
     {
-        this.resolvedBeansByName.clear();
-        this.resolvedBeansByType.clear();
+        resolvedBeansByName.clear();
+        resolvedBeansByType.clear();
     }
 
     /**
@@ -307,7 +307,7 @@ public class InjectionResolver
         }
 
         resolvedComponents = new HashSet<Bean<?>>();
-        Set<Bean<?>> deployedComponents = this.webBeansContext.getBeanManagerImpl().getBeans();
+        Set<Bean<?>> deployedComponents = webBeansContext.getBeanManagerImpl().getBeans();
 
         Iterator<Bean<?>> it = deployedComponents.iterator();
         //Finding all beans with given name
@@ -482,7 +482,7 @@ public class InjectionResolver
             returnAll = true;
         }
 
-        for (Bean<?> component : this.webBeansContext.getBeanManagerImpl().getBeans())
+        for (Bean<?> component : webBeansContext.getBeanManagerImpl().getBeans())
         {
 
             if (returnAll)

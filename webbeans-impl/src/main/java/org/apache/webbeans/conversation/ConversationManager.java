@@ -247,7 +247,7 @@ public class ConversationManager
      */
     public void destroyAllConversations()
     {
-        Collection<ConversationContext> collection = this.conversations.values();
+        Collection<ConversationContext> collection = conversations.values();
         if(collection != null && collection.size() > 0)
         {
             for (ConversationContext context : collection) 

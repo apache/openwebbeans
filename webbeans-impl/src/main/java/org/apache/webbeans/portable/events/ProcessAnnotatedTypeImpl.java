@@ -59,7 +59,7 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
     @Override
     public AnnotatedType<X> getAnnotatedType()
     {
-        return this.annotatedType;
+        return annotatedType;
     }
 
     /**
@@ -68,8 +68,8 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
     @Override
     public void setAnnotatedType(AnnotatedType<X> type)
     {
-        this.annotatedType = type;
-        this.modifiedAnnotatedType = true;
+        annotatedType = type;
+        modifiedAnnotatedType = true;
     }
     
     /**
@@ -79,7 +79,7 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
      */
     public boolean isModifiedAnnotatedType()
     {
-        return this.modifiedAnnotatedType;
+        return modifiedAnnotatedType;
     }
 
     /**
@@ -88,7 +88,7 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
     @Override
     public void veto()
     {
-        this.veto = true;
+        veto = true;
     }
     
     /**
@@ -98,7 +98,7 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
      */
     public boolean isVeto()
     {
-        return this.veto;
+        return veto;
     }
 
 }

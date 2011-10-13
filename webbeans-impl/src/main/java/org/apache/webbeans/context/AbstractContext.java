@@ -85,18 +85,18 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     {
         BeanInstanceBag<T> bag = new BeanInstanceBag<T>(creationalContext);
         
-        if(this.componentInstanceMap instanceof ConcurrentMap)
+        if(componentInstanceMap instanceof ConcurrentMap)
         {
-            T exist = (T) ((ConcurrentMap) this.componentInstanceMap).putIfAbsent(contextual, bag);
+            T exist = (T) ((ConcurrentMap) componentInstanceMap).putIfAbsent(contextual, bag);
             //no instance
             if(exist == null)
             {
-                this.componentInstanceMap.put(contextual, bag);
+                componentInstanceMap.put(contextual, bag);
             }
         }
         else
         {
-            this.componentInstanceMap.put(contextual , bag);
+            componentInstanceMap.put(contextual, bag);
         }                
     }
     
@@ -133,27 +133,27 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     {
         if (type.equals(ContextTypes.APPLICATION))
         {
-            this.scopeType = ApplicationScoped.class;
+            scopeType = ApplicationScoped.class;
         }
         else if (type.equals(ContextTypes.SESSION))
         {
-            this.scopeType = SessionScoped.class;
+            scopeType = SessionScoped.class;
         }
         else if (type.equals(ContextTypes.REQUEST))
         {
-            this.scopeType = RequestScoped.class;
+            scopeType = RequestScoped.class;
         }
         else if (type.equals(ContextTypes.DEPENDENT))
         {
-            this.scopeType = Dependent.class;
+            scopeType = Dependent.class;
         }
         else if (type.equals(ContextTypes.CONVERSATION))
         {
-            this.scopeType = ConversationScoped.class;
+            scopeType = ConversationScoped.class;
         }
         else if (type.equals(ContextTypes.SINGLETON))
         {
-            this.scopeType = Singleton.class;
+            scopeType = Singleton.class;
         }
         else
         {
@@ -280,8 +280,8 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
         }
         
         //Clear context map
-        this.componentInstanceMap.clear();
-        this.setActive(false);       
+        componentInstanceMap.clear();
+        setActive(false);
     }
 
     /**
@@ -329,7 +329,7 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     public Class<? extends Annotation> getScope()
     {
 
-        return this.scopeType;
+        return scopeType;
     }
 
     /**

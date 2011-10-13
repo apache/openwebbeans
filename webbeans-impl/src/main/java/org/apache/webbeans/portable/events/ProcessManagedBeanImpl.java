@@ -38,7 +38,7 @@ public class ProcessManagedBeanImpl<X> extends ProcessBeanImpl<X> implements Pro
     public ProcessManagedBeanImpl(ManagedBean<X> bean, AnnotatedType<X> annotatedType)
     {        
         super(bean, annotatedType);
-        this.annotatedBeanClass = annotatedType;
+        annotatedBeanClass = annotatedType;
     }
     
     /**
@@ -47,7 +47,7 @@ public class ProcessManagedBeanImpl<X> extends ProcessBeanImpl<X> implements Pro
     @Override
     public AnnotatedType<X> getAnnotatedBeanClass()
     {
-        return this.annotatedBeanClass;
+        return annotatedBeanClass;
     }
 
 }

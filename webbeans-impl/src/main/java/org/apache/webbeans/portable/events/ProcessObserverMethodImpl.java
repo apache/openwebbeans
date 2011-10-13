@@ -61,7 +61,7 @@ public class ProcessObserverMethodImpl<T,X> implements ProcessObserverMethod<T, 
     @Override
     public AnnotatedMethod<X> getAnnotatedMethod()
     {
-        return this.annotatedMethod;
+        return annotatedMethod;
     }
 
     /**
@@ -70,7 +70,7 @@ public class ProcessObserverMethodImpl<T,X> implements ProcessObserverMethod<T, 
     @Override
     public ObserverMethod<T> getObserverMethod()
     {
-        return this.observerMethod;
+        return observerMethod;
     }
 
 }

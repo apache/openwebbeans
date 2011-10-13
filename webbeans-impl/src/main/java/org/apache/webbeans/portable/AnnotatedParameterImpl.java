@@ -53,7 +53,7 @@ class AnnotatedParameterImpl<X> extends AbstractAnnotated implements AnnotatedPa
     @Override
     public AnnotatedCallable<X> getDeclaringCallable()
     {
-        return this.declaringCallable;
+        return declaringCallable;
     }
 
     /**
@@ -62,7 +62,7 @@ class AnnotatedParameterImpl<X> extends AbstractAnnotated implements AnnotatedPa
     @Override
     public int getPosition()
     {
-        return this.position;
+        return position;
     }
 
     public String toString()

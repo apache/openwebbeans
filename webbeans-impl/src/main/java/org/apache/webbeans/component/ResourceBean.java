@@ -48,7 +48,7 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
         try
         {
             ResourceInjectionService resourceService = getWebBeansContext().getService(ResourceInjectionService.class);
-            X instance = resourceService.getResourceReference(this.resourceReference);
+            X instance = resourceService.getResourceReference(resourceReference);
 
             if (instance == null || Modifier.isFinal(instance.getClass().getModifiers()))
             {
@@ -75,7 +75,7 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
     public X getActualInstance() 
     {
         ResourceInjectionService resourceService = getWebBeansContext().getService(ResourceInjectionService.class);
-        X instance = resourceService.getResourceReference(this.resourceReference);
+        X instance = resourceService.getResourceReference(resourceReference);
         return instance;
     }
     

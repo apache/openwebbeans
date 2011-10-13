@@ -41,7 +41,7 @@ public class Bootstrap
     {
         log.info(OWBLogConst.INFO_0006);
         //this relies on DefaultSingletonService to instantiate the WebBeansContext
-        this.containerLifecycle = WebBeansContext.getInstance().getService(ContainerLifecycle.class);
+        containerLifecycle = WebBeansContext.getInstance().getService(ContainerLifecycle.class);
     }
     
     public void start() throws InterruptedException
@@ -49,22 +49,22 @@ public class Bootstrap
         log.info(OWBLogConst.INFO_0005);
         long begin = System.currentTimeMillis();
         
-        containerLifecycle.startApplication(this.properties);
+        containerLifecycle.startApplication(properties);
         Runtime.getRuntime().addShutdownHook(new Thread(){
            
             public void run()
             {
-                Bootstrap.this.latch.countDown();
+                latch.countDown();
             }
             
         });
         
         log.info(OWBLogConst.INFO_0001, Long.toString(System.currentTimeMillis() - begin));
-        this.latch.await();
+        latch.await();
         
         log.info(OWBLogConst.INFO_0008);
         
-        containerLifecycle.stopApplication(this.properties);
+        containerLifecycle.stopApplication(properties);
         
         log.info(OWBLogConst.INFO_0009);
     }

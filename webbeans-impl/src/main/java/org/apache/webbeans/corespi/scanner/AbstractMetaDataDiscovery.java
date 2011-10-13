@@ -152,7 +152,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         // occurs before
         // properties are loaded.
         String usage = WebBeansContext.getInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_BDA_BEANSXML_SCANNER);
-        this.isBDAScannerEnabled = Boolean.parseBoolean(usage);
+        isBDAScannerEnabled = Boolean.parseBoolean(usage);
         if (isBDAScannerEnabled)
         {
             annotationDB = new BeansXmlAnnotationDB();
@@ -182,9 +182,9 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
      */
     protected void addWebBeansXmlLocation(URL beansXmlUrl)
     {
-        if(this.logger.wblWillLogInfo())
+        if(logger.wblWillLogInfo())
         {
-            this.logger.info("added beans.xml marker: " + beansXmlUrl.toExternalForm());
+            logger.info("added beans.xml marker: " + beansXmlUrl.toExternalForm());
         }
         webBeansXmlLocations.add(beansXmlUrl);
     }
@@ -197,7 +197,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         crossReferenceBeans();
 
         Set<Class<?>> classSet = new HashSet<Class<?>>();
-        Map<String,Set<String>> index = this.annotationDB.getClassIndex();
+        Map<String,Set<String>> index = annotationDB.getClassIndex();
         
         if(index != null)
         {

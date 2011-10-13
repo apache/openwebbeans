@@ -50,8 +50,8 @@ public class InjectableConstructor<T> extends AbstractInjectable
     public InjectableConstructor(Constructor<T> cons, AbstractOwbBean<?> owner,CreationalContext<?> creationalContext)
     {
         super(owner,creationalContext);
-        this.con = cons;
-        this.injectionMember = con;
+        con = cons;
+        injectionMember = con;
     }
 
     /**
@@ -62,7 +62,7 @@ public class InjectableConstructor<T> extends AbstractInjectable
     {
         T instance = null;
         
-        List<InjectionPoint> injectedPoints = getInjectedPoints(this.con);        
+        List<InjectionPoint> injectedPoints = getInjectedPoints(con);
         List<Object> list = new ArrayList<Object>();
                 
         

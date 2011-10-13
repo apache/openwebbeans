@@ -46,7 +46,7 @@ public class DependentContext extends AbstractContext
     public DependentContext()
     {
         super(ContextTypes.DEPENDENT);
-        this.active = true;
+        active = true;
     }
     
     

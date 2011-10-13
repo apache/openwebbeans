@@ -121,13 +121,13 @@ public final class JavassistProxyFactory
         Class<?> proxyClass = null;
         try
         {
-            proxyClass = this.resourceBeanProxyClasses.get(resourceBean);
+            proxyClass = resourceBeanProxyClasses.get(resourceBean);
             if (proxyClass == null)
             {
                 ProxyFactory fact = createProxyFactory(resourceBean);
                 proxyClass = getProxyClass(fact);
 
-                Class<?> oldClazz = this.resourceBeanProxyClasses.putIfAbsent(resourceBean, proxyClass);
+                Class<?> oldClazz = resourceBeanProxyClasses.putIfAbsent(resourceBean, proxyClass);
                 if (oldClazz != null)
                 {
                     return oldClazz;

@@ -151,7 +151,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
     {
         super(webBeansType, returnType, WebBeansContext.getInstance());
         initBuildInBeanConfig(getWebBeansContext());
-        this.handlerClassName = proxyHandlerMap.get(this.getWebBeansType());
+        handlerClassName = proxyHandlerMap.get(getWebBeansType());
         if (handlerClassName.equalsIgnoreCase(PROXY_HANDLER_VALUE_NONE) ||
                 handlerClassName.equalsIgnoreCase(PROXY_HANDLER_VALUE_DEFAULT)) 
         {
@@ -190,7 +190,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
             
             protected PrivilegedAction<T> setBuildInBean(BuildInOwbBean<T> b) 
             {
-                this.buildinBean = b;
+                buildinBean = b;
                 return this;
             }
             
@@ -267,7 +267,6 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
             this.actualObject = actualObject;
         }    
         
-        @Override
         public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable
         {
             if(proceed != null)       

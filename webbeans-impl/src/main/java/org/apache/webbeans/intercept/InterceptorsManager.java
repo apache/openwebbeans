@@ -39,7 +39,7 @@ public class InterceptorsManager
     public InterceptorsManager(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-        this.manager = webBeansContext.getBeanManagerImpl();
+        manager = webBeansContext.getBeanManagerImpl();
     }
 
     @Deprecated

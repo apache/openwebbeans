@@ -181,7 +181,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         {
             //X TODO dependentInstanceOfProducerMethods MUST NOT be public! 
             AbstractInjectable.dependentInstanceOfProducerMethods.set(new ArrayList<DependentCreationalContext<Object>>());
-            parentCreational = getManager().createCreationalContext(this.ownerComponent);
+            parentCreational = getManager().createCreationalContext(ownerComponent);
             
             if (!Modifier.isStatic(creatorMethod.getModifiers()))
             {
@@ -321,14 +321,14 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
             InjectableMethods<T> m = null;
             try
             {
-                parentCreational = getManager().createCreationalContext(this.ownerComponent);
+                parentCreational = getManager().createCreationalContext(ownerComponent);
                 
                 if (!Modifier.isStatic(disposalMethod.getModifiers()))
                 {
                     parentInstance = getParentInstance(parentCreational);
                 }
 
-                m = new InjectableMethods<T>(disposalMethod, parentInstance, this.ownerComponent, creationalContext);
+                m = new InjectableMethods<T>(disposalMethod, parentInstance, ownerComponent, creationalContext);
                 m.setDisposable(true);
                 m.setProducerMethodInstance(instance);
 
@@ -370,9 +370,9 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     {
         String errorMessage = "WebBeans producer method : " + creatorMethod.getName() +
                               " return type in the component implementation class : " +
-                              this.ownerComponent.getReturnType().getName() +
+                ownerComponent.getReturnType().getName() +
                               " scope type must be @Dependent to create null instance";
-        WebBeansUtil.checkNullInstance(instance, this.getScope(), errorMessage);
+        WebBeansUtil.checkNullInstance(instance, getScope(), errorMessage);
     }
 
     /**
@@ -382,10 +382,10 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     {
         String errorMessage = "WebBeans producer method : " + creatorMethod.getName() +
                               " return type in the component implementation class : " +
-                              this.ownerComponent.getReturnType().getName() + " with passivating scope @" +
-                              this.getScope().getName() + " must be Serializable";
-        getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(this.getScope(),
-                                                                                    this.isSerializable(), errorMessage);
+                ownerComponent.getReturnType().getName() + " with passivating scope @" +
+                getScope().getName() + " must be Serializable";
+        getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(getScope(),
+                isSerializable(), errorMessage);
 
     }
     
@@ -394,7 +394,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     @Override
     public boolean isPassivationCapable()
     {
-        return isPassivationCapable(this.creatorMethod.getReturnType(),this.creatorMethod.getModifiers());
+        return isPassivationCapable(creatorMethod.getReturnType(), creatorMethod.getModifiers());
     }
 
     public String toString()

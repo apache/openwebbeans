@@ -75,7 +75,7 @@ public class InjectionTargetWrapper<T> implements InjectionTarget<T>
     @Override
     public void inject(T instance, CreationalContext<T> ctx)
     {
-        if(this.wrapped != null)
+        if(wrapped != null)
         {
             wrapped.inject(instance, ctx);   
         }
@@ -87,7 +87,7 @@ public class InjectionTargetWrapper<T> implements InjectionTarget<T>
     @Override
     public void postConstruct(T instance)
     {
-        if(this.wrapped != null)
+        if(wrapped != null)
         {
             wrapped.postConstruct(instance);   
         }
@@ -99,7 +99,7 @@ public class InjectionTargetWrapper<T> implements InjectionTarget<T>
     @Override
     public void preDestroy(T instance)
     {
-        if(this.wrapped != null)
+        if(wrapped != null)
         {
             wrapped.preDestroy(instance);   
         }
@@ -111,7 +111,7 @@ public class InjectionTargetWrapper<T> implements InjectionTarget<T>
     @Override
     public void dispose(T instance)
     {
-        if(this.wrappedProducer != null)
+        if(wrappedProducer != null)
         {
             wrappedProducer.dispose(instance);   
         }
@@ -123,9 +123,9 @@ public class InjectionTargetWrapper<T> implements InjectionTarget<T>
     @Override
     public Set<InjectionPoint> getInjectionPoints()
     {
-        if(this.wrappedProducer != null)
+        if(wrappedProducer != null)
         {
-            return this.wrappedProducer.getInjectionPoints();
+            return wrappedProducer.getInjectionPoints();
         }
         
         return wrapped.getInjectionPoints();
@@ -137,9 +137,9 @@ public class InjectionTargetWrapper<T> implements InjectionTarget<T>
     @Override
     public T produce(CreationalContext<T> creationalContext)
     {
-        if(this.wrappedProducer != null)
+        if(wrappedProducer != null)
         {
-            return this.wrappedProducer.produce(creationalContext);
+            return wrappedProducer.produce(creationalContext);
         }
         
         return wrapped.produce(creationalContext);
@@ -147,17 +147,17 @@ public class InjectionTargetWrapper<T> implements InjectionTarget<T>
     
     public boolean isOwbProvided()
     {
-        if(this.wrapped != null)
+        if(wrapped != null)
         {
-            if(InjectionTargetProducer.class.isAssignableFrom(this.wrapped.getClass()))
+            if(InjectionTargetProducer.class.isAssignableFrom(wrapped.getClass()))
             {
                 return true;
             }
         }
         
-        else if(this.wrappedProducer != null)
+        else if(wrappedProducer != null)
         {
-            if(ProducerBeansProducer.class.isAssignableFrom(this.wrappedProducer.getClass()))
+            if(ProducerBeansProducer.class.isAssignableFrom(wrappedProducer.getClass()))
             {
                 return true;
             }

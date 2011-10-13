@@ -73,7 +73,7 @@ public final class InterceptorUtil
     public InterceptorUtil(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-        this.ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
+        ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
         if (ejbPlugin != null)
         {
             prePassivateClass = ejbPlugin.getPrePassivateClass();

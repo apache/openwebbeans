@@ -48,7 +48,7 @@ public class ProcessProducerFieldImpl<X,T> extends ProcessBeanImpl<T> implements
     @Override
     public AnnotatedField<X> getAnnotatedProducerField()
     {
-        return this.annotatedField;
+        return annotatedField;
     }
     
 }

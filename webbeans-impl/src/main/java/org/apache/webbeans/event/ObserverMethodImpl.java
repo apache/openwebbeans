@@ -135,16 +135,16 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             getWebBeansContext().getAnnotationManager().getMethodFirstParameterQualifierWithGivenAnnotation(
                 observerMethod, Observes.class);
         getWebBeansContext().getAnnotationManager().checkQualifierConditions(qualifiers);
-        this.observedQualifiers = new HashSet<Annotation>(qualifiers.length);
+        observedQualifiers = new HashSet<Annotation>(qualifiers.length);
         
         for (Annotation qualifier : qualifiers)
         {
             observedQualifiers.add(qualifier);
         }
-        
-        this.observedEventType = AnnotationUtil.getTypeOfParameterWithGivenAnnotation(observerMethod, Observes.class);
-        
-        this.phase = EventUtil.getObserverMethodTransactionType(observerMethod);
+
+        observedEventType = AnnotationUtil.getTypeOfParameterWithGivenAnnotation(observerMethod, Observes.class);
+
+        phase = EventUtil.getObserverMethodTransactionType(observerMethod);
     }
 
     /**
@@ -161,13 +161,13 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         this.bean = bean;
         this.observerMethod = observerMethod;
         this.ifExist = ifExist;
-        this.observedQualifiers = new HashSet<Annotation>(qualifiers.length);
+        observedQualifiers = new HashSet<Annotation>(qualifiers.length);
         for (Annotation qualifier : qualifiers)
         {
             observedQualifiers.add(qualifier);
         }
         this.observedEventType = observedEventType;
-        this.phase = EventUtil.getObserverMethodTransactionType(observerMethod);
+        phase = EventUtil.getObserverMethodTransactionType(observerMethod);
 
     }
     
@@ -210,7 +210,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         ObserverParams[] obargs = null;
         try
         {
-            boolean isPrivateMethod = !this.observerMethod.isAccessible();
+            boolean isPrivateMethod = !observerMethod.isAccessible();
             if (isPrivateMethod)
             {
                 bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(observerMethod, true);
@@ -226,10 +226,10 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             }
             
             //Static or not
-            if (Modifier.isStatic(this.observerMethod.getModifiers()))
+            if (Modifier.isStatic(observerMethod.getModifiers()))
             {
                 //Invoke Method
-                this.observerMethod.invoke(object, args);
+                observerMethod.invoke(object, args);
             }
             else
             {
@@ -289,7 +289,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 if (object != null)
                 {
                     //Invoke Method
-                    this.observerMethod.invoke(object, args);
+                    observerMethod.invoke(object, args);
                 }
             }                        
         }
@@ -334,11 +334,11 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
         //Define annotated parameter
-        AnnotatedType<T> annotatedType = (AnnotatedType<T>) annotatedElementFactory.newAnnotatedType(this.bean.getReturnType());
-        AnnotatedMethod<T> annotatedMethod = annotatedElementFactory.newAnnotatedMethod(this.observerMethod, annotatedType);
+        AnnotatedType<T> annotatedType = (AnnotatedType<T>) annotatedElementFactory.newAnnotatedType(bean.getReturnType());
+        AnnotatedMethod<T> annotatedMethod = annotatedElementFactory.newAnnotatedMethod(observerMethod, annotatedType);
         
-        Type[] types = this.observerMethod.getGenericParameterTypes();
-        Annotation[][] annots = this.observerMethod.getParameterAnnotations();
+        Type[] types = observerMethod.getGenericParameterTypes();
+        Annotation[][] annots = observerMethod.getParameterAnnotations();
         List<ObserverParams> list = new ArrayList<ObserverParams>();
 
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
@@ -381,7 +381,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     AnnotatedParameter<T> annotatedParameter = annotatedMethod.getParameters().get(i);
                     
                     //Creating injection point
-                    InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(this.bean, type, this.observerMethod, annotatedParameter, bindingTypes);
+                    InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(bean, type, observerMethod, annotatedParameter, bindingTypes);
                     
                     //Injected Bean
                     Bean<Object> injectedBean = (Bean<Object>)getWebBeansContext().getBeanManagerImpl().getInjectionResolver().getInjectionPointBean(point);
@@ -424,7 +424,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         List<ObserverParams> list = new ArrayList<ObserverParams>();
-        List<AnnotatedParameter<T>> parameters = this.annotatedMethod.getParameters();
+        List<AnnotatedParameter<T>> parameters = annotatedMethod.getParameters();
         ObserverParams param = null;
         for(AnnotatedParameter<T> parameter : parameters)
         {
@@ -441,7 +441,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     annotationManager.getQualifierAnnotations(AnnotationUtil.
                         getAnnotationsFromSet(parameter.getAnnotations()));
 
-                InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(this.bean, parameter.getBaseType(), 
+                InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(bean, parameter.getBaseType(),
                         parameter.getDeclaringCallable().getJavaMember(), parameter, bindingTypes);
 
                 //Get observer parameter instance
@@ -480,7 +480,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     @SuppressWarnings("unchecked")
     public Class<?> getBeanClass()
     {
-        AbstractInjectionTargetBean<T> abs = (AbstractInjectionTargetBean<T>)this.bean;
+        AbstractInjectionTargetBean<T> abs = (AbstractInjectionTargetBean<T>) bean;
         return abs.getBeanClass();
     }
 
@@ -515,7 +515,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     
     public Method getObserverMethod()
     {
-        return this.observerMethod;
+        return observerMethod;
     }
 
     protected WebBeansContext getWebBeansContext()
@@ -532,6 +532,6 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
      */
     public void setObserverMethod(Method m)
     {
-        this.observerMethod = m;
+        observerMethod = m;
     }
 }

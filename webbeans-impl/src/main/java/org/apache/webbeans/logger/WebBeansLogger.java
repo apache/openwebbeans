@@ -107,7 +107,7 @@ public final class WebBeansLogger implements Serializable, Externalizable
     {
         if (logger.isLoggable(level))
         {
-            logger.logp(level, this.caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), messageKey);
+            logger.logp(level, caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), messageKey);
         }
     }
 
@@ -115,7 +115,7 @@ public final class WebBeansLogger implements Serializable, Externalizable
     {
         if (logger.isLoggable(level))
         {
-            logger.logp(level, this.caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), messageKey, args);
+            logger.logp(level, caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), messageKey, args);
         }
     }
 
@@ -123,7 +123,7 @@ public final class WebBeansLogger implements Serializable, Externalizable
     {
         if (logger.isLoggable(level))
         {
-            logger.logp(level, this.caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), messageKey, e);
+            logger.logp(level, caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), messageKey, e);
         }
     }
 
@@ -131,114 +131,114 @@ public final class WebBeansLogger implements Serializable, Externalizable
     {
         if (logger.isLoggable(level))
         {
-            logger.logp(level, this.caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), constructMessage(messageKey, args), e);
+            logger.logp(level, caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), constructMessage(messageKey, args), e);
         }
     }
     
     public void fatal(String messageKey)
     {
-        this.wblLog(WebBeansLogger.WBL_FATAL, messageKey);
+        wblLog(WebBeansLogger.WBL_FATAL, messageKey);
     }
 
     public void fatal(String messageKey, Object... args)
     {
-        this.wblLog(WebBeansLogger.WBL_FATAL, messageKey, args);
+        wblLog(WebBeansLogger.WBL_FATAL, messageKey, args);
     }
 
     public void fatal(Throwable e, String messageKey)
     {
-        this.wblLog(WebBeansLogger.WBL_FATAL, e, messageKey);
+        wblLog(WebBeansLogger.WBL_FATAL, e, messageKey);
     }
 
     public void fatal(Throwable e, String messageKey, Object... args)
     {
-        this.wblLog(WebBeansLogger.WBL_FATAL, e, messageKey, args);
+        wblLog(WebBeansLogger.WBL_FATAL, e, messageKey, args);
     }
 
 
     public void error(Throwable e)
     {
-        this.wblLog(WebBeansLogger.WBL_ERROR, e, "");
+        wblLog(WebBeansLogger.WBL_ERROR, e, "");
     }
 
     public void error(String messageKey)
     {
-        this.wblLog(WebBeansLogger.WBL_ERROR, messageKey);
+        wblLog(WebBeansLogger.WBL_ERROR, messageKey);
     }
 
     public void error(String messageKey, Object... args)
     {
-        this.wblLog(WebBeansLogger.WBL_ERROR, messageKey, args);
+        wblLog(WebBeansLogger.WBL_ERROR, messageKey, args);
     }
     
     public void error(String messageKey, Throwable e)
     {
-        this.wblLog(WebBeansLogger.WBL_ERROR, e, messageKey);
+        wblLog(WebBeansLogger.WBL_ERROR, e, messageKey);
     }
 
     public void error(String messageKey, Throwable e, Object... args)
     {
-        this.wblLog(WebBeansLogger.WBL_ERROR, e, messageKey, args);
+        wblLog(WebBeansLogger.WBL_ERROR, e, messageKey, args);
     }
 
     public void warn(String messageKey)
     {
-        this.wblLog(WebBeansLogger.WBL_WARN, messageKey);
+        wblLog(WebBeansLogger.WBL_WARN, messageKey);
     }
 
     public void warn(String messageKey, Object... args)
     {
-        this.wblLog(WebBeansLogger.WBL_WARN, messageKey, args);
+        wblLog(WebBeansLogger.WBL_WARN, messageKey, args);
     }
 
     public void warn(String messageKey, Throwable e)
     {
-        this.wblLog(WebBeansLogger.WBL_WARN, e, messageKey);
+        wblLog(WebBeansLogger.WBL_WARN, e, messageKey);
     }
 
     public void info(String messageKey)
     {
-        this.wblLog(WebBeansLogger.WBL_INFO, messageKey);
+        wblLog(WebBeansLogger.WBL_INFO, messageKey);
     }
 
     public void info(String messageKey, Object... args)
     {
-        this.wblLog(WebBeansLogger.WBL_INFO, messageKey, args);
+        wblLog(WebBeansLogger.WBL_INFO, messageKey, args);
     }
     
     public void info(String messageKey, Throwable e)
     {
-        this.wblLog(WebBeansLogger.WBL_INFO, e, messageKey);
+        wblLog(WebBeansLogger.WBL_INFO, e, messageKey);
     }
 
     public void debug(String messageKey)
     {
-        this.wblLog(WebBeansLogger.WBL_DEBUG, messageKey);
+        wblLog(WebBeansLogger.WBL_DEBUG, messageKey);
     }
 
     public void debug(String messageKey, Throwable e)
     {
-        this.wblLog(WebBeansLogger.WBL_DEBUG, e, messageKey);
+        wblLog(WebBeansLogger.WBL_DEBUG, e, messageKey);
     }
 
     public void debug(String messageKey, Object... args)
     {
-        this.wblLog(WebBeansLogger.WBL_DEBUG, messageKey, args);
+        wblLog(WebBeansLogger.WBL_DEBUG, messageKey, args);
     }
 
     public void trace(String messageKey)
     {
-        this.wblLog(WebBeansLogger.WBL_TRACE, messageKey);
+        wblLog(WebBeansLogger.WBL_TRACE, messageKey);
     }
 
     public void trace(String messageKey, Object... args)
     {
-        this.wblLog(WebBeansLogger.WBL_TRACE, messageKey, args);
+        wblLog(WebBeansLogger.WBL_TRACE, messageKey, args);
     }
 
     public void trace(String messageKey, Throwable e)
     {
-        this.wblLog(WebBeansLogger.WBL_TRACE, e, messageKey);
+        wblLog(WebBeansLogger.WBL_TRACE, e, messageKey);
     }
 
     private String constructMessage(String messageKey, Object... args)
@@ -256,7 +256,7 @@ public final class WebBeansLogger implements Serializable, Externalizable
     {
         String strVal = null;
 
-        if (this.wbBundle == null)
+        if (wbBundle == null)
         {
             throw new NullPointerException("ResourceBundle can not be null");
         }
@@ -338,6 +338,6 @@ public final class WebBeansLogger implements Serializable, Externalizable
         {
             inLogger = Logger.getLogger(caller.getName(), ResourceBundle.getBundle("openwebbeans/Messages", locale).toString());
         }
-        this.setLogger(inLogger);
+        setLogger(inLogger);
     }
 }

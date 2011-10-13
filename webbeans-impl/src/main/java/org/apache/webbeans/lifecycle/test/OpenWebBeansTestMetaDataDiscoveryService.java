@@ -97,7 +97,7 @@ public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDi
         
         try
         {
-            this.getAnnotationDB().scanClass(url.openStream());
+            getAnnotationDB().scanClass(url.openStream());
         }
         catch (IOException e)
         {

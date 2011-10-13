@@ -127,7 +127,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
      */
     protected Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
     {
-        InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, this.bean, getContextualInstance(),
+        InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, bean, getContextualInstance(),
                                                                proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
         impl.setCreationalContext(getContextualCreationalContext());
 
@@ -145,10 +145,10 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         Object webbeansInstance;
 
         //Context of the bean
-        Context webbeansContext = getBeanManager().getContext(this.bean.getScope());
+        Context webbeansContext = getBeanManager().getContext(bean.getScope());
         
         //Already saved in context?
-        webbeansInstance = webbeansContext.get(this.bean);
+        webbeansInstance = webbeansContext.get(bean);
         if (webbeansInstance != null)
         {
             // voila, we are finished if we found an existing contextual instance
@@ -156,7 +156,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         }
 
         // finally, we create a new contextual instance
-        webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, getContextualCreationalContext());
+        webbeansInstance = webbeansContext.get((Contextual<Object>) bean, getContextualCreationalContext());
 
         if (webbeansInstance == null)
         {
@@ -169,7 +169,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     {
         CreationalContext<Object> creationalContext = null;
         
-        OwbBean<Object> contextual = (OwbBean<Object>)this.bean;
+        OwbBean<Object> contextual = (OwbBean<Object>) bean;
         //Context of the bean
         Context webbeansContext = getBeanManager().getContext(bean.getScope());
         CreationalContextFactory contextFactory = bean.getWebBeansContext().getCreationalContextFactory();
@@ -186,7 +186,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
             if(creationalContext == null)
             {
                 creationalContext = contextFactory.getCreationalContext(contextual);
-                owbContext.initContextualBag((OwbBean<Object>)this.bean, creationalContext);
+                owbContext.initContextualBag((OwbBean<Object>) bean, creationalContext);
             }
         }
 

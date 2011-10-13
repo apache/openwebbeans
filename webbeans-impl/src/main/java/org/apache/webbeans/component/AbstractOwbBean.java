@@ -355,8 +355,8 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     public void setImplScopeType(Annotation scopeType)
     {
-        this.implScopeType = scopeType;
-        this.scopeClass = this.implScopeType.annotationType();
+        implScopeType = scopeType;
+        scopeClass = implScopeType.annotationType();
         cachedHashCode = 0;
     }
 
@@ -387,9 +387,9 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     public void addStereoType(Annotation stereoType)
     {
-        this.stereoTypeClasses = null; // will get rebuilt on the next request
+        stereoTypeClasses = null; // will get rebuilt on the next request
 
-        this.stereoTypes.add(stereoType);
+        stereoTypes.add(stereoType);
         cachedHashCode = 0;
     }
 
@@ -400,7 +400,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     public void addApiType(Class<?> apiType)
     {
-        this.apiTypes.add(apiType);
+        apiTypes.add(apiType);
         cachedHashCode = 0;
     }
 
@@ -421,7 +421,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     public Set<Annotation> getOwbStereotypes()
     {
-        return this.stereoTypes;
+        return stereoTypes;
     }
 
     /**
@@ -431,7 +431,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     public void addQualifier(Annotation qualifier)
     {
-        this.implQualifiers.add(qualifier);
+        implQualifiers.add(qualifier);
         cachedHashCode = 0;
     }
 
@@ -459,7 +459,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     public Set<Annotation> getQualifiers()
     {
-        return this.implQualifiers;
+        return implQualifiers;
     }
 
     /*
@@ -468,13 +468,13 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     public Class<? extends Annotation> getScope()
     {
-        return this.scopeClass;
+        return scopeClass;
     }
 
     
     public Set<Type> getTypes()
     {        
-        return this.apiTypes;
+        return apiTypes;
     }
 
     /**
@@ -510,7 +510,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     public boolean isNullable()
     {
-        return this.nullable;
+        return nullable;
     }
     
     /**
@@ -518,7 +518,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     public boolean isSerializable()
     {
-        return this.serializable;
+        return serializable;
     }
 
     /**
@@ -526,7 +526,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */    
     public void addInjectionPoint(InjectionPoint injectionPoint)
     {
-        this.injectionPoints.add(injectionPoint);
+        injectionPoints.add(injectionPoint);
     }
     
     /**
@@ -534,7 +534,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */    
     public Set<InjectionPoint> getInjectionPoints()
     {
-        return this.injectionPoints;
+        return injectionPoints;
     }
     
     /**
@@ -542,7 +542,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */    
     public void setSpecializedBean(boolean specialized)
     {
-        this.specializedBean = specialized;
+        specializedBean = specialized;
         cachedHashCode = 0;
     }
     
@@ -560,7 +560,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */    
     public boolean isSpecializedBean()
     {
-        return this.specializedBean;
+        return specializedBean;
     }
     
     /**
@@ -590,7 +590,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         {
             Set<Class<? extends Annotation>> set = new HashSet<Class<? extends Annotation>>();
 
-            for(Annotation ann : this.stereoTypes)
+            for(Annotation ann : stereoTypes)
             {
                 set.add(ann.annotationType());
             }
@@ -613,7 +613,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     public boolean isEnabled()
     {
-        return this.enabled;
+        return enabled;
     }
     
         

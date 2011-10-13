@@ -39,37 +39,37 @@ public class DefaultInjectionTargetImpl<T> implements InjectionTarget<T>
     @Override
     public void inject(T instance, CreationalContext<T> ctx)
     {
-        this.target.inject(instance, ctx);
+        target.inject(instance, ctx);
     }
 
     @Override
     public void postConstruct(T instance)
     {
-        this.target.postConstruct(instance);
+        target.postConstruct(instance);
     }
 
     @Override
     public void preDestroy(T instance)
     {
-        this.target.preDestroy(instance);
+        target.preDestroy(instance);
     }
 
     @Override
     public void dispose(T instance)
     {
-        this.target.dispose(instance);
+        target.dispose(instance);
     }
 
     @Override
     public Set<InjectionPoint> getInjectionPoints()
     {
-        return this.target.getInjectionPoints();
+        return target.getInjectionPoints();
     }
 
     @Override
     public T produce(CreationalContext<T> creationalContext)
     {
-        return this.target.produce(creationalContext);
+        return target.produce(creationalContext);
     }
 
 }

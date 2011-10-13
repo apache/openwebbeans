@@ -67,32 +67,32 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
     
     public Set<Annotation> getInheritedQualifiers()
     {
-        return this.inheritedQualifiers;
+        return inheritedQualifiers;
     }
 
     public Set<Annotation> getInheritedStereoTypes()
     {
-        return this.inheritedStereoTypes;
+        return inheritedStereoTypes;
     }
     
     public Set<Annotation> getInheritedInterceptorBindings()
     {
-        return this.inheritedInterceptorBindings;
+        return inheritedInterceptorBindings;
     }
     
     public Annotation getInheritedScopeType()
     {
-        return this.inheritedScopeType;
+        return inheritedScopeType;
     }
     
     protected AbstractOwbBean<T> getComponent()
     {
-        return this.component;
+        return component;
     }
     
     protected Class<?> getInheritedClazz()
     {
-        return this.inheritedClazz;
+        return inheritedClazz;
     }
      
     
