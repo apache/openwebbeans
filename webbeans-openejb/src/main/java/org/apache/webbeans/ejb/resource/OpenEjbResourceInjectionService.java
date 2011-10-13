@@ -58,13 +58,11 @@ public class OpenEjbResourceInjectionService implements ResourceInjectionService
         this.webBeansContext = webBeansContext;
     }
 
-    @Override
     public void clear()
     {
         
     }
 
-    @Override
     public <X, T extends Annotation> X getResourceReference(ResourceReference<X, T> resourceReference)
     {
         try
@@ -80,7 +78,6 @@ public class OpenEjbResourceInjectionService implements ResourceInjectionService
         }
     }
 
-    @Override
     public void injectJavaEEResources(Object managedBeanInstance)
     {
         Field[] fields = webBeansContext.getSecurityService().doPrivilegedGetDeclaredFields(managedBeanInstance.getClass());

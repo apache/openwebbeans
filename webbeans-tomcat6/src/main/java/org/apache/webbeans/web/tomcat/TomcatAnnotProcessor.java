@@ -43,13 +43,11 @@ public class TomcatAnnotProcessor implements AnnotationProcessor
         this.loader = loader;
     }
     
-    @Override
     public void postConstruct(Object obj) throws IllegalAccessException, InvocationTargetException
     {
         processor.postConstruct(obj);
     }
 
-    @Override
     public void preDestroy(Object obj) throws IllegalAccessException, InvocationTargetException
     {
         Object injectorInstance = objects.get(obj);
@@ -67,7 +65,6 @@ public class TomcatAnnotProcessor implements AnnotationProcessor
         processor.preDestroy(obj);
     }
 
-    @Override
     public void processAnnotations(Object obj) throws IllegalAccessException, InvocationTargetException, NamingException
     {
         processor.processAnnotations(obj);

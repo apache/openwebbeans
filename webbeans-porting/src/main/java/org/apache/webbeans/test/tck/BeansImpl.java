@@ -72,7 +72,6 @@ public class BeansImpl implements Beans
         return instance.getClass().getName().contains("$$");
     }
 
-    @Override
     public byte[] serialize(Object o) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -81,7 +80,6 @@ public class BeansImpl implements Beans
         return baos.toByteArray();
     }
 
-    @Override
     public Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);

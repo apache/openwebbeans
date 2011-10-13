@@ -25,7 +25,6 @@ import javax.enterprise.inject.Produces;
 public class SimpleBean implements SimpleBeanLocal
 {
 
-    @Override
     @Produces
     public String hello(String hi)
     {

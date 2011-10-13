@@ -40,7 +40,6 @@ public class OpenEJBTransactionService implements TransactionService
         
     }
 
-    @Override
     public Transaction getTransaction()
     {
         TransactionManager manager = getTransactionManager();
@@ -59,20 +58,17 @@ public class OpenEJBTransactionService implements TransactionService
         return null; 
     }
 
-    @Override
     public TransactionManager getTransactionManager()
     {
         return SystemInstance.get().getComponent(TransactionManager.class);
     }
 
-    @Override
     public UserTransaction getUserTransaction()
     {
         CoreUserTransaction ut = new CoreUserTransaction(getTransactionManager());
         return ut;
     }
 
-    @Override
     public void registerTransactionSynchronization(TransactionPhase phase, ObserverMethod<? super Object> observer, Object event) throws Exception
     {
         TransactionalEventNotifier.registerTransactionSynchronization(phase, observer, event);

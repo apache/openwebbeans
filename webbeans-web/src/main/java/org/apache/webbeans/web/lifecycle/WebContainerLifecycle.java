@@ -108,7 +108,6 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
 
         service = Executors.newScheduledThreadPool(1, new ThreadFactory()
         {            
-            @Override
             public Thread newThread(Runnable runable)
             {
               Thread t = new Thread(runable, "OwbConversationCleaner-"

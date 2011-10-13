@@ -152,7 +152,6 @@ public class DefaultOwbFailOverService implements FailOverService
         }        
     }
     
-    @Override
     public void sessionWillPassivate(HttpSession session) 
     {
         FailOverBagWrapper bagWrapper = new FailOverBagWrapper(session, this);
@@ -175,25 +174,21 @@ public class DefaultOwbFailOverService implements FailOverService
         }
     }
     
-    @Override
     public boolean isSupportFailOver() 
     {
         return isSupportFailOver;
     }
 
-    @Override
     public boolean isSupportPassivation() 
     {
         return isSupportPassivation;
     }
 
-    @Override
     public void enableFailOverSupport(boolean flag) 
     {
         isSupportFailOver = flag;
     }
 
-    @Override
     public void enablePassivationSupport(boolean flag) 
     {
         isSupportPassivation = flag;
@@ -204,7 +199,6 @@ public class DefaultOwbFailOverService implements FailOverService
      * 
      * @return custom object input stream.
      */
-    @Override
     public ObjectInputStream getObjectInputStream(InputStream in) throws IOException 
     {
         return new OwbProxyObjectInputStream(in);
@@ -215,7 +209,6 @@ public class DefaultOwbFailOverService implements FailOverService
      * 
      * @return custom object output stream.
      */
-    @Override
     public ObjectOutputStream getObjectOutputStream(OutputStream out) throws IOException 
     {
         return new ProxyObjectOutputStream(out);
@@ -227,7 +220,6 @@ public class DefaultOwbFailOverService implements FailOverService
      * SerializationHandler.
      * 
      */
-    @Override
     public Object handleResource(
             Bean<?> bean,
             Object resourceObject,

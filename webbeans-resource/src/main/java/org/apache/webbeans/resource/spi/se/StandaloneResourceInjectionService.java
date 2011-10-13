@@ -75,7 +75,6 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
         return webBeansContext;
     }
 
-    @Override
     public <X, T extends Annotation> X getResourceReference(ResourceReference<X, T> resourceReference)
     {
         if(resourceReference.supports(Resource.class))
@@ -106,7 +105,6 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
         return null;
     }
 
-    @Override
     public void injectJavaEEResources(Object managedBeanInstance)
     {
         Class currentClass = managedBeanInstance.getClass();
@@ -165,7 +163,6 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
         classContainsEEResources.put(managedBeanInstance.getClass(), containsEeResource);
     }
 
-    @Override
     public void clear()
     {
         processor.clear();       

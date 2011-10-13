@@ -196,14 +196,12 @@ public class StandaloneContainersImpl implements StandaloneContainers
         return WebBeansContext.getInstance().getBeanManagerImpl();
     }
 
-    @Override
     public void deploy(Collection<Class<?>> classes) throws DeploymentException
     {
         setUp(classes);
         deployInternal(classes);
     }
 
-    @Override
     public boolean deploy(Collection<Class<?>> classes, Collection<URL> xmls)
     {
         if (!setUp(classes))

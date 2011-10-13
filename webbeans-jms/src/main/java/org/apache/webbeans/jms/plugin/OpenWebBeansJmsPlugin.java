@@ -41,7 +41,6 @@ public class OpenWebBeansJmsPlugin extends AbstractOwbPlugin implements org.apac
         super();
     }
 
-    @Override
     public Bean<?> getJmsBean(JMSModel model)
     {
         JmsBean<?> bean = JmsComponentFactory.getJmsComponentFactory().getJmsComponent(model);
@@ -56,7 +55,6 @@ public class OpenWebBeansJmsPlugin extends AbstractOwbPlugin implements org.apac
         JmsProxyHandler.clearConnections();
     }
 
-    @Override
     public Object getJmsBeanProxy(Bean<?> bean, Class<?> iface)
     {
         Object proxy = JmsUtil.createNewJmsProxy((JmsBean<?>) bean, iface);

@@ -50,7 +50,6 @@ public class ViewScopedContext implements Context, SystemEventListener
     
     private boolean isJsfSubscribed = false;
     
-    @Override
     public <T> T get(Contextual<T> component) 
     {
         checkActive();
@@ -78,7 +77,6 @@ public class ViewScopedContext implements Context, SystemEventListener
         return instance;
     }
 
-    @Override
     public <T> T get(Contextual<T> component, CreationalContext<T> creationalContext) 
     {
         checkActive();
@@ -142,7 +140,6 @@ public class ViewScopedContext implements Context, SystemEventListener
         return  instance;
     }
 
-    @Override
     public Class<? extends Annotation> getScope() 
     {
         return ViewScoped.class;
@@ -151,7 +148,6 @@ public class ViewScopedContext implements Context, SystemEventListener
     /**
      * The view context is active if a valid ViewRoot could be detected.
      */
-    @Override
     public boolean isActive() 
     {
         return JSFUtil.getViewRoot() != null;
@@ -165,7 +161,6 @@ public class ViewScopedContext implements Context, SystemEventListener
         }        
     }
 
-    @Override
     public boolean isListenerForSource(Object source)
     {
         if (source instanceof UIViewRoot)
@@ -183,7 +178,6 @@ public class ViewScopedContext implements Context, SystemEventListener
      * 
      * @see javax.faces.event.SystemEventListener#processEvent(javax.faces.event.SystemEvent)
      */
-    @Override
     @SuppressWarnings("unchecked")
     public void processEvent(SystemEvent event)
     {

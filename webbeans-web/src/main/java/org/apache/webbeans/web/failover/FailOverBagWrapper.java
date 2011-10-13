@@ -99,7 +99,6 @@ public class FailOverBagWrapper implements Serializable, Externalizable, HttpSes
         isSessionInUse = true;
     }
     
-    @Override
     public void readExternal(ObjectInput in) throws IOException,
             ClassNotFoundException 
     {
@@ -115,7 +114,6 @@ public class FailOverBagWrapper implements Serializable, Externalizable, HttpSes
         }
     }
 
-    @Override
     public synchronized void writeExternal(ObjectOutput out) throws IOException 
     {
         out.writeBoolean(isSessionInUse);
@@ -146,7 +144,6 @@ public class FailOverBagWrapper implements Serializable, Externalizable, HttpSes
         out.writeObject(buf);
     }
     
-    @Override
     public void sessionWillPassivate(HttpSessionEvent event)
     {
         if (failoverService != null && failoverService.isSupportPassivation())
@@ -157,7 +154,6 @@ public class FailOverBagWrapper implements Serializable, Externalizable, HttpSes
 
     }
 
-    @Override
     public void sessionDidActivate(HttpSessionEvent event)
     {
         if (failoverService != null && (failoverService.isSupportFailOver() || failoverService.isSupportPassivation()))

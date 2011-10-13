@@ -44,7 +44,6 @@ public class TomcatInstanceManager implements InstanceManager
         this.loader = loader;
     }
 
-    @Override
     public void destroyInstance(Object instance) throws IllegalAccessException, InvocationTargetException
     {
         Object injectorInstance = objects.get(instance);
@@ -66,7 +65,6 @@ public class TomcatInstanceManager implements InstanceManager
         this.processor.destroyInstance(instance);
     }
 
-    @Override
     public Object newInstance(String str) throws IllegalAccessException, InvocationTargetException, NamingException, InstantiationException, ClassNotFoundException
     {
         // Creates a defaut instance
@@ -78,14 +76,12 @@ public class TomcatInstanceManager implements InstanceManager
         return object;
     }
 
-    @Override
     public void newInstance(Object object) throws IllegalAccessException, InvocationTargetException, NamingException
     {
         // Inject dependencies
         inject(object);
     }
 
-    @Override
     public Object newInstance(String str, ClassLoader cl) throws IllegalAccessException, InvocationTargetException, NamingException, InstantiationException, ClassNotFoundException
     {
         // Creates a defaut instance

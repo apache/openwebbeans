@@ -113,7 +113,6 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
         }        
     }
 
-    @Override
     public void containerEvent(ContainerEvent event)
     {
         StandardContext context = null;
