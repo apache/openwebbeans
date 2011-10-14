@@ -315,29 +315,6 @@ public final class ClassUtil
     }
 
     /**
-     * Check method throws Exception or not.
-     * 
-     * @param method method instance
-     * @return trur or false
-     */
-    public static boolean isMethodHasException(Method method)
-    {
-        Asserts.nullCheckForMethod(method);
-
-        Class<?>[] et = method.getExceptionTypes();
-
-        if (et.length == 1)
-        {
-            if (et[0].equals(Exception.class))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Call method on the instance with given arguments.
      * 
      * @param method method instance

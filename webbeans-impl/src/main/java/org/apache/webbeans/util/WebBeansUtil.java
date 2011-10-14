@@ -955,12 +955,6 @@ public final class WebBeansUtil
                             + method.getName() + " in class : " + clazz.getName() + " must return Object type");
                 }
 
-                if (!ClassUtil.isMethodHasException(method))
-                {
-                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
-                            + method.getName() + " in class : " + clazz.getName() + " must throw Exception");
-                }
-
                 if (Modifier.isStatic(method.getModifiers()) || ClassUtil.isFinal(method.getModifiers()))
                 {
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
@@ -1021,13 +1015,6 @@ public final class WebBeansUtil
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
                             + method.getJavaMember().getName()+ " in class : " + annotatedType.getJavaClass().getName()
                             + " must return Object type");
-                }
-
-                if (!ClassUtil.isMethodHasException(method.getJavaMember()))
-                {
-                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
-                            + method.getJavaMember().getName( )+ " in class : " + annotatedType.getJavaClass().getName()
-                            + " must throw Exception");
                 }
 
                 if (Modifier.isStatic(method.getJavaMember().getModifiers()) ||

@@ -16,18 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.test.component.exception;
+package org.apache.webbeans.test.component.intercept.webbeans.bindings;
 
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
+import javax.interceptor.InterceptorBinding;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-
-public class AroundInvokeWithoutExceptionComponent
+/**
+ * This test interceptor catches all Exceptions and
+ * returns RuntimeExceptions instead.
+ */
+@InterceptorBinding
+@Retention(RetentionPolicy.RUNTIME)
+@Target( { ElementType.TYPE, ElementType.METHOD })
+public @interface RuntimeExceptions
 {
-    @AroundInvoke
-    public Object method2(InvocationContext ctx)
-    {
-        return null;
-    }
 
 }

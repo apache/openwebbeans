@@ -211,12 +211,9 @@ public final class InterceptorUtil
                     {
                         if (ClassUtil.getReturnType(method).equals(Object.class))
                         {
-                            if (ClassUtil.isMethodHasException(method))
+                            if (!Modifier.isStatic(method.getModifiers()) && !ClassUtil.isFinal(method.getModifiers()))
                             {
-                                if (!Modifier.isStatic(method.getModifiers()) && !ClassUtil.isFinal(method.getModifiers()))
-                                {
-                                    return true;
-                                }
+                                return true;
                             }
                         }
                     }

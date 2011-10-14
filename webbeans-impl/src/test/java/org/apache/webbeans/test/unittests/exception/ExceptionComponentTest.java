@@ -30,7 +30,6 @@ import org.apache.webbeans.test.component.exception.AroundInvokeWithFinalMethodC
 import org.apache.webbeans.test.component.exception.AroundInvokeWithSameMethodNameComponent;
 import org.apache.webbeans.test.component.exception.AroundInvokeWithStaticMethodComponent;
 import org.apache.webbeans.test.component.exception.AroundInvokeWithWrongReturnTypeComponent;
-import org.apache.webbeans.test.component.exception.AroundInvokeWithoutExceptionComponent;
 import org.apache.webbeans.test.component.exception.AroundInvokeWithoutParameterComponent;
 import org.apache.webbeans.test.component.exception.AroundInvokeWithoutReturnTypeComponent;
 import org.apache.webbeans.test.component.exception.FinalComponent;
@@ -356,23 +355,6 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithWrongReturnTypeComponent.class);
-            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            System.out.println("got expected exception: " + e.getMessage());
-            return; // all ok!
-        }
-        Assert.fail("expecting an exception!");
-    }
-
-    @Test
-    public void testAroundInvokeWithoutException()
-    {
-        try
-        {
-            clear();
-            AbstractInjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithoutExceptionComponent.class);
             getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
