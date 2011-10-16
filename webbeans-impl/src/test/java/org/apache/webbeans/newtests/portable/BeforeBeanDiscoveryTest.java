@@ -35,13 +35,35 @@ import org.junit.Test;
 public class BeforeBeanDiscoveryTest extends AbstractUnitTest
 {
 
-    @SuppressWarnings("serial")
     @Test
     public void testAddAdditionalAnnotatedType()
     {
         Collection<String> beanXmls = new ArrayList<String>();
 
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+
+        addExtension(new AddAdditionalAnnotatedTypeExtension());
+
+        startContainer(beanClasses, beanXmls);
+
+        Bean<?> bean = getBeanManager().getBeans(MyBean.class, new AnnotationLiteral<Default>()
+        {
+        }).iterator().next();
+
+        // Bean should not be null, as we added it as an additional annotated
+        // type during before bean discovery in the extension
+        Assert.assertNotNull(bean);
+
+        shutDownContainer();
+    }
+
+    @Test
+    public void testAddAdditionalAnnotatedTypeWithPresentClass()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(MyBean.class);
 
         addExtension(new AddAdditionalAnnotatedTypeExtension());
 

@@ -62,6 +62,7 @@ import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
@@ -479,14 +480,27 @@ public class BeansDeployer
         //Iterating over each class
         if (classIndex != null)
         {
+            AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
+            List<AnnotatedType<?>> additionalAnnotatedTypes = webBeansContext.getBeanManagerImpl()
+                                                                             .getAdditionalAnnotatedTypes();
+
             for(Class<?> implClass : classIndex)
             {
                 //Define annotation type
-                AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(implClass);
+                AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(implClass);
                 
                 if (null != annotatedType)
                 {
                     deploySingleAnnotatedType(implClass, annotatedType);
+
+                    if (additionalAnnotatedTypes.contains(annotatedType))
+                    {
+                        // if the implClass already gets processed as part of the
+                        // standard BDA scanning, then we don't need to 'additionally'
+                        // deploy it anymore.
+                        additionalAnnotatedTypes.remove(annotatedType);
+                    }
+
                 } 
                 else
                 {
@@ -510,14 +524,14 @@ public class BeansDeployer
     private void deployAdditionalAnnotatedTypes()
     {
         BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
-        
+
         List<AnnotatedType<?>> annotatedTypes = beanManager.getAdditionalAnnotatedTypes();
         
         for(AnnotatedType<?> type : annotatedTypes)
         {
             Class implClass = type.getJavaClass();
-            
-            deploySingleAnnotatedType(implClass, type);                           
+
+            deploySingleAnnotatedType(implClass, type);
         }
     }
 
