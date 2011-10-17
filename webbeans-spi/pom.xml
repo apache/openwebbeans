@@ -20,11 +20,11 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.1.2</version>
     </parent>
 
     <artifactId>openwebbeans-spi</artifactId>
-  <version>1.1.2-SNAPSHOT</version>
+  <version>1.1.2</version>
     <name>SPI definition</name>
     <description>Apache OpenWebBeans Service Provider Interfaces</description>
 

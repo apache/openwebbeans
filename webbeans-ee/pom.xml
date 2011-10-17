@@ -20,11 +20,11 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.1.2</version>
     </parent>
 
     <artifactId>openwebbeans-ee</artifactId>
-  <version>1.1.2-SNAPSHOT</version>
+  <version>1.1.2</version>
     <name>Java EE plugin</name>
     <description>Apache OpenWebBeans Java EE Utility</description>
 
