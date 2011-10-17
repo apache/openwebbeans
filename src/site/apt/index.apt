@@ -29,50 +29,52 @@ Welcome to Apache OpenWebBeans
 
 * Recent News
 
-  * We are currently working towards an OpenWebBeans 1.1.1 release
+  * We are currently working towards an OpenWebBeans 1.1.2 bugfix release
 
-  * 29.08.2011 - Trademark Rules & Logo download page added
+  * 2011-10-04  Apache TomEE release includes OWB as CDI container
 
-  * 04.08.2011 - Added backward compat support for Java5 for running OWB with older EE containers
+  * 2011-0-29 - Trademark Rules & Logo download page added
 
-  * 19.05.2001 - We got a new Logo, designed by Adonis Raduca and sponsored by Irian.at
+  * 2011-08-04 - Added backward compat support for Java5 for running OWB with older EE containers
 
-  * 09.04.2011 - New PMC members: Gerhard Petracek, David Jencks
+  * 2001-05-19 - We got a new Logo, designed by Adonis Raduca and sponsored by Irian.at
 
-  * 30.03.2011 - 1.1.0 released
+  * 2011-04-09 - New PMC members: Gerhard Petracek, David Jencks
 
-  * 07.11.2010 - New Committer: David Jencks
+  * 2011-03-30 - 1.1.0 released
 
-  * 08.10.2010 - New Committers: Paul J Reder, Rohit Kelapure
+  * 2010-11-07 - New Committer: David Jencks
 
-  * 03.09.2010 - alpha-2 released
+  * 2010-10-08 - New Committers: Paul J Reder, Rohit Kelapure
 
-  * 03.08.2010 - New committer: Gerhard Petracek
+  * 2010-09-03 - alpha-2 released
 
-  * 10.07.2010 - alpha-1 released
+  * 2010-08-03 - New committer: Gerhard Petracek
 
-  * 05.03.2010 - M4 released
+  * 2010-07-10 - alpha-1 released
+
+  * 2010-03-05 - M4 released
  
-  * 04.03.2010 - New committer: Ying Wang
+  * 2010-03-05 - New committer: Ying Wang
    
-  * 17.11.2009 - New committer: Eric Covener
+  * 2009-11-17 - New committer: Eric Covener
 
-  * 10.11.2009 - New committer: Joe Bergmark
+  * 2009-11-10 - New committer: Joe Bergmark
 
-  * 30.09.2009 - M3 is released
+  * 2009-09-30 - M3 is released
 
-  * 14.09.2009 - New committer: David Blevins
+  * 2009-09-14 - New committer: David Blevins
 
-  * 07.07.2009 - New committer: James Carman
+  * 2009-07-07 - New committer: James Carman
 
-  * 09.06.2009 - M2 is released
+  * 2009-06-09 - M2 is released
 
-  * 16.02.2009 - M1 is released
+  * 2009-02-16 - M1 is released
 
-  * 18.01.2009 - New committer: Mark Struberg
+  * 2009-01-18 - New committer: Mark Struberg
 
-  * 24.12.2008 - New committer: Mohammad Nour El-Din
+  * 2008-12-24 - New committer: Mohammad Nour El-Din
 
-  * 23.11.2008 - Source code is available in project SVN.
+  * 2008-11-23 - Source code is available in project SVN.
 
 
