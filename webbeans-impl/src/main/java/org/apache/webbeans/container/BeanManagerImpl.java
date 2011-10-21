@@ -1078,7 +1078,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
-    { 
+    {
+        if (beans == null || beans.isEmpty())
+        {
+            return null;
+        }
+
         Set set = new HashSet<Bean<Object>>();
         for(Bean<? extends X> obj : beans)
         {
