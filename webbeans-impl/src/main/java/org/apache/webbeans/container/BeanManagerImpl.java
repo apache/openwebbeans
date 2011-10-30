@@ -826,19 +826,20 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             // producers
             InjectionResolver.injectionPoints.set(injectionPoint);
         }
+
         if(WebBeansUtil.isDependent(injectedBean))
         {        
             //Using owner creational context
             //Dependents use parent creational context
             instance = getReference(injectedBean, injectionPoint.getType(), ownerCreationalContext);
         }
-        
         else
         {   
             //New creational context for normal scoped beans
             CreationalContextImpl<Object> injectedCreational = (CreationalContextImpl<Object>)createCreationalContext(injectedBean);            
             instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
         }
+
         if(isSetIPForProducers)
         {
             //remove reference immediate after instance is retrieved

@@ -28,12 +28,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -60,18 +63,27 @@ class InstanceImpl<T> implements Instance<T>, Serializable
 
     private WebBeansContext webBeansContext;
 
+    private CreationalContext<?> parentCreationalContext;
+
+    private Object ownerInstance;
+
     /**
      * Creates new instance.
      * 
      * @param injectionClazz injection class type
      * @param injectionPointClazz null or class of injection point
      * @param webBeansContext
+     * @param creationalContext will get used for creating &#064;Dependent beans
+     * @param ownerInstance the object the current Instance got injected into
      * @param annotations qualifier annotations
      */
-    InstanceImpl(Type injectionClazz, Class<?> injectionPointClazz, WebBeansContext webBeansContext, Annotation... annotations)
+    InstanceImpl(Type injectionClazz, Class<?> injectionPointClazz, WebBeansContext webBeansContext,
+                 CreationalContext<?> creationalContext, Object ownerInstance, Annotation... annotations)
     {
         this.injectionClazz = injectionClazz;
         this.injectionPointClazz=injectionPointClazz;
+        this.parentCreationalContext = creationalContext;
+        this.ownerInstance = ownerInstance;
 
         for (Annotation ann : annotations)
         {
@@ -83,13 +95,12 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     /**
      * Returns the bean instance with given qualifier annotations.
      * 
-     * @param annotations qualifier annotations
      * @return bean instance
      */
     @SuppressWarnings("unchecked")
     public T get()
     {
-        T instance = null;
+        T instance;
 
         Annotation[] anns = new Annotation[qualifierAnnotations.size()];
         anns = qualifierAnnotations.toArray(anns);
@@ -97,9 +108,27 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         Set<Bean<?>> beans = resolveBeans();
 
         webBeansContext.getResolutionUtil().checkResolvedBeans(beans, ClassUtil.getClazz(injectionClazz), anns);
+        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
 
-        Bean<?> bean = beans.iterator().next();
-        instance = (T) webBeansContext.getBeanManagerImpl().getInstance(bean, null);
+        Bean<?> bean = beanManager.resolve(beans);
+
+        // since Instance<T> is Dependent, we we gonna use the parent CreationalContext by default
+        CreationalContext<?> creationalContext = parentCreationalContext;
+
+        boolean isDependentBean = WebBeansUtil.isDependent(bean);
+
+        if (!isDependentBean)
+        {
+            // but for all NormalScoped beans we will need to create a fresh CreationalContext
+            creationalContext = beanManager.createCreationalContext(bean);
+        }
+
+        instance = (T) beanManager.getReference(bean, null, creationalContext);
+
+        if (isDependentBean && ownerInstance != null && creationalContext instanceof CreationalContextImpl)
+        {
+            ((CreationalContextImpl<?>) creationalContext).addDependent(ownerInstance, bean, instance);
+        }
 
         return instance;
     }
@@ -117,8 +146,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         InjectionResolver injectionResolver = webBeansContext.getBeanManagerImpl().getInjectionResolver();
 
         InjectionResolver resolver = injectionResolver;
-        Set<Bean<?>> beans = resolver.implResolveByType(
-                injectionClazz, injectionPointClazz, anns);
+        Set<Bean<?>> beans = resolver.implResolveByType(injectionClazz, injectionPointClazz, anns);
         return beans;
     }
     
@@ -149,7 +177,8 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     {
         Annotation[] newQualifiersArray = getAdditionalQualifiers(qualifiers);
         InstanceImpl<T> newInstance = new InstanceImpl<T>(injectionClazz, injectionPointClazz,
-                                                          webBeansContext, newQualifiersArray);
+                                                          webBeansContext, parentCreationalContext,
+                                                          ownerInstance, newQualifiersArray);
 
         return newInstance;
     }
@@ -200,7 +229,9 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         
         Annotation[] newQualifiers = getAdditionalQualifiers(qualifiers);
         
-        InstanceImpl<U> newInstance = new InstanceImpl<U>(sub, injectionPointClazz, webBeansContext, newQualifiers);
+        InstanceImpl<U> newInstance = new InstanceImpl(sub, injectionPointClazz, webBeansContext,
+                                                       parentCreationalContext, ownerInstance,
+                                                       newQualifiers);
                     
         return newInstance;
     }

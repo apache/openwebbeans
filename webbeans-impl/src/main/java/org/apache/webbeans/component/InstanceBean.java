@@ -20,6 +20,7 @@ package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -28,6 +29,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.inject.AbstractInjectable;
 import org.apache.webbeans.inject.instance.InstanceFactory;
 
 public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
@@ -49,10 +51,23 @@ public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
         {
             ParameterizedType injectedType = (ParameterizedType)local.get().getType();
             Set<Annotation> qualifiers = local.get().getQualifiers();
-            Instance<T> instance = InstanceFactory.getInstance(injectedType.getActualTypeArguments()[0], 
-                    (local.get().getBean() == null) ? null : local.get().getBean().getBeanClass(),
-                    getWebBeansContext(), 
-                            qualifiers.toArray(new Annotation[qualifiers.size()]));
+            Type type = injectedType.getActualTypeArguments()[0];
+            InjectionPoint injectionPoint = local.get();
+            Class injectionPointClass = null;
+
+            if (injectionPoint != null)
+            {
+                if (injectionPoint.getBean() != null)
+                {
+                    injectionPointClass = injectionPoint.getBean().getBeanClass();
+                }
+            }
+
+            Object ownerInstance = AbstractInjectable.instanceUnderInjection.get();
+
+            Instance<T> instance = InstanceFactory.getInstance(type, injectionPointClass, getWebBeansContext(),
+                                                               creationalContext, ownerInstance,
+                                                               qualifiers.toArray(new Annotation[qualifiers.size()]));
             
             return instance;
         }
@@ -63,16 +78,13 @@ public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
         }
     }
 
-
     /* (non-Javadoc)
-     * @see org.apache.webbeans.component.AbstractOwbBean#isPassivationCapable()
-     */
+    * @see org.apache.webbeans.component.AbstractOwbBean#isPassivationCapable()
+    */
     @Override
     public boolean isPassivationCapable()
     {
         return true;
     }
-    
-    
-    
+
 }

@@ -21,22 +21,18 @@ package org.apache.webbeans.newtests.managed.instance;
 
 import junit.framework.Assert;
 import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.newtests.managed.instance.beans.DependentBean;
+import org.apache.webbeans.newtests.managed.instance.beans.InstanceForDependentBean;
 import org.apache.webbeans.newtests.managed.instance.beans.InstanceInjectedComponent;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
 import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
 import org.junit.Test;
-import org.junit.Ignore;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.util.TypeLiteral;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
 
 public class InjectedInstanceComponentTest extends AbstractUnitTest
 {
@@ -72,28 +68,25 @@ public class InjectedInstanceComponentTest extends AbstractUnitTest
         shutDownContainer();
     }
 
-    @Ignore
     @Test
-    public void testManualInstanceBeanResolving()
+    public void testInstanceDestroyal()
     {
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
 
+        beanClasses.add(InstanceForDependentBean.class);
+        beanClasses.add(DependentBean.class);
         startContainer(beanClasses, null);
 
-        //X TODO doesn't work Set<Bean<?>> beans = getBeanManager().getBeans(Instance.class);
-        Type instanceType = new TypeLiteral<Instance<Object>>(){}.getType();
-        Set<Bean<?>> beans = getBeanManager().getBeans(instanceType);
-        Assert.assertNotNull(beans);
-        Assert.assertTrue(beans.size() > 0);
+        InstanceForDependentBean holder = getInstance(InstanceForDependentBean.class);
+        Assert.assertNotNull(holder);
 
-        Bean<Instance> bean = (Bean<Instance>) getBeanManager().resolve(beans);
-        Assert.assertNotNull(bean);
-        
-        CreationalContext<Instance> ctx = getBeanManager().createCreationalContext(bean);
-        
-        Object reference = getBeanManager().getReference(bean, instanceType, ctx);
-        Assert.assertNotNull(reference);
-        
+        Assert.assertEquals(42, holder.getMeaningOfLife());
+
+        DependentBean.properlyDestroyed = false;
+
         shutDownContainer();
+
+        Assert.assertTrue(DependentBean.properlyDestroyed);
     }
+
 }

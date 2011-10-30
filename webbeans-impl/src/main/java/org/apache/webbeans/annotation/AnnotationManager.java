@@ -53,6 +53,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -343,7 +344,8 @@ public final class AnnotationManager
         //check for duplicate annotations
         if (qualifierAnnots.length != annSet.size())
         {
-            throw new IllegalArgumentException("Qualifier annotations can not contain duplicate qualifiers:" + qualifierAnnots);
+            throw new IllegalArgumentException("Qualifier annotations can not contain duplicate qualifiers:"
+                                               + Arrays.toString(qualifierAnnots));
         }
 
         checkQualifierConditions(annSet);

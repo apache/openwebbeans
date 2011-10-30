@@ -104,7 +104,7 @@ public abstract class AbstractUnitTest
     {
         return this.webBeansContext.getBeanManagerImpl();
     }
-    
+
     @SuppressWarnings("unchecked")
     protected <T> T getInstance(Class<T> type, Annotation... qualifiers)
     {
