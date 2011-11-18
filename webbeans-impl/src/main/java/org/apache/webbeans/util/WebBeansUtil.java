@@ -2766,6 +2766,11 @@ public final class WebBeansUtil
 
     public boolean isPassivationCapableDependency(InjectionPoint injectionPoint)
     {
+        //Don't attempt to get an instance of the delegate injection point
+        if (injectionPoint.isDelegate())
+        {
+            return true;
+        }
         InjectionResolver instance = webBeansContext.getBeanManagerImpl().getInjectionResolver();
 
         Bean<?> bean = instance.getInjectionPointBean(injectionPoint);

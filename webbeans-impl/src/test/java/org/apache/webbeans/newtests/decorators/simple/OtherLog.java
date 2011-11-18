@@ -20,25 +20,18 @@ package org.apache.webbeans.newtests.decorators.simple;
 
 import java.io.Serializable;
 
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.inject.Inject;
-import javax.inject.Named;
+import javax.enterprise.context.SessionScoped;
 
-@Named("org.apache.webbeans.newtests.decorators.simple.LogDecorator")
-@Decorator
-public class LogDecorator implements ILog, Serializable {
-
+@SessionScoped
+public class OtherLog implements ILog, Serializable
+{
     private static final long serialVersionUID = 1L;
-    
-    public static String MESSAGE = ""; 
-    private @Inject @Delegate ILog ilog;
-    
+
     @Override
     public void log(String logMessage)
     {
-        MESSAGE = logMessage;
-        ilog.log(logMessage);
+        System.out.println("other :" + logMessage);
     }
 
 }
+

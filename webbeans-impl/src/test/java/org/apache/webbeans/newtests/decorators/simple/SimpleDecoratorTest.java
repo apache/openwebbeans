@@ -69,4 +69,24 @@ public class SimpleDecoratorTest extends AbstractUnitTest
         
         shutDownContainer();
     }
+    
+    /**
+     * Ensure that if we have multiple beans that can resolve to the @Delegate injection point we don't report an error
+     * even if one of those beans has a passivating scope.
+     */
+    @Test
+    public void testDecorateTwoBeans(){
+        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.add(LogDecorator.class);
+        classes.add(MyLog.class);
+        classes.add(OtherLog.class);
+        
+
+        Collection<String> xmls = new ArrayList<String>();
+        xmls.add(getXmlPath(PACKAGE_NAME, "SimpleDecoratorTest"));
+
+        startContainer(classes, xmls);
+        
+        shutDownContainer();
+    }
 }
