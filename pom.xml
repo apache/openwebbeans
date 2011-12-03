@@ -461,6 +461,7 @@
         <module>samples</module>
         <module>webbeans-tck</module>
         <module>distribution</module>
+        <module>webbeans-doc</module>
     </modules>
 
     <dependencyManagement>
