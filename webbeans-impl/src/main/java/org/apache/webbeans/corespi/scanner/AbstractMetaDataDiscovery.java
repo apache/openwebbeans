@@ -206,7 +206,26 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
             {
                 for(String str : strSet)
                 {
-                    classSet.add(ClassUtil.getClassFromName(str));   
+                    try
+                    {
+                        Class<?> clazz = ClassUtil.getClassFromName(str);
+                        if (clazz != null)
+                        {
+                            
+                            // try to provoke a NoClassDefFoundError exception which is thrown 
+                            // if some dependencies of the class are missing
+                            clazz.getDeclaredFields();
+                            clazz.getDeclaredMethods();
+                            
+                            // we can add this class cause it has been loaded completely
+                            classSet.add(clazz);
+                            
+                        }
+                    }
+                    catch (NoClassDefFoundError e)
+                    {
+                        logger.warn("WARN_0018", str, e.toString());
+                    }
                 }
             }   
         }    
