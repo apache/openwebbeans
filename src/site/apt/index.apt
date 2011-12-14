@@ -29,7 +29,9 @@ Welcome to Apache OpenWebBeans
 
 * Recent News
 
-  * We are currently working towards an OpenWebBeans 1.1.2 bugfix release
+  * 2011-12-10 OpenWebBeans 1.1.3 has been released - this is a bugfix release
+
+  * 2011-10-17 OpenWebBeans 1.1.2 has been released - this is a bugfix release
 
   * 2011-10-04  Apache TomEE release includes OWB as CDI container
 
