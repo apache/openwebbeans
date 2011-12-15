@@ -22,12 +22,17 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.interceptor.Interceptors;
 
-@Interceptors(value={EjbInterceptor.class})
 @RequestScoped
-public class ManagedBeanWithEjbInterceptor
-{        
-    public void sayHello()
+public class ManagedBeanWithMethodEjbInterceptor
+{
+    @Interceptors(value={EjbInterceptor.class})
+    public int sayHello()
     {
-        
+        return 42;
+    }
+
+    public int uninterceptedAction()
+    {
+        return 21;
     }
 }

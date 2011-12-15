@@ -20,10 +20,6 @@ package org.apache.webbeans.newtests.interceptors.ejb;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
@@ -36,7 +32,6 @@ public class EjbInterceptorTest extends AbstractUnitTest
 {
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testEjbInterceptor()
     {
         Collection<String> beanXmls = new ArrayList<String>();
@@ -47,18 +42,40 @@ public class EjbInterceptorTest extends AbstractUnitTest
         beanClasses.add(EjbInterceptor.class);
         
         startContainer(beanClasses, beanXmls);        
-        
-        Set<Bean<?>> beans = getBeanManager().getBeans("org.apache.webbeans.newtests.interceptors.ejb.ManagedBeanWithEjbInterceptor");
-        Assert.assertNotNull(beans);        
-        Bean<ManagedBeanWithEjbInterceptor> bean = (Bean<ManagedBeanWithEjbInterceptor>)beans.iterator().next();
-        
-        CreationalContext<ManagedBeanWithEjbInterceptor> ctx = getBeanManager().createCreationalContext(bean);
-        
-        ManagedBeanWithEjbInterceptor reference = (ManagedBeanWithEjbInterceptor)getBeanManager().getReference(bean, ManagedBeanWithEjbInterceptor.class, ctx);
+
+        ManagedBeanWithEjbInterceptor reference = getInstance(ManagedBeanWithEjbInterceptor.class);
         Assert.assertNotNull(reference);
-        
+
+        EjbInterceptor.CALLED = false;
         reference.sayHello();
+        Assert.assertTrue(EjbInterceptor.CALLED);
         
+        shutDownContainer();
+    }
+
+    @Test
+    public void testEjbMethodInterceptor()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(RequestScopedBean.class);
+        beanClasses.add(ManagedBeanWithMethodEjbInterceptor.class);
+        beanClasses.add(ApplicationScopedBean.class);
+        beanClasses.add(EjbInterceptor.class);
+
+        startContainer(beanClasses, beanXmls);
+
+        ManagedBeanWithMethodEjbInterceptor reference = getInstance(ManagedBeanWithMethodEjbInterceptor.class);
+        Assert.assertNotNull(reference);
+
+        EjbInterceptor.CALLED = false;
+        reference.sayHello();
+        Assert.assertTrue(EjbInterceptor.CALLED);
+
+        EjbInterceptor.CALLED = false;
+        reference.uninterceptedAction();
+        Assert.assertFalse(EjbInterceptor.CALLED);
+
         shutDownContainer();
     }
 }

@@ -33,8 +33,7 @@ public class EjbInterceptor
     @AroundInvoke
     public Object caller(InvocationContext context) throws Exception
     {        
-        System.out.println(bean);
-        CALLED = true;        
+        CALLED = true;
         return context.proceed();
     }
     
