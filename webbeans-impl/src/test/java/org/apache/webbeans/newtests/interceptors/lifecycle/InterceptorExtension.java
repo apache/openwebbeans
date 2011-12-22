@@ -85,43 +85,36 @@ public class InterceptorExtension implements Extension
             this.javaClass = javaClass;
         }
 
-        @Override
         public Set<AnnotatedConstructor<X>> getConstructors()
         {
             return annotatedConstructors;
         }
 
-        @Override
         public Class<X> getJavaClass()
         {
             return javaClass;
         }
 
-        @Override
         public Set<AnnotatedMethod<? super X>> getMethods()
         {
             return annotatedMethods;
         }
 
-        @Override
         public Set<AnnotatedField<? super X>> getFields()
         {
             return annotatedFields;
         }
 
-        @Override
         public Type getBaseType()
         {
             return javaClass;
         }
 
-        @Override
         public Set<Type> getTypeClosure()
         {
             return typeClosures;
         }
 
-        @Override
         public <T extends Annotation> T getAnnotation(Class<T> annotationType)
         {
             for (Annotation a: annotations)
@@ -135,13 +128,11 @@ public class InterceptorExtension implements Extension
             return null;
         }
 
-        @Override
         public Set<Annotation> getAnnotations()
         {
             return annotations;
         }
 
-        @Override
         public boolean isAnnotationPresent(Class<? extends Annotation> annotationType)
         {
             return getAnnotation(annotationType) != null;

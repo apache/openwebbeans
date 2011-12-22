@@ -18,19 +18,14 @@
  */
 package org.apache.webbeans.newtests.interceptors.ejb;
 
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
+import javax.enterprise.context.RequestScoped;
+import javax.interceptor.Interceptors;
 
-
-public class EjbInterceptor
-{   
-    public static boolean CALLED = false;
-    
-    @AroundInvoke
-    public Object caller(InvocationContext context) throws Exception
-    {        
-        CALLED = true;
-        return context.proceed();
+@RequestScoped
+public class ManagedBeanWithoutInterceptor
+{        
+    public void sayHello()
+    {
+        
     }
-    
 }

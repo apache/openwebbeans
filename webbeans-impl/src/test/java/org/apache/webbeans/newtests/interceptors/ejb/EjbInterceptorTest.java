@@ -78,4 +78,26 @@ public class EjbInterceptorTest extends AbstractUnitTest
 
         shutDownContainer();
     }
+
+
+    //X TODO enable again for OWB-634 @Test()
+    public void testDynamicEjbInterceptor()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(ManagedBeanWithoutInterceptor.class);
+        beanClasses.add(EjbInterceptor.class);
+        addExtension(new EjbInterceptorExtension());
+
+        startContainer(beanClasses, beanXmls);
+
+        ManagedBeanWithoutInterceptor reference = getInstance(ManagedBeanWithoutInterceptor.class);
+        Assert.assertNotNull(reference);
+
+        EjbInterceptor.CALLED = false;
+        reference.sayHello();
+        Assert.assertTrue(EjbInterceptor.CALLED);
+
+        shutDownContainer();
+    }
 }
