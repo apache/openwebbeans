@@ -82,6 +82,7 @@ public final class EjbUtility
         if(processAnnotatedEvent.isModifiedAnnotatedType())
         {
             ejbBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
+            ejbBeanCreator.setAnnotatedType(annotatedType);
         }
         
         //Define meta-data
