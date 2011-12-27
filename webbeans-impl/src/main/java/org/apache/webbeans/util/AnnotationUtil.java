@@ -52,7 +52,7 @@ public final class AnnotationUtil
     public static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
 
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
-    
+
     // No instantiate
     private AnnotationUtil()
     {
@@ -900,15 +900,31 @@ public final class AnnotationUtil
         Asserts.assertNotNull(bean, "bean parameter can not be null");
         Set<Annotation> qualifiers = bean.getQualifiers();
 
-        for(Annotation ann : qualifiers)
+        return getAnnotation(qualifiers, Any.class) != null;
+    }
+
+    /**
+     * Search in the given Set of Annotations for the one with the given AnnotationClass.  
+     * @param annotations to scan
+     * @param annotationClass to search for
+     * @return the annotation with the given annotationClass or <code>null</code> if not found.
+     */
+    public static <T extends Annotation> T getAnnotation(Set<Annotation> annotations, Class<T> annotationClass)
+    {
+        if (annotations == null) 
         {
-            if(ann.annotationType().equals(Any.class))
+            return null;
+        }
+            
+        for(Annotation ann : annotations)
+        {
+            if(ann.annotationType().equals(annotationClass))
             {
-                return true;
+                return (T) ann;
             }
         }
-
-        return false;
+        
+        return null;
     }
 
     
@@ -1010,6 +1026,6 @@ public final class AnnotationUtil
             return anns;
         }
         
-        return new Annotation[0];
+        return EMPTY_ANNOTATION_ARRAY;
     }
 }

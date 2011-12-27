@@ -2702,6 +2702,9 @@ public final class WebBeansUtil
         return managedBean;
     }
 
+    /**
+     * This method will be used in {@link AfterBeanDiscovery#addBean(javax.enterprise.inject.spi.Bean)}}
+     */
     public <T> ManagedBean<T> defineManagedBeanWithoutFireEvents(AnnotatedType<T> type)
     {
         Class<T> clazz = type.getJavaClass();

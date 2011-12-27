@@ -80,7 +80,7 @@ public class EjbInterceptorTest extends AbstractUnitTest
     }
 
 
-    //X TODO enable again for OWB-634 @Test()
+    @Test
     public void testDynamicEjbInterceptor()
     {
         Collection<String> beanXmls = new ArrayList<String>();

@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.test.unittests.intercept;
 
+import javax.enterprise.inject.spi.AnnotatedType;
+
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
@@ -48,7 +50,8 @@ public class EJBInterceptorExceptionComponentTest extends TestContext
         {
             AbstractInjectionTargetBean<MultpleInterceptor> component = defineManagedBean(MultpleInterceptor.class);
 
-            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
+            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(component.getReturnType());
+            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
         {

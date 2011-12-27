@@ -21,19 +21,20 @@ package org.apache.webbeans.intercept.ejb;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
 import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.intercept.InterceptorData;
-import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * Configures the EJB related interceptors.
@@ -54,25 +55,29 @@ public final class EJBInterceptorConfig
     /**
      * Configures the given class for applicable interceptors.
      *
-     * @param clazz configuration interceptors for this
+     * @param annotatedType to configure interceptors for
+     * @param interceptorStack to fill
      */
-    public void configure(Class<?> clazz, List<InterceptorData> stack)
+    public void configure(AnnotatedType<?> annotatedType, List<InterceptorData> interceptorStack)
     {
-        Asserts.nullCheckForClass(clazz);
+        Asserts.assertNotNull(annotatedType);
 
-        if (AnnotationUtil.hasClassAnnotation(clazz, Interceptors.class))
+
+        Interceptors incs = annotatedType.getAnnotation(Interceptors.class);
+        if (incs != null)
         {
-            Interceptors incs = clazz.getAnnotation(Interceptors.class);
-            Class<?>[] intClasses = incs.value();
+            Class<?>[] interceptorClasses = incs.value();
 
-            for (Class<?> intClass : intClasses)
+            for (Class<?> intClass : interceptorClasses)
             {
-                _configureInterceptorAnnots(intClass, stack, false, null);
+                configureInterceptorAnnots(intClass, interceptorStack, false, null);
             }
 
         }
-        _configureBeanAnnots(clazz, stack);
-        webBeansContext.getInterceptorUtil().filterOverridenLifecycleInterceptor(clazz, stack);
+        configureBeanAnnots(annotatedType, interceptorStack);
+
+        Class clazz = annotatedType.getJavaClass();
+        webBeansContext.getInterceptorUtil().filterOverridenLifecycleInterceptor(clazz, interceptorStack);
     }
 
     /**
@@ -82,14 +87,14 @@ public final class EJBInterceptorConfig
      * @param isMethod if interceptor definition is on the bean
      * @param m if isMethod true, then it is intercepted method
      */
-    private void _configureInterceptorAnnots(Class<?> clazz, List<InterceptorData> stack, boolean isMethod, Method m)
+    private void configureInterceptorAnnots(Class<?> clazz, List<InterceptorData> stack, boolean isMethod, Method m)
     {
         // 1- Look interceptor class super class
         // 2- Look interceptor class
         Class<?> superClass = clazz.getSuperclass();
         if (superClass != null && !superClass.equals(Object.class))
         {
-            _configureInterceptorAnnots(superClass, stack, false, null);
+            configureInterceptorAnnots(superClass, stack, false, null);
         }
 
         webBeansContext.getWebBeansUtil().configureInterceptorMethods(null, clazz, AroundInvoke.class,
@@ -105,36 +110,38 @@ public final class EJBInterceptorConfig
 
     /**
      * Configure bean class defined interceptors.
-     * @param clazz bean class
+     * @param annotatedType bean class
      * @param stack interceptor stack
      */
-    private void _configureBeanAnnots(Class<?> clazz, List<InterceptorData> stack)
+    private void configureBeanAnnots(AnnotatedType annotatedType, List<InterceptorData> stack)
     {
         // 1- Look method intercepor class annotations
         // 2- Look super class around invoke
         // 3- Look bean around invoke
 
         // 1-
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
+        Set<AnnotatedMethod<?>> annotatedMethods = annotatedType.getMethods();
 
-        for (Method method : methods)
+        for (AnnotatedMethod<?> annotatedMethod : annotatedMethods)
         {
-            Interceptors incs = method.getAnnotation(Interceptors.class);
+            Interceptors incs = annotatedMethod.getAnnotation(Interceptors.class);
             if (incs != null)
             {
+                Method method = annotatedMethod.getJavaMember();
                 Class<?>[] intClasses = incs.value();
 
                 for (Class<?> intClass : intClasses)
                 {
-                    _configureInterceptorAnnots(intClass, stack, true, method);
+                    configureInterceptorAnnots(intClass, stack, true, method);
                 }
 
             }
         }
 
+        Class clazz = annotatedType.getJavaClass();
         // 2- Super clazz
         List<Class<?>> listSuperClazz = ClassUtil.getSuperClasses(clazz, new ArrayList<Class<?>>());
-        _configureBeanSuperClassAnnots(listSuperClazz, stack);
+        configureBeanSuperClassAnnots(listSuperClazz, stack);
 
         // 3- Bean itself
         webBeansContext.getWebBeansUtil().configureInterceptorMethods(null, clazz, AroundInvoke.class,
@@ -153,7 +160,7 @@ public final class EJBInterceptorConfig
      * @param list super classes
      * @param stack interceptor stack
      */
-    private void _configureBeanSuperClassAnnots(List<Class<?>> list, List<InterceptorData> stack)
+    private void configureBeanSuperClassAnnots(List<Class<?>> list, List<InterceptorData> stack)
     {
         int i = list.size();
 

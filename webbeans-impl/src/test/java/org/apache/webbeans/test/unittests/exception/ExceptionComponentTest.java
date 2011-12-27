@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.exception;
 
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
@@ -209,7 +210,8 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<MoreThanOnePostConstructComponent> component = defineManagedBean(MoreThanOnePostConstructComponent.class);
-            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
+            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(component.getReturnType());
+            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
         {
@@ -226,7 +228,8 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<PostContructMethodHasParameterComponent> component = defineManagedBean(PostContructMethodHasParameterComponent.class);
-            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
+            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(component.getReturnType());
+            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
         {
@@ -243,7 +246,8 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(PostContructMethodHasReturnTypeComponent.class);
-            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
+            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(component.getReturnType());
+            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
         {
@@ -260,7 +264,8 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(PostContructMethodHasCheckedExceptionComponent.class);
-            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
+            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(component.getReturnType());
+            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
         {
@@ -277,7 +282,8 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(PostContructMethodHasStaticComponent.class);
-            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
+            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(component.getReturnType());
+            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
         {
@@ -294,7 +300,8 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(MoreThanOneAroundInvokeComponent.class);
-            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
+            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(component.getReturnType());
+            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
         {
@@ -321,7 +328,8 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithoutParameterComponent.class);
-            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
+            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(component.getReturnType());
+            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
         {
@@ -338,7 +346,8 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithoutReturnTypeComponent.class);
-            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
+            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(component.getReturnType());
+            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
         {
@@ -355,7 +364,8 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithWrongReturnTypeComponent.class);
-            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
+            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(component.getReturnType());
+            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
         {
@@ -372,7 +382,8 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithStaticMethodComponent.class);
-            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
+            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(component.getReturnType());
+            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
         {
@@ -389,7 +400,8 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithFinalMethodComponent.class);
-            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
+            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(component.getReturnType());
+            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
         {
@@ -406,7 +418,8 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(NoArgConstructorInterceptorComponent.class);
-            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
+            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(component.getReturnType());
+            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
         {

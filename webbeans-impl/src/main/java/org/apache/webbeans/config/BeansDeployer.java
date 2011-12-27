@@ -48,7 +48,6 @@ import org.apache.webbeans.component.InterceptedMarker;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
 import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -809,7 +808,7 @@ public class BeansDeployer
             webBeansContext.getManagedBeanConfigurator().checkManagedBeanCondition(clazz);
 
             //Temporary managed bean instance creationa
-            ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED, webBeansContext);                  
+            ManagedBean<T> managedBean = new ManagedBean<T>(clazz, webBeansContext);
             ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
 
             boolean annotationTypeSet = false;

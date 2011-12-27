@@ -324,6 +324,11 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
 
     /**
      * Get return types of the bean.
+     * As per section 11.1 it is defined as
+     * &quot;returns the bean class of the managed bean or session bean or of the bean
+     * that declares the producer method or field.&quot;
+     * Which means in case of a producer field or method, we need to return the class
+     * where the producer field/method is defined in.
      */
     public Class<?> getBeanClass()
     {
@@ -478,9 +483,11 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     }
 
     /**
-     * Gets type of the producer method.
+     * Gets type of the producer method/field or the bean class if it's not a producer.
+     * This basically determines the class which will get created.
      * 
      * @return type of the producer method
+     * @see #getBeanClass()
      */
     public Class<T> getReturnType()
     {
