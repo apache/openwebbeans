@@ -62,11 +62,12 @@ public class ExtendedStandaloneResourceInjectionService extends StandaloneResour
     {
         if (resourceReference.supports(EJB.class))
         {
+            EJB ejbAnnotation = resourceReference.getAnnotation(EJB.class);
             for (EjbResolver ejbResolver : this.ejbResolvers)
             {
                 try
                 {
-                    X result = ejbResolver.resolve(resourceReference.getResourceType());
+                    X result = ejbResolver.resolve(resourceReference.getResourceType(), ejbAnnotation);
                     if(result != null)
                     {
                         return result;
@@ -81,8 +82,9 @@ public class ExtendedStandaloneResourceInjectionService extends StandaloneResour
                     }
                 }
             }
-            
-            String jndiName = convertToJndiName(resourceReference.getResourceType());
+
+            String mappedName = ejbAnnotation.mappedName();
+            String jndiName = convertToJndiName(resourceReference.getResourceType(), mappedName);
             X result = lookupEjb(jndiName, resourceReference.getResourceType());
 
             return result;
@@ -91,9 +93,13 @@ public class ExtendedStandaloneResourceInjectionService extends StandaloneResour
         return super.getResourceReference(resourceReference);
     }
 
-    private String convertToJndiName(Class resourceType)
+    private String convertToJndiName(Class resourceType, String mappedName)
     {
-        return resourceType.getSimpleName() + "#" + resourceType.getName();
+        if(mappedName.length() == 0)
+        {
+            mappedName = resourceType.getSimpleName();
+        }
+        return mappedName + "#" + resourceType.getName();
     }
 
     private <X> X lookupEjb(String jndiName, Class<X> resourceType)

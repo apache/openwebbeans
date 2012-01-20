@@ -18,9 +18,10 @@
  */
 package org.apache.webbeans.resource.spi.ee;
 
+import javax.ejb.EJB;
 import javax.naming.NamingException;
 
 public interface EjbResolver
 {
-    <T> T resolve(Class<T> resourceReference) throws NamingException;
+    <T> T resolve(Class<T> resourceReference, EJB ejbAnnotation) throws NamingException;
 }
