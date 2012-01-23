@@ -211,6 +211,15 @@
                 <role>PMC</role>
             </roles>
         </developer>
+		<developer>
+            <id>martinkoci</id>
+            <name>Martin Koci</name>
+            <email>martinkoci at apache dot org</email>
+            <timezone>+1</timezone>
+            <roles>
+              <role>committer</role>
+            </roles>
+        </developer>		
     </developers>
 
     <contributors>
