@@ -197,15 +197,18 @@ public class ELContextStore
      */
     public void destroyDependents()
     {
-        Set<Bean<?>> beans = dependentObjects.keySet();
-        for(Bean<?> bean : beans)
+        if (dependentObjects.size() > 0)
         {
-            Bean<Object> o = (Bean<Object>)bean;
-            CreationalStore store = dependentObjects.get(bean);
-            o.destroy(store.getObject(), (CreationalContext<Object>)store.getCreational());
-        }
+            Set<Bean<?>> beans = dependentObjects.keySet();
+            for(Bean<?> bean : beans)
+            {
+                Bean<Object> o = (Bean<Object>)bean;
+                CreationalStore store = dependentObjects.get(bean);
+                o.destroy(store.getObject(), (CreationalContext<Object>)store.getCreational());
+            }
 
-        dependentObjects.clear();
+            dependentObjects.clear();
+        }
         beanNameToDependentBeanMapping.clear();
     }
 
