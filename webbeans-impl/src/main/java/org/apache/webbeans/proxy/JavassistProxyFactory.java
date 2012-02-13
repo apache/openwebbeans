@@ -357,7 +357,7 @@ public final class JavassistProxyFactory
         }
         
         boolean notInInterceptorClassAndLifecycle = false;
-        if(interceptors != null)
+        if(interceptors != null && interceptors.size() > 0)
         {
             Iterator<InterceptorData> its = interceptors.iterator();
             while(its.hasNext())

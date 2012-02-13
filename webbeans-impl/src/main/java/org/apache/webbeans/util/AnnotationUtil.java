@@ -513,7 +513,7 @@ public final class AnnotationUtil
      *
      * @param qualifier1
      * @param qualifier2
-     * @return
+     * @return 
      */
     public static boolean isQualifierEqual(Annotation qualifier1, Annotation qualifier2)
     {
@@ -535,8 +535,9 @@ public final class AnnotationUtil
         List<Method> bindingQualifierMethods
                 = getBindingQualifierMethods(qualifier1AnnotationType);
 
-        for (Method method : bindingQualifierMethods)
+        for (int i = 0, size = bindingQualifierMethods.size(); i < size; i++)
         {
+            Method method = bindingQualifierMethods.get(i);
             Object value1 = callMethod(qualifier1, method);
             Object value2 = callMethod(qualifier2, method);
 
@@ -690,7 +691,7 @@ public final class AnnotationUtil
      * which are not annotated with @Nonbinding.
      *
      * @param qualifierAnnotationType
-     * @return
+     * @return a {@link RandomAccess} List instance
      */
     private static List<Method> getBindingQualifierMethods(
             Class<? extends Annotation> qualifierAnnotationType)

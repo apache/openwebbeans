@@ -558,14 +558,17 @@ public final class InterceptorUtil
      */
     public void filterCommonInterceptorStackList(List<InterceptorData> stack, Method method)
     {
-        Iterator<InterceptorData> it = stack.iterator();
-        while (it.hasNext())
+        if (stack.size() > 0)
         {
-            InterceptorData data = it.next();
-
-            if (shouldRemoveInterceptorCommon(data, method))
+            Iterator<InterceptorData> it = stack.iterator();
+            while (it.hasNext())
             {
-                it.remove();
+                InterceptorData data = it.next();
+
+                if (shouldRemoveInterceptorCommon(data, method))
+                {
+                    it.remove();
+                }
             }
         }
     }
@@ -664,25 +667,28 @@ public final class InterceptorUtil
     {
 
         List<InterceptorData> overridenInterceptors = null;
-        Iterator<InterceptorData> it = stack.iterator();
-        while (it.hasNext())
+        if (stack.size() > 0)
         {
-            InterceptorData interceptorData = it.next();
-            if (interceptorData.getAroundInvoke() != null)
+            Iterator<InterceptorData> it = stack.iterator();
+            while (it.hasNext())
             {
-                InterceptorData overridenInterceptor = getOverridenInterceptor(beanClass, interceptorData, stack);
-                if (null != overridenInterceptor)
+                InterceptorData interceptorData = it.next();
+                if (interceptorData.getAroundInvoke() != null)
                 {
-                    if (overridenInterceptors == null)
+                    InterceptorData overridenInterceptor = getOverridenInterceptor(beanClass, interceptorData, stack);
+                    if (null != overridenInterceptor)
                     {
-                        overridenInterceptors = new ArrayList<InterceptorData>();
-                    }
-                    overridenInterceptors.add(overridenInterceptor);
-                    if (logger.wblWillLogDebug())
-                    {
-                        logger.debug("REMOVING parent " + overridenInterceptor);
-                    }
+                        if (overridenInterceptors == null)
+                        {
+                            overridenInterceptors = new ArrayList<InterceptorData>();
+                        }
+                        overridenInterceptors.add(overridenInterceptor);
+                        if (logger.wblWillLogDebug())
+                        {
+                            logger.debug("REMOVING parent " + overridenInterceptor);
+                        }
 
+                    }
                 }
             }
         }

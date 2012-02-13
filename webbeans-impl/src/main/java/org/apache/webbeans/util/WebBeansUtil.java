@@ -1214,42 +1214,45 @@ public final class WebBeansUtil
      */
     public static boolean isContainsInterceptorMethod(List<InterceptorData> stack, InterceptorType type)
     {
-        Iterator<InterceptorData> it = stack.iterator();
-        while (it.hasNext())
+        if (stack.size() > 0)
         {
-            Method m = null;
-            InterceptorData data = it.next();
+            Iterator<InterceptorData> it = stack.iterator();
+            while (it.hasNext())
+            {
+                Method m = null;
+                InterceptorData data = it.next();
 
-            if (type.equals(InterceptorType.AROUND_INVOKE))
-            {
-                m = data.getAroundInvoke();
-            }
-            else if (type.equals(InterceptorType.AROUND_TIMEOUT))
-            {
-                m = data.getAroundTimeout();
-            }
-            else if (type.equals(InterceptorType.POST_CONSTRUCT))
-            {
-                m = data.getPostConstruct();
-            }
-            else if (type.equals(InterceptorType.POST_ACTIVATE))
-            {
-                m = data.getPostActivate();
-            }
-            else if (type.equals(InterceptorType.PRE_DESTROY))
-            {
-                m = data.getPreDestroy();
-            }
-            else if (type.equals(InterceptorType.PRE_PASSIVATE))
-            {
-                m = data.getPrePassivate();
-            }
+                if (type.equals(InterceptorType.AROUND_INVOKE))
+                {
+                    m = data.getAroundInvoke();
+                }
+                else if (type.equals(InterceptorType.AROUND_TIMEOUT))
+                {
+                    m = data.getAroundTimeout();
+                }
+                else if (type.equals(InterceptorType.POST_CONSTRUCT))
+                {
+                    m = data.getPostConstruct();
+                }
+                else if (type.equals(InterceptorType.POST_ACTIVATE))
+                {
+                    m = data.getPostActivate();
+                }
+                else if (type.equals(InterceptorType.PRE_DESTROY))
+                {
+                    m = data.getPreDestroy();
+                }
+                else if (type.equals(InterceptorType.PRE_PASSIVATE))
+                {
+                    m = data.getPrePassivate();
+                }
 
-            if (m != null)
-            {
-                return true;
-            }
+                if (m != null)
+                {
+                    return true;
+                }
 
+            }
         }
 
         return false;

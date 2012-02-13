@@ -601,8 +601,9 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         super.validatePassivationDependencies();
         
         //Check for interceptors and decorators
-        for(Decorator<?> dec : decorators)
+        for(int i = 0, size = decorators.size(); i < size; i++)
         {
+            Decorator<?> dec = decorators.get(i);
             WebBeansDecorator<?> decorator = (WebBeansDecorator<?>)dec;
             if(!decorator.isPassivationCapable())
             {
@@ -615,8 +616,9 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             }
         }
         
-        for(InterceptorData interceptorData : interceptorStack)
+        for(int i = 0, size = interceptorStack.size(); i < size; i++)
         {
+            InterceptorData interceptorData = interceptorStack.get(i);
             if(interceptorData.isDefinedWithWebBeansInterceptor())
             {
                 WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>)interceptorData.getWebBeansInterceptor();

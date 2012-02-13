@@ -219,8 +219,9 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                         AbstractInjectable.dependentInstanceOfProducerMethods.get();
                 if(dependents != null)
                 {
-                    for(DependentCreationalContext<Object> dependent : dependents)
+                    for(int i = 0, size = dependents.size(); i < size; i++)
                     {
+                        DependentCreationalContext<Object> dependent = dependents.get(i);
                         ((CreationalContextImpl)creationalContext).
                                 addDependent(instance, dependent.getContextual(), dependent.getInstance());
                     }
