@@ -391,12 +391,13 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     {
                         if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(point.getType())))
                         {
-                            InjectionPointBean.local.set(point);   
+                            InjectionPointBean.setThreadLocal(point);  
                         }
                     }                           
                     
                     CreationalContext<Object> creational = manager.createCreationalContext(injectedBean);
                     Object instance = manager.getInstance(injectedBean, creational); 
+                    InjectionPointBean.unsetThreadLocal();
                     
                     param = new ObserverParams();
                     param.isBean = true;
@@ -453,12 +454,13 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 {
                     if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(point.getType())))
                     {
-                        InjectionPointBean.local.set(point);   
+                        InjectionPointBean.setThreadLocal(point);
                     }
                 }                    
                 
                 CreationalContext<Object> creational = manager.createCreationalContext(injectedBean);
                 Object instance = manager.getInstance(injectedBean, creational); 
+                InjectionPointBean.unsetThreadLocal();
                                     
                 param = new ObserverParams();
                 param.isBean = true;

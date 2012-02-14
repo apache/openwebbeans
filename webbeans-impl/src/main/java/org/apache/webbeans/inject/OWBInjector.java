@@ -44,6 +44,7 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -59,6 +60,8 @@ public final class OWBInjector implements Serializable
 {
     //Serial id
     private static final long serialVersionUID = 1L;
+    
+    public static final WebBeansLogger logger = WebBeansLogger.getLogger(OWBInjector.class);
     
     /**Creational context to hold dependent instances*/
     private CreationalContextImpl<?> ownerCreationalContext = null;
@@ -242,12 +245,13 @@ public final class OWBInjector implements Serializable
         {
             if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(injectionPoint.getType())))
             {
-                InjectionPointBean.local.set(injectionPoint);   
+                InjectionPointBean.setThreadLocal(injectionPoint);
             }
         }
         
         object = beanManager.getInjectableReference(injectionPoint, ownerCreationalContext);
-        
+        InjectionPointBean.unsetThreadLocal();
+
         return object;
     }
     

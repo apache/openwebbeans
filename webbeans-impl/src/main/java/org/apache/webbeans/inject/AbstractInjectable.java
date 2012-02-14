@@ -40,6 +40,7 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.context.creational.DependentCreationalContext;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -56,6 +57,8 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public abstract class AbstractInjectable implements Injectable
 {
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(AbstractInjectable.class);
+        
     /** Owner bean of the injection point*/
     protected OwbBean<?> injectionOwnerBean;
     
@@ -107,49 +110,56 @@ public abstract class AbstractInjectable implements Injectable
         {
             EventBean.local.set(injectionPoint);
         }        
-        
-        //Injection for dependent instance InjectionPoint fields
-        boolean dependentProducer = false;
-        if(WebBeansUtil.isDependent(injectedBean))
+
+        try 
         {
-            if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(injectionPoint.getType())))
+            //Injection for dependent instance InjectionPoint fields
+            boolean dependentProducer = false;
+            if(WebBeansUtil.isDependent(injectedBean))
             {
-                InjectionPointBean.local.set(injectionPoint);   
-            }
-            
-            if(!injectionPoint.isTransient())
-            {
-                if(injectedBean instanceof AbstractProducerBean)
+                if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(injectionPoint.getType())))
                 {
-                    if(injectionOwnerBean.isPassivationCapable())
+                    InjectionPointBean.setThreadLocal(injectionPoint);
+                }
+
+                if(!injectionPoint.isTransient())
+                {
+                    if(injectedBean instanceof AbstractProducerBean)
                     {
-                        dependentProducer = true;   
+                        if(injectionOwnerBean.isPassivationCapable())
+                        {
+                            dependentProducer = true;   
+                        }
                     }
                 }
-            }
-        }        
-        
-        //Gets injectable reference for injected bean
-        injected = beanManager.getInjectableReference(injectionPoint, injectionOwnerCreationalContext);
+            }        
 
-        /*X TODO see spec issue CDI-140 */
-        if(dependentProducer)
-        {
-            if(injected != null && !Serializable.class.isAssignableFrom(injected.getClass()))
+            //Gets injectable reference for injected bean
+            injected = beanManager.getInjectableReference(injectionPoint, injectionOwnerCreationalContext);
+
+            /*X TODO see spec issue CDI-140 */
+            if(dependentProducer)
             {
-                throw new IllegalProductException("If a producer method or field of scope @Dependent returns an serializable object for injection " +
-                                                  "into an injection point "+ injectionPoint +" that requires a passivation capable dependency");
+                if(injected != null && !Serializable.class.isAssignableFrom(injected.getClass()))
+                {
+                    throw new IllegalProductException("If a producer method or field of scope @Dependent returns an serializable object for injection " +
+                                                    "into an injection point "+ injectionPoint +" that requires a passivation capable dependency");
+                }
+            }
+
+
+            // add this dependent into bean dependent list
+            if (!WebBeansUtil.isStaticInjection(injectionPoint) && WebBeansUtil.isDependent(injectedBean))
+            {
+                if(instanceUnderInjection.get() != null)
+                {
+                    ((CreationalContextImpl<?>) injectionOwnerCreationalContext).addDependent(instanceUnderInjection.get(),injectedBean, injected);
+                }
             }
         }
-
         
-        // add this dependent into bean dependent list
-        if (!WebBeansUtil.isStaticInjection(injectionPoint) && WebBeansUtil.isDependent(injectedBean))
-        {
-            if(instanceUnderInjection.get() != null)
-            {
-                ((CreationalContextImpl<?>) injectionOwnerCreationalContext).addDependent(instanceUnderInjection.get(),injectedBean, injected);
-            }
+        finally {
+            InjectionPointBean.unsetThreadLocal();
         }
 
         return injected;
