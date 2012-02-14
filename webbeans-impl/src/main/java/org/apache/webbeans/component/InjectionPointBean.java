@@ -18,25 +18,58 @@
  */
 package org.apache.webbeans.component;
 
+import java.util.Stack;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.config.WebBeansContext;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.InjectionPoint;
-
+import org.apache.webbeans.logger.WebBeansLogger;
 
 public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
 {
-    //X TODO refactor. public static variables are utterly ugly
-    public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
+
+    public static final WebBeansLogger logger = WebBeansLogger.getLogger(InjectionPointBean.class);
+
+    private static ThreadLocal<Stack<InjectionPoint>> localThreadlocalStack = new ThreadLocal<Stack<InjectionPoint>>();
+    
+    public static Stack<InjectionPoint> getStackOfInjectionPoints()
+    {
+        Stack<InjectionPoint> stackIP = localThreadlocalStack.get();
+        if (null == stackIP) 
+        {
+            stackIP = new Stack<InjectionPoint>();
+        }
+        return stackIP;
+    }
+    
+    public static boolean setThreadLocal(InjectionPoint ip) 
+    {
+
+        Stack<InjectionPoint> stackIP = getStackOfInjectionPoints();
+        stackIP.push(ip);
+        localThreadlocalStack.set(stackIP);
+        logger.debug("PUSHED IP on stack {0}", stackIP);
+        return true;
+        
+    }
+    
+    public static void unsetThreadLocal() 
+    {
+        Stack<InjectionPoint> stackIP = getStackOfInjectionPoints();
+        InjectionPoint ip = stackIP.pop();
+        logger.debug("POPPED IP on stack {0}", ip);
+    }
 
     /**
      * Removes the ThreadLocal from the ThreadMap to prevent memory leaks.
      */
-    public static void removeThreadLocal()
+    public static void removeThreadLocal() 
     {
-        local.remove();
+
+        logger.debug("REMOVED ThreadLocal stack");
+        localThreadlocalStack.remove();
+        
     }
 
     public InjectionPointBean(WebBeansContext webBeansContext)
@@ -50,24 +83,20 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
     }
 
     @Override
-    protected InjectionPoint createInstance(CreationalContext<InjectionPoint> creationalContext)
+    protected InjectionPoint createInstance(CreationalContext<InjectionPoint> creationalContext) 
     {
-        try
-        {
-            return local.get();
-            
-        }
-        finally
-        {
-            local.set(null);
-            local.remove();
-        }
+
+        logger.debug("ENTRY createInstance {0}", creationalContext);
+        InjectionPoint ip = getStackOfInjectionPoints().peek();
+        logger.debug("RETURN {0}", ip);
+        return ip;
+
     }
 
     @Override
     protected void destroyInstance(InjectionPoint instance, CreationalContext<InjectionPoint> creationalContext)
     {
-        local.remove();
+        removeThreadLocal();
     }
     
     /* (non-Javadoc)
@@ -78,6 +107,5 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
     {
         return true;
     }
-    
-    
+        
 }

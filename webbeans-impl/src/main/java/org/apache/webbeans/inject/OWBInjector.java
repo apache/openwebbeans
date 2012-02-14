@@ -222,6 +222,7 @@ public final class OWBInjector implements Serializable
     private Object getInjectedObjectReference(InjectionPoint injectionPoint, BeanManagerImpl beanManager)
     {
         Object object = null;
+        boolean injectionPointBeanLocalSetOnStack = false;
         
         //Injected contextual beam
         InjectionResolver injectionResolver = beanManager.getInjectionResolver();
@@ -242,11 +243,16 @@ public final class OWBInjector implements Serializable
         {
             if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(injectionPoint.getType())))
             {
-                InjectionPointBean.local.set(injectionPoint);   
+                injectionPointBeanLocalSetOnStack = InjectionPointBean.setThreadLocal(injectionPoint);
             }
         }
         
         object = beanManager.getInjectableReference(injectionPoint, ownerCreationalContext);
+        
+        if (injectionPointBeanLocalSetOnStack )
+        {
+        	InjectionPointBean.unsetThreadLocal();
+        }
         
         return object;
     }
