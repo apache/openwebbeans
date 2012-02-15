@@ -374,6 +374,8 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
 
                 if (!observesAnnotation)
                 {
+                    boolean injectionPointBeanLocalSetOnStack = false;
+                    
                     //Get parameter annotations
                     Annotation[] bindingTypes = annotationManager.getQualifierAnnotations(annot);
                     
@@ -391,13 +393,17 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     {
                         if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(point.getType())))
                         {
-                            InjectionPointBean.local.set(point);   
+                            injectionPointBeanLocalSetOnStack = InjectionPointBean.setThreadLocal(point);
                         }
                     }                           
                     
                     CreationalContext<Object> creational = manager.createCreationalContext(injectedBean);
                     Object instance = manager.getInstance(injectedBean, creational); 
-                    
+                    if (injectionPointBeanLocalSetOnStack)
+                    {
+                        InjectionPointBean.unsetThreadLocal();
+                    }
+
                     param = new ObserverParams();
                     param.isBean = true;
                     param.creational = creational;
@@ -436,6 +442,8 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             }
             else
             {
+                boolean injectionPointBeanLocalSetOnStack = false;
+                
                 //Get parameter annotations
                 Annotation[] bindingTypes =
                     annotationManager.getQualifierAnnotations(AnnotationUtil.
@@ -453,12 +461,17 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 {
                     if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(point.getType())))
                     {
-                        InjectionPointBean.local.set(point);   
+                        injectionPointBeanLocalSetOnStack = InjectionPointBean.setThreadLocal(point);
                     }
                 }                    
                 
                 CreationalContext<Object> creational = manager.createCreationalContext(injectedBean);
                 Object instance = manager.getInstance(injectedBean, creational); 
+                
+                if (injectionPointBeanLocalSetOnStack)
+                {
+                    InjectionPointBean.unsetThreadLocal();
+                }
                                     
                 param = new ObserverParams();
                 param.isBean = true;
