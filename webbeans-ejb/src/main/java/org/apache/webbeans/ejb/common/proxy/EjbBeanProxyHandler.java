@@ -25,6 +25,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -103,7 +104,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
     /**
      * {@inheritDoc}
      */
-    public Object invoke(Object proxyInstance, Method method, Method proceed, Object[] arguments) throws Exception
+    public Object invoke(Object proxyInstance, Method method, Method proceed, Object[] arguments) throws Throwable 
     {
         Object result = null;
         
@@ -188,6 +189,10 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
                 webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, true);
             }
             result = method.invoke(webbeansInstance, arguments);
+        }
+        catch (InvocationTargetException ite) 
+        {
+            throw ite.getCause();
         }
         finally
         {
