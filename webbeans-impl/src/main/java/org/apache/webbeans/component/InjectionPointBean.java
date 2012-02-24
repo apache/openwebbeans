@@ -31,7 +31,6 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(InjectionPointBean.class);
     
-    //X TODO refactor. public static variables are utterly ugly
     private static ThreadLocal<Stack<InjectionPoint>> localThreadlocalStack = new ThreadLocal<Stack<InjectionPoint>>();
 
     private static Stack<InjectionPoint> getStackOfInjectionPoints()
@@ -78,6 +77,11 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
         setImplScopeType(new DependentScopeLiteral());
         addApiType(InjectionPoint.class);
         addApiType(Object.class);
+    }
+
+    public static boolean isStackEmpty()
+    {
+        return getStackOfInjectionPoints().isEmpty();
     }
 
     @Override

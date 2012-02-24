@@ -62,6 +62,7 @@ import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
+import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.JmsBeanMarker;
@@ -827,17 +828,34 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             InjectionResolver.injectionPoints.set(injectionPoint);
         }
 
-        if(WebBeansUtil.isDependent(injectedBean))
-        {        
-            //Using owner creational context
-            //Dependents use parent creational context
-            instance = getReference(injectedBean, injectionPoint.getType(), ownerCreationalContext);
+        boolean ijbSet = false;
+        if (InjectionPointBean.isStackEmpty())
+        {
+            ijbSet = true;
+            InjectionPointBean.setThreadLocal(injectionPoint);
         }
-        else
-        {   
-            //New creational context for normal scoped beans
-            CreationalContextImpl<Object> injectedCreational = (CreationalContextImpl<Object>)createCreationalContext(injectedBean);            
-            instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
+
+        try
+        {
+            if(WebBeansUtil.isDependent(injectedBean))
+            {
+                //Using owner creational context
+                //Dependents use parent creational context
+                instance = getReference(injectedBean, injectionPoint.getType(), ownerCreationalContext);
+            }
+            else
+            {
+                //New creational context for normal scoped beans
+                CreationalContextImpl<Object> injectedCreational = (CreationalContextImpl<Object>)createCreationalContext(injectedBean);
+                instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
+            }
+        }
+        finally
+        {
+            if (ijbSet)
+            {
+                InjectionPointBean.unsetThreadLocal();
+            }
         }
 
         if(isSetIPForProducers)
