@@ -89,6 +89,7 @@ public final class ContextFactory
     {
         ContextsService contextService = getContextsService();
         contextService.endContext(RequestScoped.class, request);
+        resetProxyCache();
     }
 
     public void initSessionContext(Object session)
@@ -108,6 +109,7 @@ public final class ContextFactory
     {
         ContextsService contextService = getContextsService();
         contextService.endContext(SessionScoped.class, session);
+        resetProxyCache();
     }
 
     public void initApplicationContext(Object parameter)
@@ -133,6 +135,7 @@ public final class ContextFactory
     {
         ContextsService contextService = getContextsService();
         contextService.endContext(ApplicationScoped.class, parameter);
+        resetProxyCache();
     }
 
     public void initSingletonContext(Object parameter)
@@ -152,6 +155,7 @@ public final class ContextFactory
     {
         ContextsService contextService = getContextsService();
         contextService.endContext(Singleton.class, parameter);
+        resetProxyCache();
     }
 
     public void initConversationContext(Object context)
@@ -171,6 +175,7 @@ public final class ContextFactory
     {
         ContextsService contextService = getContextsService();
         contextService.endContext(ConversationScoped.class, null);
+        resetProxyCache();
     }
 
     /**
@@ -252,4 +257,9 @@ public final class ContextFactory
         contextService.deActivateContext(scopeType);
     }
 
+
+    private void resetProxyCache()
+    {
+        this.webBeansContext.getBeanManagerImpl().resetProxyCache();
+    }
 }
