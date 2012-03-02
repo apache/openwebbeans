@@ -21,6 +21,7 @@ package org.apache.webbeans.event;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,6 +32,7 @@ import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
@@ -45,6 +47,7 @@ import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.WebBeansType;
@@ -395,7 +398,12 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                         {
                             injectionPointBeanLocalSetOnStack = InjectionPointBean.setThreadLocal(point);
                         }
-                    }                           
+                    }
+                    
+                    if (isEventProviderInjection(point))
+                    {
+                        EventBean.local.set(point);
+                    }
                     
                     CreationalContext<Object> creational = manager.createCreationalContext(injectedBean);
                     Object instance = manager.getInstance(injectedBean, creational); 
@@ -464,6 +472,11 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                         injectionPointBeanLocalSetOnStack = InjectionPointBean.setThreadLocal(point);
                     }
                 }                    
+
+                if (isEventProviderInjection(point))
+                {
+                    EventBean.local.set(point);
+                }
                 
                 CreationalContext<Object> creational = manager.createCreationalContext(injectedBean);
                 Object instance = manager.getInstance(injectedBean, creational); 
@@ -483,6 +496,24 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         }
                 
         return list;
+    }
+    
+    private boolean isEventProviderInjection(InjectionPoint injectionPoint)
+    {
+        Type type = injectionPoint.getType();
+
+        if (type instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType) type;
+            Class<?> clazz = (Class<?>) pt.getRawType();
+
+            if (clazz.isAssignableFrom(Event.class))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

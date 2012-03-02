@@ -19,6 +19,7 @@
 package org.apache.webbeans.test.component.event.normal;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Any;
 
@@ -37,9 +38,10 @@ public class ComponentWithObserves1
         this.userName = event.getUserName();
     }
 
-    private void afterLoggedInWithMember(@Observes @Check(type = "CHECK") LoggedInEvent event)
+    private void afterLoggedInWithMember(@Observes @Check(type = "CHECK") LoggedInEvent event, Event<String> myEvent)
     {
         this.userNameWithMember = event.getUserName();
+        myEvent.fire("Rohit Kelapure");
     }
 
     public String getUserName()
