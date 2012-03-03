@@ -41,6 +41,7 @@ import org.apache.webbeans.test.component.event.normal.ComponentWithObserves3;
 import org.apache.webbeans.test.component.event.normal.ComponentWithObserves4;
 import org.apache.webbeans.test.component.event.normal.ComponentWithObserves5;
 import org.apache.webbeans.test.component.event.normal.ComponentWithObserves6;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObserves7;
 import org.apache.webbeans.test.component.event.normal.TransactionalInterceptor;
 import org.apache.webbeans.test.event.LoggedInEvent;
 import org.junit.Before;
@@ -258,5 +259,26 @@ public class ObserversComponentTest extends TestContext
         Assert.assertEquals("ADMIN", instance.getUser());
 
     }
+    
+    @Test
+    public void testObservesWithEventInjection()
+    {
+        clear();
 
+        getManager().addBean(WebBeansContext.getInstance().getWebBeansUtil().getEventBean());
+
+        AbstractOwbBean<ComponentWithObserves7> component = defineManagedBean(ComponentWithObserves7.class);
+        AbstractOwbBean<ComponentWithObservable1> componentObservable = defineManagedBean(ComponentWithObservable1.class);
+
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
+
+        ComponentWithObserves7 instance = getManager().getInstance(component);
+        ComponentWithObservable1 observable = getManager().getInstance(componentObservable);
+
+        observable.afterLoggedIn();
+
+        Assert.assertEquals("Gurkan", instance.getUserName());
+        Assert.assertEquals("Rohit_Kelapure", instance.getEventString());
+    }    
+    
 }

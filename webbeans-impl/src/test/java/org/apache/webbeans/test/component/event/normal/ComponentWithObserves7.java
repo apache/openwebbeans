@@ -19,27 +19,28 @@
 package org.apache.webbeans.test.component.event.normal;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Any;
 
-import org.apache.webbeans.test.annotation.binding.Check;
 import org.apache.webbeans.test.event.LoggedInEvent;
 
 @RequestScoped
-public class ComponentWithObserves1
+public class ComponentWithObserves7
 {
     private String userName;
 
-    private String userNameWithMember;
+    private String eventString;
 
-    public void afterLoggedIn(@Observes @Any LoggedInEvent event)
+    public void afterLoggedIn(@Observes @Any LoggedInEvent event, Event<String> myEvent)
     {
         this.userName = event.getUserName();
+        myEvent.fire("Rohit_Kelapure");
     }
-
-    private void afterLoggedInWithMember(@Observes @Check(type = "CHECK") LoggedInEvent event)
+   
+    public void watchEvent(@Observes String myEventString)
     {
-        this.userNameWithMember = event.getUserName();
+        this.eventString = myEventString;
     }
 
     public String getUserName()
@@ -47,12 +48,9 @@ public class ComponentWithObserves1
         return this.userName;
     }
 
-    /**
-     * @return the userNameWithMember
-     */
-    public String getUserNameWithMember()
+    public String getEventString()
     {
-        return userNameWithMember;
+        return eventString;
     }
 
 }
