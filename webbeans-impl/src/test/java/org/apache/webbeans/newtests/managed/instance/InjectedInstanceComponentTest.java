@@ -30,9 +30,14 @@ import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
 import org.junit.Test;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.util.TypeLiteral;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
+
 
 public class InjectedInstanceComponentTest extends AbstractUnitTest
 {
@@ -87,6 +92,35 @@ public class InjectedInstanceComponentTest extends AbstractUnitTest
         shutDownContainer();
 
         Assert.assertTrue(DependentBean.properlyDestroyed);
+    }
+
+    @Test
+    public void testManualInstanceResolving()
+    {
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+
+        beanClasses.add(PaymentProcessorComponent.class);
+        beanClasses.add(CheckWithCheckPayment.class);
+        beanClasses.add(CheckWithMoneyPayment.class);
+        beanClasses.add(IPayment.class);
+
+        startContainer(beanClasses, null);
+
+        Set<Bean<?>> beans =
+                getBeanManager().getBeans(new TypeLiteral<Instance<PaymentProcessorComponent>>() {}.getType());
+        Bean<Instance<PaymentProcessorComponent>> bean =
+                (Bean<Instance<PaymentProcessorComponent>>) getBeanManager().resolve(beans);
+        CreationalContext<Instance<PaymentProcessorComponent>> creationalContext =
+                getBeanManager().createCreationalContext(bean);
+        Instance<PaymentProcessorComponent> provider = bean.create(creationalContext);
+        Assert.assertNotNull(provider);
+
+        // please note that the provider will NOT create a PaymentProcessorComponent
+        // because the Bean doesn't know this information! This is compatible with Weld
+        // which also doesn't handle this case. This is due to the fact that the spec
+        // defines that there is only one InstanceBean.
+
+        shutDownContainer();
     }
 
 }

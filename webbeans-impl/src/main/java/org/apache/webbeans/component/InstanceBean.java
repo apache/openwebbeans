@@ -49,18 +49,25 @@ public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
     {
         try
         {
-            ParameterizedType injectedType = (ParameterizedType)local.get().getType();
-            Set<Annotation> qualifiers = local.get().getQualifiers();
-            Type type = injectedType.getActualTypeArguments()[0];
             InjectionPoint injectionPoint = local.get();
+            Set<Annotation> qualifiers;
+            Type type;
             Class injectionPointClass = null;
 
             if (injectionPoint != null)
             {
+                ParameterizedType injectedType = (ParameterizedType)injectionPoint.getType();
+                qualifiers = injectionPoint.getQualifiers();
+                type = injectedType.getActualTypeArguments()[0];
                 if (injectionPoint.getBean() != null)
                 {
                     injectionPointClass = injectionPoint.getBean().getBeanClass();
                 }
+            }
+            else
+            {
+                qualifiers = getQualifiers();
+                type = getReturnType();
             }
 
             Object ownerInstance = AbstractInjectable.instanceUnderInjection.get();
