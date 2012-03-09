@@ -98,9 +98,10 @@ public class WebScannerService extends AbstractMetaDataDiscovery
     protected Set<String> createURLFromMarkerFile() throws Exception
     {
         Set<String> listURL = new HashSet<String>();
+        ClassLoader parentClassLoader = WebBeansUtil.getCurrentClassLoader().getParent();
 
         // Root with beans.xml marker.
-        String[] urls = findBeansXmlBases("META-INF/beans.xml", WebBeansUtil.getCurrentClassLoader());
+        String[] urls = findBeansXmlBases(META_INF_BEANS_XML, WebBeansUtil.getCurrentClassLoader());
 
         if (urls != null)
         {
@@ -110,14 +111,12 @@ public class WebScannerService extends AbstractMetaDataDiscovery
                 String fileDir = new URL(url).getFile();
                 if (fileDir.endsWith(".jar!/"))
                 {
-                    fileDir = fileDir.substring(0, fileDir.lastIndexOf("/")) + "/META-INF/beans.xml";
+                    fileDir = fileDir.substring(0, fileDir.lastIndexOf("/")) + "/" + META_INF_BEANS_XML;
 
                     //fix for weblogic
                     if (!fileDir.startsWith("file:/"))
                     {
                         fileDir = "file:/" + fileDir;
-                        //TODO switch to a more stable approach
-                        //url = new URL("jar:" + fileDir);
                     }
 
                     if (logger.wblWillLogDebug())
