@@ -66,13 +66,13 @@ public final class JSFUtil
     {
         Asserts.assertNotNull(redirectId, "redirectId parameter can not be null");        
 
-        StringBuffer buffer = new StringBuffer(redirectId);
+        StringBuilder buffer = new StringBuilder(redirectId);
         int index = buffer.lastIndexOf("/");        
         
         String remainder = buffer.substring(index+1, buffer.length());
         int indexOfQuery = remainder.indexOf('?');
         
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         if(indexOfQuery != -1)
         {
             result.append(buffer.substring(0,index+1));
@@ -139,8 +139,7 @@ public final class JSFUtil
 
     public static String getConversationId()
     {
-        String cid = getJSFRequestParameter("cid");
-        return cid;
+        return getJSFRequestParameter("cid");
     }
 
 }

@@ -101,9 +101,6 @@ public class OpenWebBeansConfiguration
     /**Supports conversations*/
     public static final String APPLICATION_SUPPORTS_CONVERSATION = "org.apache.webbeans.application.supportsConversation";
 
-    /**Use of JSF2 extensions*/
-    public static final String USE_JSF2_EXTENSIONS = "org.apache.webbeans.application.useJSF2Extensions";
-    
     /**Use of EJB interceptor to inject EJBs*/
     public static final String USE_EJBINTERCEPTOR_INJECTION = "org.apache.webbeans.application.useEJBInterceptorInjection";
     
@@ -185,9 +182,6 @@ public class OpenWebBeansConfiguration
         
         value = properties.getProperty(CONTAINER_LIFECYCLE);
         setPropertyFromSystemProperty(CONTAINER_LIFECYCLE, value);
-
-        value = properties.getProperty(USE_JSF2_EXTENSIONS);
-        setPropertyFromSystemProperty(USE_JSF2_EXTENSIONS, value);
 
         value = properties.getProperty(APPLICATION_IS_JSP);
         setPropertyFromSystemProperty(APPLICATION_IS_JSP, value);
@@ -297,18 +291,7 @@ public class OpenWebBeansConfiguration
         configProperties.put(key, value);
     }
     
-    /**
-     * Return true if use JSF2.
-     * @return true if use JSF2
-     */
-    public boolean isUseJSF2Extensions()
-    {
-        String value = getProperty(USE_JSF2_EXTENSIONS);
-        
-        return Boolean.valueOf(value);
-        
-    }
-    
+
     /**
      * Gets jsp property.
      * @return true if jsp

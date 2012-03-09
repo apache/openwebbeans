@@ -42,7 +42,7 @@ public class OwbApplication extends ApplicationWrapper
     @Override
     public ExpressionFactory getExpressionFactory()
     {
-        if(this.expressionFactory == null)
+        if(expressionFactory == null)
         {
             expressionFactory = wrappedApplication.getExpressionFactory();
             expressionFactory = WebBeansContext.getInstance().getBeanManagerImpl().wrapExpressionFactory(expressionFactory);

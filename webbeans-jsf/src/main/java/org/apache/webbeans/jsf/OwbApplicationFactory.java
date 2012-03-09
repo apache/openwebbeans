@@ -31,7 +31,7 @@ public class OwbApplicationFactory extends ApplicationFactory
     
     public OwbApplicationFactory(ApplicationFactory applicationFactory)
     {
-        this.wrapped = applicationFactory;        
+        wrapped = applicationFactory;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class OwbApplicationFactory extends ApplicationFactory
     @Override
     public void setApplication(Application arg0)
     {
-        this.wrapped.setApplication(arg0);
+        wrapped.setApplication(arg0);
     }
 
     /* (non-Javadoc)
