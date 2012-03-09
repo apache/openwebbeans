@@ -2296,13 +2296,21 @@ public final class WebBeansUtil
     public void setInjectionTargetBeanEnableFlag(InjectionTargetBean<?> bean)
     {
         Asserts.assertNotNull(bean, "bean can not be null");
+        
+        boolean isAlternative = hasInjectionTargetBeanAnnotatedWithAlternative(bean); 
 
-        if(hasInjectionTargetBeanAnnotatedWithAlternative(bean))
+        if(!isAlternative)
         {
-            if(!webBeansContext.getAlternativesManager().isBeanHasAlternative(bean))
+            AnnotatedType at = bean.getAnnotatedType();
+            if (at != null)
             {
-                bean.setEnabled(false);
+                isAlternative =  at.getAnnotation(Alternative.class) != null;
             }
+        }
+        
+        if(isAlternative && !webBeansContext.getAlternativesManager().isBeanHasAlternative(bean))
+        {
+            bean.setEnabled(false);
         }
     }
 

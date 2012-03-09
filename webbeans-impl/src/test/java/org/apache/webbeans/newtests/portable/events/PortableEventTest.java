@@ -68,7 +68,6 @@ public class PortableEventTest extends AbstractUnitTest
         Assert.assertFalse(NotAppleExtnsion.CALLED);
         
         shutDownContainer();
-        
     }
     
     @Test
@@ -86,7 +85,6 @@ public class PortableEventTest extends AbstractUnitTest
         Assert.assertTrue(RawTypeExtension.CALLED);
         
         shutDownContainer();
-        
     }
     
     @Test
@@ -104,7 +102,6 @@ public class PortableEventTest extends AbstractUnitTest
         Assert.assertTrue(TypeVariableExtension.CALLED);
         
         shutDownContainer();
-        
     }
     
     @Test
@@ -122,7 +119,6 @@ public class PortableEventTest extends AbstractUnitTest
         Assert.assertTrue(WildcardExtension.CALLED);
         
         shutDownContainer();
-
     }
     
     @Test
@@ -140,7 +136,6 @@ public class PortableEventTest extends AbstractUnitTest
         Assert.assertFalse(WrongTypeVariableExtension.CALLED);
         
         shutDownContainer();
-        
     }
     
     @Test
@@ -158,6 +153,6 @@ public class PortableEventTest extends AbstractUnitTest
         Assert.assertFalse(WrongWildcardExtension.CALLED);
         
         shutDownContainer();
-        
     }
+
 }

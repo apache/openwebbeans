@@ -20,6 +20,7 @@ package org.apache.webbeans.newtests.portable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 import javax.enterprise.inject.spi.Bean;
 
@@ -29,6 +30,9 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.newtests.portable.alternative.Egg;
+import org.apache.webbeans.newtests.portable.alternative.HalfEgg;
+import org.apache.webbeans.newtests.portable.events.extensions.AlternativeExtension;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScopeExtension;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScoped;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScopedBean;
@@ -101,6 +105,34 @@ public class ExtensionTest extends AbstractUnitTest
         {
             // this is expected!
         }
+    }
+
+    /**
+     * This will test if an &#0064;Alternative can get added dynamically.
+     * Please note that we cannot do much more than checking if the
+     * dynamically enabled &#0064;Alternative is now disabled.
+     * That's because with CDI-1.0 it's not possible to also add
+     * the Alternative to beans.xml nor programmatically.
+     * This feature only gets added in CDI-1.1 with
+     * ProcessModule#getAlternatives() which can be modified.
+     *
+     * TODO: extend test for CDI-1.1
+     */
+    @Test
+    public void testAlternativeExtenson()
+    {
+        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.add(Egg.class);
+        classes.add(HalfEgg.class);
+        addExtension(new AlternativeExtension());
+        startContainer(classes);
+
+        Egg egg = getInstance(Egg.class);
+        Assert.assertTrue(egg instanceof Egg);
+        Set<Bean<?>> beans = getBeanManager().getBeans(HalfEgg.class);
+        Assert.assertTrue(beans == null || beans.size() == 0);
+
+        shutDownContainer();
     }
 
 }

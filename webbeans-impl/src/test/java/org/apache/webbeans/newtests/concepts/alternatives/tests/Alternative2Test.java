@@ -37,7 +37,7 @@ import org.apache.webbeans.newtests.concepts.alternatives.common.QualifierProduc
 import org.junit.Test;
 
 public class Alternative2Test  extends AbstractUnitTest {
-	
+
     @Test
     @SuppressWarnings("unchecked")
     public void testDisposerMethodInAlternativeBean()
@@ -65,8 +65,6 @@ public class Alternative2Test  extends AbstractUnitTest {
         shutDownContainer();
         
         Assert.assertTrue(Boolean.TRUE);
-        
-    	
     }
 
 }
