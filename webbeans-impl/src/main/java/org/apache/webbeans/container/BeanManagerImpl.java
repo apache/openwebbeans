@@ -1252,8 +1252,4 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return inUse;
     }
 
-    public void resetProxyCache()
-    {
-        this.cacheProxies.clear();
-    }
 }
