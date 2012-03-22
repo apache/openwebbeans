@@ -455,7 +455,6 @@
         <module>webbeans-web</module>
         <module>webbeans-ejb</module>
         <module>webbeans-ee</module>
-        <module>webbeans-openejb</module>
         <module>webbeans-tomcat6</module>
         <module>webbeans-tomcat7</module>
         <module>webbeans-jms</module>       
