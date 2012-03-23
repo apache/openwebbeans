@@ -33,6 +33,7 @@ import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestLifeCycle;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
+import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Assert;
 
@@ -84,7 +85,11 @@ public abstract class AbstractUnitTest
         }
         
     }
-    
+
+    protected ContainerLifecycle getLifecycle()
+    {
+        return testLifecycle;
+    }
     
     protected void shutDownContainer()
     {
