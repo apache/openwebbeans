@@ -171,10 +171,12 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     public <T> T get(Contextual<T> component)
     {
         checkActive();
+
+        BeanInstanceBag bag = componentInstanceMap.get(component);
         
-        if(componentInstanceMap.get(component) != null)
+        if(bag != null)
         {
-            return (T) componentInstanceMap.get(component).getBeanInstance();    
+            return (T) bag.getBeanInstance();
         }
         
         return null;
