@@ -1084,9 +1084,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             }
         }
 
-        if(AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), NormalScope.class))
+        NormalScope scope = annotationType.getAnnotation(NormalScope.class);
+
+        if(scope != null)
         {
-            NormalScope scope = annotationType.getAnnotation(NormalScope.class);            
             return scope.passivating();
         }
      

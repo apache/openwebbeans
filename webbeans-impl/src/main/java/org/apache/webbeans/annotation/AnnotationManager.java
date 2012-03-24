@@ -67,6 +67,12 @@ public final class AnnotationManager
     private final BeanManagerImpl beanManagerImpl;
     private final WebBeansContext webBeansContext;
 
+    private final static Annotation[] ONLY_DEFAULT_ANNOTATION = new Annotation[1];
+    static
+    {
+        ONLY_DEFAULT_ANNOTATION[0] = new DefaultLiteral();
+    };
+
     // No instantiate
 
     public AnnotationManager(WebBeansContext context)
@@ -270,6 +276,11 @@ public final class AnnotationManager
     {
         Asserts.assertNotNull(annotations, "Annotations argument can not be null");
 
+        if (annotations.length == 0)
+        {
+            return ONLY_DEFAULT_ANNOTATION;
+        }
+
         Set<Annotation> set = new HashSet<Annotation>();
 
         for (Annotation annot : annotations)
@@ -283,7 +294,7 @@ public final class AnnotationManager
         //Add the default qualifier if no others exist.  Section 3.10, OWB-142///
         if(set.size() == 0)
         {
-            set.add(new DefaultLiteral());
+            return ONLY_DEFAULT_ANNOTATION;
         }
         ////////////////////////////////////////////////////////////////////////
 

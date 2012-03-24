@@ -684,7 +684,7 @@ public class BeansDeployer
     {
         boolean validate = false;
         
-        if(EnterpriseBeanMarker.class.isAssignableFrom(beanObj.getClass()))
+        if(beanObj instanceof EnterpriseBeanMarker)
         {
             EnterpriseBeanMarker marker = (EnterpriseBeanMarker)beanObj;
             if(marker.isPassivationCapable())

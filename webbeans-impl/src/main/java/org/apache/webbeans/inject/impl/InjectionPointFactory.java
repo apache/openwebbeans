@@ -117,14 +117,14 @@ public class InjectionPointFactory
      */
     private InjectionPoint getGenericInjectionPoint(Bean<?> owner, Annotation[] annots, Type type, Member member,Annotated annotated)
     {
-        InjectionPointImpl injectionPoint = null;
+        InjectionPointImpl injectionPoint;
 
         Annotation[] qualifierAnnots = webBeansContext.getAnnotationManager().getQualifierAnnotations(annots);
 
         //@Named update for injection fields!
         if(member instanceof Field)
         {
-            for(int i=0;i<qualifierAnnots.length;i++)
+            for(int i=0; i < qualifierAnnots.length; i++)
             {
                 Annotation qualifier = qualifierAnnots[i];
                 if(qualifier.annotationType().equals(Named.class))
