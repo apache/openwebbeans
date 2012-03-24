@@ -46,7 +46,6 @@ import org.apache.openejb.jee.SingletonBean;
 import org.apache.openejb.jee.StatefulBean;
 import org.apache.openejb.jee.StatelessBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.ejb.EjbPlugin;
 import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.test.tck.mock.TCKMetaDataDiscoveryImpl;
@@ -114,16 +113,6 @@ public class StandaloneContainersImpl implements StandaloneContainers
                 public void beforeStartApplication(Object object)
                 {
                     super.beforeStartApplication(object);
-                    try
-                    {
-                        WebBeansContext.getInstance().getPluginLoader().startUp();
-                        EjbPlugin plugin = (EjbPlugin) WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
-                        plugin.setUseInTest(true);
-                    }
-                    catch (Exception e)
-                    {
-                        // Not worry
-                    }
                 }
 
             };
@@ -169,16 +158,6 @@ public class StandaloneContainersImpl implements StandaloneContainers
         {
             this.lifeCycle.stopApplication(null);
             this.lifeCycle = null;
-
-            try
-            {
-                EjbPlugin plugin = (EjbPlugin) WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
-                plugin.setUseInTest(false);
-            }
-            catch (Exception e)
-            {
-                // Not worry
-            }
         }
         finally
         {
@@ -240,13 +219,6 @@ public class StandaloneContainersImpl implements StandaloneContainers
             Properties properties = new Properties(System.getProperties());
             properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, InitContextFactory.class.getName());
             new InitialContext(properties);
-
-            EjbPlugin plugin = (EjbPlugin) WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
-            if (plugin != null)
-            {
-                plugin.setUseInTest(true);
-            }
-
         }
         catch (Exception e)
         {

@@ -139,11 +139,6 @@
             <artifactId>jasper-el</artifactId>
             <version>6.0.20</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-openejb</artifactId>
-        </dependency>
-
 
     </dependencies>
 

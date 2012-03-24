@@ -132,11 +132,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>openwebbeans-openejb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>openwebbeans-ee</artifactId>
             <version>${project.version}</version>
         </dependency>

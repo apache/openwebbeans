@@ -91,12 +91,6 @@
 
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-openejb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-spi</artifactId>
         </dependency>
 
