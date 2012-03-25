@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.util;
 
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 
 import javax.enterprise.inject.Any;
@@ -29,9 +28,7 @@ import javax.enterprise.util.Nonbinding;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -195,40 +192,6 @@ public final class AnnotationUtil
         return result;
     }
 
-    public static Type[] getConstructorParameterGenericTypesWithGivenAnnotation(Constructor<?> constructor, Class<? extends Annotation> clazz)
-    {
-        Asserts.assertNotNull(constructor, "constructor argument can not be null");
-        Asserts.nullCheckForClass(clazz);
-
-        List<Type> list = new ArrayList<Type>();
-        Type[] result;
-
-        Annotation[][] parameterAnns = constructor.getParameterAnnotations();
-        Type[] genericTypes = constructor.getGenericParameterTypes();
-
-        int i = 0;
-        for (Annotation[] parameters : parameterAnns)
-        {
-            for (Annotation param : parameters)
-            {
-                Class<? extends Annotation> btype = param.annotationType();
-                if (btype.equals(clazz))
-                {
-                    list.add(genericTypes[i]);
-                    break;
-                }
-            }
-
-            i++;
-
-        }
-
-        result = new Type[list.size()];
-        result = list.toArray(result);
-
-        return result;
-    }
-
     /**
      * Check given annotation exist in the multiple parameter of the given
      * method. Return true if exist false otherwise.
@@ -347,39 +310,6 @@ public final class AnnotationUtil
         return null;
     }
 
-    @Deprecated
-    public static <X> Annotation[] getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, clazz);
-    }
-    
-    public static Class<?> getMethodFirstParameterTypeClazzWithAnnotation(Method method, Class<? extends Annotation> clazz)
-    {
-        Type type = getMethodFirstParameterWithAnnotation(method, clazz);
-
-        if (type instanceof ParameterizedType)
-        {
-            return (Class<?>) ((ParameterizedType) type).getRawType();
-        }
-        else
-        {
-            return (Class<?>) type;
-        }
-    }
-
-    /**
-     * Gets the method first found parameter qualifiers.
-     *
-     * @param method method
-     * @param clazz checking annotation
-     * @return annotation array
-     */
-    @Deprecated
-    public static Annotation[] getMethodFirstParameterQualifierWithGivenAnnotation(Method method, Class<? extends Annotation> clazz)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().getMethodFirstParameterQualifierWithGivenAnnotation(method, clazz);
-    }
-
     /**
      * Get the Type of the method parameter which has the given annotation
      * @param method which need to be scanned
@@ -469,41 +399,6 @@ public final class AnnotationUtil
         
         return null;
     }    
-    
-
-    /**
-     * Check given annotation cross ref exist in the any parameter of the given
-     * method. Return true if exist false otherwise.
-     * 
-     * @param method method
-     * @param clazz checking annotation
-     * @return true or false
-     */
-    public static boolean hasMethodParameterAnnotationCrossRef(Method method, Class<? extends Annotation> clazz)
-    {
-        Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.nullCheckForClass(clazz);
-
-        Annotation[][] parameterAnns = method.getParameterAnnotations();
-
-        for (Annotation[] parameters : parameterAnns)
-        {
-            for (Annotation param : parameters)
-            {
-                Annotation[] btype = getDeclaredAnnotations(param.annotationType());
-
-                for (Annotation b : btype)
-                {
-                    if (b.annotationType().equals(clazz))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-        }
-        return false;
-    }
 
     /**
      * Checks if the given qualifiers are equal.
@@ -742,18 +637,6 @@ public final class AnnotationUtil
         return Collections.emptyList();
     }
 
-    /**
-     * Gets the array of qualifier annotations on the given array.
-     *
-     * @param annotations annotation array
-     * @return array containing qualifier anns
-     */
-    @Deprecated
-    public static Annotation[] getQualifierAnnotations(Annotation... annotations)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().getQualifierAnnotations(annotations);
-    }
-
 
     /**
      * Gets array of methods that has parameter with given annotation type.
@@ -943,78 +826,6 @@ public final class AnnotationUtil
         }        
         
         return null;        
-    }
-
-    /**
-     * Returns true if the annotation is defined in xml or annotated with
-     * {@link javax.interceptor.InterceptorBinding} false otherwise.
-     *
-     * @param clazz type of the annotation
-     * @return true if the annotation is defined in xml or annotated with
-     *         {@link javax.interceptor.InterceptorBinding} false otherwise
-     */
-    @Deprecated
-    public static boolean isInterceptorBindingAnnotation(Class<? extends Annotation> clazz)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().isInterceptorBindingAnnotation(clazz);
-    }
-
-    /**
-     * Collect the interceptor bindings from an array of annotations, including
-     * transitively defined interceptor bindings.
-     * @param anns An array of annotations
-     * @return an array of interceptor binding annotations, including the input and any transitively declared annotations
-     */
-    @Deprecated
-    public static Annotation[] getInterceptorBindingMetaAnnotations(Annotation[] anns)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().getInterceptorBindingMetaAnnotations(anns);
-    }
-
-    @Deprecated
-    public static Annotation[] getStereotypeMetaAnnotations(Annotation[] anns)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().getStereotypeMetaAnnotations(anns);
-    }
-
-    @Deprecated
-    public static boolean hasStereoTypeMetaAnnotation(Annotation[] anns)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().hasStereoTypeMetaAnnotation(anns);
-    }
-
-    /**
-     * Returns true if the annotation is defined in xml or annotated with
-     * {@link javax.enterprise.inject.Stereotype} false otherwise.
-     *
-     * @param clazz type of the annotation
-     * @return true if the annotation is defined in xml or annotated with
-     *         {@link javax.enterprise.inject.Stereotype} false otherwise
-     */
-    @Deprecated
-    public static boolean isStereoTypeAnnotation(Class<? extends Annotation> clazz)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().isStereoTypeAnnotation(clazz);
-    }
-
-    /**
-     * If the bean extends generic class via Realizes
-     * annotation, realized based producer methods, fields and observer
-     * methods qualifier is
-     *
-     * <ul>
-     *  <li>Qualifiers on the definitions</li>
-     *  <li>Plus class qualifiers</li>
-     *  <li>Minus generic class qualifiers</li>
-     * </ul>
-     *
-     * @param clazz realized definition class
-     * @param anns binding annotations array
-     */
-    @Deprecated
-    public static Annotation[] getRealizesGenericAnnotations(Class<?> clazz, Annotation[] anns)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().getRealizesGenericAnnotations(clazz, anns);
     }
 
     public static Annotation[] getAnnotationsFromSet(Set<Annotation> set)

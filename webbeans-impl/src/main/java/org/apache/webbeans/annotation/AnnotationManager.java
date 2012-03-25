@@ -262,7 +262,7 @@ public final class AnnotationManager
                 return result;
             }
         }
-        result = new Annotation[0];
+        result = AnnotationUtil.EMPTY_ANNOTATION_ARRAY;
         return result;
     }
 
@@ -302,50 +302,6 @@ public final class AnnotationManager
         a = set.toArray(a);
 
         return a;
-    }
-
-
-    /**
-     * If the bean extends generic class via Realizes
-     * annotation, realized based producer methods, fields and observer
-     * methods qualifier is
-     *
-     * <ul>
-     *  <li>Qualifiers on the definitions</li>
-     *  <li>Plus class qualifiers</li>
-     *  <li>Minus generic class qualifiers</li>
-     * </ul>
-     *
-     * @param clazz realized definition class
-     * @param anns binding annotations array
-     */
-    public Annotation[] getRealizesGenericAnnotations(Class<?> clazz, Annotation[] anns)
-    {
-       Set<Annotation> setAnnots = new HashSet<Annotation>();
-
-        for(Annotation definedAnn : anns)
-        {
-            setAnnots.add(definedAnn);
-        }
-
-        Annotation[] genericReliazesAnns = getQualifierAnnotations(clazz.getSuperclass().getDeclaredAnnotations());
-
-        for(Annotation generic : genericReliazesAnns)
-        {
-            setAnnots.remove(generic);
-        }
-
-        genericReliazesAnns = getQualifierAnnotations(clazz.getDeclaredAnnotations());
-
-        for(Annotation generic : genericReliazesAnns)
-        {
-            setAnnots.add(generic);
-        }
-
-        Annotation[] annots = new Annotation[setAnnots.size()];
-        annots = setAnnots.toArray(annots);
-
-        return annots;
     }
 
     public void checkQualifierConditions(Annotation... qualifierAnnots)

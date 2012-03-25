@@ -106,9 +106,9 @@ public final class DefinitionUtil
         Annotation[] annots = clazz.getDeclaredAnnotations();
         
         //Looking for bean types
-        if(AnnotationUtil.hasAnnotation(annots, Typed.class))
+        Typed beanTypes = clazz.getAnnotation(Typed.class);
+        if(beanTypes != null)
         {
-            Typed beanTypes = AnnotationUtil.getAnnotation(annots, Typed.class);
             defineUserDefinedBeanTypes(bean, null, beanTypes);            
         }
         else
@@ -196,12 +196,11 @@ public final class DefinitionUtil
     {
         
         //Looking for bean types
-        if(AnnotationUtil.hasAnnotation(annots, Typed.class))
+        Typed beanTypes = AnnotationUtil.getAnnotation(annots, Typed.class);
+        if(beanTypes != null)
         {
-            Typed beanTypes = AnnotationUtil.getAnnotation(annots, Typed.class);
             defineUserDefinedBeanTypes(producerBean, type, beanTypes);
         }
-        
         else
         {
             defineNormalProducerMethodApi(producerBean, type);
@@ -219,7 +218,6 @@ public final class DefinitionUtil
         if (clazz != null && (clazz.isPrimitive() || clazz.isArray()))
         {
             types.add(clazz);
-
         }
         else
         {
@@ -711,7 +709,8 @@ public final class DefinitionUtil
             {
                 if (Modifier.isStatic(declaredMethod.getModifiers()))
                 {
-                    throw new WebBeansConfigurationException("Specializing producer method : " + declaredMethod.getName() + " in class : " + clazz.getName()
+                    throw new WebBeansConfigurationException("Specializing producer method : " + declaredMethod.getName()
+                                                             + " in class : " + clazz.getName()
                                                              + " can not be static");
                 }
 
@@ -1286,9 +1285,14 @@ public final class DefinitionUtil
     }
     
     private <X> void createProducerBeansFromAnnotatedType(InjectionTargetBean<X> bean, Set<ProducerMethodBean<?>> producerComponents,
-                                                                 AnnotatedMethod<X> annotatedMethod, Class<?> clazz, boolean isSpecializes)
+                                                          AnnotatedMethod<X> annotatedMethod, Class<?> clazz, boolean isSpecializes)
     {
         Set<Annotation> annSet = annotatedMethod.getAnnotations();
+        if (annSet == null || annSet.isEmpty())
+        {
+            return;
+        }
+
         Annotation[] anns = annSet.toArray(new Annotation[annSet.size()]);
         
         List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();

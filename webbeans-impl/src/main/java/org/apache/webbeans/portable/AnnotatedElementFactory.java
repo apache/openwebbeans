@@ -115,12 +115,8 @@ public final class AnnotatedElementFactory
     public <X> AnnotatedType<X> newAnnotatedType(Class<X> annotatedClass)
     {
         Asserts.assertNotNull(annotatedClass, "annotatedClass is null");
-        AnnotatedType<X> annotatedType;
-        if(annotatedTypeCache.containsKey(annotatedClass))
-        {
-            annotatedType = (AnnotatedType<X>)annotatedTypeCache.get(annotatedClass);
-        }
-        else
+        AnnotatedType<X> annotatedType = (AnnotatedType<X>)annotatedTypeCache.get(annotatedClass);
+        if(annotatedType == null)
         {
             try
             {
@@ -131,8 +127,7 @@ public final class AnnotatedElementFactory
                 {
                     annotatedType = oldType;
                 }
-
-            } 
+            }
             catch (Exception e)
             {
                 if (e instanceof ClassNotFoundException || e instanceof ArrayStoreException)

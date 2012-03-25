@@ -1070,7 +1070,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             }
         }
         
-        return AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), NormalScope.class);
+        return annotationType.getAnnotation(NormalScope.class) != null;
     }
     
     public boolean isPassivatingScope(Class<? extends Annotation> annotationType)
