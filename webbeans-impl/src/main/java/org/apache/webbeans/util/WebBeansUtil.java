@@ -2207,9 +2207,10 @@ public final class WebBeansUtil
         WebBeansContext webBeansContext = this.webBeansContext;
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
-        for(ProducerMethodBean<?> bean : annotatedMethods.keySet())
+        for(Map.Entry<ProducerMethodBean<?>, AnnotatedMethod<?>> beanEntry : annotatedMethods.entrySet())
         {
-            AnnotatedMethod<?> annotatedMethod = annotatedMethods.get(bean);
+            ProducerMethodBean<?> bean = beanEntry.getKey();
+            AnnotatedMethod<?> annotatedMethod = beanEntry.getValue();
             Annotation[] annotationsFromSet = AnnotationUtil.getAnnotationsFromSet(bean.getQualifiers());
             Method disposal = annotationManager.getDisposalWithGivenAnnotatedMethod(annotatedType, bean.getReturnType(), annotationsFromSet);
 
@@ -2234,9 +2235,10 @@ public final class WebBeansUtil
 
     public void fireProcessObservableMethodBeanEvent(Map<ObserverMethod<?>,AnnotatedMethod<?>> annotatedMethods)
     {
-        for(ObserverMethod<?> observableMethod : annotatedMethods.keySet())
+        for(Map.Entry<ObserverMethod<?>, AnnotatedMethod<?>> observableMethodEntry : annotatedMethods.entrySet())
         {
-            AnnotatedMethod<?> annotatedMethod = annotatedMethods.get(observableMethod);
+            ObserverMethod<?> observableMethod = observableMethodEntry.getKey();
+            AnnotatedMethod<?> annotatedMethod = observableMethodEntry.getValue();
 
             GProcessObservableMethod event = new GProcessObservableMethod(annotatedMethod, observableMethod);
 
@@ -2248,9 +2250,10 @@ public final class WebBeansUtil
 
     public void fireProcessProducerFieldBeanEvent(Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields)
     {
-        for(ProducerFieldBean<?> bean : annotatedFields.keySet())
+        for(Map.Entry<ProducerFieldBean<?>, AnnotatedField<?>> beanEntry : annotatedFields.entrySet())
         {
-            AnnotatedField<?> field = annotatedFields.get(bean);
+            ProducerFieldBean<?> bean = beanEntry.getKey();
+            AnnotatedField<?> field = beanEntry.getValue();
 
             GProcessProducerField processProducerFieldEvent = new GProcessProducerField(bean,field);
 

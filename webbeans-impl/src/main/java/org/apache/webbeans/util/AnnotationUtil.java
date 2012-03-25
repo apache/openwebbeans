@@ -156,41 +156,6 @@ public final class AnnotationUtil
         
         return false;
     }
-    
-
-    public static Type[] getMethodParameterGenericTypesWithGivenAnnotation(Method method, Class<? extends Annotation> clazz)
-    {
-        Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.nullCheckForClass(clazz);
-
-        List<Type> list = new ArrayList<Type>();
-        Type[] result;
-
-        Annotation[][] parameterAnns = method.getParameterAnnotations();
-        Type[] genericTypes = method.getGenericParameterTypes();
-
-        int i = 0;
-        for (Annotation[] parameters : parameterAnns)
-        {
-            for (Annotation param : parameters)
-            {
-                Class<? extends Annotation> btype = param.annotationType();
-                if (btype.equals(clazz))
-                {
-                    list.add(genericTypes[i]);
-                    break;
-                }
-            }
-
-            i++;
-
-        }
-
-        result = new Type[list.size()];
-        result = list.toArray(result);
-
-        return result;
-    }
 
     /**
      * Check given annotation exist in the multiple parameter of the given
@@ -586,7 +551,6 @@ public final class AnnotationUtil
      * which are not annotated with @Nonbinding.
      *
      * @param qualifierAnnotationType
-     * @return a {@link RandomAccess} List instance
      */
     private static List<Method> getBindingQualifierMethods(
             Class<? extends Annotation> qualifierAnnotationType)
