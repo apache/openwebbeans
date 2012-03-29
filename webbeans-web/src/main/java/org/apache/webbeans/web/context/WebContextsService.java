@@ -806,6 +806,12 @@ public class WebContextsService extends AbstractContextsService
                 applicationContext.set(sharedApplicationContext);
             }
         }
+        if (scopeType.equals(SessionScoped.class))
+        {
+            // getSessionContext() implicitely creates and binds the SessionContext
+            // to the current Thread if it doesn't yet exist.
+            getSessionContext().setActive(true);
+        }
         else
         {
             super.activateContext(scopeType);
