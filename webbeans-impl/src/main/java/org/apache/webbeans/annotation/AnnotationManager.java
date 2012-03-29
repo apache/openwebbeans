@@ -71,7 +71,7 @@ public final class AnnotationManager
     static
     {
         ONLY_DEFAULT_ANNOTATION[0] = new DefaultLiteral();
-    };
+    }
 
     // No instantiate
 
@@ -118,10 +118,6 @@ public final class AnnotationManager
             if (isInterceptorBindingAnnotation(ann.annotationType()))
             {
                 return true;
-            }
-            else
-            {
-                continue;
             }
         }
 
@@ -378,10 +374,6 @@ public final class AnnotationManager
             if (isStereoTypeAnnotation(ann.annotationType()))
             {
                 return true;
-            }
-            else
-            {
-                continue;
             }
         }
 
@@ -738,10 +730,6 @@ public final class AnnotationManager
                                         if(!AnnotationUtil.isQualifierEqual(qualifier, ann))
                                         {
                                             return null;
-                                        }
-                                        else
-                                        {
-                                            break;
                                         }
                                     }
                                 }

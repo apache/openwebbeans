@@ -165,11 +165,7 @@ public final class DecoratorResolverRules
                     if(actual instanceof Class)
                     {
                         Class<?> clazz = (Class<?>)actual;
-                        if(clazz.equals(Object.class))
-                        {
-                            continue;
-                        }
-                        else
+                        if(!clazz.equals(Object.class))
                         {
                             ok = false;
                             break;

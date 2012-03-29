@@ -32,6 +32,7 @@ import org.scannotation.archiveiterator.StreamIterator;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -370,11 +371,7 @@ public class AnnotationDB implements Serializable
             if (cf.getInterfaces() != null)
             {
                 Set<String> intfs = new HashSet<String>();
-                for (String intf : cf.getInterfaces())
-                {
-                    intfs.add(intf);
-                }
-
+                Collections.addAll(intfs, cf.getInterfaces());
                 implementsIndex.put(cf.getName(), intfs);
             }
 

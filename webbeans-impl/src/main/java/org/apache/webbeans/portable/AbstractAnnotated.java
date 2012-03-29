@@ -20,6 +20,7 @@ package org.apache.webbeans.portable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -93,10 +94,7 @@ abstract class AbstractAnnotated implements Annotated
     protected void setAnnotations(Annotation[] annotations)
     {        
         this.annotations.clear();
-        for(Annotation annotation : annotations)
-        {
-            this.annotations.add(annotation);
-        }
+        Collections.addAll(this.annotations, annotations);
     }
     
     /**

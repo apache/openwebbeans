@@ -48,7 +48,7 @@ public class SerializableBeanVault
     private Map<String, SerializableBean<?>> serializableBeans = new ConcurrentHashMap<String, SerializableBean<?>>();
 
     @Deprecated
-    public final static SerializableBeanVault getInstance()
+    public static SerializableBeanVault getInstance()
     {
         return WebBeansContext.getInstance().getSerializableBeanVault();
     }

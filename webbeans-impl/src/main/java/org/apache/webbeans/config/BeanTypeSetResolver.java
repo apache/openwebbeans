@@ -48,7 +48,6 @@ public class BeanTypeSetResolver
         {
             return;
         }
-        
         else if(ClassUtil.isParametrizedType(beanType))
         {
             parametrizedClassConfiguration((ParameterizedType) beanType);

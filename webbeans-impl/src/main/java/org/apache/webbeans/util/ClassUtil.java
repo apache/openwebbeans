@@ -287,7 +287,6 @@ public final class ClassUtil
      * Check method throws checked exception or not.
      * 
      * @param method method instance
-     * @return trur or false
      */
     public static boolean isMethodHasCheckedException(Method method)
     {
@@ -299,11 +298,7 @@ public final class ClassUtil
         {
             for (Class<?> type : et)
             {
-                if (Error.class.isAssignableFrom(type) || RuntimeException.class.isAssignableFrom(type))
-                {
-                    return false;
-                }
-                else
+                if (!Error.class.isAssignableFrom(type) && !RuntimeException.class.isAssignableFrom(type))
                 {
                     return true;
                 }
@@ -581,11 +576,7 @@ public final class ClassUtil
                         if(actual instanceof Class)
                         {
                             Class<?> clazz = (Class<?>)actual;
-                            if(clazz.equals(Object.class))
-                            {
-                                continue;
-                            }
-                            else
+                            if(!clazz.equals(Object.class))
                             {
                                 ok = false;
                                 break;
