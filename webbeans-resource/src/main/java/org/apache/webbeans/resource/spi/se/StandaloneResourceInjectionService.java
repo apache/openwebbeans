@@ -109,7 +109,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
     {
         Class currentClass = managedBeanInstance.getClass();
         Boolean containsEeResource = classContainsEEResources.get(currentClass);
-        if (containsEeResource != null && containsEeResource.booleanValue() == false)
+        if (containsEeResource != null && !containsEeResource)
         {
             // nothing to do it seems.
             return;
