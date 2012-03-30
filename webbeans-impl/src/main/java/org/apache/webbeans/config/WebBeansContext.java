@@ -92,6 +92,7 @@ public class WebBeansContext
     private final ManagedBeanConfigurator managedBeanConfigurator = new ManagedBeanConfigurator(this);
     private final SecurityService securityService;
     private final LoaderService loaderService;
+    private ScannerService scannerService;
 
     public WebBeansContext()
     {
@@ -346,10 +347,15 @@ public class WebBeansContext
         return javassistProxyFactory;
     }
 
-    //candidates for fields
+
     public ScannerService getScannerService()
     {
-        return getService(ScannerService.class);
+        if (scannerService == null)
+        {
+            // lazy init
+            scannerService = getService(ScannerService.class);
+        }
+        return scannerService;
     }
 
     public ContextsService getContextsService()
