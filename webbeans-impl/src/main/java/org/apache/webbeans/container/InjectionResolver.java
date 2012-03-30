@@ -68,12 +68,15 @@ public class InjectionResolver
      * Bean Manager
      */
     private WebBeansContext webBeansContext;
+    
+    private final static Annotation[] DEFAULT_LITERAL_ARRAY = new Annotation[]{new DefaultLiteral()};
 
     /**
      * This Map contains all resolved beans via it's type and qualifiers.
      * If a bean have resolved as not existing, the entry will contain <code>null</code> as value.
+     * The Long key is a hashCode, see {@link #getBeanCacheKey(Type, String, Annotation...)}
      */
-    private Map<String, Set<Bean<?>>> resolvedBeansByType = new ConcurrentHashMap<String, Set<Bean<?>>>();
+    private Map<Long, Set<Bean<?>>> resolvedBeansByType = new ConcurrentHashMap<Long, Set<Bean<?>>>();
 
     /**
      * This Map contains all resolved beans via it's ExpressionLanguage name.
@@ -449,8 +452,7 @@ public class InjectionResolver
             bdaBeansXMLFilePath = getBDABeansXMLPath(injectinPointClass);
         }
 
-        //X TODO maybe we need to stringify the qualifiers manually im a loop...
-        String cacheKey = getBeanCacheKey(injectionPointType, bdaBeansXMLFilePath, qualifiers);
+        Long cacheKey = getBeanCacheKey(injectionPointType, bdaBeansXMLFilePath, qualifiers);
 
         Set<Bean<?>> resolvedComponents = resolvedBeansByType.get(cacheKey);
         if (resolvedComponents != null)
@@ -472,7 +474,7 @@ public class InjectionResolver
         {
             if (qualifiers.length == 0)
             {
-                qualifiers = new Annotation[]{new DefaultLiteral()};
+                qualifiers = DEFAULT_LITERAL_ARRAY;
                 currentQualifier = true;
             }
         }
@@ -524,18 +526,21 @@ public class InjectionResolver
         return resolvedComponents;
     }
 
-    private String getBeanCacheKey(Type injectionPointType, String bdaBeansXMLPath, Annotation... qualifiers)
+    private Long getBeanCacheKey(Type injectionPointType, String bdaBeansXMLPath, Annotation... qualifiers)
     {
-        StringBuilder cacheKey = new StringBuilder(injectionPointType.toString());
+
+        long cacheKey = injectionPointType.hashCode();
         if (bdaBeansXMLPath != null)
         {
-            cacheKey.append('@').append(bdaBeansXMLPath);
+            cacheKey += 29L * bdaBeansXMLPath.hashCode();
         }
         for (Annotation a : qualifiers)
         {
-            cacheKey.append('@').append(a.toString());
+            // we need to toString as the hashCode of an Annotation is always 0 :(
+            // and the annotationType does not contain variable payload
+            cacheKey += 29L * a.toString().hashCode();
         }
-        return cacheKey.toString();
+        return cacheKey;
     }
 
     /**
