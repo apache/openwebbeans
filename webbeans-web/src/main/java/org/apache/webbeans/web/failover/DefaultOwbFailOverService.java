@@ -43,8 +43,7 @@ public class DefaultOwbFailOverService implements FailOverService
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(DefaultOwbFailOverService.class);
 
     private static final String OWB_FAILOVER_JVM_ID = 
-        UUID.randomUUID().toString() + "_" + 
-            String.valueOf(System.currentTimeMillis());
+        UUID.randomUUID().toString() + "_" + System.currentTimeMillis();
     
     private static final String OWB_FAILOVER_PROPERTY_NAME = 
         "org.apache.webbeans.web.failover"; 

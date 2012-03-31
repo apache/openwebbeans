@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import javax.enterprise.context.Conversation;
+import javax.enterprise.context.SessionScoped;
 import javax.servlet.http.HttpSession;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -29,6 +30,7 @@ import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.web.context.SessionContextManager;
 import org.apache.webbeans.web.context.WebContextsService;
@@ -84,7 +86,7 @@ public class FailOverBag implements Serializable
         conversationContextMap = conversationManager.getConversationMapWithSessionId(session.getId());
     }
     
-    public void restore() 
+    public void restore()
     {
         try 
         {
@@ -93,9 +95,8 @@ public class FailOverBag implements Serializable
             
             if (sessionContext != null) 
             {
-                SessionContextManager sessionManager = ((WebContextsService)webBeansContext.getContextsService()).getSessionContextManager();
-                sessionManager.addNewSessionContext(sessionId, sessionContext);
-                sessionContext.setActive(true);
+                ContextsService contextsService = webBeansContext.getContextsService();
+                contextsService.activateContext(SessionScoped.class);
             }
             if (conversationContextMap != null && !conversationContextMap.isEmpty())
             {

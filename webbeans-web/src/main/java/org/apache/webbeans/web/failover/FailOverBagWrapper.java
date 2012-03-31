@@ -74,7 +74,7 @@ public class FailOverBagWrapper implements Serializable, Externalizable, HttpSes
         bag.updateOwbFailOverBag(session, service);
     }
     
-    public void restore() 
+    public void restore()
     {
         if (!isSessionInUse) 
         {

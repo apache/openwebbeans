@@ -62,13 +62,13 @@ public class WebContextsService extends AbstractContextsService
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebContextsService.class);
 
     /**Current request context*/
-    private static ThreadLocal<RequestContext> requestContext = null;
+    private static ThreadLocal<RequestContext> requestContexts = null;
 
     /**Current session context*/
-    private static ThreadLocal<SessionContext> sessionContext = null;
+    private static ThreadLocal<SessionContext> sessionContexts = null;
 
     /**Current application context*/
-    private static ThreadLocal<ApplicationContext> applicationContext = null;
+    private static ThreadLocal<ApplicationContext> applicationContexts = null;
 
     /**
      * This applicationContext will be used for all non servlet-request threads
@@ -76,10 +76,10 @@ public class WebContextsService extends AbstractContextsService
     private ApplicationContext sharedApplicationContext ;
 
     /**Current conversation context*/
-    private static ThreadLocal<ConversationContext> conversationContext = null;
+    private static ThreadLocal<ConversationContext> conversationContexts = null;
     
     /**Current singleton context*/
-    private static ThreadLocal<SingletonContext> singletonContext = null;
+    private static ThreadLocal<SingletonContext> singletonContexts = null;
 
     /**Current dependent context*/
     private static DependentContext dependentContext;
@@ -105,11 +105,11 @@ public class WebContextsService extends AbstractContextsService
     /**Initialize thread locals*/
     static
     {
-        requestContext = new ThreadLocal<RequestContext>();
-        sessionContext = new ThreadLocal<SessionContext>();
-        applicationContext = new ThreadLocal<ApplicationContext>();
-        conversationContext = new ThreadLocal<ConversationContext>();
-        singletonContext = new ThreadLocal<SingletonContext>();
+        requestContexts = new ThreadLocal<RequestContext>();
+        sessionContexts = new ThreadLocal<SessionContext>();
+        applicationContexts = new ThreadLocal<ApplicationContext>();
+        conversationContexts = new ThreadLocal<ConversationContext>();
+        singletonContexts = new ThreadLocal<SingletonContext>();
         
         //Dependent context is always active
         dependentContext = new DependentContext();
@@ -121,11 +121,11 @@ public class WebContextsService extends AbstractContextsService
      */
     public static void removeThreadLocals()
     {
-        requestContext.remove();
-        sessionContext.remove();
-        applicationContext.remove();
-        conversationContext.remove();
-        singletonContext.remove();
+        requestContexts.remove();
+        sessionContexts.remove();
+        applicationContexts.remove();
+        conversationContexts.remove();
+        singletonContexts.remove();
         RequestScopedBeanInterceptorHandler.removeThreadLocals();
     }
     
@@ -182,19 +182,19 @@ public class WebContextsService extends AbstractContextsService
         currentSingletonContexts.clear();
         
         //Thread local values to null
-        requestContext.set(null);
-        sessionContext.set(null);
-        conversationContext.set(null);
-        applicationContext.set(null);
-        singletonContext.set(null);
+        requestContexts.set(null);
+        sessionContexts.set(null);
+        conversationContexts.set(null);
+        applicationContexts.set(null);
+        singletonContexts.set(null);
         
         //Remove thread locals
         //for preventing memory leaks
-        requestContext.remove();
-        sessionContext.remove();
-        conversationContext.remove();
-        applicationContext.remove();
-        singletonContext.remove();        
+        requestContexts.remove();
+        sessionContexts.remove();
+        conversationContexts.remove();
+        applicationContexts.remove();
+        singletonContexts.remove();
                 
     }    
     
@@ -327,7 +327,7 @@ public class WebContextsService extends AbstractContextsService
         RequestContext rq = new ServletRequestContext();
         rq.setActive(true);
 
-        requestContext.set(rq);// set thread local
+        requestContexts.set(rq);// set thread local
 
         if(event != null)
         {
@@ -391,20 +391,20 @@ public class WebContextsService extends AbstractContextsService
         }
 
         //Clear thread locals
-        requestContext.set(null);
-        requestContext.remove();
+        requestContexts.set(null);
+        requestContexts.remove();
         
         //Also clear application and singleton context
-        applicationContext.set(null);
-        applicationContext.remove();
+        applicationContexts.set(null);
+        applicationContexts.remove();
         
         //Singleton context
-        singletonContext.set(null);
-        singletonContext.remove();
+        singletonContexts.set(null);
+        singletonContexts.remove();
         
         //Conversation context
-        conversationContext.set(null);
-        conversationContext.remove();
+        conversationContexts.set(null);
+        conversationContexts.remove();
     }
 
     private void cleanupConversations()
@@ -477,7 +477,7 @@ public class WebContextsService extends AbstractContextsService
         currentSessionContext.setActive(true);
 
         //Set thread local
-        sessionContext.set(currentSessionContext);
+        sessionContexts.set(currentSessionContext);
     }
 
     /**
@@ -490,7 +490,7 @@ public class WebContextsService extends AbstractContextsService
         if (session != null)
         {
             //Get current session context
-            SessionContext context = sessionContext.get();
+            SessionContext context = sessionContexts.get();
 
             //Destroy context
             if (context != null)
@@ -499,8 +499,8 @@ public class WebContextsService extends AbstractContextsService
             }
 
             //Clear thread locals
-            sessionContext.set(null);
-            sessionContext.remove();
+            sessionContexts.set(null);
+            sessionContexts.remove();
 
             //Remove session from manager
             sessionCtxManager.destroySessionContextWithSessionId(session.getId());
@@ -518,7 +518,7 @@ public class WebContextsService extends AbstractContextsService
         {
             if (currentApplicationContexts.containsKey(servletContext))
             {
-                applicationContext.set(currentApplicationContexts.get(servletContext));
+                applicationContexts.set(currentApplicationContexts.get(servletContext));
             }
             else
             {
@@ -526,7 +526,7 @@ public class WebContextsService extends AbstractContextsService
                 currentApplicationContext.setActive(true);
                 currentApplicationContexts.put(servletContext, currentApplicationContext);
 
-                applicationContext.set(currentApplicationContext);
+                applicationContexts.set(currentApplicationContext);
             }
         }
         else
@@ -534,7 +534,7 @@ public class WebContextsService extends AbstractContextsService
             // if we are in a thread which is not related to a Servlet request,
             // then we use a shared ApplicationContext.
             // this happens for asynchronous jobs and JMS invocations, etc.
-            applicationContext.set(sharedApplicationContext);
+            applicationContexts.set(sharedApplicationContext);
         }
     }
 
@@ -589,7 +589,7 @@ public class WebContextsService extends AbstractContextsService
     {
         if(servletContext != null && currentSingletonContexts.containsKey(servletContext))
         {
-            singletonContext.set(currentSingletonContexts.get(servletContext));
+            singletonContexts.set(currentSingletonContexts.get(servletContext));
         }
         
         else
@@ -603,7 +603,7 @@ public class WebContextsService extends AbstractContextsService
                 
             }
             
-            singletonContext.set(context);   
+            singletonContexts.set(context);
         }
                         
     }
@@ -650,23 +650,23 @@ public class WebContextsService extends AbstractContextsService
     {
         if (context == null)
         {
-            if(conversationContext.get() == null)
+            if(conversationContexts.get() == null)
             {
                 ConversationContext newContext = new ConversationContext();
                 newContext.setActive(true);
                 
-                conversationContext.set(newContext);                
+                conversationContexts.set(newContext);
             }
             else
             {
-                conversationContext.get().setActive(true);
+                conversationContexts.get().setActive(true);
             }
             
         }
         else
         {
             context.setActive(true);
-            conversationContext.set(context);
+            conversationContexts.set(context);
         }
     }
 
@@ -682,8 +682,8 @@ public class WebContextsService extends AbstractContextsService
             context.destroy();
         }
 
-        conversationContext.set(null);
-        conversationContext.remove();
+        conversationContexts.set(null);
+        conversationContexts.remove();
     }
 
     /**
@@ -692,7 +692,7 @@ public class WebContextsService extends AbstractContextsService
      */
     private  RequestContext getRequestContext()
     {
-        return requestContext.get();
+        return requestContexts.get();
     }
 
     /**
@@ -701,11 +701,11 @@ public class WebContextsService extends AbstractContextsService
      */
     private  SessionContext getSessionContext()
     {
-        SessionContext context = sessionContext.get();
+        SessionContext context = sessionContexts.get();
         if (null == context)
         {
             lazyStartSessionContext();
-            context = sessionContext.get();
+            context = sessionContexts.get();
         }
 
         return context;
@@ -717,7 +717,7 @@ public class WebContextsService extends AbstractContextsService
      */
     private  ApplicationContext getApplicationContext()
     {
-        return applicationContext.get();
+        return applicationContexts.get();
     }
 
     /**
@@ -726,7 +726,7 @@ public class WebContextsService extends AbstractContextsService
      */
     private  SingletonContext getSingletonContext()
     {
-        return singletonContext.get();
+        return singletonContexts.get();
     }
 
     /**
@@ -735,7 +735,7 @@ public class WebContextsService extends AbstractContextsService
      */
     private  ConversationContext getConversationContext()
     {
-        return conversationContext.get();
+        return conversationContexts.get();
     }
 
     private Context lazyStartSessionContext()
@@ -801,9 +801,9 @@ public class WebContextsService extends AbstractContextsService
     {
         if (scopeType.equals(ApplicationScoped.class))
         {
-            if (applicationContext.get() == null)
+            if (applicationContexts.get() == null)
             {
-                applicationContext.set(sharedApplicationContext);
+                applicationContexts.set(sharedApplicationContext);
             }
         }
         if (scopeType.equals(SessionScoped.class))
