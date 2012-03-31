@@ -385,7 +385,7 @@ public final class AnnotationUtil
 
         // check if the annotationTypes are equal
         if (qualifier1AnnotationType == null
-                || !qualifier1AnnotationType.equals(qualifier2.annotationType()))
+            || !qualifier1AnnotationType.equals(qualifier2.annotationType()))
         {
             return false;
         }
