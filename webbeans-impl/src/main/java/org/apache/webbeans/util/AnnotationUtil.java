@@ -26,12 +26,9 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.Nonbinding;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -509,7 +506,7 @@ public final class AnnotationUtil
         {
             if (!method.isAccessible())
             {
-                doPrivilegedSetAccessible(method, true);
+                method.setAccessible(true);
             }
 
             return method.invoke(instance, EMPTY_OBJECT_ARRAY);
@@ -517,32 +514,6 @@ public final class AnnotationUtil
         catch (Exception e)
         {
             throw new WebBeansException("Exception in method call : " + method.getName(), e);
-        }
-    }
-
-    private static Object doPrivilegedSetAccessible(AccessibleObject obj, boolean flag)
-    {
-        AccessController.doPrivileged(new PrivilegedActionForAccessibleObject(obj, flag));
-        return null;
-    }
-
-    private static class PrivilegedActionForAccessibleObject implements PrivilegedAction<Object>
-    {
-
-        private AccessibleObject object;
-
-        private boolean flag;
-
-        protected PrivilegedActionForAccessibleObject(AccessibleObject object, boolean flag)
-        {
-            this.object = object;
-            this.flag = flag;
-        }
-
-        public Object run()
-        {
-            object.setAccessible(flag);
-            return null;
         }
     }
 
@@ -555,8 +526,7 @@ public final class AnnotationUtil
     private static List<Method> getBindingQualifierMethods(
             Class<? extends Annotation> qualifierAnnotationType)
     {
-        Method[] qualifierMethods = SecurityUtil
-                .doPrivilegedGetDeclaredMethods(qualifierAnnotationType);
+        Method[] qualifierMethods = qualifierAnnotationType.getDeclaredMethods();
 
         if (qualifierMethods.length > 0)
         {

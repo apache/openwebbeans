@@ -58,12 +58,6 @@ public final class EventUtil
         }
     }
 
-    @Deprecated
-    public static void checkEventBindings(Set<Annotation> annotations)
-    {
-        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(annotations);
-    }
-
     public static void checkEventBindings(WebBeansContext webBeansContext, Annotation... annotations)
     {
         for(Annotation ann : annotations)
