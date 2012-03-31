@@ -23,6 +23,8 @@ import javax.enterprise.util.AnnotationLiteral;
 
 public class AnyLiteral extends AnnotationLiteral<Any> implements Any
 {
+    private static final String TOSTRING = "@javax.enterprise.inject.Any()";
+
     @Override
     public int hashCode()
     {
@@ -46,7 +48,7 @@ public class AnyLiteral extends AnnotationLiteral<Any> implements Any
     public String toString()
     {
         // implemented for performance reasons
-        return "@javax.enterprise.inject.Any()";
+        return TOSTRING;
     }
 
 }

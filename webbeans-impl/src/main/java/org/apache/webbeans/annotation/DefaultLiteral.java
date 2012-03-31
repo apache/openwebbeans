@@ -28,6 +28,8 @@ import javax.enterprise.util.AnnotationLiteral;
  */
 public class DefaultLiteral extends AnnotationLiteral<Default> implements Default
 {
+    private static final String TOSTRING = "@javax.enterprise.inject.Default()";
+
     @Override
     public int hashCode()
     {
@@ -51,6 +53,6 @@ public class DefaultLiteral extends AnnotationLiteral<Default> implements Defaul
     public String toString()
     {
         // implemented for performance reasons
-        return "@javax.enterprise.inject.Default()";
+        return TOSTRING;
     }
 }
