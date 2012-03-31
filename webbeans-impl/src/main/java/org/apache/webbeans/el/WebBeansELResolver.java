@@ -25,8 +25,6 @@ import java.util.Set;
 import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ELResolver;
-import javax.el.PropertyNotFoundException;
-import javax.el.PropertyNotWritableException;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -82,7 +80,7 @@ public class WebBeansELResolver extends ELResolver
      * {@inheritDoc}
      */    
     @Override
-    public Class<?> getType(ELContext arg0, Object arg1, Object arg2) throws NullPointerException, PropertyNotFoundException, ELException
+    public Class<?> getType(ELContext arg0, Object arg1, Object arg2) throws ELException
     {
         return null;
     }
@@ -92,7 +90,7 @@ public class WebBeansELResolver extends ELResolver
      */    
     @Override
     @SuppressWarnings({"unchecked","deprecation"})
-    public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
+    public Object getValue(ELContext context, Object obj, Object property) throws ELException
     {
         // Check if the OWB actually got used in this application
         if (!webBeansContext.getBeanManagerImpl().isInUse())
@@ -188,7 +186,7 @@ public class WebBeansELResolver extends ELResolver
      * {@inheritDoc}
      */    
     @Override
-    public boolean isReadOnly(ELContext arg0, Object arg1, Object arg2) throws NullPointerException, PropertyNotFoundException, ELException
+    public boolean isReadOnly(ELContext arg0, Object arg1, Object arg2) throws ELException
     {
         return false;
     }
@@ -197,7 +195,7 @@ public class WebBeansELResolver extends ELResolver
      * {@inheritDoc}
      */    
     @Override
-    public void setValue(ELContext arg0, Object arg1, Object arg2, Object arg3) throws NullPointerException, PropertyNotFoundException, PropertyNotWritableException, ELException
+    public void setValue(ELContext arg0, Object arg1, Object arg2, Object arg3) throws ELException
     {
 
     }
