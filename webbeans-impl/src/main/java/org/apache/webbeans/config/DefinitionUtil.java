@@ -103,8 +103,6 @@ public final class DefinitionUtil
      */
     public static <T> void defineApiTypes(AbstractOwbBean<T> bean, Class<T> clazz)
     {
-        Annotation[] annots = clazz.getDeclaredAnnotations();
-        
         //Looking for bean types
         Typed beanTypes = clazz.getAnnotation(Typed.class);
         if(beanTypes != null)
@@ -757,7 +755,6 @@ public final class DefinitionUtil
 
         Annotation[] methodAnns = method.getDeclaredAnnotations();
 
-        WebBeansContext webBeansContext = parent.getWebBeansContext();
         webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(parent, component, methodAnns);
 
         defineProducerMethodApiTypes(component, method.getGenericReturnType(), methodAnns);
@@ -867,7 +864,7 @@ public final class DefinitionUtil
             Bean<?> bean = set.iterator().next();
             ProducerMethodBean<?> pr = null;
 
-            if (bean == null || !(bean instanceof ProducerMethodBean))
+            if (!(bean instanceof ProducerMethodBean))
             {
                 throwUnsatisfiedResolutionException(clazz, declaredMethod);
             }
@@ -1287,6 +1284,7 @@ public final class DefinitionUtil
     private <X> void createProducerBeansFromAnnotatedType(InjectionTargetBean<X> bean, Set<ProducerMethodBean<?>> producerComponents,
                                                           AnnotatedMethod<X> annotatedMethod, Class<?> clazz, boolean isSpecializes)
     {
+        boolean specializes = isSpecializes;
         Set<Annotation> annSet = annotatedMethod.getAnnotations();
         if (annSet == null || annSet.isEmpty())
         {
@@ -1322,11 +1320,11 @@ public final class DefinitionUtil
                                                              + " can not be static");
                 }
 
-                isSpecializes = true;
+                specializes = true;
             }
 
             ProducerMethodBean<?> newComponent = createProducerBeanFromAnnotatedType((Class<X>)annotatedMethod.getJavaMember().getReturnType(),
-                                                                                     annotatedMethod, bean, isSpecializes);
+                                                                                     annotatedMethod, bean, specializes);
             if (newComponent != null)
             {
                 producerComponents.add(newComponent);
