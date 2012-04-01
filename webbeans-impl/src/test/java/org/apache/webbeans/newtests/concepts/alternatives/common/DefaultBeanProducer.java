@@ -22,16 +22,18 @@ import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 
 
-public class DefaultBeanProducer {
-	
-		public @Produces @QualifierProducerBased IProducedBean 
-			generateBean() {
-			return new ProducedBean("default", this);
-		}
-		
-		public void dumpBean(
-				@Disposes @QualifierProducerBased IProducedBean bean) {
-			System.out.println(bean + " is dumped in dumpBean().");
-		}
+public class DefaultBeanProducer
+{
+    public static boolean gotDumped = false;
 
+    @Produces @QualifierProducerBased
+    public IProducedBean generateBean()
+    {
+        return new ProducedBean("default", this);
+    }
+
+    public void dumpBean(@Disposes @QualifierProducerBased IProducedBean bean)
+    {
+        gotDumped = true;
+    }
 }

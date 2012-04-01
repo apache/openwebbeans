@@ -19,10 +19,13 @@
 package org.apache.webbeans.newtests.concepts.alternatives.common;
 
 
-public interface IProducedBean {
-		
-	public String getID();
+public interface IProducedBean
+{
 
-	public String getProducerID();
-		
+    public String getID();
+
+    public String getProducerID();
+
+    public String getProducerType();
+
 }

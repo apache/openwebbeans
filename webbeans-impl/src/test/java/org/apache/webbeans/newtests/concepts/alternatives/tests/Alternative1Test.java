@@ -21,10 +21,6 @@ package org.apache.webbeans.newtests.concepts.alternatives.tests;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.AnnotationLiteral;
 
 import junit.framework.Assert;
@@ -44,6 +40,8 @@ public class Alternative1Test  extends AbstractUnitTest {
     {
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(DefaultBeanProducer.class);
+
+        // available but not enabled in beans.xml
         beanClasses.add(AlternativeBeanProducer1.class);
         
         startContainer(beanClasses, null);
@@ -53,17 +51,11 @@ public class Alternative1Test  extends AbstractUnitTest {
         {
         };
 
-        Set beans = getBeanManager().getBeans(IProducedBean.class, anns);
-        System.out.print("Size of the bean set is " + beans.size());
-        Bean<IProducedBean> bean = (Bean<IProducedBean>)beans.iterator().next();
-        CreationalContext<IProducedBean> cc = getBeanManager().createCreationalContext(bean);
-        IProducedBean model = (IProducedBean) getBeanManager().getReference(bean, IProducedBean.class, cc);
-        System.out.println(model.getID());
-        
+        IProducedBean model = getInstance(IProducedBean.class, anns);
+        Assert.assertNotNull(model);
+        Assert.assertEquals("default", model.getProducerType());
+
         shutDownContainer();
         
-        Assert.assertTrue(Boolean.TRUE);
-        
-    	
     }
 }

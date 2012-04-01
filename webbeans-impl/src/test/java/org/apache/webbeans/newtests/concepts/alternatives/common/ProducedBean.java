@@ -18,23 +18,29 @@
  */
 package org.apache.webbeans.newtests.concepts.alternatives.common;
 
-public class ProducedBean implements IProducedBean {
-	
-	String str;
-	
-	Object producer;
-	
-	public ProducedBean(String s, Object producer) {
-		str = s;
-		this.producer = producer;
-	}
-	
-	public String getID() {
-		
-		return str + "," + getProducerID() + "," + this;
-	}
-	
-	public String getProducerID() {
-		return producer.toString();
-	}
+public class ProducedBean implements IProducedBean
+{
+    String str;
+    Object producer;
+
+    public ProducedBean(String s, Object producer)
+    {
+        str = s;
+        this.producer = producer;
+    }
+
+    public String getID()
+    {
+        return str + "," + getProducerID() + "," + this;
+    }
+
+    public String getProducerID()
+    {
+        return producer.toString();
+    }
+
+    public String getProducerType()
+    {
+        return str;
+    }
 }

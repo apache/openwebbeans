@@ -56,12 +56,10 @@ public class Alternative2Test  extends AbstractUnitTest {
         };
 
         Set beans = getBeanManager().getBeans(IProducedBean.class, anns);
-        System.out.println("Size of the bean set is " + beans.size());
         Bean<IProducedBean> bean = (Bean<IProducedBean>)beans.iterator().next();
         CreationalContext<IProducedBean> cc = getBeanManager().createCreationalContext(bean);
         IProducedBean producedBean = (IProducedBean) getBeanManager().getReference(bean, IProducedBean.class, cc);
-        System.out.println(producedBean.getID());
-        
+
         shutDownContainer();
         
         Assert.assertTrue(Boolean.TRUE);
