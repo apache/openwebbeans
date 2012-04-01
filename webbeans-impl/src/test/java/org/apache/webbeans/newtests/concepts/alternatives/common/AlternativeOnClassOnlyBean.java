@@ -26,13 +26,13 @@ import javax.enterprise.inject.Produces;
  * This one has the &#064;Alternative on the class and NOT on the producer method
  */
 @Alternative
-public class AlternativeBeanProducer1
+public class AlternativeOnClassOnlyBean
 {
 
     @Produces
     @QualifierProducerBased
     public IProducedBean generateBean1()
     {
-        return new ProducedBean("alternative1", this);
+        return new ProducedBean("AlternativeOnClassOnlyBean", this);
     }
 }

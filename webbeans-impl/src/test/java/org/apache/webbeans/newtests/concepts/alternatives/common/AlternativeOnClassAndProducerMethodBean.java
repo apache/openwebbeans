@@ -26,7 +26,7 @@ import javax.enterprise.inject.Produces;
  * AND also an &#064;Alternative on the producer method
  */
 @Alternative
-public class AlternativeBeanProducer2
+public class AlternativeOnClassAndProducerMethodBean
 {
 
     @Produces
@@ -34,7 +34,7 @@ public class AlternativeBeanProducer2
     @QualifierProducerBased
     public IProducedBean generateBean2()
     {
-        return new ProducedBean("alternative2", this);
+        return new ProducedBean("AlternativeOnClassAndProducerMethodBean", this);
     }
 
 }

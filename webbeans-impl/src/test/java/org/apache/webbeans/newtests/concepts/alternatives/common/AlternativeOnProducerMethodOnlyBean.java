@@ -18,13 +18,21 @@
  */
 package org.apache.webbeans.newtests.concepts.alternatives.common;
 
+import javax.enterprise.inject.Alternative;
+import javax.enterprise.inject.Produces;
 
-public class Pencil
+/**
+ * This one has the &#064;Alternative ONLY on the producer method
+ */
+public class AlternativeOnProducerMethodOnlyBean
 {
-    private int nr = 42;
 
-    public int getNr()
+    @Produces
+    @Alternative
+    @QualifierProducerBased
+    public IProducedBean generateBean2()
     {
-        return nr;
+        return new ProducedBean("AlternativeOnProducerMethodOnlyBean", this);
     }
+
 }

@@ -21,32 +21,57 @@ package org.apache.webbeans.newtests.concepts.alternatives.tests;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import javax.enterprise.util.AnnotationLiteral;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeBeanProducer2;
+import org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeOnClassAndProducerMethodBean;
+import org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeOnClassOnlyBean;
 import org.apache.webbeans.newtests.concepts.alternatives.common.DefaultBeanProducer;
 import org.apache.webbeans.newtests.concepts.alternatives.common.IProducedBean;
 import org.apache.webbeans.newtests.concepts.alternatives.common.QualifierProducerBased;
 import org.junit.Test;
 
-public class Alternative2Test  extends AbstractUnitTest {
+public class AlternativeTest extends AbstractUnitTest {
 
     @Test
-    public void testDisposerMethodInAlternativeBean()
+    @SuppressWarnings("unchecked")
+    public void testAlternativeOnClassOnlyBean()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
-        
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(DefaultBeanProducer.class);
 
         // available but not enabled in beans.xml
-        beanClasses.add(AlternativeBeanProducer2.class);
+        beanClasses.add(AlternativeOnClassOnlyBean.class);
         
-        startContainer(beanClasses, beanXmls);        
+        startContainer(beanClasses, null);
+
+        Annotation[] anns = new Annotation[1];
+        anns[0] = new AnnotationLiteral<QualifierProducerBased>()
+        {
+        };
+
+        IProducedBean model = getInstance(IProducedBean.class, anns);
+        Assert.assertNotNull(model);
+        Assert.assertEquals("default", model.getProducerType());
+
+        shutDownContainer();
+        
+    }
+
+    @Test
+    public void testAlternativeOnClassAndProducerMethodBean()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(DefaultBeanProducer.class);
+
+        // available but not enabled in beans.xml
+        beanClasses.add(AlternativeOnClassAndProducerMethodBean.class);
+
+        startContainer(beanClasses, beanXmls);
 
         Annotation[] anns = new Annotation[1];
         anns[0] = new AnnotationLiteral<QualifierProducerBased>()
@@ -59,5 +84,6 @@ public class Alternative2Test  extends AbstractUnitTest {
 
         shutDownContainer();
     }
+
 
 }

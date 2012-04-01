@@ -45,19 +45,38 @@ public class AlternativeOnProducerFieldTest extends AbstractUnitTest
     @Test
     public void testProducerFieldAlternativeNotEnabled()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
-        beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeOnProducerFieldTest"));
-        
+
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(PencilProducerBean.class);
         beanClasses.add(Pencil.class);
         
-        startContainer(beanClasses, beanXmls);        
-        
+        startContainer(beanClasses, null);
+
         Set<Bean<?>> beans = getBeanManager().getBeans(Pencil.class, new AnnotationLiteral<Pen>(){});
-        Assert.assertEquals(1, beans.size());
-        
+        Assert.assertEquals(0, beans.size());
+
         shutDownContainer();
     }
-    
+
+    @Test
+    public void testProducerFieldAlternativeEnabled()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeOnProducerFieldTest"));
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(PencilProducerBean.class);
+        beanClasses.add(Pencil.class);
+
+        startContainer(beanClasses, beanXmls);
+
+        Set<Bean<?>> beans = getBeanManager().getBeans(Pencil.class, new AnnotationLiteral<Pen>(){});
+        Assert.assertEquals(1, beans.size());
+        Pencil pencil = getInstance(Pencil.class, new AnnotationLiteral<Pen>(){});
+        Assert.assertNotNull(pencil);
+        Assert.assertEquals(42, pencil.getNr());
+
+        shutDownContainer();
+    }
+
 }
