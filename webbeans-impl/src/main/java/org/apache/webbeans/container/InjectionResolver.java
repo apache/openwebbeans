@@ -70,6 +70,7 @@ public class InjectionResolver
     private WebBeansContext webBeansContext;
     
     private final static Annotation[] DEFAULT_LITERAL_ARRAY = new Annotation[]{new DefaultLiteral()};
+    private final static Annotation[] ANY_LITERAL_ARRAY = new Annotation[]{new AnyLiteral()};
 
     /**
      * This Map contains all resolved beans via it's type and qualifiers.
@@ -452,6 +453,21 @@ public class InjectionResolver
             bdaBeansXMLFilePath = getBDABeansXMLPath(injectinPointClass);
         }
 
+        boolean currentQualifier = false;
+
+        if (isInstanceOrEventInjection(injectionPointType))
+        {
+            qualifiers = ANY_LITERAL_ARRAY;
+        }
+        else
+        {
+            if (qualifiers.length == 0)
+            {
+                qualifiers = DEFAULT_LITERAL_ARRAY;
+                currentQualifier = true;
+            }
+        }
+
         Long cacheKey = getBeanCacheKey(injectionPointType, bdaBeansXMLFilePath, qualifiers);
 
         Set<Bean<?>> resolvedComponents = resolvedBeansByType.get(cacheKey);
@@ -462,22 +478,7 @@ public class InjectionResolver
 
         resolvedComponents = new HashSet<Bean<?>>();
 
-        boolean currentQualifier = false;
         boolean returnAll = false;
-
-        if (isInstanceOrEventInjection(injectionPointType))
-        {
-            qualifiers = new Annotation[]{new AnyLiteral()};
-        }
-
-        else
-        {
-            if (qualifiers.length == 0)
-            {
-                qualifiers = DEFAULT_LITERAL_ARRAY;
-                currentQualifier = true;
-            }
-        }
 
         if (injectionPointType.equals(Object.class) && currentQualifier)
         {
