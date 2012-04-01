@@ -21,20 +21,21 @@ package org.apache.webbeans.newtests.concepts.alternatives.common;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 
-
 @Alternative
-public class AlternativeBeanProducer4 {
-	
-	public @Produces
-	@Alternative
-	@QualifierProducerBased
-	IProducedBean generateBean4() {
-		return new ProducedBean("alternative4", this);
-	}
+public class AlternativeBeanProducer4
+{
 
-	/*
-	public void dumpBean4(@Disposes @QualifierProducerBased IProducedBean bean) {
-			System.out.println(bean + " is dumped in dumpBean4().");	
-	}
-	*/
+    public @Produces
+    @Alternative
+    @QualifierProducerBased
+    IProducedBean generateBean4()
+    {
+        return new ProducedBean("alternative4", this);
+    }
+
+    /*
+     public void dumpBean4(@Disposes @QualifierProducerBased IProducedBean bean) {
+             System.out.println(bean + " is dumped in dumpBean4().");
+     }
+     */
 }

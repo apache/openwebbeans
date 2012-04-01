@@ -20,11 +20,13 @@ package org.apache.webbeans.newtests.concepts.alternatives.common;
 
 import javax.enterprise.inject.Produces;
 
-public class DefaultBeanProducerWithoutDisposes {
-	
-	public @Produces @QualifierProducerBased IProducedBean 
-	generateBean() {
-		return new ProducedBean("defaultwithoutdisposes", this);
-	}
+public class DefaultBeanProducerWithoutDisposes
+{
+
+    public @Produces @QualifierProducerBased
+    IProducedBean generateBean()
+    {
+        return new ProducedBean("defaultwithoutdisposes", this);
+    }
 
 }

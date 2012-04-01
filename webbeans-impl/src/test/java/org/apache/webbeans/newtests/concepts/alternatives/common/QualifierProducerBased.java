@@ -28,6 +28,7 @@ import javax.inject.Qualifier;
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.PARAMETER, ElementType.METHOD,ElementType.CONSTRUCTOR,ElementType.FIELD})
-public @interface QualifierProducerBased {
+public @interface QualifierProducerBased
+{
 
 }

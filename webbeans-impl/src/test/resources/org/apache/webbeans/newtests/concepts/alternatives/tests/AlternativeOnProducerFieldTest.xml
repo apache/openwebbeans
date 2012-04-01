@@ -18,7 +18,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 <beans>
-	<alternatives>
-		<class>org.apache.webbeans.newtests.concepts.alternatives.common.PencilProducerBean</class>
-	</alternatives>
+    <alternatives>
+        <class>org.apache.webbeans.newtests.concepts.alternatives.common.PencilProducerBean</class>
+    </alternatives>
 </beans>

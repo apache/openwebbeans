@@ -39,13 +39,14 @@ import org.junit.Test;
 public class Alternative2Test  extends AbstractUnitTest {
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testDisposerMethodInAlternativeBean()
     {
         Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(DefaultBeanProducer.class);
+
+        // available but not enabled in beans.xml
         beanClasses.add(AlternativeBeanProducer2.class);
         
         startContainer(beanClasses, beanXmls);        
@@ -55,14 +56,11 @@ public class Alternative2Test  extends AbstractUnitTest {
         {
         };
 
-        Set beans = getBeanManager().getBeans(IProducedBean.class, anns);
-        Bean<IProducedBean> bean = (Bean<IProducedBean>)beans.iterator().next();
-        CreationalContext<IProducedBean> cc = getBeanManager().createCreationalContext(bean);
-        IProducedBean producedBean = (IProducedBean) getBeanManager().getReference(bean, IProducedBean.class, cc);
+        IProducedBean producedBean = getInstance(IProducedBean.class, anns);
+        Assert.assertNotNull(producedBean);
+        Assert.assertEquals("default", producedBean.getProducerType());
 
         shutDownContainer();
-        
-        Assert.assertTrue(Boolean.TRUE);
     }
 
 }

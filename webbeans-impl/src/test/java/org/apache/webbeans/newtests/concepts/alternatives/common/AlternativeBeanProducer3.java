@@ -22,18 +22,20 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 
 @Alternative
-public class AlternativeBeanProducer3 {
-	
-	public @Produces
-	@Alternative
-	@QualifierProducerBased
-	IProducedBean generateBean3() {
-		return new ProducedBean("alternative3", this);
-	}
+public class AlternativeBeanProducer3
+{
 
-	/*
-	public void dumpBean3(@Disposes @QualifierProducerBased IProducedBean bean) {
-			System.out.println(bean + " is dumped in dumpBean3().");	
-	}
-	*/
+    public @Produces
+    @Alternative
+    @QualifierProducerBased
+    IProducedBean generateBean3()
+    {
+        return new ProducedBean("alternative3", this);
+    }
+
+    /*
+     public void dumpBean3(@Disposes @QualifierProducerBased IProducedBean bean) {
+             System.out.println(bean + " is dumped in dumpBean3().");
+     }
+     */
 }

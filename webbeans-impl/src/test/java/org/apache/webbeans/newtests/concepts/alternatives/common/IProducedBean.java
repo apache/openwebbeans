@@ -27,5 +27,4 @@ public interface IProducedBean
     public String getProducerID();
 
     public String getProducerType();
-
 }
