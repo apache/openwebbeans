@@ -177,6 +177,10 @@ public final class WebBeansUtil
      */
     private static volatile Boolean enforceCheckedException;
 
+    private final static Class<Instance<?>> INSTANCE_TYPE = new TypeLiteral<Instance<?>>(){}.getRawType();
+    private final static Class<Provider<?>> PROVIDER_TYPE = new TypeLiteral<Provider<?>>(){}.getRawType();
+    private final static Class<Event<?>>    EVENT_TYPE    = new TypeLiteral<Event<?>>(){}.getRawType();
+
     private final WebBeansContext webBeansContext;
 
     public WebBeansUtil(WebBeansContext webBeansContext)
@@ -670,8 +674,8 @@ public final class WebBeansUtil
     {
         InstanceBean<T> instanceBean = new InstanceBean<T>(webBeansContext);
 
-        instanceBean.getTypes().add(new TypeLiteral<Instance<?>>(){}.getRawType());
-        instanceBean.getTypes().add(new TypeLiteral<Provider<?>>(){}.getRawType());
+        instanceBean.getTypes().add(INSTANCE_TYPE);
+        instanceBean.getTypes().add(PROVIDER_TYPE);
         instanceBean.addApiType(Object.class);
 
         instanceBean.addQualifier(new AnyLiteral());
@@ -690,7 +694,7 @@ public final class WebBeansUtil
     {
         EventBean<T> eventBean = new EventBean<T>(webBeansContext);
 
-        eventBean.getTypes().add(new TypeLiteral<Event<?>>(){}.getRawType());
+        eventBean.getTypes().add(EVENT_TYPE);
         eventBean.addApiType(Object.class);
 
         eventBean.addQualifier(new AnyLiteral());

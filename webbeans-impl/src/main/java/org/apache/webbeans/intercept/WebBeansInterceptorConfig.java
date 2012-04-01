@@ -248,7 +248,7 @@ public final class WebBeansInterceptorConfig
             componentInterceptors = findDeployedWebBeansInterceptor(anns, component.getWebBeansContext());
 
             // Adding class interceptors
-            addComponentInterceptors(component, componentInterceptors, stack);
+            addComponentInterceptors(componentInterceptors, stack);
         }
 
         // Method level interceptors.
@@ -258,7 +258,7 @@ public final class WebBeansInterceptorConfig
         }
         else
         {
-            addMethodInterceptors(component, annotatedType, stack, componentInterceptors);
+            addMethodInterceptors(annotatedType, stack, componentInterceptors);
         }
         filterInterceptorsPerBDA(component,stack);
 
@@ -295,9 +295,8 @@ public final class WebBeansInterceptorConfig
 
     }
 
-    public void addComponentInterceptors(AbstractOwbBean<?> bean, Set<Interceptor<?>> set, List<InterceptorData> stack)
+    public void addComponentInterceptors(Set<Interceptor<?>> set, List<InterceptorData> stack)
     {
-        WebBeansContext webBeansContext = bean.getWebBeansContext();
         Iterator<Interceptor<?>> it = set.iterator();
         while (it.hasNext())
         {
@@ -388,7 +387,6 @@ public final class WebBeansInterceptorConfig
     private void addMethodInterceptors(AbstractInjectionTargetBean<?> component, Class<?> clazz, List<InterceptorData> stack, Set<Interceptor<?>> componentInterceptors,
                                               Set<Annotation> resolvedComponentInterceptorBindings)
     {
-        WebBeansContext webBeansContext = component.getWebBeansContext();
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
         // All methods, not just those declared
@@ -485,13 +483,11 @@ public final class WebBeansInterceptorConfig
     }
 
     @SuppressWarnings("unchecked")
-    private <T> void addMethodInterceptors(AbstractInjectionTargetBean<?> component,
-                                                  AnnotatedType<T> annotatedType,
-                                                  List<InterceptorData> stack,
-                                                  Set<Interceptor<?>> componentInterceptors)
+    private <T> void addMethodInterceptors(AnnotatedType<T> annotatedType,
+                                           List<InterceptorData> stack,
+                                           Set<Interceptor<?>> componentInterceptors)
     {
 
-        WebBeansContext webBeansContext = component.getWebBeansContext();
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
         for(AnnotatedMethod<? super T> methodA : methods)
