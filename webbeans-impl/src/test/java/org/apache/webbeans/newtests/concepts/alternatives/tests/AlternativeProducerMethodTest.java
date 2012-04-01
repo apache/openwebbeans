@@ -29,6 +29,7 @@ import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeOnClassAndProducerMethodBean;
 import org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeOnClassOnlyBean;
 import org.apache.webbeans.newtests.concepts.alternatives.common.DefaultBeanProducer;
+import org.apache.webbeans.newtests.concepts.alternatives.common.DefaultBeanProducerWithoutDisposes;
 import org.apache.webbeans.newtests.concepts.alternatives.common.IProducedBean;
 import org.apache.webbeans.newtests.concepts.alternatives.common.QualifierProducerBased;
 import org.junit.Test;
@@ -92,9 +93,11 @@ public class AlternativeProducerMethodTest extends AbstractUnitTest {
     public void testAlternativeOnClassAndProducerMethodBean()
     {
         Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeOnClassAndProducerMethod"));
 
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(DefaultBeanProducer.class);
+        beanClasses.add(IProducedBean.class);
+        beanClasses.add(DefaultBeanProducerWithoutDisposes.class);
 
         // available but not enabled in beans.xml
         beanClasses.add(AlternativeOnClassAndProducerMethodBean.class);
@@ -108,7 +111,7 @@ public class AlternativeProducerMethodTest extends AbstractUnitTest {
 
         IProducedBean producedBean = getInstance(IProducedBean.class, anns);
         Assert.assertNotNull(producedBean);
-        Assert.assertEquals("default", producedBean.getProducerType());
+        Assert.assertEquals("AlternativeOnClassAndProducerMethodBean", producedBean.getProducerType());
 
         shutDownContainer();
     }
