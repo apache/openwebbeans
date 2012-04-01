@@ -19,6 +19,6 @@ under the License.
 -->
 <beans>
     <alternatives>
-        <class>org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeBeanProducer4</class>
+        <class>org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeOnProducerMethodOnlyBean</class>
     </alternatives>
 </beans>

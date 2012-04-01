@@ -32,12 +32,14 @@ import org.apache.webbeans.newtests.concepts.alternatives.common.DefaultBeanProd
 import org.apache.webbeans.newtests.concepts.alternatives.common.IProducedBean;
 import org.apache.webbeans.newtests.concepts.alternatives.common.QualifierProducerBased;
 import org.junit.Test;
+import org.junit.Ignore;
 
-public class AlternativeTest extends AbstractUnitTest {
+public class AlternativeProducerMethodTest extends AbstractUnitTest {
+
+    private static final String PACKAGE_NAME = AlternativeProducerMethodTest.class.getPackage().getName();
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void testAlternativeOnClassOnlyBean()
+    public void testNotEnabledAlternativeOnClassOnlyBean()
     {
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(DefaultBeanProducer.class);
@@ -57,8 +59,34 @@ public class AlternativeTest extends AbstractUnitTest {
         Assert.assertEquals("default", model.getProducerType());
 
         shutDownContainer();
-        
     }
+
+    @Test
+    @Ignore("need to clarify this with the EG")
+    //X TODO It's not yet clear how paragraph 5.1.1 is to be interpreted
+    public void testAlternativeOnClassOnlyBean()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeOnClassOnly"));
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(DefaultBeanProducer.class);
+        beanClasses.add(AlternativeOnClassOnlyBean.class);
+
+        startContainer(beanClasses, null);
+
+        Annotation[] anns = new Annotation[1];
+        anns[0] = new AnnotationLiteral<QualifierProducerBased>()
+        {
+        };
+
+        IProducedBean model = getInstance(IProducedBean.class, anns);
+        Assert.assertNotNull(model);
+        Assert.assertEquals("AlternativeOnClassOnlyBean", model.getProducerType());
+
+        shutDownContainer();
+    }
+
 
     @Test
     public void testAlternativeOnClassAndProducerMethodBean()
@@ -85,5 +113,7 @@ public class AlternativeTest extends AbstractUnitTest {
         shutDownContainer();
     }
 
+
+    //X TODO add tests for disposal methods
 
 }

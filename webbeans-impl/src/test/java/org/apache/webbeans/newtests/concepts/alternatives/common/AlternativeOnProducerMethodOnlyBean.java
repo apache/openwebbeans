@@ -22,7 +22,8 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 
 /**
- * This one has the &#064;Alternative ONLY on the producer method
+ * This one has the &#064;Alternative ONLY on the producer method.
+ * This must result in an Exception.
  */
 public class AlternativeOnProducerMethodOnlyBean
 {

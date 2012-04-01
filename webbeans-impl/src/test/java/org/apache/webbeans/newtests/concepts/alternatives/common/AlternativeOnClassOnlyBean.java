@@ -24,6 +24,13 @@ import javax.enterprise.inject.Produces;
 
 /**
  * This one has the &#064;Alternative on the class and NOT on the producer method
+ *
+ * See Spec 5.1.1
+ * <pre>
+ * An alternative is selected for the bean archive if ...
+ *   * the alternative is a producer method, field or resource, and the bean class
+ *     that declares the method or field is listed ..
+ * </pre>
  */
 @Alternative
 public class AlternativeOnClassOnlyBean

@@ -491,16 +491,17 @@ public class InjectionResolver
             if (returnAll)
             {
                 resolvedComponents.add(component);
-                continue;
             }
-
-            for (Type componentApiType : component.getTypes())
+            else
             {
-
-                if (ClassUtil.isAssignable(componentApiType, injectionPointType))
+                for (Type componentApiType : component.getTypes())
                 {
-                    resolvedComponents.add(component);
-                    break;
+
+                    if (ClassUtil.isAssignable(componentApiType, injectionPointType))
+                    {
+                        resolvedComponents.add(component);
+                        break;
+                    }
                 }
             }
         }
@@ -508,8 +509,14 @@ public class InjectionResolver
         // Look for qualifiers
         resolvedComponents = findByQualifier(resolvedComponents, qualifiers);
 
-        // Look for alternative
-        resolvedComponents = findByAlternatives(resolvedComponents, bdaBeansXMLFilePath);
+        if (!injectionPointType.equals(Object.class))
+        {
+            // see OWB-658 skip if all Object.class instances are requested
+            // as there is no way to Alternative Object.class
+
+            // Look for alternative
+            resolvedComponents = findByAlternatives(resolvedComponents, bdaBeansXMLFilePath);
+        }
 
         // Ambigious resolution, check for specialization
         if (resolvedComponents.size() > 1)
