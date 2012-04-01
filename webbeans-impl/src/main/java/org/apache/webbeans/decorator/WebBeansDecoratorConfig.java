@@ -150,9 +150,8 @@ public final class WebBeansDecoratorConfig
         BeanManager manager = component.getWebBeansContext().getBeanManagerImpl();
         while (itList.hasNext())
         {
-            Object decoratorInstance = null;
-            @SuppressWarnings("unchecked")
-            WebBeansDecorator<Object> decorator = (WebBeansDecorator<Object>) itList.next();            
+            Object decoratorInstance ;
+            WebBeansDecorator<Object> decorator = (WebBeansDecorator<Object>) itList.next();
             decoratorInstance = ownerCreationalContext.getDependentDecorator(instance, decorator);
             if(decoratorInstance == null)
             {
@@ -162,14 +161,11 @@ public final class WebBeansDecoratorConfig
                 decorator.setInjections(decoratorInstance, creationalContext);
                 decorator.setDelegate(decoratorInstance, delegate);
                 
-                if (ownerCreationalContext != null)
-                {
-                    ownerCreationalContext.addDependent(instance, decorator, decoratorInstance);
-                }                
+                ownerCreationalContext.addDependent(instance, decorator, decoratorInstance);
             }
-            //We found an existing decorator instance, update the delegate
             else
             {
+                //We found an existing decorator instance, update the delegate
                 decorator.setDelegate(decoratorInstance, delegate);
             }
             

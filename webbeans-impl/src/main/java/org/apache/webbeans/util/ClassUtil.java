@@ -1052,7 +1052,7 @@ public final class ClassUtil
 
                 boolean ok = true;
 
-                if (parameterTypes != null && parameterTypes.size() > 0)
+                if (parameterTypes.size() > 0)
                 {
                     ok = false;
                 }
