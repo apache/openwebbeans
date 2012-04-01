@@ -21,14 +21,18 @@ package org.apache.webbeans.newtests.concepts.alternatives.common;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 
+/**
+ * This one has the &#064;Alternative on the class
+ * AND also an &#064;Alternative on the producer method
+ */
 @Alternative
 public class AlternativeBeanProducer2
 {
 
-    public @Produces
+    @Produces
     @Alternative
     @QualifierProducerBased
-    IProducedBean generateBean2()
+    public IProducedBean generateBean2()
     {
         return new ProducedBean("alternative2", this);
     }

@@ -22,13 +22,16 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 
 
+/**
+ * This one has the &#064;Alternative on the class and NOT on the producer method
+ */
 @Alternative
 public class AlternativeBeanProducer1
 {
 
-    public @Produces
+    @Produces
     @QualifierProducerBased
-    IProducedBean generateBean1()
+    public IProducedBean generateBean1()
     {
         return new ProducedBean("alternative1", this);
     }
