@@ -104,12 +104,7 @@ public class AlternativeProducerMethodTest extends AbstractUnitTest {
 
         startContainer(beanClasses, beanXmls);
 
-        Annotation[] anns = new Annotation[1];
-        anns[0] = new AnnotationLiteral<QualifierProducerBased>()
-        {
-        };
-
-        IProducedBean producedBean = getInstance(IProducedBean.class, anns);
+        IProducedBean producedBean = getInstance(IProducedBean.class, new AnnotationLiteral<QualifierProducerBased>(){});
         Assert.assertNotNull(producedBean);
         Assert.assertEquals("AlternativeOnClassAndProducerMethodBean", producedBean.getProducerType());
 
