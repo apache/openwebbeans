@@ -129,7 +129,7 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
         return ((OwbBean<?>) bean).getId();
     }
 
-    private synchronized void writeObject(ObjectOutputStream s)
+    private void writeObject(ObjectOutputStream s)
     throws IOException
     {
         String id = getId();
@@ -143,7 +143,7 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
 
 
     @SuppressWarnings("unchecked")
-    private synchronized void readObject(ObjectInputStream s)
+    private void readObject(ObjectInputStream s)
     throws IOException, ClassNotFoundException
     {
         String id = (String) s.readObject();

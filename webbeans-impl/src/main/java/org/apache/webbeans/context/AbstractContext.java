@@ -353,7 +353,7 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     /**
      * Write Object.
      */
-    private synchronized void writeObject(ObjectOutputStream s)
+    private void writeObject(ObjectOutputStream s)
     throws IOException
     {
         s.writeObject(type);
@@ -385,8 +385,7 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     /**
      * Read object.
      */
-    @SuppressWarnings("unchecked")
-    private synchronized void readObject(ObjectInputStream s)
+    private void readObject(ObjectInputStream s)
     throws IOException, ClassNotFoundException
     {
         type = (ContextTypes) s.readObject();

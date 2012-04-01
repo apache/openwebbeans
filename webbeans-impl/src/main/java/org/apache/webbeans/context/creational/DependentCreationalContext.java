@@ -100,7 +100,7 @@ public class DependentCreationalContext<S> implements Serializable
         return contextual;
     }
 
-    private synchronized void writeObject(ObjectOutputStream s)
+    private void writeObject(ObjectOutputStream s)
     throws IOException
     {
         s.writeObject(dependentType);
@@ -128,7 +128,7 @@ public class DependentCreationalContext<S> implements Serializable
 
 
     @SuppressWarnings("unchecked")
-    private synchronized void readObject(ObjectInputStream s)
+    private void readObject(ObjectInputStream s)
     throws IOException, ClassNotFoundException
     {
         dependentType = (DependentType) s.readObject();

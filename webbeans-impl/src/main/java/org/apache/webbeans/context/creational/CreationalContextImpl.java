@@ -350,7 +350,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     /**
      * Write Object. 
      */
-    private synchronized void writeObject(ObjectOutputStream s)
+    private void writeObject(ObjectOutputStream s)
     throws IOException
     {
         s.writeObject(dependentObjects);
@@ -372,7 +372,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      * Read object. 
      */
     @SuppressWarnings("unchecked")
-    private synchronized void readObject(ObjectInputStream s)
+    private void readObject(ObjectInputStream s)
     throws IOException, ClassNotFoundException
     {
         webBeansContext = WebBeansContext.currentInstance();
