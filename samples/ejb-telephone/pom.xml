@@ -32,6 +32,10 @@ under the License.
     <name>Telephone Ejb Demo On OpenEJB in Tomcat</name>
     <description>Telephone Ejb Demo</description>
 
+    <properties>
+        <deploy.skip>true</deploy.skip>
+    </properties>
+
     <build>
         <finalName>ejb-telephone</finalName>
         <plugins>

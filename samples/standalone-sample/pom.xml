@@ -32,6 +32,10 @@ under the License.
     <packaging>jar</packaging>
     <description>Java SE Sample</description>
 
+    <properties>
+        <deploy.skip>true</deploy.skip>
+    </properties>
+
     <dependencies>
 
         <dependency>

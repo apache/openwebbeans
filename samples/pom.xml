@@ -33,6 +33,7 @@ under the License.
     <description>Apache OpenWebBeans Samples contains samples project for openwebbeans.</description>
 
     <properties>
+        <deploy.skip>false</deploy.skip>
         <myfaces2.version>2.0.7</myfaces2.version>
     </properties>
 
@@ -42,7 +43,7 @@ under the License.
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <configuration>
-                    <skip>true</skip> <!-- we don't deploy our samples upstream -->
+                    <skip>${deploy.skip}</skip> <!-- we don't deploy our samples upstream -->
                 </configuration>
             </plugin>
             <plugin>

@@ -32,6 +32,9 @@ under the License.
     <name>Sample Hotel Reservation Application</name>
     <description>Simple hotel reservation application</description>
 
+    <properties>
+        <deploy.skip>true</deploy.skip>
+    </properties>
 
     <build>
         <finalName>reservation</finalName>

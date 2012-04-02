@@ -31,6 +31,10 @@ under the License.
     <packaging>war</packaging>
     <name>Tomcat 7 Sample</name>
 
+    <properties>
+        <deploy.skip>true</deploy.skip>
+    </properties>
+
     <dependencies>
 
         <dependency>

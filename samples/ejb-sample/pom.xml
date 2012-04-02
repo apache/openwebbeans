@@ -32,6 +32,10 @@ under the License.
     <name>Sample Ejb Demo On OpenEJB in Tomcat</name>
     <description>Sample Ejb Demo</description>
 
+    <properties>
+        <deploy.skip>true</deploy.skip>
+    </properties>
+
     <build>
         <finalName>ejb-sample</finalName>
         <plugins>

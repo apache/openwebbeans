@@ -32,6 +32,10 @@ under the License.
     <name>Sample Jms Injection Demo</name>
     <description>Sample Jms Injection Demo</description>
 
+    <properties>
+        <deploy.skip>true</deploy.skip>
+    </properties>
+
     <build>
         <finalName>jms-sample</finalName>
     </build>

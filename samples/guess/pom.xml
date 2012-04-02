@@ -32,6 +32,10 @@ under the License.
     <name>Sample Guess Application</name>
     <description>Simple login application</description>
 
+    <properties>
+        <deploy.skip>true</deploy.skip>
+    </properties>
+
     <build>
         <finalName>guess</finalName>
         <plugins>
