@@ -78,6 +78,13 @@ under the License.
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip> <!-- we don't deploy our samples upstream -->
+                </configuration>
+            </plugin>
 
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
