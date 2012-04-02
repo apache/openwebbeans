@@ -32,6 +32,10 @@ under the License.
     <packaging>war</packaging>
     <name>JSF Conversation Sample</name>
 
+    <properties>
+        <deploy.skip>true</deploy.skip>
+    </properties>
+
     <dependencies>
 
         <!-- JSR-299 Impl -->
