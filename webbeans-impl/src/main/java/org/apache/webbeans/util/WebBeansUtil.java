@@ -403,6 +403,12 @@ public final class WebBeansUtil
      */
     public boolean supportsJavaEeComponentInjections(Class<?> clazz)
     {
+        if (clazz.isInterface() || clazz.isAnnotation() || clazz.isEnum())
+        {
+            // interfaces, annotations and enums are no subject of injection
+            return false;
+        }
+
         // and finally call all checks which are defined in plugins like JSF, JPA, etc
         List<OpenWebBeansPlugin> plugins = webBeansContext.getPluginLoader().getPlugins();
         for (OpenWebBeansPlugin plugin : plugins)

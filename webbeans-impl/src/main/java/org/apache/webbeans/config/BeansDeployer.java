@@ -785,8 +785,7 @@ public class BeansDeployer
         {
             //Fires ProcessInjectionTarget
             processInjectionTargetEvent =
-                webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEventForJavaEeComponents(
-                    clazz);
+                webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEventForJavaEeComponents(clazz);
             webBeansContext.getWebBeansUtil().inspectErrorStack(
                 "There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
 
@@ -794,7 +793,8 @@ public class BeansDeployer
             if(processInjectionTargetEvent.isSet())
             {
                 //Adding injection target
-                manager.putInjectionTargetWrapperForJavaEeComponents(clazz, new InjectionTargetWrapper<T>(processInjectionTargetEvent.getInjectionTarget()));                
+                manager.putInjectionTargetWrapperForJavaEeComponents(clazz,
+                        new InjectionTargetWrapper<T>(processInjectionTargetEvent.getInjectionTarget()));
             }
             
             //Checks that not contains @Inject InjectionPoint

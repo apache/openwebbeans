@@ -97,16 +97,16 @@ public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansWe
     public boolean supportsJavaEeComponentInjections(Class<?> clazz)
     {
         if(Servlet.class.isAssignableFrom(clazz) ||
-                Filter.class.isAssignableFrom(clazz) ||
-                ServletContextListener.class.isAssignableFrom(clazz) ||
-                ServletContextAttributeListener.class.isAssignableFrom(clazz) ||
-                HttpSessionActivationListener.class.isAssignableFrom(clazz) ||
-                HttpSessionAttributeListener.class.isAssignableFrom(clazz) ||
-                HttpSessionBindingListener.class.isAssignableFrom(clazz) ||
-                HttpSessionListener.class.isAssignableFrom(clazz) ||
-                ServletRequestListener.class.isAssignableFrom(clazz) ||
-                ServletRequestAttributeListener.class.isAssignableFrom(clazz) ||
-                clazz.isAnnotationPresent(WebService.class))
+           Filter.class.isAssignableFrom(clazz) ||
+           ServletContextListener.class.isAssignableFrom(clazz) ||
+           ServletContextAttributeListener.class.isAssignableFrom(clazz) ||
+           HttpSessionActivationListener.class.isAssignableFrom(clazz) ||
+           HttpSessionAttributeListener.class.isAssignableFrom(clazz) ||
+           HttpSessionBindingListener.class.isAssignableFrom(clazz) ||
+           HttpSessionListener.class.isAssignableFrom(clazz) ||
+           ServletRequestListener.class.isAssignableFrom(clazz) ||
+           ServletRequestAttributeListener.class.isAssignableFrom(clazz) ||
+           clazz.isAnnotationPresent(WebService.class))
         {
             return true;
         }
