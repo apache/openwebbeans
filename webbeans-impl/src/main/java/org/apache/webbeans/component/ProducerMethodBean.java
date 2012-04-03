@@ -369,11 +369,11 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      */
     protected void checkNullInstance(Object instance)
     {
-        String errorMessage = "WebBeans producer method : " + creatorMethod.getName() +
-                              " return type in the component implementation class : " +
-                ownerComponent.getReturnType().getName() +
+        String errorMessage = "WebBeans producer method : %s" +
+                              " return type in the component implementation class : %s" +
                               " scope type must be @Dependent to create null instance";
-        WebBeansUtil.checkNullInstance(instance, getScope(), errorMessage);
+        WebBeansUtil.checkNullInstance(instance, getScope(), errorMessage, creatorMethod.getName(),
+                ownerComponent.getReturnType().getName());
     }
 
     /**
@@ -381,12 +381,13 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      */
     protected void checkScopeType()
     {
-        String errorMessage = "WebBeans producer method : " + creatorMethod.getName() +
-                              " return type in the component implementation class : " +
-                ownerComponent.getReturnType().getName() + " with passivating scope @" +
-                getScope().getName() + " must be Serializable";
+        String errorMessage = "WebBeans producer method : %s" +
+                              " return type in the component implementation class : %s" +
+                              " with passivating scope @%s" +
+                              " must be Serializable";
         getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(getScope(),
-                isSerializable(), errorMessage);
+                isSerializable(), errorMessage, creatorMethod.getName(), ownerComponent.getReturnType().getName(),
+                getScope().getName());
 
     }
     

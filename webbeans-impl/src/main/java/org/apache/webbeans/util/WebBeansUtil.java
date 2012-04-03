@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.decorator.Decorator;
@@ -159,6 +160,8 @@ import org.apache.webbeans.portable.events.generics.GProcessProducerMethod;
 import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
+
+
 import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnproxyableResolutionException;
 
 /**
@@ -270,13 +273,16 @@ public final class WebBeansUtil
             throw new IllegalArgumentException("Bean must be Producer Field or Method Bean instance : " + bean);
         }
 
-        String message = "Producer Field/Method Bean with name : " + member.getName()
-                         + " in bean class : " + member.getDeclaringClass().getName();
+        String messageTemplate = "Producer Field/Method Bean with name : %s" + 
+                         " in bean class : %s"; 
 
-        if(checkGenericForProducers(type, message))
+        String memberName = member.getName();
+        String declaringClassName = member.getDeclaringClass().getName();
+        if(checkGenericForProducers(type, messageTemplate, memberName, declaringClassName))
         {
             if(!bean.getScope().equals(Dependent.class))
             {
+                String message = format(messageTemplate, memberName, declaringClassName);
                 throw new WebBeansConfigurationException(message + " scope must bee @Dependent");
             }
         }
@@ -285,16 +291,17 @@ public final class WebBeansUtil
     /**
      * Check generic types for producer method and fields.
      * @param type generic return type
-     * @param message error message
+     * @param messageTemplate error message
      * @return true if parametrized type argument is TypeVariable
      */
     //Helper method
-    private static boolean checkGenericForProducers(Type type, String message)
+    private static boolean checkGenericForProducers(Type type, String messageTemplate, Object... errorMessageArgs)
     {
         boolean result = false;
 
         if(type instanceof TypeVariable)
         {
+            String message = format(messageTemplate, errorMessageArgs);
             throw new WebBeansConfigurationException(message + " return type can not be type variable");
         }
 
@@ -304,6 +311,7 @@ public final class WebBeansUtil
 
             if(actualTypes.length == 0)
             {
+                String message = format(messageTemplate, errorMessageArgs);
                 throw new WebBeansConfigurationException(message +
                         " return type must define actual type arguments or type variable");
             }
@@ -312,6 +320,7 @@ public final class WebBeansUtil
             {
                 if(ClassUtil.isWildCardType(actualType))
                 {
+                    String message = format(messageTemplate, errorMessageArgs);
                     throw new WebBeansConfigurationException(message +
                             " return type can not define wildcard actual type argument");
                 }
@@ -2052,27 +2061,29 @@ public final class WebBeansUtil
      */
     private static Map<Class<? extends Annotation>, Boolean> isScopeTypeNormalCache =
             new ConcurrentHashMap<Class<? extends Annotation>, Boolean>();
-
-
-    public static void checkNullInstance(Object instance,Class<?> scopeType, String errorMessage)
+    
+    public static void checkNullInstance(Object instance, Class<? > scopeType, String errorMessage, 
+            Object... errorMessageArgs)
     {
         if (instance == null)
         {
             if (!scopeType.equals(Dependent.class))
             {
-                throw new IllegalProductException(errorMessage);
+                String message = format(errorMessage, errorMessageArgs);
+                throw new IllegalProductException(message);
             }
         }
-
     }
 
-    public void checkSerializableScopeType(Class<? extends Annotation> scopeType, boolean isSerializable, String errorMessage)
+    public void checkSerializableScopeType(Class<? extends Annotation> scopeType, boolean isSerializable, String errorMessage,
+            Object... errorMessageArgs)
     {
         if (webBeansContext.getBeanManagerImpl().isPassivatingScope(scopeType))
         {
             if (!isSerializable)
             {
-                throw new IllegalProductException(errorMessage);
+                String message = format(errorMessage, errorMessageArgs);
+                throw new IllegalProductException(message);
             }
         }
     }
@@ -3122,4 +3133,59 @@ public final class WebBeansUtil
 
         }
     }
+
+    // Note: following code for method 'format' is taken from google guava - apache 2.0 licenced library
+    // com.google.common.base.Preconditions.format(String, Object...)
+    /**
+     * Substitutes each {@code %s} in {@code template} with an argument. These
+     * are matched by position - the first {@code %s} gets {@code args[0]}, etc.
+     * If there are more arguments than placeholders, the unmatched arguments will
+     * be appended to the end of the formatted message in square braces.
+     *
+     * @param template a non-null string containing 0 or more {@code %s}
+     *     placeholders.
+     * @param args the arguments to be substituted into the message
+     *     template. Arguments are converted to strings using
+     *     {@link String#valueOf(Object)}. Arguments can be null.
+     */
+    private static String format(String template,
+            Object... args)
+    {
+        template = String.valueOf(template); // null -> "null"
+
+        // start substituting the arguments into the '%s' placeholders
+        StringBuilder builder = new StringBuilder(
+                template.length() + 16 * args.length);
+        int templateStart = 0;
+        int i = 0;
+        while (i < args.length)
+        {
+            int placeholderStart = template.indexOf("%s", templateStart);
+            if (placeholderStart == -1)
+            {
+                break;
+            }
+            builder.append(template.substring(templateStart, placeholderStart));
+            builder.append(args[i++]);
+            templateStart = placeholderStart + 2;
+        }
+        builder.append(template.substring(templateStart));
+
+        // if we run out of placeholders, append the extra args in square braces
+        if (i < args.length)
+        {
+            builder.append(" [");
+            builder.append(args[i++]);
+            while (i < args.length)
+            {
+                builder.append(", ");
+                builder.append(args[i++]);
+            }
+            builder.append(']');
+        }
+
+        return builder.toString();
+    }
+
+
 }

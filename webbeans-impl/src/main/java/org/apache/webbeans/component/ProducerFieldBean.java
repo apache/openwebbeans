@@ -161,11 +161,11 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
      */
     protected void checkNullInstance(Object instance)
     {
-        String errorMessage = "WebBeans producer field : " + producerField.getName() +
-                              " return type in the component implementation class : " +
-                ownerComponent.getReturnType().getName() +
+        String errorMessage = "WebBeans producer field : %s" +
+                              " return type in the component implementation class : %s" +
                               " scope must be @Dependent to create null instance";
-        WebBeansUtil.checkNullInstance(instance, getScope(), errorMessage);
+        WebBeansUtil.checkNullInstance(instance, getScope(), errorMessage, producerField.getName(),
+                ownerComponent.getReturnType().getName());
     }
 
     /**
@@ -173,12 +173,13 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
      */
     protected void checkScopeType()
     {
-        String errorMessage = "WebBeans producer method : " + producerField.getName() +
-                              " return type in the component implementation class : " +
-                ownerComponent.getReturnType().getName() + " with passivating scope @" +
-                getScope().getName() + " must be Serializable";
+        String errorMessage = "WebBeans producer method : %s" + 
+                              " return type in the component implementation class : %s" +
+                              " with passivating scope @%s" +
+                              " must be Serializable";
         getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(getScope(),
-                isSerializable(), errorMessage);
+                isSerializable(), errorMessage, producerField.getName(), 
+                ownerComponent.getReturnType().getName(), getScope().getName());
     }
     
     @Override
