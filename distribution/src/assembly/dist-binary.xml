@@ -37,7 +37,7 @@ under the License.
         </file>
 
         <file>
-            <source>../readme/README_1_1_3.txt</source>
+            <source>../readme/README_1_1_4.txt</source>
         </file>
 
         <file>
@@ -198,7 +198,6 @@ under the License.
         <dependencySet>
             <outputDirectory>plugins</outputDirectory>
             <includes>
-                <include>org.apache.openwebbeans:openwebbeans-openejb</include>
                 <include>org.apache.openwebbeans:openwebbeans-resource</include>
                 <include>org.apache.openwebbeans:openwebbeans-jsf</include>
                 <include>org.apache.openwebbeans:openwebbeans-jsf12</include>
