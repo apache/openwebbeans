@@ -24,7 +24,6 @@
         <version>1.1.4</version>
     </parent>
     <artifactId>openwebbeans-jms</artifactId>
-    <version>1.1.4</version>
     <name>JMS plugin</name>
     <description>Apache OpenWebBeans JMS Integration</description>
     <dependencies>
