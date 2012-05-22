@@ -69,14 +69,14 @@ public class DefaultOwbFailOverService implements FailOverService
     {
         String value;
         value = WebBeansContext.getInstance().getOpenWebBeansConfiguration().
-            getProperty(OWB_FAILOVER_IS_SUPPORT_FAILOVER);
+                getProperty(OWB_FAILOVER_IS_SUPPORT_FAILOVER);
         if (value != null && value.equalsIgnoreCase("true"))
         {
             isSupportFailOver = true;
         }
 
         value = WebBeansContext.getInstance().getOpenWebBeansConfiguration().
-        getProperty(OWB_FAILOVER_IS_SUPPORT_PASSIVATE);
+                getProperty(OWB_FAILOVER_IS_SUPPORT_PASSIVATE);
         if (value != null && value.equalsIgnoreCase("true"))
         {
             isSupportPassivation = true;

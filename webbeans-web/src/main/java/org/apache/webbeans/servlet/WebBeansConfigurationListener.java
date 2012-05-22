@@ -36,8 +36,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
@@ -112,21 +110,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         if (logger.wblWillLogDebug())
         {
             logger.debug("Destroying a request : [{0}]", event.getServletRequest().getRemoteAddr());
-        }
-
-        if (failoverService != null && 
-                failoverService.isSupportFailOver()) 
-        {
-            Object request = event.getServletRequest();
-            if(request instanceof HttpServletRequest)
-            {
-                HttpServletRequest httpRequest = (HttpServletRequest)request;
-                HttpSession session = httpRequest.getSession(false);
-                if (session != null) 
-                {
-                    failoverService.sessionIsIdle(session);
-                }
-            }
         }
         
         // clean up the EL caches after each request
