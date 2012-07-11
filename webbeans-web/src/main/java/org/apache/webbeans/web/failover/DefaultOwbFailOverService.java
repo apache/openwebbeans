@@ -148,7 +148,7 @@ public class DefaultOwbFailOverService implements FailOverService
             {
                 bagWrapper.sessionIsInUse();
             }
-        }        
+        }
     }
     
     public void sessionWillPassivate(HttpSession session) 
