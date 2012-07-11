@@ -63,7 +63,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
     {
         if (lifecycle != null) 
         {
-            lifecycle.stopApplication(servletContext);
+            lifecycle.stopApplication(new ServletContextEvent(servletContext));
         }
     }
 
@@ -72,10 +72,8 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        ServletContextEvent servletContextEvent = new ServletContextEvent(servletContext);
-
-        contextFactory.initSingletonContext(servletContextEvent);
-        contextFactory.initApplicationContext(servletContextEvent);
+        contextFactory.initSingletonContext(servletContext);
+        contextFactory.initApplicationContext(servletContext);
         contextFactory.initSessionContext(session);
         contextFactory.initConversationContext(null);
         contextFactory.initRequestContext(null);
@@ -86,7 +84,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        contextFactory.initApplicationContext(new ServletContextEvent(servletContext));
+        contextFactory.initApplicationContext(servletContext);
     }
 
     public void startConversationScope() throws Exception 
@@ -131,7 +129,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         Context context = contextFactory.getStandardContext(ContextTypes.SINGLETON);
         if(context != null && context.isActive())
         {
-            contextFactory.destroySingletonContext(new ServletContextEvent(servletContext));
+            contextFactory.destroySingletonContext(servletContext);
         }
         else
         {
@@ -153,7 +151,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         Context context = contextFactory.getStandardContext(ContextTypes.APPLICATION);
         if(context != null && context.isActive())
         {
-            contextFactory.destroyApplicationContext(new ServletContextEvent(servletContext));
+            contextFactory.destroyApplicationContext(servletContext);
         }
         else
         {
