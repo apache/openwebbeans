@@ -58,32 +58,4 @@ public enum ContextTypes
     {
         return cardinal;
     }
-
-    public String getContextName()
-    {
-        switch (getCardinal())
-        {
-            case 0:
-                return "request";
-    
-            case 1:
-                return "session";
-    
-            case 2:
-                return "application";
-    
-            case 3:
-                return "conversation";
-    
-            case 4:
-                return "dependent";
-            
-            case 5:
-                return "singleton";
-
-            default:
-                return null;
-        }
-    }
-
 }
