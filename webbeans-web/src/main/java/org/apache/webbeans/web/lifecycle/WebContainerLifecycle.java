@@ -225,7 +225,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
             }
         }                
         
-        throw new IllegalArgumentException("Must give ServletContext object but found null");
+        throw new IllegalArgumentException("ServletContextEvent object but found null");
     }
     
     /**
