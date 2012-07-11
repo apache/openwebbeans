@@ -41,7 +41,6 @@ import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
-import org.apache.webbeans.jms.JMSManager;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
@@ -77,7 +76,6 @@ public class WebBeansContext
     private final ExtensionLoader extensionLoader = new ExtensionLoader(this);
     private final InterceptorsManager interceptorsManager = new InterceptorsManager(this);
     private final WebBeansInterceptorConfig webBeansInterceptorConfig = new WebBeansInterceptorConfig(this);
-    private final JMSManager jmsManager = new JMSManager();
     private final JavassistProxyFactory javassistProxyFactory = new JavassistProxyFactory();
     private final OpenWebBeansConfiguration openWebBeansConfiguration;
     private final PluginLoader pluginLoader = new PluginLoader();
@@ -150,7 +148,6 @@ public class WebBeansContext
         managerMap.put(DecoratorsManager.class, decoratorsManager);
         managerMap.put(ExtensionLoader.class, extensionLoader);
         managerMap.put(InterceptorsManager.class, interceptorsManager);
-        managerMap.put(JMSManager.class, jmsManager);
         managerMap.put(JavassistProxyFactory.class, javassistProxyFactory);
         managerMap.put(OpenWebBeansConfiguration.class, openWebBeansConfiguration);
         managerMap.put(PluginLoader.class, pluginLoader);
@@ -325,11 +322,6 @@ public class WebBeansContext
     public InterceptorsManager getInterceptorsManager()
     {
         return interceptorsManager;
-    }
-
-    public JMSManager getjMSManager()
-    {
-        return jmsManager;
     }
 
     public PluginLoader getPluginLoader()

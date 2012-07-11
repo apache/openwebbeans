@@ -170,9 +170,6 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             //Delete AnnotateTypeCache
             webBeansContext.getAnnotatedElementFactory().clear();
             
-            //Delete JMS Model Cache
-            webBeansContext.getjMSManager().clear();
-            
             //After Stop
             afterStopApplication(endObject);
 
