@@ -42,9 +42,9 @@ public class ResourceProxyHandler implements MethodHandler, Serializable, Extern
 
     private transient ResourceBean bean;
 
-    //DO NOT REMOVE, used by failover and passivation.
     public ResourceProxyHandler()
     {
+        //DO NOT REMOVE, used by failover and passivation.
     }
     
     public ResourceProxyHandler(ResourceBean bean, Object actualResource)

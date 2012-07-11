@@ -185,7 +185,6 @@ public final class WebBeansXMLConfigurator
             factory.setValidating(false);
             DocumentBuilder documentBuilder = factory.newDocumentBuilder();
             documentBuilder.setErrorHandler(new WebBeansErrorHandler());
-            documentBuilder.setEntityResolver(new WebBeansResolver());
 
             Element root = documentBuilder.parse(stream).getDocumentElement();
             return root;
