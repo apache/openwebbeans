@@ -130,8 +130,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
      */
     private void cleanupRequestThreadLocals()
     {
-        // TODO maybe there are more to cleanup
-
         InjectionPointBean.removeThreadLocal();
         WebContextsService.removeThreadLocals();
     }
