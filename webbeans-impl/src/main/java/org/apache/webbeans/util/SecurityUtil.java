@@ -32,6 +32,11 @@ public class SecurityUtil
 
     public static <T> Method[] doPrivilegedGetDeclaredMethods(Class<T> clazz)
     {
+        if (System.getSecurityManager() == null)
+        {
+            return clazz.getDeclaredMethods();
+        }
+
         Object obj = AccessController.doPrivileged(
                 new PrivilegedActionForClass(clazz, null, METHOD_CLASS_GETDECLAREDMETHODS));
         return (Method[])obj;
@@ -62,8 +67,14 @@ public class SecurityUtil
 
     public static Class<?> doPrivilegedCreateClass(ProxyFactory factory)
     {
-        Class<?> ret = (Class<?>)AccessController.doPrivileged(new PrivilegedActionForProxyFactory(factory));
-        return ret;
+        if (System.getSecurityManager() == null)
+        {
+            return factory.createClass();
+        }
+        else
+        {
+            return (Class<?>)AccessController.doPrivileged(new PrivilegedActionForProxyFactory(factory));
+        }
     }
 
 
