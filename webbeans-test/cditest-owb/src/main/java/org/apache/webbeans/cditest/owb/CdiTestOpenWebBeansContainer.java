@@ -30,6 +30,7 @@ import javax.enterprise.inject.ResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Singleton;
+import javax.servlet.ServletContextEvent;
 
 import org.apache.webbeans.cditest.CdiTestContainer;
 import org.apache.webbeans.config.WebBeansContext;
@@ -55,7 +56,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         servletContext = new MockServletContext();
         session = new MockHttpSession();
         lifecycle = WebBeansContext.getInstance().getService(ContainerLifecycle.class);
-        lifecycle.startApplication(servletContext);
+        lifecycle.startApplication(new ServletContextEvent(servletContext));
     }
 
     public void shutdownContainer() throws Exception 
@@ -71,8 +72,10 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        contextFactory.initSingletonContext(servletContext);
-        contextFactory.initApplicationContext(servletContext);
+        ServletContextEvent servletContextEvent = new ServletContextEvent(servletContext);
+
+        contextFactory.initSingletonContext(servletContextEvent);
+        contextFactory.initApplicationContext(servletContextEvent);
         contextFactory.initSessionContext(session);
         contextFactory.initConversationContext(null);
         contextFactory.initRequestContext(null);
@@ -83,7 +86,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        contextFactory.initApplicationContext(servletContext);
+        contextFactory.initApplicationContext(new ServletContextEvent(servletContext));
     }
 
     public void startConversationScope() throws Exception 
@@ -128,7 +131,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         Context context = contextFactory.getStandardContext(ContextTypes.SINGLETON);
         if(context != null && context.isActive())
         {
-            contextFactory.destroySingletonContext(servletContext);
+            contextFactory.destroySingletonContext(new ServletContextEvent(servletContext));
         }
         else
         {
@@ -150,7 +153,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         Context context = contextFactory.getStandardContext(ContextTypes.APPLICATION);
         if(context != null && context.isActive())
         {
-            contextFactory.destroyApplicationContext(servletContext);
+            contextFactory.destroyApplicationContext(new ServletContextEvent(servletContext));
         }
         else
         {
