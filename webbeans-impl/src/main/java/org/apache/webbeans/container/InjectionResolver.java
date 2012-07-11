@@ -19,8 +19,10 @@
 package org.apache.webbeans.container;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,6 +35,7 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.util.Nonbinding;
 
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
@@ -551,17 +554,6 @@ public class InjectionResolver
         return cacheKey;
     }
 
-    private long getQualifierHashCode(Annotation a)
-    {
-        // the hashCode of an Annotation is calculated solely via the hashCodes
-        // of it's members. If there are no members, it is 0.
-        // thus we first need to get the annotation-class hashCode
-        long hashCode = getTypeHashCode(a.getClass());
-
-        // but we also add the hashCode of the annotation IF it has methods.
-        return hashCode + 29 * a.hashCode();
-    }
-
     /**
      * We need this method as some weird JVMs return 0 as hashCode for classes.
      * In that case we return the hashCode of the String.
@@ -577,6 +569,130 @@ public class InjectionResolver
         return typeHash;
     }
 
+    /**
+     * Calculate the hashCode of a Qualifier
+     */
+    private long getQualifierHashCode(Annotation a)
+    {
+        Class annotationClass = getAnnotationClass(a.getClass());
+
+        if (annotationClass == null)
+        {
+            return getTypeHashCode(a.getClass());
+        }
+
+        // the hashCode of an Annotation is calculated solely via the hashCodes
+        // of it's members. If there are no members, it is 0.
+        // thus we first need to get the annotation-class hashCode
+        long hashCode = getTypeHashCode(annotationClass);
+
+        // and now add the hashCode of all it's Nonbinding members
+        // the following algorithm is defined by the Annotation class definition
+        // see the JavaDoc for Annotation!
+        // we only change it so far that we skip evaluating @Nonbinding members
+        Method[] methods = annotationClass.getDeclaredMethods();
+
+        for (Method method : methods)
+        {
+            if (method.isAnnotationPresent(Nonbinding.class))
+            {
+                continue;
+            }
+
+            // Member name
+            int name = 127 * method.getName().hashCode();
+
+            // Member value
+            Object object = callMethod(a, method);
+            int value = 0;
+            if(object.getClass().isArray())
+            {
+                Class<?> type = object.getClass().getComponentType();
+                if(type.isPrimitive())
+                {
+                    if(Long.TYPE == type)
+                    {
+                        value = Arrays.hashCode((Long[]) object);
+                    }
+                    else if(Integer.TYPE == type)
+                    {
+                        value = Arrays.hashCode((Integer[])object);
+                    }
+                    else if(Short.TYPE == type)
+                    {
+                        value = Arrays.hashCode((Short[])object);
+                    }
+                    else if(Double.TYPE == type)
+                    {
+                        value = Arrays.hashCode((Double[])object);
+                    }
+                    else if(Float.TYPE == type)
+                    {
+                        value = Arrays.hashCode((Float[])object);
+                    }
+                    else if(Boolean.TYPE == type)
+                    {
+                        value = Arrays.hashCode((Long[])object);
+                    }
+                    else if(Byte.TYPE == type)
+                    {
+                        value = Arrays.hashCode((Byte[])object);
+                    }
+                    else if(Character.TYPE == type)
+                    {
+                        value = Arrays.hashCode((Character[])object);
+                    }
+                }
+                else
+                {
+                    value = Arrays.hashCode((Object[])object);
+                }
+            }
+            else
+            {
+                value = object.hashCode();
+            }
+
+            hashCode += name ^ value;
+
+
+            hashCode += 29L * a.hashCode();
+        }
+
+        return hashCode;
+    }
+
+    private Class getAnnotationClass(Class a)
+    {
+        for (Class i : a.getInterfaces())
+        {
+            if (i.isAnnotation())
+            {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Helper method for calculating the hashCode of an annotation.
+     */
+    private Object callMethod(Object instance, Method method)
+    {
+        try
+        {
+            if (!method.isAccessible())
+            {
+                method.setAccessible(true);
+            }
+
+            return method.invoke(instance, AnnotationUtil.EMPTY_OBJECT_ARRAY);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("Exception in method call : " + method.getName(), e);
+        }
+    }
 
     /**
      * Returns specialized beans if exists, otherwise return input result
