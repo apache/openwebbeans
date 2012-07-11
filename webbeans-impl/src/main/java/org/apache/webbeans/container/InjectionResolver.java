@@ -537,19 +537,46 @@ public class InjectionResolver
     private Long getBeanCacheKey(Type injectionPointType, String bdaBeansXMLPath, Annotation... qualifiers)
     {
 
-        long cacheKey = injectionPointType.hashCode();
+        long cacheKey = getTypeHashCode(injectionPointType);
+
         if (bdaBeansXMLPath != null)
         {
             cacheKey += 29L * bdaBeansXMLPath.hashCode();
         }
+
         for (Annotation a : qualifiers)
         {
-            // we need to toString as the hashCode of an Annotation is always 0 :(
-            // and the annotationType does not contain variable payload
-            cacheKey += 29L * a.toString().hashCode();
+            cacheKey += 29L * getQualifierHashCode(a);
         }
         return cacheKey;
     }
+
+    private long getQualifierHashCode(Annotation a)
+    {
+        // the hashCode of an Annotation is calculated solely via the hashCodes
+        // of it's members. If there are no members, it is 0.
+        // thus we first need to get the annotation-class hashCode
+        long hashCode = getTypeHashCode(a.getClass());
+
+        // but we also add the hashCode of the annotation IF it has methods.
+        return hashCode + 29 * a.hashCode();
+    }
+
+    /**
+     * We need this method as some weird JVMs return 0 as hashCode for classes.
+     * In that case we return the hashCode of the String.
+     */
+    private int getTypeHashCode(Type type)
+    {
+        int typeHash = type.hashCode();
+        if (typeHash == 0)
+        {
+            return type.toString().hashCode();
+        }
+
+        return typeHash;
+    }
+
 
     /**
      * Returns specialized beans if exists, otherwise return input result
