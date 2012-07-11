@@ -62,7 +62,6 @@
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-spi</artifactId>
-            <optional>true</optional>
         </dependency>
 
         <dependency>
