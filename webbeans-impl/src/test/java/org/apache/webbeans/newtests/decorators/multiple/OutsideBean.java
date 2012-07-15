@@ -18,12 +18,17 @@
  */
 package org.apache.webbeans.newtests.decorators.multiple;
 
-public interface IOutputProvider
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+@ApplicationScoped
+//X @MyIntercept
+public class OutsideBean
 {
+    private @Inject IOutputProvider outputProvider;
 
-    public String getOutput();
-    public String trace();
-    public String otherMethod();
-
-    public String getDelayedOutput() throws InterruptedException;
+    public void doThaStuff() throws Exception
+    {
+        outputProvider.getDelayedOutput();
+    }
 }

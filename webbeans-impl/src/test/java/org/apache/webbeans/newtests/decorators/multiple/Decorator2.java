@@ -47,4 +47,10 @@ public class Decorator2 implements IOutputProvider
     {
         return "Decorator2/otherMethod," + op.otherMethod();
     }
+
+    @Override
+    public String getDelayedOutput() throws InterruptedException
+    {
+        return op.getDelayedOutput();
+    }
 }

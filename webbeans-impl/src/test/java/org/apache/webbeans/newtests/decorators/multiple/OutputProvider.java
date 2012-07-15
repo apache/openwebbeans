@@ -18,11 +18,11 @@
  */
 package org.apache.webbeans.newtests.decorators.multiple;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-@RequestScoped
+@ApplicationScoped
 @Named("op")
 public class OutputProvider implements IOutputProvider
 {
@@ -33,7 +33,6 @@ public class OutputProvider implements IOutputProvider
     @MyIntercept
     public String getOutput()
     {
-
         rsb.addOutput("OutputProvider\n");
         return rsb.toString();
     }
@@ -46,4 +45,14 @@ public class OutputProvider implements IOutputProvider
     public String otherMethod() {
         return "delegate/otherMethod";
     }
+
+
+    @MyIntercept
+    public String getDelayedOutput() throws InterruptedException
+    {
+        Thread.sleep(5L);
+        rsb.addOutput("OutputProvider\n");
+        return rsb.toString();
+    }
+
 }

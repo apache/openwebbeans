@@ -65,7 +65,7 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
 
         long start = System.nanoTime();
 
-        //X TODO START THREADS
+        // START THREADS
         CalculationRunner[] threads = new CalculationRunner[NUM_THREADS];
         for (int i= 0 ; i < NUM_THREADS; i++)
         {

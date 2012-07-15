@@ -25,13 +25,13 @@ import javax.interceptor.InvocationContext;
 
 @MyIntercept @Interceptor
 public class OutputInterceptor {
-	
-	@Inject RequestStringBuilder rb;
-	
-	@AroundInvoke
-	public Object myHook(InvocationContext ctx) throws Exception{
-		rb.addOutput("OutputInterceptor\n");
-		return ctx.proceed();
-	}
+
+    @Inject RequestStringBuilder rb;
+
+    @AroundInvoke
+    public Object myHook(InvocationContext ctx) throws Exception{
+        rb.addOutput("OutputInterceptor\n");
+        return ctx.proceed();
+    }
 
 }

@@ -20,16 +20,20 @@ package org.apache.webbeans.newtests.decorators.multiple;
 
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
-import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
 @Decorator
 public class Decorator1 implements IOutputProvider
 {
 
-    @Inject @Delegate @Any IOutputProvider op;
+    @Inject @Delegate IOutputProvider op;
     
     @Inject RequestStringBuilder rsb;
+
+    public void init()
+    {
+        System.out.println("decorator created!");
+    }
 
     public String getOutput()
     {
@@ -44,5 +48,11 @@ public class Decorator1 implements IOutputProvider
     public String otherMethod() 
     {
         return "Decorator1/otherMethod," + op.otherMethod();
+    }
+
+    @Override
+    public String getDelayedOutput() throws InterruptedException
+    {
+        return op.getDelayedOutput();
     }
 }
