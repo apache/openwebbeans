@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import org.apache.webbeans.annotation.DefaultLiteral;
@@ -155,10 +154,9 @@ public final class WebBeansDecoratorConfig
             decoratorInstance = ownerCreationalContext.getDependentDecorator(instance, decorator);
             if(decoratorInstance == null)
             {
-                CreationalContext<Object> creationalContext = manager.createCreationalContext(decorator);
-                decoratorInstance = manager.getReference(decorator, decorator.getBeanClass(), creationalContext);
+                decoratorInstance = manager.getReference(decorator, decorator.getBeanClass(), ownerCreationalContext);
                 
-                decorator.setInjections(decoratorInstance, creationalContext);
+                decorator.setInjections(decoratorInstance, ownerCreationalContext);
                 decorator.setDelegate(decoratorInstance, delegate);
                 
                 ownerCreationalContext.addDependent(instance, decorator, decoratorInstance);
