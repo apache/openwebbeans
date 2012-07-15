@@ -46,7 +46,7 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
     private transient List<Object> decorators;
     private transient int position = 0;
 
-    private transient Object actualBean = null;
+    private transient Object actualInstance = null;
     
     private transient OwbBean<?> bean = null;
     
@@ -72,9 +72,9 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         // Tuck away a reference to the bean being Decorated
-        if (actualBean == null)
+        if (actualInstance == null)
         {
-            actualBean = instance;
+            actualInstance = instance;
         }
 
         while (position < decorators.size())
@@ -151,7 +151,7 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
         
         if(!(bean instanceof EnterpriseBeanMarker))
         {
-            result = method.invoke(actualBean, arguments);
+            result = method.invoke(actualInstance, arguments);
         }
         else
         {
@@ -219,7 +219,6 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
         if (id != null) 
         {
             out.writeObject(id);
-            out.writeObject(actualBean);
             out.writeObject(decorators);
         }
         else 
@@ -239,7 +238,6 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
             return;
         }
         bean = (OwbBean<?>) WebBeansContext.currentInstance().getBeanManagerImpl().getPassivationCapableBean(id);
-        actualBean = in.readObject();
         decorators = (List<Object>) in.readObject();
     }    
 }
