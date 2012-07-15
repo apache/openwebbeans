@@ -24,6 +24,7 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
@@ -81,7 +82,7 @@ public class ReplaceInjectionTargetTest extends AbstractUnitTest
         }
     }
 
-    public static class InjectionTargetReplacer {
+    public static class InjectionTargetReplacer implements Extension {
         public void replaceInjectionTarget(@Observes ProcessInjectionTarget<IJBean> event) {
             event.setInjectionTarget(new MyInjectionTarget(event.getInjectionTarget()));
         }
@@ -89,12 +90,13 @@ public class ReplaceInjectionTargetTest extends AbstractUnitTest
 
     @Test
     public void checkCustomWrapperIsUsed() {
+        addExtension(new InjectionTargetReplacer());
+
         final Collection<String> beanXmls = new ArrayList<String>();
 
         final Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(IJBean.class);
         beanClasses.add(InjectedBean.class);
-        beanClasses.add(InjectionTargetReplacer.class);
 
         startContainer(beanClasses, beanXmls);
 
