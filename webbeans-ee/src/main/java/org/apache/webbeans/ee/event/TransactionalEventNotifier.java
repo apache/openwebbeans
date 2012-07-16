@@ -26,13 +26,16 @@ import javax.transaction.Transaction;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.TransactionService;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @SuppressWarnings("unchecked")
 public class TransactionalEventNotifier
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(TransactionalEventNotifier.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(TransactionalEventNotifier.class);
 
     public TransactionalEventNotifier()
     {
@@ -69,7 +72,7 @@ public class TransactionalEventNotifier
             }
             else
             {
-                throw new IllegalStateException(logger.getTokenString(OWBLogConst.EXCEPT_0007) + phase);
+                throw new IllegalStateException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0007) + phase);
             }            
         }        
     }
@@ -104,7 +107,7 @@ public class TransactionalEventNotifier
             }
             catch (Exception e)
             {
-                logger.error(OWBLogConst.ERROR_0003, e);
+                logger.log(Level.SEVERE, OWBLogConst.ERROR_0003, e);
             }
         }
     }

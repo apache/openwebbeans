@@ -21,6 +21,8 @@ package org.apache.webbeans.web.scanner;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
@@ -29,7 +31,7 @@ import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
 import org.apache.webbeans.corespi.scanner.AnnotationDB;
 import org.apache.webbeans.corespi.se.BeansXmlAnnotationDB;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.scannotation.WarUrlFinder;
 
@@ -38,7 +40,7 @@ import org.scannotation.WarUrlFinder;
  */
 public class WebScannerService extends AbstractMetaDataDiscovery
 {
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(WebScannerService.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(WebScannerService.class);
 
     private boolean configure = false;
 
@@ -73,7 +75,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
         }
         catch (Exception e)
         {
-            throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.ERROR_0002), e);
+            throw new WebBeansConfigurationException(WebBeansLoggerFacade.getTokenString(OWBLogConst.ERROR_0002), e);
         }
 
     }
@@ -119,16 +121,16 @@ public class WebScannerService extends AbstractMetaDataDiscovery
                         fileDir = "file:/" + fileDir;
                     }
 
-                    if (logger.wblWillLogDebug())
+                    if (logger.isLoggable(Level.FINE))
                     {
-                        logger.debug("OpenWebBeans found the following url while doing web scanning: " + fileDir);
+                        logger.log(Level.FINE, "OpenWebBeans found the following url while doing web scanning: " + fileDir);
                     }
 
                     addPath = "jar:" + fileDir;
 
-                    if (logger.wblWillLogDebug())
+                    if (logger.isLoggable(Level.FINE))
                     {
-                        logger.debug("OpenWebBeans added the following jar based path while doing web scanning: " +
+                        logger.log(Level.FINE, "OpenWebBeans added the following jar based path while doing web scanning: " +
                                 addPath);
                     }
                 }
@@ -137,9 +139,9 @@ public class WebScannerService extends AbstractMetaDataDiscovery
                     //X TODO check!
                     addPath = "file:" + url + "META-INF/beans.xml";
 
-                    if (logger.wblWillLogDebug())
+                    if (logger.isLoggable(Level.FINE))
                     {
-                        logger.debug("OpenWebBeans added the following file based path while doing web scanning: " +
+                        logger.log(Level.FINE, "OpenWebBeans added the following file based path while doing web scanning: " +
                                 addPath);
                     }
 

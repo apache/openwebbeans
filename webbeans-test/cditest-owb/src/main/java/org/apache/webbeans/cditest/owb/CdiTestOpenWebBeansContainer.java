@@ -20,6 +20,8 @@ package org.apache.webbeans.cditest.owb;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ConversationScoped;
@@ -36,7 +38,7 @@ import org.apache.webbeans.cditest.CdiTestContainer;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.type.ContextTypes;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.util.InjectionExceptionUtils;
 
@@ -45,7 +47,7 @@ import org.apache.webbeans.util.InjectionExceptionUtils;
  */
 public class CdiTestOpenWebBeansContainer implements CdiTestContainer 
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(CdiTestOpenWebBeansContainer.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(CdiTestOpenWebBeansContainer.class);
 
     private ContainerLifecycle  lifecycle = null;
     private MockServletContext  servletContext = null;
@@ -133,9 +135,9 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         }
         else
         {
-            if(logger.wblWillLogWarn())
+            if(logger.isLoggable(Level.WARNING))
             {
-                logger.warn("destroy was called for an inactive context (" + Singleton.class.getName() + ")");
+                logger.warning("destroy was called for an inactive context (" + Singleton.class.getName() + ")");
             }
         }
 
@@ -155,9 +157,9 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         }
         else
         {
-            if(logger.wblWillLogWarn())
+            if(logger.isLoggable(Level.WARNING))
             {
-                logger.warn("destroy was called for an inactive context (" + ApplicationScoped.class.getName() + ")");
+                logger.warning("destroy was called for an inactive context (" + ApplicationScoped.class.getName() + ")");
             }
         }
     }
@@ -174,9 +176,9 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         }
         else
         {
-            if(logger.wblWillLogWarn())
+            if(logger.isLoggable(Level.WARNING))
             {
-                logger.warn("destroy was called for an inactive context (" + ConversationScoped.class.getName() + ")");
+                logger.warning("destroy was called for an inactive context (" + ConversationScoped.class.getName() + ")");
             }
         }
     }
@@ -198,9 +200,9 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         }
         else
         {
-            if(logger.wblWillLogWarn())
+            if(logger.isLoggable(Level.WARNING))
             {
-                logger.warn("destroy was called for an inactive context (" + RequestScoped.class.getName() + ")");
+                logger.warning("destroy was called for an inactive context (" + RequestScoped.class.getName() + ")");
             }
         }
     }
@@ -217,9 +219,9 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         }
         else
         {
-            if(logger.wblWillLogWarn())
+            if(logger.isLoggable(Level.WARNING))
             {
-                logger.warn("destroy was called for an inactive context (" + SessionScoped.class.getName() + ")");
+                logger.warning("destroy was called for an inactive context (" + SessionScoped.class.getName() + ")");
             }
         }
     }

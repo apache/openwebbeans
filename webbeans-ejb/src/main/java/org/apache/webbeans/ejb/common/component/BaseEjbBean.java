@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
@@ -165,7 +166,7 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
             }
             catch (NoSuchMethodException e) 
             {
-                getLogger().error("Error calling Stateful Session Bean remove method: ", e);
+                getLogger().log(Level.SEVERE, "Error calling Stateful Session Bean remove method: ", e);
                 throw new RuntimeException(e);
             }
         }

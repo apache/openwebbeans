@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.config;
 
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import java.io.IOException;
@@ -29,6 +29,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>Utility class to load configuration properties via a list of
@@ -44,7 +46,7 @@ public class PropertyLoader
     public final static String CONFIGURATION_ORDINAL_PROPERTY_NAME = "configuration.ordinal";
 
 
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(PropertyLoader.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(PropertyLoader.class);
 
 
     /**
@@ -84,7 +86,7 @@ public class PropertyLoader
         }
         catch (IOException e)
         {
-            logger.error("Error while loading the propertyFile " + propertyFileName, e);
+            logger.log(Level.SEVERE, "Error while loading the propertyFile " + propertyFileName, e);
             return null;
         }
     }
@@ -96,7 +98,7 @@ public class PropertyLoader
         Enumeration<URL> propertyUrls = cl.getResources(propertyFileName);
         if (propertyUrls == null || !propertyUrls.hasMoreElements())
         {
-            if(logger.wblWillLogInfo())
+            if(logger.isLoggable(Level.INFO))
             {
                 logger.info("could not find any property files with name " + propertyFileName);   
             }
@@ -119,9 +121,9 @@ public class PropertyLoader
 
                 // a bit debugging output
                 int ordinal = getConfigurationOrdinal(prop);
-                if(logger.wblWillLogDebug())
+                if(logger.isLoggable(Level.FINE))
                 {
-                    logger.debug("loading properties with ordinal " + ordinal + " from file " + propertyUrl.getFile());   
+                    logger.fine("loading properties with ordinal " + ordinal + " from file " + propertyUrl.getFile());
                 }
             }
             finally
@@ -185,7 +187,7 @@ public class PropertyLoader
             }
             catch(NumberFormatException nfe)
             {
-                logger.error(CONFIGURATION_ORDINAL_PROPERTY_NAME + " must be an integer value!");
+                logger.severe(CONFIGURATION_ORDINAL_PROPERTY_NAME + " must be an integer value!");
                 throw nfe;
             }
         }

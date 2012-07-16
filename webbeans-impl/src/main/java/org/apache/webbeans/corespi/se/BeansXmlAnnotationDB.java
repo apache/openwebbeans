@@ -23,11 +23,13 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javassist.bytecode.ClassFile;
 
 import org.apache.webbeans.corespi.scanner.AnnotationDB;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -43,7 +45,7 @@ public class BeansXmlAnnotationDB extends AnnotationDB
     private static final long serialVersionUID = 4321069777044090278L;
 
     /** Logger instance */
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(BeansXmlAnnotationDB.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(BeansXmlAnnotationDB.class);
 
     /**
      * null or beans.xml of current BDA being processed 
@@ -90,7 +92,7 @@ public class BeansXmlAnnotationDB extends AnnotationDB
 
     public void setResourceBeansXml(String resource, String beansXml)
     {
-        if(logger.wblWillLogDebug())
+        if(logger.isLoggable(Level.FINE))
         {
             logger.info("resource="+resource+", beansXml="+beansXml);
         }        
@@ -131,9 +133,9 @@ public class BeansXmlAnnotationDB extends AnnotationDB
             //See if mapping was already assigned for this beans.xml
             if(beansXmlResources.containsValue(beanXmlUrl))
             {
-                if(logger.wblWillLogDebug())
+                if(logger.isLoggable(Level.FINE))
                 {
-                    logger.debug("beans.xml mapping already set: "+beanXmlUrl);
+                    logger.fine("beans.xml mapping already set: " + beanXmlUrl);
                 }
                 continue;
             }

@@ -30,7 +30,10 @@ import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.conversation.ConversationManager;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Conversation related phase listener.
@@ -43,7 +46,7 @@ public class WebBeansPhaseListener implements PhaseListener
     private static final long serialVersionUID = 1L;
 
     /**Logger instance*/
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansPhaseListener.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansPhaseListener.class);
 
     private Boolean owbApplication = null;
 
@@ -67,9 +70,9 @@ public class WebBeansPhaseListener implements PhaseListener
 
             if (conversation.isTransient())
             {
-                if (logger.wblWillLogDebug())
+                if (logger.isLoggable(Level.FINE))
                 {
-                    logger.debug("Destroying the conversation context with cid : [{0}]", conversation.getId());
+                    logger.log(Level.FINE, "Destroying the conversation context with cid : [{0}]", conversation.getId());
                 }
                 contextFactory.destroyConversationContext();
             }
@@ -107,9 +110,9 @@ public class WebBeansPhaseListener implements PhaseListener
 
             if (conversation.isTransient())
             {
-                if (logger.wblWillLogDebug())
+                if (logger.isLoggable(Level.FINE))
                 {
-                    logger.debug("Creating a new transitional conversation with cid : [{0}]", conversation.getId());
+                    logger.log(Level.FINE, "Creating a new transitional conversation with cid : [{0}]", conversation.getId());
                 }
                 contextFactory.initConversationContext(null);
 
@@ -121,9 +124,9 @@ public class WebBeansPhaseListener implements PhaseListener
             }
             else
             {
-                if (logger.wblWillLogDebug())
+                if (logger.isLoggable(Level.FINE))
                 {
-                    logger.debug("Restoring conversation with cid : [{0}]", conversation.getId());
+                    logger.log(Level.FINE, "Restoring conversation with cid : [{0}]", conversation.getId());
                 }
 
                 //Conversation must be used by one thread at a time

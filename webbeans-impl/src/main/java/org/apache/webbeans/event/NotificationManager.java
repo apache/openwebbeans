@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.Observes;
@@ -44,7 +45,7 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.events.generics.GenericBeanEvent;
 import org.apache.webbeans.portable.events.generics.GenericProducerObserverEvent;
 import org.apache.webbeans.spi.TransactionService;
@@ -57,7 +58,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 @SuppressWarnings("unchecked")
 public final class NotificationManager
 {
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(NotificationManager.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(NotificationManager.class);
 
     private final Map<Type, Set<ObserverMethod<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverMethod<?>>>();
     private final WebBeansContext webBeansContext;
@@ -472,7 +473,7 @@ public final class NotificationManager
                 
                 if (!RuntimeException.class.isAssignableFrom(exc.getClass()))
                 {
-                    throw new ObserverException(logger.getTokenString(OWBLogConst.EXCEPT_0008) + event.getClass().getName(), e);
+                    throw new ObserverException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0008) + event.getClass().getName(), e);
                 }
                 else
                 {

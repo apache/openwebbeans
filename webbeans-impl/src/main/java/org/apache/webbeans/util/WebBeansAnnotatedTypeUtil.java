@@ -35,7 +35,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.api.ResourceReference;
 
 import javax.decorator.Delegate;
@@ -67,12 +67,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnsatisfiedResolutionException;
 
 public final class WebBeansAnnotatedTypeUtil
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansAnnotatedTypeUtil.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansAnnotatedTypeUtil.class);
 
     private final WebBeansContext webBeansContext;
 
@@ -733,7 +735,7 @@ public final class WebBeansAnnotatedTypeUtil
         catch(Exception e)
         {
             String message = "Error is occured while getting injection points for the Java EE component instance class, " + type.getJavaClass(); 
-            logger.error(message,e);
+            logger.log(Level.SEVERE, message, e);
             throw new IllegalArgumentException(message, e);
         }
     }
@@ -743,6 +745,6 @@ public final class WebBeansAnnotatedTypeUtil
     @Deprecated
     public static <X> Method getDisposalWithGivenAnnotatedMethod(AnnotatedType<X> annotatedType, Type beanType, Annotation[] qualifiers)
     {
-        return WebBeansContext.getInstance().getAnnotationManager().getDisposalWithGivenAnnotatedMethod(annotatedType, beanType, qualifiers);
+        return WebBeansContext.currentInstance().getAnnotationManager().getDisposalWithGivenAnnotatedMethod(annotatedType, beanType, qualifiers);
     }
 }

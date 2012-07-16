@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 import javax.annotation.PostConstruct;
@@ -141,7 +143,7 @@ import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorDataImpl;
 import org.apache.webbeans.intercept.InterceptorType;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
@@ -172,7 +174,7 @@ import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnproxyableR
 @SuppressWarnings("unchecked")
 public final class WebBeansUtil
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansUtil.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansUtil.class);
 
     /**
      * Enforcing that interceptor callbacks should not be
@@ -1575,7 +1577,7 @@ public final class WebBeansUtil
         ProducerMethodBean pLeft;
         ProducerMethodBean pRight;
 
-        logger.debug("configure Specialized producer beans has started.");
+        logger.fine("configure Specialized producer beans has started.");
 
         // collect all producer method beans
         Set<Bean<?>> beans = webBeansContext.getBeanManagerImpl().getBeans();
@@ -2599,8 +2601,8 @@ public final class WebBeansUtil
         //Define meta-data
         managedBeanCreator.defineStereoTypes();
         //Scope type
-        managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
-                                           logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE), allowLazyInit);
+        managedBeanCreator.defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
+                WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE), allowLazyInit);
 
         managedBeanCreator.defineSerializable();
 
@@ -2755,8 +2757,8 @@ public final class WebBeansUtil
         managedBeanCreator.defineStereoTypes();
 
         //Scope type
-        managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
-                logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE), false);
+        managedBeanCreator.defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
+                WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE), false);
 
         managedBeanCreator.defineSerializable();
 
@@ -2922,8 +2924,8 @@ public final class WebBeansUtil
         managedBeanCreator.defineStereoTypes();
 
         //Scope type
-        managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName()
-                                           + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE), false);
+        managedBeanCreator.defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName()
+                                           + WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE), false);
 
         managedBeanCreator.defineSerializable();
 
@@ -3018,9 +3020,9 @@ public final class WebBeansUtil
             }
             else
             {
-                if (logger.wblWillLogTrace())
+                if (logger.isLoggable(Level.FINEST))
                 {
-                    logger.trace("Unable to configure decorator with class : [{0}]", annotatedType.getJavaClass());
+                    logger.log(Level.FINEST, "Unable to configure decorator with class : [{0}]", annotatedType.getJavaClass());
                 }
             }
         }
@@ -3046,9 +3048,9 @@ public final class WebBeansUtil
             }
             else
             {
-                if (logger.wblWillLogTrace())
+                if (logger.isLoggable(Level.FINEST))
                 {
-                    logger.trace("Unable to configure interceptor with class : [{0}]", annotatedType.getJavaClass());
+                    logger.log(Level.FINEST, "Unable to configure interceptor with class : [{0}]", annotatedType.getJavaClass());
                 }
             }
         }

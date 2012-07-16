@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.Dependent;
@@ -56,7 +58,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
@@ -87,7 +89,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class ObserverMethodImpl<T> implements ObserverMethod<T>
 {
     /**Logger instance*/
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(ObserverMethodImpl.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(ObserverMethodImpl.class);
 
     /**Observer owner bean that defines observer method*/
     private final InjectionTargetBean<?> bean;
@@ -189,7 +191,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     @SuppressWarnings("unchecked")
     public void notify(T event)
     {
-        logger.trace("Notifying with event payload : [{0}]", event);
+        logger.log(Level.FINEST, "Notifying with event payload : [{0}]", event);
         
         AbstractOwbBean<Object> component = (AbstractOwbBean<Object>) bean;
         if (!bean.isEnabled())
@@ -245,7 +247,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 catch (ContextNotActiveException cnae)
                 {
                     // this may happen if we try to e.g. send an event to a @ConversationScoped bean from a ServletListener
-                    logger.info(OWBLogConst.INFO_0010, bean);
+                    logger.log(Level.INFO, OWBLogConst.INFO_0010, bean);
                     return;
                 }
                 
@@ -572,7 +574,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
      * EJBs so that the method used will be from an interface and not the
      * EJB class that likely can not be invoked on the EJB proxy
      * 
-     * @param method to be invoked as the observer
+     * @param m method to be invoked as the observer
      */
     public void setObserverMethod(Method m)
     {

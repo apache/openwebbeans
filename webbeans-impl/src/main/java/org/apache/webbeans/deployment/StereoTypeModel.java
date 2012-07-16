@@ -23,6 +23,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.Default;
@@ -35,7 +37,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.AnnotationUtil;
 
 /**
@@ -61,7 +63,7 @@ public class StereoTypeModel implements IStereoTypeModel
     /**Inherit StereoType annotations*/
     private Set<Annotation> inherits = new HashSet<Annotation>();
     
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(StereoTypeModel.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(StereoTypeModel.class);
 
     /**
      * Creates a new instance of the stereotype model for
@@ -86,9 +88,9 @@ public class StereoTypeModel implements IStereoTypeModel
     {
         if(clazz.getAnnotation(Typed.class) != null)
         {
-            if(logger.wblWillLogWarn())
+            if(logger.isLoggable(Level.WARNING))
             {
-                logger.warn(OWBLogConst.WARN_0016, clazz.getName());
+                logger.log(Level.WARNING, OWBLogConst.WARN_0016, clazz.getName());
             }            
         }
 
@@ -106,9 +108,9 @@ public class StereoTypeModel implements IStereoTypeModel
                 
                 if(qualifier.annotationType() != Named.class)
                 {
-                    if(logger.wblWillLogWarn())
+                    if(logger.isLoggable(Level.WARNING))
                     {
-                        logger.warn(OWBLogConst.WARN_0017, clazz.getName(),qualifier.annotationType().getName());
+                        logger.log(Level.WARNING, OWBLogConst.WARN_0017, WebBeansLoggerFacade.args(clazz.getName(),qualifier.annotationType().getName()));
                     }
                 }
             }            

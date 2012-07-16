@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.interceptor.InvocationContext;
 import javassist.util.proxy.MethodHandler;
@@ -43,7 +45,7 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
@@ -144,7 +146,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     private static final long serialVersionUID = 1L;
     
     /**Logger instance*/
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorHandler.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(InterceptorHandler.class);
     
     /**Proxied bean*/
     protected OwbBean<?> bean = null;
@@ -384,7 +386,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         else
         {
             s.writeObject(null);
-            logger.warn(OWBLogConst.WARN_0010, bean);
+            logger.log(Level.WARNING, OWBLogConst.WARN_0010, bean);
         }
     }
     
@@ -407,7 +409,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         }
         else
         {
-            logger.warn(OWBLogConst.WARN_0011, bean);
+            logger.log(Level.WARNING, OWBLogConst.WARN_0011, bean);
         }
     }
 

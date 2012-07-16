@@ -21,6 +21,8 @@ package org.apache.webbeans.resource.spi.se;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.naming.InitialContext;
@@ -31,13 +33,13 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import javax.xml.ws.WebServiceRef;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 public class StandaloneResourceProcessor
 { 
     private static InitialContext context = null;
     
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneResourceProcessor.class);
+    private static Logger logger = WebBeansLoggerFacade.getLogger(StandaloneResourceProcessor.class);
     
     private static StandaloneResourceProcessor processor = new StandaloneResourceProcessor();
     
@@ -69,7 +71,7 @@ public class StandaloneResourceProcessor
         EntityManager obj = getPersistenceContext(persistenceContext.unitName());
         if (obj == null) 
         {
-            logger.warn(OWBLogConst.WARN_0014, "@PersistenceContext", persistenceContext.unitName());
+            logger.log(Level.WARNING, WebBeansLoggerFacade.constructMessage(OWBLogConst.WARN_0014, "@PersistenceContext", persistenceContext.unitName()));
         }
         
         return clazz.cast(obj);
@@ -80,7 +82,7 @@ public class StandaloneResourceProcessor
         EntityManagerFactory factory = getPersistenceUnit(persistenceUnit.unitName());
         if (factory == null) 
         {
-            logger.warn(OWBLogConst.WARN_0014, "@PersistenceUnit", persistenceUnit.unitName());
+            logger.log(Level.WARNING, WebBeansLoggerFacade.constructMessage(OWBLogConst.WARN_0014, "@PersistenceUnit", persistenceUnit.unitName()));
         }
         
         return clazz.cast(factory);
@@ -94,13 +96,13 @@ public class StandaloneResourceProcessor
             obj = context.lookup("java:/comp/env/"+ resource.name()); 
             if (obj == null) 
             {
-                logger.warn(OWBLogConst.WARN_0014, "@Resource", resource.name());
+                logger.log(Level.WARNING, WebBeansLoggerFacade.constructMessage(OWBLogConst.WARN_0014, "@Resource", resource.name()));
             }
 
         }
         catch(Exception e)
         {
-            logger.error(OWBLogConst.ERROR_0001, resource);
+            logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0001, resource));
         }   
         
         return resourceType.cast(obj);
@@ -114,13 +116,13 @@ public class StandaloneResourceProcessor
             obj = context.lookup("java:/comp/env/"+ resource.name()); 
             if (obj == null) 
             {
-                logger.warn(OWBLogConst.WARN_0014, "@WebServiceRef", resource.name());
+                logger.log(Level.WARNING, WebBeansLoggerFacade.constructMessage(OWBLogConst.WARN_0014, "@WebServiceRef", resource.name()));
             }
 
         }
         catch(Exception e)
         {
-            logger.error(OWBLogConst.ERROR_0001, resource);
+            logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0001, resource));
         }   
         
         return resourceType.cast(obj);
@@ -169,7 +171,7 @@ public class StandaloneResourceProcessor
             }
             catch(Exception e)
             {
-                logger.warn(OWBLogConst.WARN_0006, e, key);
+                logger.log(Level.WARNING, WebBeansLoggerFacade.constructMessage(OWBLogConst.WARN_0006, e, key));
             }
         }
     }

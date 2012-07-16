@@ -35,10 +35,13 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.intercept.custom.CustomInterceptor;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
 import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
 import org.apache.webbeans.util.AnnotationUtil;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Event that is fired by the container after it discovers beans.
@@ -50,7 +53,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
 {
     private BeanManagerImpl beanManager = null;
     
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(AfterBeanDiscoveryImpl.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(AfterBeanDiscoveryImpl.class);
     private final WebBeansContext webBeansContext;
 
     public AfterBeanDiscoveryImpl(WebBeansContext webBeansContext)
@@ -81,25 +84,25 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
             CustomInterceptor<?> interceptor = new CustomInterceptor(managedBean, (Interceptor<?>)bean);
             if(interceptor.getScope() != Dependent.class)
             {
-                if(logger.wblWillLogWarn())
+                if(logger.isLoggable(Level.WARNING))
                 {
-                    logger.warn(OWBLogConst.WARN_0005_1, interceptor.getBeanClass().getName());
+                    logger.log(Level.WARNING, OWBLogConst.WARN_0005_1, interceptor.getBeanClass().getName());
                 }
             }
             
             if(interceptor.getName() != null)
             {
-                if(logger.wblWillLogWarn())
+                if(logger.isLoggable(Level.WARNING))
                 {
-                    logger.warn(OWBLogConst.WARN_0005_2, interceptor.getBeanClass().getName());
+                    logger.log(Level.WARNING, OWBLogConst.WARN_0005_2, interceptor.getBeanClass().getName());
                 }
             }
             
             if(interceptor.isAlternative())
             {
-                if(logger.wblWillLogWarn())
+                if(logger.isLoggable(Level.WARNING))
                 {
-                    logger.warn(OWBLogConst.WARN_0005_3, interceptor.getBeanClass().getName());
+                    logger.log(Level.WARNING, OWBLogConst.WARN_0005_3, interceptor.getBeanClass().getName());
                 }                
             }
 
@@ -115,25 +118,25 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
                     (AnnotatedType<?>) annotatedType);
             if(managedBean.getScope() != Dependent.class)
             {
-                if(logger.wblWillLogWarn())
+                if(logger.isLoggable(Level.WARNING))
                 {
-                    logger.warn(OWBLogConst.WARN_0005_1, managedBean.getBeanClass().getName());
+                    logger.log(Level.WARNING, OWBLogConst.WARN_0005_1, managedBean.getBeanClass().getName());
                 }
             }
             
             if(managedBean.getName() != null)
             {
-                if(logger.wblWillLogWarn())
+                if(logger.isLoggable(Level.WARNING))
                 {
-                    logger.warn(OWBLogConst.WARN_0005_2, managedBean.getBeanClass().getName());
+                    logger.log(Level.WARNING, OWBLogConst.WARN_0005_2, managedBean.getBeanClass().getName());
                 }
             }
             
             if(managedBean.isAlternative())
             {
-                if(logger.wblWillLogWarn())
+                if(logger.isLoggable(Level.WARNING))
                 {
-                    logger.warn(OWBLogConst.WARN_0005_3, managedBean.getBeanClass().getName());
+                    logger.log(Level.WARNING, OWBLogConst.WARN_0005_3, managedBean.getBeanClass().getName());
                 }                
             }
 

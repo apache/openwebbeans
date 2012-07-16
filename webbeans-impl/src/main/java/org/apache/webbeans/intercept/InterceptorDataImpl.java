@@ -20,6 +20,8 @@ package org.apache.webbeans.intercept;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -35,7 +37,7 @@ import org.apache.webbeans.context.creational.EjbInterceptorContext;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
 import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 
 /**
@@ -46,7 +48,7 @@ import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 public class InterceptorDataImpl implements InterceptorData
 {
     // Logger instance
-    private final static WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorDataImpl.class);
+    private final static Logger logger = WebBeansLoggerFacade.getLogger(InterceptorDataImpl.class);
 
     /** Around invokes method */
     private Method aroundInvoke = null;
@@ -456,7 +458,7 @@ public class InterceptorDataImpl implements InterceptorData
                 }
                 catch (Exception e)
                 {
-                    logger.error(OWBLogConst.ERROR_0022, e, interceptorClass);
+                    logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0022, interceptorClass), e);
                 }
 
                 ownerCreationalContext.addEjbInterceptor(ownerInstance, ctx);

@@ -21,11 +21,13 @@ package org.apache.webbeans.newtests.injection.injectionpoint.beans;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import org.apache.webbeans.config.PropertyLoader;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 /**
  * Factory class for PropertyHolder Annotation. 
@@ -33,7 +35,7 @@ import org.apache.webbeans.logger.WebBeansLogger;
  */
 public class PropertyHolderFactory {
 
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(PropertyHolderFactory.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(PropertyHolderFactory.class);
     
     //Properties
     private static final String PROPERTY_FILE = 
@@ -72,7 +74,7 @@ public class PropertyHolderFactory {
     @PropertyHolder
     public String getPlaceHolderValue(InjectionPoint injectionPoint) {
 
-        logger.info("getPlaceHolderValue {0}", injectionPoint);
+        logger.log(Level.INFO, "getPlaceHolderValue {0}", injectionPoint);
 
         //Get value attribute of the PlaceHolder Annotation
         String keyName = injectionPoint.getAnnotated().getAnnotation(PropertyHolder.class).value();

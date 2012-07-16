@@ -19,17 +19,19 @@
 package org.apache.webbeans.component;
 
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 
 public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(InjectionPointBean.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(InjectionPointBean.class);
     
     private static ThreadLocal<Stack<InjectionPoint>> localThreadlocalStack = new ThreadLocal<Stack<InjectionPoint>>();
 
@@ -48,7 +50,7 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
         Stack<InjectionPoint> stackIP = getStackOfInjectionPoints();
         stackIP.push(ip);
         localThreadlocalStack.set(stackIP);
-        logger.debug("PUSHED IP on stack {0}", stackIP);
+        logger.log(Level.FINE, "PUSHED IP on stack {0}", stackIP);
         return true;
     }
     
@@ -56,7 +58,7 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
     {
         Stack<InjectionPoint> stackIP = getStackOfInjectionPoints();
         InjectionPoint ip = stackIP.pop();
-        logger.debug("POPPED IP on stack {0}", ip);
+        logger.log(Level.FINE, "POPPED IP on stack {0}", ip);
     }
     
     /**
@@ -64,7 +66,7 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
      */
     public static void removeThreadLocal()
     {
-        logger.debug(" local.remove() ");
+        logger.fine(" local.remove() ");
         getStackOfInjectionPoints().clear();
         localThreadlocalStack.remove();
     }
@@ -87,9 +89,9 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
     @Override
     protected InjectionPoint createInstance(CreationalContext<InjectionPoint> creationalContext)
     {
-        logger.debug("ENTRY createInstance {0}", creationalContext);
+        logger.log(Level.FINE, "ENTRY createInstance {0}", creationalContext);
         InjectionPoint ip = getStackOfInjectionPoints().peek();
-        logger.debug("RETURN {0}", ip);
+        logger.log(Level.FINE, "RETURN {0}", ip);
         return ip;
     }
 

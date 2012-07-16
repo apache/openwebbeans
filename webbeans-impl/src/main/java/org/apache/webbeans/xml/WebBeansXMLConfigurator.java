@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.interceptor.Interceptor;
@@ -36,7 +38,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorsManager;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -53,7 +55,7 @@ import org.w3c.dom.NodeList;
 @SuppressWarnings("unchecked")
 public final class WebBeansXMLConfigurator
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansXMLConfigurator.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansXMLConfigurator.class);
 
     /**
      * Current configuration file name
@@ -191,8 +193,8 @@ public final class WebBeansXMLConfigurator
         }
         catch (Exception e)
         {
-            logger.fatal(e, OWBLogConst.FATAL_0002);
-            throw new WebBeansException(logger.getTokenString(OWBLogConst.EXCEPT_0013), e);
+            logger.log(Level.SEVERE, OWBLogConst.FATAL_0002, e);
+            throw new WebBeansException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0013), e);
         }
     }
 
@@ -323,7 +325,7 @@ public final class WebBeansXMLConfigurator
                 if ((!isBDAScanningEnabled && manager.isInterceptorEnabled(clazz)) ||
                         (isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addInterceptor(clazz, fileName)))
                 {
-                    logger.warn( "Interceptor class : " + child.getTextContent().trim() + " is already defined");
+                    logger.warning( "Interceptor class : " + child.getTextContent().trim() + " is already defined");
                 }
                 else
                 {
@@ -411,9 +413,9 @@ public final class WebBeansXMLConfigurator
             }
             else
             {
-                if (logger.wblWillLogWarn())
+                if (logger.isLoggable(Level.WARNING))
                 {
-                    logger.warn(OWBLogConst.WARN_0002, getName(child));
+                    logger.log(Level.WARNING, OWBLogConst.WARN_0002, getName(child));
                 }
             }
         }

@@ -68,6 +68,7 @@ public class OWBLogConst
 
     // Stereotypes can not define qualifier other than @Named but stereotype \: [{0}] has defined [{1}] , non-portable behaviour results.
     public static final String WARN_0017 = "WARN_0017";
+    public static final String WARN_0018 = "WARN_0018";
 
 
     public static final String ERROR_0001 = "ERROR_0001"; // Unable to inject resource for : [{0}]
@@ -97,6 +98,7 @@ public class OWBLogConst
     public static final String ERROR_0025 = "ERROR_0025"; // Unable to inject field \: [{0}]
     public static final String ERROR_0026 = "ERROR_0026"; // An error occured while injecting dependencies of bean \: [{0}]
     public static final String ERROR_0027 = "ERROR_0027"; // Unable to create AnnotatedType for class \: [{0}]. Exception cause \: [{1}].
+    public static final String ERROR_0028 = "ERROR_0028"; // Can't use logger factory class [{0}]. Exception cause \: [{1}].
 
 
     public static final String FATAL_0001 = "FATAL_0001"; // Exception thrown while destroying bean instance : {0}

@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
@@ -61,7 +63,7 @@ import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorDataImpl;
 import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -80,7 +82,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     private static final long serialVersionUID = -4317127341083031217L;
 
     //Logger instance
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(OpenWebBeansEjbInterceptor.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(OpenWebBeansEjbInterceptor.class);
     
     /**Thread local for calling bean*/
     private static transient ThreadLocal<BaseEjbBean<?>> threadLocal = new ThreadLocal<BaseEjbBean<?>>();
@@ -156,9 +158,9 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         boolean requestAlreadyActive = false;
         boolean applicationAlreadyActive = false;
        
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         { 
-            logger.debug("Intercepting EJB method {0} ", ejbContext.getMethod());
+            logger.log(Level.FINE, "Intercepting EJB method {0} ", ejbContext.getMethod());
         }
 
         try
@@ -231,7 +233,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         }
         catch (Exception e)
         {
-            logger.error(OWBLogConst.ERROR_0008, e, interceptorType);
+            logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0008, interceptorType), e);
             throw new RuntimeException(e);
         }
     }
@@ -249,14 +251,14 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     @PostConstruct
     public void afterConstruct(InvocationContext context)
     {
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("entry");
+            logger.fine("entry");
         }
 
         if (this.webBeansContext == null)
         {
-            this.webBeansContext = WebBeansContext.getInstance();
+            this.webBeansContext = WebBeansContext.currentInstance();
         }
 
         BaseEjbBean<?> injectionTarget = threadLocal.get();
@@ -290,9 +292,9 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         // Even for contextuals, we want to manage it along with THIS intereptor instance (e.g. SLSB)
         this.cc = webBeansContext.getBeanManagerImpl().createCreationalContext(this.contextual);
         
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("manager = {0} interceptor_instance = {1} contextual = {2} ", 
+            logger.log(Level.FINE, "manager = {0} interceptor_instance = {1} contextual = {2} ",
                     new Object[] { this.webBeansContext.getBeanManagerImpl(), this, this.contextual});
         }
         
@@ -308,7 +310,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             }
             catch (Exception e)
             {
-                logger.error(OWBLogConst.ERROR_0026, e, this.contextual);
+                logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0026, contextual), e);
             }
         }
     }
@@ -440,9 +442,9 @@ public class OpenWebBeansEjbInterceptor implements Serializable
                     if(bean.getBeanClass() == instance.getClass())
                     {
                         ejbBean = (BaseEjbBean<?>)bean;
-                        if (logger.wblWillLogDebug())
+                        if (logger.isLoggable(Level.FINE))
                         {
-                            logger.debug("Found managed bean for [{0}] [{1}]", instance.getClass(), ejbBean);
+                            logger.log(Level.FINE, "Found managed bean for [{0}] [{1}]", WebBeansLoggerFacade.args(instance.getClass(), ejbBean));
                         }
                         this.resolvedBeans.put(instance.getClass(), ejbBean);
                         break;
@@ -452,9 +454,9 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         }        
         else 
         {
-                if (logger.wblWillLogDebug()) 
+                if (logger.isLoggable(Level.FINE))
                 {
-                    logger.debug("Managed bean for [{0}] found in cache: [{1}]", instance.getClass(),  ejbBean);
+                    logger.log(Level.FINE, "Managed bean for [{0}] found in cache: [{1}]", WebBeansLoggerFacade.args(instance.getClass(),  ejbBean));
                 }
         }
         
@@ -484,17 +486,17 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         List<InterceptorData> interceptorStack = injectionTarget.getInterceptorStack();
 
 
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("Decorator stack for target {0}", decoratorStack);
-            logger.debug("Interceptor stack {0}", interceptorStack);
+            logger.log(Level.FINE, "Decorator stack for target {0}", decoratorStack);
+            logger.log(Level.FINE, "Interceptor stack {0}", interceptorStack);
         }
                     
         if (decoratorStack.size() > 0 )
         {    
-            if (logger.wblWillLogDebug())
+            if (logger.isLoggable(Level.FINE))
             {
-                logger.debug("Obtaining a delegate");
+                logger.fine("Obtaining a delegate");
             }
             Class<?> proxyClass = webBeansContext.getJavassistProxyFactory().getInterceptorProxyClasses().get(injectionTarget);
             if (proxyClass == null)
@@ -577,9 +579,9 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     public Object callAroundTimeouts(InvocationContext context) throws Exception
     {
         Object rv = null;
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("OWBEI:: @AroundTimeout entry. Trying to run Interceptors.");            
+            logger.fine("OWBEI:: @AroundTimeout entry. Trying to run Interceptors.");
         }
 
         if ((this.contextual != null) && WebBeansUtil.isContainsInterceptorMethod(this.contextual.getInterceptorStack(), InterceptorType.AROUND_TIMEOUT))
@@ -598,7 +600,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             }
             catch (Exception e)
             {
-                logger.error(OWBLogConst.ERROR_0008, e, "@AroundTimeout.");    
+                logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0008, "@AroundTimeout."), e);
                 throw new RuntimeException(e);
             }                      
         }
@@ -618,10 +620,10 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     @PrePassivate
     public void beforePassivate(InvocationContext context)
     {
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("manager = {0} interceptor_instance = {1} contextual = {2} ", 
-                    new Object[] { this.webBeansContext.getBeanManagerImpl(), this, this.contextual});
+            logger.log(Level.FINE, "manager = {0} interceptor_instance = {1} contextual = {2} ",
+                    WebBeansLoggerFacade.args(this.webBeansContext.getBeanManagerImpl(), this, this.contextual));
         }
         lifecycleCommon(context, InterceptorType.PRE_PASSIVATE);
     }
@@ -635,10 +637,10 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         // lost during activation
         this.contextual = findTargetBean(context.getTarget());
 
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("manager = {0} interceptor_instance = {1} contextual = {2} ", 
-                    new Object[] { this.webBeansContext.getBeanManagerImpl(), this, this.contextual});
+            logger.log(Level.FINE, "manager = {0} interceptor_instance = {1} contextual = {2} ",
+                    WebBeansLoggerFacade.args(this.webBeansContext.getBeanManagerImpl(), this, this.contextual));
         }
 
         lifecycleCommon(context, InterceptorType.POST_ACTIVATE);
@@ -656,10 +658,10 @@ public class OpenWebBeansEjbInterceptor implements Serializable
 
     private void writeObject(ObjectOutputStream out) throws IOException
     {
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("manager = {0} interceptor_instance = {1} contextual = {2} ", 
-                          new Object[] { this.webBeansContext.getBeanManagerImpl(), this, this.contextual});
+            logger.log(Level.FINE, "manager = {0} interceptor_instance = {1} contextual = {2} ",
+                          WebBeansLoggerFacade.args(this.webBeansContext.getBeanManagerImpl(), this, this.contextual));
         }
         
         /* notably our stashed CreationalContext */
@@ -669,9 +671,9 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     
     private  void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException
     {
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("interceptor instance = " + this.hashCode());
+            logger.log(Level.FINE, "interceptor instance = " + this.hashCode());
         }
 
         /* rebuild transient maps */
@@ -685,10 +687,10 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         /* restore transient BeanManager */
         this.webBeansContext = WebBeansContext.currentInstance();
 
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("manager = {0} interceptor_instance = {1} contextual = {2} ", 
-                          new Object[] { this.webBeansContext.getBeanManagerImpl(), this, this.contextual});
+            logger.log(Level.FINE, "manager = {0} interceptor_instance = {1} contextual = {2} ",
+                          WebBeansLoggerFacade.args(this.webBeansContext.getBeanManagerImpl(), this, this.contextual));
         }
         
     }

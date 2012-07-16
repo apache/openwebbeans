@@ -18,9 +18,11 @@
  */
 package org.apache.webbeans.test.servlet;
 
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.test.TestContext;
 import org.junit.Test;
+
+import java.util.logging.Logger;
 
 /**
  * This test listener class is used for running the tests from the web page.
@@ -33,7 +35,7 @@ import org.junit.Test;
  */
 public class TestListener
 {
-    WebBeansLogger log = WebBeansLogger.getLogger(TestListener.class);
+    Logger log = WebBeansLoggerFacade.getLogger(TestListener.class);
 
     private void init()
     {

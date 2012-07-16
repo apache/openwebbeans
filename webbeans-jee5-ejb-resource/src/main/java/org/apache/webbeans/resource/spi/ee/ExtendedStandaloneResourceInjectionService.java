@@ -21,7 +21,7 @@ package org.apache.webbeans.resource.spi.ee;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.resource.spi.se.StandaloneResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
 
@@ -34,13 +34,15 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Allows to use @EJB in JEE 5 app servers
  */
 public class ExtendedStandaloneResourceInjectionService extends StandaloneResourceInjectionService
 {
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(ExtendedStandaloneResourceInjectionService.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(ExtendedStandaloneResourceInjectionService.class);
 
     private List<EjbResolver> ejbResolvers = new ArrayList<EjbResolver>();
 
@@ -75,9 +77,9 @@ public class ExtendedStandaloneResourceInjectionService extends StandaloneResour
                 }
                 catch (NamingException e)
                 {
-                    if(logger.wblWillLogDebug())
+                    if(logger.isLoggable(Level.FINE))
                     {
-                        logger.debug(ejbResolver.getClass().getName()
+                        logger.log(Level.FINE, ejbResolver.getClass().getName()
                                 + " couldn't find EJB for " + resourceReference.getResourceType().getName());
                     }
                 }
@@ -119,7 +121,7 @@ public class ExtendedStandaloneResourceInjectionService extends StandaloneResour
 
             if (!beansIterator.hasNext())
             {
-                logger.error(e);
+                logger.log(Level.SEVERE, "can't find ejb (via jndi) or cdi bean for type " + resourceType.getName(), e);
                 throw new RuntimeException("can't find ejb (via jndi) or cdi bean for type "
                         + resourceType.getName(), e);
             }

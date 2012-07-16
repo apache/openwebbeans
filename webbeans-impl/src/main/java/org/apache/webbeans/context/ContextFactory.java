@@ -19,6 +19,8 @@
 package org.apache.webbeans.context;
 
 import java.lang.annotation.Annotation;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ContextNotActiveException;
@@ -29,7 +31,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 import javax.inject.Singleton;
 import org.apache.webbeans.context.type.ContextTypes;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.config.WebBeansContext;
 
@@ -40,7 +42,7 @@ import org.apache.webbeans.config.WebBeansContext;
 public final class ContextFactory
 {
     /**Logger instance*/
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(ContextFactory.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(ContextFactory.class);
     private final WebBeansContext webBeansContext;
 
     private ContextsService contextsService = null;
@@ -71,7 +73,7 @@ public final class ContextFactory
         }
         catch (Exception e)
         {
-            logger.error(e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -100,7 +102,7 @@ public final class ContextFactory
         }
         catch (Exception e)
         {
-            logger.error(e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -119,7 +121,7 @@ public final class ContextFactory
         }
         catch (Exception e)
         {
-            logger.error(e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -144,7 +146,7 @@ public final class ContextFactory
         }
         catch (Exception e)
         {
-            logger.error(e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -163,7 +165,7 @@ public final class ContextFactory
         }
         catch (Exception e)
         {
-            logger.error(e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -188,7 +190,7 @@ public final class ContextFactory
 
     public Context getStandardContext(ContextsService contextService, ContextTypes type) throws ContextNotActiveException
     {
-        Context context = null;
+        Context context;
         switch (type.getCardinal())
         {
             case 0:

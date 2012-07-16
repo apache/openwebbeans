@@ -25,9 +25,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 /**
  * Defines configuration for OpenWebBeans.
@@ -43,7 +44,7 @@ import org.apache.webbeans.logger.WebBeansLogger;
 public class OpenWebBeansConfiguration
 {
     /**Logger instance*/
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(OpenWebBeansConfiguration.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(OpenWebBeansConfiguration.class);
 
     /**Default configuration files*/
     private final static String DEFAULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";
@@ -147,7 +148,7 @@ public class OpenWebBeansConfiguration
     {
         parseConfiguration();
         
-        logger.debug("Overriding properties from System properties");
+        logger.fine("Overriding properties from System properties");
         
         //Look for System properties
         loadFromSystemProperties();        

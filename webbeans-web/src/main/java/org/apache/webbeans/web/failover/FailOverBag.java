@@ -20,6 +20,8 @@ package org.apache.webbeans.web.failover;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.SessionScoped;
@@ -29,7 +31,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.conversation.ConversationManager;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.web.context.SessionContextManager;
 import org.apache.webbeans.web.context.WebContextsService;
@@ -47,8 +49,8 @@ public class FailOverBag implements Serializable
     private static final long serialVersionUID = -6314819837009653189L;
     
     /**Logger instance*/
-    protected  final WebBeansLogger logger = 
-            WebBeansLogger.getLogger(FailOverBag.class);
+    protected  final Logger logger =
+            WebBeansLoggerFacade.getLogger(FailOverBag.class);
     
     private String sessionId;
 
@@ -111,7 +113,7 @@ public class FailOverBag implements Serializable
         } 
         catch (Exception e)
         {
-            logger.error(e);
+            logger.log(Level.SEVERE, "FailOverBag", e);
         }
     }
 

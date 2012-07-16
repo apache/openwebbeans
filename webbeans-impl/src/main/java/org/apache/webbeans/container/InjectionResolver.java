@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
@@ -43,7 +45,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -65,7 +67,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class InjectionResolver
 {
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(InjectionResolver.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(InjectionResolver.class);
 
     /**
      * Bean Manager
@@ -353,9 +355,9 @@ public class InjectionResolver
         {
             resolvedBeansByName.put(cacheKey, resolvedComponents);
         }
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("DEBUG_ADD_BYNAME_CACHE_BEANS", cacheKey);
+            logger.log(Level.FINE, "DEBUG_ADD_BYNAME_CACHE_BEANS", cacheKey);
         }
 
         return resolvedComponents;
@@ -529,9 +531,9 @@ public class InjectionResolver
         }
 
         resolvedBeansByType.put(cacheKey, resolvedComponents);
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("DEBUG_ADD_BYTYPE_CACHE_BEANS", cacheKey);
+            logger.log(Level.FINE, "DEBUG_ADD_BYTYPE_CACHE_BEANS", cacheKey);
         }
 
         return resolvedComponents;

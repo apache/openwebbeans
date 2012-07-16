@@ -19,7 +19,7 @@
 package org.apache.webbeans.web.tests.interceptor;
 
 import junit.framework.Assert;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.beans.ApplicationScopedBean;
 import org.apache.webbeans.newtests.interceptors.beans.RequestScopedBean;
@@ -33,6 +33,8 @@ import javax.servlet.ServletRequestEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This test checks the performance of simple interceptor invocations.
@@ -44,7 +46,7 @@ public class CachedInterceptorHandlerTest extends AbstractUnitTest
 
     private static final int ITERATIONS = 100000;
 
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(CachedInterceptorHandlerTest.class);
+    private static Logger logger = WebBeansLoggerFacade.getLogger(CachedInterceptorHandlerTest.class);
 
 
     @Test
@@ -95,7 +97,7 @@ public class CachedInterceptorHandlerTest extends AbstractUnitTest
 
         long end = System.nanoTime();
 
-        logger.info("Executing {0} iterations took {1} ns", ITERATIONS, end - start);
+        logger.log(Level.INFO, "Executing {0} iterations took {1} ns", WebBeansLoggerFacade.args(ITERATIONS, end - start));
 
         shutDownContainer();
 

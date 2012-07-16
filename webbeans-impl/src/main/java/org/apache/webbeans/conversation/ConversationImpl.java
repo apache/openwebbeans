@@ -21,6 +21,8 @@ package org.apache.webbeans.conversation;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
@@ -29,7 +31,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ConversationContext;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.Asserts;
 
 /**
@@ -45,7 +47,7 @@ public class ConversationImpl implements Conversation, Serializable
     private static final long serialVersionUID = 8511063860333431722L;
 
     /**Logger instance*/
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(ConversationImpl.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(ConversationImpl.class);
     
     /**Conversation id*/
     private String id;
@@ -148,7 +150,7 @@ public class ConversationImpl implements Conversation, Serializable
         //Already started conversation.
         else
         {
-            logger.warn(OWBLogConst.WARN_0003, id);
+            logger.log(Level.WARNING, OWBLogConst.WARN_0003, id);
             throw new IllegalStateException();
         }
     }
@@ -189,7 +191,7 @@ public class ConversationImpl implements Conversation, Serializable
         }
         else
         {
-            logger.warn(OWBLogConst.WARN_0004, id);
+            logger.log(Level.WARNING, OWBLogConst.WARN_0004, id);
             throw new IllegalStateException(toString() + " has already ended");
         }
     }

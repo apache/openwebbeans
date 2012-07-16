@@ -25,15 +25,18 @@ import javax.naming.NamingException;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This is the internal helper class for low level access to JNDI
- * @see org.apache.webbeans.corespi.JNDIService for transparent access over SPI 
+ * @see org.apache.webbeans.spi.JNDIService for transparent access over SPI
  */
 public final class JNDIUtil
 {
-    private static final WebBeansLogger LOGGER = WebBeansLogger.getLogger(JNDIUtil.class);
+    private static final Logger LOGGER = WebBeansLoggerFacade.getLogger(JNDIUtil.class);
 
     private JNDIUtil()
     {
@@ -70,7 +73,7 @@ public final class JNDIUtil
         }
         catch (NamingException e)
         {
-            LOGGER.error(OWBLogConst.ERROR_0005, e, name);
+            LOGGER.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0005, name), e);
         }
     }
 
@@ -85,8 +88,8 @@ public final class JNDIUtil
         }
         catch (NamingException e)
         {
-            LOGGER.error(e);
-            throw new WebBeansException(LOGGER.getTokenString(OWBLogConst.EXCEPT_0009) + name, e);
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            throw new WebBeansException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0009) + name, e);
         }
     }
     
@@ -101,8 +104,8 @@ public final class JNDIUtil
         }
         catch (NamingException e)
         {
-            LOGGER.error(e);
-            throw new WebBeansException(LOGGER.getTokenString(OWBLogConst.EXCEPT_0010) + name, e);
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            throw new WebBeansException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0010) + name, e);
         }
     }
 

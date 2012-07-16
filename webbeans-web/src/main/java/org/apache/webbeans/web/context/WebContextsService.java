@@ -31,7 +31,7 @@ import org.apache.webbeans.context.SingletonContext;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.ELContextStore;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.web.intercept.RequestScopedBeanInterceptorHandler;
 
@@ -51,6 +51,8 @@ import javax.servlet.http.HttpSession;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Web container {@link org.apache.webbeans.spi.ContextsService}
@@ -59,7 +61,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebContextsService extends AbstractContextsService
 {
     /**Logger instance*/
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebContextsService.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebContextsService.class);
 
     /**Current request context*/
     private static ThreadLocal<RequestContext> requestContexts = null;
@@ -426,9 +428,9 @@ public class WebContextsService extends AbstractContextsService
 
         if (conversation.isTransient())
         {
-            if (logger.wblWillLogDebug())
+            if (logger.isLoggable(Level.FINE))
             {
-                logger.debug("Destroying the conversation context with cid : [{0}]", conversation.getId());
+                logger.log(Level.FINE, "Destroying the conversation context with cid : [{0}]", conversation.getId());
             }
             ContextFactory contextFactory = webBeansContext.getContextFactory();
             contextFactory.destroyConversationContext();
@@ -741,9 +743,9 @@ public class WebContextsService extends AbstractContextsService
     private Context lazyStartSessionContext()
     {
 
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug(">lazyStartSessionContext");
+            logger.log(Level.FINE, ">lazyStartSessionContext");
         }
 
         Context webContext = null;
@@ -763,30 +765,30 @@ public class WebContextsService extends AbstractContextsService
                         failoverService.sessionIsInUse(currentSession);
                     }
 
-                    if (logger.wblWillLogDebug())
+                    if (logger.isLoggable(Level.FINE))
                     {
-                        logger.debug("Lazy SESSION context initialization SUCCESS");
+                        logger.log(Level.FINE, "Lazy SESSION context initialization SUCCESS");
                     }
                 }
                 catch (Exception e)
                 {
-                    logger.error(OWBLogConst.ERROR_0013, e);
+                    logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0013, e));
                 }
 
             }
             else
             {
-                logger.warn("Could NOT lazily initialize session context because NO active request context");
+                logger.log(Level.WARNING, "Could NOT lazily initialize session context because NO active request context");
             }
         }
         else
         {
-            logger.warn("Could NOT lazily initialize session context because of "+context+" RequestContext");
+            logger.log(Level.WARNING, "Could NOT lazily initialize session context because of "+context+" RequestContext");
         }
 
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("<lazyStartSessionContext "+ webContext);
+            logger.log(Level.FINE, "<lazyStartSessionContext "+ webContext);
         }
         return webContext;
     }

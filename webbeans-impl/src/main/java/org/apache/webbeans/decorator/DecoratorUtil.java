@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
@@ -35,7 +37,7 @@ import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -49,7 +51,7 @@ import org.apache.webbeans.util.ClassUtil;
 public final class DecoratorUtil
 {
     //Logger instance
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(DecoratorUtil.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(DecoratorUtil.class);
 
     //Non-instantiate
     private DecoratorUtil()
@@ -134,7 +136,7 @@ public final class DecoratorUtil
                         }
                         catch (SecurityException e)
                         {
-                            logger.error(OWBLogConst.ERROR_0006, e, decClazz.getName(),method.getName());
+                            logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0006, decClazz.getName(),method.getName(), e));
                             throw new WebBeansException(e);
 
                         }

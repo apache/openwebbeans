@@ -23,7 +23,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.ELContextStore;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -38,6 +38,8 @@ import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Initializing the beans container for using in an web application
@@ -54,7 +56,7 @@ import javax.servlet.http.HttpSessionListener;
 public class WebBeansConfigurationListener implements ServletContextListener, ServletRequestListener, HttpSessionListener
 {
     /**Logger instance*/
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansConfigurationListener.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansConfigurationListener.class);
     
     /**Manages the container lifecycle*/
     protected ContainerLifecycle lifeCycle = null;
@@ -84,7 +86,10 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
         catch (Exception e)
         {
-             logger.error(OWBLogConst.ERROR_0018, ServletCompatibilityUtil.getServletInfo(event.getServletContext()));
+             logger.log(Level.SEVERE,
+                     WebBeansLoggerFacade.constructMessage(
+                             OWBLogConst.ERROR_0018,
+                             ServletCompatibilityUtil.getServletInfo(event.getServletContext())));
              WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
@@ -107,9 +112,9 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
      */
     public void requestDestroyed(ServletRequestEvent event)
     {
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("Destroying a request : [{0}]", event.getServletRequest().getRemoteAddr());
+            logger.log(Level.FINE, "Destroying a request : [{0}]", event.getServletRequest().getRemoteAddr());
         }
         
         // clean up the EL caches after each request
@@ -141,9 +146,9 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     {
         try
         {
-            if (logger.wblWillLogDebug())
+            if (logger.isLoggable(Level.FINE))
             {
-                logger.debug("Starting a new request : [{0}]", event.getServletRequest().getRemoteAddr());
+                logger.log(Level.FINE, "Starting a new request : [{0}]", event.getServletRequest().getRemoteAddr());
             }
             
             this.lifeCycle.getContextService().startContext(RequestScoped.class, event);
@@ -153,7 +158,8 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
         catch (Exception e)
         {
-            logger.error(OWBLogConst.ERROR_0019, event.getServletRequest());
+            logger.log(Level.SEVERE,
+                    WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0019, event.getServletRequest()));
             WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
@@ -165,15 +171,16 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     {
         try
         {
-            if (logger.wblWillLogDebug())
+            if (logger.isLoggable(Level.FINE))
             {
-                logger.debug("Starting a session with session id : [{0}]", event.getSession().getId());
+                logger.log(Level.FINE, "Starting a session with session id : [{0}]", event.getSession().getId());
             }
             this.lifeCycle.getContextService().startContext(SessionScoped.class, event.getSession());
         }
         catch (Exception e)
         {
-            logger.error(OWBLogConst.ERROR_0020, event.getSession());
+            logger.log(Level.SEVERE,
+                    WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0020, event.getSession()));
             WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
@@ -183,9 +190,9 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
      */
     public void sessionDestroyed(HttpSessionEvent event)
     {
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("Destroying a session with session id : [{0}]", event.getSession().getId());
+            logger.log(Level.FINE, "Destroying a session with session id : [{0}]", event.getSession().getId());
         }
         this.lifeCycle.getContextService().endContext(SessionScoped.class, event.getSession());
 

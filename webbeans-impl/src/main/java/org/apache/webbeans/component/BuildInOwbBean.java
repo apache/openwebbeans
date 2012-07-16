@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javassist.util.proxy.MethodHandler;
@@ -149,7 +150,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
     @SuppressWarnings("unchecked")
     protected BuildInOwbBean(WebBeansType webBeansType, Class<T> returnType)
     {
-        super(webBeansType, returnType, WebBeansContext.getInstance());
+        super(webBeansType, returnType, WebBeansContext.currentInstance());
         initBuildInBeanConfig(getWebBeansContext());
         handlerClassName = proxyHandlerMap.get(getWebBeansType());
         if (handlerClassName.equalsIgnoreCase(PROXY_HANDLER_VALUE_NONE) ||
@@ -173,15 +174,15 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
                 } 
                 catch (ClassNotFoundException e) 
                 {
-                    getLogger().error(e);
+                    getLogger().log(Level.SEVERE, e.getMessage(), e);
                 } 
                 catch (SecurityException e) 
                 {
-                    getLogger().error(e);
+                    getLogger().log(Level.SEVERE, e.getMessage(), e);
                 } 
                 catch (NoSuchMethodException e) 
                 {
-                    getLogger().error(e);
+                    getLogger().log(Level.SEVERE, e.getMessage(), e);
                 }
                 buildinBean.handlerClass = null;
                 buildinBean.handlerContructor = null;
@@ -226,7 +227,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
             } 
             catch (Exception e) 
             {
-                getLogger().error(e);
+                getLogger().log(Level.SEVERE, e.getMessage(), e);
                 //X TODO don't we rethrow this Exception?
             }
         }

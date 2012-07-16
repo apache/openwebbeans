@@ -20,8 +20,10 @@ package org.apache.webbeans.portable.events.discovery;
 
 import java.util.Iterator;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 /**
  * Error stack.
@@ -30,7 +32,7 @@ import org.apache.webbeans.logger.WebBeansLogger;
  */
 public class ErrorStack
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(ErrorStack.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(ErrorStack.class);
     
     private Stack<Throwable> errorStack = new Stack<Throwable>();
     
@@ -60,7 +62,7 @@ public class ErrorStack
             while(it.hasNext())
             {
                 Throwable t = it.next();
-                logger.error(t);
+                logger.log(Level.SEVERE, t.getMessage(), t);
             }
         }
     }

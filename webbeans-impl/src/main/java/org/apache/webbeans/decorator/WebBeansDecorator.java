@@ -28,6 +28,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -49,6 +50,7 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * Defines decorators. It wraps the bean instance related
@@ -335,13 +337,13 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         }
         catch (IllegalArgumentException e)
         {
-            getLogger().error(OWBLogConst.ERROR_0007, e, instance.getClass().getName());
+            getLogger().log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0007, instance.getClass().getName()), e);
             throw new WebBeansException(e);
 
         }
         catch (IllegalAccessException e)
         {
-            getLogger().error(OWBLogConst.ERROR_0015, e, delegateField.getName(), instance.getClass().getName());
+            getLogger().log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0015, delegateField.getName(), instance.getClass().getName()), e);
         }
 
     }

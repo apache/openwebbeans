@@ -28,6 +28,8 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
@@ -41,7 +43,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.AbstractContext;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 import org.apache.webbeans.ejb.common.interceptor.OpenWebBeansEjbInterceptor;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.ClassUtil;
 
 import javassist.util.proxy.MethodHandler;
@@ -55,7 +57,7 @@ import javassist.util.proxy.MethodHandler;
 public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externalizable
 {
     //Logger instance
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(EjbBeanProxyHandler.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(EjbBeanProxyHandler.class);
     
     /**Proxy ejb bean instance*/
     private BaseEjbBean<?> ejbBean;
@@ -113,9 +115,9 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
         
         if(ClassUtil.isObjectMethod(methodName) && !methodName.equals("toString"))
         {
-            if(logger.wblWillLogTrace())
+            if(logger.isLoggable(Level.FINEST))
             {
-                logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object. [{0}]", methodName);   
+                logger.log(Level.FINEST, "Calling method on proxy is restricted except Object.toString(), but current method is Object. [{0}]", methodName);
             }
             
             if (!method.isAccessible())
@@ -127,7 +129,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
                 
         try
         {
-            Object webbeansInstance = null;
+            Object webbeansInstance;
 
             // Set Ejb bean on thread local
             OpenWebBeansEjbInterceptor.setThreadLocal(this.ejbBean, getContextualCreationalContext());
@@ -285,9 +287,9 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
         {
             s.writeObject(null);
             
-            if(logger.wblWillLogWarn())
+            if(logger.isLoggable(Level.WARNING))
             {
-                logger.warn(OWBLogConst.WARN_0015, this.ejbBean);   
+                logger.log(Level.WARNING, OWBLogConst.WARN_0015, this.ejbBean);
             }
         }
         
@@ -328,9 +330,9 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
         {
             out.writeObject(null);
             
-            if(logger.wblWillLogWarn())
+            if(logger.isLoggable(Level.WARNING))
             {
-                logger.warn(OWBLogConst.WARN_0015, this.ejbBean);   
+                logger.log(Level.WARNING, OWBLogConst.WARN_0015, this.ejbBean);
             }
         }
         

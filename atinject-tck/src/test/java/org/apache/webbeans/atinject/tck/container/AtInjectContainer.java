@@ -21,6 +21,7 @@ package org.apache.webbeans.atinject.tck.container;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -79,7 +80,7 @@ public class AtInjectContainer extends StandaloneContainersImpl
             
         } catch(DeploymentException e)
         {
-            logger.error(e);
+            logger.log(Level.SEVERE, "AtInjectContainer", e);
             excpetion = e;
         }
         

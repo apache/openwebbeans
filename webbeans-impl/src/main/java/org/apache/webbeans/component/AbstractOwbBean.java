@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
@@ -37,7 +39,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 /**
  * Abstract implementation of the {@link OwbBean} contract. 
@@ -50,7 +52,7 @@ import org.apache.webbeans.logger.WebBeansLogger;
 public abstract class AbstractOwbBean<T> implements OwbBean<T>
 {
     /**Logger instance*/
-    private WebBeansLogger logger = null;
+    protected Logger logger = null;
     
     /** Name of the bean */
     protected String name;
@@ -264,7 +266,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         }
         catch(Exception e)
         {
-            getLogger().fatal(e, OWBLogConst.FATAL_0001, this);
+            getLogger().log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.FATAL_0001, this), e);
         }
     }
 
@@ -685,11 +687,11 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     /**
      * The Logger should really only be used to log errors!
      */
-    protected synchronized WebBeansLogger getLogger()
+    protected synchronized Logger getLogger()
     {
         if (logger == null)
         {
-            logger = WebBeansLogger.getLogger(getClass());
+            logger = WebBeansLoggerFacade.getLogger(getClass());
         }
         return logger;
     }

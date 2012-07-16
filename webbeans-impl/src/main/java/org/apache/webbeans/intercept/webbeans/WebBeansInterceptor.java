@@ -53,6 +53,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * Defines the webbeans specific interceptors.
@@ -409,7 +410,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
         }
         catch (Exception e)
         {
-            getLogger().error(e);
+            getLogger().log(Level.SEVERE, e.getMessage(), e);
             throw new WebBeansException(e);
         }
 

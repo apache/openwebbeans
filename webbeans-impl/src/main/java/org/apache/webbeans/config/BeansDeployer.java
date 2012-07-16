@@ -28,6 +28,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Specializes;
@@ -61,7 +63,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
@@ -89,7 +91,7 @@ import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 public class BeansDeployer
 {
     //Logger instance
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(BeansDeployer.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(BeansDeployer.class);
 
     /**Deployment is started or not*/
     protected boolean deployed = false;
@@ -191,7 +193,7 @@ public class BeansDeployer
         }
         catch(Exception e)
         {
-            logger.error(e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
             WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
@@ -289,7 +291,7 @@ public class BeansDeployer
      */
     private void validateInjectionPoints()
     {
-        logger.debug("Validation of injection points has started.");
+        logger.fine("Validation of injection points has started.");
 
         webBeansContext.getDecoratorsManager().validateDecoratorClasses();
         webBeansContext.getInterceptorsManager().validateInterceptorClasses();
@@ -306,7 +308,7 @@ public class BeansDeployer
         }
         
         
-        logger.debug("Validation of the decorator's injection points has started.");
+        logger.fine("Validation of the decorator's injection points has started.");
         
         //Validate Decorators
         validate(beans);
@@ -321,7 +323,7 @@ public class BeansDeployer
             beans.add(wbInt);
         }
         
-        logger.debug("Validation of the interceptor's injection points has started.");
+        logger.fine("Validation of the interceptor's injection points has started.");
         
         //Validate Interceptors
         validate(beans);
@@ -472,7 +474,7 @@ public class BeansDeployer
      */
     protected void deployFromClassPath(ScannerService scanner) throws ClassNotFoundException
     {
-        logger.debug("Deploying configurations from class files has started.");
+        logger.fine("Deploying configurations from class files has started.");
 
         // Start from the class
         Set<Class<?>> classIndex = scanner.getBeanClasses();
@@ -504,9 +506,9 @@ public class BeansDeployer
                 } 
                 else
                 {
-                    if (logger.wblWillLogDebug())
+                    if (logger.isLoggable(Level.FINE))
                     {
-                        logger.debug("Error creating managed bean "+ implClass);
+                        logger.fine("Error creating managed bean " + implClass);
                     }
 
                 }
@@ -514,7 +516,7 @@ public class BeansDeployer
             }
         }
 
-        logger.debug("Deploying configurations from class files has ended.");
+        logger.fine("Deploying configurations from class files has ended.");
 
     }
     
@@ -562,7 +564,7 @@ public class BeansDeployer
         {
             if (EJBWebBeansConfigurator.isSessionBean(implClass, webBeansContext))
             {
-                logger.debug("Found Enterprise Bean with class name : [{0}]", implClass.getName());
+                logger.log(Level.FINE, "Found Enterprise Bean with class name : [{0}]", implClass.getName());
                 defineEnterpriseWebBean((Class<Object>) implClass, (ProcessAnnotatedTypeImpl<Object>) processAnnotatedEvent);
             }
         }
@@ -577,7 +579,7 @@ public class BeansDeployer
      */
     protected void deployFromXML(ScannerService scanner) throws WebBeansDeploymentException
     {
-        logger.debug("Deploying configurations from XML files has started.");
+        logger.fine("Deploying configurations from XML files has started.");
 
         Set<URL> xmlLocations = scanner.getBeanXmls();
         Iterator<URL> it = xmlLocations.iterator();
@@ -586,9 +588,9 @@ public class BeansDeployer
         {
             URL url = it.next();
 
-            if (logger.wblWillLogDebug())
+            if (logger.isLoggable(Level.FINE))
             {
-                logger.debug("OpenWebBeans BeansDeployer configuring: " + url.toExternalForm());
+                logger.fine("OpenWebBeans BeansDeployer configuring: " + url.toExternalForm());
             }
 
             InputStream fis = null;
@@ -618,9 +620,9 @@ public class BeansDeployer
             }
         }
 
-        if(logger.wblWillLogDebug())
+        if(logger.isLoggable(Level.FINE))
         {
-            logger.debug("Deploying configurations from XML has ended successfully.");
+            logger.fine("Deploying configurations from XML has ended successfully.");
         }
     }
 
@@ -630,7 +632,7 @@ public class BeansDeployer
      */
     protected void checkSpecializations(ScannerService scanner)
     {
-        logger.debug("Checking Specialization constraints has started.");
+        logger.fine("Checking Specialization constraints has started.");
         
         try
         {
@@ -650,12 +652,12 @@ public class BeansDeployer
                         superClass = specialClass.getSuperclass();
                         if(superClass.equals(Object.class))
                         {
-                            throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.EXCEPT_0003) + specialClass.getName()
-                                                                     + logger.getTokenString(OWBLogConst.EXCEPT_0004));
+                            throw new WebBeansConfigurationException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0003) + specialClass.getName()
+                                                                     + WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0004));
                         }
                         if (superClassList.contains(superClass))
                         {
-                            throw new InconsistentSpecializationException(logger.getTokenString(OWBLogConst.EXCEPT_0005) + superClass.getName());
+                            throw new InconsistentSpecializationException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0005) + superClass.getName());
                         }
                         superClassList.add(superClass);
                         specialClassList.add(specialClass);
@@ -674,7 +676,7 @@ public class BeansDeployer
         }
         
 
-        logger.debug("Checking Specialization constraints has ended.");
+        logger.fine("Checking Specialization constraints has ended.");
     }
 
     
@@ -723,7 +725,7 @@ public class BeansDeployer
      */
     protected void checkStereoTypes(ScannerService scanner)
     {
-        logger.debug("Checking StereoType constraints has started.");
+        logger.fine("Checking StereoType constraints has started.");
 
         addDefaultStereoTypes();
 
@@ -747,7 +749,7 @@ public class BeansDeployer
             }
         }
 
-        logger.debug("Checking StereoType constraints has ended.");
+        logger.fine("Checking StereoType constraints has ended.");
     }
 
     /**
@@ -832,9 +834,9 @@ public class BeansDeployer
             //Decorator
             if(WebBeansUtil.isAnnotatedTypeDecorator(annotatedType))
             {
-                if (logger.wblWillLogDebug())
+                if (logger.isLoggable(Level.FINE))
                 {
-                    logger.debug("Found Managed Bean Decorator with class name : [{0}]", annotatedType.getJavaClass().getName());
+                    logger.log(Level.FINE, "Found Managed Bean Decorator with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
                 if(annotationTypeSet)
                 {
@@ -849,9 +851,9 @@ public class BeansDeployer
             //Interceptor
             else if(WebBeansUtil.isAnnotatedTypeInterceptor(annotatedType))
             {
-                if (logger.wblWillLogDebug())
+                if (logger.isLoggable(Level.FINE))
                 {
-                    logger.debug("Found Managed Bean Interceptor with class name : [{0}]", annotatedType.getJavaClass().getName());
+                    logger.log(Level.FINE, "Found Managed Bean Interceptor with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
                 if(annotationTypeSet)
                 {
@@ -871,9 +873,9 @@ public class BeansDeployer
                     return false;
                 }
                 
-                if (logger.wblWillLogDebug())
+                if (logger.isLoggable(Level.FINE))
                 {
-                    logger.debug("Found Managed Bean with class name : [{0}]", annotatedType.getJavaClass().getName());
+                    logger.log(Level.FINE, "Found Managed Bean with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
                 webBeansContext.getWebBeansUtil().defineManagedBean(managedBeanCreator,
                                                                     processInjectionTargetEvent, true);

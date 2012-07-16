@@ -27,20 +27,23 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.corespi.se.BeansXmlAnnotationDB;
 import org.apache.webbeans.corespi.se.DefaultBDABeansXmlScanner;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.ClassUtil;
 
 public abstract class AbstractMetaDataDiscovery implements ScannerService
 {
-    protected final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
+    protected final Logger logger = WebBeansLoggerFacade.getLogger(getClass());
 
     public static final String META_INF_BEANS_XML = "META-INF/beans.xml";
 
@@ -151,7 +154,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         // set per BDA beans.xml flag here because setting it in constructor
         // occurs before
         // properties are loaded.
-        String usage = WebBeansContext.getInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_BDA_BEANSXML_SCANNER);
+        String usage = WebBeansContext.currentInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_BDA_BEANSXML_SCANNER);
         isBDAScannerEnabled = Boolean.parseBoolean(usage);
         if (isBDAScannerEnabled)
         {
@@ -182,7 +185,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
      */
     protected void addWebBeansXmlLocation(URL beansXmlUrl)
     {
-        if(logger.wblWillLogInfo())
+        if(logger.isLoggable(Level.INFO))
         {
             logger.info("added beans.xml marker: " + beansXmlUrl.toExternalForm());
         }
@@ -224,7 +227,10 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
                     }
                     catch (NoClassDefFoundError e)
                     {
-                        logger.warn("WARN_0018", str, e.toString());
+                        if (logger.isLoggable(Level.WARNING))
+                        {
+                            logger.log(Level.WARNING, OWBLogConst.WARN_0018, new Object[] { str, e.toString() });
+                        }
                     }
                 }
             }   

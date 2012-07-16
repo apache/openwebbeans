@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -48,7 +50,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -57,7 +59,7 @@ import org.apache.webbeans.util.ClassUtil;
 
 public final class InterceptorUtil
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorUtil.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(InterceptorUtil.class);
 
     private final OpenWebBeansEjbLCAPlugin ejbPlugin;
     private final Class<? extends Annotation> prePassivateClass;
@@ -642,9 +644,9 @@ public final class InterceptorUtil
                 InterceptorData overridenInterceptor = getOverridenInterceptor(beanClass, interceptorData, stack);
                 if (null != overridenInterceptor)
                 {
-                    if (logger.wblWillLogDebug())
+                    if (logger.isLoggable(Level.FINE))
                     {
-                        logger.debug("REMOVING parent " + overridenInterceptor);
+                        logger.fine("REMOVING parent " + overridenInterceptor);
                     }
 
                     it.remove();
@@ -683,9 +685,9 @@ public final class InterceptorUtil
                             overridenInterceptors = new ArrayList<InterceptorData>();
                         }
                         overridenInterceptors.add(overridenInterceptor);
-                        if (logger.wblWillLogDebug())
+                        if (logger.isLoggable(Level.FINE))
                         {
-                            logger.debug("REMOVING parent " + overridenInterceptor);
+                            logger.fine("REMOVING parent " + overridenInterceptor);
                         }
 
                     }

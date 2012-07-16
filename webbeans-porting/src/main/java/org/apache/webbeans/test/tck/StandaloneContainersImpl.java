@@ -22,6 +22,8 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.Singleton;
 import javax.ejb.Stateful;
@@ -47,7 +49,7 @@ import org.apache.openejb.jee.StatefulBean;
 import org.apache.openejb.jee.StatelessBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.test.tck.mock.TCKMetaDataDiscoveryImpl;
 import org.jboss.testharness.api.DeploymentException;
 import org.jboss.testharness.spi.StandaloneContainers;
@@ -55,7 +57,7 @@ import org.jboss.testharness.spi.StandaloneContainers;
 public class StandaloneContainersImpl implements StandaloneContainers
 {
     /**Logger instance*/
-    protected  final WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneContainersImpl.class);
+    protected  final Logger logger = WebBeansLoggerFacade.getLogger(StandaloneContainersImpl.class);
 
     protected StandaloneLifeCycle lifeCycle = null;
 
@@ -88,7 +90,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
         }
         catch (Exception e)
         {
-            logger.error(e);
+            logger.log(Level.SEVERE, "Standalone Container Impl.", e);
             this.excpetion = new DeploymentException("Standalone Container Impl.", e);
             throw this.excpetion;
         }
@@ -133,7 +135,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
         }
         catch (Exception e)
         {
-            logger.error(e);
+            logger.log(Level.SEVERE, "Standalone Container Impl.", e);
             this.excpetion = new DeploymentException("Standalone Container Impl.", e);
 
             return false;
@@ -222,7 +224,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
         }
         catch (Exception e)
         {
-            logger.error(e);
+            logger.log(Level.SEVERE, "Standalone Container Impl.", e);
             return false;
         }
 

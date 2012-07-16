@@ -20,15 +20,17 @@ package org.apache.webbeans.boot;
 
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContainerLifecycle;
 
 public class Bootstrap
 {
-    private static final WebBeansLogger log = WebBeansLogger.getLogger(Bootstrap.class);
+    private static final Logger log = WebBeansLoggerFacade.getLogger(Bootstrap.class);
     
     private final CountDownLatch latch = new CountDownLatch(1);
     
@@ -59,7 +61,7 @@ public class Bootstrap
             
         });
         
-        log.info(OWBLogConst.INFO_0001, Long.toString(System.currentTimeMillis() - begin));
+        log.log(Level.INFO, OWBLogConst.INFO_0001, Long.toString(System.currentTimeMillis() - begin));
         latch.await();
         
         log.info(OWBLogConst.INFO_0008);

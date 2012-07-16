@@ -23,6 +23,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
@@ -31,7 +33,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.Asserts;
 
 /**
@@ -43,7 +45,7 @@ public final class AnnotatedElementFactory
 {
 
     // Logger instance
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(AnnotatedElementFactory.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedElementFactory.class);
 
     @Deprecated
     public static AnnotatedElementFactory getInstance()
@@ -132,9 +134,9 @@ public final class AnnotatedElementFactory
             {
                 if (e instanceof ClassNotFoundException || e instanceof ArrayStoreException)
                 {
-                    if (logger.wblWillLogError())
+                    if (logger.isLoggable(Level.SEVERE))
                     {
-                        logger.error(OWBLogConst.ERROR_0027, e, annotatedClass.getName(), e.getCause());
+                        logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0027, annotatedClass.getName(), e.getCause()), e);
                     }
 
                     annotatedType = null;
@@ -146,9 +148,9 @@ public final class AnnotatedElementFactory
             } 
             catch (NoClassDefFoundError ncdfe)
             {
-                if (logger.wblWillLogError())
+                if (logger.isLoggable(Level.SEVERE))
                 {
-                    logger.error(OWBLogConst.ERROR_0027, ncdfe, annotatedClass.getName(), ncdfe.getCause());
+                    logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0027, annotatedClass.getName(), ncdfe.getCause()), ncdfe);
                 }
 
                 annotatedType = null;

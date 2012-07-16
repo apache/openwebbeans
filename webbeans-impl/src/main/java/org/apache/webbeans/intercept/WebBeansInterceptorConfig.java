@@ -26,7 +26,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
@@ -49,6 +49,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Configures the Web Beans related interceptors.
@@ -60,7 +62,7 @@ import java.util.Set;
 public final class WebBeansInterceptorConfig
 {
     /** Logger instance */
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansInterceptorConfig.class);
+    private static Logger logger = WebBeansLoggerFacade.getLogger(WebBeansInterceptorConfig.class);
 
     private WebBeansContext webBeansContext;
 
@@ -78,31 +80,31 @@ public final class WebBeansInterceptorConfig
     {
         if(delegate.getScope() != Dependent.class)
         {
-            if(logger.wblWillLogWarn())
+            if(logger.isLoggable(Level.WARNING))
             {
-                logger.warn(OWBLogConst.WARN_0005_1, delegate.getBeanClass().getName());
+                logger.log(Level.WARNING, OWBLogConst.WARN_0005_1, delegate.getBeanClass().getName());
             }
         }
 
         if(delegate.getName() != null)
         {
-            if(logger.wblWillLogWarn())
+            if(logger.isLoggable(Level.WARNING))
             {
-                logger.warn(OWBLogConst.WARN_0005_2, delegate.getBeanClass().getName());
+                logger.log(Level.WARNING, OWBLogConst.WARN_0005_2, delegate.getBeanClass().getName());
             }
         }
 
         if(delegate.isAlternative())
         {
-            if(logger.wblWillLogWarn())
+            if(logger.isLoggable(Level.WARNING))
             {
-                logger.warn(OWBLogConst.WARN_0005_3, delegate.getBeanClass().getName());
+                logger.log(Level.WARNING, OWBLogConst.WARN_0005_3, delegate.getBeanClass().getName());
             }
         }
 
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("Configuring interceptor class : [{0}]", delegate.getReturnType());
+            logger.log(Level.FINE, "Configuring interceptor class : [{0}]", delegate.getReturnType());
         }
         WebBeansInterceptor<T> interceptor = new WebBeansInterceptor<T>(delegate);
 

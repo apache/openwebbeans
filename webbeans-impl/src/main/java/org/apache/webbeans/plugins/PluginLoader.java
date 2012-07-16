@@ -22,11 +22,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansJavaEEPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
@@ -47,7 +49,7 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
 public class PluginLoader
 {
     /**Logger instance*/
-    private  final WebBeansLogger logger = WebBeansLogger.getLogger(PluginLoader.class);
+    private  final Logger logger = WebBeansLoggerFacade.getLogger(PluginLoader.class);
 
     /** unmodifiable list with all found OWB plugins */
     private List<OpenWebBeansPlugin> plugins = null;
@@ -76,15 +78,15 @@ public class PluginLoader
     {
         if(started.compareAndSet(false, true))
         {
-            logger.debug("PluginLoader startUp called.");
+            logger.fine("PluginLoader startUp called.");
             ArrayList<OpenWebBeansPlugin> ps = new ArrayList<OpenWebBeansPlugin>();
 
             List<OpenWebBeansPlugin> pluginList = WebBeansContext.getInstance().getLoaderService().load(OpenWebBeansPlugin.class);
             for (OpenWebBeansPlugin plugin : pluginList)
             {
-                if (logger.wblWillLogInfo())
+                if (logger.isLoggable(Level.INFO))
                 {
-                    logger.info(OWBLogConst.INFO_0004, plugin.getClass().getSimpleName());
+                    logger.log(Level.INFO, OWBLogConst.INFO_0004, plugin.getClass().getSimpleName());
                 }
                 try
                 {
@@ -102,7 +104,7 @@ public class PluginLoader
         }
         else
         {
-            logger.debug("PluginLoader is already started.");
+            logger.fine("PluginLoader is already started.");
         }
     }
     
@@ -127,11 +129,11 @@ public class PluginLoader
     {
         if(started.compareAndSet(true, false))
         {
-            logger.debug("PluginLoader shutDown called.");
+            logger.fine("PluginLoader shutDown called.");
             
             if (plugins == null)
             {
-                logger.warn(OWBLogConst.WARN_0001);
+                logger.warning(OWBLogConst.WARN_0001);
                 return;
             }
 
@@ -147,19 +149,19 @@ public class PluginLoader
                 {
                     // we catch ALL exceptions, since we like to continue shutting down all other plugins!
                     String pluginName = plugin.getClass().getSimpleName();
-                    logger.error(OWBLogConst.ERROR_0009, e, pluginName);
+                    logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0009, pluginName), e);
                     failedShutdown.add(pluginName);
                 }
             }
             
             if (!failedShutdown.isEmpty())
             {
-                throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.EXCEPT_0006) + failedShutdown.toString());
+                throw new WebBeansConfigurationException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0006) + failedShutdown.toString());
             }            
         }
         else
         {
-            logger.debug("PluginLoader is already shut down.");
+            logger.fine("PluginLoader is already shut down.");
         }
     }
     

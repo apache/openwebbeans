@@ -27,13 +27,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionActivationListener;
 import javax.servlet.http.HttpSessionEvent;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.FailOverService;
 
 /**
@@ -43,8 +45,7 @@ import org.apache.webbeans.spi.FailOverService;
 public class FailOverBagWrapper implements Serializable, Externalizable, HttpSessionActivationListener
 {
     /**Logger instance*/
-    protected  final WebBeansLogger logger = 
-            WebBeansLogger.getLogger(FailOverBagWrapper.class);
+    protected  final Logger logger = WebBeansLoggerFacade.getLogger(FailOverBagWrapper.class);
 
     private transient FailOverService failoverService;
 
@@ -79,17 +80,17 @@ public class FailOverBagWrapper implements Serializable, Externalizable, HttpSes
         if (!isSessionInUse) 
         {
             bag.restore();
-            if (logger.wblWillLogDebug())
+            if (logger.isLoggable(Level.FINE))
             {
-                logger.debug(sessionId + " from " + bag.getJVMId() 
-                        + "is restored successfully." );
+                logger.log(Level.FINE, sessionId + " from " + bag.getJVMId()
+                        + "is restored successfully.");
             }
         } 
         else 
         {
-            if (logger.wblWillLogDebug())
+            if (logger.isLoggable(Level.FINE))
             {
-                logger.debug("restore is skipped because isSessionInUse is true for session " + sessionId);
+                logger.log(Level.FINE, "restore is skipped because isSessionInUse is true for session " + sessionId);
             }
         }
     }
@@ -120,9 +121,9 @@ public class FailOverBagWrapper implements Serializable, Externalizable, HttpSes
         out.writeObject(sessionId);
         if (isSessionInUse)
         {
-            if (logger.wblWillLogDebug())
+            if (logger.isLoggable(Level.FINE))
             {
-                logger.debug("writeExternal skip writing because session is in use for sessionid" + 
+                logger.log(Level.FINE, "writeExternal skip writing because session is in use for sessionid" +
                     sessionId);
             }
             return;

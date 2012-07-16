@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.decorator.Decorator;
 import javax.enterprise.context.Dependent;
@@ -44,7 +45,7 @@ import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.StereoTypeModel;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeIsnotInterface;
@@ -63,7 +64,6 @@ import org.apache.webbeans.test.sterotype.StereoWithNonScope;
 import org.apache.webbeans.test.sterotype.StereoWithRequestScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope2;
-import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 /**
@@ -81,7 +81,7 @@ import org.apache.webbeans.xml.WebBeansXMLConfigurator;
  */
 public abstract class TestContext implements ITestContext
 {
-    private WebBeansLogger logger = WebBeansLogger.getLogger(TestContext.class);
+    private Logger logger = WebBeansLoggerFacade.getLogger(TestContext.class);
 
     /**
      * All unit test classes. It is defined for starting the tests from the
@@ -219,7 +219,7 @@ public abstract class TestContext implements ITestContext
      */
     public void fail(String methodName)
     {
-        logger.error("Test Class: " + clazzName + ",Method Name: " + methodName + " is FAILED");
+        logger.severe("Test Class: " + clazzName + ",Method Name: " + methodName + " is FAILED");
     }
 
     /**

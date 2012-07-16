@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
@@ -31,7 +33,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.jboss.testharness.api.DeploymentException;
 import org.jboss.testharness.spi.Containers;
 import org.jboss.testharness.spi.helpers.AbstractContainerConnector;
@@ -44,7 +46,7 @@ import org.jboss.testharness.spi.helpers.AbstractContainerConnector;
 public class TomcatConnector extends AbstractContainerConnector implements Containers
 {
 
-    private WebBeansLogger logger = WebBeansLogger.getLogger(TomcatConnector.class);
+    private Logger logger = WebBeansLoggerFacade.getLogger(TomcatConnector.class);
     
    private static final String SERVER_HOME_PROPERTY_NAME = "tomcat.home";
 
@@ -56,7 +58,7 @@ public class TomcatConnector extends AbstractContainerConnector implements Conta
 
    public TomcatConnector() throws IOException
    {
-      logger.info("You must add the the tests/secret user to Tomcat, for example, in $CATALINA_BASE/conf/tomcat-users.xml add " +
+      logger.log(Level.INFO, "You must add the the tests/secret user to Tomcat, for example, in $CATALINA_BASE/conf/tomcat-users.xml add " +
                   "<user name=\"tests\" password=\"secret\" roles=\"standard,manager\" />");
       tmpdir = new File(System.getProperty("java.io.tmpdir"), "org.jboss.webbeans.tck.integration.jbossas");
       tmpdir.mkdir();

@@ -20,7 +20,7 @@ package org.apache.webbeans.newtests.interceptors.business.tests;
 
 import junit.framework.Assert;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.beans.ApplicationScopedBean;
 import org.apache.webbeans.newtests.interceptors.beans.RequestScopedBean;
@@ -32,6 +32,8 @@ import javax.enterprise.inject.spi.Bean;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This test checks the performance of simple interceptor invocations.
@@ -45,7 +47,7 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
     private static final int ITERATIONS = 1000;
     private static final int NUM_THREADS = 50;
 
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorPerformanceTest.class);
+    private static Logger logger = WebBeansLoggerFacade.getLogger(InterceptorPerformanceTest.class);
 
 
     @Test
@@ -82,7 +84,7 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
 
         long end = System.nanoTime();
 
-        logger.info("Executing {0} iterations took {1} ns", ITERATIONS, end - start);
+        logger.log(Level.INFO, "Executing {0} iterations took {1} ns", WebBeansLoggerFacade.args(ITERATIONS, end - start));
 
         shutDownContainer();
 
@@ -147,7 +149,7 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
             }
             catch (Exception e)
             {
-                logger.error("Concurrency problem in InterceptorPerformanceTest detected in thread " + threadName, e);
+                logger.log(Level.SEVERE, "Concurrency problem in InterceptorPerformanceTest detected in thread " + threadName, e);
                 failed = true;
             }
         }

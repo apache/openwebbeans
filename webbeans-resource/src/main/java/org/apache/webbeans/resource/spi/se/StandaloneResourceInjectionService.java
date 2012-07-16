@@ -28,6 +28,8 @@ import java.lang.reflect.Modifier;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.enterprise.inject.Produces;
@@ -40,7 +42,7 @@ import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
@@ -56,7 +58,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
 
     private final StandaloneResourceProcessor processor = StandaloneResourceProcessor.getProcessor();
     
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneResourceInjectionService.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(StandaloneResourceInjectionService.class);
 
     private final WebBeansContext webBeansContext;
 
@@ -143,8 +145,8 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
                             }
                             catch(Exception e)
                             {
-                                logger.error(OWBLogConst.ERROR_0025, e, field);
-                                throw new WebBeansException(MessageFormat.format(logger.getTokenString(OWBLogConst.ERROR_0025), field), e);
+                                logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0025, e, field));
+                                throw new WebBeansException(MessageFormat.format(WebBeansLoggerFacade.getTokenString(OWBLogConst.ERROR_0025), field), e);
 
                             }
                         }

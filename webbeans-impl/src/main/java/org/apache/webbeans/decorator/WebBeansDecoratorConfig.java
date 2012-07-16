@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.BeanManager;
@@ -36,13 +38,13 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 
 public final class WebBeansDecoratorConfig
 {
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansDecoratorConfig.class);
+    private static Logger logger = WebBeansLoggerFacade.getLogger(WebBeansDecoratorConfig.class);
 
     private WebBeansDecoratorConfig()
     {
@@ -53,32 +55,32 @@ public final class WebBeansDecoratorConfig
     {
         if(delegate.getScope() != Dependent.class)
         {
-            if(logger.wblWillLogWarn())
+            if(logger.isLoggable(Level.WARNING))
             {
-                logger.warn(OWBLogConst.WARN_0005_1, delegate.getBeanClass().getName());                
+                logger.log(Level.WARNING, OWBLogConst.WARN_0005_1, delegate.getBeanClass().getName());
             }
         }
         
         if(delegate.getName() != null)
         {
-            if(logger.wblWillLogWarn())
+            if(logger.isLoggable(Level.WARNING))
             {
-                logger.warn(OWBLogConst.WARN_0005_2, delegate.getBeanClass().getName());                
+                logger.log(Level.WARNING, OWBLogConst.WARN_0005_2, delegate.getBeanClass().getName());
             }
         }       
         
         if(delegate.isAlternative())
         {
-            if(logger.wblWillLogWarn())
+            if(logger.isLoggable(Level.WARNING))
             {
-                logger.warn(OWBLogConst.WARN_0005_3, delegate.getBeanClass().getName());                
+                logger.log(Level.WARNING, OWBLogConst.WARN_0005_3, delegate.getBeanClass().getName());
             }                
         }            
 
 
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("Configuring decorator class : [{0}]", delegate.getReturnType());
+            logger.log(Level.FINE, "Configuring decorator class : [{0}]", delegate.getReturnType());
         }
         WebBeansDecorator<T> decorator = new WebBeansDecorator<T>(delegate);
         delegate.getWebBeansContext().getBeanManagerImpl().addDecorator(decorator);

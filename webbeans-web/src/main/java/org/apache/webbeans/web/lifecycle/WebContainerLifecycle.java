@@ -24,7 +24,7 @@ import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.lifecycle.AbstractLifeCycle;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 import org.apache.webbeans.web.context.WebContextsService;
@@ -40,6 +40,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 /**
  * Manages container lifecycle.
@@ -65,7 +66,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     public WebContainerLifecycle()
     {
         super(null);
-        this.logger = WebBeansLogger.getLogger(WebContainerLifecycle.class);
+        this.logger = WebBeansLoggerFacade.getLogger(WebContainerLifecycle.class);
     }
 
     /**
@@ -75,7 +76,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     public WebContainerLifecycle(WebBeansContext webBeansContext)
     {
         super(null, webBeansContext);
-        this.logger = WebBeansLogger.getLogger(WebContainerLifecycle.class);
+        this.logger = WebBeansLoggerFacade.getLogger(WebContainerLifecycle.class);
     }
 
 
@@ -124,7 +125,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         //Application is configured as JSP
         if(getWebBeansContext().getOpenWebBeansConfiguration().isJspApplication())
         {
-            logger.debug("Application is configured as JSP. Adding EL Resolver.");
+            logger.log(Level.FINE, "Application is configured as JSP. Adding EL Resolver.");
             
             JspFactory factory = JspFactory.getDefaultFactory();
             if (factory != null) 
@@ -134,7 +135,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
             }            
             else
             {
-                logger.debug("Default JSPFactroy instance has not found");
+                logger.log(Level.FINE, "Default JSPFactroy instance has not found");
             }
         }
 
@@ -189,9 +190,9 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
 
         this.cleanupShutdownThreadLocals();
         
-        if (logger.wblWillLogInfo())
+        if (logger.isLoggable(Level.INFO))
         {
-          logger.info(OWBLogConst.INFO_0002, ServletCompatibilityUtil.getServletInfo(servletContext));
+          logger.log(Level.INFO, OWBLogConst.INFO_0002, ServletCompatibilityUtil.getServletInfo(servletContext));
         }
     }
 
@@ -221,7 +222,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
             }
             else
             {
-                throw new WebBeansException(logger.getTokenString(OWBLogConst.EXCEPT_0002));
+                throw new WebBeansException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0002));
             }
         }                
         

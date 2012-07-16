@@ -19,7 +19,7 @@
 package org.apache.webbeans.osgi.scanner;
 
 import org.apache.webbeans.exception.WebBeansDeploymentException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 
@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
 /**
@@ -55,7 +56,7 @@ import java.util.zip.ZipEntry;
  */
 public class OsgiMetaDataScannerService implements ScannerService
 {
-    private WebBeansLogger logger = WebBeansLogger.getLogger(OsgiMetaDataScannerService.class);
+    private Logger logger = WebBeansLoggerFacade.getLogger(OsgiMetaDataScannerService.class);
 
     protected ServletContext servletContext = null;
     private static final String META_INF_BEANS_XML = "META-INF/beans.xml";

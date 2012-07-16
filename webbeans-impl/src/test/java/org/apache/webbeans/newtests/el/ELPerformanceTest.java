@@ -22,10 +22,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.el.WebBeansELResolver;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,7 +40,7 @@ public class ELPerformanceTest extends AbstractUnitTest
     private final static int ITERATIONS = 200;
 
 
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(ELPerformanceTest.class);
+    private static Logger logger = WebBeansLoggerFacade.getLogger(ELPerformanceTest.class);
 
     /**
      * Test our bean creation for thread safety.
@@ -74,7 +76,7 @@ public class ELPerformanceTest extends AbstractUnitTest
         
         long end = System.nanoTime();
 
-        logger.info("Executing {0} threads with {1} iterations took {2} ns", THREADS, ITERATIONS, end - start);
+        logger.log(Level.INFO, "Executing {0} threads with {1} iterations took {2} ns", WebBeansLoggerFacade.args(THREADS, ITERATIONS, end - start));
         
         shutDownContainer();
     }
@@ -107,7 +109,7 @@ public class ELPerformanceTest extends AbstractUnitTest
             }
             catch(RuntimeException e)
             {
-                logger.error(e);
+                logger.log(Level.SEVERE, e.getMessage(), e);
                 Assert.fail("got an exception: " + e.getMessage());
                 throw e;
             }

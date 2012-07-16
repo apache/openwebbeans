@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.inject.spi.Bean;
@@ -33,7 +35,7 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ConversationContext;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.Asserts;
 
 /**
@@ -48,7 +50,7 @@ public class ConversationManager
     /**Current conversations*/
     private final ConcurrentHashMap<Conversation, ConversationContext> conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
     private final WebBeansContext webBeansContext;
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(ConversationManager.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(ConversationManager.class);
 
     /**
      * Creates new conversation manager
@@ -229,9 +231,9 @@ public class ConversationManager
                     ConversationContext ctx = getConversationContext(conv);
                     if (ctx != null) 
                     {
-                        if(logger.wblWillLogInfo())
+                        if(logger.isLoggable(Level.INFO))
                         {
-                            logger.info(logger.getTokenString(OWBLogConst.INFO_0011),conv.getId());
+                            logger.log(Level.INFO, OWBLogConst.INFO_0011, conv.getId());
                         }
                         ctx.destroy();
                     }

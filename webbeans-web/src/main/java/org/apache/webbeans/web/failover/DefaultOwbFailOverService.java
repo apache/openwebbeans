@@ -26,6 +26,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javassist.util.proxy.ProxyObjectOutputStream;
 
@@ -33,14 +35,14 @@ import javax.enterprise.inject.spi.Bean;
 import javax.servlet.http.HttpSession;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.util.WebBeansUtil;
 
 public class DefaultOwbFailOverService implements FailOverService 
 {
     /**Logger instance*/
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(DefaultOwbFailOverService.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(DefaultOwbFailOverService.class);
 
     private static final String OWB_FAILOVER_JVM_ID = 
         UUID.randomUUID().toString() + "_" + System.currentTimeMillis();
@@ -94,14 +96,14 @@ public class DefaultOwbFailOverService implements FailOverService
             } 
             catch (Exception e) 
             {
-                logger.error("DefaultOwbFailOverService could not instanciate: [{0}]", e, value);
+                logger.log(Level.SEVERE, "DefaultOwbFailOverService could not instanciate: [" + value + "]", e);
             }
         }
         
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("DefaultOwbFailOverService isSupportFailOver: [{0}]", String.valueOf(isSupportFailOver));
-            logger.debug("DefaultOwbFailOverService isSupportPassivation: [{0}]", String.valueOf(isSupportPassivation));
+            logger.log(Level.FINE, "DefaultOwbFailOverService isSupportFailOver: [{0}]", String.valueOf(isSupportFailOver));
+            logger.log(Level.FINE, "DefaultOwbFailOverService isSupportPassivation: [{0}]", String.valueOf(isSupportPassivation));
         }
     }
     
@@ -164,9 +166,9 @@ public class DefaultOwbFailOverService implements FailOverService
             (FailOverBagWrapper)session.getAttribute(getFailOverAttributeName());
         if (bagWrapper != null) 
         {
-            if (logger.wblWillLogDebug())
+            if (logger.isLoggable(Level.FINE))
             {
-                logger.debug("DefaultOwbFailOverService restoreBeans for session: [{0}]", session);
+                logger.log(Level.FINE, "DefaultOwbFailOverService restoreBeans for session: [{0}]", session);
             }
             bagWrapper.restore();
             session.removeAttribute(getFailOverAttributeName());

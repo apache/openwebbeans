@@ -19,6 +19,7 @@
 package org.apache.webbeans.jms.component;
 
 import java.lang.reflect.Method;
+import java.util.logging.Level;
 
 import javax.enterprise.context.spi.CreationalContext;
 import org.apache.webbeans.component.AbstractOwbBean;
@@ -28,6 +29,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.util.Closable;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 public class JmsBean<T> extends AbstractOwbBean<T> implements JmsBeanMarker
 {
@@ -60,7 +62,7 @@ public class JmsBean<T> extends AbstractOwbBean<T> implements JmsBeanMarker
         
         catch (Exception e)
         {
-            getLogger().error(OWBLogConst.ERROR_0010, e); 
+            logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0010, e));
         }
 }
         

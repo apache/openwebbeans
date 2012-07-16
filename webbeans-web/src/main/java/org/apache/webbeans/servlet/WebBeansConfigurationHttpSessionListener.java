@@ -22,19 +22,21 @@ package org.apache.webbeans.servlet;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationManager;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.enterprise.context.SessionScoped;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class WebBeansConfigurationHttpSessionListener implements HttpSessionListener
 {
 
     /**Logger instance*/
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansConfigurationHttpSessionListener.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansConfigurationHttpSessionListener.class);
 
     /**Manages the container lifecycle*/
     protected ContainerLifecycle lifeCycle = null;
@@ -51,15 +53,16 @@ public class WebBeansConfigurationHttpSessionListener implements HttpSessionList
     {
         try
         {
-            if (logger.wblWillLogDebug())
+            if (logger.isLoggable(Level.FINE))
             {
-                logger.debug("Starting a session with session id : [{0}]", event.getSession().getId());
+                logger.log(Level.FINE, "Starting a session with session id : [{0}]", event.getSession().getId());
             }
             this.lifeCycle.getContextService().startContext(SessionScoped.class, event.getSession());
         }
         catch (Exception e)
         {
-            logger.error(OWBLogConst.ERROR_0020, event.getSession());
+            logger.log(Level.SEVERE,
+                    WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0020, event.getSession()));
             WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
@@ -69,9 +72,9 @@ public class WebBeansConfigurationHttpSessionListener implements HttpSessionList
      */
     public void sessionDestroyed(HttpSessionEvent event)
     {
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("Destroying a session with session id : [{0}]", event.getSession().getId());
+            logger.log(Level.FINE, "Destroying a session with session id : [{0}]", event.getSession().getId());
         }
         this.lifeCycle.getContextService().endContext(SessionScoped.class, event.getSession());
 

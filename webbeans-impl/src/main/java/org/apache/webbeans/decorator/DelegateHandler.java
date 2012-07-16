@@ -26,6 +26,8 @@ import java.io.ObjectOutput;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.interceptor.InvocationContext;
 
@@ -34,14 +36,14 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import javassist.util.proxy.MethodHandler;
 
 public class DelegateHandler implements MethodHandler, Serializable, Externalizable
 {
-    private transient WebBeansLogger logger = WebBeansLogger.getLogger(DelegateHandler.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(DelegateHandler.class);
 
     private transient List<Object> decorators;
     private transient int position = 0;
@@ -55,7 +57,7 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
     //Do not remove this constructor, used by passivation.
     public DelegateHandler()
     {
-        logger = WebBeansLogger.getLogger(DelegateHandler.class);
+        // no-op
     }
 
     public DelegateHandler(OwbBean<?> bean)
@@ -102,7 +104,7 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
             }
             catch (SecurityException e)
             {
-                logger.error(OWBLogConst.ERROR_0011, method.getName(), decorator.getClass().getName());
+                logger.log(Level.SEVERE, OWBLogConst.ERROR_0011, WebBeansLoggerFacade.args(method.getName(), decorator.getClass().getName()));
                 throw new WebBeansException(e);
 
             }
@@ -119,7 +121,7 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
                     continue;
                 }
                 
-                logger.error(OWBLogConst.ERROR_0012, e.getTargetException(), method.getName(), decorator.getClass().getName());
+                logger.log(Level.SEVERE, OWBLogConst.ERROR_0012, WebBeansLoggerFacade.args(e.getTargetException(), method.getName(), decorator.getClass().getName()));
 
                 if (cause instanceof Exception)
                 {
@@ -136,7 +138,7 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
             }
             catch (IllegalAccessException e)
             {
-                logger.error(OWBLogConst.ERROR_0014, method.getName(), decorator.getClass().getName());
+                logger.log(Level.SEVERE, OWBLogConst.ERROR_0014, WebBeansLoggerFacade.args(method.getName(), decorator.getClass().getName()));
                 throw new WebBeansException(e);
             }
 

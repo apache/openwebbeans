@@ -23,7 +23,7 @@ import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.el.ELContextStore;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -43,6 +43,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Initializing the beans container for using in a web application
@@ -60,7 +62,7 @@ public class WebBeansConfigurationFilter implements Filter
     private static final String CALL_COUNT_ATTRIBUTE_NAME = WebBeansConfigurationFilter.class.getName();
 
     /**Logger instance*/
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansConfigurationFilter.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansConfigurationFilter.class);
 
     /**Manages the container lifecycle*/
     protected ContainerLifecycle lifeCycle = null;
@@ -93,7 +95,8 @@ public class WebBeansConfigurationFilter implements Filter
         }
         catch (Exception e)
         {
-             logger.error(OWBLogConst.ERROR_0018, ServletCompatibilityUtil.getServletInfo(servletContext));
+             logger.log(Level.SEVERE,
+                     WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0018, ServletCompatibilityUtil.getServletInfo(servletContext)));
              WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
@@ -147,9 +150,9 @@ public class WebBeansConfigurationFilter implements Filter
     {
         try
         {
-            if (logger.wblWillLogDebug())
+            if (logger.isLoggable(Level.FINE))
             {
-                logger.debug("Starting a new request : [{0}]", servletRequest.getRemoteAddr());
+                logger.log(Level.FINE, "Starting a new request : [{0}]", servletRequest.getRemoteAddr());
             }
 
             this.lifeCycle.getContextService().startContext(RequestScoped.class,
@@ -160,16 +163,17 @@ public class WebBeansConfigurationFilter implements Filter
         }
         catch (Exception e)
         {
-            logger.error(OWBLogConst.ERROR_0019, servletRequest);
+            logger.log(Level.SEVERE,
+                    WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0019, servletRequest));
             WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
 
     public void requestDestroyed(ServletRequest request)
     {
-        if (logger.wblWillLogDebug())
+        if (logger.isLoggable(Level.FINE))
         {
-            logger.debug("Destroying a request : [{0}]", request.getRemoteAddr());
+            logger.log(Level.FINE, "Destroying a request : [{0}]", request.getRemoteAddr());
         }
 
         if (failoverService != null &&

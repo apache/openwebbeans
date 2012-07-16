@@ -21,15 +21,17 @@ package org.apache.webbeans.web.tomcat;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.naming.NamingException;
 
 import org.apache.AnnotationProcessor;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 public class TomcatAnnotProcessor implements AnnotationProcessor
 {
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(TomcatAnnotProcessor.class);
+    private final Logger logger = WebBeansLoggerFacade.getLogger(TomcatAnnotProcessor.class);
 
     private AnnotationProcessor processor;
 
@@ -59,7 +61,7 @@ public class TomcatAnnotProcessor implements AnnotationProcessor
             }
             catch (Exception e)
             {
-                logger.error(e);
+                logger.log(Level.SEVERE, "TomcatAnnotProcessor", e);
             }
         }
         processor.preDestroy(obj);
@@ -78,7 +80,7 @@ public class TomcatAnnotProcessor implements AnnotationProcessor
         }
         catch (Exception e)
         {
-            logger.error(e);
+            logger.log(Level.SEVERE, "TomcatAnnotProcessor", e);
         }
     }
 

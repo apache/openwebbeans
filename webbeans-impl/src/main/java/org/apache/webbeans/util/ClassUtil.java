@@ -34,6 +34,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -42,7 +44,7 @@ import javax.inject.Provider;
 import org.apache.webbeans.config.BeanTypeSetResolver;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 /**
  * Utility classes with respect to the class operations.
@@ -55,7 +57,7 @@ public final class ClassUtil
 {
     public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPERS_MAP = new HashMap<Class<?>, Class<?>>();
 
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(ClassUtil.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(ClassUtil.class);
 
     static
     {
@@ -99,7 +101,7 @@ public final class ClassUtil
             }
             
             String error = "Error occurred while creating an instance of class : " + clazz.getName(); 
-            logger.error(error, cause);
+            logger.log(Level.SEVERE, error, cause);
             throw new WebBeansException(error,cause); 
         
         }

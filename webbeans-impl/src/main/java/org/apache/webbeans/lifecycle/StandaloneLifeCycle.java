@@ -19,10 +19,11 @@
 package org.apache.webbeans.lifecycle;
 
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.el.ELContextStore;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -30,7 +31,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class StandaloneLifeCycle extends AbstractLifeCycle
 {
-    public StandaloneLifeCycle(Properties properties, WebBeansLogger logger)
+    public StandaloneLifeCycle(Properties properties, Logger logger)
     {
         super(properties);
         this.logger = logger;
@@ -38,7 +39,7 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
     
     public StandaloneLifeCycle()
     {
-        this(null, WebBeansLogger.getLogger(StandaloneLifeCycle.class));        
+        this(null, WebBeansLoggerFacade.getLogger(StandaloneLifeCycle.class));
     }
     
     @Override

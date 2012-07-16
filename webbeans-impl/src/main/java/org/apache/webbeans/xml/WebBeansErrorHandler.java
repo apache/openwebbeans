@@ -19,10 +19,13 @@
 package org.apache.webbeans.xml;
 
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Implementation of the {@link ErrorHandler} .
@@ -35,23 +38,23 @@ import org.xml.sax.SAXParseException;
  */
 public class WebBeansErrorHandler implements ErrorHandler
 {
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansErrorHandler.class);
+    private static Logger logger = WebBeansLoggerFacade.getLogger(WebBeansErrorHandler.class);
 
     public void error(SAXParseException exception) throws SAXException
     {
-        logger.error(exception.getMessage(), exception.getCause());
+        logger.log(Level.SEVERE, exception.getMessage(), exception.getCause());
         throw new WebBeansException(exception);
     }
 
     public void fatalError(SAXParseException exception) throws SAXException
     {
-        logger.fatal(exception.getCause(), exception.getMessage());
+        logger.log(Level.SEVERE, exception.getMessage(), exception.getCause());
         throw new WebBeansException(exception);
     }
 
     public void warning(SAXParseException exception) throws SAXException
     {
-        logger.debug(exception.getMessage(), exception.getCause());
+        logger.log(Level.FINE, exception.getMessage(), exception.getCause());
     }
 
 }
