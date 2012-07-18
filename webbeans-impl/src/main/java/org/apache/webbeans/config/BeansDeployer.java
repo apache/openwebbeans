@@ -759,14 +759,8 @@ public class BeansDeployer
     {
         StereoTypeModel model = new StereoTypeModel(webBeansContext, Model.class);
         webBeansContext.getStereoTypeManager().addStereoTypeModel(model);
-        
-        model = new StereoTypeModel(webBeansContext, javax.decorator.Decorator.class);
-        webBeansContext.getStereoTypeManager().addStereoTypeModel(model);
-        
-        model = new StereoTypeModel(webBeansContext, Interceptor.class);
-        webBeansContext.getStereoTypeManager().addStereoTypeModel(model);
     }
-    
+
     /**
      * Defines and configures managed bean.
      * @param <T> type info
