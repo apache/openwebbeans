@@ -398,16 +398,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     }
 
     /**
-     * Get qualifiers.
-     *
-     * @return qualifiers
-     */
-    public Set<Annotation> getImplQualifiers()
-    {
-        return implQualifiers;
-    }
-
-    /**
      * Gets the stereotypes.
      *
      * @return stereotypes of the bean
@@ -442,7 +432,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         }
         else
         {
-            throw new UnsupportedOperationException("Component name is not null, is " + this.name);
+            throw new UnsupportedOperationException("Component name is already set to: " + this.name);
         }
     }
 

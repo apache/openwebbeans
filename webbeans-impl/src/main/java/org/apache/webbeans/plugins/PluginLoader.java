@@ -278,9 +278,4 @@ public class PluginLoader
         
         return true;
     }
-    
-    public boolean isShowDown()
-    {
-        return !started.get();
-    }
 }

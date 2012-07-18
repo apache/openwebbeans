@@ -119,8 +119,6 @@ public final class EjbUtility
 
             annotatedMethods.put(producerMethod, method);
             manager.putInjectionTargetWrapper(producerMethod, new InjectionTargetWrapper(producerEvent.getProducer()));
-            
-            producerEvent.setProducerSet(false);
         }
         
         Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields = new HashMap<ProducerFieldBean<?>, AnnotatedField<?>>();
@@ -134,9 +132,6 @@ public final class EjbUtility
 
             annotatedFields.put(producerField, field);
             manager.putInjectionTargetWrapper(producerField, new InjectionTargetWrapper(producerEvent.getProducer()));
-
-            
-            producerEvent.setProducerSet(false);
         }
         
         Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap = new HashMap<ObserverMethod<?>, AnnotatedMethod<?>>(); 
@@ -210,8 +205,6 @@ public final class EjbUtility
 
             annotatedMethods.put(producerMethod, method);
             manager.putInjectionTargetWrapper(producerMethod, new InjectionTargetWrapper(producerEvent.getProducer()));
-
-            producerEvent.setProducerSet(false);
         }
 
         // PRODUCER FIELDS
@@ -226,9 +219,6 @@ public final class EjbUtility
 
             annotatedFields.put(producerField, field);
             manager.putInjectionTargetWrapper(producerField, new InjectionTargetWrapper(producerEvent.getProducer()));
-
-
-            producerEvent.setProducerSet(false);
         }
 
         //Fires ProcessProducerMethod

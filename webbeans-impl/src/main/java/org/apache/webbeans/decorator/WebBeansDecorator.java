@@ -19,7 +19,6 @@
 package org.apache.webbeans.decorator;
 
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
-import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
@@ -504,14 +503,6 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         return wrappedBean.isSerializable();
     }
 
-    /**
-     * @return the delegateComponent
-     */
-    public AbstractOwbBean<T> getDelegateComponent()
-    {
-        return wrappedBean;
-    }
-    
     public Set<InjectionPoint> getInjectionPoints()
     {
         if(customDecorator != null)

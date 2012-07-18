@@ -25,7 +25,6 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Decorator;
 
-import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.InterceptedMarker;
 
 public interface OwbDecorator<T> extends Decorator<T>, InterceptedMarker
@@ -35,7 +34,4 @@ public interface OwbDecorator<T> extends Decorator<T>, InterceptedMarker
     public void setDelegate(Object instance, Object delegate);
     
     public void setInjections(Object proxy, CreationalContext<?> cretionalContext);
-    
-    public AbstractOwbBean<T> getDelegateComponent();
-    
 }

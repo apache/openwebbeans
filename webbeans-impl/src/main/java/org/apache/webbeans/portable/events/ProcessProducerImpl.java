@@ -40,9 +40,6 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     /**Used by container to produce instance for producer method or field*/
     private Producer<T> producer = null;
     
-    /**Set or not*/
-    private boolean set;
-
     public ProcessProducerImpl(Producer<T> producer,AnnotatedMember<X> annotateMember)
     {
         this.annotateMember = annotateMember;
@@ -79,22 +76,5 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     public void setProducer(Producer<T> producer)
     {
         this.producer = producer;
-        set = true;
     }
-    
-    /**
-     * Returns set or not.
-     * 
-     * @return set or not
-     */
-    public boolean isProducerSet()
-    {
-        return set;
-    }
-    
-    public void setProducerSet(boolean set)
-    {
-        this.set = set;
-    }
-
 }

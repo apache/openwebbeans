@@ -68,11 +68,6 @@ public final class OWBInjector implements Serializable
 
     private final WebBeansContext webBeansContext;
 
-    public OWBInjector()
-    {
-        this(WebBeansContext.getInstance());
-    }
-
     /**
      * Creates a new instance
      * @param webBeansContext

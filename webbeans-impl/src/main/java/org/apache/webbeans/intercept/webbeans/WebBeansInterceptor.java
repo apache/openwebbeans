@@ -234,16 +234,6 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
         return set;
     }
 
-    /**
-     * Sets interceptor class.
-     * 
-     * @param clazz class instance
-     */
-    public void setClazz(Class<?> clazz)
-    {
-        this.clazz = clazz;
-    }
-
     public Set<Annotation> getInterceptorBindings()
     {
         Set<Annotation> set = new HashSet<Annotation>();

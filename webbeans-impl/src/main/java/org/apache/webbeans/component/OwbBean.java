@@ -103,13 +103,6 @@ public interface OwbBean<T> extends Bean<T>
     public void addInjectionPoint(InjectionPoint injectionPoint);
 
     /**
-     * Returns set of qualifier annotations.
-     * 
-     * @return set of qualifier annotations
-     */
-    public Set<Annotation> getImplQualifiers();
-
-    /**
      * Gets stereotypes annotations.
      */
     public Set<Annotation> getOwbStereotypes();

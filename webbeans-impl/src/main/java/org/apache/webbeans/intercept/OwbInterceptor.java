@@ -42,7 +42,5 @@ public interface OwbInterceptor<T> extends Interceptor<T>
     
     public Set<Interceptor<?>> getMetaInceptors();
     
-    public void setClazz(Class<?> clazz);
-    
-    public void setInjections(Object proxy, CreationalContext<?> creationalContext);            
+    public void setInjections(Object proxy, CreationalContext<?> creationalContext);
 }

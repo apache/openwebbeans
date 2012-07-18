@@ -2645,8 +2645,6 @@ public final class WebBeansUtil
 
                 annotatedMethods.put(producerMethod, method);
                 manager.putInjectionTargetWrapper(producerMethod, new InjectionTargetWrapper(producerEvent.getProducer()));
-
-                producerEvent.setProducerSet(false);
             }
 
             Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields =
@@ -2663,8 +2661,6 @@ public final class WebBeansUtil
 
                 annotatedFields.put(producerField, field);
                 manager.putInjectionTargetWrapper(producerField, new InjectionTargetWrapper(producerEvent.getProducer()));
-
-                producerEvent.setProducerSet(false);
             }
 
             Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap =
