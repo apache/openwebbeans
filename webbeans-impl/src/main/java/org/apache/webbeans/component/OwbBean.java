@@ -36,14 +36,7 @@ import org.apache.webbeans.config.WebBeansContext;
  * <T> bean class
  */
 public interface OwbBean<T> extends Bean<T>
-{        
-    /**
-     * Returns scope type annotation.
-     * 
-     * @return scope type annotation
-     */
-    public Annotation getImplScopeType();
-
+{
     /**
      * Sets bean scope type annotation.
      * 

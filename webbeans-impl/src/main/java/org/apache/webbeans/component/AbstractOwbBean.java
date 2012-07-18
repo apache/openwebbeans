@@ -57,9 +57,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     /** Name of the bean */
     protected String name;
 
-    /** Scope type of the bean */
-    protected Annotation implScopeType;
-
     /** Cached scope type of the bean */
     protected Class<? extends Annotation> scopeClass;
 
@@ -346,24 +343,13 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     }
 
     /**
-     * Get scope type.
-     * 
-     * @return scope type
-     */
-    public Annotation getImplScopeType()
-    {
-        return implScopeType;
-    }
-
-    /**
      * Set scope type.
      * 
      * @param scopeType scope type
      */
     public void setImplScopeType(Annotation scopeType)
     {
-        implScopeType = scopeType;
-        scopeClass = implScopeType.annotationType();
+        scopeClass = scopeType.annotationType();
         cachedHashCode = 0;
     }
 
@@ -740,7 +726,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         result = prime * result + (enabled ? 1231 : 1237);
         result = prime * result + (isAlternative() ? 1289 : 1273);
         result = prime * result + ((implQualifiers == null) ? 0 : implQualifiers.hashCode());
-        result = prime * result + ((implScopeType == null) ? 0 : implScopeType.hashCode());
         result = prime * result + ((injectionPoints == null) ? 0 : injectionPoints.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + (nullable ? 1231 : 1237);
@@ -798,17 +783,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
             }
         }
         else if (!implQualifiers.equals(other.implQualifiers))
-        {
-            return false;
-        }
-        if (implScopeType == null)
-        {
-            if (other.implScopeType != null)
-            {
-                return false;
-            }
-        }
-        else if (!implScopeType.equals(other.implScopeType))
         {
             return false;
         }
