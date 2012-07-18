@@ -273,7 +273,7 @@ public class InjectionResolver
 
     private boolean isInstanceOrEventInjection(Type type)
     {
-        Class<?> clazz = null;
+        Class<?> clazz;
         boolean injectInstanceOrEventProvider = false;
         if (type instanceof ParameterizedType)
         {
@@ -898,9 +898,7 @@ public class InjectionResolver
             if (i == annotations.length)
             {
                 result.add(component);
-                i = 0;
             }
-
         }
 
         return result;

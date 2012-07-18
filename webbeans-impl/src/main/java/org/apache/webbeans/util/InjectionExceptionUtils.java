@@ -41,25 +41,6 @@ public class InjectionExceptionUtils
                         .addLine(violationMessage.toString())
                         .toString());
     }
-    
-    public static void throwBeanNotFoundException(Class type, Annotation... qualifiers)
-    {
-        ViolationMessageBuilder violationMessage =
-                newViolation("Cannot find beans for class ", type.getCanonicalName());
-
-        violationMessage.addLine(createQualifierMessage(qualifiers));
-
-        throw new ResolutionException(violationMessage.toString());
-    }
-
-    public static void throwUnsatisfiedResolutionException(String message, Method producerMethod)
-    {
-        ViolationMessageBuilder violationMessage = newViolation(message);
-
-        violationMessage.addLine(createProducerMethodMessage(producerMethod));
-
-        throw new UnsatisfiedResolutionException(violationMessage.toString());
-    }
 
     public static void throwUnsatisfiedResolutionException(Type type, Method producerMethod, Annotation... qualifiers)
     {

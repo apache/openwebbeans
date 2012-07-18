@@ -19,7 +19,6 @@
 package org.apache.webbeans.container;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Set;
@@ -28,7 +27,6 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.InjectionExceptionUtils;
 
@@ -68,27 +66,6 @@ public final class ResolutionUtil
         }
 
         return false;
-    }
-
-    public static void resolveByTypeConditions(ParameterizedType type)
-    {
-        Asserts.assertNotNull(type, "type parameter can not be null");
-        boolean result = ClassUtil.checkParametrizedType(type);
-
-        if (!result)
-        {
-            throw new IllegalArgumentException("Parametrized type : " + type + " can not contain type variable or wildcard type arguments");
-        }
-    }
-
-    public void getInstanceByTypeConditions(Annotation[] qualifiers)
-    {
-        webBeansContext.getAnnotationManager().checkQualifierConditions(qualifiers);
-    }
-
-    public void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] qualifiers)
-    {
-        checkResolvedBeans(resolvedSet, type, qualifiers, null);
     }
 
     public void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] qualifiers, InjectionPoint injectionPoint)

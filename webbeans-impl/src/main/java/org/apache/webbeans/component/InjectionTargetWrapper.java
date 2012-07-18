@@ -25,9 +25,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.Producer;
 
-import org.apache.webbeans.portable.creation.InjectionTargetProducer;
-import org.apache.webbeans.portable.creation.ProducerBeansProducer;
-
 /**
  * Reponsible for producing, injection etc.
  * of beans. Delegate operations to the wrapped
@@ -138,26 +135,4 @@ public class InjectionTargetWrapper<T> implements InjectionTarget<T>
         
         return wrapped.produce(creationalContext);
     }
-    
-    public boolean isOwbProvided()
-    {
-        if(wrapped != null)
-        {
-            if(InjectionTargetProducer.class.isAssignableFrom(wrapped.getClass()))
-            {
-                return true;
-            }
-        }
-        
-        else if(wrappedProducer != null)
-        {
-            if(ProducerBeansProducer.class.isAssignableFrom(wrappedProducer.getClass()))
-            {
-                return true;
-            }
-        }
-     
-        return false;
-    }
-
 }
