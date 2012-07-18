@@ -40,7 +40,6 @@ import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContainerLifecycle;
-import org.apache.webbeans.util.InjectionExceptionUtils;
 
 /**
  * OpenWebBeans specific implementation of {@link CdiTestContainer}.
@@ -235,18 +234,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
     throws ResolutionException 
     {
         Set<Bean<?>> beans = getBeanManager().getBeans(type, qualifiers);
-        if (beans == null || beans.isEmpty()) 
-        {
-            InjectionExceptionUtils.throwBeanNotFoundException(type, qualifiers);
-        }
-
-        if (beans.size() > 1) 
-        {
-            InjectionExceptionUtils.throwAmbiguousResolutionException(beans, type, null, qualifiers);
-        }
-
-        @SuppressWarnings("unchecked")
-        Bean<T> bean = (Bean<T>)beans.iterator().next();
+        Bean<?> bean = getBeanManager().resolve(beans);
 
         @SuppressWarnings("unchecked")
         T instance = (T) getBeanManager().getReference(bean, type, getBeanManager().createCreationalContext(bean));
@@ -256,9 +244,12 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
     public Object getInstance(String name)
     throws ResolutionException 
     {
-        //X getBeanManager().getELResolver();
-        // TODO implement
-        return null;
+        Set<Bean<?>> beans = getBeanManager().getBeans(name);
+        Bean<?> bean = getBeanManager().resolve(beans);
+
+        @SuppressWarnings("unchecked")
+        Object instance = getBeanManager().getReference(bean, bean.getBeanClass(), getBeanManager().createCreationalContext(bean));
+        return instance;
     }
 
 }
