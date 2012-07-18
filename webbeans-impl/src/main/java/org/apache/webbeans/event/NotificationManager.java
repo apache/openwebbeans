@@ -25,7 +25,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -87,33 +86,6 @@ public final class NotificationManager
         EventUtil.checkEventType(typeLiteral.getRawType());
 
         addObserver(observer, typeLiteral.getType());
-    }
-
-    public <T> void removeObserver(ObserverMethod<T> observer, Class<T> eventType, Annotation... annotations)
-    {
-        EventUtil.checkEventType(eventType);
-        EventUtil.checkEventBindings(webBeansContext, annotations);
-
-        if (observers.containsKey(eventType))
-        {
-            Set<ObserverMethod<?>> set = observers.get(eventType);
-            for (ObserverMethod<?> ob : set)
-            {
-                Set<Annotation> evenBindings = ob.getObservedQualifiers();
-                Annotation[] anns = new Annotation[evenBindings.size()];
-                anns = evenBindings.toArray(anns);
-
-                if (ob.equals(observer) && Arrays.equals(anns, annotations))
-                {
-                    set.remove(ob);
-                }
-            }
-        }
-    }
-
-    public <T> void removeObserver(ObserverMethod<T> observer, TypeLiteral<T> typeLiteral, Annotation... annotations)
-    {
-        removeObserver(observer, typeLiteral.getRawType(), annotations);
     }
 
     public <T> Set<ObserverMethod<? super T>> resolveObservers(T event, Annotation... eventQualifiers)
