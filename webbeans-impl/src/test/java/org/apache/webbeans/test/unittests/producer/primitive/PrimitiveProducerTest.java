@@ -48,7 +48,7 @@ public class PrimitiveProducerTest extends TestContext
         defineManagedBean(PrimitiveProducer.class);
         defineManagedBean(PrimitiveConsumer.class);
         
-        PrimitiveConsumer consumer = (PrimitiveConsumer) getManager().getInstanceByName("primitiveConsumer");
+        PrimitiveConsumer consumer = (PrimitiveConsumer) getInstanceByName("primitiveConsumer");
         
         Assert.assertEquals(56.7f, consumer.getSalary());
         

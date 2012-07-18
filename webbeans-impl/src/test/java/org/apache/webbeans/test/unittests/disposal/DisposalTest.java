@@ -54,7 +54,7 @@ public class DisposalTest extends TestContext
         defineManagedBean(Disposal1.class);
 
         @SuppressWarnings("unchecked")
-        List<Integer> list = (List<Integer>) getManager().getInstanceByName("createBinding1");
+        List<Integer> list = (List<Integer>) getInstanceByName("createBinding1");
         Assert.assertNotNull(list);
         Assert.assertTrue(list.size() == 1);
         contextFactory.destroyRequestContext(null);

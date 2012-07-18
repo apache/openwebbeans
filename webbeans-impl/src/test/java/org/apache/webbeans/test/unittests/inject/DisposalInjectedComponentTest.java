@@ -66,7 +66,7 @@ public class DisposalInjectedComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        Object producerResult = getManager().getInstanceByName("service");
+        Object producerResult = getInstanceByName("service");
         
         IService producverService = (IService)producerResult;
         

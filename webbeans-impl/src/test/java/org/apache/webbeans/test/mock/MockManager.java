@@ -141,11 +141,6 @@ public class MockManager implements BeanManager
         return manager.getInstance(bean,null);
     }
 
-    public Object getInstanceByName(String name)
-    {
-        return manager.getInstanceByName(name,null);
-    }
-
     public <T> T getInstanceByType(Class<T> type, Annotation... bindingTypes)
     {
         return manager.getInstanceByType(type, bindingTypes);

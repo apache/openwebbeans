@@ -94,8 +94,6 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
-import static org.apache.webbeans.util.InjectionExceptionUtils.throwAmbiguousResolutionExceptionForBeanName;
-
 /**
  * Implementation of the {@link BeanManager} contract of the web beans
  * container.
@@ -478,31 +476,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         notificationManager.fireEvent(event, bindings);
     }
-    
-    @Deprecated
-    public Object getInstanceByName(String name, CreationalContext<?> creationalContext)
-    {
-        AbstractOwbBean<?> component = null;
-        Object object = null;
-
-        Set<Bean<?>> set = injectionResolver.implResolveByName(name);
-        if (set.isEmpty())
-        {
-            return null;
-        }
-
-        if (set.size() > 1)
-        {
-            throwAmbiguousResolutionExceptionForBeanName(set, name);
-        }
-
-        component = (AbstractOwbBean<?>) set.iterator().next();
-
-        object = getInstance(component, creationalContext);
-
-        return object;
-    }
-    
     
     @Deprecated
     public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
