@@ -27,6 +27,7 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.UnproxyableResolutionException;
+import javax.enterprise.inject.spi.InterceptionType;
 
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.context.AbstractContext;
@@ -128,7 +129,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     protected Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
     {
         InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, bean, getContextualInstance(),
-                                                               proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
+                                                               proceed, arguments, stack, InterceptionType.AROUND_INVOKE);
         impl.setCreationalContext(getContextualCreationalContext());
 
         return impl.proceed();

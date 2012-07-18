@@ -61,7 +61,7 @@ import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorDataImpl;
-import org.apache.webbeans.intercept.InterceptorType;
+import javax.enterprise.inject.spi.InterceptionType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
@@ -213,14 +213,14 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         }
     }
 
-    public void lifecycleCommon(InvocationContext context, InterceptorType interceptorType) 
+    public void lifecycleCommon(InvocationContext context, InterceptionType interceptionType)
     { 
         try
         {
-            if ((this.contextual != null) && WebBeansUtil.isContainsInterceptorMethod(this.contextual.getInterceptorStack(), interceptorType))
+            if ((this.contextual != null) && WebBeansUtil.isContainsInterceptorMethod(this.contextual.getInterceptorStack(), interceptionType))
             {
                 InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, this.contextual, context.getTarget(), null, null,
-                        webBeansContext.getInterceptorUtil().getInterceptorMethods(this.contextual.getInterceptorStack(), interceptorType), interceptorType);
+                        webBeansContext.getInterceptorUtil().getInterceptorMethods(this.contextual.getInterceptorStack(), interceptionType), interceptionType);
                 impl.setCreationalContext(this.cc);
                 impl.setEJBInvocationContext(context); // If the final 299 interceptor calls ic.proceed, the InvocationContext calls the ejbContext.proceed()
                 impl.setCcKey(this.ccKey);
@@ -233,7 +233,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         }
         catch (Exception e)
         {
-            logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0008, interceptorType), e);
+            logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0008, interceptionType), e);
             throw new RuntimeException(e);
         }
     }
@@ -298,7 +298,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
                     new Object[] { this.webBeansContext.getBeanManagerImpl(), this, this.contextual});
         }
         
-        lifecycleCommon(context, InterceptorType.POST_CONSTRUCT);
+        lifecycleCommon(context, InterceptionType.POST_CONSTRUCT);
 
         if (webBeansContext.getOpenWebBeansConfiguration().isUseEJBInterceptorInjection())
         {
@@ -324,7 +324,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     public void preDestroy(InvocationContext context)
     {
 
-        lifecycleCommon(context, InterceptorType.PRE_DESTROY);
+        lifecycleCommon(context, InterceptionType.PRE_DESTROY);
 
         if (this.injector != null)
         {
@@ -564,7 +564,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             //      If there were decorators, the DelegatHandler will handle the  ejbcontext.proceed at the top of the stack.
             //      If there were no decorators, we will fall off the end of our own InvocationContext and take care of ejbcontext.proceed.
             rv = webBeansContext.getInterceptorUtil().callAroundInvokes(webBeansContext, this.contextual, instance, (CreationalContextImpl<?>) this.cc, method,
-                    arguments, webBeansContext.getInterceptorUtil().getInterceptorMethods(filteredInterceptorStack, InterceptorType.AROUND_INVOKE),
+                    arguments, webBeansContext.getInterceptorUtil().getInterceptorMethods(filteredInterceptorStack, InterceptionType.AROUND_INVOKE),
                                                                                           ejbContext, this.ccKey);
         }
         
@@ -584,14 +584,14 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             logger.fine("OWBEI:: @AroundTimeout entry. Trying to run Interceptors.");
         }
 
-        if ((this.contextual != null) && WebBeansUtil.isContainsInterceptorMethod(this.contextual.getInterceptorStack(), InterceptorType.AROUND_TIMEOUT))
+        if ((this.contextual != null) && WebBeansUtil.isContainsInterceptorMethod(this.contextual.getInterceptorStack(), InterceptionType.AROUND_TIMEOUT))
         {           
             try
             {
                     InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, null, context.getTarget(), null, null,
                             webBeansContext.getInterceptorUtil().getInterceptorMethods(this.contextual.getInterceptorStack(),
-                                                                                       InterceptorType.AROUND_TIMEOUT),
-                                                                                       InterceptorType.AROUND_TIMEOUT);
+                                    InterceptionType.AROUND_TIMEOUT),
+                                    InterceptionType.AROUND_TIMEOUT);
                     impl.setCreationalContext(this.cc);
                     impl.setEJBInvocationContext(context);
                     impl.setCcKey((Object)this.ccKey);
@@ -625,7 +625,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             logger.log(Level.FINE, "manager = {0} interceptor_instance = {1} contextual = {2} ",
                     WebBeansLoggerFacade.args(this.webBeansContext.getBeanManagerImpl(), this, this.contextual));
         }
-        lifecycleCommon(context, InterceptorType.PRE_PASSIVATE);
+        lifecycleCommon(context, InterceptionType.PRE_PASSIVATE);
     }
 
     /**
@@ -643,7 +643,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
                     WebBeansLoggerFacade.args(this.webBeansContext.getBeanManagerImpl(), this, this.contextual));
         }
 
-        lifecycleCommon(context, InterceptorType.POST_ACTIVATE);
+        lifecycleCommon(context, InterceptionType.POST_ACTIVATE);
     }
     
     public static CreationalContext<?> getThreadCreationalContext()

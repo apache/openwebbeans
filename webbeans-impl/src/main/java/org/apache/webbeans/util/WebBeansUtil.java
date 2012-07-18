@@ -142,7 +142,7 @@ import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorDataImpl;
-import org.apache.webbeans.intercept.InterceptorType;
+import javax.enterprise.inject.spi.InterceptionType;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
@@ -1056,7 +1056,7 @@ public final class WebBeansUtil
      * Configures the interceptor stack of the web beans component.
      *
      * @param interceptorClass interceptor class
-     * @param interceptorType annotation type
+     * @param interceptionType annotation type
      * @param definedInInterceptorClass check if annotation is defined in
      *            interceptor class (as opposed to bean class)
      * @param definedInMethod check if the interceptor is defined in the comp.
@@ -1069,7 +1069,7 @@ public final class WebBeansUtil
      */
     public void configureInterceptorMethods(Interceptor<?> webBeansInterceptor,
                                              Class<?> interceptorClass,
-                                             Class<? extends Annotation> interceptorType,
+                                             Class<? extends Annotation> interceptionType,
                                              boolean definedInInterceptorClass,
                                              boolean definedInMethod,
                                              List<InterceptorData> stack,
@@ -1103,14 +1103,14 @@ public final class WebBeansUtil
             }
         }
 
-        if (interceptorType.equals(AroundInvoke.class) || interceptorType.equals(AroundTimeout.class))
+        if (interceptionType.equals(AroundInvoke.class) || interceptionType.equals(AroundTimeout.class))
         {
-            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(interceptorClass, interceptorType);
+            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(interceptorClass, interceptionType);
         }
-        else if (interceptorType.equals(PostConstruct.class) || ((postActivateClass != null) && (interceptorType.equals(postActivateClass)))
-                 || interceptorType.equals(PreDestroy.class) || ((prePassivateClass != null) && (interceptorType.equals(prePassivateClass))))
+        else if (interceptionType.equals(PostConstruct.class) || ((postActivateClass != null) && (interceptionType.equals(postActivateClass)))
+                 || interceptionType.equals(PreDestroy.class) || ((prePassivateClass != null) && (interceptionType.equals(prePassivateClass))))
         {
-            method = checkCommonAnnotationCriterias(interceptorClass, interceptorType, definedInInterceptorClass);
+            method = checkCommonAnnotationCriterias(interceptorClass, interceptionType, definedInInterceptorClass);
         }
 
         if (method != null)
@@ -1126,7 +1126,7 @@ public final class WebBeansUtil
                 intData.setInterceptorClass(interceptorClass);
             }
 
-            intData.setInterceptorMethod(method, interceptorType);
+            intData.setInterceptorMethod(method, interceptionType);
 
             stack.add(intData);
         }
@@ -1233,7 +1233,7 @@ public final class WebBeansUtil
      * @param type interceptor type
      * @return true if stack contains the interceptor with given type
      */
-    public static boolean isContainsInterceptorMethod(List<InterceptorData> stack, InterceptorType type)
+    public static boolean isContainsInterceptorMethod(List<InterceptorData> stack, InterceptionType type)
     {
         if (stack.size() > 0)
         {
@@ -1243,27 +1243,27 @@ public final class WebBeansUtil
                 Method m = null;
                 InterceptorData data = it.next();
 
-                if (type.equals(InterceptorType.AROUND_INVOKE))
+                if (type.equals(InterceptionType.AROUND_INVOKE))
                 {
                     m = data.getAroundInvoke();
                 }
-                else if (type.equals(InterceptorType.AROUND_TIMEOUT))
+                else if (type.equals(InterceptionType.AROUND_TIMEOUT))
                 {
                     m = data.getAroundTimeout();
                 }
-                else if (type.equals(InterceptorType.POST_CONSTRUCT))
+                else if (type.equals(InterceptionType.POST_CONSTRUCT))
                 {
                     m = data.getPostConstruct();
                 }
-                else if (type.equals(InterceptorType.POST_ACTIVATE))
+                else if (type.equals(InterceptionType.POST_ACTIVATE))
                 {
                     m = data.getPostActivate();
                 }
-                else if (type.equals(InterceptorType.PRE_DESTROY))
+                else if (type.equals(InterceptionType.PRE_DESTROY))
                 {
                     m = data.getPreDestroy();
                 }
-                else if (type.equals(InterceptorType.PRE_PASSIVATE))
+                else if (type.equals(InterceptionType.PRE_PASSIVATE))
                 {
                     m = data.getPrePassivate();
                 }

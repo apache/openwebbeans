@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.InterceptionType;
 
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -79,7 +80,7 @@ public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
      */
     protected Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
     {
-        InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, bean, actualInstance,proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
+        InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, bean, actualInstance,proceed, arguments, stack, InterceptionType.AROUND_INVOKE);
         impl.setCreationalContext(creationalContext);
         
         return impl.proceed();

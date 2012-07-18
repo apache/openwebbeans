@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.InterceptionType;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.EnterpriseBeanMarker;
@@ -56,7 +57,7 @@ public class InvocationContextImpl implements InvocationContext
     private Object target;
 
     /** Interceptor type */
-    private InterceptorType type;
+    private InterceptionType type;
 
     /** Used for numbering interceptors */
     private int currentMethod = 1;
@@ -83,7 +84,7 @@ public class InvocationContextImpl implements InvocationContext
      * @param type interceptor type
      */
     public InvocationContextImpl(WebBeansContext webBeansContext, OwbBean<?> bean, Object instance, Method method,
-                                 Object[] parameters, List<InterceptorData> datas, InterceptorType type)
+                                 Object[] parameters, List<InterceptorData> datas, InterceptionType type)
     {
         this.webBeansContext = webBeansContext;
         owbBean = bean;
@@ -173,11 +174,11 @@ public class InvocationContextImpl implements InvocationContext
     {
         try
         {
-            if (type.equals(InterceptorType.AROUND_INVOKE))
+            if (type.equals(InterceptionType.AROUND_INVOKE))
             {
                 return proceedAroundInvokes(interceptorDatas);
             }
-            else if (type.equals(InterceptorType.AROUND_TIMEOUT))
+            else if (type.equals(InterceptionType.AROUND_TIMEOUT))
             {
                 return proceedAroundTimeouts(interceptorDatas);
             }
@@ -326,7 +327,7 @@ public class InvocationContextImpl implements InvocationContext
      * @return final result
      * @throws Exception for any exception
      */
-    private Object proceedCommonAnnots(List<InterceptorData> datas, InterceptorType type) throws Exception
+    private Object proceedCommonAnnots(List<InterceptorData> datas, InterceptionType type) throws Exception
     {
         Object result = null;
 
@@ -335,25 +336,25 @@ public class InvocationContextImpl implements InvocationContext
             InterceptorData intc = datas.get(currentMethod - 1);
             Method commonAnnMethod = null;
 
-            if (type.equals(InterceptorType.POST_CONSTRUCT))
+            if (type.equals(InterceptionType.POST_CONSTRUCT))
             {
                 commonAnnMethod = intc.getPostConstruct();
             }
-            else if (type.equals(InterceptorType.POST_ACTIVATE))
+            else if (type.equals(InterceptionType.POST_ACTIVATE))
             {
                 commonAnnMethod = intc.getPostActivate();
             }
-            else if (type.equals(InterceptorType.PRE_PASSIVATE))
+            else if (type.equals(InterceptionType.PRE_PASSIVATE))
             {
                 commonAnnMethod = intc.getPrePassivate();
             }
-            else if (type.equals(InterceptorType.PRE_DESTROY))
+            else if (type.equals(InterceptionType.PRE_DESTROY))
             {
                 commonAnnMethod = intc.getPreDestroy();
             }
             else
             {
-                throw new IllegalArgumentException("Unsupportet InterceptorType: " + type);
+                throw new IllegalArgumentException("Unsupportet InterceptionType: " + type);
             }
 
             if (commonAnnMethod == null)

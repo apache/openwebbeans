@@ -108,9 +108,9 @@ public interface InterceptorData
      * </ul>
      * </p>
      * @param interceptorMethod interceptor method
-     * @param interceptorType interceptor annotation class
+     * @param interceptionType interceptor annotation class
      */
-    public void setInterceptorMethod(Method interceptorMethod, Class<? extends Annotation> interceptorType);
+    public void setInterceptorMethod(Method interceptorMethod, Class<? extends Annotation> interceptionType);
 
     /**
      * Sets the source of the interceptor.

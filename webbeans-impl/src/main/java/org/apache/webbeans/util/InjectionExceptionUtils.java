@@ -25,7 +25,6 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
-import javax.enterprise.inject.ResolutionException;
 import javax.enterprise.inject.UnproxyableResolutionException;
 import java.util.Set;
 import java.lang.annotation.Annotation;

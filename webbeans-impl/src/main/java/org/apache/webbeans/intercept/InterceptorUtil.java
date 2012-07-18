@@ -476,7 +476,7 @@ public final class InterceptorUtil
      * @return list of interceptor
      */
     @SuppressWarnings("unchecked")
-    public List<InterceptorData> getInterceptorMethods(List<InterceptorData> stack, InterceptorType type)
+    public List<InterceptorData> getInterceptorMethods(List<InterceptorData> stack, InterceptionType type)
     {
         List<InterceptorData> interceptors = new ArrayList<InterceptorData>();
 
@@ -486,27 +486,27 @@ public final class InterceptorUtil
             Method m = null;
             InterceptorData data = it.next();
 
-            if (type.equals(InterceptorType.AROUND_INVOKE))
+            if (type.equals(InterceptionType.AROUND_INVOKE))
             {
                 m = data.getAroundInvoke();
             }
-            else if (type.equals(InterceptorType.AROUND_TIMEOUT))
+            else if (type.equals(InterceptionType.AROUND_TIMEOUT))
             {
                 m = data.getAroundTimeout();
             }
-            else if (type.equals(InterceptorType.POST_ACTIVATE))
+            else if (type.equals(InterceptionType.POST_ACTIVATE))
             {
                 m = data.getPostActivate();
             }
-            else if (type.equals(InterceptorType.POST_CONSTRUCT))
+            else if (type.equals(InterceptionType.POST_CONSTRUCT))
             {
                 m = data.getPostConstruct();
             }
-            else if (type.equals(InterceptorType.PRE_DESTROY))
+            else if (type.equals(InterceptionType.PRE_DESTROY))
             {
                 m = data.getPreDestroy();
             }
-            else if (type.equals(InterceptorType.PRE_PASSIVATE))
+            else if (type.equals(InterceptionType.PRE_PASSIVATE))
             {
                 m = data.getPrePassivate();
             }
@@ -579,7 +579,7 @@ public final class InterceptorUtil
             Method proceed, Object[] arguments, List<InterceptorData> stack, InvocationContext ejbInvocationContext, Object altKey) throws Exception
     {
         InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, bean, instance,
-                                                               proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
+                                                               proceed, arguments, stack, InterceptionType.AROUND_INVOKE);
         if (ejbInvocationContext != null)
         {
             impl.setEJBInvocationContext(ejbInvocationContext);
