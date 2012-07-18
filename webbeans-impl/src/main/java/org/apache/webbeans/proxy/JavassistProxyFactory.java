@@ -41,7 +41,6 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -81,12 +80,6 @@ public final class JavassistProxyFactory
     public   Map<OwbBean<?>, Class<?>> getInterceptorProxyClasses()
     {
         return interceptorProxyClasses;
-    }
-
-    @Deprecated
-    public static JavassistProxyFactory getInstance()
-    {
-        return WebBeansContext.getInstance().getJavassistProxyFactory();
     }
 
     public void clear()

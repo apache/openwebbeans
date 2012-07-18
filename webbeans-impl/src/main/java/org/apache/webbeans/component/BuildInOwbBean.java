@@ -34,7 +34,6 @@ import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyObject;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 
 /**
  * Following 3 options are provided for vendor's build-in beans implementation:
@@ -211,8 +210,8 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
         {
             return actualInstance;
         }
-        
-        T proxy = (T)JavassistProxyFactory.getInstance().createBuildInBeanProxy(this);
+
+        T proxy = (T) webBeansContext.getJavassistProxyFactory().createBuildInBeanProxy(this);
         if (handlerClassName.equals(PROXY_HANDLER_VALUE_DEFAULT)) 
         {
             ((ProxyObject)proxy).setHandler(new BuildInBeanMethodHandler(this, actualInstance));

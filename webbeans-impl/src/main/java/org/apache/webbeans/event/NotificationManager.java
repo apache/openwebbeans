@@ -68,11 +68,6 @@ public final class NotificationManager
         this.webBeansContext = webBeansContext;
     }
 
-    public static NotificationManager getInstance()
-    {
-        return WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager();
-    }
-
     public <T> void addObserver(ObserverMethod<T> observer, Type eventType)
     {
         webBeansContext.getAnnotationManager().checkQualifierConditions(observer.getObservedQualifiers());

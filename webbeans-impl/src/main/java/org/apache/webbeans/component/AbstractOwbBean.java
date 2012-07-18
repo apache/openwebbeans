@@ -112,7 +112,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     protected String passivatingId = null;
     
-    private final WebBeansContext webBeansContext;
+    protected final WebBeansContext webBeansContext;
 
     /**
      * Constructor definiton. Each subclass redefines its own constructor with

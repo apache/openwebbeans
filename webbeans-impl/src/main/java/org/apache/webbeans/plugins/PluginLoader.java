@@ -56,15 +56,6 @@ public class PluginLoader
 
     private AtomicBoolean started = new AtomicBoolean(false);
 
-    /**
-     * @return singleton PluginLoader
-     */
-    @Deprecated
-    public static PluginLoader getInstance()
-    {
-        return WebBeansContext.getInstance().getPluginLoader();
-    }
-
     public PluginLoader()
     {
     }    

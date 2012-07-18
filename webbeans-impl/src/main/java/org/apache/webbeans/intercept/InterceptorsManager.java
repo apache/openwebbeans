@@ -42,12 +42,6 @@ public class InterceptorsManager
         manager = webBeansContext.getBeanManagerImpl();
     }
 
-    @Deprecated
-    public static InterceptorsManager getInstance()
-    {
-        return WebBeansContext.getInstance().getInterceptorsManager();
-    }
-
     public void addNewInterceptor(Class<?> interceptorClazz)
     {
         Asserts.nullCheckForClass(interceptorClazz, "interceptorClazz can not be null");
