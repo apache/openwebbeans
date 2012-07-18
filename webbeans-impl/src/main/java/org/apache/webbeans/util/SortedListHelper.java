@@ -61,9 +61,4 @@ public class SortedListHelper<E>
     {
         list.clear();
     }
-
-    public E get(int location) 
-    {
-        return list.get(location);
-    }
 }

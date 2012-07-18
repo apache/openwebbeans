@@ -739,12 +739,4 @@ public final class WebBeansAnnotatedTypeUtil
             throw new IllegalArgumentException(message, e);
         }
     }
-
-
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    public static <X> Method getDisposalWithGivenAnnotatedMethod(AnnotatedType<X> annotatedType, Type beanType, Annotation[] qualifiers)
-    {
-        return WebBeansContext.currentInstance().getAnnotationManager().getDisposalWithGivenAnnotatedMethod(annotatedType, beanType, qualifiers);
-    }
 }

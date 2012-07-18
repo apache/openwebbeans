@@ -38,32 +38,11 @@ public final class WebBeansConstants
                                                                          "javax.persistence.PersistenceUnit",
                                                                          "javax.persistence.PersistenceContext"};
     
-    /** Prefix of the web beans package */
-    public static final String WEB_BEANS_PREFIX = "javax.webbeans";
-
-    /** Webbeans systemId URL */
-    public static final String WEB_BEANS_XML_SYSID = "http://java.sun.com/jee/web-beans-1.0.xsd";
-
-    /** Classpath systemId */
-    public static final String CLASSPATH_URI_SCHEMA = "classpath:";
-
-    /** WebBeans namespace */
-    public static final String WEB_BEANS_NAMESPACE = "urn:java:ee";
-
-    /** <Deploy> XML Element */
-    public static final String WEB_BEANS_XML_DEPLOY_ELEMENT = "Deploy";
-
-    /** <Interceptors> XML Element */
-    public static final String WEB_BEANS_XML_INTERCEPTORS_ELEMENT = "Interceptors";
-    
     public static final String WEB_BEANS_XML_SPEC_SPECIFIC_INTERCEPTORS_ELEMENT = "interceptors";
     
     public static final String WEB_BEANS_XML_SPEC_SPECIFIC_DECORATORS_ELEMENT = "decorators";
     
-    public static final String WEB_BEANS_XML_SPEC_SPECIFIC_DEPLOY_ELEMENT = "deploy";
-    
-    public static final String WEB_BEANS_XML_OWB_SPECIFIC_ALTERNATIVES = "Alternatives";
-    
+
     public static final String WEB_BEANS_XML_SPEC_SPECIFIC_ALTERNATIVES = "alternatives";
     
     public static final String WEB_BEANS_XML_SPEC_SPECIFIC_CLASS = "class";
@@ -74,51 +53,6 @@ public final class WebBeansConstants
     
     public static final String WEB_BEANS_XML_OWB_SPECIFIC_STEREOTYPE = "Stereotype";
     
-    public static final String WEB_BEANS_XML_INTERCEPTOR_ELEMENT = "Interceptor";
-
-    /** <Decorators> XML Element */
-    public static final String WEB_BEANS_XML_DECORATORS_ELEMENT = "Decorators";
-
-    public static final String WEB_BEANS_XML_DECORATOR_ELEMENT = "Decorator";
-
-    /** <Queue> XML Element */
-    public static final String WEB_BEANS_XML_TOPIC_ELEMENT = "Topic";
-
-    /** <Topic> XML Element */
-    public static final String WEB_BEANS_XML_QUEUE_ELEMENT = "Queue";
-    
-    public static final String WEB_BEANS_XML_JMS_RESOURCE = "Resource";
-    
-    public static final String WEB_BEANS_XML_JMS_RESOURCE_NAME = "name";
-    
-    public static final String WEB_BEANS_XML_JMS_RESOURCE_MAPPED_NAME = "mappedName";
-
-    public static final String WEB_BEANS_XML_INITIALIZER_ELEMENT = "Inject";
-
-    public static final String WEB_BEANS_XML_DESTRUCTOR_ELEMENT = "Destructor";
-
-    public static final String WEB_BEANS_XML_PRODUCES_ELEMENT = "Produces";
-
-    public static final String WEB_BEANS_XML_DISPOSES_ELEMENT = "Disposes";
-
-    public static final String WEB_BEANS_XML_OBSERVES_ELEMENT = "Observers";
-
-    public static final String WEB_BEANS_XML_DECORATES_ELEMENT = "Decorates";
-
-    public static final String WEB_BEANS_XML_STANDART_ELEMENT = "Standard";
-
-    public static final String WEB_BEANS_XML_BINDING_TYPE = "BindingType";
-
-    public static final String WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE = "InterceptorBindingType";
-
-    public static final String WEB_BEANS_XML_STEREOTYPE = "StereoType";
-
-    public static final String WEB_BEANS_XML_VALUE_ELEMENT = "value";
-
-    public static final String WEB_BEANS_XML_NAMED_ELEMENT = "Named";
-
-    public static final String WEB_BEANS_XML_ARRAY_ELEMENT = "Array";
-
     /**JNDI name of the {@link javax.enterprise.inject.spi.BeanManager} instance*/
     public static final String WEB_BEANS_MANAGER_JNDI_NAME = "java:comp/BeanManager";
 
