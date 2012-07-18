@@ -94,7 +94,6 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
-import static org.apache.webbeans.util.InjectionExceptionUtils.throwAmbiguousResolutionException;
 import static org.apache.webbeans.util.InjectionExceptionUtils.throwAmbiguousResolutionExceptionForBeanName;
 
 /**
@@ -1102,30 +1101,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
     {
-        if (beans == null || beans.isEmpty())
-        {
-            return null;
-        }
-
-        Set set = new HashSet<Bean<Object>>();
-        for(Bean<? extends X> obj : beans)
-        {
-            set.add(obj);
-        }
-        
-        set = injectionResolver.findByAlternatives(set);
-
-        if(set.size() > 1)
-        {
-            set = injectionResolver.findBySpecialization(set);
-        }
-        
-        if(set.size() > 1)
-        {
-            throwAmbiguousResolutionException(set);
-        }
-        
-        return (Bean<? extends X>)set.iterator().next();
+        return injectionResolver.resolve(beans);
     }
 
     /**

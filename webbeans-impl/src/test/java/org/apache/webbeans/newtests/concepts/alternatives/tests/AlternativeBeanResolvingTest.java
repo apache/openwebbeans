@@ -63,7 +63,7 @@ public class AlternativeBeanResolvingTest extends AbstractUnitTest
         // available but not enabled in beans.xml
         beanClasses.add(AlternativeOnClassOnlyBean.class);
 
-        startContainer(beanClasses, null);
+        startContainer(beanClasses, beanXmls);
 
         Set<Bean<?>> beans = getBeanManager().getBeans(Object.class, new AnnotationLiteral<Pen>(){});
         Assert.assertNotNull(beans);

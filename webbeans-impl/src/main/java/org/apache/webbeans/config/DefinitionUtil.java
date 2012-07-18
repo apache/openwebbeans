@@ -853,15 +853,15 @@ public final class DefinitionUtil
             Type type = AnnotationUtil.getMethodFirstParameterWithAnnotation(declaredMethod, Disposes.class);
             Annotation[] annot = annotationManager.getMethodFirstParameterQualifierWithGivenAnnotation(declaredMethod, Disposes.class);
 
-            InjectionResolver instance = webBeansContext.getBeanManagerImpl().getInjectionResolver();
+            InjectionResolver injectionResolver = webBeansContext.getBeanManagerImpl().getInjectionResolver();
 
-            Set<Bean<?>> set = instance.implResolveByType(type, annot);
-            if (set.isEmpty())
+            Set<Bean<?>> set = injectionResolver.implResolveByType(type, annot);
+            Bean<?> bean = injectionResolver.resolve(set);
+            if (bean == null)
             {
                 throwUnsatisfiedResolutionException(clazz, declaredMethod, annot);
             }
             
-            Bean<?> bean = set.iterator().next();
             ProducerMethodBean<?> pr = null;
 
             if (!(bean instanceof ProducerMethodBean))

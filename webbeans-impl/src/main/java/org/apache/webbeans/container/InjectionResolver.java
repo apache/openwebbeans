@@ -42,6 +42,7 @@ import javax.enterprise.util.Nonbinding;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
@@ -51,7 +52,9 @@ import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.InjectionExceptionUtils;
 import org.apache.webbeans.util.WebBeansUtil;
+import static org.apache.webbeans.util.InjectionExceptionUtils.throwAmbiguousResolutionException;
 
 /**
  * Injection point resolver class.
@@ -158,7 +161,7 @@ public class InjectionResolver
         WebBeansUtil.checkInjectionPointNamedQualifier(injectionPoint);
 
         Type type = injectionPoint.getType();
-        Class<?> clazz = null;
+        Class<?> clazz;
 
         if (ClassUtil.isTypeVariable(type))
         {
@@ -199,15 +202,20 @@ public class InjectionResolver
             }
         }
 
-        webBeansContext.getResolutionUtil().checkResolvedBeans(beanSet, clazz, qualifiers, injectionPoint);
+        Bean<?> bean = resolve(beanSet);
 
-        Bean<?> bean = beanSet.iterator().next();
+        if (bean == null)
+        {
+            InjectionExceptionUtils.throwUnsatisfiedResolutionException(clazz, injectionPoint, qualifiers);
+        }
+
 
         if (clazz.isPrimitive())
         {
             if (bean.isNullable())
             {
-                throw new NullableDependencyException("Injection point type : " + injectionPoint + " type is primitive but resolved bean can have nullable objects!");
+                throw new NullableDependencyException("Injection point type : " + injectionPoint +
+                                                      " type is primitive but resolved bean can have nullable objects!");
             }
         }
 
@@ -224,14 +232,12 @@ public class InjectionResolver
     {
 
         Type type = injectionPoint.getType();
-        Class<?> clazz = null;
+        Class<?> clazz;
 
         if (type instanceof ParameterizedType)
         {
             ParameterizedType pt = (ParameterizedType) type;
             clazz = (Class<?>) pt.getRawType();
-
-
         }
         else
         {
@@ -267,14 +273,14 @@ public class InjectionResolver
                 {
                     beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(newQualifier.value(), null));
                 }
-
+            }
+            else
+            {
+                InjectionExceptionUtils.throwUnsatisfiedResolutionException(clazz, injectionPoint, qualifiers);
             }
         }
 
-        webBeansContext.getResolutionUtil().checkResolvedBeans(beanSet, clazz, qualifiers, injectionPoint);
-
-        return beanSet.iterator().next();
-
+        return resolve(beanSet);
     }
 
 
@@ -492,6 +498,12 @@ public class InjectionResolver
 
         for (Bean<?> component : webBeansContext.getBeanManagerImpl().getBeans())
         {
+            // no need to check instanceof OwbBean as we always wrap in a
+            // ThirdpartyBeanImpl at least
+            if (!((OwbBean) component).isEnabled())
+            {
+                continue;
+            }
 
             if (returnAll)
             {
@@ -513,15 +525,6 @@ public class InjectionResolver
 
         // Look for qualifiers
         resolvedComponents = findByQualifier(resolvedComponents, qualifiers);
-
-        if (!injectionPointType.equals(Object.class))
-        {
-            // see OWB-658 skip if all Object.class instances are requested
-            // as there is no way to Alternative Object.class
-
-            // Look for alternative
-            resolvedComponents = findByAlternatives(resolvedComponents, bdaBeansXMLFilePath);
-        }
 
         // Ambigious resolution, check for specialization
         if (resolvedComponents.size() > 1)
@@ -808,6 +811,40 @@ public class InjectionResolver
 
         return enableSet;
     }
+
+    public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
+    {
+        if (beans == null || beans.isEmpty())
+        {
+            return null;
+        }
+
+        Set set = new HashSet<Bean<Object>>();
+        for(Bean<? extends X> obj : beans)
+        {
+            set.add(obj);
+        }
+
+        set = findByAlternatives(set);
+
+        if (set == null || set.isEmpty())
+        {
+            return null;
+        }
+
+        if(set.size() > 1)
+        {
+            set = findBySpecialization(set);
+        }
+
+        if(set.size() > 1)
+        {
+            throwAmbiguousResolutionException(set);
+        }
+
+        return (Bean<? extends X>)set.iterator().next();
+    }
+
 
     private boolean isAltBeanInInjectionPointBDA(String bdaBeansXMLFilePath, Bean<?> altBean)
     {

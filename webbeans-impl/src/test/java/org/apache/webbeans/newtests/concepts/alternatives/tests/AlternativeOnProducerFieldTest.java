@@ -55,6 +55,8 @@ public class AlternativeOnProducerFieldTest extends AbstractUnitTest
         Set<Bean<?>> beans = getBeanManager().getBeans(Pencil.class, new AnnotationLiteral<Pen>(){});
         Assert.assertEquals(0, beans.size());
 
+        Assert.assertNull(getBeanManager().resolve(beans));
+
         shutDownContainer();
     }
 
@@ -75,6 +77,9 @@ public class AlternativeOnProducerFieldTest extends AbstractUnitTest
         Pencil pencil = getInstance(Pencil.class, new AnnotationLiteral<Pen>(){});
         Assert.assertNotNull(pencil);
         Assert.assertEquals(42, pencil.getNr());
+
+        beans = getBeanManager().getBeans(PencilProducerBean.class);
+        Assert.assertEquals(1, beans.size());
 
         shutDownContainer();
     }
