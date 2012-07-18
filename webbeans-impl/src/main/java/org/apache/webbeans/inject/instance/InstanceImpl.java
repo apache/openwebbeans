@@ -254,7 +254,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         Set<T> instances = new HashSet<T>();
         for(Bean<?> bean : beans)
         {
-            T instance = (T) webBeansContext.getBeanManagerImpl().getInstance(bean,null);
+            T instance = (T) webBeansContext.getBeanManagerImpl().getReference(bean,null, parentCreationalContext);
             instances.add(instance);
         }
         

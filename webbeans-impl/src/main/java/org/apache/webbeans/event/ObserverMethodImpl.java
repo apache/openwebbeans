@@ -408,7 +408,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     }
                     
                     CreationalContext<Object> creational = manager.createCreationalContext(injectedBean);
-                    Object instance = manager.getInstance(injectedBean, creational); 
+                    Object instance = manager.getReference(injectedBean, null, creational);
                     if (injectionPointBeanLocalSetOnStack)
                     {
                         InjectionPointBean.unsetThreadLocal();
@@ -481,7 +481,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 }
                 
                 CreationalContext<Object> creational = manager.createCreationalContext(injectedBean);
-                Object instance = manager.getInstance(injectedBean, creational); 
+                Object instance = manager.getReference(injectedBean, null, creational);
                 
                 if (injectionPointBeanLocalSetOnStack)
                 {

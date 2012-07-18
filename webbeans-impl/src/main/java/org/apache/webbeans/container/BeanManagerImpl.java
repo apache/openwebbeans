@@ -512,17 +512,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return this;
     }
 
-    
-    @Deprecated
-    public <T> T getInstance(Bean<T> bean, CreationalContext<?> creationalContext)
-    {
-        if(creationalContext == null)
-        {
-            creationalContext = createCreationalContext(bean);
-        }
-        return (T)getReference(bean, null, creationalContext);
-    }
-    
     /**
      * {@inheritDoc}
      */

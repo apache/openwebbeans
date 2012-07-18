@@ -127,7 +127,7 @@ public class MockManager implements BeanManager
 
     public <T> T getInstance(Bean<T> bean)
     {
-        return manager.getInstance(bean,null);
+        return (T) manager.getReference(bean,null, manager.createCreationalContext(bean));
     }
 
     public <T> T getInstanceByType(Type type, Annotation... bindingTypes)
