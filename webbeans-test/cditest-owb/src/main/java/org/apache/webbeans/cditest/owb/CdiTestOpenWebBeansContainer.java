@@ -81,13 +81,14 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
 
     public void startApplicationScope() throws Exception 
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        @SuppressWarnings("deprecation") WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
         contextFactory.initApplicationContext(servletContext);
     }
 
-    public void startConversationScope() throws Exception 
+    @SuppressWarnings("deprecation")
+    public void startConversationScope() throws Exception
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
