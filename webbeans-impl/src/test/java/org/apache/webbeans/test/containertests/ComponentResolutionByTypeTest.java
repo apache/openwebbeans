@@ -49,6 +49,7 @@ public class ComponentResolutionByTypeTest extends TestContext
     NonBindingComponent s5 = null;
 
     private BeanManagerImpl cont;
+
     private static final String CLAZZ_NAME = ComponentResolutionByTypeTest.class.getName();
 
     public ComponentResolutionByTypeTest()
@@ -66,25 +67,25 @@ public class ComponentResolutionByTypeTest extends TestContext
     @Test
     public void testBindingTypeOk() throws Throwable
     {
-        cont.resolveByType(BindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s1").getAnnotations());
+        cont.getBeans(BindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s1").getAnnotations());
     }
 
     @Test
     public void testBindingTypeNonOk() throws Throwable
     {
-        cont.resolveByType(BindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s2").getAnnotations());
+        cont.getBeans(BindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s2").getAnnotations());
     }
 
     @Test
     public void testNonBindingTypeOk1() throws Throwable
     {
-        cont.resolveByType(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s3").getAnnotations());
+        cont.getBeans(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s3").getAnnotations());
     }
 
     @Test
     public void testNonBindingTypeOk2() throws Throwable
     {
-        Set<Bean<?>> beans = cont.resolveByType(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s4").getAnnotations());
+        Set<Bean<?>> beans = cont.getBeans(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s4").getAnnotations());
         Assert.assertNotNull(beans);
         Assert.assertTrue(beans.isEmpty());
     }
@@ -92,7 +93,7 @@ public class ComponentResolutionByTypeTest extends TestContext
     @Test
     public void testNonBindingTypeNonOk() throws Throwable
     {
-        cont.resolveByType(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s5").getAnnotations());
+        cont.getBeans(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s5").getAnnotations());
     }
 
 }

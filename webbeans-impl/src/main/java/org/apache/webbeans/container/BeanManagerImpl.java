@@ -20,7 +20,6 @@ package org.apache.webbeans.container;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,7 +52,6 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.util.TypeLiteral;
 import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
 import javax.naming.NamingException;
@@ -477,58 +475,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         notificationManager.fireEvent(event, bindings);
     }
 
-    @Deprecated
-    public <T> T getInstanceByType(Class<T> type, Annotation... bindingTypes)
-    {
-        webBeansContext.getResolutionUtil().getInstanceByTypeConditions(bindingTypes);
-        Set<Bean<?>> set = resolveByType(type, bindingTypes);
-
-        webBeansContext.getResolutionUtil().checkResolvedBeans(set, type, bindingTypes);
-
-        Bean<?> bean = set.iterator().next();
-        
-        return (T)getInstance(bean, createCreationalContext(bean));
-    }
-
-    @Deprecated
-    public <T> T getInstanceByType(TypeLiteral<T> type, Annotation... bindingTypes)
-    {
-        webBeansContext.getResolutionUtil().getInstanceByTypeConditions(bindingTypes);
-        Set<Bean<?>> set = resolveByType(type, bindingTypes);
-
-        webBeansContext.getResolutionUtil().checkResolvedBeans(set, type.getRawType(), bindingTypes);
-
-        Bean<?> bean = set.iterator().next();
-        
-        return (T)getInstance(bean, createCreationalContext(bean));
-    }
-
-    @Deprecated
-    public Set<Bean<?>> resolveByName(String name)
-    {
-        return injectionResolver.implResolveByName(name);
-    }
-
-    @Deprecated
-    public Set<Bean<?>> resolveByType(Class<?> apiType, Annotation... bindingTypes)
-    {
-        webBeansContext.getResolutionUtil().getInstanceByTypeConditions(bindingTypes);
-
-        return injectionResolver.implResolveByType(apiType, bindingTypes);
-    }
-
-    @Deprecated
-    public Set<Bean<?>> resolveByType(TypeLiteral<?> apiType, Annotation... bindingTypes)
-    {
-        ParameterizedType ptype = (ParameterizedType) apiType.getType();
-        ResolutionUtil.resolveByTypeConditions(ptype);
-
-        webBeansContext.getResolutionUtil().getInstanceByTypeConditions(bindingTypes);
-
-        return injectionResolver.implResolveByType(apiType.getType(), bindingTypes);
-    }
-
-    
     public Set<Bean<?>> getComponents()
     {
         return deploymentBeans;

@@ -130,29 +130,29 @@ public class MockManager implements BeanManager
         return manager.getInstance(bean,null);
     }
 
-    public <T> T getInstanceByType(Class<T> type, Annotation... bindingTypes)
+    public <T> T getInstanceByType(Type type, Annotation... bindingTypes)
     {
-        return manager.getInstanceByType(type, bindingTypes);
+        Bean<?> bean = manager.resolve(manager.getBeans(type, bindingTypes));
+        if (bean == null)
+        {
+            return null;
+        }
+        return (T) manager.getReference(bean, type, manager.createCreationalContext(bean));
     }
 
     public <T> T getInstanceByType(TypeLiteral<T> type, Annotation... bindingTypes)
     {
-        return manager.getInstanceByType(type, bindingTypes);
+        return  getInstanceByType(type.getType(), bindingTypes);
     }
 
     public Set<Bean<?>> resolveByName(String name)
     {
-        return manager.resolveByName(name);
+        return manager.getBeans(name);
     }
 
     public Set<Bean<?>> resolveByType(Class<?> apiType, Annotation... bindingTypes)
     {
-        return manager.resolveByType(apiType, bindingTypes);
-    }
-
-    public Set<Bean<?>> resolveByType(TypeLiteral<?> apiType, Annotation... bindingTypes)
-    {
-        return manager.resolveByType(apiType, bindingTypes);
+        return manager.getBeans(apiType, bindingTypes);
     }
 
     public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes)

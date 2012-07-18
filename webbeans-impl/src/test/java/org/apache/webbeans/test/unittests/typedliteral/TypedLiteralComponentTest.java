@@ -99,7 +99,7 @@ public class TypedLiteralComponentTest extends TestContext
 
         };
 
-        Bean<?> s = WebBeansContext.getInstance().getBeanManagerImpl().resolveByType(tl, anns).iterator().next();
+        Bean<?> s = WebBeansContext.getInstance().getBeanManagerImpl().getBeans(tl.getType(), anns).iterator().next();
         Assert.assertNotNull(s);
 
         contextFactory.destroyRequestContext(null);

@@ -370,6 +370,11 @@ public abstract class TestContext implements ITestContext
     protected Object getInstanceByName(String name)
     {
         Bean<?> bean = manager.resolve(manager.getBeans(name));
+        if (bean == null)
+        {
+            return null;
+        }
+
         return manager.getReference(bean, Object.class, manager.createCreationalContext(bean));
     }
 
