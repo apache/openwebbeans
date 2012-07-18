@@ -28,7 +28,6 @@ import java.util.logging.Logger;
 import javax.ejb.Singleton;
 import javax.ejb.Stateful;
 import javax.ejb.Stateless;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
@@ -163,11 +162,6 @@ public class StandaloneContainersImpl implements StandaloneContainers
     public DeploymentException getDeploymentException()
     {
         return this.excpetion;
-    }
-
-    protected BeanManager getBeanManager()
-    {
-        return WebBeansContext.getInstance().getBeanManagerImpl();
     }
 
     public void deploy(Collection<Class<?>> classes) throws DeploymentException

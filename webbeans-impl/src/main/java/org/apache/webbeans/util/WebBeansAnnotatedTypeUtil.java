@@ -512,8 +512,8 @@ public final class WebBeansAnnotatedTypeUtil
                 definitionUtil.defineSerializable(producerMethodBean);
                 definitionUtil.defineStereoTypes(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
                 webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
-                                                                                                  producerMethodBean,
-                                                                                                  AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
+                                                                                   producerMethodBean,
+                                                                                   AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
 
                 Set<Type> types = annotatedMethod.getTypeClosure();
                 producerMethodBean.getTypes().addAll(types);

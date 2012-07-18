@@ -22,9 +22,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectableBeanManager;
-import org.apache.webbeans.exception.inject.DefinitionException;
 import org.jboss.jsr299.tck.spi.Managers;
-import org.jboss.testharness.api.DeploymentException;
 
 public class ManagersImpl implements Managers
 {
@@ -44,29 +42,4 @@ public class ManagersImpl implements Managers
         
         return beanManager; 
     }
-
-    public boolean isDefinitionError(DeploymentException deploymentException)
-    {
-        Throwable cause = deploymentException.getCause();
-        
-        if(DefinitionException.class.isAssignableFrom(cause.getClass()))
-        {
-            return true;
-        }
-        
-        return false;
-    }
-
-    public boolean isDeploymentError(DeploymentException deploymentException)
-    {
-        Throwable cause = deploymentException.getCause();
-        
-        if(DeploymentException.class.isAssignableFrom(cause.getClass()))
-        {
-            return true;
-        }
-        
-        return false;
-    }
-
 }

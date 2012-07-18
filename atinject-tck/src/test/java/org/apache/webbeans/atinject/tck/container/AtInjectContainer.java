@@ -29,6 +29,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import junit.framework.Test;
 
 import org.apache.webbeans.atinject.tck.specific.SpecificProducer;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.tck.StandaloneContainersImpl;
 import org.atinject.tck.Tck;
 import org.atinject.tck.auto.Car;
@@ -70,7 +71,7 @@ public class AtInjectContainer extends StandaloneContainersImpl
         {
             deploy(deploymentClasses);
             
-            BeanManager manager = getBeanManager(); 
+            BeanManager manager = WebBeansContext.getInstance().getBeanManagerImpl();
             Set<Bean<?>> beans = manager.getBeans(Car.class, new Annotation[0]);
             Bean<?> carBean = beans.iterator().next();
             

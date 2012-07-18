@@ -23,49 +23,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Method;
-
-import javax.enterprise.inject.spi.Bean;
-import javax.persistence.Entity;
-
-import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.config.DefinitionUtil;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.util.AnnotationUtil;
 import org.jboss.jsr299.tck.spi.Beans;
 
 public class BeansImpl implements Beans
 {
-
-    @SuppressWarnings("unchecked")
-    public <T> Bean<T> createProducerMethodBean(Method method, Bean<?> declaringBean)
-    {
-        DefinitionUtil definitionUtil = ((InjectionTargetBean<?>)declaringBean).getWebBeansContext().getDefinitionUtil();
-        return definitionUtil.createProducerComponent((Class<T>)method.getReturnType(), method, (InjectionTargetBean<?>)declaringBean, false);
-        
-    }
-
-    public <T> Bean<T> createSimpleBean(Class<T> clazz)
-    {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        webBeansContext.getManagedBeanConfigurator().checkManagedBeanCondition(clazz);
-
-        ManagedBean<T> bean = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.MANAGED);
-
-        return bean;
-    }
-
-    public boolean isEnterpriseBean( Class<?> clazz )
-    {
-        return false;
-    }
-
-    public boolean isEntityBean( Class<?> clazz )
-    {
-        return (AnnotationUtil.hasClassAnnotation(clazz, Entity.class));
-    }        
 
     public boolean isProxy( Object instance )
     {
@@ -86,19 +47,4 @@ public class BeansImpl implements Beans
         ObjectInputStream ois = new ObjectInputStream(bais);
         return ois.readObject();
     }
-
-    public boolean isStatefulBean( Class<?> clazz )
-    {
-        return false;
-    }
-
-    public boolean isStatelessBean( Class<?> clazz )
-    {
-        return false;
-    }
-
-    public <T> T getEnterpriseBean(Class<? extends T> beanType, Class<T> localInterface)
-    {
-        return null;
-    }
-}
+ }
