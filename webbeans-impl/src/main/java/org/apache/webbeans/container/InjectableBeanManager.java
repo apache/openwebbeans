@@ -67,12 +67,6 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
         this.bm = bm;
     }
 
-
-    public InjectableBeanManager()
-    {
-        bm = WebBeansContext.getInstance().getBeanManagerImpl();
-    }
-    
     public <T> AnnotatedType<T> createAnnotatedType(Class<T> type)
     {
         return bm.createAnnotatedType(type);

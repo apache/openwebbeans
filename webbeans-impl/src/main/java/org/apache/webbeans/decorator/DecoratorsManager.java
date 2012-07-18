@@ -33,17 +33,9 @@ public class DecoratorsManager
     private List<Class<?>> enabledDecorators = new CopyOnWriteArrayList<Class<?>>();
     private final BeanManagerImpl manager;
 
-    public
-    DecoratorsManager(WebBeansContext webBeansContext)
+    public DecoratorsManager(WebBeansContext webBeansContext)
     {
-
         manager = webBeansContext.getBeanManagerImpl();
-    }
-
-    @Deprecated
-    public static DecoratorsManager getInstance()
-    {
-        return WebBeansContext.getInstance().getDecoratorsManager();
     }
 
     public void addNewDecorator(Class<?> decoratorClazz)

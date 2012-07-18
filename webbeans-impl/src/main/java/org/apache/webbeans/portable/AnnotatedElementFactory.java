@@ -47,12 +47,6 @@ public final class AnnotatedElementFactory
     // Logger instance
     private final Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedElementFactory.class);
 
-    @Deprecated
-    public static AnnotatedElementFactory getInstance()
-    {
-        return WebBeansContext.getInstance().getAnnotatedElementFactory();
-    }
-
     //Cache of the AnnotatedType
     private ConcurrentMap<Class<?>, AnnotatedType<?>> annotatedTypeCache =
         new ConcurrentHashMap<Class<?>, AnnotatedType<?>>();

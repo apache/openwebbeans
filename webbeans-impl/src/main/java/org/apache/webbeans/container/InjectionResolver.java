@@ -116,19 +116,6 @@ public class InjectionResolver
     }
 
     /**
-     * Returns bean manager injection resolver.
-     *
-     * @return bean manager injection resolver
-     * @see org.apache.webbeans.config.WebBeansFinder
-     */
-    public static InjectionResolver getInstance()
-    {
-        InjectionResolver instance = WebBeansContext.getInstance().getBeanManagerImpl().getInjectionResolver();
-
-        return instance;
-    }
-
-    /**
      * Check the type of the injection point.
      * <p>
      * Injection point type can not be {@link java.lang.reflect.TypeVariable}.

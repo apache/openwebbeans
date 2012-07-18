@@ -44,12 +44,6 @@ public class AlternativesManager
         this.webBeansContext = webBeansContext;
     }
 
-    @Deprecated
-    public static AlternativesManager getInstance()
-    {
-        return WebBeansContext.getInstance().getAlternativesManager();
-    }
-
     @SuppressWarnings("unchecked")
     public void addStereoTypeAlternative(Class<?> alternative,String fileName,ScannerService scanner)
     {                

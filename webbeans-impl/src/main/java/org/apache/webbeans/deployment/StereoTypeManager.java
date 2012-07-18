@@ -21,7 +21,6 @@ package org.apache.webbeans.deployment;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.util.Asserts;
 
@@ -44,16 +43,6 @@ public class StereoTypeManager
     public StereoTypeManager()
     {
 
-    }
-
-    /**
-     * Returns manager for this application.
-     * @return singleton instance.
-     */
-    @Deprecated
-    public static StereoTypeManager getInstance()
-    {
-        return WebBeansContext.getInstance().getStereoTypeManager();
     }
 
     /**

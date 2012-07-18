@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -46,12 +45,6 @@ public class SerializableBeanVault
 {
 
     private Map<String, SerializableBean<?>> serializableBeans = new ConcurrentHashMap<String, SerializableBean<?>>();
-
-    @Deprecated
-    public static SerializableBeanVault getInstance()
-    {
-        return WebBeansContext.getInstance().getSerializableBeanVault();
-    }
 
     @SuppressWarnings("unchecked")
     public <T> Contextual<T> getSerializableBean(Contextual<T> bean)
