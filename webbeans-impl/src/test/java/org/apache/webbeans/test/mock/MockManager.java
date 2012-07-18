@@ -125,17 +125,6 @@ public class MockManager implements BeanManager
         return manager.getContext(scopeType);
     }
 
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
-    {
-        return manager.<T>getInstanceToInject(injectionPoint, context); //X ugly <T> due to javac bug 6302954
-    }
-    
-    public Object getInstanceToInject(InjectionPoint injectionPoint)
-    {
-       return manager.getInstanceToInject(injectionPoint);
-        
-    }    
-    
     public <T> T getInstance(Bean<T> bean)
     {
         return manager.getInstance(bean,null);
@@ -188,13 +177,11 @@ public class MockManager implements BeanManager
         return this.manager.createAnnotatedType(type);
     }
 
-
     @Override
     public <T> CreationalContext<T> createCreationalContext(Contextual<T> contextual)
     {
         return this.manager.createCreationalContext(contextual);
     }
-
 
     @Override
     public Set<Bean<?>> getBeans(Type beanType, Annotation... bindings)
@@ -202,13 +189,11 @@ public class MockManager implements BeanManager
         return this.manager.getBeans();
     }
 
-
     @Override
     public Set<Bean<?>> getBeans(String name)
     {
         return this.manager.getBeans(name);
     }
-
 
     @Override
     public ELResolver getELResolver()
@@ -216,13 +201,11 @@ public class MockManager implements BeanManager
         return this.manager.getELResolver();
     }
 
-
     @Override
     public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> ctx)
     {
         return this.manager.getInjectableReference(injectionPoint, ctx);
     }
-
 
     @Override
     public Set<Annotation> getInterceptorBindingDefinition(Class<? extends Annotation> binding)
@@ -230,20 +213,11 @@ public class MockManager implements BeanManager
         return this.manager.getInterceptorBindingDefinition(binding);
     }
 
-
-    @Deprecated
-    public <X> Bean<? extends X> getMostSpecializedBean(Bean<X> bean)
-    {
-        return this.manager.getMostSpecializedBean(bean);
-    }
-
-
     @Override
     public Bean<?> getPassivationCapableBean(String id)
     {
         return this.manager.getPassivationCapableBean(id);
     }
-
 
     @Override
     public Object getReference(Bean<?> bean, Type beanType, CreationalContext<?> ctx)
@@ -251,13 +225,11 @@ public class MockManager implements BeanManager
         return this.manager.getReference(bean, beanType, ctx);
     }
 
-
     @Override
     public Set<Annotation> getStereotypeDefinition(Class<? extends Annotation> stereotype)
     {
         return this.manager.getStereotypeDefinition(stereotype);
     }
-
 
     @Override
     public boolean isQualifier(Class<? extends Annotation> annotationType)
@@ -265,13 +237,11 @@ public class MockManager implements BeanManager
         return this.manager.isQualifier(annotationType);
     }
 
-
     @Override
     public boolean isInterceptorBinding(Class<? extends Annotation> annotationType)
     {
         return this.manager.isInterceptorBinding(annotationType);
     }
-
 
     @Override
     public boolean isScope(Class<? extends Annotation> annotationType)
@@ -297,13 +267,11 @@ public class MockManager implements BeanManager
         return this.manager.isStereotype(annotationType);
     }
 
-
     @Override
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
     {
         return this.manager.resolve(beans);
     }
-
 
     @Override
     public void validate(InjectionPoint injectionPoint)
@@ -312,13 +280,11 @@ public class MockManager implements BeanManager
         
     }
 
-
     @Override
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
         return this.manager.createInjectionTarget(type);
     }
-
 
     @Override
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, Annotation... bindings)
@@ -326,11 +292,9 @@ public class MockManager implements BeanManager
         return this.manager.resolveObserverMethods(event, bindings);
     }
 
-
     @Override
     public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)
     {
-        // TODO Auto-generated method stub
         return null;
     }
 }

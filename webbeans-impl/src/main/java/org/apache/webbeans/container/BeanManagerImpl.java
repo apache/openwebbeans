@@ -476,20 +476,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         notificationManager.fireEvent(event, bindings);
     }
-    
-    @Deprecated
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
-    {
-        return (T)getInjectableReference(injectionPoint, context);
-    }
-    
-    @Deprecated
-    public Object getInstanceToInject(InjectionPoint injectionPoint)
-    {        
-        return getInstanceToInject(injectionPoint, null);
-    }
 
-    
     @Deprecated
     public <T> T getInstanceByType(Class<T> type, Annotation... bindingTypes)
     {
@@ -863,14 +850,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
         
         return set;
-    }
-
-    @Deprecated
-    public <X> Bean<? extends X> getMostSpecializedBean(Bean<X> bean)
-    {
-        Bean<? extends X> specialized = (Bean<? extends X>) WebBeansUtil.getMostSpecializedBean(this, bean);
-        
-        return specialized;
     }
 
     public Bean<?> getPassivationCapableBean(String id)

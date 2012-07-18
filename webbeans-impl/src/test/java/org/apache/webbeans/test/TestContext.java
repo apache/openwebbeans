@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.test;
 
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,11 +28,9 @@ import java.util.logging.Logger;
 import javax.decorator.Decorator;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
-import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.component.AbstractOwbBean;
@@ -176,20 +173,6 @@ public abstract class TestContext implements ITestContext
         initializeStereoType(StereoWithSessionScope2.class);
 
     }
-    
-    protected void addInstanceImplicitBean(Bean<?> bean)
-    {
-        Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
-        for(InjectionPoint injectionPoint : injectionPoints)
-        {
-            //If contains the @Obtains, defines implicit component
-            if(injectionPoint.getAnnotated().getBaseType().equals(Instance.class))
-            {
-                //WebBeansUtil.addInjectedImplicitInstanceComponent(injectionPoint);
-            }                                    
-        }
-
-    }
 
     /**
      * Default stereo types
@@ -200,13 +183,6 @@ public abstract class TestContext implements ITestContext
         initializeStereoType(Decorator.class);
     }
 
-    /**
-     * Call before test.
-     */
-    protected void beforeTest()
-    {
-
-    }
 
     /**
      * This will be called whenever the test is failed. NOT : This method is
@@ -220,20 +196,6 @@ public abstract class TestContext implements ITestContext
     public void fail(String methodName)
     {
         logger.severe("Test Class: " + clazzName + ",Method Name: " + methodName + " is FAILED");
-    }
-
-    /**
-     * This will be called whenever the test is passed. NOT : This method is
-     * used for running the tests from the ServletContextListener. It is
-     * not used for normal unit tests.
-     * 
-     * @see TestListener
-     * @see ComponentResolutionByTypeTest
-     * @param methodName passed method name
-     */
-    public void pass(String methodName)
-    {
-        logger.info("Test Class: " + clazzName + ",Method Name: " + methodName + " is PASSED");
     }
 
     /**
@@ -380,17 +342,6 @@ public abstract class TestContext implements ITestContext
     }
 
     /**
-     * Gets the ith component in the {@link MockManager}
-     * 
-     * @param i ith component in the {@link MockManager}
-     * @return the ith component in the list
-     */
-    protected AbstractOwbBean<?> getComponent(int i)
-    {
-        return manager.getComponent(i);
-    }
-
-    /**
      * Gets all components in the {@link MockManager}
      * 
      * @return all components
@@ -449,7 +400,7 @@ public abstract class TestContext implements ITestContext
     }
 
     /**
-     * Return new {@link MockHttpSession}
+     * Return new MockHttpSession
      * 
      * @return new mock session
      */
@@ -457,17 +408,6 @@ public abstract class TestContext implements ITestContext
     {
         //X TODO huh? WTF...
         return new Object();
-    }
-
-    /**
-     * Configuration of the webbeans XML file.
-     * 
-     * @param file input stream
-     * @param fileName file name
-     */
-    protected void configureFromXML(InputStream file, String fileName)
-    {
-        this.xmlConfigurator.configure(file, fileName);
     }
 
     /**
