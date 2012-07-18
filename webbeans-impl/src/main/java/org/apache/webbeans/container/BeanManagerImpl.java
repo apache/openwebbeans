@@ -160,10 +160,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private List<Class<?>> additionalInterceptorClasses = new ArrayList<Class<?>>();
 
     /**Additional interceptor binding types we got via Extensions */
-    private Map<Class<? extends Annotation>, Set<Annotation>> additionalInterceptorBindingTypes = new HashMap<Class<? extends Annotation>, Set<Annotation>>();
+    private Map<Class<? extends Annotation>, Set<Annotation>> additionalInterceptorBindingTypes
+            = new HashMap<Class<? extends Annotation>, Set<Annotation>>();
 
     /**
-     * This list contains additional qualifiers which got set via the {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addQualifier(Class)}
+     * This list contains additional qualifiers which got set via the
+     * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addQualifier(Class)}
      * event function.
      */
     private List<Class<? extends Annotation>> additionalQualifiers = new ArrayList<Class<? extends Annotation>>();
@@ -310,7 +312,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {
             if (!singleContext.isActive())
             {
-                throw new ContextNotActiveException("WebBeans context with scope type annotation @" + scopeType.getSimpleName() + " does not exist within current thread");
+                throw new ContextNotActiveException("WebBeans context with scope type annotation @"
+                                                    + scopeType.getSimpleName()
+                                                    + " does not exist within current thread");
             }
             return singleContext;
         }
@@ -328,7 +332,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 {
                     if (found != null)
                     {
-                        throw new IllegalStateException("More than one active context exists with scope type annotation @" + scopeType.getSimpleName());
+                        throw new IllegalStateException("More than one active context exists with scope type annotation @"
+                                                        + scopeType.getSimpleName());
                     }
                     
                     found = otherContext;
@@ -338,7 +343,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
         if (found == null)
         {
-            throw new ContextNotActiveException("WebBeans context with scope type annotation @" + scopeType.getSimpleName() + " does not exist within current thread");
+            throw new ContextNotActiveException("WebBeans context with scope type annotation @"
+                                                + scopeType.getSimpleName() + " does not exist within current thread");
         }
         
         return found;

@@ -19,7 +19,6 @@
 package org.apache.webbeans.util;
 
 import java.lang.reflect.Method;
-import org.w3c.dom.Element;
 
 /**
  * Simple utility classes with some assertions methods.
@@ -103,16 +102,6 @@ public final class Asserts
     public static void nullCheckForMethod(Method method)
     {
         Asserts.assertNotNull(method, "method argument can not be null");
-    }
-
-    /**
-     * Null check for element parameter.
-     * 
-     * @param element parameter
-     */
-    public static void nullCheckForDomElement(Element element)
-    {
-        Asserts.assertNotNull(element, "element argument can not be null");
     }
 
 }

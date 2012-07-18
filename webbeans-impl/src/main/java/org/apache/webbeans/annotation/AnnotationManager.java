@@ -47,8 +47,6 @@ import javax.interceptor.InterceptorBinding;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -472,16 +470,6 @@ public final class AnnotationManager
      * defined by the specification.
      * @param clazz stereotype class
      */
-    public void checkStereoTypeClass(Class<? extends Annotation> clazz)
-    {
-        checkStereoTypeClass(clazz, clazz.getDeclaredAnnotations());
-    }
-
-    /**
-     * Validates that given class obeys stereotype model
-     * defined by the specification.
-     * @param clazz stereotype class
-     */
     public void checkStereoTypeClass(Class<? extends Annotation> clazz, Annotation...annotations)
     {
         Asserts.nullCheckForClass(clazz);
@@ -511,18 +499,6 @@ public final class AnnotationManager
                     throw new WebBeansConfigurationException("@StereoType annotation can not define @Named " +
                             "annotation with value");
                 }
-            }
-            else if (isInterceptorBindingAnnotation(annotType))
-            {
-                Target target = clazz.getAnnotation(Target.class);
-                ElementType[] type = target.value();
-
-                if (type.length != 1 && !type[0].equals(ElementType.TYPE))
-                {
-                    throw new WebBeansConfigurationException("Stereotype with @InterceptorBinding must be " +
-                            "defined as @Target{TYPE}");
-                }
-
             }
         }
     }
