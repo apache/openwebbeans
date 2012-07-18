@@ -517,7 +517,7 @@ public final class WebBeansAnnotatedTypeUtil
 
                 Set<Type> types = annotatedMethod.getTypeClosure();
                 producerMethodBean.getTypes().addAll(types);
-                DefinitionUtil.defineScopeType(producerMethodBean,
+                definitionUtil.defineScopeType(producerMethodBean,
                                                AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()),
                                                                                     "Annotated producer method : " + annotatedMethod +  "must declare default @Scope annotation",
                                                                                     false);

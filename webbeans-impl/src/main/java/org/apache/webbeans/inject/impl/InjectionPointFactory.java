@@ -63,18 +63,10 @@ public class InjectionPointFactory
         Annotation[] annots = null;
         annots = member.getAnnotations();
 
-        if(!checkFieldApplicable(annots))
-        {
-            AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
+        AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
 
-            AnnotatedType<?> annotated = annotatedElementFactory.newAnnotatedType(member.getDeclaringClass());
-            return getGenericInjectionPoint(owner, annots, member.getGenericType(), member, annotatedElementFactory.newAnnotatedField(member, annotated));
-        }
-        else
-        {
-            return null;
-        }
-
+        AnnotatedType<?> annotated = annotatedElementFactory.newAnnotatedType(member.getDeclaringClass());
+        return getGenericInjectionPoint(owner, annots, member.getGenericType(), member, annotatedElementFactory.newAnnotatedField(member, annotated));
     }
 
     public <X> InjectionPoint getFieldInjectionPointData(Bean<?> owner, AnnotatedField<X> annotField)
@@ -85,25 +77,7 @@ public class InjectionPointFactory
 
         Annotation[] annots = AnnotationUtil.getAnnotationsFromSet(annotField.getAnnotations());
 
-        if(!checkFieldApplicable(annots))
-        {
-            return getGenericInjectionPoint(owner, annots, annotField.getBaseType(), member, annotField);
-        }
-        else
-        {
-            return null;
-        }
-
-    }
-
-    private static boolean checkFieldApplicable(Annotation[] anns)
-    {
-//        if(AnnotationUtil.isAnnotationExist(anns, Fires.class) || AnnotationUtil.isAnnotationExist(anns, Obtains.class))
-//        {
-//            return true;
-//        }
-
-        return false;
+        return getGenericInjectionPoint(owner, annots, annotField.getBaseType(), member, annotField);
     }
 
     /**

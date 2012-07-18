@@ -232,8 +232,6 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                     }
                 }
             }
-            
-
         }
         finally
         {
@@ -358,17 +356,10 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                 getScope().getName());
 
     }
-    
-    
-    
+
     @Override
     public boolean isPassivationCapable()
     {
         return isPassivationCapable(creatorMethod.getReturnType(), creatorMethod.getModifiers());
-    }
-
-    public String toString()
-    {
-        return super.toString();
     }
 }

@@ -140,12 +140,6 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
         return true;
     }
 
-    protected BuildInOwbBean(WebBeansType webBeanType)
-    {
-        this(webBeanType, null);
-        initBuildInBeanConfig(getWebBeansContext());
-    }
-
     @SuppressWarnings("unchecked")
     protected BuildInOwbBean(WebBeansType webBeansType, Class<T> returnType)
     {

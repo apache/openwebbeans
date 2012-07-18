@@ -572,15 +572,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Set<InjectionPoint> getInjectionPoints()
-    {
-        return super.getInjectionPoints();
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
     public AnnotatedType<T> getAnnotatedType()
     {
         return annotatedType;

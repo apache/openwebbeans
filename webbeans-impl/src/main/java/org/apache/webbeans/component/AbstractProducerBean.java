@@ -19,11 +19,9 @@
 package org.apache.webbeans.component;
 
 import java.io.Serializable;
-import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -145,26 +143,7 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
         return parentInstance;
 
     }
-    
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
-    {
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Set<InjectionPoint> getInjectionPoints()
-    {
-        return super.getInjectionPoints();
-    }
-    
     protected boolean isPassivationCapable(Class<?> returnType, Integer modifiers)
     {
         if(ClassUtil.isFinal(modifiers) && !(Serializable.class.isAssignableFrom(returnType)))

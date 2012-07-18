@@ -319,7 +319,7 @@ public final class DefinitionUtil
      * @param component configuring web beans component
      * @param annotations annotations
      */
-    public static <T> void defineScopeType(AbstractOwbBean<T> component, Annotation[] annotations,
+    public <T> void defineScopeType(AbstractOwbBean<T> component, Annotation[] annotations,
                                            String exceptionMessage, boolean allowLazyInit)
     {
         boolean found = false;
@@ -393,7 +393,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void defineStereoTypes(OwbBean<?> component, Annotation[] anns)
+    public <T> void defineStereoTypes(OwbBean<?> component, Annotation[] anns)
     {
         final AnnotationManager annotationManager = component.getWebBeansContext().getAnnotationManager();
         if (annotationManager.hasStereoTypeMetaAnnotation(anns))
@@ -439,7 +439,7 @@ public final class DefinitionUtil
         
     }
 
-    public static void defineDefaultScopeType(OwbBean<?> component, String exceptionMessage, boolean allowLazyInit)
+    public void defineDefaultScopeType(OwbBean<?> component, String exceptionMessage, boolean allowLazyInit)
     {
         // Frist look for inherited scope
         IBeanInheritedMetaData metaData = null;
@@ -813,8 +813,8 @@ public final class DefinitionUtil
 
         webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(parent, component, fieldAnns);
 
-        DefinitionUtil.defineProducerMethodApiTypes(component, field.getGenericType(), fieldAnns);
-        DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName()
+        defineProducerMethodApiTypes(component, field.getGenericType(), fieldAnns);
+        defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName()
                                                              + " must declare default @Scope annotation", false);
         webBeansContext.getWebBeansUtil().checkUnproxiableApiType(component, component.getScope());
         WebBeansUtil.checkProducerGenericType(component,field);
@@ -1356,8 +1356,8 @@ public final class DefinitionUtil
         defineSerializable(bean);
         defineStereoTypes(bean, anns);
 
-        DefinitionUtil.defineProducerMethodApiTypes(bean, method.getBaseType(), anns);
-        DefinitionUtil.defineScopeType(bean, anns, "Bean producer method : " + method.getJavaMember().getName() + " in class "
+        defineProducerMethodApiTypes(bean, method.getBaseType(), anns);
+        defineScopeType(bean, anns, "Bean producer method : " + method.getJavaMember().getName() + " in class "
                                                    + parent.getReturnType().getName() + " must declare default @Scope annotation", false);
         WebBeansUtil.checkProducerGenericType(bean,method.getJavaMember());        
         defineQualifiers(bean, anns);

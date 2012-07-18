@@ -129,7 +129,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
 
     public void containerEvent(ContainerEvent event)
     {
-        StandardContext context = null;
+        StandardContext context;
         
         try
         {
@@ -228,16 +228,6 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
         }
     }
 
-    private void serviceRemoved(Service service)
-    {
-        Container container = service.getContainer();
-        if (container instanceof StandardEngine)
-        {
-            StandardEngine engine = (StandardEngine) container;
-            engineRemoved(engine);
-        }
-    }
-
     private void engineAdded(StandardEngine engine)
     {
         addContextListener(engine);
@@ -247,18 +237,6 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
             {
                 StandardHost host = (StandardHost) child;
                 hostAdded(host);
-            }
-        }
-    }
-
-    private void engineRemoved(StandardEngine engine)
-    {
-        for (Container child : engine.findChildren())
-        {
-            if (child instanceof StandardHost)
-            {
-                StandardHost host = (StandardHost) child;
-                hostRemoved(host);
             }
         }
     }
@@ -273,18 +251,6 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
             {
                 StandardContext context = (StandardContext) child;
                 contextAdded(context);
-            }
-        }
-    }
-
-    private void hostRemoved(StandardHost host)
-    {
-        for (Container child : host.findChildren())
-        {
-            if (child instanceof StandardContext)
-            {
-                StandardContext context = (StandardContext) child;
-                contextRemoved(context);
             }
         }
     }
@@ -326,11 +292,6 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
         }
     }
 
-    private void contextRemoved(StandardContext context)
-    {
-        
-    }
-
     public void propertyChange(PropertyChangeEvent event)
     {
         if ("service".equals(event.getPropertyName()))
@@ -340,10 +301,6 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
             if (oldValue == null && newValue instanceof Service)
             {
                 serviceAdded((Service) newValue);
-            }
-            if (oldValue instanceof Service && newValue == null)
-            {
-                serviceRemoved((Service) oldValue);
             }
         }
         if ("children".equals(event.getPropertyName()))
@@ -357,20 +314,12 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                 {
                     hostAdded((StandardHost) newValue);
                 }
-                if (oldValue instanceof StandardHost && newValue == null)
-                {
-                    hostRemoved((StandardHost) oldValue);
-                }
             }
             if (source instanceof StandardHost)
             {
                 if (oldValue == null && newValue instanceof StandardContext)
                 {
                     contextAdded((StandardContext) newValue);
-                }
-                if (oldValue instanceof StandardContext && newValue == null)
-                {
-                    contextRemoved((StandardContext) oldValue);
                 }
             }
         }

@@ -176,12 +176,4 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
         }
         return passivatingId;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String toString()
-    {
-        return super.toString();
-    }
 }

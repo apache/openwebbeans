@@ -820,9 +820,4 @@ public class WebContextsService extends AbstractContextsService
         }
     }
 
-    @Override
-    public void deActivateContext(Class<? extends Annotation> scopeType)
-    {
-        super.deActivateContext(scopeType);
-    }
 }

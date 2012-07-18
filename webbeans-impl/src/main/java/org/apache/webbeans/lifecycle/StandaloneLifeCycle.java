@@ -41,13 +41,7 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
     {
         this(null, WebBeansLoggerFacade.getLogger(StandaloneLifeCycle.class));
     }
-    
-    @Override
-    public void beforeInitApplication(Properties properties)
-    {
-//        WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
-    }
-    
+
     @Override
     public void beforeStartApplication(Object object)
     {
@@ -57,8 +51,7 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
         webBeansContext.getContextFactory().initApplicationContext(null);
         webBeansContext.getContextFactory().initSingletonContext(null);
     }
-        
-    
+
     @Override
     public void beforeStopApplication(Object endObject)
     {

@@ -110,13 +110,6 @@ public class StandaloneContainersImpl implements StandaloneContainers
                 {
                     this.scannerService = discovery;
                 }
-
-                @Override
-                public void beforeStartApplication(Object object)
-                {
-                    super.beforeStartApplication(object);
-                }
-
             };
 
             Iterator<Class<?>> it = classes.iterator();
