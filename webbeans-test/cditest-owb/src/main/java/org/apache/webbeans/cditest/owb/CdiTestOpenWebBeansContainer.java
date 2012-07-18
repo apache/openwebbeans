@@ -37,7 +37,6 @@ import javax.servlet.ServletContextEvent;
 import org.apache.webbeans.cditest.CdiTestContainer;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContainerLifecycle;
 
@@ -127,7 +126,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         stopRequestScope();
         stopApplicationScope();
 
-        Context context = contextFactory.getStandardContext(ContextTypes.SINGLETON);
+        Context context = contextFactory.getStandardContext(Singleton.class);
         if(context != null && context.isActive())
         {
             contextFactory.destroySingletonContext(servletContext);
@@ -149,7 +148,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        Context context = contextFactory.getStandardContext(ContextTypes.APPLICATION);
+        Context context = contextFactory.getStandardContext(ApplicationScoped.class);
         if(context != null && context.isActive())
         {
             contextFactory.destroyApplicationContext(servletContext);
@@ -168,7 +167,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        Context context = contextFactory.getStandardContext(ContextTypes.CONVERSATION);
+        Context context = contextFactory.getStandardContext(ConversationScoped.class);
         if(context != null && context.isActive())
         {
             contextFactory.destroyConversationContext();
@@ -192,7 +191,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        Context context = contextFactory.getStandardContext(ContextTypes.REQUEST);
+        Context context = contextFactory.getStandardContext(RequestScoped.class);
         if(context != null && context.isActive())
         {
             contextFactory.destroyRequestContext(null);
@@ -211,7 +210,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        Context context = contextFactory.getStandardContext(ContextTypes.SESSION);
+        Context context = contextFactory.getStandardContext(SessionScoped.class);
         if(context != null && context.isActive())
         {
             contextFactory.destroySessionContext(session);

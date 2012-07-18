@@ -18,10 +18,9 @@
  */
 package org.apache.webbeans.context;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
-
-import org.apache.webbeans.context.type.ContextTypes;
 
 /**
  * Defines the component {@link javax.enterprise.context.Dependent} context.
@@ -45,7 +44,7 @@ public class DependentContext extends AbstractContext
      */
     public DependentContext()
     {
-        super(ContextTypes.DEPENDENT);
+        super(Dependent.class);
         active = true;
     }
     

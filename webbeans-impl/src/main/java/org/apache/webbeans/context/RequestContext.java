@@ -20,10 +20,10 @@ package org.apache.webbeans.context;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.Contextual;
 
 import org.apache.webbeans.context.creational.BeanInstanceBag;
-import org.apache.webbeans.context.type.ContextTypes;
 
 /**
  * Request context implementation.
@@ -38,7 +38,7 @@ public class RequestContext extends AbstractContext
      */
     public RequestContext()
     {
-        super(ContextTypes.REQUEST);
+        super(RequestScoped.class);
     }
 
     @Override

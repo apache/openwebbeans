@@ -23,14 +23,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 import javax.inject.Singleton;
-import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.config.WebBeansContext;
@@ -173,55 +170,6 @@ public final class ContextFactory
     {
         ContextsService contextService = getContextsService();
         contextService.endContext(ConversationScoped.class, null);
-    }
-
-    /**
-     * Gets the current context with given type.
-     *
-     * @return the current context
-     * @throws ContextNotActiveException if context is not active
-     * @throws IllegalArgumentException if the type is not a standard context
-     */
-    public Context getStandardContext(ContextTypes type) throws ContextNotActiveException
-    {
-        ContextsService contextService = getContextsService();
-        return getStandardContext(contextService, type);
-    }
-
-    public Context getStandardContext(ContextsService contextService, ContextTypes type) throws ContextNotActiveException
-    {
-        Context context;
-        switch (type.getCardinal())
-        {
-            case 0:
-                context = contextService.getCurrentContext(RequestScoped.class);
-                break;
-
-            case 1:
-                context = contextService.getCurrentContext(SessionScoped.class);
-                break;
-
-            case 2:
-                context = contextService.getCurrentContext(ApplicationScoped.class);
-                break;
-
-            case 3:
-                context = contextService.getCurrentContext(ConversationScoped.class);
-                break;
-
-            case 4:
-                context = contextService.getCurrentContext(Dependent.class);
-                break;
-
-            case 5:
-                context = contextService.getCurrentContext(Singleton.class);
-                break;
-
-            default:
-                throw new IllegalArgumentException("There is no such a standard context with context id=" + type.getCardinal());
-        }
-
-        return context;
     }
 
     /**

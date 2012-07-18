@@ -30,11 +30,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Contextual;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.BeanInstanceBag;
-import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -46,7 +46,7 @@ public class SessionContext extends AbstractContext implements Serializable, Ext
 
     public SessionContext()
     {
-        super(ContextTypes.SESSION);
+        super(SessionScoped.class);
     }
 
     @Override
@@ -60,7 +60,6 @@ public class SessionContext extends AbstractContext implements Serializable, Ext
     {
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
 
-        type = (ContextTypes) in.readObject();
         scopeType = (Class<? extends Annotation>) in.readObject();
         Map<String, BeanInstanceBag<?>> map = (Map<String, BeanInstanceBag<?>>)in.readObject();
         setComponentInstanceMap();
@@ -82,7 +81,6 @@ public class SessionContext extends AbstractContext implements Serializable, Ext
 
     public void writeExternal(ObjectOutput out) throws IOException 
     {
-        out.writeObject(type);
         out.writeObject(scopeType);
         Iterator<Contextual<?>> it = componentInstanceMap.keySet().iterator();
         Map<String, BeanInstanceBag<?>> map = new HashMap<String, BeanInstanceBag<?>>();

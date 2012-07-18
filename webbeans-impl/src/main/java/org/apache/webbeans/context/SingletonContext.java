@@ -21,9 +21,9 @@ package org.apache.webbeans.context;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.spi.Contextual;
+import javax.inject.Singleton;
 
 import org.apache.webbeans.context.creational.BeanInstanceBag;
-import org.apache.webbeans.context.type.ContextTypes;
 
 /**
  * Application context implementation.
@@ -33,7 +33,7 @@ public class SingletonContext extends AbstractContext
 {
     public SingletonContext()
     {
-        super(ContextTypes.SINGLETON);
+        super(Singleton.class);
     }
 
     @Override

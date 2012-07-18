@@ -18,14 +18,9 @@
  */
 package org.apache.webbeans.context;
 
-import java.util.Map;
 
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
-
-import org.apache.webbeans.context.creational.BeanInstanceBag;
-import org.apache.webbeans.context.type.ContextTypes;
-
 
 /**
  * Defines spi for contexts.
@@ -51,21 +46,7 @@ public interface WebBeansContext extends javax.enterprise.context.spi.Context
      * Destroys the context.
      */
     public void destroy();
-    
-    /**
-     * Returns context type.
-     * 
-     * @return context type
-     */
-    public ContextTypes getType();
-    
-    /**
-     * Returns instance map.
-     * 
-     * @return instance map
-     */
-    public Map<Contextual<?>, BeanInstanceBag<?>> getComponentInstanceMap();
-    
+
     /**
      * Gets creational context of the given bean.
      * @param <T> type

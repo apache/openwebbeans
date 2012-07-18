@@ -21,7 +21,6 @@ package org.apache.webbeans.newtests.contexts;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.SerializableBean;
-import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.contexts.serialize.AppScopedBean;
 import org.apache.webbeans.newtests.contexts.serialize.SessScopedBean;
@@ -47,6 +46,7 @@ import org.junit.Test;
 
 import javassist.util.proxy.ProxyObject;
 
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -140,7 +140,7 @@ public class SerializationTest extends AbstractUnitTest
         
         // first we need to actually create a few instances
 
-        Context sessionContext = webBeansContext.getContextFactory().getStandardContext(ContextTypes.SESSION);
+        Context sessionContext = webBeansContext.getContextFactory().getStandardContext(SessionScoped.class);
         Assert.assertNotNull(sessionContext);
         byte[] ba = serializeObject(sessionContext);
         Assert.assertNotNull(ba);

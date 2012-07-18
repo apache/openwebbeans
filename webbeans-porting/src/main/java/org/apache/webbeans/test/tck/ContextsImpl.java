@@ -18,13 +18,13 @@
  */
 package org.apache.webbeans.test.tck;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.AbstractContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.RequestContext;
-import org.apache.webbeans.context.type.ContextTypes;
 import org.jboss.jsr299.tck.spi.Contexts;
 
 public class ContextsImpl implements Contexts<AbstractContext>
@@ -42,7 +42,7 @@ public class ContextsImpl implements Contexts<AbstractContext>
             contextFactory.initRequestContext(null);
         }
         
-        return (AbstractContext) contextFactory.getStandardContext(ContextTypes.REQUEST);
+        return (AbstractContext) contextFactory.getStandardContext(RequestScoped.class);
     }
 
     public void setActive(AbstractContext context)
@@ -61,7 +61,7 @@ public class ContextsImpl implements Contexts<AbstractContext>
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        return (AbstractContext) contextFactory.getStandardContext(ContextTypes.DEPENDENT);
+        return (AbstractContext) contextFactory.getStandardContext(Dependent.class);
     }
 
     public void destroyContext(AbstractContext context)

@@ -27,20 +27,13 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.inject.Singleton;
 
 import org.apache.webbeans.container.SerializableBean;
 import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.context.creational.BeanInstanceBag;
-import org.apache.webbeans.context.type.ContextTypes;
 
 /**
  * Abstract implementation of the {@link WebBeansContext} interfaces.
@@ -57,8 +50,6 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     /**Context status, active or not*/
     protected volatile boolean active;
 
-    /**Context type*/
-    protected ContextTypes type;
 
     /**Context contextual instances*/
     protected Map<Contextual<?>, BeanInstanceBag<?>> componentInstanceMap = null;
@@ -111,58 +102,6 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
         setComponentInstanceMap();
 
     }
-
-    /**
-     * Creates a new context with given context type.
-     * 
-     * @param type context type
-     */
-    protected AbstractContext(ContextTypes type)
-    {
-        this.type = type;
-        configureScopeType(type);
-        setComponentInstanceMap();
-    }
-
-    /**
-     * Configures scope type from context type.
-     * 
-     * @param type context type
-     */
-    private void configureScopeType(ContextTypes type)
-    {
-        if (type.equals(ContextTypes.APPLICATION))
-        {
-            scopeType = ApplicationScoped.class;
-        }
-        else if (type.equals(ContextTypes.SESSION))
-        {
-            scopeType = SessionScoped.class;
-        }
-        else if (type.equals(ContextTypes.REQUEST))
-        {
-            scopeType = RequestScoped.class;
-        }
-        else if (type.equals(ContextTypes.DEPENDENT))
-        {
-            scopeType = Dependent.class;
-        }
-        else if (type.equals(ContextTypes.CONVERSATION))
-        {
-            scopeType = ConversationScoped.class;
-        }
-        else if (type.equals(ContextTypes.SINGLETON))
-        {
-            scopeType = Singleton.class;
-        }
-        else
-        {
-            throw new IllegalArgumentException("Not known scope type : " + type.toString());
-        }
-
-    }
-    
-    
 
     /**
      * {@inheritDoc}
@@ -307,25 +246,6 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     }
 
     /**
-     * Type of the context.
-     * 
-     * @return type of the context
-     * @see ContextTypes
-     */
-    public ContextTypes getType()
-    {
-        return type;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Map<Contextual<?>, BeanInstanceBag<?>> getComponentInstanceMap()
-    {
-        return componentInstanceMap;
-    }
-
-    /**
      * {@inheritDoc}
      */
     public Class<? extends Annotation> getScope()
@@ -356,7 +276,6 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     private void writeObject(ObjectOutputStream s)
     throws IOException
     {
-        s.writeObject(type);
         s.writeObject(scopeType);
 
         // we need to repack the Contextual<T> from the componentInstanceMap into Serializable ones
@@ -388,7 +307,6 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     private void readObject(ObjectInputStream s)
     throws IOException, ClassNotFoundException
     {
-        type = (ContextTypes) s.readObject();
         scopeType = (Class<? extends Annotation>) s.readObject();
 
         HashMap<Contextual<?>, BeanInstanceBag<?>> serializableInstanceMap =

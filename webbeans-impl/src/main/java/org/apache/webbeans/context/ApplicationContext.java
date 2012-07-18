@@ -20,10 +20,10 @@ package org.apache.webbeans.context;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.Contextual;
 
 import org.apache.webbeans.context.creational.BeanInstanceBag;
-import org.apache.webbeans.context.type.ContextTypes;
 
 /**
  * Application context implementation.
@@ -33,7 +33,7 @@ public class ApplicationContext extends AbstractContext
 {
     public ApplicationContext()
     {
-        super(ContextTypes.APPLICATION);
+        super(ApplicationScoped.class);
     }
 
     @Override
