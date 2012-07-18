@@ -20,8 +20,6 @@ package org.apache.webbeans.component;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
@@ -121,27 +119,6 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
     public Field getCreatorField()
     {
         return producerField;
-    }
-
-    /**
-     * Returns actual type arguments.
-     * 
-     * @return actual type arguments
-     */
-    public Type[] getActualTypeArguments()
-    {
-        Type type = producerField.getGenericType();
-        if (type instanceof ParameterizedType)
-        {
-            ParameterizedType pType = (ParameterizedType) type;
-            return pType.getActualTypeArguments();
-        }
-
-        else
-        {
-            return new Type[0];
-        }
-
     }
 
     /**

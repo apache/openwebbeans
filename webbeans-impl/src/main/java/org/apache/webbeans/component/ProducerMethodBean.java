@@ -20,8 +20,6 @@ package org.apache.webbeans.component;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -88,16 +86,6 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     }
 
     /**
-     * Gets the disposal method of the component.
-     * 
-     * @return disposal method
-     */
-    public Method getDisposalMethod()
-    {
-        return disposalMethod;
-    }
-
-    /**
      * Sets the disposal method.
      * 
      * @param disposalMethod disposal method of this producer method component
@@ -123,26 +111,6 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
             passivatingId = id + "#" + creatorMethod.toGenericString();
         }
         return passivatingId;
-    }
-    /**
-     * Gets actual type arguments.
-     * 
-     * @return actual type arguments
-     */
-    public Type[] getActualTypeArguments()
-    {
-        Type type = creatorMethod.getGenericReturnType();
-        if (type instanceof ParameterizedType)
-        {
-            ParameterizedType pType = (ParameterizedType) type;
-            return pType.getActualTypeArguments();
-        }
-
-        else
-        {
-            return new Type[0];
-        }
-
     }
 
     /**
