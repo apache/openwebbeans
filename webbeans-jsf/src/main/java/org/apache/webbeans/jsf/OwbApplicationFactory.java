@@ -27,21 +27,24 @@ public class OwbApplicationFactory extends ApplicationFactory
 {
     private ApplicationFactory wrapped;
     
-    private Application wrappedApplication;
+    private volatile Application wrappedApplication;
+
+    private WebBeansContext webBeansContext;
     
     public OwbApplicationFactory(ApplicationFactory applicationFactory)
     {
         wrapped = applicationFactory;
+        webBeansContext = WebBeansContext.currentInstance();
     }
 
     @Override
     public Application getApplication()
     {
-        if(!WebBeansContext.getInstance().getBeanManagerImpl().isInUse())
+        if(!webBeansContext.getBeanManagerImpl().isInUse())
         {
             return wrapped.getApplication();
         }
-        
+
         if(wrappedApplication == null)
         {
             wrappedApplication = new OwbApplication(wrapped.getApplication());
@@ -53,6 +56,7 @@ public class OwbApplicationFactory extends ApplicationFactory
     @Override
     public void setApplication(Application arg0)
     {
+        wrappedApplication = arg0;
         wrapped.setApplication(arg0);
     }
 
