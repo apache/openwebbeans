@@ -54,10 +54,14 @@ public class OwbApplicationFactory extends ApplicationFactory
     }
 
     @Override
-    public void setApplication(Application arg0)
+    public void setApplication(Application application)
     {
-        wrappedApplication = arg0;
-        wrapped.setApplication(arg0);
+        if(!webBeansContext.getBeanManagerImpl().isInUse())
+        {
+            wrappedApplication = new OwbApplication(application);
+        }
+
+        wrapped.setApplication(application);
     }
 
     /* (non-Javadoc)
