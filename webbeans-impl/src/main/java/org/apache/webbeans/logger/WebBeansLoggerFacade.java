@@ -23,7 +23,6 @@ package org.apache.webbeans.logger;
  */
 
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.util.WebBeansUtil;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -57,7 +56,14 @@ public final class WebBeansLoggerFacade
         {
             try
             {
-                Class<?> factoryClazz = WebBeansUtil.getCurrentClassLoader().loadClass(factoryClassname);
+                // don't use the org.apache.webbeans.util.WebBeansUtil.getCurrentClassLoader()
+                // to avoid weird dependency and potential failing
+                ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+                if(classloader == null)
+                {
+                    classloader = WebBeansLoggerFacade.class.getClassLoader();
+                }
+                Class<?> factoryClazz = classloader.loadClass(factoryClassname);
                 factory = (WebBeansLoggerFactory) factoryClazz.newInstance();
             }
             catch (Exception e)
