@@ -32,7 +32,12 @@ public class CircularApplicationScopedBean
     
     public void hello()
     {
-        
+        // nothing to do
+    }
+
+    public void callDependent()
+    {
+        dependent.hello();
     }
     
     @PostConstruct

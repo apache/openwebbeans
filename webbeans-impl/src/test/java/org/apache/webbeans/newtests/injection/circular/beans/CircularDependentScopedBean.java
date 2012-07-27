@@ -37,9 +37,15 @@ public class CircularDependentScopedBean implements Serializable
     @Transactional
     public void hello()
     {
+        // do nothing
+    }
+
+    public void callAppScoped()
+    {
         app.hello();
     }
-    
+
+
     @PostConstruct
     public void postConstruct()
     {
