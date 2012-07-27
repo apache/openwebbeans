@@ -81,16 +81,11 @@ public class CircularInjectionTest extends AbstractUnitTest
         beanClasses.add(CircularApplicationScopedBean.class);
         
         startContainer(beanClasses, beanXmls);
-        
-        Set<Bean<?>> beans = getBeanManager().getBeans("org.apache.webbeans.newtests.injection.circular.beans.CircularDependentScopedBean");
-        Assert.assertNotNull(beans);
-        
-        Bean<CircularDependentScopedBean> dependentBean = (Bean<CircularDependentScopedBean>)beans.iterator().next();
-        CreationalContext<CircularDependentScopedBean> ctx = getBeanManager().createCreationalContext(dependentBean);
-        
-        Object reference = getBeanManager().getReference(dependentBean, CircularDependentScopedBean.class, ctx);
-        
+
+        CircularDependentScopedBean reference = getInstance(CircularDependentScopedBean.class);
         Assert.assertTrue(reference instanceof CircularDependentScopedBean);
+
+        reference.hello();
                 
         Assert.assertTrue(CircularDependentScopedBean.success);
         Assert.assertTrue(CircularApplicationScopedBean.success);

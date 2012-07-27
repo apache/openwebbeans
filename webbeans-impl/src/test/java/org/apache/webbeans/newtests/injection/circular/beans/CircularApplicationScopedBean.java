@@ -21,10 +21,8 @@ package org.apache.webbeans.newtests.injection.circular.beans;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 @ApplicationScoped
-@Named(value="org.apache.webbeans.newtests.injection.circular.beans.CircularApplicationScopedBean")
 public class CircularApplicationScopedBean
 {
     private @Inject
@@ -40,7 +38,6 @@ public class CircularApplicationScopedBean
     @PostConstruct
     public void postConstruct()
     {
-        dependent.hello();
         success = true;
     }
 
