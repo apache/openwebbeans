@@ -437,35 +437,34 @@ public class InterceptorDataImpl implements InterceptorData
             return interceptor;
         }
 
-        EjbInterceptorContext ctx ;
+        EjbInterceptorContext ejbInterceptorContext ;
         Object interceptor = null;
         // control for this InterceptorData is defined by interceptor class
         if (definedInInterceptorClass)
         {
-            ctx = ownerCreationalContext.getEjbInterceptor(ownerInstance, interceptorClass);
-            if (ctx == null)
+            ejbInterceptorContext = ownerCreationalContext.getEjbInterceptor(ownerInstance, interceptorClass);
+            if (ejbInterceptorContext == null)
             {
                 interceptor = webBeansContext.getWebBeansUtil().newInstanceForced(interceptorClass);
                 try
                 {
                     OWBInjector injector = new OWBInjector(webBeansContext);
-                    injector.inject(interceptor);
+                    injector.inject(interceptor, ownerCreationalContext);
 
-                    ctx = new EjbInterceptorContext();
-                    ctx.setInjectorInstance(injector);
-                    ctx.setInterceptorInstance(interceptor);
-                    ctx.setInterceptorClass(interceptorClass);
+                    ejbInterceptorContext = new EjbInterceptorContext();
+                    ejbInterceptorContext.setInterceptorInstance(interceptor);
+                    ejbInterceptorContext.setInterceptorClass(interceptorClass);
                 }
                 catch (Exception e)
                 {
                     logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0022, interceptorClass), e);
                 }
 
-                ownerCreationalContext.addEjbInterceptor(ownerInstance, ctx);
+                ownerCreationalContext.addEjbInterceptor(ownerInstance, ejbInterceptorContext);
             }
             else
             {
-                interceptor = ctx.getInterceptorInstance();
+                interceptor = ejbInterceptorContext.getInterceptorInstance();
             }
         }
         return interceptor;

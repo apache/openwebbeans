@@ -40,13 +40,11 @@ public class JavaEeInjectionTest extends AbstractUnitTest
         MockInstance instance = new MockInstance();
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         OWBInjector injector = new OWBInjector(webBeansContext);
-        injector.inject(instance);
+        injector.inject(instance, null);
         
         Assert.assertNotNull(instance.getBeanManager());
         Assert.assertNotNull(instance.getSample());
         Assert.assertNotNull(instance.getViaMethod());
-        
-        injector.destroy();
         
         shutDownContainer();
         

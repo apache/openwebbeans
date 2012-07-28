@@ -306,26 +306,11 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
             dependentObjects = null;
         }
 
-        Collection<List<EjbInterceptorContext>> interceptorValues = null;
+        // the instances are managed as normal dependent instances already
         if (ejbInterceptors != null)
         {
-            interceptorValues = ejbInterceptors.values();
-        }
-
-        if(interceptorValues != null)
-        {
-            for(List<EjbInterceptorContext> interceptors : interceptorValues)
-            {
-                if(interceptors != null)
-                {
-                    for(EjbInterceptorContext intereptor : interceptors)
-                    {
-                        intereptor.getInjectorInstance().destroy();
-                    }
-                }                
-            }
-
             ejbInterceptors.clear();
+            ejbInterceptors = null;
         }
     }
     

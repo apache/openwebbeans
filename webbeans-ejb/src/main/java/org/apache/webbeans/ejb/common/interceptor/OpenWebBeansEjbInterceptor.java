@@ -96,9 +96,6 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     /**Non contextual Intercepted methods*/
     protected transient Map<Method, List<InterceptorData>> nonCtxInterceptedMethodMap = new WeakHashMap<Method, List<InterceptorData>>();
     
-    /**Injector*/
-    private transient OWBInjector injector;
-    
     /**Resolved ejb beans for non-contexctual interceptors*/
     private transient Map<Class<?>, BaseEjbBean<?>> resolvedBeans = new HashMap<Class<?>, BaseEjbBean<?>>();
     
@@ -303,10 +300,10 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         if (webBeansContext.getOpenWebBeansConfiguration().isUseEJBInterceptorInjection())
         {
             Object instance = context.getTarget();
-            this.injector = new OWBInjector(webBeansContext);
+            OWBInjector injector = new OWBInjector(webBeansContext);
             try
             {
-                this.injector.inject(instance, this.cc);
+                injector.inject(instance, this.cc);
             }
             catch (Exception e)
             {
@@ -325,11 +322,6 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     {
 
         lifecycleCommon(context, InterceptionType.PRE_DESTROY);
-
-        if (this.injector != null)
-        {
-            this.injector.destroy();
-        }
 
         this.interceptedMethodMap.clear();
         this.resolvedBeans.clear();

@@ -20,15 +20,12 @@ package org.apache.webbeans.context.creational;
 
 import java.io.Serializable;
 
-import org.apache.webbeans.inject.OWBInjector;
 
 public class EjbInterceptorContext implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
     private Object interceptorInstance;
-
-    private OWBInjector injectorInstance;
 
     private Class<?> interceptorClass;
 
@@ -69,27 +66,10 @@ public class EjbInterceptorContext implements Serializable
         this.interceptorInstance = interceptorInstance;
     }
 
-    /**
-     * @return the injectorInstance
-     */
-    public OWBInjector getInjectorInstance()
-    {
-        return injectorInstance;
-    }
-
-    /**
-     * @param injectorInstance the injectorInstance to set
-     */
-    public void setInjectorInstance(OWBInjector injectorInstance)
-    {
-        this.injectorInstance = injectorInstance;
-    }
-    
     @Override
     public String toString() 
     {
         return "EjbInterceptorContext [interceptorClass=" + interceptorClass
-            + ", interceptorInstance=" + interceptorInstance
-            + ", injectorInstance=" + injectorInstance + "]";
+            + ", interceptorInstance=" + interceptorInstance + "]";
     }
 }
