@@ -448,8 +448,7 @@ public class InterceptorDataImpl implements InterceptorData
                 interceptor = webBeansContext.getWebBeansUtil().newInstanceForced(interceptorClass);
                 try
                 {
-                    OWBInjector injector = new OWBInjector(webBeansContext);
-                    injector.inject(interceptor, ownerCreationalContext);
+                    OWBInjector.inject(webBeansContext.getBeanManagerImpl(), interceptor, ownerCreationalContext);
 
                     ejbInterceptorContext = new EjbInterceptorContext();
                     ejbInterceptorContext.setInterceptorInstance(interceptor);

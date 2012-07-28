@@ -21,7 +21,6 @@ package org.apache.webbeans.inject;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
-import org.apache.webbeans.config.WebBeansContext;
 
 /**
  * Injects dependencies of the given Java EE component
@@ -32,40 +31,31 @@ import org.apache.webbeans.config.WebBeansContext;
  */
 public final class OWBInjector
 {
-    private final WebBeansContext webBeansContext;
-
-    /**
-     * Creates a new instance
-     * @param webBeansContext
-     */
-    public OWBInjector(WebBeansContext webBeansContext)
+    private OWBInjector()
     {
         //No operation
-        this.webBeansContext = webBeansContext;
     }
 
     /**
      * Inject dependencies of given instance.
+     * @param beamManager the BeanManager to use
      * @param instanceUnderInjection instance
      * @param ownerCreationalContext CreationalContext of the owner
      * @return this injector
      * @throws Exception if exception occurs
      */
     @SuppressWarnings("unchecked")
-    public  OWBInjector inject(Object instanceUnderInjection, CreationalContext<?> ownerCreationalContext) throws Exception
+    public static void inject(BeanManager beamManager, Object instanceUnderInjection, CreationalContext<?> ownerCreationalContext)
+            throws Exception
     {
         CreationalContext<?> creationalContext = ownerCreationalContext;
-        BeanManager bm = webBeansContext.getBeanManagerImpl();
-
         if(creationalContext == null)
         {
-            creationalContext = bm.createCreationalContext(null);
+            creationalContext = beamManager.createCreationalContext(null);
         }
 
-        AnnotatedType annotatedType = bm.createAnnotatedType(instanceUnderInjection.getClass());
-        bm.createInjectionTarget(annotatedType).inject(instanceUnderInjection, creationalContext);
-
-        return this;
+        AnnotatedType annotatedType = beamManager.createAnnotatedType(instanceUnderInjection.getClass());
+        beamManager.createInjectionTarget(annotatedType).inject(instanceUnderInjection, creationalContext);
     }
 
 

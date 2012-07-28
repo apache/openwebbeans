@@ -300,10 +300,9 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         if (webBeansContext.getOpenWebBeansConfiguration().isUseEJBInterceptorInjection())
         {
             Object instance = context.getTarget();
-            OWBInjector injector = new OWBInjector(webBeansContext);
             try
             {
-                injector.inject(instance, this.cc);
+                OWBInjector.inject(webBeansContext.getBeanManagerImpl(), instance, this.cc);
             }
             catch (Exception e)
             {
