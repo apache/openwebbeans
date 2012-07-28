@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.conversation;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -70,16 +72,16 @@ public class ConversationImpl implements Conversation, Serializable
     /**This instance is under used*/
     private AtomicBoolean inUsed = new AtomicBoolean(false);
 
-    private WebBeansContext webBeansContext;
+    private transient WebBeansContext webBeansContext;
 
     /**
-     * Default constructor. Used in tests.
+     * Default constructor. Used for proxies.
      */
     public ConversationImpl()
     {
-        this(WebBeansContext.getInstance());
+        super();
     }
-    
+
     public ConversationImpl(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
@@ -352,6 +354,15 @@ public class ConversationImpl implements Conversation, Serializable
         builder.append(" ]");
         
         return builder.toString();
+    }
+
+    /**
+     * We need this for restoring our WebBeansContext on de-serialisation
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        webBeansContext = WebBeansContext.currentInstance();
+        in.defaultReadObject();
     }
 
 }

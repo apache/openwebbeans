@@ -18,14 +18,13 @@
  */
 package org.apache.webbeans.decorator;
 
-import java.io.Serializable;
 import java.util.Comparator;
 
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.config.WebBeansContext;
 
-public class DecoratorComparator<T> implements Comparator<Decorator<T>>, Serializable
+public class DecoratorComparator<T> implements Comparator<Decorator<T>>
 {
 
     /** default serial version UID */
