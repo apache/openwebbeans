@@ -156,7 +156,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
 
     protected WebBeansContext webBeansContext;
 
-    private volatile DelegateHandler delegateHandler = null;
+    private volatile DelegateHandler decoratorDelegateHandler = null;
 
     /**
      * Creates a new handler.
@@ -234,27 +234,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                 {
                     if (!injectionTarget.getDecoratorStack().isEmpty())
                     {
-                        synchronized (this)
-                        {
-                            if (delegateHandler == null)
-                            {
-                                Class<?> proxyClass = webBeansContext.getJavassistProxyFactory().getInterceptorProxyClasses().get(bean);
-                                if (proxyClass == null)
-                                {
-                                    ProxyFactory delegateFactory = webBeansContext.getJavassistProxyFactory().createProxyFactory(bean);
-                                    proxyClass = webBeansContext.getJavassistProxyFactory().getProxyClass(delegateFactory);
-                                    webBeansContext.getJavassistProxyFactory().getInterceptorProxyClasses().put(bean, proxyClass);
-                                }
-                                Object delegate = proxyClass.newInstance();
-                                delegateHandler = new DelegateHandler(bean);
-                                ((ProxyObject)delegate).setHandler(delegateHandler);
-
-                                // Gets component decorator stack
-                                List<Object> decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate, ownerCreationalContext);
-                                //Sets decorator stack of delegate
-                                delegateHandler.setDecorators(decorators);
-                            }
-                        }
+                        resolveDecoratorDelegateHandler(instance, ownerCreationalContext, injectionTarget);
                     }
 
                     // Run around invoke chain
@@ -267,10 +247,10 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                             interceptedMethodMap = new ConcurrentHashMap<Method, List<InterceptorData>>();
                         }
                         
-                        if (delegateHandler != null)
+                        if (decoratorDelegateHandler != null)
                         {
                             // We have interceptors and decorators, Our delegateHandler will need to be wrapped in an interceptor
-                            WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(delegateHandler, instance);
+                            WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(decoratorDelegateHandler, instance);
                             decoratorInterceptorDataImpl = new InterceptorDataImpl(true, lastInterceptor, webBeansContext);
                             decoratorInterceptorDataImpl.setDefinedInInterceptorClass(true);
                             decoratorInterceptorDataImpl.setAroundInvoke(
@@ -316,9 +296,9 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                     
                     // If there are Decorators, allow the delegate handler to
                     // manage the stack
-                    if (delegateHandler != null)
+                    if (decoratorDelegateHandler != null)
                     {
-                        return delegateHandler.invoke(instance, method, proceed, arguments);
+                        return decoratorDelegateHandler.invoke(instance, method, proceed, arguments);
                     }
                 }
 
@@ -352,6 +332,31 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         }
 
         return result;
+    }
+
+    private synchronized void resolveDecoratorDelegateHandler(Object instance, CreationalContextImpl<?> ownerCreationalContext,
+                                                              InjectionTargetBean<?> injectionTarget)
+            throws Exception
+    {
+        if (decoratorDelegateHandler == null)
+        {
+            Class<?> proxyClass = webBeansContext.getJavassistProxyFactory().getInterceptorProxyClasses().get(bean);
+            if (proxyClass == null)
+            {
+                ProxyFactory delegateFactory = webBeansContext.getJavassistProxyFactory().createProxyFactory(bean);
+                proxyClass = webBeansContext.getJavassistProxyFactory().getProxyClass(delegateFactory);
+                webBeansContext.getJavassistProxyFactory().getInterceptorProxyClasses().put(bean, proxyClass);
+            }
+            Object delegate = proxyClass.newInstance();
+            DelegateHandler newDelegateHandler = new DelegateHandler(bean);
+            ((ProxyObject)delegate).setHandler(newDelegateHandler);
+
+            // Gets component decorator stack
+            List<Object> decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate, ownerCreationalContext);
+            //Sets decorator stack of delegate
+            newDelegateHandler.setDecorators(decorators);
+            decoratorDelegateHandler = newDelegateHandler;
+        }
     }
 
     /**
