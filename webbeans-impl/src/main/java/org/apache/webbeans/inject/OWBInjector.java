@@ -38,24 +38,24 @@ public final class OWBInjector
 
     /**
      * Inject dependencies of given instance.
-     * @param beamManager the BeanManager to use
+     * @param beanManager the BeanManager to use
      * @param instanceUnderInjection instance
      * @param ownerCreationalContext CreationalContext of the owner
      * @return this injector
      * @throws Exception if exception occurs
      */
     @SuppressWarnings("unchecked")
-    public static void inject(BeanManager beamManager, Object instanceUnderInjection, CreationalContext<?> ownerCreationalContext)
+    public static void inject(BeanManager beanManager, Object instanceUnderInjection, CreationalContext<?> ownerCreationalContext)
             throws Exception
     {
         CreationalContext<?> creationalContext = ownerCreationalContext;
         if(creationalContext == null)
         {
-            creationalContext = beamManager.createCreationalContext(null);
+            creationalContext = beanManager.createCreationalContext(null);
         }
 
-        AnnotatedType annotatedType = beamManager.createAnnotatedType(instanceUnderInjection.getClass());
-        beamManager.createInjectionTarget(annotatedType).inject(instanceUnderInjection, creationalContext);
+        AnnotatedType annotatedType = beanManager.createAnnotatedType(instanceUnderInjection.getClass());
+        beanManager.createInjectionTarget(annotatedType).inject(instanceUnderInjection, creationalContext);
     }
 
 
