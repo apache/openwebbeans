@@ -32,10 +32,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Wrapper class around the log4j logger class to include some checks before the
+ * Wrapper class around the JUL logger class to include some checks before the
  * logs are actually written.
  * <p>
- * Actually, it is a thin layer on the log4j {@link Logger} implementation.
+ * Actually, it is a thin layer on the JUL {@link Logger} implementation.
  * </p>
  *
  * @version $Rev$ $Date$
