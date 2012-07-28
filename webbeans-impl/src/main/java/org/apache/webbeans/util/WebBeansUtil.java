@@ -39,8 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 import javax.annotation.PostConstruct;
@@ -174,8 +172,6 @@ import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnproxyableR
 @SuppressWarnings("unchecked")
 public final class WebBeansUtil
 {
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansUtil.class);
-
     /**
      * Enforcing that interceptor callbacks should not be
      * able to throw checked exceptions is configurable
@@ -1576,8 +1572,6 @@ public final class WebBeansUtil
         ProducerMethodBean pbean;
         ProducerMethodBean pLeft;
         ProducerMethodBean pRight;
-
-        logger.fine("configure Specialized producer beans has started.");
 
         // collect all producer method beans
         Set<Bean<?>> beans = webBeansContext.getBeanManagerImpl().getBeans();
@@ -3014,13 +3008,6 @@ public final class WebBeansUtil
             {
                 WebBeansDecoratorConfig.configureDecoratorClass(delegate);
             }
-            else
-            {
-                if (logger.isLoggable(Level.FINEST))
-                {
-                    logger.log(Level.FINEST, "Unable to configure decorator with class : [{0}]", annotatedType.getJavaClass());
-                }
-            }
         }
     }
 
@@ -3041,13 +3028,6 @@ public final class WebBeansUtil
                 AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
                 webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass(delegate,
                                                                annotationManager.getInterceptorBindingMetaAnnotations(anns));
-            }
-            else
-            {
-                if (logger.isLoggable(Level.FINEST))
-                {
-                    logger.log(Level.FINEST, "Unable to configure interceptor with class : [{0}]", annotatedType.getJavaClass());
-                }
             }
         }
 

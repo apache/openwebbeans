@@ -54,7 +54,7 @@ public class WebBeansErrorHandler implements ErrorHandler
 
     public void warning(SAXParseException exception) throws SAXException
     {
-        logger.log(Level.FINE, exception.getMessage(), exception.getCause());
+        logger.log(Level.WARNING, exception.getMessage(), exception.getCause());
     }
 
 }

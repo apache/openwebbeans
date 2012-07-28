@@ -191,8 +191,6 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     @SuppressWarnings("unchecked")
     public void notify(T event)
     {
-        logger.log(Level.FINEST, "Notifying with event payload : [{0}]", event);
-        
         AbstractOwbBean<Object> component = (AbstractOwbBean<Object>) bean;
         if (!bean.isEnabled())
         {
