@@ -45,7 +45,7 @@ public class DecoratorAndInterceptorStackTests extends AbstractUnitTest
 {
 
     public static final String PACKAGE_NAME = DecoratorAndInterceptorStackTests.class.getPackage().getName();
-    private static final int NUM_THREADS = 50;
+    private static final int NUM_THREADS = 20;
 
     private static final Logger log = Logger.getLogger(DecoratorAndInterceptorStackTests.class.getName());
 
@@ -82,7 +82,7 @@ public class DecoratorAndInterceptorStackTests extends AbstractUnitTest
     }
 
 
-    //X TODO @Test
+    @Test
     public void testParallelInterceptorInvocation() throws Exception
     {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
@@ -106,6 +106,7 @@ public class DecoratorAndInterceptorStackTests extends AbstractUnitTest
         for (int i= 0 ; i < NUM_THREADS; i++)
         {
             threads[i] = new InterceptorTestRunner(outsideBean);
+            threads[i].setName("testthread_" + i);
             threads[i].start();
         }
 
@@ -136,7 +137,7 @@ public class DecoratorAndInterceptorStackTests extends AbstractUnitTest
                 // this starts the RequestContext for this very thread
                 WebBeansContext.currentInstance().getContextFactory().initRequestContext(null);
 
-                for (int i=0; i < 5; i++)
+                for (int i=0; i < 10; i++)
                 {
                     outsideBean.doThaStuff();
                 }

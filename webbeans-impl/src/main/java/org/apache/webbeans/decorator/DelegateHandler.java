@@ -26,6 +26,7 @@ import java.io.ObjectOutput;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,7 +47,14 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
     private static final Logger logger = WebBeansLoggerFacade.getLogger(DelegateHandler.class);
 
     private transient List<Object> decorators;
-    private transient int position = 0;
+    private transient ThreadLocal<AtomicInteger> position = new ThreadLocal<AtomicInteger>()
+    {
+        @Override
+        protected AtomicInteger initialValue()
+        {
+            return new AtomicInteger(0);
+        }
+    };
 
     private transient Object actualInstance = null;
     
@@ -79,10 +87,10 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
             actualInstance = instance;
         }
 
-        while (position < decorators.size())
+        while (position.get().intValue() < decorators.size())
         {
 
-            Object decorator = decorators.get(position++);
+            Object decorator = decorators.get(position.get().getAndIncrement());
 
             try
             {
@@ -97,7 +105,7 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
                     }
 
                     Object returnValue = decMethod.invoke(decorator, arguments);
-                    position--;
+                    position.remove();
                     return returnValue;
                 }
 
@@ -120,7 +128,7 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
                 {
                     continue;
                 }
-                
+
                 logger.log(Level.SEVERE, OWBLogConst.ERROR_0012, WebBeansLoggerFacade.args(e.getTargetException(), method.getName(), decorator.getClass().getName()));
 
                 if (cause instanceof Exception)
@@ -143,6 +151,8 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
             }
 
         }
+
+        position.remove();
 
         if (!method.isAccessible())
         {

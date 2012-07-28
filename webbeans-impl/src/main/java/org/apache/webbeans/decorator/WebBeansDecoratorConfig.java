@@ -145,34 +145,34 @@ public final class WebBeansDecoratorConfig
     public static List<Object> getDecoratorStack(InjectionTargetBean<?> component, Object instance, 
             Object delegate, CreationalContextImpl<?> ownerCreationalContext)
     {
-        List<Object> decoratorStack = new ArrayList<Object>();
-        List<Decorator<?>> decoratorList = component.getDecoratorStack();        
-        Iterator<Decorator<?>> itList = decoratorList.iterator();
-        BeanManager manager = component.getWebBeansContext().getBeanManagerImpl();
-        while (itList.hasNext())
+        // we need to synchronize on the instance to prevent
+        // creating the decorators too often
+        synchronized(instance)
         {
-            Object decoratorInstance ;
-            WebBeansDecorator<Object> decorator = (WebBeansDecorator<Object>) itList.next();
-            decoratorInstance = ownerCreationalContext.getDependentDecorator(instance, decorator);
-            if(decoratorInstance == null)
+            List<Object> decoratorStack = new ArrayList<Object>();
+            List<Decorator<?>> decoratorList = component.getDecoratorStack();
+            Iterator<Decorator<?>> itList = decoratorList.iterator();
+            BeanManager manager = component.getWebBeansContext().getBeanManagerImpl();
+            while (itList.hasNext())
             {
-                decoratorInstance = manager.getReference(decorator, decorator.getBeanClass(), ownerCreationalContext);
-                
-                decorator.setInjections(decoratorInstance, ownerCreationalContext);
-                decorator.setDelegate(decoratorInstance, delegate);
-                
-                ownerCreationalContext.addDependent(instance, decorator, decoratorInstance);
-            }
-            else
-            {
-                //We found an existing decorator instance, update the delegate
-                decorator.setDelegate(decoratorInstance, delegate);
-            }
-            
-            decoratorStack.add(decoratorInstance);
-        }
+                Object decoratorInstance ;
+                WebBeansDecorator<Object> decorator = (WebBeansDecorator<Object>) itList.next();
+                decoratorInstance = ownerCreationalContext.getDependentDecorator(instance, decorator);
+                if(decoratorInstance == null)
+                {
+                    decoratorInstance = manager.getReference(decorator, decorator.getBeanClass(), ownerCreationalContext);
 
-        return decoratorStack;
+                    decorator.setInjections(decoratorInstance, ownerCreationalContext);
+                    decorator.setDelegate(decoratorInstance, delegate);
+
+                    ownerCreationalContext.addDependent(instance, decorator, decoratorInstance);
+                }
+
+                decoratorStack.add(decoratorInstance);
+            }
+
+            return decoratorStack;
+        }
     }
 
     public static Set<Decorator<?>> findDeployedWebBeansDecorator(BeanManagerImpl beanManagerImpl, Set<Type> apiType, Annotation... anns)

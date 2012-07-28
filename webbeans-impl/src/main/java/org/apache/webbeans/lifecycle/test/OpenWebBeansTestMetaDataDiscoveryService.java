@@ -22,11 +22,14 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javassist.ClassPool;
 
 import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.Asserts;
 
 /**
@@ -36,6 +39,8 @@ import org.apache.webbeans.util.Asserts;
  */
 public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDiscovery
 {
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(OpenWebBeansTestMetaDataDiscoveryService.class);
+
     public OpenWebBeansTestMetaDataDiscoveryService()
     {
         
@@ -101,7 +106,7 @@ public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDi
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Problems while scanning class " + clazz.getName());
         }
     }
     
