@@ -31,7 +31,7 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 public class TomcatAnnotProcessor implements AnnotationProcessor
 {
-    private final Logger logger = WebBeansLoggerFacade.getLogger(TomcatAnnotProcessor.class);
+    private final static Logger logger = WebBeansLoggerFacade.getLogger(TomcatAnnotProcessor.class);
 
     private AnnotationProcessor processor;
 

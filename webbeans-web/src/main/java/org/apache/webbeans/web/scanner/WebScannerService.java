@@ -40,7 +40,7 @@ import org.scannotation.WarUrlFinder;
  */
 public class WebScannerService extends AbstractMetaDataDiscovery
 {
-    private final Logger logger = WebBeansLoggerFacade.getLogger(WebScannerService.class);
+    private final static Logger logger = WebBeansLoggerFacade.getLogger(WebScannerService.class);
 
     private boolean configure = false;
 

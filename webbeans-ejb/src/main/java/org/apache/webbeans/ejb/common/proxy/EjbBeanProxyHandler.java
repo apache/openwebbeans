@@ -57,7 +57,7 @@ import javassist.util.proxy.MethodHandler;
 public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externalizable
 {
     //Logger instance
-    private final Logger logger = WebBeansLoggerFacade.getLogger(EjbBeanProxyHandler.class);
+    private final static Logger logger = WebBeansLoggerFacade.getLogger(EjbBeanProxyHandler.class);
     
     /**Proxy ejb bean instance*/
     private BaseEjbBean<?> ejbBean;

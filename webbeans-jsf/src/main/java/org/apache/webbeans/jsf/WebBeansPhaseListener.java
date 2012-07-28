@@ -46,7 +46,7 @@ public class WebBeansPhaseListener implements PhaseListener
     private static final long serialVersionUID = 1L;
 
     /**Logger instance*/
-    private final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansPhaseListener.class);
+    private final static Logger logger = WebBeansLoggerFacade.getLogger(WebBeansPhaseListener.class);
 
     private Boolean owbApplication = null;
 
