@@ -31,7 +31,7 @@ import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 
 public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
 {
-    private final Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedTypeBeanCreatorImpl.class);
+    private final static Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedTypeBeanCreatorImpl.class);
 
     public AnnotatedTypeBeanCreatorImpl(ManagedBean<T> managedBean)
     {
@@ -58,7 +58,8 @@ public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
         }
         catch(Exception e)
         {
-            logger.log(Level.WARNING, OWBLogConst.WARN_0012, getAnnotatedType().getJavaClass());
+            // if no constructor could be found, we just leave the empty set.
+            logger.log(Level.INFO, OWBLogConst.WARN_0012, getAnnotatedType().getJavaClass());
         }
     }
     

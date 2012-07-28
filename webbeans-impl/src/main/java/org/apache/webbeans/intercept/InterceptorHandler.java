@@ -145,8 +145,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     /**Default serial id*/
     private static final long serialVersionUID = 1L;
     
-    /**Logger instance*/
-    private final Logger logger = WebBeansLoggerFacade.getLogger(InterceptorHandler.class);
+    private final static Logger logger = WebBeansLoggerFacade.getLogger(InterceptorHandler.class);
     
     /**Proxied bean*/
     protected OwbBean<?> bean = null;

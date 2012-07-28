@@ -50,7 +50,7 @@ public class ConversationManager
     /**Current conversations*/
     private final ConcurrentHashMap<Conversation, ConversationContext> conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
     private final WebBeansContext webBeansContext;
-    private final Logger logger = WebBeansLoggerFacade.getLogger(ConversationManager.class);
+    private final static Logger logger = WebBeansLoggerFacade.getLogger(ConversationManager.class);
 
     /**
      * Creates new conversation manager

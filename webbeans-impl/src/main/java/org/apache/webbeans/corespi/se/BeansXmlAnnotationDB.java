@@ -45,7 +45,7 @@ public class BeansXmlAnnotationDB extends AnnotationDB
     private static final long serialVersionUID = 4321069777044090278L;
 
     /** Logger instance */
-    private final Logger logger = WebBeansLoggerFacade.getLogger(BeansXmlAnnotationDB.class);
+    private final static Logger logger = WebBeansLoggerFacade.getLogger(BeansXmlAnnotationDB.class);
 
     /**
      * null or beans.xml of current BDA being processed 

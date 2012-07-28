@@ -89,7 +89,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class ObserverMethodImpl<T> implements ObserverMethod<T>
 {
     /**Logger instance*/
-    private final Logger logger = WebBeansLoggerFacade.getLogger(ObserverMethodImpl.class);
+    private final static Logger logger = WebBeansLoggerFacade.getLogger(ObserverMethodImpl.class);
 
     /**Observer owner bean that defines observer method*/
     private final InjectionTargetBean<?> bean;

@@ -45,7 +45,7 @@ public final class AnnotatedElementFactory
 {
 
     // Logger instance
-    private final Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedElementFactory.class);
+    private final static Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedElementFactory.class);
 
     //Cache of the AnnotatedType
     private ConcurrentMap<Class<?>, AnnotatedType<?>> annotatedTypeCache =
