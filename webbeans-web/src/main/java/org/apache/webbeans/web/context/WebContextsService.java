@@ -395,18 +395,8 @@ public class WebContextsService extends AbstractContextsService
         //Clear thread locals
         requestContexts.set(null);
         requestContexts.remove();
-        
-        //Also clear application and singleton context
-        applicationContexts.set(null);
-        applicationContexts.remove();
-        
-        //Singleton context
-        singletonContexts.set(null);
-        singletonContexts.remove();
-        
-        //Conversation context
-        conversationContexts.set(null);
-        conversationContexts.remove();
+
+        RequestScopedBeanInterceptorHandler.removeThreadLocals();
     }
 
     private void cleanupConversations()
@@ -581,6 +571,10 @@ public class WebContextsService extends AbstractContextsService
         
         //destroyDependents all conversations
         conversationManager.destroyAllConversations();
+
+        //Also clear application and singleton context
+        applicationContexts.set(null);
+        applicationContexts.remove();
     }
     
     /**
@@ -641,7 +635,11 @@ public class WebContextsService extends AbstractContextsService
         if(servletContext != null)
         {
             currentSingletonContexts.remove(servletContext);   
-        }                
+        }
+
+        //Singleton context
+        singletonContexts.set(null);
+        singletonContexts.remove();
     }
 
     /**
