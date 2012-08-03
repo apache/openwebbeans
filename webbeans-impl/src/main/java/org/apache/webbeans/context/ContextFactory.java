@@ -35,6 +35,7 @@ import org.apache.webbeans.config.WebBeansContext;
 /**
  * JSR-299 based standard context
  * related operations.
+ * @deprecated user should use the ContextsService directly.
  */
 public final class ContextFactory
 {

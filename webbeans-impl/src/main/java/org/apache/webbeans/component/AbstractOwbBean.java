@@ -681,8 +681,8 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     {
         if(isPassivationCapable())
         {
-            Set<InjectionPoint> injectionPoints = getInjectionPoints();
-            for(InjectionPoint injectionPoint : injectionPoints)
+            Set<InjectionPoint> beanInjectionPoints = getInjectionPoints();
+            for(InjectionPoint injectionPoint : beanInjectionPoints)
             {
                 if(!injectionPoint.isTransient())
                 {

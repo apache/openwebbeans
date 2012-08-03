@@ -336,16 +336,12 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
-        //Define annotated parameter
-        AnnotatedType<T> annotatedType = (AnnotatedType<T>) annotatedElementFactory.newAnnotatedType(bean.getReturnType());
-        AnnotatedMethod<T> annotatedMethod = annotatedElementFactory.newAnnotatedMethod(observerMethod, annotatedType);
-        
         Type[] types = observerMethod.getGenericParameterTypes();
         Annotation[][] annots = observerMethod.getParameterAnnotations();
         List<ObserverParams> list = new ArrayList<ObserverParams>();
 
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        ObserverParams param = null;
+        ObserverParams param;
         if (types.length > 0)
         {
             int i = 0;
@@ -381,9 +377,13 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     
                     //Get parameter annotations
                     Annotation[] bindingTypes = annotationManager.getQualifierAnnotations(annot);
-                    
+
+                    //Define annotated parameter
+                    AnnotatedType<T> annotatedType = (AnnotatedType<T>) annotatedElementFactory.newAnnotatedType(bean.getReturnType());
+                    AnnotatedMethod<T> newAnnotatedMethod = annotatedElementFactory.newAnnotatedMethod(observerMethod, annotatedType);
+
                     //Annotated parameter
-                    AnnotatedParameter<T> annotatedParameter = annotatedMethod.getParameters().get(i);
+                    AnnotatedParameter<T> annotatedParameter = newAnnotatedMethod.getParameters().get(i);
                     
                     //Creating injection point
                     InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(bean, type, observerMethod, annotatedParameter, bindingTypes);

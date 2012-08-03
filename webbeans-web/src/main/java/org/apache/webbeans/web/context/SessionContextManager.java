@@ -91,16 +91,16 @@ public class SessionContextManager
     public void destroyAllSessions()
     {
         //Destroy all contexts
-        Collection<SessionContext> sessionContexts = this.sessionContexts.values();
-        if(sessionContexts != null && sessionContexts.size() > 0)
+        Collection<SessionContext> allSessionContexts = this.sessionContexts.values();
+        if(allSessionContexts != null && allSessionContexts.size() > 0)
         {
-            for(SessionContext sessionContext : sessionContexts)
+            for(SessionContext sessionContext : allSessionContexts)
             {
                 sessionContext.destroy();
             }
 
         //Clear map
-        sessionContexts.clear();
+        allSessionContexts.clear();
         }
     }
 }

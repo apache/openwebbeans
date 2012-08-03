@@ -408,7 +408,6 @@ public class WebContextsService extends AbstractContextsService
             return;
         }
 
-        ConversationManager conversationManager = webBeansContext.getConversationManager();
         Conversation conversation = conversationManager.getConversationBeanReference();
 
         if (conversation == null)

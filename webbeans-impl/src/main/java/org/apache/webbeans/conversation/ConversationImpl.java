@@ -163,7 +163,6 @@ public class ConversationImpl implements Conversation, Serializable
     public void begin(String id)
     {   
         //Look at other conversation, that may collate with this is
-        final WebBeansContext webBeansContext = this.webBeansContext;
         final ConversationManager conversationManager = webBeansContext.getConversationManager();
         if(conversationManager.isConversationExistWithGivenId(id))
         {
