@@ -29,9 +29,12 @@ import java.util.ServiceLoader;
  */
 public class CdiTestContainerLoader 
 {
+    private CdiTestContainerLoader()
+    {
+        // utility class doesn't have a public ct
+    }
 
-    
-    public static CdiTestContainer getCdiContainer() 
+    public static CdiTestContainer getCdiContainer()
     {
         CdiTestContainer testContainer = null;
 

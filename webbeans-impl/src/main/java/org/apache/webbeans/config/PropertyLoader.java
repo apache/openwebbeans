@@ -49,6 +49,11 @@ public class PropertyLoader
     private static final Logger logger = WebBeansLoggerFacade.getLogger(PropertyLoader.class);
 
 
+    private PropertyLoader()
+    {
+        // utility class doesn't have a public ct
+    }
+
     /**
      * <p>Look for all property files with the given name (e.g. 'myconfig.properties') in
      * the classpath. Then load all properties files and sort them by their ascending

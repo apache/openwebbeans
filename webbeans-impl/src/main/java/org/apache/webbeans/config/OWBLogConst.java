@@ -24,13 +24,13 @@ package org.apache.webbeans.config;
 
 public class OWBLogConst
 {
-    public static final String DEFAULT_MSGS_PROPERTIES_NAME = "javax.openwebbeans.Messages";
+    private OWBLogConst()
+    {
+        // utility class doesn't have a public ct
+    }
 
-    public static final String TEXT_CONFIG_NOT_FOUND = "TEXT_CONFIG_NOT_FOUND"; // Config properties [{0}] not found. Using default settings.
-    public static final String TEXT_CONFIG_FOUND     = "TEXT_CONFIG_FOUND";     // Config properties [{0}] found at location \: [{1}]. Overriding default settings.
-    public static final String TEXT_MB_IMPL          = "TEXT_MB_IMPL";          // Managed Bean implementation class : 
+    public static final String TEXT_MB_IMPL          = "TEXT_MB_IMPL";          // Managed Bean implementation class :
     public static final String TEXT_SAME_SCOPE       = "TEXT_SAME_SCOPE";       //  stereotypes must declare the same @Scope annotations.
-    public static final String TEXT_JAVA_TYPENAME    = "TEXT_JAVA_TYPENAME";    // Java type with name \: 
 
     public static final String INFO_0001 = "INFO_0001"; // OpenWebBeans Container has started, it took {0} ms.
     public static final String INFO_0002 = "INFO_0002"; // OpenWebBeans Container has stopped for context path, 

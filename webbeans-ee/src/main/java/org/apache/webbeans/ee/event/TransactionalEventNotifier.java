@@ -37,14 +37,17 @@ public class TransactionalEventNotifier
 {
     private static final Logger logger = WebBeansLoggerFacade.getLogger(TransactionalEventNotifier.class);
 
-    public TransactionalEventNotifier()
+    private TransactionalEventNotifier()
     {
-        
+        // utility class ct
     }
-    
+
+    /**
+     * This will get called by the EJB integration code
+     */
     public static void registerTransactionSynchronization(TransactionPhase phase, ObserverMethod<? super Object> observer, Object event) throws Exception
     {
-        TransactionService transactionService = WebBeansContext.getInstance().getService(TransactionService.class);
+        TransactionService transactionService = WebBeansContext.currentInstance().getService(TransactionService.class);
         
         Transaction transaction = null;
         if(transactionService != null)

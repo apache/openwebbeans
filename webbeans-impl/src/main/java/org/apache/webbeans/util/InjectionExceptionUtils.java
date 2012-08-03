@@ -33,6 +33,11 @@ import java.lang.reflect.Type;
 
 public class InjectionExceptionUtils
 {
+    private InjectionExceptionUtils()
+    {
+        // utility class ct
+    }
+
     public static void throwUnproxyableResolutionException(ViolationMessageBuilder violationMessage)
     {
         throw new UnproxyableResolutionException(
