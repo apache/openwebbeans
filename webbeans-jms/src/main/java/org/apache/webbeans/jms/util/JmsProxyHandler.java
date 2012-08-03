@@ -154,16 +154,28 @@ public class JmsProxyHandler implements MethodHandler
 
     private Session createSession()
     {
+        Connection connection = null;
         try
         {
 
-            Connection connection = createOrReturnQueueOrTopicConnection();
+            connection = createOrReturnQueueOrTopicConnection();
 
             return connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
         }
         catch (JMSException e)
         {
+            if (connection != null)
+            {
+                try
+                {
+                    connection.close();
+                }
+                catch (JMSException jmse)
+                {
+                    // do nothing, we are already throwing up anyway...
+                }
+            }
             throw new WebBeansException("Unable to create jms session", e);
         }
 
