@@ -165,14 +165,14 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
                     "But the decorator bean : " + toString() + " has none");
         }
         
-        String message = new String("Error in decorator : "+ toString() + ". The delegate injection point must be an injected field, " +
-                "initializer method parameter or bean constructor method parameter. ");
-        
         if(!(ipFound.getMember() instanceof Constructor))
         {
             AnnotatedElement element = (AnnotatedElement)ipFound.getMember();
             if(!element.isAnnotationPresent(Inject.class))
             {
+                String message = "Error in decorator : "+ toString() + ". The delegate injection point must be an injected field, " +
+                        "initializer method parameter or bean constructor method parameter.";
+
                 throw new WebBeansConfigurationException(message);
             }                
         }

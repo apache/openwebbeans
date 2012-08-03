@@ -100,7 +100,6 @@ public class WebScannerService extends AbstractMetaDataDiscovery
     protected Set<String> createURLFromMarkerFile() throws Exception
     {
         Set<String> listURL = new HashSet<String>();
-        ClassLoader parentClassLoader = WebBeansUtil.getCurrentClassLoader().getParent();
 
         // Root with beans.xml marker.
         String[] urls = findBeansXmlBases(META_INF_BEANS_XML, WebBeansUtil.getCurrentClassLoader());
