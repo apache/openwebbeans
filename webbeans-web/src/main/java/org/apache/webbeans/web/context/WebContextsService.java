@@ -22,7 +22,6 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.AbstractContextsService;
 import org.apache.webbeans.context.ApplicationContext;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.context.RequestContext;
@@ -419,10 +418,9 @@ public class WebContextsService extends AbstractContextsService
         {
             if (logger.isLoggable(Level.FINE))
             {
-                logger.log(Level.FINE, "Destroying the conversation context with cid : [{0}]", conversation.getId());
+                logger.log(Level.FINE, "Destroying the transient conversation context with cid : [{0}]", conversation.getId());
             }
-            ContextFactory contextFactory = webBeansContext.getContextFactory();
-            contextFactory.destroyConversationContext();
+            destroyConversationContext();
         }
         else
         {
