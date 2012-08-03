@@ -27,7 +27,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.ResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -36,9 +35,9 @@ import javax.servlet.ServletContextEvent;
 
 import org.apache.webbeans.cditest.CdiTestContainer;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContainerLifecycle;
+import org.apache.webbeans.spi.ContextsService;
 
 /**
  * OpenWebBeans specific implementation of {@link CdiTestContainer}.
@@ -69,31 +68,33 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
 
     public void startContexts() throws Exception 
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        ContextFactory contextFactory = webBeansContext.getContextFactory();
+        logger.log(Level.FINE, "starting all OWB Contexts");
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+        ContextsService contextsService = webBeansContext.getContextsService();
 
-        contextFactory.initSingletonContext(servletContext);
-        contextFactory.initApplicationContext(servletContext);
-        contextFactory.initSessionContext(session);
-        contextFactory.initConversationContext(null);
-        contextFactory.initRequestContext(null);
+        contextsService.startContext(Singleton.class, servletContext);
+        contextsService.startContext(ApplicationScoped.class, servletContext);
+        contextsService.startContext(SessionScoped.class, session);
+        contextsService.startContext(ConversationScoped.class, null);
+        contextsService.startContext(RequestScoped.class, null);
     }
 
     public void startApplicationScope() throws Exception 
     {
-        @SuppressWarnings("deprecation") WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        ContextFactory contextFactory = webBeansContext.getContextFactory();
+        logger.log(Level.FINE, "starting the OWB ApplicationContext");
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+        ContextsService contextsService = webBeansContext.getContextsService();
 
-        contextFactory.initApplicationContext(servletContext);
+        contextsService.startContext(ApplicationScoped.class, servletContext);
     }
 
-    @SuppressWarnings("deprecation")
     public void startConversationScope() throws Exception
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        ContextFactory contextFactory = webBeansContext.getContextFactory();
+        logger.log(Level.FINE, "starting the OWB ConversationContext");
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+        ContextsService contextsService = webBeansContext.getContextsService();
 
-        contextFactory.initConversationContext(null);
+        contextsService.startContext(ConversationScoped.class, null);
     }
 
     public void startCustomScope(Class<? extends Annotation> scopeClass) throws Exception 
@@ -103,83 +104,49 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
 
     public void startRequestScope() throws Exception 
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        ContextFactory contextFactory = webBeansContext.getContextFactory();
+        logger.log(Level.FINE, "starting the OWB RequestContext");
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+        ContextsService contextsService = webBeansContext.getContextsService();
 
-        contextFactory.initRequestContext(null);
+        contextsService.startContext(RequestScoped.class, null);
     }
 
     public void startSessionScope() throws Exception 
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        ContextFactory contextFactory = webBeansContext.getContextFactory();
+        logger.log(Level.FINE, "starting the OWB SessionContext");
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+        ContextsService contextsService = webBeansContext.getContextsService();
 
-        contextFactory.initSessionContext(session);
+        contextsService.startContext(SessionScoped.class, session);
     }
 
     public void stopContexts() throws Exception 
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        ContextFactory contextFactory = webBeansContext.getContextFactory();
+        logger.log(Level.FINE, "stopping all OWB Contexts");
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+        ContextsService contextsService = webBeansContext.getContextsService();
 
         stopSessionScope();
         stopConversationScope();
         stopRequestScope();
         stopApplicationScope();
-
-        Context context = contextFactory.getStandardContext(Singleton.class);
-        if(context != null && context.isActive())
-        {
-            contextFactory.destroySingletonContext(servletContext);
-        }
-        else
-        {
-            if(logger.isLoggable(Level.WARNING))
-            {
-                logger.warning("destroy was called for an inactive context (" + Singleton.class.getName() + ")");
-            }
-        }
-
-        //Comment out for OWB-502
-        //ContextFactory.cleanUpContextFactory();
+        contextsService.endContext(Singleton.class, null);
     }
 
     public void stopApplicationScope() throws Exception 
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        ContextFactory contextFactory = webBeansContext.getContextFactory();
-
-        Context context = contextFactory.getStandardContext(ApplicationScoped.class);
-        if(context != null && context.isActive())
-        {
-            contextFactory.destroyApplicationContext(servletContext);
-        }
-        else
-        {
-            if(logger.isLoggable(Level.WARNING))
-            {
-                logger.warning("destroy was called for an inactive context (" + ApplicationScoped.class.getName() + ")");
-            }
-        }
+        logger.log(Level.FINE, "stopping the OWB ApplicationContext");
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+        ContextsService contextsService = webBeansContext.getContextsService();
+        contextsService.endContext(ApplicationScoped.class, servletContext);
     }
 
     public void stopConversationScope() throws Exception 
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        ContextFactory contextFactory = webBeansContext.getContextFactory();
-
-        Context context = contextFactory.getStandardContext(ConversationScoped.class);
-        if(context != null && context.isActive())
-        {
-            contextFactory.destroyConversationContext();
-        }
-        else
-        {
-            if(logger.isLoggable(Level.WARNING))
-            {
-                logger.warning("destroy was called for an inactive context (" + ConversationScoped.class.getName() + ")");
-            }
-        }
+        logger.log(Level.FINE, "stopping the OWB ConversationContext");
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+        ContextsService contextsService = webBeansContext.getContextsService();
+        contextsService.endContext(ConversationScoped.class, null);
     }
 
     public void stopCustomScope(Class<? extends Annotation> scopeClass) throws Exception 
@@ -189,40 +156,19 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
 
     public void stopRequestScope() throws Exception 
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        ContextFactory contextFactory = webBeansContext.getContextFactory();
-
-        Context context = contextFactory.getStandardContext(RequestScoped.class);
-        if(context != null && context.isActive())
-        {
-            contextFactory.destroyRequestContext(null);
-        }
-        else
-        {
-            if(logger.isLoggable(Level.WARNING))
-            {
-                logger.warning("destroy was called for an inactive context (" + RequestScoped.class.getName() + ")");
-            }
-        }
+        logger.log(Level.FINE, "stopping the OWB RequestContext");
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+        ContextsService contextsService = webBeansContext.getContextsService();
+        contextsService.endContext(RequestScoped.class, null);
     }
 
     public void stopSessionScope() throws Exception 
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        ContextFactory contextFactory = webBeansContext.getContextFactory();
+        logger.log(Level.FINE, "stopping the OWB SessionContext");
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+        ContextsService contextsService = webBeansContext.getContextsService();
 
-        Context context = contextFactory.getStandardContext(SessionScoped.class);
-        if(context != null && context.isActive())
-        {
-            contextFactory.destroySessionContext(session);
-        }
-        else
-        {
-            if(logger.isLoggable(Level.WARNING))
-            {
-                logger.warning("destroy was called for an inactive context (" + SessionScoped.class.getName() + ")");
-            }
-        }
+        contextsService.endContext(SessionScoped.class, session);
     }
     
     public  BeanManager getBeanManager() 
