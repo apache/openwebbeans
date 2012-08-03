@@ -254,6 +254,7 @@ public class WebBeansContext
         return webBeansUtil;
     }
 
+    @Deprecated
     public ContextFactory getContextFactory()
     {
         return contextFactory;
