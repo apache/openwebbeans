@@ -31,6 +31,8 @@ import org.apache.webbeans.context.creational.BeanInstanceBag;
  */
 public class SingletonContext extends AbstractContext
 {
+    private static final long serialVersionUID = -7600942820719243149L;
+
     public SingletonContext()
     {
         super(Singleton.class);

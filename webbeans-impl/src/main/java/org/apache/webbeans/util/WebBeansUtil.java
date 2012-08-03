@@ -178,9 +178,23 @@ public final class WebBeansUtil
      */
     private static volatile Boolean enforceCheckedException;
 
-    private final static Class<Instance<?>> INSTANCE_TYPE = new TypeLiteral<Instance<?>>(){}.getRawType();
-    private final static Class<Provider<?>> PROVIDER_TYPE = new TypeLiteral<Provider<?>>(){}.getRawType();
-    private final static Class<Event<?>>    EVENT_TYPE    = new TypeLiteral<Event<?>>(){}.getRawType();
+    private final static Class<Instance<?>> INSTANCE_TYPE
+            = new TypeLiteral<Instance<?>>()
+    {
+        private static final long serialVersionUID = 3555319035805031154L;
+    }.getRawType();
+
+    private final static Class<Provider<?>> PROVIDER_TYPE
+            = new TypeLiteral<Provider<?>>()
+    {
+        private static final long serialVersionUID = -2611190564495920054L;
+    }.getRawType();
+
+    private final static Class<Event<?>>    EVENT_TYPE
+            = new TypeLiteral<Event<?>>()
+    {
+        private static final long serialVersionUID = -1395145871249763477L;
+    }.getRawType();
 
     private final WebBeansContext webBeansContext;
 

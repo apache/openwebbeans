@@ -30,4 +30,5 @@ import javax.enterprise.util.AnnotationLiteral;
 public class ApplicationScopeLiteral extends AnnotationLiteral<ApplicationScoped> implements ApplicationScoped
 {
 
+    private static final long serialVersionUID = 8089948111744513390L;
 }

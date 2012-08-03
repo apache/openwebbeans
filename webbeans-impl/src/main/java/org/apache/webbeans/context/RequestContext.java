@@ -33,9 +33,11 @@ import org.apache.webbeans.context.creational.BeanInstanceBag;
  */
 public class RequestContext extends AbstractContext
 {
+    private static final long serialVersionUID = -1030240915163272268L;
+
     /*
-     * Constructor
-     */
+    * Constructor
+    */
     public RequestContext()
     {
         super(RequestScoped.class);

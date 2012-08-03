@@ -29,6 +29,8 @@ import javax.inject.Named;
  */
 public class NamedLiteral extends AnnotationLiteral<Named> implements Named
 {
+
+    private static final long serialVersionUID = 8867272511520063730L;
     private String value;
     
     public NamedLiteral()

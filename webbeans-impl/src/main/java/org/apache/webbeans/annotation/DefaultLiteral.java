@@ -29,6 +29,7 @@ import javax.enterprise.util.AnnotationLiteral;
 public class DefaultLiteral extends AnnotationLiteral<Default> implements Default
 {
     private static final String TOSTRING = "@javax.enterprise.inject.Default()";
+    private static final long serialVersionUID = 6788272256977634238L;
 
     @Override
     public int hashCode()

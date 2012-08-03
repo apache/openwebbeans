@@ -30,4 +30,5 @@ import javax.enterprise.util.AnnotationLiteral;
 public class DependentScopeLiteral extends AnnotationLiteral<Dependent> implements Dependent
 {
 
+    private static final long serialVersionUID = -2677299920840834714L;
 }

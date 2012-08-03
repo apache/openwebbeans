@@ -39,6 +39,8 @@ import javax.enterprise.context.spi.CreationalContext;
  */
 public class DependentContext extends AbstractContext
 {
+    private static final long serialVersionUID = 8225241216057316441L;
+
     /**
      * Creats a new instance of dependent context.
      */

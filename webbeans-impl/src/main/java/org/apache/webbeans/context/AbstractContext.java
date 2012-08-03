@@ -47,6 +47,7 @@ import org.apache.webbeans.context.creational.BeanInstanceBag;
  */
 public abstract class AbstractContext implements WebBeansContext, Serializable
 {
+    private static final long serialVersionUID = 2357678967444477818L;
     /**Context status, active or not*/
     protected volatile boolean active;
 

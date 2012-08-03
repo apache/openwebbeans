@@ -74,6 +74,7 @@ public class AnnotationDB
 
     public class CrossReferenceException extends Exception
     {
+        private static final long serialVersionUID = 8012802335134828909L;
         private Set<String> unresolved;
 
         public CrossReferenceException(Set<String> unresolved)

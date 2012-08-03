@@ -26,6 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class BeanInstanceBag<T> implements Serializable
 {
+    private static final long serialVersionUID = 1656996021599122499L;
     private final CreationalContext<T> beanCreationalContext;
     
     private T beanInstance;

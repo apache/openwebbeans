@@ -24,6 +24,7 @@ import javax.enterprise.util.AnnotationLiteral;
 public class AnyLiteral extends AnnotationLiteral<Any> implements Any
 {
     private static final String TOSTRING = "@javax.enterprise.inject.Any()";
+    private static final long serialVersionUID = -8922048102786275371L;
 
     @Override
     public int hashCode()

@@ -45,6 +45,7 @@ import javassist.util.proxy.MethodHandler;
 public class DelegateHandler implements MethodHandler, Serializable, Externalizable
 {
     private static final Logger logger = WebBeansLoggerFacade.getLogger(DelegateHandler.class);
+    private static final long serialVersionUID = -3063755008944970684L;
 
     private transient List<Object> decorators;
     private transient ThreadLocal<AtomicInteger> position = new ThreadLocal<AtomicInteger>()

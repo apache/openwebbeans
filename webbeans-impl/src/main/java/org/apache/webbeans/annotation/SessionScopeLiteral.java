@@ -30,4 +30,5 @@ import javax.enterprise.util.AnnotationLiteral;
 public class SessionScopeLiteral extends AnnotationLiteral<SessionScoped> implements SessionScoped
 {
 
+    private static final long serialVersionUID = -7469945140661485990L;
 }

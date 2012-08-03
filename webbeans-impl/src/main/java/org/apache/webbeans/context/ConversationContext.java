@@ -40,9 +40,11 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class ConversationContext extends AbstractContext implements Externalizable
 {
+    private static final long serialVersionUID = -576054696008715282L;
+
     /*
-     * Constructor
-     */
+    * Constructor
+    */
     public ConversationContext()
     {
         super(ConversationScoped.class);
