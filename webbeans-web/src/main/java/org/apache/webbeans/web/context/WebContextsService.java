@@ -572,6 +572,10 @@ public class WebContextsService extends AbstractContextsService
         //Also clear application and singleton context
         applicationContexts.set(null);
         applicationContexts.remove();
+
+        // this is needed to get rid of ApplicationScoped beans which are cached inside the proxies...
+        webBeansContext.getBeanManagerImpl().clearCacheProxies();
+
     }
     
     /**

@@ -89,4 +89,18 @@
         
     </dependencies>
 
+
+    <profiles>
+        <profile>
+            <id>web</id>
+            <!-- simulate a unit test when webbeans-web is in the Classpath -->
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.openwebbeans</groupId>
+                    <artifactId>openwebbeans-web</artifactId>
+                </dependency>
+            </dependencies>
+
+        </profile>
+    </profiles>
 </project>

@@ -1105,7 +1105,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         additionalInterceptorBindingTypes.clear();
         additionalQualifiers.clear();
         additionalScopes.clear();
-        cacheProxies.clear();
+        clearCacheProxies();
         singleContextMap.clear();
         contextMap.clear();
         deploymentBeans.clear();
@@ -1115,6 +1115,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         passivationBeans.clear();
         webBeansDecorators.clear();
         webBeansInterceptors.clear();
+    }
+
+    public void clearCacheProxies()
+    {
+        cacheProxies.clear();
     }
 
     public boolean isInUse()

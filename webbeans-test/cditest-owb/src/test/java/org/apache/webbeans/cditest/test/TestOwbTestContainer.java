@@ -27,15 +27,69 @@ import junit.framework.TestCase;
 
 public class TestOwbTestContainer extends TestCase {
 
+    private static final int DEFAULT_VAL = 42;
+
     @Test
     public void testInstanceRetrieval() throws Exception
     {
         CdiTestContainer cdi = CdiTestContainerLoader.getCdiContainer();
         cdi.bootContainer();
 
-        SessionScopedTestBean testReference = cdi.getInstance(SessionScopedTestBean.class);
-        Assert.assertNotNull(testReference);
+        assertAll(cdi, 0);
+
+        cdi.stopContexts();
+        cdi.startContexts();
+
+        assertAll(cdi, 0);
+
+        cdi.stopRequestScope();
+        cdi.stopSessionScope();
+        cdi.stopApplicationScope();
+        cdi.startRequestScope();
+        cdi.startSessionScope();
+        cdi.startApplicationScope();
+
+        assertAll(cdi, 0);
+
+        cdi.stopRequestScope();
+        cdi.startRequestScope();
+
+        assertReq(cdi, 0);
+        assertSess(cdi, DEFAULT_VAL);
+        assertApp(cdi, DEFAULT_VAL);
 
         cdi.shutdownContainer();
+    }
+
+    private void assertAll(CdiTestContainer cdi, int value) {
+        assertReq(cdi, value);
+        assertSess(cdi, value);
+        assertApp(cdi, value);
+    }
+
+    private void assertReq(CdiTestContainer cdi, int value)
+    {
+        RequestScopedTestBean testReq = cdi.getInstance(RequestScopedTestBean.class);
+        Assert.assertNotNull(testReq);
+        Assert.assertEquals(value, testReq.getI());
+        testReq.setI(DEFAULT_VAL);
+
+    }
+
+    private void assertSess(CdiTestContainer cdi, int value)
+    {
+        SessionScopedTestBean testSess = cdi.getInstance(SessionScopedTestBean.class);
+        Assert.assertNotNull(testSess);
+        Assert.assertEquals(value, testSess.getI());
+        testSess.setI(DEFAULT_VAL);
+
+    }
+
+    private void assertApp(CdiTestContainer cdi, int value)
+    {
+        ApplicationScopedTestBean testApp = cdi.getInstance(ApplicationScopedTestBean.class);
+        Assert.assertNotNull(testApp);
+        Assert.assertEquals(value, testApp.getI());
+        testApp.setI(DEFAULT_VAL);
     }
 }

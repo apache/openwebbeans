@@ -29,6 +29,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 import javax.inject.Singleton;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.AbstractContextsService;
 import org.apache.webbeans.context.ApplicationContext;
 import org.apache.webbeans.context.ConversationContext;
@@ -315,6 +316,9 @@ public class DefaultContextsService extends AbstractContextsService
         {
             applicationContext.destroy();
             applicationContext = null;
+
+            // this is needed to get rid of ApplicationScoped beans which are cached inside the proxies...
+            WebBeansContext.currentInstance().getBeanManagerImpl().clearCacheProxies();
         }
     }
 
@@ -325,6 +329,9 @@ public class DefaultContextsService extends AbstractContextsService
         {
             conversationContext.get().destroy();   
         }
+
+        conversationContext.set(null);
+        conversationContext.remove();
     }
 
     
@@ -334,6 +341,9 @@ public class DefaultContextsService extends AbstractContextsService
         {
             requestContext.get().destroy();   
         }
+
+        requestContext.set(null);
+        requestContext.remove();
     }
 
     
@@ -342,7 +352,10 @@ public class DefaultContextsService extends AbstractContextsService
         if(sessionContext.get() != null)
         {
             sessionContext.get().destroy();   
-        }        
+        }
+
+        sessionContext.set(null);
+        sessionContext.remove();
     }
 
     
@@ -352,6 +365,9 @@ public class DefaultContextsService extends AbstractContextsService
         {
             singletonContext.get().destroy();   
         }
+
+        singletonContext.set(null);
+        singletonContext.remove();
     }
 
 }

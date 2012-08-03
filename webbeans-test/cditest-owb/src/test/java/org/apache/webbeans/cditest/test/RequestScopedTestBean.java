@@ -20,10 +20,10 @@ package org.apache.webbeans.cditest.test;
 
 import java.io.Serializable;
 
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.RequestScoped;
 
-@SessionScoped
-public class SessionScopedTestBean implements Serializable {
+@RequestScoped
+public class RequestScopedTestBean implements Serializable {
     private int i = 0;
 
     public int getI() {
