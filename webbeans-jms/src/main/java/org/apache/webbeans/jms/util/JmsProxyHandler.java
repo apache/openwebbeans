@@ -165,32 +165,39 @@ public class JmsProxyHandler implements MethodHandler
         }
         catch (JMSException e)
         {
-            if (connection != null)
-            {
-                try
-                {
-                    connection.close();
-                }
-                catch (JMSException jmse)
-                {
-                    // do nothing, we are already throwing up anyway...
-                }
-            }
+            ensureConnectionClosing(connection);
             throw new WebBeansException("Unable to create jms session", e);
         }
 
     }
 
+    private void ensureConnectionClosing(Connection connection)
+    {
+        if (connection != null)
+        {
+            try
+            {
+                connection.close();
+            }
+            catch (JMSException jmse)
+            {
+                // do nothing, we are already throwing up anyway...
+            }
+        }
+    }
+
     private MessageProducer createMessageProducers()
     {
+        Connection connection = null;
         try
         {
-            Connection connection = createOrReturnQueueOrTopicConnection();
+            connection = createOrReturnQueueOrTopicConnection();
 
             return connection.createSession(false, Session.AUTO_ACKNOWLEDGE).createProducer(createOrReturnQueueOrTopic());
         }
         catch (JMSException e)
         {
+            ensureConnectionClosing(connection);
             throw new WebBeansException("Unable to create jms message producer", e);
         }
 
@@ -198,14 +205,16 @@ public class JmsProxyHandler implements MethodHandler
 
     private MessageConsumer createMessageConsumers()
     {
+        Connection connection = null;
         try
         {
-            Connection connection = createOrReturnQueueOrTopicConnection();
+            connection = createOrReturnQueueOrTopicConnection();
 
             return connection.createSession(false, Session.AUTO_ACKNOWLEDGE).createConsumer(createOrReturnQueueOrTopic());
         }
         catch (JMSException e)
         {
+            ensureConnectionClosing(connection);
             throw new WebBeansException("Unable to create jms message producer", e);
         }
 
