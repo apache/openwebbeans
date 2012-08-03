@@ -60,7 +60,7 @@ public final class WebBeansXMLConfigurator
     /**
      * Current configuration file name
      */
-    private String CURRENT_SCAN_FILE_NAME = null;
+    private String currentScanFileName = null;
 
     /**
      * Creates a new instance of the <code>WebBeansXMLConfigurator</code>
@@ -152,7 +152,7 @@ public final class WebBeansXMLConfigurator
                 Asserts.assertNotNull(xmlStream, "xmlStream parameter can not be null!");
                 Asserts.assertNotNull(fileName, "fileName parameter can not be null!");
 
-                CURRENT_SCAN_FILE_NAME = fileName;
+                currentScanFileName = fileName;
 
                 //Get root element of the XML document
                 Element webBeansRoot = getSpecStrictRootElement(xmlStream);
@@ -454,7 +454,7 @@ public final class WebBeansXMLConfigurator
      */
     private String createConfigurationFailedMessage()
     {
-        return "WebBeans XML configuration defined in " + CURRENT_SCAN_FILE_NAME + " is failed. Reason is : ";
+        return "WebBeans XML configuration defined in " + currentScanFileName + " is failed. Reason is : ";
     }
 
 }

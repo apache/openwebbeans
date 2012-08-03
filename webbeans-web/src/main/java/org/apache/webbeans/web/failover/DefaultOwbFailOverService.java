@@ -230,8 +230,7 @@ public class DefaultOwbFailOverService implements FailOverService
         if (handler != null) 
         {
             return handler.handleResource(bean, resourceObject, in, out, 
-                (Boolean.TRUE == isForPassivation.get()) ? 
-                SerializationHandlerV10.TYPE_PASSIVATION : SerializationHandlerV10.TYPE_FAILOVER);
+                (isForPassivation.get()) ? SerializationHandlerV10.TYPE_PASSIVATION : SerializationHandlerV10.TYPE_FAILOVER);
         }
         return NOT_HANDLED;
     }
