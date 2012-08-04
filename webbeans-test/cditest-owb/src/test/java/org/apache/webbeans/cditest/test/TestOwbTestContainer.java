@@ -34,6 +34,7 @@ public class TestOwbTestContainer extends TestCase {
     {
         CdiTestContainer cdi = CdiTestContainerLoader.getCdiContainer();
         cdi.bootContainer();
+        cdi.startContexts();
 
         assertAll(cdi, 0);
 
