@@ -79,6 +79,7 @@ public class AnnotationDB
 
         public CrossReferenceException(Set<String> unresolved)
         {
+            super("cannot resolve classes " + unresolved.toString());
             this.unresolved = unresolved;
         }
 
