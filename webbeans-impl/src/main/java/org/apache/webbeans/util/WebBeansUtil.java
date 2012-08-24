@@ -1772,61 +1772,64 @@ public final class WebBeansUtil
         //Unproxiable test for NormalScoped beans
         if (isScopeTypeNormal(scopeType))
         {
-            Set<Type> types = bean.getTypes();
-
             ViolationMessageBuilder violationMessage = ViolationMessageBuilder.newViolation();
 
-            for(Type type : types)
+            Class<?> beanClass;
+            if (bean instanceof OwbBean) 
             {
-                Class<?> beanClass = ClassUtil.getClass(type);
-
-                if(!beanClass.isInterface() && beanClass != Object.class)
+                beanClass = ((OwbBean)bean).getReturnType();
+            }
+            else 
+            {
+                beanClass = bean.getBeanClass();
+            }
+            
+            if(!beanClass.isInterface() && beanClass != Object.class)
+            {
+                if(beanClass.isPrimitive())
                 {
-                    if(beanClass.isPrimitive())
+                    violationMessage.addLine("It isn't possible to proxy a primitive type (" + beanClass.getName(), ")");
+                }
+
+                if(ClassUtil.isArray(beanClass))
+                {
+                    violationMessage.addLine("It isn't possible to proxy an array type (", beanClass.getName(), ")");
+                }
+
+                if(!violationMessage.containsViolation())
+                {
+                    if (ClassUtil.isFinal(beanClass.getModifiers()))
                     {
-                        violationMessage.addLine("It isn't possible to use a primitive type (" + beanClass.getName(), ")");
+                        violationMessage.addLine(beanClass.getName(), " is a final class! CDI doesn't allow to proxy that.");
                     }
 
-                    if(ClassUtil.isArray(beanClass))
+                    Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(beanClass);
+                    for (Method m : methods)
                     {
-                        violationMessage.addLine("It isn't possible to use an array type (", beanClass.getName(), ")");
-                    }
-
-                    if(!violationMessage.containsViolation())
-                    {
-                        if (ClassUtil.isFinal(beanClass.getModifiers()))
+                        int modifiers = m.getModifiers();
+                        if (ClassUtil.isFinal(modifiers) && !Modifier.isPrivate(modifiers) &&
+                            !m.isSynthetic() && !m.isBridge())
                         {
-                            violationMessage.addLine(beanClass.getName(), " is a final class! CDI doesn't allow that.");
-                        }
-
-                        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(beanClass);
-                        for (Method m : methods)
-                        {
-                            int modifiers = m.getModifiers();
-                            if (ClassUtil.isFinal(modifiers) && !Modifier.isPrivate(modifiers) &&
-                                !m.isSynthetic() && !m.isBridge())
-                            {
-                                violationMessage.addLine(beanClass.getName(), " has final method "+ m + " CDI doesn't allow that.");
-                            }
-                        }
-
-                        Constructor<?> cons = getNoArgConstructor(beanClass);
-                        if (cons == null)
-                        {
-                            violationMessage.addLine(beanClass.getName(), " has no explicit no-arg constructor!",
-                                    "A public or protected constructor without args is required!");
-                        }
-                        else if (Modifier.isPrivate(cons.getModifiers()))
-                        {
-                            violationMessage.addLine(beanClass.getName(), " has a >private< no-arg constructor! CDI doesn't allow that.");
+                            violationMessage.addLine(beanClass.getName(), " has final method "+ m + " CDI doesn't allow to proxy that.");
                         }
                     }
 
-                    //Throw Exception
-                    if(violationMessage.containsViolation())
+                    Constructor<?> cons = getNoArgConstructor(beanClass);
+                    if (cons == null)
                     {
-                        throwUnproxyableResolutionException(violationMessage);
+                        violationMessage.addLine(beanClass.getName(), " has no explicit no-arg constructor!",
+                                "A public or protected constructor without args is required!");
                     }
+                    else if (Modifier.isPrivate(cons.getModifiers()))
+                    {
+                        violationMessage.addLine(beanClass.getName(), " has a >private< no-arg constructor! CDI doesn't allow to proxy that.");
+                    }
+                }
+
+                //Throw Exception
+                if(violationMessage.containsViolation())
+                {
+                    throwUnproxyableResolutionException(violationMessage);
                 }
             }
         }

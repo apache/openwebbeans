@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.webbeans.newtests.definition.proxyable.beans.BeanWithPublicFinalMethod;
+import org.apache.webbeans.newtests.definition.proxyable.beans.DependentBeanWithoutDefaultCt;
+import org.apache.webbeans.newtests.definition.proxyable.beans.NonAbstractSubClassBean;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -68,6 +70,18 @@ public class ProxyableBeanTypeTest extends AbstractUnitTest
 
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(BeanWithPublicFinalMethod.class);
+
+        startContainer(beanClasses, beanXmls);
+    }
+
+    @Test
+    public void testNotInjectedBeanWithoutDefaultCt()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(DependentBeanWithoutDefaultCt.class);
+        beanClasses.add(NonAbstractSubClassBean.class);
 
         startContainer(beanClasses, beanXmls);
     }
