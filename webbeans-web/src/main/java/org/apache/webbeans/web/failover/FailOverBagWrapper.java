@@ -45,7 +45,7 @@ import org.apache.webbeans.spi.FailOverService;
 public class FailOverBagWrapper implements Serializable, Externalizable, HttpSessionActivationListener
 {
     /**Logger instance*/
-    protected  final Logger logger = WebBeansLoggerFacade.getLogger(FailOverBagWrapper.class);
+    protected static final Logger logger = WebBeansLoggerFacade.getLogger(FailOverBagWrapper.class);
 
     private transient FailOverService failoverService;
 

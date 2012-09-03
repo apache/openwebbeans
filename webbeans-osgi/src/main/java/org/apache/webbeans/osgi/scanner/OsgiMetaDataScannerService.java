@@ -56,7 +56,7 @@ import java.util.zip.ZipEntry;
  */
 public class OsgiMetaDataScannerService implements ScannerService
 {
-    private Logger logger = WebBeansLoggerFacade.getLogger(OsgiMetaDataScannerService.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(OsgiMetaDataScannerService.class);
 
     protected ServletContext servletContext = null;
     private static final String META_INF_BEANS_XML = "META-INF/beans.xml";

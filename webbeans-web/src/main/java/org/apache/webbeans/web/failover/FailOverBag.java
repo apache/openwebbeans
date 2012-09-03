@@ -49,7 +49,7 @@ public class FailOverBag implements Serializable
     private static final long serialVersionUID = -6314819837009653189L;
     
     /**Logger instance*/
-    protected  final Logger logger =
+    protected static final Logger logger =
             WebBeansLoggerFacade.getLogger(FailOverBag.class);
     
     private String sessionId;

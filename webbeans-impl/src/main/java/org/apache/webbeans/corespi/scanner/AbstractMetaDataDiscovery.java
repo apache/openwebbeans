@@ -43,7 +43,7 @@ import org.apache.webbeans.util.ClassUtil;
 
 public abstract class AbstractMetaDataDiscovery implements ScannerService
 {
-    protected final Logger logger = WebBeansLoggerFacade.getLogger(getClass());
+    protected static final Logger logger = WebBeansLoggerFacade.getLogger(AbstractMetaDataDiscovery.class);
 
     public static final String META_INF_BEANS_XML = "META-INF/beans.xml";
 
