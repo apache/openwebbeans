@@ -62,6 +62,14 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
     
     private transient BeanManager bm;
 
+    /**
+     * Used by serialization.
+     */
+    public InjectableBeanManager()
+    {
+        bm = WebBeansContext.getInstance().getBeanManagerImpl();
+    }
+
     public InjectableBeanManager(BeanManager bm)
     {
         this.bm = bm;
