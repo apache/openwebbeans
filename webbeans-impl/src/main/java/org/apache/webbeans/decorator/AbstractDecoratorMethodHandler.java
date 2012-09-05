@@ -34,11 +34,11 @@ public class AbstractDecoratorMethodHandler implements MethodHandler, Serializab
     public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable
     {
         //Don't attempt to call it if the method doesn't exist
-        if(proceed != null)       
+        if(proceed != null)
         {
             return proceed.invoke(self,args);
         }
-        
+
         //Throw the exception so the DelegateHandler will continue the loop
         throw new NoSuchMethodException();
     }

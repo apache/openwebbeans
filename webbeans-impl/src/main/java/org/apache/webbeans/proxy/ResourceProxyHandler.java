@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -31,7 +32,7 @@ import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.ResourceInjectionService;
 
-public class ResourceProxyHandler implements MethodHandler, Serializable, Externalizable
+public class ResourceProxyHandler implements InvocationHandler, MethodHandler, Serializable, Externalizable
 {
     /**
      * 
@@ -53,11 +54,16 @@ public class ResourceProxyHandler implements MethodHandler, Serializable, Extern
         this.actualResource = actualResource;
     }
     
-    public Object invoke(Object self, Method actualMethod, Method proceed, Object[] args) throws Throwable
+    public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Throwable
+    {
+        return invoke(instance, method, arguments);
+    }
+
+    public Object invoke(Object instance, Method method, Object[] arguments) throws Throwable
     {
         try
         {
-            return actualMethod.invoke(actualResource, args);
+            return method.invoke(actualResource, arguments);
         }
         catch (InvocationTargetException e)
         {

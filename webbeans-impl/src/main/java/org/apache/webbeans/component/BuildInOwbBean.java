@@ -261,17 +261,15 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
             this.actualObject = actualObject;
         }    
         
-        public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable
+        public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Throwable
         {
-            if(proceed != null)       
-            {
-                return proceed.invoke(actualObject,args);
-            } 
-            else 
-            {
+            return invoke(instance, method, arguments);
+        }
+
+        public Object invoke(Object instance, Method method, Object[] arguments) throws Throwable
+        {
                 //interface method.
-                return thisMethod.invoke(actualObject,args);
-            }            
+            return method.invoke(actualObject, arguments);
         }
 
         private  void writeObject(ObjectOutputStream s) throws IOException

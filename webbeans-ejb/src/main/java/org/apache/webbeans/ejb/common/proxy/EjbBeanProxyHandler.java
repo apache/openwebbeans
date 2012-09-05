@@ -25,6 +25,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -54,7 +55,7 @@ import javassist.util.proxy.MethodHandler;
  *
  */
 @SuppressWarnings("unchecked")
-public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externalizable
+public class EjbBeanProxyHandler implements InvocationHandler, MethodHandler, Serializable, Externalizable
 {
     //Logger instance
     private final static Logger logger = WebBeansLoggerFacade.getLogger(EjbBeanProxyHandler.class);
@@ -103,10 +104,12 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
         webBeansContext = ejbBean.getWebBeansContext();
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public Object invoke(Object proxyInstance, Method method, Method proceed, Object[] arguments) throws Throwable 
+    public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Throwable
+    {
+        return invoke(instance, method, arguments);
+    }
+
+    public Object invoke(Object instance, Method method, Object[] arguments) throws Throwable
     {
         Object result = null;
         
@@ -124,7 +127,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
             {
                 webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, true);
             }
-            return proceed.invoke(proxyInstance, arguments);
+            return method.invoke(instance, arguments);
         }
                 
         try
@@ -162,7 +165,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
                     if (this.ejbBean.getEjbType().equals(SessionBeanType.STATEFUL))
                     {
                         // It's an SFSB, so we need to track when it's removed
-                        this.ejbBean.addDependentSFSB(webbeansInstance, proxyInstance);
+                        this.ejbBean.addDependentSFSB(webbeansInstance, instance);
                     }
                 }
             }
@@ -173,7 +176,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
                 if (checkEjbRemoveMethod(method))
                 {
                     // Stop tracking the EJB associated with this proxy
-                    this.ejbBean.removeDependentSFSB(proxyInstance);
+                    this.ejbBean.removeDependentSFSB(instance);
                     
                     /*
                      * Keep the local reference to the dependent SFSB. If the

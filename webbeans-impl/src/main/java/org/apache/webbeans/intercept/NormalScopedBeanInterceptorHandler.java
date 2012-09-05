@@ -104,7 +104,12 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     /**
      * {@inheritDoc}
      */
-    public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
+    public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Throwable
+    {
+        return invoke(instance, method, arguments);
+    }
+
+    public Object invoke(Object instance, Method method, Object[] arguments) throws Throwable
     {
         if (method.getName() == FINALIZE &&   // Method.getName() is defined to return .intern() in the VM spec.
             method.getParameterTypes().length == 0 &&
@@ -120,7 +125,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         Object webbeansInstance = getContextualInstance();
         
         //Call super
-        return super.invoke(webbeansInstance, method, proceed, arguments, (CreationalContextImpl<?>) getContextualCreationalContext());
+        return super.invoke(webbeansInstance, method, arguments, (CreationalContextImpl<?>) getContextualCreationalContext());
     }
         
     /**

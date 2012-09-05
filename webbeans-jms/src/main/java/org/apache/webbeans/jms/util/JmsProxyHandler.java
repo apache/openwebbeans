@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.jms.util;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,7 +44,7 @@ import org.apache.webbeans.util.ClassUtil;
 
 import javassist.util.proxy.MethodHandler;
 
-public class JmsProxyHandler implements MethodHandler
+public class JmsProxyHandler implements InvocationHandler, MethodHandler
 {
     private JmsBean<?> jmsComponent = null;
 
@@ -65,7 +66,12 @@ public class JmsProxyHandler implements MethodHandler
         this.injectionClazz = injectionClazz;
     }
 
-    public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
+    public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Throwable
+    {
+        return invoke(instance, method, arguments);
+    }
+
+    public Object invoke(Object instance, Method method, Object[] arguments) throws Throwable
     {
         if(method.getName().equals("closeJMSObject"))
         {
@@ -129,7 +135,7 @@ public class JmsProxyHandler implements MethodHandler
         }
         else
         {
-            return proceed.invoke(instance, arguments);
+            return method.invoke(instance, arguments);
         }
     }
 

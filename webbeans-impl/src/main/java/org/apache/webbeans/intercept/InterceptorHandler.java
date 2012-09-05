@@ -208,6 +208,11 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
      */
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments, CreationalContextImpl<?> ownerCreationalContext) throws Exception
     {
+        return invoke(instance, method, arguments, ownerCreationalContext);
+    }
+
+    public Object invoke(Object instance, Method method, Object[] arguments, CreationalContextImpl<?> ownerCreationalContext) throws Exception
+    {
         if (instance == null)
         {
             return null;
@@ -297,7 +302,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                     // manage the stack
                     if (decoratorDelegateHandler != null)
                     {
-                        return decoratorDelegateHandler.invoke(instance, method, proceed, arguments);
+                        return decoratorDelegateHandler.invoke(instance, method, arguments);
                     }
                 }
 

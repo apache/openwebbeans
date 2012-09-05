@@ -23,6 +23,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -42,7 +43,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 import javassist.util.proxy.MethodHandler;
 
-public class DelegateHandler implements MethodHandler, Serializable, Externalizable
+public class DelegateHandler implements InvocationHandler, MethodHandler, Serializable, Externalizable
 {
     private static final Logger logger = WebBeansLoggerFacade.getLogger(DelegateHandler.class);
     private static final long serialVersionUID = -3063755008944970684L;
@@ -81,6 +82,11 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
     }    
     
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
+    {
+        return invoke(instance, method, arguments);
+    }
+
+    public Object invoke(Object instance, Method method, Object[] arguments) throws Exception
     {
         // Tuck away a reference to the bean being Decorated
         if (actualInstance == null)
