@@ -21,6 +21,7 @@ package org.apache.webbeans.proxy;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,6 +35,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 
+import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyFactory.ClassLoaderProvider;
 import javassist.util.proxy.ProxyObject;
@@ -474,8 +476,9 @@ public final class JavassistProxyFactory
 
         ProxyFactory fact = new ProxyFactory();        
         fact.setInterfaces(interfaceArray);
-        fact.setSuperclass(superClass);        
-        
+        fact.setSuperclass(superClass);
+        fact.setFilter(FinalizeMethodFilter.INSTANCE);
+
         return fact;
         
     }
@@ -489,4 +492,17 @@ public final class JavassistProxyFactory
         return o instanceof ProxyObject;
     }
 
+    private static class FinalizeMethodFilter implements MethodFilter
+    {
+        private static final String FINALIZE = "finalize".intern();
+
+        public static final FinalizeMethodFilter INSTANCE = new FinalizeMethodFilter();
+
+        public boolean isHandled(final Method method)
+        {
+            return !(method.getName() == FINALIZE
+                        && method.getParameterTypes().length == 0
+                        && method.getReturnType() == Void.TYPE);
+        }
+    }
 }

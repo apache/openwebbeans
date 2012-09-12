@@ -45,7 +45,6 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
 {
     /**Serial id*/
     private static final long serialVersionUID = 1L;
-    private static final String FINALIZE = "finalize".intern();
 
     /** this stores the {@link java.lang.reflect.Method#hashCode()} of intercepted methods */
     private CopyOnWriteArrayList<Integer> cachedInterceptedMethods = new CopyOnWriteArrayList<Integer>();
@@ -111,16 +110,6 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
 
     public Object invoke(Object instance, Method method, Object[] arguments) throws Throwable
     {
-        if (method.getName() == FINALIZE &&   // Method.getName() is defined to return .intern() in the VM spec.
-            method.getParameterTypes().length == 0 &&
-            method.getReturnType() == Void.TYPE)
-        {
-            // we should NOT invoke the bean's finalize() from proxied
-            // finalize() method since JVM will invoke it directly.
-            // OWB-366
-            return null;
-        }
-
         //Get instance from context
         Object webbeansInstance = getContextualInstance();
         
