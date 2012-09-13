@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,6 +37,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 
 import javassist.util.proxy.MethodFilter;
+import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyFactory.ClassLoaderProvider;
 import javassist.util.proxy.ProxyObject;
@@ -44,6 +46,7 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandler;
@@ -78,7 +81,12 @@ public final class JavassistProxyFactory
     private Map<String, Class<? extends InterceptorHandler>> interceptorHandlerClasses =
             new ConcurrentHashMap<String, Class<? extends InterceptorHandler>>();
 
-    
+    public void setHandler(Object proxy, MethodHandler handler)
+    {
+        ((ProxyObject)proxy).setHandler(handler);
+    }
+
+
     public   Map<OwbBean<?>, Class<?>> getInterceptorProxyClasses()
     {
         return interceptorProxyClasses;
@@ -109,6 +117,23 @@ public final class JavassistProxyFactory
         return proxyClass;
     }
     
+    public Object createDecoratorDelegate(OwbBean<?> bean, DelegateHandler newDelegateHandler)
+        throws Exception
+    {
+
+        Class<?> proxyClass = this.getInterceptorProxyClasses().get(bean);
+        if (proxyClass == null)
+        {
+            ProxyFactory delegateFactory = this.createProxyFactory(bean);
+            proxyClass = this.getProxyClass(delegateFactory);
+            this.getInterceptorProxyClasses().put(bean, proxyClass);
+        }
+
+        final Object delegate = proxyClass.newInstance();
+        setHandler(delegate, newDelegateHandler);
+        return delegate;
+    }
+
     public Class<?> getResourceBeanProxyClass(ResourceBean<?, ?> resourceBean)
     {
         Class<?> proxyClass = null;
@@ -209,7 +234,52 @@ public final class JavassistProxyFactory
             
             if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptor<?>))
             {
-                setInterceptorMethodHandler((ProxyObject) result, bean, creationalContext);
+                InterceptorHandler interceptorHandler = createInterceptorHandler(bean, creationalContext);
+
+                if (!true)
+                {
+                    final Set<Type> types = bean.getTypes();
+                    final Set<Class<?>> interfaceList = new HashSet<Class<?>>();
+                    Class<?> superClass = null;
+                    for (Type generic : types)
+                    {
+                        Class<?> type = ClassUtil.getClazz(generic);
+
+                        if (type.isInterface())
+                        {
+                            interfaceList.add(type);
+                        }
+
+                        else if ((superClass == null) || (superClass.isAssignableFrom(type) && type != Object.class))
+                        {
+                            superClass = type;
+                        }
+
+                    }
+                    if (!interfaceList.contains(Serializable.class))
+                    {
+                        interfaceList.add(Serializable.class);
+                    }
+
+                    Class<?>[] interfaceArray = new Class<?>[interfaceList.size()];
+                    interfaceArray = interfaceList.toArray(interfaceArray);
+
+                    if (superClass == null || superClass.equals(Object.class))
+                    {
+                        return Proxy.newProxyInstance(WebBeansUtil.getCurrentClassLoader(), interfaceArray,
+                                                      interceptorHandler);
+                    }
+                    else
+                    {
+                        return AsmProxyFactory.newProxyInstance(WebBeansUtil.getCurrentClassLoader(),
+                                                                interceptorHandler, superClass, interfaceArray);
+                    }
+
+                }
+                else
+                {
+                    setHandler(result, interceptorHandler);
+                }
             }
         }
         catch (Exception e)
@@ -220,13 +290,7 @@ public final class JavassistProxyFactory
         return result;
     }
 
-    /**
-     * This helper method will set the correct InterceptorHandler into our proxy.
-     * @param proxyObject
-     * @param bean
-     * @param creationalContext
-     */
-    private void setInterceptorMethodHandler(ProxyObject proxyObject, OwbBean<?> bean, CreationalContext<?> creationalContext)
+    private InterceptorHandler createInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         InterceptorHandler interceptorHandler = null;
         String scopeClassName = bean.getScope().getName();
@@ -303,9 +367,7 @@ public final class JavassistProxyFactory
                                                          e);
             }
         }
-
-
-        proxyObject.setHandler(interceptorHandler);
+        return interceptorHandler;
     }
 
     public Object createBuildInBeanProxy(OwbBean<?> bean) 
@@ -404,7 +466,7 @@ public final class JavassistProxyFactory
             result = proxyClass.newInstance();
             if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptor<?>))
             {
-                ((ProxyObject)result).setHandler(new DependentScopedBeanInterceptorHandler(bean, actualInstance, creastionalContext));
+                setHandler(result, new DependentScopedBeanInterceptorHandler(bean, actualInstance, creastionalContext));
             }
 
         }
@@ -482,7 +544,7 @@ public final class JavassistProxyFactory
         return fact;
         
     }
-    
+
     /**
      * @param o the object to check
      * @return <code>true</code> if the given object is a proxy

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -33,8 +34,6 @@ import java.util.logging.Logger;
 
 import javax.interceptor.InvocationContext;
 import javassist.util.proxy.MethodHandler;
-import javassist.util.proxy.ProxyFactory;
-import javassist.util.proxy.ProxyObject;
 
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
@@ -46,6 +45,7 @@ import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
@@ -140,7 +140,7 @@ import org.apache.webbeans.util.ClassUtil;
  * @see org.apache.webbeans.decorator.WebBeansDecorator
  * @see org.apache.webbeans.intercept.ejb.EJBInterceptorConfig
  */
-public abstract class InterceptorHandler implements MethodHandler, Serializable
+public abstract class InterceptorHandler implements InvocationHandler, MethodHandler, Serializable
 {
     /**Default serial id*/
     private static final long serialVersionUID = 1L;
@@ -165,6 +165,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     {
         this.bean = bean;
         webBeansContext = bean.getWebBeansContext();
+//        new Exception().fillInStackTrace().printStackTrace();
     }
 
     /**
@@ -344,16 +345,10 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     {
         if (decoratorDelegateHandler == null)
         {
-            Class<?> proxyClass = webBeansContext.getJavassistProxyFactory().getInterceptorProxyClasses().get(bean);
-            if (proxyClass == null)
-            {
-                ProxyFactory delegateFactory = webBeansContext.getJavassistProxyFactory().createProxyFactory(bean);
-                proxyClass = webBeansContext.getJavassistProxyFactory().getProxyClass(delegateFactory);
-                webBeansContext.getJavassistProxyFactory().getInterceptorProxyClasses().put(bean, proxyClass);
-            }
-            Object delegate = proxyClass.newInstance();
-            DelegateHandler newDelegateHandler = new DelegateHandler(bean);
-            ((ProxyObject)delegate).setHandler(newDelegateHandler);
+            final DelegateHandler newDelegateHandler = new DelegateHandler(bean);
+            final JavassistProxyFactory javassistProxyFactory = webBeansContext.getJavassistProxyFactory();
+
+            final Object delegate = javassistProxyFactory.createDecoratorDelegate(bean, newDelegateHandler);
 
             // Gets component decorator stack
             List<Object> decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate, ownerCreationalContext);

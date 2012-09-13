@@ -22,8 +22,6 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.annotation.Annotation;
 
-import javassist.util.proxy.ProxyObject;
-
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
@@ -98,7 +96,7 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
         //If this is an abstract Decorator, we need to set the handler on the Proxy instance
         if(isAbstractDecorator)
         {
-            ((ProxyObject)instance).setHandler(new AbstractDecoratorMethodHandler());
+            webBeansContext.getJavassistProxyFactory().setHandler(instance, new AbstractDecoratorMethodHandler());
         }
         
         return instance;

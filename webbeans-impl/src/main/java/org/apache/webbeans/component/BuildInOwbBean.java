@@ -31,7 +31,6 @@ import java.util.logging.Level;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javassist.util.proxy.MethodHandler;
-import javassist.util.proxy.ProxyObject;
 
 import org.apache.webbeans.config.WebBeansContext;
 
@@ -208,14 +207,16 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
         T proxy = (T) webBeansContext.getJavassistProxyFactory().createBuildInBeanProxy(this);
         if (handlerClassName.equals(PROXY_HANDLER_VALUE_DEFAULT)) 
         {
-            ((ProxyObject)proxy).setHandler(new BuildInBeanMethodHandler(this, actualInstance));
+            final MethodHandler handler = new BuildInBeanMethodHandler(this, actualInstance);
+            webBeansContext.getJavassistProxyFactory().setHandler(proxy, handler);
             return proxy;
         } 
         else if (handlerContructor != null)
         {
             try 
             {
-                ((ProxyObject)proxy).setHandler( (MethodHandler)(handlerContructor.newInstance(this, actualInstance)));
+                webBeansContext.getJavassistProxyFactory().setHandler(proxy,
+                                                 (MethodHandler) (handlerContructor.newInstance(this, actualInstance)));
                 return proxy;
             } 
             catch (Exception e) 
@@ -226,7 +227,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
         }
         return null;
     }
-    
+
 
     protected abstract T createActualInstance(CreationalContext<T> creationalContext);
     

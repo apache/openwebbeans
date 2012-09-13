@@ -33,9 +33,6 @@ import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javassist.util.proxy.ProxyFactory;
-import javassist.util.proxy.ProxyObject;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.PostActivate;
@@ -64,7 +61,6 @@ import org.apache.webbeans.intercept.InterceptorDataImpl;
 import javax.enterprise.inject.spi.InterceptionType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -489,18 +485,11 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             {
                 logger.fine("Obtaining a delegate");
             }
-            Class<?> proxyClass = webBeansContext.getJavassistProxyFactory().getInterceptorProxyClasses().get(injectionTarget);
-            if (proxyClass == null)
-            {
-                JavassistProxyFactory proxyFactory = webBeansContext.getJavassistProxyFactory();
-                ProxyFactory delegateFactory = proxyFactory.createProxyFactory(injectionTarget);
-                proxyClass = proxyFactory.getProxyClass(delegateFactory);
-                proxyFactory.getInterceptorProxyClasses().put(injectionTarget, proxyClass);
-            }
-            Object delegate = proxyClass.newInstance();
+
             delegateHandler = new DelegateHandler(this.contextual, ejbContext);
-            ((ProxyObject)delegate).setHandler(delegateHandler);
-     
+
+            final Object delegate =
+                webBeansContext.getJavassistProxyFactory().createDecoratorDelegate(injectionTarget, delegateHandler);
             // Gets component decorator stack
             decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate,
                                                                    (CreationalContextImpl<?>)this.cc);          
