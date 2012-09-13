@@ -24,7 +24,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 
-import javassist.util.proxy.MethodHandler;
+import org.apache.webbeans.proxy.MethodHandler;
 
 public class AbstractDecoratorMethodHandler implements MethodHandler, Serializable
 {

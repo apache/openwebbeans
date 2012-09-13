@@ -26,7 +26,7 @@ import java.util.HashMap;
 
 
 /**
- * <p>This is a {@link javassist.util.proxy.MethodHandler} especially
+ * <p>This is a {@link org.apache.webbeans.proxy.MethodHandler} especially
  * made for &#064;RequestScoped beans used in web applications.</p>
  * 
  * <p>Since there is only one single contextual instance of an &#064;RequestScoped bean per thread,

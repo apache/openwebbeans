@@ -20,8 +20,6 @@ package org.apache.webbeans.jms.util;
 
 import java.io.Serializable;
 
-import javassist.util.proxy.ProxyFactory;
-
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.MessageConsumer;
@@ -45,6 +43,7 @@ import org.apache.webbeans.exception.WebBeansCreationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.component.JmsBean;
+import org.apache.webbeans.proxy.MethodHandler;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.util.Asserts;
 
@@ -166,27 +165,19 @@ public final class JmsUtil
      */
     public static Object createNewJmsProxy(JmsBean<?> jmsComponent, Class<?> intf)
     {
-       Object result = null;
-
         try
         {
-            ProxyFactory pf = new ProxyFactory();
-            pf.setInterfaces(new Class<?>[] {
-                    Closable.class,
-                    Serializable.class,
-                    intf});
-            
-            pf.setHandler(new JmsProxyHandler(jmsComponent,intf));
+            final MethodHandler handler = new JmsProxyHandler(jmsComponent, intf);
 
-            result = WebBeansContext.getInstance().getJavassistProxyFactory().getProxyClass(pf).newInstance();
+            final Class<?>[] interfaces = {Closable.class, Serializable.class, intf};
+
+            return WebBeansContext.getInstance().getJavassistProxyFactory().createProxy(handler, interfaces);
 
         }
         catch (Exception e)
         {
             throw new WebBeansException(e);
         }
-
-        return result;
     }
-    
+
 }

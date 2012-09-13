@@ -33,7 +33,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.interceptor.InvocationContext;
-import javassist.util.proxy.MethodHandler;
+import org.apache.webbeans.proxy.MethodHandler;
 
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;

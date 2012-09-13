@@ -22,8 +22,6 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import javassist.util.proxy.ProxyFactory;
-
 /** @deprecated  use SecurityService instead */
 public class SecurityUtil
 {
@@ -64,33 +62,4 @@ public class SecurityUtil
         }
 
     }
-
-    public static Class<?> doPrivilegedCreateClass(ProxyFactory factory)
-    {
-        if (System.getSecurityManager() == null)
-        {
-            return factory.createClass();
-        }
-        else
-        {
-            return (Class<?>)AccessController.doPrivileged(new PrivilegedActionForProxyFactory(factory));
-        }
-    }
-
-
-    protected static class PrivilegedActionForProxyFactory implements PrivilegedAction<Object>
-    {
-        private ProxyFactory factory;
-
-        protected PrivilegedActionForProxyFactory(ProxyFactory factory)
-        {
-            this.factory = factory;
-        }
-
-        public Object run()
-        {
-            return factory.createClass();
-        }
-    }
-
 }

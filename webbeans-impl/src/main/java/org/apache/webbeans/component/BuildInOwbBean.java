@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.logging.Level;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javassist.util.proxy.MethodHandler;
+import org.apache.webbeans.proxy.MethodHandler;
 
 import org.apache.webbeans.config.WebBeansContext;
 

@@ -24,6 +24,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +39,6 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 
 import javassist.util.proxy.MethodFilter;
-import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyFactory.ClassLoaderProvider;
 import javassist.util.proxy.ProxyObject;
@@ -54,9 +55,8 @@ import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorHandler;
 import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.proxy.javassist.OpenWebBeansClassLoaderProvider;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.OpenWebBeansClassLoaderProvider;
-import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 public final class JavassistProxyFactory
@@ -80,6 +80,18 @@ public final class JavassistProxyFactory
      */
     private Map<String, Class<? extends InterceptorHandler>> interceptorHandlerClasses =
             new ConcurrentHashMap<String, Class<? extends InterceptorHandler>>();
+
+    public static Class<?> doPrivilegedCreateClass(ProxyFactory factory)
+    {
+        if (System.getSecurityManager() == null)
+        {
+            return factory.createClass();
+        }
+        else
+        {
+            return (Class<?>) AccessController.doPrivileged(new PrivilegedActionForProxyFactory(factory));
+        }
+    }
 
     public void setHandler(Object proxy, MethodHandler handler)
     {
@@ -190,7 +202,7 @@ public final class JavassistProxyFactory
 
         if (proxyClass == null)
         {
-            proxyClass = SecurityUtil.doPrivilegedCreateClass(factory);
+            proxyClass = doPrivilegedCreateClass(factory);
             typeToProxyClassMap.putIfAbsent(iface, proxyClass);
             // don't care if we were beaten in updating the iface->proxyclass map
         }
@@ -206,7 +218,7 @@ public final class JavassistProxyFactory
         {
             ProxyFactory fact = createProxyFactory(bean);
             
-            clazz = SecurityUtil.doPrivilegedCreateClass(fact);
+            clazz = doPrivilegedCreateClass(fact);
         }
         catch(Exception e)
         {
@@ -215,7 +227,18 @@ public final class JavassistProxyFactory
         return clazz;
         
     }
-    
+
+    public Object createProxy(MethodHandler handler, Class<?>[] interfaces)
+        throws InstantiationException, IllegalAccessException
+    {
+        ProxyFactory pf = new ProxyFactory();
+        pf.setInterfaces(interfaces);
+        pf.setHandler(handler);
+
+        return getProxyClass(pf).newInstance();
+    }
+
+
     public  Object createNormalScopedBeanProxy(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         Object result = null;
@@ -485,7 +508,7 @@ public final class JavassistProxyFactory
         Class<?> clazz = null;
         try
         {
-            clazz = SecurityUtil.doPrivilegedCreateClass(factory);            
+            clazz = doPrivilegedCreateClass(factory);
         }
         catch(RuntimeException e)
         {
@@ -495,7 +518,7 @@ public final class JavassistProxyFactory
             }
 
             //try again with updated class loader
-            clazz = SecurityUtil.doPrivilegedCreateClass(factory);
+            clazz = doPrivilegedCreateClass(factory);
         }
         finally
         {
@@ -565,6 +588,21 @@ public final class JavassistProxyFactory
             return !(method.getName() == FINALIZE
                         && method.getParameterTypes().length == 0
                         && method.getReturnType() == Void.TYPE);
+        }
+    }
+
+    protected static class PrivilegedActionForProxyFactory implements PrivilegedAction<Object>
+    {
+        private ProxyFactory factory;
+
+        protected PrivilegedActionForProxyFactory(ProxyFactory factory)
+        {
+            this.factory = factory;
+        }
+
+        public Object run()
+        {
+            return factory.createClass();
         }
     }
 }

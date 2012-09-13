@@ -47,7 +47,7 @@ import org.apache.webbeans.ejb.common.interceptor.OpenWebBeansEjbInterceptor;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.ClassUtil;
 
-import javassist.util.proxy.MethodHandler;
+import org.apache.webbeans.proxy.MethodHandler;
 
 /**
  * EJB beans proxy handler.

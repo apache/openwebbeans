@@ -45,6 +45,7 @@ import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.proxy.javassist.OpenWebBeansClassLoaderProvider;
 import org.apache.webbeans.service.DefaultLoaderService;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.LoaderService;
@@ -134,7 +135,7 @@ public class WebBeansContext
         }
         loaderService = getService(LoaderService.class);
         securityService = getService(SecurityService.class);
-        WebBeansUtil.initProxyFactoryClassLoaderProvider();
+        OpenWebBeansClassLoaderProvider.initProxyFactoryClassLoaderProvider();
 
         // Allow the WebBeansContext itself to be looked up
         managerMap.put(getClass(), this);

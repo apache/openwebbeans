@@ -90,7 +90,6 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
-import javassist.util.proxy.ProxyFactory;
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.ApplicationScopeLiteral;
@@ -2854,11 +2853,6 @@ public final class WebBeansUtil
         }
 
         throw new RuntimeException(e);
-    }
-
-    public static void initProxyFactoryClassLoaderProvider()
-    {
-        ProxyFactory.classLoaderProvider = new OpenWebBeansClassLoaderProvider();
     }
 
     /**

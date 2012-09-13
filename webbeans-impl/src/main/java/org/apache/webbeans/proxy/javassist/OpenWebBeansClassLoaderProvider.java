@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.util;
+package org.apache.webbeans.proxy.javassist;
 
 import javassist.util.proxy.ProxyFactory;
 
@@ -32,6 +32,11 @@ public class OpenWebBeansClassLoaderProvider implements ProxyFactory.ClassLoader
     OpenWebBeansClassLoaderProvider()
     {
         wrapped = ProxyFactory.classLoaderProvider;
+    }
+
+    public static void initProxyFactoryClassLoaderProvider()
+    {
+        ProxyFactory.classLoaderProvider = new OpenWebBeansClassLoaderProvider();
     }
 
     public void useCurrentClassLoader()

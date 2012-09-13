@@ -42,7 +42,7 @@ import org.apache.webbeans.jms.JMSModel.JMSType;
 import org.apache.webbeans.jms.component.JmsBean;
 import org.apache.webbeans.util.ClassUtil;
 
-import javassist.util.proxy.MethodHandler;
+import org.apache.webbeans.proxy.MethodHandler;
 
 public class JmsProxyHandler implements InvocationHandler, MethodHandler
 {

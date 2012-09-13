@@ -24,7 +24,7 @@ import org.apache.webbeans.component.OwbBean;
 
 
 /**
- * <p>This is a {@link javassist.util.proxy.MethodHandler} especially
+ * <p>This is a {@link org.apache.webbeans.proxy.MethodHandler} especially
  * made for &#064;ApplicationScoped beans.</p>
  * 
  * <p>Since there is only one single contextual instance of an &#064;ApplicationScoped bean,

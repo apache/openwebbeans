@@ -41,7 +41,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.WebBeansUtil;
 
-import javassist.util.proxy.MethodHandler;
+import org.apache.webbeans.proxy.MethodHandler;
 
 public class DelegateHandler implements InvocationHandler, MethodHandler, Serializable, Externalizable
 {

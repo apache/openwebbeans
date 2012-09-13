@@ -36,8 +36,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.proxy.javassist.OpenWebBeansClassLoaderProvider;
 import org.apache.webbeans.spi.FailOverService;
-import org.apache.webbeans.util.WebBeansUtil;
 
 public class DefaultOwbFailOverService implements FailOverService 
 {
@@ -85,7 +85,7 @@ public class DefaultOwbFailOverService implements FailOverService
         }
         if (isSupportFailOver || isSupportPassivation)
         {
-            WebBeansUtil.initProxyFactoryClassLoaderProvider();
+            OpenWebBeansClassLoaderProvider.initProxyFactoryClassLoaderProvider();
             value = WebBeansContext.getInstance().getOpenWebBeansConfiguration().getProperty(OWB_FAILOVER_RESOURCSES_SERIALIZATION_HANDLER);
             try 
             {
