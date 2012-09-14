@@ -371,7 +371,7 @@ public final class JavassistProxyFactory
         return null;
     }
 
-    private Class<?> createProxyClass(OwbBean<?> bean)
+    public Class<?> createProxyClass(OwbBean<?> bean)
     {
         final ProxyInfo info = getProxyInfo(bean);
         return factory.getProxyClass(info.getSuperClass(), info.getInterfaces());
