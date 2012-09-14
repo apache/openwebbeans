@@ -18,11 +18,21 @@
  */
 package org.apache.webbeans.proxy;
 
-import java.lang.reflect.InvocationHandler;
-
 /**
  * @version $Rev$ $Date$
  */
-public interface MethodHandler extends javassist.util.proxy.MethodHandler, InvocationHandler
+public interface Factory
 {
+    Class<?> getProxyClass(Class<?> superClass, Class<?>[] interfaces);
+
+    boolean isProxyInstance(Object o);
+
+    Object createProxy(MethodHandler handler, Class<?>[] interfaces)
+        throws InstantiationException, IllegalAccessException;
+
+     Object createProxy(Class<?> proxyClass)
+        throws InstantiationException, IllegalAccessException;
+
+
+    void setHandler(Object proxy, MethodHandler handler);
 }

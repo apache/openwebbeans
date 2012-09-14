@@ -21,11 +21,7 @@ package org.apache.webbeans.proxy;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -38,10 +34,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 
-import javassist.util.proxy.MethodFilter;
-import javassist.util.proxy.ProxyFactory;
-import javassist.util.proxy.ProxyFactory.ClassLoaderProvider;
-import javassist.util.proxy.ProxyObject;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ResourceBean;
@@ -55,7 +47,7 @@ import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorHandler;
 import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
-import org.apache.webbeans.proxy.javassist.OpenWebBeansClassLoaderProvider;
+import org.apache.webbeans.proxy.javassist.JavassistFactory;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -73,6 +65,7 @@ public final class JavassistProxyFactory
     private ConcurrentMap<ResourceBean<?, ?>, Class<?>> resourceBeanProxyClasses = new ConcurrentHashMap<ResourceBean<?,?>, Class<?>>();
     // second level map is indexed on local interface
     private ConcurrentMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>>();
+    private Factory factory = new JavassistFactory();
 
     /**
      * This map contains all configured special Scope->InterceptorHandler mappings.
@@ -81,21 +74,9 @@ public final class JavassistProxyFactory
     private Map<String, Class<? extends InterceptorHandler>> interceptorHandlerClasses =
             new ConcurrentHashMap<String, Class<? extends InterceptorHandler>>();
 
-    public static Class<?> doPrivilegedCreateClass(ProxyFactory factory)
-    {
-        if (System.getSecurityManager() == null)
-        {
-            return factory.createClass();
-        }
-        else
-        {
-            return (Class<?>) AccessController.doPrivileged(new PrivilegedActionForProxyFactory(factory));
-        }
-    }
-
     public void setHandler(Object proxy, MethodHandler handler)
     {
-        ((ProxyObject)proxy).setHandler(handler);
+        factory.setHandler(proxy, handler);
     }
 
 
@@ -120,13 +101,12 @@ public final class JavassistProxyFactory
      */
     public Class<?> getEjbBeanProxyClass(OwbBean<?> bean, Class<?> iface)
     {
-        Class<?> proxyClass = null;
         ConcurrentMap<Class<?>, Class<?>> typeToProxyClassMap = ejbProxyClasses.get(bean);
         if (typeToProxyClassMap != null)
         {
-            proxyClass = typeToProxyClassMap.get(iface);
+            return typeToProxyClassMap.get(iface);
         }
-        return proxyClass;
+        return null;
     }
     
     public Object createDecoratorDelegate(OwbBean<?> bean, DelegateHandler newDelegateHandler)
@@ -136,106 +116,38 @@ public final class JavassistProxyFactory
         Class<?> proxyClass = this.getInterceptorProxyClasses().get(bean);
         if (proxyClass == null)
         {
-            ProxyFactory delegateFactory = this.createProxyFactory(bean);
-            proxyClass = this.getProxyClass(delegateFactory);
+            proxyClass = createProxyClass(bean);
             this.getInterceptorProxyClasses().put(bean, proxyClass);
         }
 
-        final Object delegate = proxyClass.newInstance();
+        final Object delegate = createProxy(proxyClass);
         setHandler(delegate, newDelegateHandler);
         return delegate;
     }
 
     public Class<?> getResourceBeanProxyClass(ResourceBean<?, ?> resourceBean)
     {
-        Class<?> proxyClass = null;
         try
         {
-            proxyClass = resourceBeanProxyClasses.get(resourceBean);
+            Class<?> proxyClass = resourceBeanProxyClasses.get(resourceBean);
             if (proxyClass == null)
             {
-                ProxyFactory fact = createProxyFactory(resourceBean);
-                proxyClass = getProxyClass(fact);
+                proxyClass = createProxyClass(resourceBean);
 
                 Class<?> oldClazz = resourceBeanProxyClasses.putIfAbsent(resourceBean, proxyClass);
                 if (oldClazz != null)
                 {
                     return oldClazz;
                 }                
-            }                
+            }
+            return proxyClass;
         }
         catch (Exception e)
         {
             WebBeansUtil.throwRuntimeExceptions(e);
         }
 
-        return proxyClass;
-    }    
-
-    /**
-     * Defines the proxy for the given bean and iface using callers factory. Due
-     * to races with the concurrentmap, this might sometimes create additional
-     * javassist-defined classes that are not used by the caller and not stored
-     * in the map. Synchronizing the entire method, and getEjbBeanProxyClass, on
-     * ejbProxyClasses is an alternative.
-     * 
-     * @param bean the contextual representing the EJB
-     * @param iface the injected business local interface
-     * @param factory
-     * @return
-     */
-    public Class<?> defineEjbBeanProxyClass(OwbBean<?> bean, Class<?> iface, ProxyFactory factory)
-    {
-        Class<?> proxyClass = null;
-
-        ConcurrentMap<Class<?>, Class<?>> typeToProxyClassMap = ejbProxyClasses.get(bean);
-        if (typeToProxyClassMap == null)
-        {
-            typeToProxyClassMap = new ConcurrentHashMap<Class<?>, Class<?>>();
-            ConcurrentMap<Class<?>, Class<?>> existingMap = ejbProxyClasses.putIfAbsent(bean, typeToProxyClassMap);
-            
-            // use the map that beat us, because our new one definitely had no classes in it.
-            typeToProxyClassMap = (existingMap != null) ? existingMap : typeToProxyClassMap; 
-        }
-
-        proxyClass = typeToProxyClassMap.get(iface);
-
-        if (proxyClass == null)
-        {
-            proxyClass = doPrivilegedCreateClass(factory);
-            typeToProxyClassMap.putIfAbsent(iface, proxyClass);
-            // don't care if we were beaten in updating the iface->proxyclass map
-        }
-
-        return proxyClass;
-    }
-    
-    public  Class<?> createAbstractDecoratorProxyClass(OwbBean<?> bean)
-    {
-        //Will only get called once while defining the bean, so no need to cache
-        Class<?> clazz = null;
-        try
-        {
-            ProxyFactory fact = createProxyFactory(bean);
-            
-            clazz = doPrivilegedCreateClass(fact);
-        }
-        catch(Exception e)
-        {
-            WebBeansUtil.throwRuntimeExceptions(e);
-        }
-        return clazz;
-        
-    }
-
-    public Object createProxy(MethodHandler handler, Class<?>[] interfaces)
-        throws InstantiationException, IllegalAccessException
-    {
-        ProxyFactory pf = new ProxyFactory();
-        pf.setInterfaces(interfaces);
-        pf.setHandler(handler);
-
-        return getProxyClass(pf).newInstance();
+        return null;
     }
 
 
@@ -247,62 +159,18 @@ public final class JavassistProxyFactory
             Class<?> proxyClass = normalScopedBeanProxyClasses.get(bean);
             if (proxyClass == null)
             {
-                ProxyFactory fact = createProxyFactory(bean);
-
-                proxyClass = getProxyClass(fact);
+                proxyClass = createProxyClass(bean);
                 normalScopedBeanProxyClasses.putIfAbsent(bean, proxyClass);
             }
-            
-            result = proxyClass.newInstance();
+
+
+            result = createProxy(proxyClass);
             
             if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptor<?>))
             {
                 InterceptorHandler interceptorHandler = createInterceptorHandler(bean, creationalContext);
 
-                if (!true)
-                {
-                    final Set<Type> types = bean.getTypes();
-                    final Set<Class<?>> interfaceList = new HashSet<Class<?>>();
-                    Class<?> superClass = null;
-                    for (Type generic : types)
-                    {
-                        Class<?> type = ClassUtil.getClazz(generic);
-
-                        if (type.isInterface())
-                        {
-                            interfaceList.add(type);
-                        }
-
-                        else if ((superClass == null) || (superClass.isAssignableFrom(type) && type != Object.class))
-                        {
-                            superClass = type;
-                        }
-
-                    }
-                    if (!interfaceList.contains(Serializable.class))
-                    {
-                        interfaceList.add(Serializable.class);
-                    }
-
-                    Class<?>[] interfaceArray = new Class<?>[interfaceList.size()];
-                    interfaceArray = interfaceList.toArray(interfaceArray);
-
-                    if (superClass == null || superClass.equals(Object.class))
-                    {
-                        return Proxy.newProxyInstance(WebBeansUtil.getCurrentClassLoader(), interfaceArray,
-                                                      interceptorHandler);
-                    }
-                    else
-                    {
-                        return AsmProxyFactory.newProxyInstance(WebBeansUtil.getCurrentClassLoader(),
-                                                                interceptorHandler, superClass, interfaceArray);
-                    }
-
-                }
-                else
-                {
-                    setHandler(result, interceptorHandler);
-                }
+                setHandler(result, interceptorHandler);
             }
         }
         catch (Exception e)
@@ -313,9 +181,14 @@ public final class JavassistProxyFactory
         return result;
     }
 
+    private Object createProxy(Class<?> proxyClass)
+        throws InstantiationException, IllegalAccessException
+    {
+        return proxyClass.newInstance();
+    }
+
     private InterceptorHandler createInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
-        InterceptorHandler interceptorHandler = null;
         String scopeClassName = bean.getScope().getName();
         Class<? extends InterceptorHandler> interceptorHandlerClass = null;
         if (!interceptorHandlerClasses.containsKey(scopeClassName))
@@ -352,14 +225,14 @@ public final class JavassistProxyFactory
         if (interceptorHandlerClass.equals(NormalScopedBeanInterceptorHandler.class))
         {
             // this is faster that way...
-            interceptorHandler = new NormalScopedBeanInterceptorHandler(bean, creationalContext);
+            return new NormalScopedBeanInterceptorHandler(bean, creationalContext);
         }
         else
         {
             try
             {
                 Constructor ct = interceptorHandlerClass.getConstructor(OwbBean.class, CreationalContext.class);
-                interceptorHandler = (InterceptorHandler) ct.newInstance(bean, creationalContext);
+                return (InterceptorHandler) ct.newInstance(bean, creationalContext);
             }
             catch (NoSuchMethodException e)
             {
@@ -390,7 +263,6 @@ public final class JavassistProxyFactory
                                                          e);
             }
         }
-        return interceptorHandler;
     }
 
     public Object createBuildInBeanProxy(OwbBean<?> bean) 
@@ -401,11 +273,10 @@ public final class JavassistProxyFactory
             Class<?> proxyClass = buildInBeanProxyClasses.get(bean);
             if (proxyClass == null)
             {
-                ProxyFactory fact = createProxyFactory(bean);
-                proxyClass = getProxyClass(fact);
+                proxyClass = createProxyClass(bean);
                 buildInBeanProxyClasses.putIfAbsent(bean, proxyClass);
             }
-            result = proxyClass.newInstance();
+            result = createProxy(proxyClass);
         }
         catch (Exception e)
         {
@@ -417,8 +288,7 @@ public final class JavassistProxyFactory
     
     public  Object createDependentScopedBeanProxy(OwbBean<?> bean, Object actualInstance, CreationalContext<?> creastionalContext)
     {
-        Object result = null;
-        
+
         List<InterceptorData> interceptors =  null;
         List<Decorator<?>> decorators = null;
         InjectionTargetBean<?> injectionTargetBean = null;
@@ -481,70 +351,83 @@ public final class JavassistProxyFactory
             Class<?> proxyClass = dependentScopedBeanProxyClasses.get(bean);
             if (proxyClass == null)
             {
-                ProxyFactory fact = createProxyFactory(bean);
-                proxyClass = getProxyClass(fact);
+                proxyClass = createProxyClass(bean);
                 dependentScopedBeanProxyClasses.putIfAbsent(bean, proxyClass);
             }
-            
-            result = proxyClass.newInstance();
+
+            Object result = createProxy(proxyClass);
             if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptor<?>))
             {
                 setHandler(result, new DependentScopedBeanInterceptorHandler(bean, actualInstance, creastionalContext));
             }
 
+            return result;
         }
         catch (Exception e)
         {
             WebBeansUtil.throwRuntimeExceptions(e);
         }
 
-        return result;
+        return null;
     }
 
-
-    public  Class<?> getProxyClass(ProxyFactory factory)
+    private Class<?> createProxyClass(OwbBean<?> bean)
     {
-        ClassLoaderProvider classLoaderProvider = ProxyFactory.classLoaderProvider;
-        Class<?> clazz = null;
-        try
-        {
-            clazz = doPrivilegedCreateClass(factory);
-        }
-        catch(RuntimeException e)
-        {
-            if(classLoaderProvider instanceof OpenWebBeansClassLoaderProvider)
-            {
-                ((OpenWebBeansClassLoaderProvider)classLoaderProvider).useCurrentClassLoader();
-            }
-
-            //try again with updated class loader
-            clazz = doPrivilegedCreateClass(factory);
-        }
-        finally
-        {
-            if(classLoaderProvider instanceof OpenWebBeansClassLoaderProvider)
-            {
-                ((OpenWebBeansClassLoaderProvider)classLoaderProvider).reset();
-            }
-        }
-        
-        return clazz; 
+        final ProxyInfo info = getProxyInfo(bean);
+        return factory.getProxyClass(info.getSuperClass(), info.getInterfaces());
     }
-    
-    public  ProxyFactory createProxyFactory(Bean<?> bean) throws Exception
+
+    public Class<?> createAbstractDecoratorProxyClass(OwbBean<?> bean)
     {
-        Set<Type> types = bean.getTypes();
-        Set<Class<?>> interfaceList = new HashSet<Class<?>>();
+        return createProxyClass(bean);
+    }
+
+    public boolean isProxyInstance(Object o)
+    {
+        return factory.isProxyInstance(o);
+    }
+
+    public Object createProxy(MethodHandler handler, Class<?>[] interfaces)
+        throws IllegalAccessException, InstantiationException
+    {
+        return factory.createProxy(handler, interfaces);
+    }
+
+    private static class ProxyInfo
+    {
+        private final Class<?> superClass;
+        private final Class<?>[] interfaces;
+
+        private ProxyInfo(Class<?> superClass, Class<?>[] interfaces)
+        {
+            this.superClass = superClass;
+            this.interfaces = interfaces;
+        }
+
+        public Class<?> getSuperClass()
+        {
+            return superClass;
+        }
+
+        public Class<?>[] getInterfaces()
+        {
+            return interfaces;
+        }
+    }
+
+    private static ProxyInfo getProxyInfo(Bean<?> bean)
+    {
+        final Set<Class<?>> interfaceList = new HashSet<Class<?>>();
         Class<?> superClass = null;
-        for (Type generic : types)
+        for (Type generic : bean.getTypes())
         {
             Class<?> type = ClassUtil.getClazz(generic);
-            
+
             if (type.isInterface())
             {
                 interfaceList.add(type);
             }
-            
+
             else if ((superClass == null) || (superClass.isAssignableFrom(type) && type != Object.class))
             {
                 superClass = type;
@@ -559,50 +442,6 @@ public final class JavassistProxyFactory
         Class<?>[] interfaceArray = new Class<?>[interfaceList.size()];
         interfaceArray = interfaceList.toArray(interfaceArray);
 
-        ProxyFactory fact = new ProxyFactory();        
-        fact.setInterfaces(interfaceArray);
-        fact.setSuperclass(superClass);
-        fact.setFilter(FinalizeMethodFilter.INSTANCE);
-
-        return fact;
-        
-    }
-
-    /**
-     * @param o the object to check
-     * @return <code>true</code> if the given object is a proxy
-     */
-    public static boolean isProxyInstance(Object o)
-    {
-        return o instanceof ProxyObject;
-    }
-
-    private static class FinalizeMethodFilter implements MethodFilter
-    {
-        private static final String FINALIZE = "finalize".intern();
-
-        public static final FinalizeMethodFilter INSTANCE = new FinalizeMethodFilter();
-
-        public boolean isHandled(final Method method)
-        {
-            return !(method.getName() == FINALIZE
-                        && method.getParameterTypes().length == 0
-                        && method.getReturnType() == Void.TYPE);
-        }
-    }
-
-    protected static class PrivilegedActionForProxyFactory implements PrivilegedAction<Object>
-    {
-        private ProxyFactory factory;
-
-        protected PrivilegedActionForProxyFactory(ProxyFactory factory)
-        {
-            this.factory = factory;
-        }
-
-        public Object run()
-        {
-            return factory.createClass();
-        }
+        return new ProxyInfo(superClass, interfaceArray);
     }
 }

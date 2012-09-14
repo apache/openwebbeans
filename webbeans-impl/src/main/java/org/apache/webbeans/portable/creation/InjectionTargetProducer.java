@@ -83,7 +83,8 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
                 //injection will be occured on Proxy instances that are 
                 //not correct. Injection must be on actual dependent
                 //instance,so not necessary to inject on proxy
-                if(bean.getScope() == Dependent.class && JavassistProxyFactory.isProxyInstance(instance))
+                final JavassistProxyFactory proxyFactory = this.bean.getWebBeansContext().getJavassistProxyFactory();
+                if(bean.getScope() == Dependent.class && proxyFactory.isProxyInstance(instance))
                 {
                     return;
                 }
