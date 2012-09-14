@@ -55,6 +55,10 @@ final class BeanCacheKey
             // TBD: is the order of the qualifiers always the same?
             System.arraycopy(qualifiers, 0, this.qualifiers, 0, length);
         }
+
+        // this class is directly used in ConcurrentHashMap.get() so simply init the hasCode here
+        hashCode = computeHashCode();
+
     }
 
     @Override
@@ -94,22 +98,6 @@ final class BeanCacheKey
     @Override
     public int hashCode()
     {
-        if (hashCode != -1)
-        {
-            return hashCode;
-        }
-
-        int result = getTypeHashCode(type);
-        result = 31 * result + (path != null ? path.hashCode() : 0);
-        result = 31 * result + (qualifier != null ? getQualifierHashCode(qualifier) : 0);
-        if (qualifiers != null)
-        {
-            for (int i = 0; i < qualifiers.length; i++)
-            {
-                result = 31 * result + getQualifierHashCode(qualifiers[i]);
-            }
-        }
-        hashCode = result;
         return hashCode;
     }
 
@@ -128,6 +116,22 @@ final class BeanCacheKey
         }
 
         return typeHash;
+    }
+
+    /**
+     * Compute the HashCode. This should be called only in the constructor.
+     */
+    private int computeHashCode()
+    {
+        int computedHashCode = 31 * getTypeHashCode(type) + (path != null ? path.hashCode() : 0);
+        if (qualifiers != null)
+        {
+            for (Annotation q : qualifiers)
+            {
+                computedHashCode = 31 * computedHashCode + getQualifierHashCode(q);
+            }
+        }
+        return computedHashCode;
     }
 
     /**
