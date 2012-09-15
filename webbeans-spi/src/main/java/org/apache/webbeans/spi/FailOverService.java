@@ -30,22 +30,16 @@ import java.io.ObjectOutputStream;
 
 /**
  * Container provided failover and passivation service.
- * 
  */
-public interface FailOverService 
+public interface FailOverService
 {
     /**
-     * Used for tracking the origin of serialized bean instances. 
+     * Used for tracking the origin of serialized bean instances.
      * 
      * @return an UUID which is unique for each installation. This might change on restarts.
      */
-    public String getJVMId();
-    
-    /**
-     * @return The session attribute name used to store the bean instances bag
-     */
-    public String getFailOverAttributeName();
-    
+    public String getJvmId();
+
     /**
      * @return Whether or not the system supports failover
      */
@@ -55,7 +49,7 @@ public interface FailOverService
      * @return Whether or not the system support passivation
      */
     public boolean isSupportPassivation();
-    
+
     /**
      * Enable failover support.
      * 
@@ -71,47 +65,46 @@ public interface FailOverService
     public void enablePassivationSupport(boolean flag);
 
     /**
-     * Inform the service that a session is idle. Invoked when we finish
-     * a request.
+     * Inform the service that a session is idle and that beans should be stored for fail over.
+     * Invoked when we finish a request.
      * 
-     * @param session
+     * @param session The {@link HttpSession}.
      */
     public void sessionIsIdle(HttpSession session);
 
     /**
-     * Inform the service that a session will be active. Invoked when 
-     * a request is received. 
+     * Inform the service that the session will be active.
+     * Invoked when a request is received.
      * 
-     * @param session
+     * @param session The {@link HttpSession}.
      */
     public void sessionIsInUse(HttpSession session);
-    
+
     /**
-     * Invoked when we try to restore cdi bean instances. Invoked when
-     * a request is finished.
+     * Informs the service that the session did activate and that beans should be restored.
      * 
-     * @param session
+     * @param session The {@link HttpSession}.
      */
-    public void restoreBeans(HttpSession session);
-    
+    public void sessionDidActivate(HttpSession session);
+
     /**
-     * Container is going to actively passivate a session.
+     * Invoked when the session will passivate and that beans should be stored for passivation.
      * 
-     * @param session
+     * @param session The {@link HttpSession}.
      */
     public void sessionWillPassivate(HttpSession session);
-    
+
     /**
      * Container provided object input stream.
-     *  
+     * 
      * Note, the stream should support deserializing javassist objects.
      * 
      * @return custom object input stream.
      */
     public ObjectInputStream getObjectInputStream(InputStream in) throws IOException;
-    
+
     /**
-     * Container provided object output stream. 
+     * Container provided object output stream.
      * 
      * Note, the stream should support serializing javassist objects.
      * 
@@ -119,19 +112,18 @@ public interface FailOverService
      */
     public ObjectOutputStream getObjectOutputStream(OutputStream out) throws IOException;
 
-
     /**
-     * Container provided custom handler for serialize / deserialize a resource bean. 
-     * Add clean up code in this method will allow OWB to override default resource 
-     * bean passivation behavior. 
+     * Container provided custom handler for serialize / deserialize a resource
+     * bean. Add clean up code in this method will allow OWB to override default
+     * resource bean passivation behavior.
      * 
-     * Note, in the method, a container may first invoke the application provided 
-     * handler(@See SerializationHandler) if it is configured. 
+     * Note, in the method, a container may first invoke the application
+     * provided handler(@See SerializationHandler) if it is configured.
      * 
-     * @param bean                The resource bean.
-     * @param resourceObject    The resource bean instance
-     * @param in                The input object stream
-     * @param out                The output object stream
+     * @param bean The resource bean.
+     * @param resourceObject The resource bean instance
+     * @param in The input object stream
+     * @param out The output object stream
      * 
      * @return {@link #NOT_HANDLED} if not handled by handler.
      */

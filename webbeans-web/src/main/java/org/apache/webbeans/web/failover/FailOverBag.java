@@ -18,113 +18,154 @@
  */
 package org.apache.webbeans.web.failover;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.context.Conversation;
-import javax.enterprise.context.SessionScoped;
-import javax.servlet.http.HttpSession;
-
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ConversationContext;
-import org.apache.webbeans.context.SessionContext;
-import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.FailOverService;
-import org.apache.webbeans.web.context.SessionContextManager;
-import org.apache.webbeans.web.context.WebContextsService;
 
 /**
- * 
- * The bag that collects all conversation, session owb bean instances.
- * 
+ * Bag which holds all required informations for the fail over.
  */
-public class FailOverBag implements Serializable 
+public class FailOverBag implements Serializable, Externalizable
 {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -6314819837009653189L;
-    
-    /**Logger instance*/
-    protected static final Logger logger =
-            WebBeansLoggerFacade.getLogger(FailOverBag.class);
-    
+    public static final String SESSION_ATTRIBUTE_NAME = "o.a.owb.FAIL_OVER_BAG";
+
+    private static final Logger LOGGER = WebBeansLoggerFacade.getLogger(FailOverBag.class);
+    private static final long serialVersionUID = -6314819837009653190L;
+
+    private transient FailOverService failOverService;
+
+    private Map<String, Object> items;
+    private boolean sessionInUse;
     private String sessionId;
+    private String jvmId;
 
-    private String owbFailoverJVMId;
-    
-    private SessionContext sessionContext;
-    
-    private Map<Conversation, ConversationContext> conversationContextMap;
-
-    private transient WebBeansContext webBeansContext;
-    
+    /**
+     * Used by serialization.
+     */
     public FailOverBag()
     {
-        webBeansContext = WebBeansContext.getInstance();
-    }
-    
-    public FailOverBag(HttpSession session, FailOverService service) 
-    {
-        webBeansContext = WebBeansContext.getInstance();
-        
-        sessionId = session.getId();
-        owbFailoverJVMId = service.getJVMId();
-        updateOwbFailOverBag(session, service);
-    }
-    
-    public void updateOwbFailOverBag(HttpSession session, FailOverService service) 
-    {
-        // get the session context
-        sessionContext = (SessionContext) webBeansContext.getBeanManagerImpl().getContext(SessionScoped.class);
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
 
-        // get all conversation contexts 
-        ConversationManager conversationManager = webBeansContext.getConversationManager();
-        conversationContextMap = conversationManager.getConversationMapWithSessionId(session.getId());
+        this.failOverService = webBeansContext.getService(FailOverService.class);
+        this.items = new HashMap<String, Object>();
     }
-    
-    public void restore()
+
+    public FailOverBag(String sessionId, String jvmId)
     {
-        try 
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+
+        this.failOverService = webBeansContext.getService(FailOverService.class);
+        this.items = new HashMap<String, Object>();
+        this.sessionId = sessionId;
+        this.jvmId = jvmId;
+    }
+
+    public void put(String name, Object item)
+    {
+        items.put(name, item);
+    }
+
+    public Object get(String name)
+    {
+        return items.get(name);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
+    {
+        sessionInUse = in.readBoolean();
+        sessionId = (String) in.readObject();
+        jvmId = (String) in.readObject();
+
+        if (sessionInUse)
         {
-            //Transient, so we need to look this up again during restore.
-            webBeansContext = WebBeansContext.getInstance();
-            
-            if (sessionContext != null) 
+            if (LOGGER.isLoggable(Level.FINE))
             {
-                SessionContextManager sessionManager = ((WebContextsService)webBeansContext.getContextsService()).getSessionContextManager();
-                sessionManager.addNewSessionContext(sessionId, sessionContext);
-                sessionContext.setActive(true);
+                LOGGER.log(Level.FINE, "Skip bean de-serialization because session with id [" + sessionId + "] is in use.");
             }
-            if (conversationContextMap != null && !conversationContextMap.isEmpty())
-            {
-                ConversationManager conversationManager = webBeansContext.getConversationManager();
-                java.util.Iterator<Conversation> it = conversationContextMap.keySet().iterator();
-                while(it.hasNext()) 
-                {
-                    Conversation c = it.next();
-                    ConversationContext cc = conversationContextMap.get(c);
-                    conversationManager.addConversationContext(c, cc);
-                }
-            }
-        } 
-        catch (Exception e)
-        {
-            logger.log(Level.SEVERE, "FailOverBag", e);
+
+            return;
         }
+
+        byte[] buffer = (byte[]) in.readObject();
+        ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
+        ObjectInputStream ois = failOverService.getObjectInputStream(bais);
+
+        items = (Map<String, Object>) ois.readObject();
+
+        ois.close();
     }
 
-    public String getSessionId() 
+    public void writeExternal(ObjectOutput out) throws IOException
     {
-        return this.sessionId;
-    }
-    
-    public String getJVMId() 
-    {
-        return this.owbFailoverJVMId;
+        out.writeBoolean(sessionInUse);
+        out.writeObject(sessionId);
+        out.writeObject(jvmId);
+
+        if (sessionInUse)
+        {
+            if (LOGGER.isLoggable(Level.FINE))
+            {
+                LOGGER.log(Level.FINE, "Skip bean serialization because session with id [" + sessionId + "] is in use.");
+            }
+
+            return;
+        }
+
+        // We could not directly use java object stream since we are using javassist.
+        // Serialize the bag by use javassist object stream.
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = failOverService.getObjectOutputStream(baos);
+        oos.writeObject(items);
+        oos.flush();
+
+        out.writeObject(baos.toByteArray());
+
+        oos.close();
+        baos.close();
     }
 
+    public boolean isSessionInUse()
+    {
+        return sessionInUse;
+    }
+
+    public void setSessionInUse(boolean sessionInUse)
+    {
+        this.sessionInUse = sessionInUse;
+    }
+
+    public String getSessionId()
+    {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId)
+    {
+        this.sessionId = sessionId;
+    }
+
+    public String getJvmId()
+    {
+        return jvmId;
+    }
+
+    public void setJvmId(String jvmId)
+    {
+        this.jvmId = jvmId;
+    }
 }

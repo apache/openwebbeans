@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.web.failover;
 
-import java.util.UUID;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInput;
@@ -26,212 +25,356 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javassist.util.proxy.ProxyObjectOutputStream;
 
+import javax.enterprise.context.Conversation;
 import javax.enterprise.inject.spi.Bean;
 import javax.servlet.http.HttpSession;
 
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.ConversationContext;
+import org.apache.webbeans.context.SessionContext;
+import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.javassist.OpenWebBeansClassLoaderProvider;
 import org.apache.webbeans.spi.FailOverService;
+import org.apache.webbeans.web.context.SessionContextManager;
+import org.apache.webbeans.web.context.WebContextsService;
 
-public class DefaultOwbFailOverService implements FailOverService 
+/**
+ * Default implementation of the {@link FailOverService}.
+ */
+public class DefaultOwbFailOverService implements FailOverService
 {
-    /**Logger instance*/
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(DefaultOwbFailOverService.class);
+    private static final Logger LOGGER = WebBeansLoggerFacade.getLogger(DefaultOwbFailOverService.class);
 
-    private static final String OWB_FAILOVER_JVM_ID = 
-        UUID.randomUUID().toString() + "_" + System.currentTimeMillis();
-    
-    private static final String OWB_FAILOVER_PROPERTY_NAME = 
-        "org.apache.webbeans.web.failover"; 
-    
-    private static final String OWB_FAILOVER_IS_SUPPORT_FAILOVER = 
-        "org.apache.webbeans.web.failover.issupportfailover";
-    
-    private static final String OWB_FAILOVER_IS_SUPPORT_PASSIVATE = 
-        "org.apache.webbeans.web.failover.issupportpassivation";
+    public static final String CONFIG_IS_SUPPORT_FAILOVER = "org.apache.webbeans.web.failover.issupportfailover";
+    public static final String CONFIG_IS_SUPPORT_PASSIVATE = "org.apache.webbeans.web.failover.issupportpassivation";
+    public static final String CONFIG_RESOURCES_SERIALIZATION_HANDLER = "org.apache.webbeans.web.failover.resources.serialization.handler.v10";
 
-    private static final String OWB_FAILOVER_RESOURCSES_SERIALIZATION_HANDLER =
-        "org.apache.webbeans.web.failover.resources.serialization.handler.v10";
-    
-    boolean isSupportFailOver;
-    
-    boolean isSupportPassivation;
+    public static final String ATTRIBUTE_SESSION_CONTEXT = "sessionContext";
+    public static final String ATTRIBUTE_CONVERSATION_CONTEXT_MAP = "conversatzionContextMap";
 
-    SerializationHandlerV10 handler;
-    
-    ThreadLocal<Boolean> isForPassivation = new ThreadLocal<Boolean>();
-    
-    public DefaultOwbFailOverService () 
+    private static final String JVM_ID = UUID.randomUUID().toString() + "_" + System.currentTimeMillis();
+
+    private final WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+
+    private ThreadLocal<Boolean> passivation = new ThreadLocal<Boolean>();
+    private boolean supportFailOver;
+    private boolean supportPassivation;
+    private SerializationHandlerV10 handler;
+
+    public DefaultOwbFailOverService()
     {
+        OpenWebBeansConfiguration config = webBeansContext.getOpenWebBeansConfiguration();
+
         String value;
-        value = WebBeansContext.getInstance().getOpenWebBeansConfiguration().
-                getProperty(OWB_FAILOVER_IS_SUPPORT_FAILOVER);
+
+        value = config.getProperty(CONFIG_IS_SUPPORT_FAILOVER);
         if (value != null && value.equalsIgnoreCase("true"))
         {
-            isSupportFailOver = true;
+            supportFailOver = true;
         }
 
-        value = WebBeansContext.getInstance().getOpenWebBeansConfiguration().
-                getProperty(OWB_FAILOVER_IS_SUPPORT_PASSIVATE);
+        value = config.getProperty(CONFIG_IS_SUPPORT_PASSIVATE);
         if (value != null && value.equalsIgnoreCase("true"))
         {
-            isSupportPassivation = true;
+            supportPassivation = true;
         }
-        if (isSupportFailOver || isSupportPassivation)
+
+        if (supportFailOver || supportPassivation)
         {
             OpenWebBeansClassLoaderProvider.initProxyFactoryClassLoaderProvider();
-            value = WebBeansContext.getInstance().getOpenWebBeansConfiguration().getProperty(OWB_FAILOVER_RESOURCSES_SERIALIZATION_HANDLER);
-            try 
+            value = config.getProperty(CONFIG_RESOURCES_SERIALIZATION_HANDLER);
+
+            if (value != null)
             {
-                if (value != null) 
+                try
                 {
                     handler = (SerializationHandlerV10) Class.forName(value).newInstance();
                 }
-            } 
-            catch (Exception e) 
-            {
-                logger.log(Level.SEVERE, "DefaultOwbFailOverService could not instanciate: [" + value + "]", e);
+                catch (Exception e)
+                {
+                    LOGGER.log(Level.SEVERE, "DefaultOwbFailOverService could not instanciate: [" + value + "]", e);
+                }
             }
         }
-        
-        if (logger.isLoggable(Level.FINE))
+
+        if (LOGGER.isLoggable(Level.FINE))
         {
-            logger.log(Level.FINE, "DefaultOwbFailOverService isSupportFailOver: [{0}]", String.valueOf(isSupportFailOver));
-            logger.log(Level.FINE, "DefaultOwbFailOverService isSupportPassivation: [{0}]", String.valueOf(isSupportPassivation));
+            LOGGER.log(Level.FINE, "IsSupportFailOver: [{0}]", String.valueOf(supportFailOver));
+            LOGGER.log(Level.FINE, "IsSupportPassivation: [{0}]", String.valueOf(supportPassivation));
         }
     }
-    
-    public String getJVMId() 
+
+    public void sessionIsIdle(HttpSession session)
     {
-        return OWB_FAILOVER_JVM_ID;
-    }
-    
-    public String getFailOverAttributeName() 
-    {
-        return OWB_FAILOVER_PROPERTY_NAME;
-    }
-    
-    public void sessionIsIdle(HttpSession session) 
-    {
-        if (session != null) 
+        if (session != null)
         {
-            FailOverBagWrapper bagWrapper = 
-                (FailOverBagWrapper)session.getAttribute(getFailOverAttributeName());
-            if (bagWrapper == null) 
+            FailOverBag bag = (FailOverBag) session.getAttribute(FailOverBag.SESSION_ATTRIBUTE_NAME);
+
+            if (bag == null)
             {
-                bagWrapper = new FailOverBagWrapper(session, this);
-            } 
-            else 
-            {
-                bagWrapper.updateOwbFailOverBag(session, this);
+                bag = new FailOverBag(session.getId(), getJvmId());
             }
-            // store the bag as an attribute of the session. So when the 
-            // session is fail over to other jvm or local disk, the attribute
-            // could also be serialized.
-            session.setAttribute(getFailOverAttributeName(), bagWrapper);
+
+            bag.setSessionInUse(false);
+
+            storeBeansInFailOverBag(bag, session);
+
+            addFailOverBagToSession(bag, session);
+            addActivationListenerToSession(session);
         }
-        isForPassivation.remove();
-        isForPassivation.set(null);
+
+        passivation.remove();
+        passivation.set(null);
     }
-    
+
     public void sessionIsInUse(HttpSession session)
     {
-        if (session != null) 
+        if (session != null)
         {
-            FailOverBagWrapper bagWrapper = 
-                (FailOverBagWrapper)session.getAttribute(getFailOverAttributeName());
-            if (bagWrapper != null)
+            FailOverBag bag = (FailOverBag) session.getAttribute(FailOverBag.SESSION_ATTRIBUTE_NAME);
+
+            if (bag != null)
             {
-                bagWrapper.sessionIsInUse();
+                bag.setSessionInUse(true);
+            }
+
+            addActivationListenerToSession(session);
+        }
+    }
+
+    public void sessionDidActivate(HttpSession session)
+    {
+        FailOverBag bag = (FailOverBag) session.getAttribute(FailOverBag.SESSION_ATTRIBUTE_NAME);
+
+        if (bag != null)
+        {
+            if (bag.isSessionInUse())
+            {
+                if (LOGGER.isLoggable(Level.FINE))
+                {
+                    LOGGER.log(Level.FINE, "Skip restore beans for session [" + bag.getSessionId() + "] because session is in use.");
+                }
+            }
+            else
+            {
+                if (LOGGER.isLoggable(Level.FINE))
+                {
+                    LOGGER.log(Level.FINE, "Restore beans for session [{0}]", session.getId());
+                }
+
+                restoreBeansFromFailOverBag(bag, session);
             }
         }
     }
-    
-    public void sessionWillPassivate(HttpSession session) 
+
+    public void sessionWillPassivate(HttpSession session)
     {
-        FailOverBagWrapper bagWrapper = new FailOverBagWrapper(session, this);
-        session.setAttribute(getFailOverAttributeName(), bagWrapper);
-        isForPassivation.set(Boolean.TRUE);
-    }
-    
-    public void restoreBeans(HttpSession session)
-    {
-        FailOverBagWrapper bagWrapper = 
-            (FailOverBagWrapper)session.getAttribute(getFailOverAttributeName());
-        if (bagWrapper != null) 
-        {
-            if (logger.isLoggable(Level.FINE))
-            {
-                logger.log(Level.FINE, "DefaultOwbFailOverService restoreBeans for session: [{0}]", session);
-            }
-            bagWrapper.restore();
-            session.removeAttribute(getFailOverAttributeName());
-        }
-    }
-    
-    public boolean isSupportFailOver() 
-    {
-        return isSupportFailOver;
+        sessionIsIdle(session);
+
+        passivation.set(true);
     }
 
-    public boolean isSupportPassivation() 
-    {
-        return isSupportPassivation;
-    }
-
-    public void enableFailOverSupport(boolean flag) 
-    {
-        isSupportFailOver = flag;
-    }
-
-    public void enablePassivationSupport(boolean flag) 
-    {
-        isSupportPassivation = flag;
-    }
-    
     /**
-     * Get object input stream. Note, the stream should support deserialize javassist objects.
+     * Adds the {@link FailOverSessionActivationListener} to the current {@link HttpSession}.
+     * It must not be manually registered when we store it as session attribute.
+     * 
+     * @param session The current {@link HttpSession}.
+     */
+    protected void addActivationListenerToSession(HttpSession session)
+    {
+        if (session.getAttribute(FailOverSessionActivationListener.SESSION_ATTRIBUTE_NAME) == null)
+        {
+            session.setAttribute(FailOverSessionActivationListener.SESSION_ATTRIBUTE_NAME, new FailOverSessionActivationListener());
+        }
+    }
+
+    /**
+     * Store the {@link FailOverBag} as attribute to the current {@link HttpSession}.
+     * So when the session is fail over to other JVM or local disk, the
+     * attribute could also be serialized.
+     * 
+     * @param bag The {@link FailOverBag}.
+     * @param session The current {@link HttpSession}.
+     */
+    protected void addFailOverBagToSession(FailOverBag bag, HttpSession session)
+    {
+        try
+        {
+            session.setAttribute(FailOverBag.SESSION_ATTRIBUTE_NAME, bag);
+
+            if (LOGGER.isLoggable(Level.FINE))
+            {
+                LOGGER.log(Level.FINE, "Successfully added FailOverBag to session [" + bag.getSessionId() + "].");
+            }
+        }
+        catch (Exception e)
+        {
+            String message = "Could not add FailOverBag to session [" + bag.getSessionId() + "].";
+            LOGGER.log(Level.SEVERE, message, e);
+
+            throw new WebBeansException(message, e);
+        }
+    }
+
+    /**
+     * Stores the session and conversation contexts in the {@link FailOverBag}.
+     * 
+     * @param bag The {@link FailOverBag}.
+     * @param session The current {@link HttpSession}.
+     */
+    protected void storeBeansInFailOverBag(FailOverBag bag, HttpSession session)
+    {
+        // store the session context
+        SessionContextManager sessionManager =
+                ((WebContextsService) webBeansContext.getContextsService()).getSessionContextManager();
+        SessionContext sessionContext = sessionManager.getSessionContextWithSessionId(session.getId());
+        bag.put(ATTRIBUTE_SESSION_CONTEXT, sessionContext);
+
+        // store all conversation contexts
+        ConversationManager conversationManager = webBeansContext.getConversationManager();
+        bag.put(ATTRIBUTE_CONVERSATION_CONTEXT_MAP, conversationManager.getConversationMapWithSessionId(session.getId()));
+
+        if (LOGGER.isLoggable(Level.FINE))
+        {
+            LOGGER.log(Level.FINE, "Beans for session [" + bag.getSessionId() + "] successfully stored in FailOverBag.");
+        }
+    }
+
+    /**
+     * Restores the session and conversation contexts from the given {@link FailOverBag}.
+     * 
+     * @param bag The {@link FailOverBag}.
+     * @param session The current {@link HttpSession}.
+     */
+    @SuppressWarnings("unchecked")
+    protected void restoreBeansFromFailOverBag(FailOverBag bag, HttpSession session)
+    {
+        try
+        {
+            // restore session context
+            SessionContext sessionContext = (SessionContext) bag.get(ATTRIBUTE_SESSION_CONTEXT);
+
+            if (sessionContext != null)
+            {
+                SessionContextManager sessionManager =
+                        ((WebContextsService) webBeansContext.getContextsService()).getSessionContextManager();
+
+                sessionManager.addNewSessionContext(session.getId(), sessionContext);
+                sessionContext.setActive(true);
+            }
+
+            // restore conversation contexts
+            Map<Conversation, ConversationContext> conversationContextMap =
+                    (Map<Conversation, ConversationContext>) bag.get(ATTRIBUTE_CONVERSATION_CONTEXT_MAP);
+
+            if (conversationContextMap != null && !conversationContextMap.isEmpty())
+            {
+                ConversationManager conversationManager = webBeansContext.getConversationManager();
+                Iterator<Conversation> iterator = conversationContextMap.keySet().iterator();
+
+                while (iterator.hasNext())
+                {
+                    Conversation conversation = iterator.next();
+                    ConversationContext context = conversationContextMap.get(conversation);
+                    conversationManager.addConversationContext(conversation, context);
+                }
+            }
+
+            if (LOGGER.isLoggable(Level.FINE))
+            {
+                LOGGER.log(Level.FINE, "Beans for session [" + bag.getSessionId() + "] from [" + bag.getJvmId() + "] successfully restored.");
+            }
+        }
+        catch (Exception e)
+        {
+            String message = "Could not restore beans for session [" + bag.getSessionId()
+                    + "] from [" + bag.getJvmId() + "]";
+            LOGGER.log(Level.SEVERE, message, e);
+
+            throw new WebBeansException(message, e);
+        }
+    }
+
+    /**
+     * Except the EJB remote stub, it is hard to handle other types of
+     * resources. Here we delegate serialization/deserialization to the
+     * application provided SerializationHandler.
+     */
+    public Object handleResource(Bean<?> bean, Object resourceObject, ObjectInput in, ObjectOutput out)
+    {
+        if (handler != null)
+        {
+            return handler.handleResource(bean, resourceObject, in, out,
+                    (isPassivation()) ? SerializationHandlerV10.TYPE_PASSIVATION : SerializationHandlerV10.TYPE_FAILOVER);
+        }
+        return NOT_HANDLED;
+    }
+
+    /**
+     * Get object input stream. Note, the stream should support deserialize
+     * javassist objects.
      * 
      * @return custom object input stream.
      */
-    public ObjectInputStream getObjectInputStream(InputStream in) throws IOException 
+    public ObjectInputStream getObjectInputStream(InputStream in) throws IOException
     {
         return new OwbProxyObjectInputStream(in);
     }
-    
+
     /**
-     * Get object output stream. Note, the stream should support deserialize javassist objects.
+     * Get object output stream. Note, the stream should support deserialize
+     * javassist objects.
      * 
      * @return custom object output stream.
      */
-    public ObjectOutputStream getObjectOutputStream(OutputStream out) throws IOException 
+    public ObjectOutputStream getObjectOutputStream(OutputStream out) throws IOException
     {
         return new ProxyObjectOutputStream(out);
     }
-    
-    /**
-     * Except the EJB remote stub, it is hard to handle other types of resources.
-     * Here we delegate serialization/deserialization to the application provided
-     * SerializationHandler.
-     * 
-     */
-    public Object handleResource(
-            Bean<?> bean,
-            Object resourceObject,
-            ObjectInput in,
-            ObjectOutput out)
+
+    public String getJvmId()
     {
-        if (handler != null) 
+        return JVM_ID;
+    }
+
+    public boolean isSupportFailOver()
+    {
+        return supportFailOver;
+    }
+
+    public void enableFailOverSupport(boolean supportFailOver)
+    {
+        this.supportFailOver = supportFailOver;
+    }
+
+    public boolean isSupportPassivation()
+    {
+        return supportPassivation;
+    }
+
+    public void enablePassivationSupport(boolean supportPassivation)
+    {
+        this.supportPassivation = supportPassivation;
+    }
+
+    public boolean isPassivation()
+    {
+        if (passivation.get() == null)
         {
-            return handler.handleResource(bean, resourceObject, in, out, 
-                (isForPassivation.get()) ? SerializationHandlerV10.TYPE_PASSIVATION : SerializationHandlerV10.TYPE_FAILOVER);
+            passivation.set(false);
         }
-        return NOT_HANDLED;
+
+        return passivation.get();
     }
 }

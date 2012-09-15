@@ -16,33 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.web.failover;
+package org.apache.webbeans.web.tests.failover;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectStreamClass;
+import java.io.Serializable;
 
-import javassist.util.proxy.ProxyObjectInputStream;
+import javax.enterprise.context.SessionScoped;
 
-public class OwbProxyObjectInputStream extends ProxyObjectInputStream
+@SessionScoped
+public class SessionScopedBean implements Serializable
 {
-    public OwbProxyObjectInputStream(InputStream in) throws IOException
+    private static final long serialVersionUID = -448758698909502562L;
+
+    private String text;
+
+    public String getText()
     {
-        super(in);
+        return text;
     }
 
-    @Override
-    protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException
+    public void setText(String text)
     {
-        try
-        {
-            String name = desc.getName();
-
-            return Class.forName(name, false, Thread.currentThread().getContextClassLoader());
-        }
-        catch (ClassNotFoundException ex)
-        {
-            return super.resolveClass(desc);
-        }
+        this.text = text;
     }
 }

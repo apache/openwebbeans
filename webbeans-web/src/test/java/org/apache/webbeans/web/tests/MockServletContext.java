@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.web.tests.interceptor;
+package org.apache.webbeans.web.tests;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;

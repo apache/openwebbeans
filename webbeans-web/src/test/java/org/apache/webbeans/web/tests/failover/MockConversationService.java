@@ -16,33 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.web.failover;
+package org.apache.webbeans.web.tests.failover;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectStreamClass;
+import javax.enterprise.context.Conversation;
+import javax.servlet.http.HttpSession;
 
-import javassist.util.proxy.ProxyObjectInputStream;
+import org.apache.webbeans.spi.ConversationService;
 
-public class OwbProxyObjectInputStream extends ProxyObjectInputStream
+public class MockConversationService implements ConversationService
 {
-    public OwbProxyObjectInputStream(InputStream in) throws IOException
+    private String conversationId;
+    private String sessionId;
+
+    public MockConversationService(HttpSession session, Conversation conversation)
     {
-        super(in);
+        this.sessionId = session.getId();
+        this.conversationId = conversation.getId();
     }
 
-    @Override
-    protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException
+    public String getConversationId()
     {
-        try
-        {
-            String name = desc.getName();
+        return conversationId;
+    }
 
-            return Class.forName(name, false, Thread.currentThread().getContextClassLoader());
-        }
-        catch (ClassNotFoundException ex)
-        {
-            return super.resolveClass(desc);
-        }
+    public String getConversationSessionId()
+    {
+        return sessionId;
     }
 }

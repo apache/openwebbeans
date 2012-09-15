@@ -24,6 +24,8 @@ import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.beans.ApplicationScopedBean;
 import org.apache.webbeans.newtests.interceptors.beans.RequestScopedBean;
 import org.apache.webbeans.newtests.interceptors.common.TransactionInterceptor;
+import org.apache.webbeans.web.tests.MockServletContext;
+import org.apache.webbeans.web.tests.MockServletRequest;
 import org.junit.Test;
 
 import javax.enterprise.context.RequestScoped;
@@ -103,7 +105,7 @@ public class CachedInterceptorHandlerTest extends AbstractUnitTest
 
         if ((end - start) / 1e6 > ITERATIONS*10)
         {
-            // if it takes longer than 1ms for each iteration, then this is really a performance blocker! 
+            // if it takes longer than 1ms for each iteration, then this is really a performance blocker!
             Assert.fail("Performance test took more than 20 times longer than it should");
         }
 
