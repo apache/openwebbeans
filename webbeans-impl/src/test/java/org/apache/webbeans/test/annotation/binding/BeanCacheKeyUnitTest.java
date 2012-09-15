@@ -17,8 +17,9 @@
  * under the License.
  */
 
-package org.apache.webbeans.container;
+package org.apache.webbeans.test.annotation.binding;
 
+import org.apache.webbeans.container.BeanCacheKey;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithArrayOfBooleanMember;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithArrayOfIntMember;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithArrayOfStringMember;

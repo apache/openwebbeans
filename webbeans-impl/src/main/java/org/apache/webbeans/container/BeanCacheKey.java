@@ -28,7 +28,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Comparator;
 
-final class BeanCacheKey
+public final class BeanCacheKey
 {
     private final Type type;
     private final String path;
