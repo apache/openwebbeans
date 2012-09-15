@@ -51,7 +51,7 @@ import org.apache.webbeans.proxy.javassist.JavassistFactory;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
-public final class JavassistProxyFactory
+public final class ProxyFactory
 {
     private ConcurrentMap<OwbBean<?>, Class<?>> buildInBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
     private ConcurrentMap<OwbBean<?>, Class<?>> normalScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
@@ -62,12 +62,12 @@ public final class JavassistProxyFactory
     private ConcurrentMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>>();
     private Factory factory;
 
-    public JavassistProxyFactory()
+    public ProxyFactory()
     {
         this(new JavassistFactory());
     }
 
-    public JavassistProxyFactory(Factory factory)
+    public ProxyFactory(Factory factory)
     {
         this.factory = factory;
     }

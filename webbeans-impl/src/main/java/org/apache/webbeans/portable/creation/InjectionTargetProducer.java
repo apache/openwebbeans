@@ -27,7 +27,7 @@ import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.AbstractInjectable;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.proxy.ProxyFactory;
 
 /**
  * InjectionTargetProducer implementation.
@@ -83,7 +83,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
                 //injection will be occured on Proxy instances that are 
                 //not correct. Injection must be on actual dependent
                 //instance,so not necessary to inject on proxy
-                final JavassistProxyFactory proxyFactory = this.bean.getWebBeansContext().getJavassistProxyFactory();
+                final ProxyFactory proxyFactory = this.bean.getWebBeansContext().getProxyFactory();
                 if(bean.getScope() == Dependent.class && proxyFactory.isProxyInstance(instance))
                 {
                     return;

@@ -51,7 +51,7 @@ import javax.enterprise.inject.spi.InterceptionType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.proxy.ProxyFactory;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -136,7 +136,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         boolean isDependentProxy = false;
         if(getScope() == Dependent.class && !(this instanceof EnterpriseBeanMarker))
         {
-            final JavassistProxyFactory proxyFactory = getWebBeansContext().getJavassistProxyFactory();
+            final ProxyFactory proxyFactory = getWebBeansContext().getProxyFactory();
             T result = (T) proxyFactory.createDependentScopedBeanProxy(this, instance, creationalContext);
             //Means that Dependent Bean has interceptor/decorator
             if(proxyFactory.isProxyInstance(result))

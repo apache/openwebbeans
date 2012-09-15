@@ -45,7 +45,7 @@ import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.proxy.ProxyFactory;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
@@ -346,9 +346,9 @@ public abstract class InterceptorHandler implements InvocationHandler, MethodHan
         if (decoratorDelegateHandler == null)
         {
             final DelegateHandler newDelegateHandler = new DelegateHandler(bean);
-            final JavassistProxyFactory javassistProxyFactory = webBeansContext.getJavassistProxyFactory();
+            final ProxyFactory proxyFactory = webBeansContext.getProxyFactory();
 
-            final Object delegate = javassistProxyFactory.createDecoratorDelegate(bean, newDelegateHandler);
+            final Object delegate = proxyFactory.createDecoratorDelegate(bean, newDelegateHandler);
 
             // Gets component decorator stack
             List<Object> decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate, ownerCreationalContext);

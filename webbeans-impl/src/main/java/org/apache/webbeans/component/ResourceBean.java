@@ -54,8 +54,8 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
                 return instance;
             }
 
-            X proxyInstance = (X) getWebBeansContext().getJavassistProxyFactory().getResourceBeanProxyClass(this).newInstance();
-            webBeansContext.getJavassistProxyFactory().setHandler(proxyInstance, new ResourceProxyHandler(this,instance));
+            X proxyInstance = (X) getWebBeansContext().getProxyFactory().getResourceBeanProxyClass(this).newInstance();
+            webBeansContext.getProxyFactory().setHandler(proxyInstance, new ResourceProxyHandler(this,instance));
             return proxyInstance;
         }
         catch (Exception e)

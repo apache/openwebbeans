@@ -204,18 +204,18 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
             return actualInstance;
         }
 
-        T proxy = (T) webBeansContext.getJavassistProxyFactory().createBuildInBeanProxy(this);
+        T proxy = (T) webBeansContext.getProxyFactory().createBuildInBeanProxy(this);
         if (handlerClassName.equals(PROXY_HANDLER_VALUE_DEFAULT)) 
         {
             final MethodHandler handler = new BuildInBeanMethodHandler(this, actualInstance);
-            webBeansContext.getJavassistProxyFactory().setHandler(proxy, handler);
+            webBeansContext.getProxyFactory().setHandler(proxy, handler);
             return proxy;
         } 
         else if (handlerContructor != null)
         {
             try 
             {
-                webBeansContext.getJavassistProxyFactory().setHandler(proxy,
+                webBeansContext.getProxyFactory().setHandler(proxy,
                                                  (MethodHandler) (handlerContructor.newInstance(this, actualInstance)));
                 return proxy;
             } 

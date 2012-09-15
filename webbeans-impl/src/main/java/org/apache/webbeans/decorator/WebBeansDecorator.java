@@ -359,7 +359,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         WebBeansContext webBeansContext = wrappedBean.getWebBeansContext();
         Context context = webBeansContext.getBeanManagerImpl().getContext(getScope());
         Object actualInstance = context.get((Bean<Object>) wrappedBean, (CreationalContext<Object>)creationalContext);
-        T proxy = (T) webBeansContext.getJavassistProxyFactory().createDependentScopedBeanProxy(wrappedBean, actualInstance, creationalContext);
+        T proxy = (T) webBeansContext.getProxyFactory().createDependentScopedBeanProxy(wrappedBean, actualInstance, creationalContext);
         
         return proxy;        
     }

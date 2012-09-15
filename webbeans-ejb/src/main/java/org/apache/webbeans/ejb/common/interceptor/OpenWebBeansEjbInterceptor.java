@@ -489,7 +489,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             delegateHandler = new DelegateHandler(this.contextual, ejbContext);
 
             final Object delegate =
-                webBeansContext.getJavassistProxyFactory().createDecoratorDelegate(injectionTarget, delegateHandler);
+                webBeansContext.getProxyFactory().createDecoratorDelegate(injectionTarget, delegateHandler);
             // Gets component decorator stack
             decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate,
                                                                    (CreationalContextImpl<?>)this.cc);          

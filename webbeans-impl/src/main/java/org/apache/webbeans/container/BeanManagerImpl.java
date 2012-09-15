@@ -838,7 +838,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             if (instance == null)
             {
                 //Create Managed Bean Proxy
-                instance = webBeansContext.getJavassistProxyFactory().createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
+                instance = webBeansContext.getProxyFactory().createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
 
                 //Cached instance
                 cacheProxies.put(bean, instance);

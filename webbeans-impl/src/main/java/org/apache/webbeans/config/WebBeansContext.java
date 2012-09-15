@@ -44,7 +44,7 @@ import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.proxy.ProxyFactory;
 import org.apache.webbeans.proxy.javassist.OpenWebBeansClassLoaderProvider;
 import org.apache.webbeans.service.DefaultLoaderService;
 import org.apache.webbeans.spi.ContextsService;
@@ -77,7 +77,7 @@ public class WebBeansContext
     private final ExtensionLoader extensionLoader = new ExtensionLoader(this);
     private final InterceptorsManager interceptorsManager = new InterceptorsManager(this);
     private final WebBeansInterceptorConfig webBeansInterceptorConfig = new WebBeansInterceptorConfig(this);
-    private final JavassistProxyFactory javassistProxyFactory;
+    private final ProxyFactory proxyFactory;
     private final OpenWebBeansConfiguration openWebBeansConfiguration;
     private final PluginLoader pluginLoader = new PluginLoader();
     private final SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
@@ -136,9 +136,9 @@ public class WebBeansContext
         loaderService = getService(LoaderService.class);
         securityService = getService(SecurityService.class);
 
-        javassistProxyFactory = serviceMap.containsKey(JavassistProxyFactory.class)
-            ? (JavassistProxyFactory) serviceMap.get(JavassistProxyFactory.class)
-            : new JavassistProxyFactory();
+        proxyFactory = serviceMap.containsKey(ProxyFactory.class)
+            ? (ProxyFactory) serviceMap.get(ProxyFactory.class)
+            : new ProxyFactory();
         OpenWebBeansClassLoaderProvider.initProxyFactoryClassLoaderProvider();
 
         // Allow the WebBeansContext itself to be looked up
@@ -153,7 +153,7 @@ public class WebBeansContext
         managerMap.put(DecoratorsManager.class, decoratorsManager);
         managerMap.put(ExtensionLoader.class, extensionLoader);
         managerMap.put(InterceptorsManager.class, interceptorsManager);
-        managerMap.put(JavassistProxyFactory.class, javassistProxyFactory);
+        managerMap.put(ProxyFactory.class, proxyFactory);
         managerMap.put(OpenWebBeansConfiguration.class, openWebBeansConfiguration);
         managerMap.put(PluginLoader.class, pluginLoader);
         managerMap.put(SerializableBeanVault.class, serializableBeanVault);
@@ -340,9 +340,9 @@ public class WebBeansContext
         return extensionLoader;
     }
 
-    public JavassistProxyFactory getJavassistProxyFactory()
+    public ProxyFactory getProxyFactory()
     {
-        return javassistProxyFactory;
+        return proxyFactory;
     }
 
 
