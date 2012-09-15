@@ -53,20 +53,24 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 public final class JavassistProxyFactory
 {
-    public JavassistProxyFactory()
-    {
-
-    }
-    
-    private ConcurrentMap<OwbBean<?>, Class<?>> buildInBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
+    private ConcurrentMap<OwbBean<?>, Class<?>> buildInBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
     private ConcurrentMap<OwbBean<?>, Class<?>> normalScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
     private ConcurrentMap<OwbBean<?>, Class<?>> dependentScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
     private ConcurrentMap<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
     private ConcurrentMap<ResourceBean<?, ?>, Class<?>> resourceBeanProxyClasses = new ConcurrentHashMap<ResourceBean<?,?>, Class<?>>();
     // second level map is indexed on local interface
     private ConcurrentMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>>();
-    private Factory factory = new JavassistFactory();
-//    private Factory factory = new AsmFactory();
+    private Factory factory;
+
+    public JavassistProxyFactory()
+    {
+        this(new JavassistFactory());
+    }
+
+    public JavassistProxyFactory(Factory factory)
+    {
+        this.factory = factory;
+    }
 
     /**
      * This map contains all configured special Scope->InterceptorHandler mappings.

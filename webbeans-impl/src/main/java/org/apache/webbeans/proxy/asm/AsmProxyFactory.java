@@ -257,6 +257,47 @@ public class AsmProxyFactory
         cw.visitField(ACC_FINAL + ACC_PRIVATE, NON_BUSINESS_HANDLER_NAME, "Ljava/lang/reflect/InvocationHandler;", null,
                       null).visitEnd();
 
+        propagateConstructors(classToProxy, cw, classFileName);
+
+        final Map<String, List<Method>> methodMap = new HashMap<String, List<Method>>();
+
+        getNonPrivateMethods(classToProxy, methodMap);
+
+        for (Class<?> anInterface : interfaces)
+        {
+            getNonPrivateMethods(anInterface, methodMap);
+        }
+
+        // Iterate over the public methods
+        for (final Map.Entry<String, List<Method>> entry : methodMap.entrySet())
+        {
+
+            for (final Method method : entry.getValue())
+            {
+                final String name = method.getName();
+
+                addDirectAccessMethod(classToProxy, cw, method, name);
+
+                if (Modifier.isPublic(method.getModifiers()) ||
+                    (method.getParameterTypes().length == 0 && ("finalize".equals(name) || "clone".equals(name))))
+                {
+                    // forward invocations of any public methods or
+                    // finalize/clone methods to businessHandler
+                    processMethod(cw, method, proxyClassFileName, BUSSINESS_HANDLER_NAME);
+                }
+                else
+                {
+                    // forward invocations of any other methods to nonBusinessHandler
+                    processMethod(cw, method, proxyClassFileName, NON_BUSINESS_HANDLER_NAME);
+                }
+            }
+        }
+
+        return cw.toByteArray();
+    }
+
+    private static void propagateConstructors(Class<?> classToProxy, ClassWriter cw, String classFileName)
+    {
         for (Constructor<?> constructor : classToProxy.getDeclaredConstructors())
         {
 
@@ -279,39 +320,47 @@ public class AsmProxyFactory
             mv.visitEnd();
 
         }
-        final Map<String, List<Method>> methodMap = new HashMap<String, List<Method>>();
+    }
 
-        getNonPrivateMethods(classToProxy, methodMap);
-
-        for (Class<?> anInterface : interfaces)
+    private static void addDirectAccessMethod(Class<?> classToProxy, ClassWriter cw, Method method, String name)
+    {
+        try
         {
-            getNonPrivateMethods(anInterface, methodMap);
-        }
-
-        // Iterate over the public methods
-        for (final Map.Entry<String, List<Method>> entry : methodMap.entrySet())
-        {
-
-            for (final Method method : entry.getValue())
+            final Method impl = classToProxy.getMethod(name, method.getParameterTypes());
+            if (!Modifier.isAbstract(impl.getModifiers()))
             {
-                final String name = method.getName();
+                final String[] exceptions = new String[impl.getExceptionTypes().length];
+                for (int i = 0; i < exceptions.length; i++)
+                {
+                    exceptions[i] = Type.getType(impl.getExceptionTypes()[i]).getInternalName();
+                }
 
-                if (Modifier.isPublic(method.getModifiers()) ||
-                    (method.getParameterTypes().length == 0 && ("finalize".equals(name) || "clone".equals(name))))
+                final String methodDescriptor = Type.getMethodDescriptor(impl);
+                final MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "_$$" + name, methodDescriptor,
+                                                               null, exceptions);
+                mv.visitCode();
+                mv.visitVarInsn(ALOAD, 0);
+
+                int offset = 1;
+                for (Class<?> aClass : impl.getParameterTypes())
                 {
-                    // forward invocations of any public methods or
-                    // finalize/clone methods to businessHandler
-                    processMethod(cw, method, proxyClassFileName, BUSSINESS_HANDLER_NAME);
+                    final Type type = Type.getType(aClass);
+                    mv.visitVarInsn(type.getOpcode(ILOAD), offset);
+                    offset += type.getSize();
                 }
-                else
-                {
-                    // forward invocations of any other methods to nonBusinessHandler
-                    processMethod(cw, method, proxyClassFileName, NON_BUSINESS_HANDLER_NAME);
-                }
+
+                final Type declaringClass = Type.getType(impl.getDeclaringClass());
+                mv.visitMethodInsn(INVOKESPECIAL, declaringClass.getInternalName(), name, methodDescriptor);
+
+                final Type returnType = Type.getType(method.getReturnType());
+                mv.visitInsn(returnType.getOpcode(IRETURN));
+                mv.visitMaxs(-1, -1);
+                mv.visitEnd();
             }
         }
-
-        return cw.toByteArray();
+        catch (NoSuchMethodException e)
+        {
+        }
     }
 
     private static void getNonPrivateMethods(Class<?> clazz, Map<String, List<Method>> methodMap)

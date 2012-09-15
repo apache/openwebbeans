@@ -39,7 +39,8 @@ public class AbstractDecoratorMethodHandler implements MethodHandler, Serializab
     public Object invoke(Object proxy, Method method, Object[] args)
         throws Throwable
     {
-        throw new NoSuchMethodException();
+        final Method proceed = proxy.getClass().getMethod("_$$" + method.getName(), method.getParameterTypes());
+        return proceed.invoke(proxy, args);
     }
 
     public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable

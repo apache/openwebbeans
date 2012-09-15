@@ -77,7 +77,7 @@ public class WebBeansContext
     private final ExtensionLoader extensionLoader = new ExtensionLoader(this);
     private final InterceptorsManager interceptorsManager = new InterceptorsManager(this);
     private final WebBeansInterceptorConfig webBeansInterceptorConfig = new WebBeansInterceptorConfig(this);
-    private final JavassistProxyFactory javassistProxyFactory = new JavassistProxyFactory();
+    private final JavassistProxyFactory javassistProxyFactory;
     private final OpenWebBeansConfiguration openWebBeansConfiguration;
     private final PluginLoader pluginLoader = new PluginLoader();
     private final SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
@@ -135,6 +135,10 @@ public class WebBeansContext
         }
         loaderService = getService(LoaderService.class);
         securityService = getService(SecurityService.class);
+
+        javassistProxyFactory = serviceMap.containsKey(JavassistProxyFactory.class)
+            ? (JavassistProxyFactory) serviceMap.get(JavassistProxyFactory.class)
+            : new JavassistProxyFactory();
         OpenWebBeansClassLoaderProvider.initProxyFactoryClassLoaderProvider();
 
         // Allow the WebBeansContext itself to be looked up
