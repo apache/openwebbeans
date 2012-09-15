@@ -24,8 +24,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 
-import javax.naming.OperationNotSupportedException;
-
 import org.apache.webbeans.proxy.MethodHandler;
 
 public class AbstractDecoratorMethodHandler implements MethodHandler, Serializable
@@ -35,13 +33,13 @@ public class AbstractDecoratorMethodHandler implements MethodHandler, Serializab
 
     public AbstractDecoratorMethodHandler()
     {
-        new Exception().fillInStackTrace().printStackTrace();
+//        new Exception().fillInStackTrace().printStackTrace();
     }
 
     public Object invoke(Object proxy, Method method, Object[] args)
         throws Throwable
     {
-        throw new OperationNotSupportedException();
+        throw new NoSuchMethodException();
     }
 
     public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable

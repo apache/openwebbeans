@@ -66,6 +66,7 @@ public final class JavassistProxyFactory
     // second level map is indexed on local interface
     private ConcurrentMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>>();
     private Factory factory = new JavassistFactory();
+//    private Factory factory = new AsmFactory();
 
     /**
      * This map contains all configured special Scope->InterceptorHandler mappings.
@@ -184,7 +185,7 @@ public final class JavassistProxyFactory
     private Object createProxy(Class<?> proxyClass)
         throws InstantiationException, IllegalAccessException
     {
-        return proxyClass.newInstance();
+        return factory.createProxy(proxyClass);
     }
 
     private InterceptorHandler createInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)

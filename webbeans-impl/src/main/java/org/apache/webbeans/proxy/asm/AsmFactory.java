@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.proxy.asm;
 
-import java.lang.reflect.Proxy;
-
 import org.apache.webbeans.proxy.Factory;
 import org.apache.webbeans.proxy.MethodHandler;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -27,52 +25,40 @@ import org.apache.webbeans.util.WebBeansUtil;
 /**
  * @version $Rev$ $Date$
  */
-public class AsmFactory implements Factory
+public class AsmFactory
+    implements Factory
 {
 
     public Object createProxy(MethodHandler handler, Class<?> superClass, Class<?>[] interfaceArray)
     {
-        if (useJdkProxy(superClass))
-        {
-            return Proxy.newProxyInstance(WebBeansUtil.getCurrentClassLoader(), interfaceArray, handler);
-        }
-        else
-        {
-            return AsmProxyFactory.newProxyInstance(WebBeansUtil.getCurrentClassLoader(), handler, superClass,
-                                                    interfaceArray);
-        }
-
+        return AsmProxyFactory.newProxyInstance(WebBeansUtil.getCurrentClassLoader(), handler, superClass,
+                                                interfaceArray);
     }
 
     public Class<?> getProxyClass(Class<?> superClass, Class<?>[] interfaces)
     {
-        return null;
+        return AsmProxyFactory.getProxyClass(WebBeansUtil.getCurrentClassLoader(), superClass, interfaces);
     }
 
     public boolean isProxyInstance(Object o)
     {
-        return false;
+        return AsmProxyFactory.isProxyClass(o.getClass());
     }
 
     public Object createProxy(MethodHandler handler, Class<?>[] interfaces)
         throws InstantiationException, IllegalAccessException
     {
-        return null;
+        return createProxy(handler, null, interfaces);
     }
 
     public Object createProxy(Class<?> proxyClass)
         throws InstantiationException, IllegalAccessException
     {
-        return null;
+        return AsmProxyFactory.constructProxy(proxyClass, null);
     }
 
     public void setHandler(Object proxy, MethodHandler handler)
     {
+        AsmProxyFactory.setInvocationHandler(proxy, handler);
     }
-
-    private boolean useJdkProxy(Class<?> superClass)
-    {
-        return superClass == null || superClass.equals(Object.class);
-    }
-
 }

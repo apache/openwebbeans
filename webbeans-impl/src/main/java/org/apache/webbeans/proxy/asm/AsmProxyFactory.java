@@ -25,6 +25,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -38,6 +39,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.webbeans.proxy.ProxyGenerationException;
 import org.objectweb.asm.ClassWriter;
@@ -49,6 +51,8 @@ import org.objectweb.asm.Type;
 public class AsmProxyFactory
     implements Opcodes
 {
+
+    private static final AtomicInteger ID = new AtomicInteger(1);
 
     public static final InvocationHandler NON_BUSINESS_HANDLER = new NonBusinessHandler();
 
@@ -66,7 +70,7 @@ public class AsmProxyFactory
         try
         {
 
-            final Class proxyClass = GENERATOR.createProxy(classToSubclass, classLoader, interfaces);
+            final Class proxyClass = GENERATOR.getProxyClass(classLoader, classToSubclass, interfaces);
             final Object object = GENERATOR.constructProxy(proxyClass, handler);
 
             return object;
@@ -109,9 +113,38 @@ public class AsmProxyFactory
         }
     }
 
-    public Object constructProxy(final Class clazz, final InvocationHandler handler)
+    public static void setInvocationHandler(Object proxy, InvocationHandler invocationHandler)
+    {
+        try
+        {
+            final Field field = proxy.getClass().getDeclaredField(BUSSINESS_HANDLER_NAME);
+            field.setAccessible(true);
+            try
+            {
+                field.set(proxy, invocationHandler);
+            }
+            finally
+            {
+                field.setAccessible(false);
+            }
+        }
+        catch (NoSuchFieldException e)
+        {
+            throw new IllegalArgumentException(e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static Object constructProxy(final Class clazz, InvocationHandler handler)
         throws IllegalStateException
     {
+        if (handler == null)
+        {
+            handler = new NoHandler();
+        }
 
         final Object instance = Unsafe.allocateInstance(clazz);
 
@@ -120,6 +153,17 @@ public class AsmProxyFactory
 
         return instance;
     }
+
+    private static class NoHandler
+        implements InvocationHandler
+    {
+        public Object invoke(Object proxy, Method method, Object[] args)
+            throws Throwable
+        {
+            throw new UnsupportedOperationException("No valid MethodHandler has been set");
+        }
+    }
+
 
     private static Field getDeclaredField(final Class clazz, final String fieldName)
     {
@@ -135,14 +179,23 @@ public class AsmProxyFactory
         }
     }
 
-    public static boolean isProxy(final Class<?> clazz)
+    public static boolean isProxyClass(final Class<?> clazz)
     {
         return clazz.isAnnotationPresent(Proxy.class);
     }
 
-    public Class createProxy(final Class<?> classToProxy, final ClassLoader cl, final Class... interfaces)
+    public static Class getProxyClass(final ClassLoader cl, final Class<?> classToProxy, final Class... interfaces)
     {
-        final String proxyName = classToProxy.getName() + "$LocalBeanProxy";
+        final String proxyName;
+        if (classToProxy == null || classToProxy.getName().startsWith("java.") ||
+            classToProxy.getName().startsWith("javax."))
+        {
+            proxyName = "BeanProxy$" + ID.incrementAndGet();
+        }
+        else
+        {
+            proxyName = classToProxy.getName() + "$BeanProxy";
+        }
         final String classFileName = proxyName.replace('.', '/');
 
         try
@@ -165,7 +218,7 @@ public class AsmProxyFactory
             try
             {
                 final byte[] proxyBytes = generateProxy(classToProxy, classFileName, interfaces);
-                return Unsafe.defineClass(classToProxy, proxyName, proxyBytes);
+                return Unsafe.defineClass(proxyName, proxyBytes, cl, null);
             }
             catch (Exception e)
             {
@@ -176,7 +229,8 @@ public class AsmProxyFactory
         }
     }
 
-    private byte[] generateProxy(final Class<?> classToProxy, final String proxyName, final Class<?>... interfaces)
+    private static byte[] generateProxy(final Class<?> classToProxy, final String proxyName,
+                                        final Class<?>... interfaces)
         throws ProxyGenerationException
     {
         final ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
@@ -203,6 +257,28 @@ public class AsmProxyFactory
         cw.visitField(ACC_FINAL + ACC_PRIVATE, NON_BUSINESS_HANDLER_NAME, "Ljava/lang/reflect/InvocationHandler;", null,
                       null).visitEnd();
 
+        for (Constructor<?> constructor : classToProxy.getDeclaredConstructors())
+        {
+
+            final String descriptor = Type.getConstructorDescriptor(constructor);
+            final MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", descriptor, null, null);
+            mv.visitCode();
+            mv.visitVarInsn(ALOAD, 0);
+
+            int offset = 1;
+            for (Class<?> aClass : constructor.getParameterTypes())
+            {
+                final Type type = Type.getType(aClass);
+                mv.visitVarInsn(type.getOpcode(ILOAD), offset);
+                offset += type.getSize();
+            }
+
+            mv.visitMethodInsn(INVOKESPECIAL, classFileName, "<init>", descriptor);
+            mv.visitInsn(RETURN);
+            mv.visitMaxs(-1, -1);
+            mv.visitEnd();
+
+        }
         final Map<String, List<Method>> methodMap = new HashMap<String, List<Method>>();
 
         getNonPrivateMethods(classToProxy, methodMap);
@@ -238,7 +314,7 @@ public class AsmProxyFactory
         return cw.toByteArray();
     }
 
-    private void getNonPrivateMethods(Class<?> clazz, Map<String, List<Method>> methodMap)
+    private static void getNonPrivateMethods(Class<?> clazz, Map<String, List<Method>> methodMap)
     {
         while (clazz != null)
         {
@@ -276,7 +352,7 @@ public class AsmProxyFactory
         }
     }
 
-    private boolean isOverridden(final List<Method> methods, final Method method)
+    private static boolean isOverridden(final List<Method> methods, final Method method)
     {
         for (final Method m : methods)
         {
@@ -289,8 +365,8 @@ public class AsmProxyFactory
     }
 
 
-    private void processMethod(final ClassWriter cw, final Method method, final String proxyName,
-                               final String handlerName)
+    private static void processMethod(final ClassWriter cw, final Method method, final String proxyName,
+                                      final String handlerName)
         throws ProxyGenerationException
     {
         if ("<init>".equals(method.getName()))
@@ -526,7 +602,7 @@ public class AsmProxyFactory
      * @param type Type the needs to be returned
      * @return The matching bytecode instruction
      */
-    private int getReturnInsn(final Class<?> type)
+    private static int getReturnInsn(final Class<?> type)
     {
         if (type.isPrimitive())
         {
@@ -574,7 +650,7 @@ public class AsmProxyFactory
      * @param type Type to load
      * @return Bytecode instruction to use
      */
-    private int getVarInsn(final Class<?> type)
+    private static int getVarInsn(final Class<?> type)
     {
         if (type.isPrimitive())
         {
@@ -621,7 +697,7 @@ public class AsmProxyFactory
      * @param type Type whose primitive method we want to lookup
      * @return The name of the method to use
      */
-    private String getPrimitiveMethod(final Class<?> type)
+    private static String getPrimitiveMethod(final Class<?> type)
     {
         if (Integer.TYPE.equals(type))
         {
@@ -665,7 +741,7 @@ public class AsmProxyFactory
      * @param returnType The type to cast to with CHECKCAST
      * @return CHECKCAST parameter
      */
-    String getCastType(final Class<?> returnType)
+    static String getCastType(final Class<?> returnType)
     {
         if (returnType.isPrimitive())
         {
@@ -683,7 +759,7 @@ public class AsmProxyFactory
      * @param type
      * @return
      */
-    private String getWrapperType(final Class<?> type)
+    private static String getWrapperType(final Class<?> type)
     {
         if (Integer.TYPE.equals(type))
         {
@@ -731,7 +807,7 @@ public class AsmProxyFactory
      * @param mv
      * @param i
      */
-    private void pushIntOntoStack(final MethodVisitor mv, final int i)
+    private static void pushIntOntoStack(final MethodVisitor mv, final int i)
     {
         if (i == 0)
         {
@@ -776,7 +852,7 @@ public class AsmProxyFactory
      * @param type Type of array to create
      * @throws ProxyGenerationException
      */
-    private void createArrayDefinition(final MethodVisitor mv, final int size, final Class<?> type)
+    private static void createArrayDefinition(final MethodVisitor mv, final int size, final Class<?> type)
         throws ProxyGenerationException
     {
         // create a new array of java.lang.class (2)
@@ -792,7 +868,7 @@ public class AsmProxyFactory
     }
 
 
-    String getMethodSignatureAsString(final Class<?> returnType, final Class<?>[] parameterTypes)
+    static String getMethodSignatureAsString(final Class<?> returnType, final Class<?>[] parameterTypes)
     {
         final StringBuilder builder = new StringBuilder();
         builder.append("(");
@@ -813,7 +889,7 @@ public class AsmProxyFactory
      * @param type
      * @return
      */
-    private String getPrimitiveLetter(final Class<?> type)
+    private static String getPrimitiveLetter(final Class<?> type)
     {
         if (Integer.TYPE.equals(type))
         {
@@ -862,7 +938,7 @@ public class AsmProxyFactory
      * @param wrap          True if a non-array object should be wrapped with L and ; - e.g. Ljava/lang/Integer;
      * @return String to use for ASM
      */
-    public String getAsmTypeAsString(final Class<?> parameterType, final boolean wrap)
+    public static String getAsmTypeAsString(final Class<?> parameterType, final boolean wrap)
     {
         if (parameterType.isArray())
         {
@@ -1092,12 +1168,11 @@ public class AsmProxyFactory
             }
         }
 
-        private static Class defineClass(Class<?> clsToProxy, String proxyName, byte[] proxyBytes)
+        private static Class defineClass(String proxyName, byte[] proxyBytes, final ClassLoader classLoader,
+                                         ProtectionDomain o)
             throws IllegalAccessException, InvocationTargetException
         {
-            final ProtectionDomain protectionDomain = clsToProxy.getProtectionDomain();
-            return (Class<?>) DEFINE_CLASS.invoke(UNSAFE, proxyName, proxyBytes, 0, proxyBytes.length,
-                                                 clsToProxy.getClassLoader(), protectionDomain);
+            return (Class<?>) DEFINE_CLASS.invoke(UNSAFE, proxyName, proxyBytes, 0, proxyBytes.length, classLoader, o);
         }
     }
 
