@@ -51,7 +51,7 @@
             <groupId>asm</groupId>
             <artifactId>asm</artifactId>
             <version>3.3.1</version>
-            <optional>true</true>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
