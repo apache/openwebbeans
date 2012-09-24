@@ -16,12 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.web.tomcat.test;
+package org.apache.webbeans.web.tomcat7.test;
+
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
- *
+ * Simple requests to the tomcat installation
  */
 public class OwbTomcatPluginIT
 {
+    @Test
+    public void testTomcatRequest() throws Exception
+    {
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        HttpGet httpGet = new HttpGet("http://localhost:9081/owbtomcat7it/test.test");
+
+        HttpResponse response = httpclient.execute(httpGet);
+        Assert.assertNotNull(response);
+        Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+    }
 
 }
