@@ -132,11 +132,12 @@
 
     <profiles>
         <profile>
-            <id>integrationTest</id>
+            <id>run-its</id>
             <build>
                 <plugins>
                     <!-- invoke the integration tests under src/it -->
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-invoker-plugin</artifactId>
                         <configuration>
                             <debug>true</debug>
