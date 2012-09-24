@@ -32,6 +32,7 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardServer;
 import org.apache.naming.ContextAccessController;
 import org.apache.tomcat.InstanceManager;
+import org.apache.webbeans.servlet.WebBeansConfigurationListener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -91,7 +92,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                         String[] oldListeners = context.findApplicationListeners();
                         LinkedList<String> listeners = new LinkedList<String>();
 
-                        listeners.addFirst("org.apache.webbeans.servlet.WebBeansConfigurationListener");
+                        listeners.addFirst(WebBeansConfigurationListener.class.getName());
 
 
                         for(String listener : oldListeners)
@@ -142,7 +143,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                     ClassLoader loader = context.getLoader().getClassLoader();
                     Object listener = event.getData();
                     
-                    if(listener.getClass().getName().equals("org.apache.webbeans.servlet.WebBeansConfigurationListener"))
+                    if(listener.getClass().getName().equals(WebBeansConfigurationListener.class.getName()))
                     {
                        ContextAccessController.setWritable(context.getNamingContextListener().getName(), context);                       
                        return;
@@ -161,7 +162,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                     ClassLoader loader = context.getLoader().getClassLoader();
                     Object listener = event.getData();
                     
-                    if(listener.getClass().getName().equals("org.apache.webbeans.servlet.WebBeansConfigurationListener"))
+                    if(listener.getClass().getName().equals(WebBeansConfigurationListener.class.getName()))
                     {   
                         InstanceManager processor = context.getInstanceManager();
                         InstanceManager custom = new TomcatInstanceManager(context.getLoader().getClassLoader(),processor);
@@ -177,7 +178,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                             Object[] listeners = context.getApplicationEventListeners();
                             for(Object instance : listeners)
                             {
-                                if(!instance.getClass().getName().equals("org.apache.webbeans.servlet.WebBeansConfigurationListener"))
+                                if(!instance.getClass().getName().equals(WebBeansConfigurationListener.class.getName()))
                                 {                                
                                     TomcatUtil.inject(instance, loader);   
                                 }
@@ -188,7 +189,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                 else if(event.getType().equals("beforeContextDestroyed"))
                 {
                     Object listener = event.getData();
-                    if(listener.getClass().getName().equals("org.apache.webbeans.servlet.WebBeansConfigurationListener"))
+                    if(listener.getClass().getName().equals(WebBeansConfigurationListener.class.getName()))
                     {
                         ContextAccessController.setWritable(context.getNamingContextListener().getName(),context);   
                     }
