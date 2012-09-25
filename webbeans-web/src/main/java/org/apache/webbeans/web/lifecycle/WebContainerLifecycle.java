@@ -222,7 +222,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
             }
             else
             {
-                throw new WebBeansException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0002));
+                throw new WebBeansException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0018));
             }
         }                
         
