@@ -51,6 +51,7 @@
             <groupId>asm</groupId>
             <artifactId>asm</artifactId>
             <version>3.3.1</version>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -131,11 +132,12 @@
 
     <profiles>
         <profile>
-            <id>integrationTest</id>
+            <id>run-its</id>
             <build>
                 <plugins>
                     <!-- invoke the integration tests under src/it -->
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-invoker-plugin</artifactId>
                         <configuration>
                             <debug>true</debug>

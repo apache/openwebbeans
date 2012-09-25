@@ -32,11 +32,13 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardServer;
 import org.apache.naming.ContextAccessController;
+import org.apache.webbeans.servlet.WebBeansConfigurationListener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -60,6 +62,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
 
     public ContextLifecycleListener()
     {
+        System.out.println("MSX TODO REMOVE ContextLifecycleListener invoked");
     }
 
     public void lifecycleEvent(LifecycleEvent event)
@@ -81,7 +84,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                 if (event.getType().equals(Lifecycle.START_EVENT))
                 {
                     ServletContext scontext = context.getServletContext();
-                    URL url = scontext.getResource("/WEB-INF/beans.xml");
+                    URL url = getBeansXml(scontext);
                     if (url != null)
                     {
                         //Registering ELResolver with JSP container
@@ -89,7 +92,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                         
                         String[] oldListeners = context.findApplicationListeners();
                         LinkedList<String> listeners = new LinkedList<String>();
-                        listeners.addFirst("org.apache.webbeans.servlet.WebBeansConfigurationListener");
+                        listeners.addFirst(WebBeansConfigurationListener.class.getName());
                         for(String listener : oldListeners)
                         {
                             listeners.add(listener);
@@ -102,7 +105,9 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                         }                        
                         
                         context.addApplicationListener(TomcatSecurityListener.class.getName());
-                        //context.addInstanceListener(TomcatInstanceListener.class.getName());             
+                        context.addContainerListener(this);
+
+                        //context.addInstanceListener(TomcatInstanceListener.class.getName());
                     }
                 }
             }                        
@@ -128,14 +133,14 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                     ClassLoader loader = context.getLoader().getClassLoader();
                     Object listener = event.getData();
                     
-                    if(listener.getClass().getName().equals("org.apache.webbeans.servlet.WebBeansConfigurationListener"))
+                    if(listener.getClass().getName().equals(WebBeansConfigurationListener.class.getName()))
                     {
                        ContextAccessController.setWritable(context.getNamingContextListener().getName(), context);                       
                        return;
                     }
                     else
                     {
-                        URL url = context.getServletContext().getResource("/WEB-INF/beans.xml");
+                        URL url = getBeansXml(context.getServletContext());
                         if(url != null)
                         {
                             TomcatUtil.inject(listener, loader);   
@@ -148,7 +153,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                     ClassLoader loader = context.getLoader().getClassLoader();
                     Object listener = event.getData();
                     
-                    if(listener.getClass().getName().equals("org.apache.webbeans.servlet.WebBeansConfigurationListener"))
+                    if(listener.getClass().getName().equals(WebBeansConfigurationListener.class.getName()))
                     {   
                         AnnotationProcessor processor = context.getAnnotationProcessor();
                         AnnotationProcessor custom = new TomcatAnnotProcessor(context.getLoader().getClassLoader(),processor);
@@ -158,13 +163,13 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                         
                         ContextAccessController.setReadOnly(context.getNamingContextListener().getName());
                         
-                        URL url = context.getServletContext().getResource("/WEB-INF/beans.xml");
+                        URL url = getBeansXml(context.getServletContext());
                         if(url != null)
                         {
                             Object[] listeners = context.getApplicationEventListeners();
                             for(Object instance : listeners)
                             {
-                                if(!instance.getClass().getName().equals("org.apache.webbeans.servlet.WebBeansConfigurationListener"))
+                                if(!instance.getClass().getName().equals(WebBeansConfigurationListener.class.getName()))
                                 {                                
                                     TomcatUtil.inject(instance, loader);   
                                 }
@@ -175,7 +180,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                 else if(event.getType().equals("beforeContextDestroyed"))
                 {
                     Object listener = event.getData();
-                    if(listener.getClass().getName().equals("org.apache.webbeans.servlet.WebBeansConfigurationListener"))
+                    if(listener.getClass().getName().equals(WebBeansConfigurationListener.class.getName()))
                     {
                         ContextAccessController.setWritable(context.getNamingContextListener().getName(),context);   
                     }
@@ -369,6 +374,17 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
             return value;
         }
     }
+
+    private URL getBeansXml(ServletContext scontext) throws MalformedURLException
+    {
+        URL url = scontext.getResource("/WEB-INF/beans.xml");
+        if (url == null)
+        {
+            url = scontext.getResource("/WEB-INF/classes/META-INF/beans.xml");
+        }
+        return url;
+    }
+
 
     protected static class PrivilegedActionForAccessibleObject implements PrivilegedAction<Object>
     {

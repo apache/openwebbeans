@@ -121,4 +121,5 @@ public class OWBLogConst
     public static final String EXCEPT_0015 = "EXCEPT_0015"; // Passivation bean \: [{0}] decorators must be passivating capable.
     public static final String EXCEPT_0016 = "EXCEPT_0016"; // Passivation bean \: [{0}] interceptors must be passivating capable.
     public static final String EXCEPT_0017 = "EXCEPT_0017"; // Passivation bean \: [{0}] interceptor \: [{1}] must have serializable injection points.
+    public static final String EXCEPT_0018 = "EXCEPT_0018"; // Wrong start object.
 }

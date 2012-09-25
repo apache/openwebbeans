@@ -81,17 +81,21 @@ Release Notes - OpenWebBeans - Version 1.1.6
 
 Bug
 
-    * [OWB-696] - check for unproxyable API types should get moved to the validateBeans phase
-    * [OWB-697] - Non-Static Loggers leads to NonSerizializableException
-    * [OWB-698] - InjectableBeanManager not serializable
-    * [OWB-703] - getBeans cache key algorithm must be unique
+    [OWB-694] - Misleading exception message "Wrong termination object"
+    [OWB-696] - check for unproxyable API types should get moved to the validateBeans phase
+    [OWB-697] - Non-Static Loggers leads to NonSerizializableException
+    [OWB-698] - InjectableBeanManager not serializable
+    [OWB-703] - getBeans cache key algorithm must be unique
+    [OWB-707] - tomcat-sample and tomcat7-sample are just broken.
+    [OWB-708] - PrincipalBean doesn't get found
+    [OWB-709] - webbeans-tomcat6 must honour WEB-INF/classes/META-INF/beans.xml
 
 Improvement
 
-    * [OWB-695] - Cause missing in AnnotationDB$CrossReferenceException
-    * [OWB-701] - Support ASM for Bean Proxies
-    * [OWB-702] - Add serialization unit tests to openwebbeans-web to catch future regressions
-    * [OWB-704] - use method filter in javassist proxies instead of "manual" filtering
+    [OWB-695] - Cause missing in AnnotationDB$CrossReferenceException
+    [OWB-701] - Support ASM for Bean Proxies
+    [OWB-702] - Add serialization unit tests to openwebbeans-web to catch future regressions
+    [OWB-704] - use method filter in javassist proxies instead of "manual" filtering
 
 
 

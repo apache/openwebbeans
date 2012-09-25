@@ -19,7 +19,6 @@
 package org.apache.webbeans.samples.tomcat;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.Bean;
@@ -32,7 +31,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.webbeans.annotation.DefaultLiteral;
 
 public class MyFilter implements Filter
 {
@@ -49,7 +47,7 @@ public class MyFilter implements Filter
     @SuppressWarnings("unchecked")
     public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain arg2) throws IOException, ServletException
     {
-        Set<Bean<?>> beans = manager.getBeans(CurrentDateProvider.class, new Annotation[]{new DefaultLiteral()});
+        Set<Bean<?>> beans = manager.getBeans(CurrentDateProvider.class);
         System.out.println("Total found beans : " + beans.size());
         Bean<CurrentDateProvider> provider = (Bean<CurrentDateProvider>)beans.iterator().next();
         CurrentDateProvider instance = (CurrentDateProvider) manager.getReference(provider, CurrentDateProvider.class, manager.createCreationalContext(provider));
