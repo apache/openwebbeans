@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+
 /**
  * Context lifecycle listener. Adapted from
  * OpenEJB Tomcat and updated.
@@ -81,6 +82,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
             else if (event.getSource() instanceof StandardContext)
             {
                 StandardContext context = (StandardContext) event.getSource();
+
                 if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT))
                 {
                     ServletContext scontext = context.getServletContext();
@@ -94,7 +96,6 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                         LinkedList<String> listeners = new LinkedList<String>();
 
                         listeners.addFirst(WebBeansConfigurationListener.class.getName());
-
 
                         for(String listener : oldListeners)
                         {
@@ -138,6 +139,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
             if(event.getSource() instanceof StandardContext)
             {               
                 context = (StandardContext)event.getSource();
+
                 if(event.getType().equals("beforeContextInitialized"))
                 {
                     ClassLoader loader = context.getLoader().getClassLoader();
