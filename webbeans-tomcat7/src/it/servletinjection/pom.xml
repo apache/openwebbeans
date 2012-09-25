@@ -53,38 +53,6 @@
             <scope>test</scope>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-catalina</artifactId>
-            <version>7.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-spi</artifactId>
-            <version>@project.version@</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-impl</artifactId>
-            <version>@project.version@</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-web</artifactId>
-            <version>@project.version@</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-tomcat7</artifactId>
-            <version>@project.version@</version>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jcdi_1.0_spec</artifactId>
@@ -97,10 +65,23 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-servlet_3.0_spec</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
         <finalName>owbtomcat7it</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -226,16 +207,6 @@
                             <version>${tomcat7.version}</version>
                         </dependency>
 
-                        <!--
-                         * since we register the tomcat listener we also need
-                         * all owb stuff in the tomcat root classpath
-                        -->
-                        <dependency>
-                            <groupId>org.apache.tomcat</groupId>
-                            <artifactId>tomcat-catalina</artifactId>
-                            <version>7.0.0</version>
-                        </dependency>
-
                         <dependency>
                             <groupId>org.apache.openwebbeans</groupId>
                             <artifactId>openwebbeans-spi</artifactId>
@@ -262,16 +233,20 @@
                         <dependency>
                             <groupId>org.apache.geronimo.specs</groupId>
                             <artifactId>geronimo-jcdi_1.0_spec</artifactId>
-                            <version>${geronimo_cdi.version}</version>
+                            <version>1.0</version>
                         </dependency>
 
                         <dependency>
                             <groupId>org.apache.geronimo.specs</groupId>
                             <artifactId>geronimo-atinject_1.0_spec</artifactId>
-                            <version>${geronimo_atinject.version}</version>
+                            <version>1.0</version>
                         </dependency>
 
-
+                        <dependency>
+                            <groupId>org.apache.geronimo.specs</groupId>
+                            <artifactId>geronimo-interceptor_1.1_spec</artifactId>
+                            <version>1.0</version>
+                        </dependency>
                     </dependencies>
                 </plugin>
 
@@ -305,7 +280,6 @@
                 <version>2.0-beta-1</version>
                 <configuration>
                     <path>/${project.build.finalName}</path>
-                    <serverXml>src/test/tomcat/server.xml</serverXml>
                     <addContextWarDependencies>true</addContextWarDependencies>
                     <port>${tomcat.port.it}</port>
                     <fork>true</fork> <!-- needed for testing ITs -->
@@ -319,7 +293,7 @@
                         <id>start-tomcat</id>
                         <phase>pre-integration-test</phase>
                         <goals>
-                            <goal>run</goal>
+                            <goal>run-war</goal>
                         </goals>
                     </execution>
                     <execution>
