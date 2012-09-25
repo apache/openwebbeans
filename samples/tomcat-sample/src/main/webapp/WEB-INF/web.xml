@@ -34,7 +34,6 @@
   <servlet-name>injector</servlet-name>
   <url-pattern>/injector</url-pattern>
  </servlet-mapping>
-<!--
  <security-constraint>
   <display-name>injector</display-name>
   <web-resource-collection>
@@ -52,5 +51,4 @@
  <security-role>
   <role-name>manager</role-name>
  </security-role>
--->
 </web-app>
