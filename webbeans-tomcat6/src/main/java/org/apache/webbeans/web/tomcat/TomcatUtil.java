@@ -18,25 +18,67 @@
  */
 package org.apache.webbeans.web.tomcat;
 
-import java.lang.reflect.Method;
+import org.apache.webbeans.component.InjectionTargetWrapper;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.inject.OWBInjector;
+
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.BeanManager;
 
 public class TomcatUtil
 {
     public static Object inject(Object object, ClassLoader loader) throws Exception
     {
-        Class<?> injector = loader.loadClass("org.apache.webbeans.inject.OWBInjector");
-        Object injectorInstance = injector.newInstance();
-        Method method = injector.getDeclaredMethod("inject", new Class<?>[]{Object.class});
-        injectorInstance = method.invoke(injectorInstance, new Object[]{object});       
-        
-        return injectorInstance;
-    }
-    
-    public static void destroy(Object injectorInstance, ClassLoader loader) throws Exception
-    {
-        Class<?> injector = loader.loadClass("org.apache.webbeans.inject.OWBInjector");
-        Method method = injector.getDeclaredMethod("destroy", new Class<?>[]{});
-        method.invoke(injectorInstance, new Object[]{});               
+        final ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(loader);
+        CreationalContext<?> context = null;
+        try
+        {
+            final BeanManager beanManager = WebBeansContext.currentInstance().getBeanManagerImpl();
+            context = beanManager.createCreationalContext(null);
+            OWBInjector.inject(beanManager, object, context);
+        }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader(oldLoader);
+        }
+        return new Instance(object, context);
     }
 
+    public static void destroy(Object injectorInstance, ClassLoader loader) throws Exception
+    {
+        final Instance instance = (TomcatUtil.Instance) injectorInstance;
+        final ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(loader);
+        try
+        {
+            final BeanManagerImpl beanManager = WebBeansContext.currentInstance().getBeanManagerImpl();
+            final InjectionTargetWrapper wrapper = beanManager.getInjectionTargetWrapper(instance.object.getClass());
+            if (wrapper != null)
+            {
+                wrapper.dispose(instance.object);
+            }
+            else if (instance.context != null)
+            {
+                instance.context.release();
+            }
+        }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader(oldLoader);
+        }
+    }
+
+    private static class Instance
+    {
+        private Object object;
+        private CreationalContext<?> context;
+
+        private Instance(Object object, CreationalContext<?> context)
+        {
+            this.object = object;
+            this.context = context;
+        }
+    }
 }

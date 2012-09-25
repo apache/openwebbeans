@@ -31,9 +31,21 @@
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>catalina</artifactId>
-            <version>6.0.26</version>
+            <version>6.0.35</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jcdi_1.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-atinject_1.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-spi</artifactId>
@@ -50,16 +62,44 @@
             <artifactId>openwebbeans-web</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jcdi_1.0_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-atinject_1.0_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
+
     </dependencies>
-    
+
+    <profiles>
+        <profile>
+            <id>run-its</id>
+            <build>
+                <plugins>
+                    <!-- invoke the integration tests under src/it -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-invoker-plugin</artifactId>
+                        <configuration>
+                            <debug>true</debug>
+                            <projectsDirectory>src/it</projectsDirectory>
+                            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+                            <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+                            <settingsFile>src/it/settings.xml</settingsFile>
+                            <pomIncludes>
+                                <pomInclude>*/pom.xml</pomInclude>
+                            </pomIncludes>
+                            <goals>
+                                <goal>install</goal>
+                            </goals>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>install</goal>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
