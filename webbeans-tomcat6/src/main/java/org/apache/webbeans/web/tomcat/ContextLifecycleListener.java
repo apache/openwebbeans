@@ -38,6 +38,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -83,7 +84,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                 if (event.getType().equals(Lifecycle.START_EVENT))
                 {
                     ServletContext scontext = context.getServletContext();
-                    URL url = scontext.getResource("/WEB-INF/beans.xml");
+                    URL url = getBeansXml(scontext);
                     if (url != null)
                     {
                         //Registering ELResolver with JSP container
@@ -139,7 +140,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                     }
                     else
                     {
-                        URL url = context.getServletContext().getResource("/WEB-INF/beans.xml");
+                        URL url = getBeansXml(context.getServletContext());
                         if(url != null)
                         {
                             TomcatUtil.inject(listener, loader);   
@@ -162,7 +163,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                         
                         ContextAccessController.setReadOnly(context.getNamingContextListener().getName());
                         
-                        URL url = context.getServletContext().getResource("/WEB-INF/beans.xml");
+                        URL url = getBeansXml(context.getServletContext());
                         if(url != null)
                         {
                             Object[] listeners = context.getApplicationEventListeners();
@@ -373,6 +374,17 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
             return value;
         }
     }
+
+    private URL getBeansXml(ServletContext scontext) throws MalformedURLException
+    {
+        URL url = scontext.getResource("/WEB-INF/beans.xml");
+        if (url == null)
+        {
+            url = scontext.getResource("/WEB-INF/classes/META-INF/beans.xml");
+        }
+        return url;
+    }
+
 
     protected static class PrivilegedActionForAccessibleObject implements PrivilegedAction<Object>
     {
