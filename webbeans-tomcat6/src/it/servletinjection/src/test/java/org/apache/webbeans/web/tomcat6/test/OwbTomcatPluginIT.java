@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.web.tomcat7.test;
+package org.apache.webbeans.web.tomcat6.test;
 
 
 import org.apache.http.HttpResponse;

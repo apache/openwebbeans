@@ -134,7 +134,7 @@
                         <id>start-tomcat</id>
                         <phase>pre-integration-test</phase>
                         <goals>
-                            <goal>run-war</goal>
+                            <goal>run</goal>
                         </goals>
                     </execution>
                     <execution>

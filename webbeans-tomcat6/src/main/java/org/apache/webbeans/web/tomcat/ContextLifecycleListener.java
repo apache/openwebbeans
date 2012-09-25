@@ -104,6 +104,8 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                         }                        
                         
                         context.addApplicationListener(TomcatSecurityListener.class.getName());
+                        context.addContainerListener(this);
+
                         //context.addInstanceListener(TomcatInstanceListener.class.getName());
                     }
                 }
