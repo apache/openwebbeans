@@ -225,14 +225,14 @@ public class BeansDeployer
         
         if(beanEeProvider != null)
         {
-            addDefaultBean(beanManager, "org.apache.webbeans.ee.common.beans.PrinicipalBean");
+            addDefaultBean(beanManager, "org.apache.webbeans.ee.common.beans.PrincipalBean");
             addDefaultBean(beanManager, "org.apache.webbeans.ee.beans.ValidatorBean");
             addDefaultBean(beanManager, "org.apache.webbeans.ee.beans.ValidatorFactoryBean");
             addDefaultBean(beanManager, "org.apache.webbeans.ee.beans.UserTransactionBean");
         }
         else if(beanWebProvider != null)
         {
-            addDefaultBean(beanManager, "org.apache.webbeans.ee.common.beans.PrinicipalBean");
+            addDefaultBean(beanManager, "org.apache.webbeans.ee.common.beans.PrincipalBean");
         }
             
     }
