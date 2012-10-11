@@ -18,22 +18,25 @@
  */
 package org.apache.webbeans.util;
 
-import org.apache.webbeans.exception.WebBeansException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.Nonbinding;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+
+import org.apache.webbeans.exception.WebBeansException;
 
 /**
  * Utility class related with {@link Annotation} operations.
@@ -408,6 +411,46 @@ public final class AnnotationUtil
     }
 
     /**
+     * Checks if the specified method is overridden by another method from the list.
+     *
+     * @param method the method to check
+     * @param overridingCandidates the collection of methods potentially overriding the specified method
+     * @return
+     */
+    public static boolean isMethodOverridden(Method method, Collection<Method> overridingCandidates)
+    {
+        if (overridingCandidates.isEmpty() || Modifier.isPrivate(method.getModifiers()))
+        {
+            return false;
+        }
+        Class<?>[] methodParameterTypes = method.getParameterTypes();
+        boolean isOverridden = false;
+        candidates:
+        for (Method candidate : overridingCandidates) {
+            if (!candidate.getName().equals(method.getName()))
+            {
+                continue;
+            }
+            Class<?>[] candidateParameterTypes = candidate.getParameterTypes();
+            if (candidateParameterTypes.length != methodParameterTypes.length)
+            {
+                continue;
+            }
+            for (int i = 0; i < methodParameterTypes.length; i++)
+            {
+                if (!candidateParameterTypes[i].equals(methodParameterTypes[i]))
+                {
+                    continue candidates;
+                }
+            }
+            // we don't need to check the return type as that is done by the java compiler
+            isOverridden = true;
+            break;
+        }
+        return isOverridden;
+    }
+
+    /**
      * Quecks if the two values are equal.
      *
      * @param value1
@@ -591,7 +634,7 @@ public final class AnnotationUtil
 
             for (Method m : methods)
             {
-                if (hasMethodParameterAnnotation(m, annotation))
+                if (hasMethodParameterAnnotation(m, annotation) && !isMethodOverridden(m, list))
                 {
                     list.add(m);
                 }
