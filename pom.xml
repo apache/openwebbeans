@@ -220,6 +220,15 @@
               <role>committer</role>
             </roles>
         </developer>
+        <developer>
+            <id>arne</id>
+            <name>Arne Limburg</name>
+            <email>arne at apache dot org</email>
+            <timezone>+1</timezone>
+            <roles>
+                <role>committer</role>
+            </roles>
+        </developer>
     </developers>
 
     <contributors>
