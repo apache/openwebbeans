@@ -375,6 +375,7 @@
                 <configuration>
                     <configLocation>openwebbeans/owb-checks-default.xml</configLocation>
                     <headerLocation>openwebbeans/owb-header.txt</headerLocation>
+                    <consoleOutput>true</consoleOutput>
                 </configuration>
                 <dependencies>
                     <dependency>
