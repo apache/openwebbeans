@@ -426,7 +426,8 @@ public final class AnnotationUtil
         Class<?>[] methodParameterTypes = method.getParameterTypes();
         boolean isOverridden = false;
         candidates:
-        for (Method candidate : overridingCandidates) {
+        for (Method candidate : overridingCandidates)
+        {
             if (!candidate.getName().equals(method.getName()))
             {
                 continue;
