@@ -29,14 +29,12 @@ public class BeanA extends Superclass implements Serializable
 {
     private static final long serialVersionUID = 821164664338581947L;
 
-    protected void observeTestEvent(@Observes TestEvent testEvent)
-    {
+    private void observeTestEvent(@Observes PrivateTestEvent testEvent) {
         testEvent.addInvocation(getBeanName());
     }
 
-    @Override
-    public String getBeanName()
+    protected void observeTestEvent(@Observes TestEvent testEvent)
     {
-        return super.getBeanName() + ":[subclass]";
+        testEvent.addInvocation(getBeanName());
     }
 }

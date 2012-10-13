@@ -18,22 +18,20 @@
  */
 package org.apache.webbeans.newtests.events.observer;
 
-import javax.enterprise.event.Observes;
+import java.util.ArrayList;
+import java.util.List;
 
-public abstract class Superclass
+public class PrivateTestEvent
 {
+    private List<String> calledObserverNames = new ArrayList<String>();
 
-    private void observeTestEvent(@Observes PrivateTestEvent testEvent) {
-        testEvent.addInvocation(getBeanName() + "[" + Superclass.class.getSimpleName() + "]");
+    public void addInvocation(String observerName)
+    {
+        this.calledObserverNames.add(observerName);
     }
 
-    protected void observeTestEvent(@Observes TestEvent testEvent)
+    public List<String> getCalledObservers()
     {
-        testEvent.addInvocation(getBeanName());
-    }
-
-    public String getBeanName()
-    {
-        return getClass().getSimpleName();
+        return calledObserverNames;
     }
 }

@@ -39,7 +39,7 @@ public class EventTest extends AbstractUnitTest {
         getBeanManager().fireEvent(testEvent);
 
         Assert.assertEquals(1, testEvent.getCalledObservers().size());
-        Assert.assertTrue(testEvent.getCalledObservers().iterator().next().endsWith(":[subclass]"));
+        Assert.assertTrue(testEvent.getCalledObservers().iterator().next().equals("BeanA"));
 
         shutDownContainer();
     }
@@ -58,5 +58,23 @@ public class EventTest extends AbstractUnitTest {
         Assert.assertEquals(0, testEvent.getCalledObservers().size());
 
         shutDownContainer();
+    }
+    
+    @Test
+    public void testObserverOnPrivateMethod() {
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Superclass.class);
+        beanClasses.add(BeanA.class);
+        startContainer(beanClasses, null);
+
+        PrivateTestEvent testEvent = new PrivateTestEvent();
+        getBeanManager().fireEvent(testEvent);
+
+        Assert.assertEquals(2, testEvent.getCalledObservers().size());
+        Assert.assertTrue(testEvent.getCalledObservers().contains("BeanA"));
+        Assert.assertTrue(testEvent.getCalledObservers().contains("BeanA[Superclass]"));
+
+        shutDownContainer();
+
     }
 }
