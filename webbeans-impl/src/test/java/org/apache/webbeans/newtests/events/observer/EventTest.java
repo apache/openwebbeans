@@ -94,4 +94,39 @@ public class EventTest extends AbstractUnitTest {
         shutDownContainer();
 
     }
+    
+    @Test
+    public void testObserverOnStaticMethod() {
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Superclass.class);
+        beanClasses.add(BeanA.class);
+        startContainer(beanClasses, null);
+
+        StaticTestEvent testEvent = new StaticTestEvent();
+        getBeanManager().fireEvent(testEvent);
+
+        Assert.assertEquals(2, testEvent.getCalledObservers().size());
+        Assert.assertTrue(testEvent.getCalledObservers().contains("BeanA"));
+        Assert.assertTrue(testEvent.getCalledObservers().contains("Superclass"));
+
+        shutDownContainer();
+
+    }
+    
+    @Test
+    public void testStaticMethodCannotBeOverridden() {
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Superclass.class);
+        beanClasses.add(BeanB.class);
+        startContainer(beanClasses, null);
+
+        StaticTestEvent testEvent = new StaticTestEvent();
+        getBeanManager().fireEvent(testEvent);
+
+        Assert.assertEquals(1, testEvent.getCalledObservers().size());
+        Assert.assertEquals("Superclass", testEvent.getCalledObservers().iterator().next());
+
+        shutDownContainer();
+
+    }
 }

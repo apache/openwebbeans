@@ -419,7 +419,7 @@ public final class AnnotationUtil
      */
     public static boolean isMethodOverridden(Method method, Collection<Method> overridingCandidates)
     {
-        if (overridingCandidates.isEmpty() || Modifier.isPrivate(method.getModifiers()))
+        if (overridingCandidates.isEmpty() || Modifier.isPrivate(method.getModifiers()) || Modifier.isStatic(method.getModifiers()))
         {
             return false;
         }

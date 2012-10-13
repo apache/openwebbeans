@@ -19,15 +19,16 @@
 package org.apache.webbeans.newtests.events.observer;
 
 
-import java.io.Serializable;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 
 @ApplicationScoped
-public class BeanA extends Superclass implements Serializable
+public class BeanA extends Superclass
 {
-    private static final long serialVersionUID = 821164664338581947L;
+
+    public static void observeTestEvent(@Observes StaticTestEvent testEvent) {
+        testEvent.addInvocation(BeanA.class.getSimpleName());
+    }
 
     private void observeTestEvent(@Observes PrivateTestEvent testEvent) {
         testEvent.addInvocation(getBeanName());

@@ -23,6 +23,10 @@ import javax.enterprise.event.Observes;
 public abstract class Superclass
 {
 
+    public static void observeTestEvent(@Observes StaticTestEvent testEvent) {
+        testEvent.addInvocation(Superclass.class.getSimpleName());
+    }
+
     private void observeTestEvent(@Observes PrivateTestEvent testEvent) {
         testEvent.addInvocation(getBeanName() + "[" + Superclass.class.getSimpleName() + "]");
     }

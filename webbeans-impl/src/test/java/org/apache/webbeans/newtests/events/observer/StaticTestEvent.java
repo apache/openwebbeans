@@ -18,26 +18,20 @@
  */
 package org.apache.webbeans.newtests.events.observer;
 
+import java.util.ArrayList;
+import java.util.List;
 
-import java.io.Serializable;
-
-import javax.enterprise.context.ApplicationScoped;
-
-@ApplicationScoped
-public class BeanB extends Superclass implements Serializable
+public class StaticTestEvent
 {
-    private static final long serialVersionUID = 821164664338581947L;
+    private List<String> calledObserverNames = new ArrayList<String>();
 
-    public static void observeTestEvent(StaticTestEvent testEvent) {
-        testEvent.addInvocation(BeanB.class.getSimpleName());
-    }
-
-    private void observeTestEvent(PrivateTestEvent testEvent) {
-        testEvent.addInvocation(getBeanName());
-    }
-
-    protected void observeTestEvent(TestEvent testEvent)
+    public void addInvocation(String observerName)
     {
-        testEvent.addInvocation(getBeanName());
+        this.calledObserverNames.add(observerName);
+    }
+
+    public List<String> getCalledObservers()
+    {
+        return calledObserverNames;
     }
 }
