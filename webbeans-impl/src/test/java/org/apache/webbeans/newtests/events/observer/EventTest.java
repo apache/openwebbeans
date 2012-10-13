@@ -77,4 +77,21 @@ public class EventTest extends AbstractUnitTest {
         shutDownContainer();
 
     }
+    
+    @Test
+    public void testPrivateMethodCannotBeOverridden() {
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Superclass.class);
+        beanClasses.add(BeanB.class);
+        startContainer(beanClasses, null);
+
+        PrivateTestEvent testEvent = new PrivateTestEvent();
+        getBeanManager().fireEvent(testEvent);
+
+        Assert.assertEquals(1, testEvent.getCalledObservers().size());
+        Assert.assertEquals("BeanB[Superclass]", testEvent.getCalledObservers().iterator().next());
+
+        shutDownContainer();
+
+    }
 }

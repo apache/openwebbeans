@@ -36,10 +36,4 @@ public class BeanB extends Superclass implements Serializable
     {
         testEvent.addInvocation(getBeanName());
     }
-
-    @Override
-    public String getBeanName()
-    {
-        return super.getBeanName() + ":[subclass]";
-    }
 }
