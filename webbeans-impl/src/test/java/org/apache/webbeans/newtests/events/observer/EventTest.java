@@ -28,11 +28,11 @@ import org.junit.Test;
 public class EventTest extends AbstractUnitTest {
 
     @Test
-    public void testObserverMethodsInSpecializedBeans()
+    public void testOverriddenObserverMethodsInSubclasses()
     {
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(Superclass.class);
-        beanClasses.add(Bean.class);
+        beanClasses.add(BeanA.class);
         startContainer(beanClasses, null);
 
         TestEvent testEvent = new TestEvent();
@@ -40,6 +40,22 @@ public class EventTest extends AbstractUnitTest {
 
         Assert.assertEquals(1, testEvent.getCalledObservers().size());
         Assert.assertTrue(testEvent.getCalledObservers().iterator().next().endsWith(":[subclass]"));
+
+        shutDownContainer();
+    }
+
+    @Test
+    public void testSubclassRemovesObserverAnnotationByOverriding()
+    {
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Superclass.class);
+        beanClasses.add(BeanB.class);
+        startContainer(beanClasses, null);
+
+        TestEvent testEvent = new TestEvent();
+        getBeanManager().fireEvent(testEvent);
+
+        Assert.assertEquals(0, testEvent.getCalledObservers().size());
 
         shutDownContainer();
     }

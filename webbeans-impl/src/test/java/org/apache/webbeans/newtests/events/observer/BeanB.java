@@ -18,18 +18,24 @@
  */
 package org.apache.webbeans.newtests.events.observer;
 
-import javax.enterprise.event.Observes;
 
-public abstract class Superclass
+import java.io.Serializable;
+
+import javax.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
+public class BeanB extends Superclass implements Serializable
 {
+    private static final long serialVersionUID = 821164664338581947L;
 
-    protected void observeTestEvent(@Observes TestEvent testEvent)
+    protected void observeTestEvent(TestEvent testEvent)
     {
         testEvent.addInvocation(getBeanName());
     }
 
+    @Override
     public String getBeanName()
     {
-        return getClass().getSimpleName();
+        return super.getBeanName() + ":[subclass]";
     }
 }

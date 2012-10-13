@@ -627,7 +627,8 @@ public final class AnnotationUtil
     {
         Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(annotation, "Annotation argument can not be null");
-        List<Method> list = new ArrayList<Method>();
+        List<Method> methodsWithParameterAnnotation = new ArrayList<Method>();
+        List<Method> allMethods = new ArrayList<Method>();
 
         do
         {
@@ -635,15 +636,16 @@ public final class AnnotationUtil
 
             for (Method m : methods)
             {
-                if (hasMethodParameterAnnotation(m, annotation) && !isMethodOverridden(m, list))
+                if (hasMethodParameterAnnotation(m, annotation) && !isMethodOverridden(m, allMethods))
                 {
-                    list.add(m);
+                    methodsWithParameterAnnotation.add(m);
                 }
+                allMethods.add(m);
             }
             clazz = clazz.getSuperclass();
         } while (clazz != null && clazz != Object.class);
 
-        Method[] rMethod = list.toArray(new Method[list.size()]);
+        Method[] rMethod = methodsWithParameterAnnotation.toArray(new Method[methodsWithParameterAnnotation.size()]);
 
         return rMethod;
     }

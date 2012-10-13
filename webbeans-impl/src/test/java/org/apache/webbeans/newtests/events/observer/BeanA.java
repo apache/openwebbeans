@@ -23,11 +23,9 @@ import java.io.Serializable;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Specializes;
 
-@Specializes
 @ApplicationScoped
-public class Bean extends Superclass implements Serializable
+public class BeanA extends Superclass implements Serializable
 {
     private static final long serialVersionUID = 821164664338581947L;
 
