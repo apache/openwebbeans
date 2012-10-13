@@ -26,6 +26,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,6 +40,7 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessProducer;
 import javax.enterprise.util.TypeLiteral;
+
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
@@ -86,6 +88,22 @@ public final class NotificationManager
         EventUtil.checkEventType(typeLiteral.getRawType());
 
         addObserver(observer, typeLiteral.getType());
+    }
+
+    public void disableObservers(Class<?> declaringClass)
+    {
+        for (Set<ObserverMethod<?>> observerMethods: observers.values())
+        {
+            for (Iterator<ObserverMethod<?>> i = observerMethods.iterator(); i.hasNext();)
+            {
+                ObserverMethod<?> observer = i.next();
+                if (observer instanceof ObserverMethodImpl
+                        && ((ObserverMethodImpl<?>)observer).getObserverMethod().getDeclaringClass().equals(declaringClass))
+                {
+                    i.remove();
+                }
+            }
+        }
     }
 
     public <T> Set<ObserverMethod<? super T>> resolveObservers(T event, Annotation... eventQualifiers)

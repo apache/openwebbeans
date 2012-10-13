@@ -20,6 +20,7 @@ package org.apache.webbeans.newtests.specalization.observer;
 
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Specializes;
 
 @Specializes
@@ -27,6 +28,11 @@ import javax.enterprise.inject.Specializes;
 public class BeanB extends BeanA
 {
     private static final long serialVersionUID = 821164664338581947L;
+
+    protected void observeTestEvent(@Observes TestEvent testEvent)
+    {
+        testEvent.addInvocation(getBeanName());
+    }
 
     @Override
     public String getBeanName()

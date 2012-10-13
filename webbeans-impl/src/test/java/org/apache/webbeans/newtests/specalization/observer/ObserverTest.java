@@ -32,9 +32,74 @@ import org.junit.Test;
 public class ObserverTest extends AbstractUnitTest
 {
     private static final String PACKAGE_NAME = ObserverTest.class.getPackage().getName();
+    
+    @Test
+    public void testObserverMethodsInParentOfAlternativeAndSpecializedBeans()
+    {
+    	Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeSpecializes"));
+
+    	Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(BeanA.class);
+        beanClasses.add(BeanC.class);
+        startContainer(beanClasses, beanXmls);
+        
+        Set<Bean<?>> beans = getBeanManager().getBeans(BeanA.class);
+        Assert.assertEquals(1, beans.size());
+        
+        TestEvent testEvent = new TestEvent();
+        getBeanManager().fireEvent(testEvent);
+        
+        Assert.assertEquals(0, testEvent.getCalledObservers().size());
+        
+        shutDownContainer();
+    }
+    
+    @Test
+    public void testOverrideObserverMethodsInAlternativeAndSpecializedBeans()
+    {
+    	Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeSpecializes"));
+
+    	Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(BeanA.class);
+        beanClasses.add(BeanD.class);
+        startContainer(beanClasses, beanXmls);
+        
+        Set<Bean<?>> beans = getBeanManager().getBeans(BeanA.class);
+        Assert.assertEquals(1, beans.size());
+        
+        TestEvent testEvent = new TestEvent();
+        getBeanManager().fireEvent(testEvent);
+        
+        Assert.assertEquals(1, testEvent.getCalledObservers().size());
+        Assert.assertTrue(testEvent.getCalledObservers().iterator().next().endsWith(":[alternative]:[specialize]"));
+        
+        shutDownContainer();
+    }
+    
+    @Test
+    public void testObserverMethodsInParentOfSpecializedBeans()
+    {
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(BeanA.class);
+        beanClasses.add(BeanE.class);
+        startContainer(beanClasses, null);
+
+        Set<Bean<?>> beans = getBeanManager().getBeans(BeanA.class);
+        Assert.assertEquals(1, beans.size());
+
+        TestEvent testEvent = new TestEvent();
+        getBeanManager().fireEvent(testEvent);
+
+        Assert.assertEquals(BeanE.class, beans.toArray(new Bean<?>[0])[0].getBeanClass());
+        Assert.assertEquals(0, testEvent.getCalledObservers().size());
+
+        shutDownContainer();
+    }
 
     @Test
-    public void testObserverMethodsInSpecializedBeans()
+    public void testOverrideObserverMethodsInSpecializedBeans()
     {
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(BeanA.class);
@@ -50,50 +115,6 @@ public class ObserverTest extends AbstractUnitTest
         Assert.assertEquals(1, testEvent.getCalledObservers().size());
         Assert.assertTrue(testEvent.getCalledObservers().iterator().next().endsWith(":[specialize]"));
 
-        shutDownContainer();
-    }
-       
-    @Test
-    public void testOverrideObserverMethodsInAlternativeAndSpecializedBeans()
-    {
-        Collection<String> beanXmls = new ArrayList<String>();
-        beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeSpecializes"));
-   
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(BeanA.class);
-        beanClasses.add(BeanD.class);
-        startContainer(beanClasses, beanXmls);
-           
-        Set<Bean<?>> beans = getBeanManager().getBeans(BeanA.class);
-        Assert.assertEquals(1, beans.size());
-           
-        TestEvent testEvent = new TestEvent();
-        getBeanManager().fireEvent(testEvent);
-           
-        Assert.assertEquals(1, testEvent.getCalledObservers().size());
-        Assert.assertTrue(testEvent.getCalledObservers().iterator().next().endsWith(":[alternative]:[specialize]"));
-           
-        shutDownContainer();
-    }
-   
-    @Test
-    public void testOverrideObserverMethodsInSpecializedBeans()
-    {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(BeanA.class);
-        beanClasses.add(BeanF.class);
-        startContainer(beanClasses, null);
-   
-        Set<Bean<?>> beans = getBeanManager().getBeans(BeanA.class);
-        Assert.assertEquals(1, beans.size());
-   
-        TestEvent testEvent = new TestEvent();
-        getBeanManager().fireEvent(testEvent);
-   
-        Assert.assertEquals(BeanF.class, beans.toArray(new Bean<?>[0])[0].getBeanClass());
-        Assert.assertEquals(1, testEvent.getCalledObservers().size());
-        Assert.assertTrue(testEvent.getCalledObservers().iterator().next().endsWith(":[specialize]"));
-   
         shutDownContainer();
     }
 }

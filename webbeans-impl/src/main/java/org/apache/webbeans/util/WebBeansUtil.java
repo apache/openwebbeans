@@ -1478,11 +1478,13 @@ public final class WebBeansUtil
                 {
                     //disable superbean if the current bean is not an alternative
                     ((AbstractOwbBean<?>)superBean).setEnabled(false);
+                    webBeansContext.getBeanManagerImpl().getNotificationManager().disableObservers(superClass);
                 }
                 else if(altManager.isClassAlternative(specializedClass))
                 {
                     //disable superbean if the current bean is an enabled alternative
                     ((AbstractOwbBean<?>)superBean).setEnabled(false);
+                    webBeansContext.getBeanManagerImpl().getNotificationManager().disableObservers(superClass);
                 }
 
                 AbstractOwbBean<?> comp = (AbstractOwbBean<?>)specialized;
