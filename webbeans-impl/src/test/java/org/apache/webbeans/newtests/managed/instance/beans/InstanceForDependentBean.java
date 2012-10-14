@@ -32,9 +32,17 @@ public class InstanceForDependentBean
     @Inject
     private Instance<DependentBean> instance;
 
-
+    @Inject
+    @MeaningOfLife(0)
+    private Instance<DependentBean> secondaryInstance; 
+    
     public int getMeaningOfLife()
     {
         return instance.get().getMeaningOfLife();
+    }
+
+    public int getSecondaryMeaning()
+    {
+        return secondaryInstance.get().getMeaningOfLife();
     }
 }

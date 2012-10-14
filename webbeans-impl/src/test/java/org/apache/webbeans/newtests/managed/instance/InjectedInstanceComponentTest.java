@@ -19,9 +19,20 @@
 
 package org.apache.webbeans.newtests.managed.instance;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
+
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.util.TypeLiteral;
+
 import junit.framework.Assert;
+
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.managed.instance.beans.DependentBean;
+import org.apache.webbeans.newtests.managed.instance.beans.DependentBeanProducer;
 import org.apache.webbeans.newtests.managed.instance.beans.InstanceForDependentBean;
 import org.apache.webbeans.newtests.managed.instance.beans.InstanceInjectedComponent;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
@@ -29,14 +40,6 @@ import org.apache.webbeans.test.component.CheckWithMoneyPayment;
 import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
 import org.junit.Test;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.util.TypeLiteral;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Set;
 
 
 public class InjectedInstanceComponentTest extends AbstractUnitTest
@@ -69,6 +72,25 @@ public class InjectedInstanceComponentTest extends AbstractUnitTest
         boolean unsatisfied = ins.isUnsatisfied();
 
         Assert.assertFalse(unsatisfied);
+
+        shutDownContainer();
+    }
+
+    @Test
+    public void testInstanceProducedWithInjectionPoint()
+    {
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+
+        beanClasses.add(InstanceForDependentBean.class);
+        beanClasses.add(DependentBean.class);
+        beanClasses.add(DependentBeanProducer.class);
+        startContainer(beanClasses, null);
+
+        InstanceForDependentBean holder = getInstance(InstanceForDependentBean.class);
+        Assert.assertNotNull(holder);
+
+        Assert.assertEquals(42, holder.getMeaningOfLife());
+        Assert.assertEquals(0, holder.getSecondaryMeaning());
 
         shutDownContainer();
     }

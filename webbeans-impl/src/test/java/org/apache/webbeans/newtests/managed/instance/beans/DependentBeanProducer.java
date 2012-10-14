@@ -18,28 +18,17 @@
  */
 package org.apache.webbeans.newtests.managed.instance.beans;
 
-import javax.annotation.PreDestroy;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.InjectionPoint;
 
-/**
- * Test for properly destroying dependent contextual instances
- */
-@Dependent
-public class DependentBean
-{
+public class DependentBeanProducer {
 
-    public static boolean properlyDestroyed = false;
-
-    int meaningOfLife = 42;
-    
-    public int getMeaningOfLife()
-    {
-        return meaningOfLife;
-    }
-
-    @PreDestroy
-    protected void destroy()
-    {
-        properlyDestroyed = true;
+    @Produces
+    @Dependent
+    @MeaningOfLife
+    public DependentBean produce(InjectionPoint ip, DependentBean bean) {
+        bean.meaningOfLife = ip.getAnnotated().getAnnotation(MeaningOfLife.class).value();
+        return bean;
     }
 }

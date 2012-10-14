@@ -52,17 +52,12 @@ public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
             InjectionPoint injectionPoint = local.get();
             Set<Annotation> qualifiers;
             Type type;
-            Class injectionPointClass = null;
 
             if (injectionPoint != null)
             {
                 ParameterizedType injectedType = (ParameterizedType)injectionPoint.getType();
                 qualifiers = injectionPoint.getQualifiers();
                 type = injectedType.getActualTypeArguments()[0];
-                if (injectionPoint.getBean() != null)
-                {
-                    injectionPointClass = injectionPoint.getBean().getBeanClass();
-                }
             }
             else
             {
@@ -72,7 +67,7 @@ public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
 
             Object ownerInstance = AbstractInjectable.instanceUnderInjection.get();
 
-            Instance<T> instance = InstanceFactory.getInstance(type, injectionPointClass, getWebBeansContext(),
+            Instance<T> instance = InstanceFactory.getInstance(type, injectionPoint, getWebBeansContext(),
                                                                creationalContext, ownerInstance,
                                                                qualifiers.toArray(new Annotation[qualifiers.size()]));
             
