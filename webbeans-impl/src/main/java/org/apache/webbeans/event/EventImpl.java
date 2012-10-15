@@ -28,8 +28,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 
+import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
@@ -50,6 +52,9 @@ public class EventImpl<T> implements Event<T>, Serializable
 
     /**Event types*/
     private Type eventType;
+    
+    /**injection point of the event*/
+    private InjectionPoint injectionPoint;
 
     private transient WebBeansContext webBeansContext;
 
@@ -60,11 +65,12 @@ public class EventImpl<T> implements Event<T>, Serializable
      * @param eventType event type
      * @param webBeansContext
      */
-    public EventImpl(Annotation[] injectedBindings, Type eventType, WebBeansContext webBeansContext)
+    public EventImpl(Annotation[] injectedBindings, Type eventType, InjectionPoint injectionPoint, WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
         this.injectedBindings = injectedBindings;
         this.eventType = eventType;
+        this.injectionPoint = injectionPoint;
     }
 
     /**
@@ -72,7 +78,15 @@ public class EventImpl<T> implements Event<T>, Serializable
      */
     public void fire(T event)
     {
-        webBeansContext.getBeanManagerImpl().fireEvent(event, injectedBindings);
+        InjectionPointBean.setThreadLocal(injectionPoint);
+        try
+        {
+            webBeansContext.getBeanManagerImpl().fireEvent(event, injectedBindings);
+        }
+        finally
+        {
+            InjectionPointBean.setThreadLocal(injectionPoint);
+        }
     }
 
     /**
@@ -111,7 +125,7 @@ public class EventImpl<T> implements Event<T>, Serializable
      */
     public Event<T> select(Annotation... bindings)
     {
-        Event<T> sub = new EventImpl<T>(getEventBindings(bindings), eventType, webBeansContext);
+        Event<T> sub = new EventImpl<T>(getEventBindings(bindings), eventType, injectionPoint, webBeansContext);
         
         return sub;
     }
@@ -133,7 +147,7 @@ public class EventImpl<T> implements Event<T>, Serializable
             sub = eventType;
         }
         
-        Event<U> subEvent = new EventImpl<U>(getEventBindings(bindings),sub, webBeansContext);
+        Event<U> subEvent = new EventImpl<U>(getEventBindings(bindings),sub, injectionPoint, webBeansContext);
         
         return subEvent;
     }

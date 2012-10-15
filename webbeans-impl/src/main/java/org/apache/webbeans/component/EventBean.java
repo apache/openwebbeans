@@ -79,7 +79,7 @@ public class EventBean<T> extends AbstractOwbBean<Event<T>>
             
             try
             {
-                instance = new EventImpl<T>(qualifiers, eventType, getWebBeansContext());
+                instance = new EventImpl<T>(qualifiers, eventType, injectionPoint, getWebBeansContext());
             }
             catch (Exception e)
             {
