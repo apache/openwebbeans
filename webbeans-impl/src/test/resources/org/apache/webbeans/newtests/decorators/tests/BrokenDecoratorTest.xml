@@ -18,13 +18,13 @@ specific language governing permissions and limitations
 under the License.
 -->
 <beans>
-  <decorators>
-      <class>org.apache.webbeans.newtests.decorators.broken.BrokenAlternative</class>
-      <class>org.apache.webbeans.newtests.decorators.broken.BrokenName</class>
-      <class>org.apache.webbeans.newtests.decorators.broken.BrokenScope</class>
-   </decorators>
-   
-   <alternatives>
-     	<class>org.apache.webbeans.newtests.decorators.broken.BrokenAlternative</class>
-   </alternatives>
+    <decorators>
+        <class>org.apache.webbeans.newtests.decorators.broken.BrokenAlternative</class>
+        <class>org.apache.webbeans.newtests.decorators.broken.BrokenName</class>
+        <class>org.apache.webbeans.newtests.decorators.broken.BrokenScope</class>
+    </decorators>
+
+    <alternatives>
+        <class>org.apache.webbeans.newtests.decorators.broken.BrokenAlternative</class>
+    </alternatives>
 </beans>
