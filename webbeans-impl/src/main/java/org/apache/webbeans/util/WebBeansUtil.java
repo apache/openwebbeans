@@ -1467,6 +1467,8 @@ public final class WebBeansUtil
 
             if (superBean != null)
             {
+                webBeansContext.getBeanManagerImpl().getNotificationManager().disableOverriddenObservers(superClass);
+
                 // Recursively configure super class first if super class is also a special bean.
                 // So the name and bean meta data could be populated to this beanclass.
                 if (beanClasses.contains(superClass) && ((AbstractOwbBean<?>)superBean).isEnabled())
@@ -1478,13 +1480,11 @@ public final class WebBeansUtil
                 {
                     //disable superbean if the current bean is not an alternative
                     ((AbstractOwbBean<?>)superBean).setEnabled(false);
-                    webBeansContext.getBeanManagerImpl().getNotificationManager().disableObservers(superClass);
                 }
                 else if(altManager.isClassAlternative(specializedClass))
                 {
                     //disable superbean if the current bean is an enabled alternative
                     ((AbstractOwbBean<?>)superBean).setEnabled(false);
-                    webBeansContext.getBeanManagerImpl().getNotificationManager().disableObservers(superClass);
                 }
 
                 AbstractOwbBean<?> comp = (AbstractOwbBean<?>)specialized;

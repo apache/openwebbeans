@@ -90,17 +90,37 @@ public final class NotificationManager
         addObserver(observer, typeLiteral.getType());
     }
 
-    public void disableObservers(Class<?> declaringClass)
+    /**
+     * <p>This method shall only be called for subclasses.
+     * It will disable all observer methods which are overridden
+     * in the given subclass.</p>
+     */
+    public void disableOverriddenObservers(Class<?> subClass)
     {
         for (Set<ObserverMethod<?>> observerMethods: observers.values())
         {
             for (Iterator<ObserverMethod<?>> i = observerMethods.iterator(); i.hasNext();)
             {
                 ObserverMethod<?> observer = i.next();
-                if (observer instanceof ObserverMethodImpl
-                        && ((ObserverMethodImpl<?>)observer).getObserverMethod().getDeclaringClass().equals(declaringClass))
+                if (observer instanceof ObserverMethodImpl)
                 {
-                    i.remove();
+                    Method observerMethod = ((ObserverMethodImpl<?>)observer).getObserverMethod();
+
+                    // we only remove methods from a superclass
+                    if (!observerMethod.getDeclaringClass().equals(subClass))
+                    {
+                        try
+                        {
+                            subClass.getMethod(observerMethod.getName(), observerMethod.getParameterTypes());
+                            i.remove();
+                        }
+                        catch(NoSuchMethodException nsme)
+                        {
+                            // that's perfectly fine.
+                            // it means that we don't need to remove anything becasue the
+                            // observer method didn't get overridden.
+                        }
+                    }
                 }
             }
         }

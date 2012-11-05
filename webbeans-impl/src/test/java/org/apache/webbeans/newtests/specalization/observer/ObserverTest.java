@@ -36,10 +36,10 @@ public class ObserverTest extends AbstractUnitTest
     @Test
     public void testObserverMethodsInParentOfAlternativeAndSpecializedBeans()
     {
-    	Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<String>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeSpecializes"));
 
-    	Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(BeanA.class);
         beanClasses.add(BeanC.class);
         startContainer(beanClasses, beanXmls);
@@ -49,19 +49,20 @@ public class ObserverTest extends AbstractUnitTest
         
         TestEvent testEvent = new TestEvent();
         getBeanManager().fireEvent(testEvent);
-        
-        Assert.assertEquals(0, testEvent.getCalledObservers().size());
-        
+
+        Assert.assertEquals(1, testEvent.getCalledObservers().size());
+        Assert.assertTrue(testEvent.getCalledObservers().iterator().next().endsWith(":[specialize]"));
+
         shutDownContainer();
     }
     
     @Test
     public void testOverrideObserverMethodsInAlternativeAndSpecializedBeans()
     {
-    	Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<String>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeSpecializes"));
 
-    	Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(BeanA.class);
         beanClasses.add(BeanD.class);
         startContainer(beanClasses, beanXmls);
@@ -93,7 +94,8 @@ public class ObserverTest extends AbstractUnitTest
         getBeanManager().fireEvent(testEvent);
 
         Assert.assertEquals(BeanE.class, beans.toArray(new Bean<?>[0])[0].getBeanClass());
-        Assert.assertEquals(0, testEvent.getCalledObservers().size());
+        Assert.assertEquals(1, testEvent.getCalledObservers().size());
+        Assert.assertTrue(testEvent.getCalledObservers().iterator().next().endsWith(":[specialize]"));
 
         shutDownContainer();
     }
