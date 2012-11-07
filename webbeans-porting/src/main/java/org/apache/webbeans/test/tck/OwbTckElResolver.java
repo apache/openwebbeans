@@ -28,7 +28,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.el.ELContextStore;
-import org.apache.webbeans.el.WebBeansELResolver;
+import org.apache.webbeans.el22.WebBeansELResolver;
 
 /**
  * Exist for TCK standalone EL resolver.

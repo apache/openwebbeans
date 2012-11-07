@@ -34,7 +34,7 @@ import javax.el.VariableMapper;
 import org.apache.el.ExpressionFactoryImpl;
 import org.apache.el.lang.FunctionMapperImpl;
 import org.apache.el.lang.VariableMapperImpl;
-import org.apache.webbeans.el.WrappedExpressionFactory;
+import org.apache.webbeans.el22.WrappedExpressionFactory;
 import org.jboss.jsr299.tck.spi.EL;
 
 public class ELImpl implements EL
