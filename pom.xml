@@ -470,6 +470,7 @@
         <module>webbeans-jsf</module>
         <module>webbeans-jsf12</module>
         <module>webbeans-el10</module>
+        <module>webbeans-el22</module>		
         <module>webbeans-resource</module>
         <module>webbeans-jee5-ejb-resource</module>
         <module>webbeans-osgi</module>
@@ -620,6 +621,12 @@
             <dependency>
                 <groupId>org.apache.openwebbeans</groupId>
                 <artifactId>openwebbeans-impl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.openwebbeans</groupId>
+                <artifactId>openwebbeans-el22</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
