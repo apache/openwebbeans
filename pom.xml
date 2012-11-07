@@ -469,6 +469,7 @@
         <module>webbeans-jms</module>       
         <module>webbeans-jsf</module>
         <module>webbeans-jsf12</module>
+        <module>webbeans-clustering</module>
         <module>webbeans-el10</module>
         <module>webbeans-el22</module>		
         <module>webbeans-resource</module>
