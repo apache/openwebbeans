@@ -23,18 +23,18 @@ import javax.decorator.Delegate;
 import javax.inject.Inject;
 
 @Decorator
-public class MultipleCallDecorator implements IOutputProvider
-{
+public class MultipleCallDecorator implements IOutputProvider {
 
-    @Inject @Delegate IOutputProvider op;
+    @Inject
+    @Delegate
+    IOutputProvider op;
 
     public String getOutput() {
         return null;
     }
 
     public String trace() {
-        op.trace();
-        return op.trace();
+        return op.trace() + op.toString() + op.hashCode() + op.trace();
     }
 
     public String otherMethod() {

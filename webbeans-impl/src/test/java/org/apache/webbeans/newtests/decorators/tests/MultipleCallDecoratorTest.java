@@ -23,7 +23,6 @@ import org.apache.webbeans.newtests.decorators.multiple.IOutputProvider;
 import org.apache.webbeans.newtests.decorators.multiple.MultipleCallDecorator;
 import org.apache.webbeans.newtests.decorators.multiple.OutputProvider;
 import org.apache.webbeans.newtests.decorators.multiple.RequestStringBuilder;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.enterprise.inject.Default;
@@ -32,32 +31,35 @@ import javax.enterprise.util.AnnotationLiteral;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class MultipleCallDecoratorTest extends AbstractUnitTest
 {
     public static final String PACKAGE_NAME = MultipleDecoratorStackTests.class.getPackage().getName();
 
     @Test
-    @Ignore("Decorator can't call twice the delegate")
+    // this test is just a standard decorator calling a bunch of method
+    // it tests we don't have recusive issues in DelegateHandler
     public void testDecoratorStackWithAbstractAtEnd()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        final Collection<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(MultipleCallDecorator.class);
         classes.add(IOutputProvider.class);
         classes.add(OutputProvider.class);
         classes.add(RequestStringBuilder.class);
 
-        Collection<String> xmls = new ArrayList<String>();
+        final Collection<String> xmls = new ArrayList<String>();
         xmls.add(getXmlPath(PACKAGE_NAME, "MultipleCallDecoratorTest"));
 
         startContainer(classes, xmls);
 
-        Bean<?> bean = getBeanManager().getBeans(OutputProvider.class, new AnnotationLiteral<Default>()
+        final Bean<?> bean = getBeanManager().getBeans(OutputProvider.class, new AnnotationLiteral<Default>()
         {
         }).iterator().next();
 
-        IOutputProvider instance = (IOutputProvider) getBeanManager().getReference(bean, IOutputProvider.class, getBeanManager().createCreationalContext(bean));
-        assertEquals("delegate/trace", instance.trace()); // StackOverFlow
+        final IOutputProvider instance = (IOutputProvider) getBeanManager().getReference(bean, IOutputProvider.class, getBeanManager().createCreationalContext(bean));
+        final String expected = "delegate/traceorg.apache.webbeans.newtests.decorators.multiple.OutputProvider@.*delegate/trace";
+        final String actual = instance.trace();
+        assertTrue("'" + actual + "' doesn't match with '" + expected + "'", actual.matches(expected));
     }
 }
