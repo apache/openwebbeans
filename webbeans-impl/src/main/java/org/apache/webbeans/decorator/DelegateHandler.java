@@ -47,7 +47,7 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
     private static final long serialVersionUID = -3063755008944970684L;
 
     private transient List<Object> decorators;
-    public static transient ThreadLocal<AtomicInteger> position = new ThreadLocal<AtomicInteger>()
+    private transient ThreadLocal<AtomicInteger> position = new ThreadLocal<AtomicInteger>()
     {
         @Override
         protected AtomicInteger initialValue()
