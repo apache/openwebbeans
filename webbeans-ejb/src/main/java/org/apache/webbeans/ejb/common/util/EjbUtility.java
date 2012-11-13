@@ -90,8 +90,8 @@ public final class EjbUtility
         ejbBeanCreator.defineStereoTypes();
         ejbBeanCreator.defineApiType();
         ejbBeanCreator.defineScopeType("Session Bean implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations", false);
-        ejbBeanCreator.defineQualifier();
         ejbBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));            
+        ejbBeanCreator.defineQualifier();
         Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods();        
         checkProducerMethods(producerMethodBeans, ejbBean);
         Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields();           

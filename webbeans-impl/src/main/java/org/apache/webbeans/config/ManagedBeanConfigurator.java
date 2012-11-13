@@ -149,8 +149,8 @@ public final class ManagedBeanConfigurator
         component.setFullInit(true);
 
         WebBeansUtil.checkGenericType(component);
-        definitionUtil.defineQualifiers(component, clazzAnns);
         definitionUtil.defineName(component, clazzAnns, WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
+        definitionUtil.defineQualifiers(component, clazzAnns);
 
         Constructor<T> constructor = webBeansContext.getWebBeansUtil().defineConstructor(clazz);
         component.setConstructor(constructor);

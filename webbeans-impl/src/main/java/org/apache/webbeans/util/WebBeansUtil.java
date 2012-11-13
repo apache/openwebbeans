@@ -2622,8 +2622,8 @@ public final class WebBeansUtil
         setInjectionTargetBeanEnableFlag(managedBean);
 
         managedBeanCreator.checkCreateConditions();
-        managedBeanCreator.defineQualifier();
         managedBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
+        managedBeanCreator.defineQualifier();
 
         if (managedBean.isFullInit())
         {
@@ -2773,8 +2773,8 @@ public final class WebBeansUtil
         //Check for Enabled via Alternative
         setInjectionTargetBeanEnableFlag(managedBean);
         managedBeanCreator.checkCreateConditions();
-        managedBeanCreator.defineQualifier();
         managedBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
+        managedBeanCreator.defineQualifier();
         managedBeanCreator.defineConstructor();
         managedBeanCreator.defineProducerMethods();
         managedBeanCreator.defineProducerFields();
@@ -2935,8 +2935,8 @@ public final class WebBeansUtil
         //Check for Enabled via Alternative
         setInjectionTargetBeanEnableFlag(managedBean);
         managedBeanCreator.checkCreateConditions();
-        managedBeanCreator.defineQualifier();
         managedBeanCreator.defineName(getManagedBeanDefaultName(clazz.getSimpleName()));
+        managedBeanCreator.defineQualifier();
         managedBeanCreator.defineConstructor();
         managedBeanCreator.defineProducerMethods();
         managedBeanCreator.defineProducerFields();
