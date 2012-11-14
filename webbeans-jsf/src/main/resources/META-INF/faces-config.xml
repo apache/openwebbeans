@@ -30,7 +30,7 @@ under the License.
 
     <application>
         <view-handler>org.apache.webbeans.jsf.ConversationAwareViewHandler</view-handler>
-        <el-resolver>org.apache.webbeans.el.WebBeansELResolver</el-resolver>
+        <el-resolver>org.apache.webbeans.el22.WebBeansELResolver</el-resolver>
     </application>
 
     <lifecycle>
