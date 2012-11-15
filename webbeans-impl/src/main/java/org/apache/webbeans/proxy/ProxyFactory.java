@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -106,12 +107,60 @@ public final class ProxyFactory
      */
     public Class<?> getEjbBeanProxyClass(OwbBean<?> bean, Class<?> iface)
     {
+        Class<?> proxyClass = null;
+
         ConcurrentMap<Class<?>, Class<?>> typeToProxyClassMap = ejbProxyClasses.get(bean);
-        if (typeToProxyClassMap != null)
+        if (typeToProxyClassMap == null)
         {
-            return typeToProxyClassMap.get(iface);
+            typeToProxyClassMap = new ConcurrentHashMap<Class<?>, Class<?>>();
+            ConcurrentMap<Class<?>, Class<?>> existingMap = ejbProxyClasses.putIfAbsent(bean, typeToProxyClassMap);
+            
+            // use the map that beat us, because our new one definitely had no classes in it.
+            typeToProxyClassMap = (existingMap != null) ? existingMap : typeToProxyClassMap; 
         }
-        return null;
+
+        proxyClass = typeToProxyClassMap.get(iface);
+
+        if (proxyClass == null)
+        {
+            Class<?> superClazz = null;
+            List<Class<?>> list = new ArrayList<Class<?>>();
+            Class<?>[] interfaces = null;
+            
+            if (iface.isInterface())
+            {
+                list.add(iface);
+            }
+            else 
+            {
+                // @LocalBean no-interface local view requested
+                superClazz = iface;
+                //Stateless beans with no interface
+                //To failover bean instance
+                Class<?>[] ifaces = iface.getInterfaces();
+                if(ifaces != null && ifaces.length > 0)
+                {
+                    //check for serializable
+                    for(Class<?> temp : ifaces)
+                    {
+                        if(temp == Serializable.class)
+                        {
+                            list.add(Serializable.class);
+                            break;
+                        }
+                    }
+                }
+            }            
+            
+            interfaces = new Class<?>[list.size()];
+            interfaces = list.toArray(interfaces);
+            proxyClass = factory.getProxyClass(superClazz, interfaces);
+            
+            typeToProxyClassMap.putIfAbsent(iface, proxyClass);
+            // don't care if we were beaten in updating the iface->proxyclass map
+        }
+
+        return proxyClass;
     }
     
     public Object createDecoratorDelegate(OwbBean<?> bean, DelegateHandler newDelegateHandler)
