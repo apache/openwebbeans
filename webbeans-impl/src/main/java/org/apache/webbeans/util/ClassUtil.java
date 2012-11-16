@@ -18,6 +18,14 @@
  */
 package org.apache.webbeans.util;
 
+import org.apache.webbeans.config.BeanTypeSetResolver;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Provider;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -36,15 +44,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Provider;
-
-import org.apache.webbeans.config.BeanTypeSetResolver;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 /**
  * Utility classes with respect to the class operations.
@@ -603,19 +602,39 @@ public final class ClassUtil
         //Bean type is class and required type is parametrized
         else if(beanType instanceof Class && requiredType instanceof ParameterizedType)
         {
-            Class<?> clazzBeanType = (Class<?>)beanType;
-            ParameterizedType ptReq = (ParameterizedType)requiredType;
-            Class<?> clazzReqType = (Class<?>)ptReq.getRawType();
-            
+            final Class<?> clazzBeanType = (Class<?>)beanType;
+            final ParameterizedType ptReq = (ParameterizedType)requiredType;
+            final Class<?> clazzReqType = (Class<?>)ptReq.getRawType();
+            final Type genericSuperClass = clazzBeanType.getGenericSuperclass();
+
             if(Provider.class.isAssignableFrom(clazzReqType) ||
                     Event.class.isAssignableFrom(clazzReqType))
             {
                 if(isClassAssignable(clazzReqType, clazzBeanType))
                 {
                     return true;
-                }    
+                }
             }
-                        
+            else if (genericSuperClass instanceof ParameterizedType)
+            {
+                final Type[] params = ((ParameterizedType) genericSuperClass).getActualTypeArguments();
+                final Type[] requiredParams = ((ParameterizedType) requiredType).getActualTypeArguments();
+                if (params.length != requiredParams.length)
+                {
+                    return false;
+                }
+
+                for (int i = 0; i < params.length; i++)
+                {
+                    if (!isAssignable(params[i], requiredParams[i]))
+                    {
+                        return false;
+                    }
+                }
+
+                return isClassAssignable(clazzReqType, clazzBeanType);
+            }
+
             return false;
         }
         else

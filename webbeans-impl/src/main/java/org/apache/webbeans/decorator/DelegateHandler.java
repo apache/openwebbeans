@@ -18,11 +18,21 @@
  */
 package org.apache.webbeans.decorator;
 
-import java.io.Serializable;
+import org.apache.webbeans.component.EnterpriseBeanMarker;
+import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.proxy.MethodHandler;
+import org.apache.webbeans.util.WebBeansUtil;
+
+import javax.interceptor.InvocationContext;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -31,25 +41,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.interceptor.InvocationContext;
-
-import org.apache.webbeans.component.EnterpriseBeanMarker;
-import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.util.WebBeansUtil;
-
-import org.apache.webbeans.proxy.MethodHandler;
-
 public class DelegateHandler implements InvocationHandler, MethodHandler, Serializable, Externalizable
 {
     private static final Logger logger = WebBeansLoggerFacade.getLogger(DelegateHandler.class);
     private static final long serialVersionUID = -3063755008944970684L;
 
     private transient List<Object> decorators;
-    private transient ThreadLocal<AtomicInteger> position = new ThreadLocal<AtomicInteger>()
+    public static transient ThreadLocal<AtomicInteger> position = new ThreadLocal<AtomicInteger>()
     {
         @Override
         protected AtomicInteger initialValue()
@@ -94,11 +92,14 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
             actualInstance = instance;
         }
 
-        while (position.get().intValue() < decorators.size())
+        int hit = 0;
+        int decoratorsSize = decorators.size();
+        while (position.get().intValue() < decoratorsSize)
         {
+            hit++;
 
+            int currentPosition = position.get().intValue();
             Object decorator = decorators.get(position.get().getAndIncrement());
-
             try
             {
                 Method decMethod = decorator.getClass().getMethod(method.getName(), method.getParameterTypes());
@@ -111,9 +112,17 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
                         bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(decMethod, true);
                     }
 
-                    Object returnValue = decMethod.invoke(decorator, arguments);
-                    position.remove();
-                    return returnValue;
+                    try
+                    {
+                        return decMethod.invoke(decorator, arguments);
+                    }
+                    finally
+                    {
+                        if (currentPosition == 0) // if we go back on the first decorator no more need of this thread local
+                        {
+                            position.remove();
+                        }
+                    }
                 }
 
             }
@@ -159,7 +168,10 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
 
         }
 
-        position.remove();
+        if (hit == decoratorsSize) // if we hit all decorators but noone was called (see while loop) then clean here
+        {
+            position.remove();
+        }
 
         if (!method.isAccessible())
         {
@@ -193,7 +205,7 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
                 }
             }
         }
-        
+
         return result;
 
     }
@@ -258,5 +270,5 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
         }
         bean = (OwbBean<?>) WebBeansContext.currentInstance().getBeanManagerImpl().getPassivationCapableBean(id);
         decorators = (List<Object>) in.readObject();
-    }    
+    }
 }

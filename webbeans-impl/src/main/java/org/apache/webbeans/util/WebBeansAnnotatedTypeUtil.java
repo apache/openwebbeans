@@ -524,10 +524,10 @@ public final class WebBeansAnnotatedTypeUtil
                 webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerMethodBean,
                                                                                          producerMethodBean.getScope());
                 WebBeansUtil.checkProducerGenericType(producerMethodBean,annotatedMethod.getJavaMember());
-                definitionUtil.defineQualifiers(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
                 definitionUtil.defineName(producerMethodBean,
                                           AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()),
                                                                                WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
+                definitionUtil.defineQualifiers(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
                 
                 addMethodInjectionPointMetaData(producerMethodBean, annotatedMethod);
                 producerBeans.add(producerMethodBean);

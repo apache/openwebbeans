@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.config;
 
+import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnsatisfiedResolutionException;
+
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -36,10 +38,10 @@ import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
+import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -55,13 +57,14 @@ import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
-import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.annotation.NamedLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
@@ -79,7 +82,6 @@ import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
-import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnsatisfiedResolutionException;
 
 /**
  * Defines the web beans components common properties.
@@ -255,7 +257,14 @@ public final class DefinitionUtil
                     }
                 }
 
-                component.addQualifier(annotation);
+                if (annotation.annotationType().equals(Named.class) && component.getName() != null)
+                {
+                    component.addQualifier(new NamedLiteral(component.getName()));
+                }
+                else
+                {
+                    component.addQualifier(annotation);
+                }
             }
         }
         
@@ -762,8 +771,8 @@ public final class DefinitionUtil
                                                               + " must declare default @Scope annotation", false);
         webBeansContext.getWebBeansUtil().checkUnproxiableApiType(component, component.getScope());
         WebBeansUtil.checkProducerGenericType(component,method);
-        defineQualifiers(component, methodAnns);
         defineName(component, methodAnns, WebBeansUtil.getProducerDefaultName(method.getName()));
+        defineQualifiers(component, methodAnns);
 
         return component;
     }
@@ -1360,8 +1369,8 @@ public final class DefinitionUtil
         defineScopeType(bean, anns, "Bean producer method : " + method.getJavaMember().getName() + " in class "
                                                    + parent.getReturnType().getName() + " must declare default @Scope annotation", false);
         WebBeansUtil.checkProducerGenericType(bean,method.getJavaMember());        
-        defineQualifiers(bean, anns);
         defineName(bean, anns, WebBeansUtil.getProducerDefaultName(method.getJavaMember().getName()));
+        defineQualifiers(bean, anns);
 
         return bean;
     }
