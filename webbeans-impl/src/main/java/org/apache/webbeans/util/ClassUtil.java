@@ -229,7 +229,16 @@ public final class ClassUtil
         return PRIMITIVE_TO_WRAPPERS_MAP.get(clazz);
 
     }
-    
+
+    public static Class<?>  identityOrGetPrimitiveWrapper(Class<?> clazz)
+    {
+        if (clazz.isPrimitive())
+        {
+            return getPrimitiveWrapper(clazz);
+        }
+        return clazz;
+
+    }
 
     /**
      * Gets the class of the given type arguments.
@@ -565,9 +574,9 @@ public final class ClassUtil
         {
             boolean ok = true;
             ParameterizedType ptBean = (ParameterizedType)beanType;
-            Class<?> clazzBeanType = (Class<?>)ptBean.getRawType();
-            Class<?> clazzReqType = (Class<?>)requiredType;
-            if(isClassAssignable(clazzReqType, clazzBeanType ))
+            Class<?> clazzBeanType = identityOrGetPrimitiveWrapper((Class<?>)ptBean.getRawType());
+            Class<?> clazzReqType = identityOrGetPrimitiveWrapper((Class<?>)requiredType);
+            if(clazzBeanType.equals(clazzReqType))
             {
                 Type[]  beanTypeArgs = ptBean.getActualTypeArguments();               
                 for(Type actual : beanTypeArgs)
@@ -720,7 +729,7 @@ public final class ClassUtil
         {
             rhs = getPrimitiveWrapper(rhs);
         }
-        
+
         if (lhs.isAssignableFrom(rhs))
         {
             return true;
