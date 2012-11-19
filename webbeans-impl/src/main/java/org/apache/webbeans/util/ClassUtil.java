@@ -222,6 +222,16 @@ public final class ClassUtil
         return clazz.isMemberClass();
     }
 
+    public static Class<?>  identityOrGetPrimitiveWrapper(Class<?> clazz)
+    {
+        if (clazz.isPrimitive())
+        {
+            return getPrimitiveWrapper(clazz);
+        }
+        return clazz;
+
+    }
+
     public static Class<?>  getPrimitiveWrapper(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
@@ -565,9 +575,9 @@ public final class ClassUtil
         {
             boolean ok = true;
             ParameterizedType ptBean = (ParameterizedType)beanType;
-            Class<?> clazzBeanType = (Class<?>)ptBean.getRawType();
-            Class<?> clazzReqType = (Class<?>)requiredType;
-            if(isClassAssignable(clazzReqType, clazzBeanType ))
+            Class<?> clazzBeanType = identityOrGetPrimitiveWrapper((Class<?>)ptBean.getRawType());
+            Class<?> clazzReqType = identityOrGetPrimitiveWrapper((Class<?>)requiredType);
+            if(clazzBeanType.equals(clazzReqType))
             {
                 Type[]  beanTypeArgs = ptBean.getActualTypeArguments();               
                 for(Type actual : beanTypeArgs)
