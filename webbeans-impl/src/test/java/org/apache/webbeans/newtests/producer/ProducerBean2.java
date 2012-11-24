@@ -21,41 +21,10 @@ package org.apache.webbeans.newtests.producer;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
-public class ProducerBean {
-
+public class ProducerBean2 {
     @Produces
     @Named
     public String name1() {
-        return "name1";
-    }
-
-    @Produces
-    @Named
-    public String getName2() {
-        return "name2";
-    }
-
-    @Produces
-    @Named
-    public boolean isName3() {
-        return true;
-    }
-
-    @Produces
-    @Named("name4")
-    public String producesName4() {
-        return "name4";
-    }
-
-    @Produces
-    @Named("name5")
-    public String getName5() {
-        return "name5";
-    }
-
-    @Produces
-    @Named("name6")
-    public boolean isName6() {
-        return true;
+        return "name1 of ProducerBean2";
     }
 }

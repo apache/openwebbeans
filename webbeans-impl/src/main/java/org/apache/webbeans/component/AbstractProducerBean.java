@@ -165,4 +165,20 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
         // the injection points of producers are the parameters of the producermethod.
         // since CDI-1.1 we must not check those for is serializable anymore.
     }
+
+    @Override
+    public int hashCode()
+    {
+        return super.hashCode() ^ ownerComponent.hashCode();
+    }
+
+    public boolean equals(Object object)
+    {
+        if (!super.equals(object))
+        {
+            return false;
+        }
+        AbstractProducerBean<?> other = (AbstractProducerBean<?>) object;
+        return ownerComponent.equals(other.ownerComponent);
+    }
 }
