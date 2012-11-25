@@ -18,13 +18,32 @@
  */
 package org.apache.webbeans.newtests.disposes.common;
 
+import javax.annotation.PreDestroy;
+import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
 
-public class RequestModel {
+@Typed
+public class RequestModel
+{
 
-	@Inject @HttpHeader DependentModel disposeModel;
+	private DependentModel disposeModel;
 	
-	public int getID() {
+	public int getID()
+    {
 		return disposeModel.getId();
 	}
+
+    public DependentModel getDisposeModel() {
+        return disposeModel;
+    }
+
+    public void setDisposeModel(DependentModel disposeModel) {
+        this.disposeModel = disposeModel;
+    }
+
+    @PreDestroy
+    public void destroyMe()
+    {
+        System.out.println("RequestModel got destroyed");
+    }
 }

@@ -18,17 +18,21 @@
  */
 package org.apache.webbeans.newtests.disposes.beans;
 
+import javax.annotation.PreDestroy;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 
 import org.apache.webbeans.newtests.disposes.common.DependentModel;
 import org.apache.webbeans.newtests.disposes.common.HttpHeader;
 
-public class DependentProducer
+@ApplicationScoped
+public class DependentModelProducer
 {
     public static int disposerCount = 0;
+
+    public static boolean producerGotDestroyed = false;
 
     @Produces @Dependent @HttpHeader
     public static DependentModel dproduce()
@@ -40,7 +44,14 @@ public class DependentProducer
     
     public static void ddispose(@Disposes @HttpHeader DependentModel model)
     {
-        DependentProducer.disposerCount++;
+        DependentModelProducer.disposerCount++;
         System.out.println("disposed DependentModel from DependentDisposer");
     }
+
+    @PreDestroy
+    public void destroyMe()
+    {
+        producerGotDestroyed = true;
+    }
+
 }

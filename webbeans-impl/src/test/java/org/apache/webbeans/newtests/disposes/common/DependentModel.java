@@ -18,6 +18,9 @@
  */
 package org.apache.webbeans.newtests.disposes.common;
 
+import javax.enterprise.inject.Typed;
+
+@Typed()
 public class DependentModel
 {
     public boolean value = false;
@@ -25,7 +28,7 @@ public class DependentModel
     public int id = 0;
     
     public DependentModel() {
-    	System.out.println(this.getClass().getSimpleName() + ".DependentModel() is invoked");
+    	System.out.println(this.getClass().getSimpleName() + ".DependentModel() is constructed");
     }
     /**
      * @return the value

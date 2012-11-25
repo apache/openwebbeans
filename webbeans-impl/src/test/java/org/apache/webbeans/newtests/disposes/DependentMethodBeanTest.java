@@ -21,16 +21,14 @@ package org.apache.webbeans.newtests.disposes;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import junit.framework.Assert;
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.newtests.disposes.beans.AppScopedBean;
-import org.apache.webbeans.newtests.disposes.beans.DependentProducer;
-import org.apache.webbeans.newtests.disposes.beans.DisposerMethodBean;
-import org.apache.webbeans.newtests.disposes.beans.InjectedIntoBean;
-import org.apache.webbeans.newtests.disposes.beans.IntermediateDependentBean;
-import org.apache.webbeans.newtests.disposes.beans.RequestBean;
+import org.apache.webbeans.newtests.disposes.beans.*;
+import org.apache.webbeans.newtests.disposes.beans.DependentModelProducer;
+import org.apache.webbeans.newtests.disposes.common.DependentModel;
 import org.apache.webbeans.newtests.disposes.common.RequestModel;
 import org.junit.Test;
 
@@ -44,7 +42,7 @@ public class DependentMethodBeanTest extends AbstractUnitTest
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(AppScopedBean.class);
-        beanClasses.add(RequestBean.class);
+        beanClasses.add(RequestModelProducer.class);
         
         startContainer(beanClasses, beanXmls);        
 
@@ -66,23 +64,58 @@ public class DependentMethodBeanTest extends AbstractUnitTest
         Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(DependentProducer.class);
+        beanClasses.add(DependentModelProducer.class);
         beanClasses.add(InjectedIntoBean.class);
         beanClasses.add(IntermediateDependentBean.class);
         
-        startContainer(beanClasses, beanXmls);        
+        startContainer(beanClasses, beanXmls);
         Bean<InjectedIntoBean> bean = (Bean<InjectedIntoBean>)getBeanManager().getBeans("injectedIntoBean").iterator().next();
-         
+
         CreationalContext<InjectedIntoBean> cc = getBeanManager().createCreationalContext(bean);
-        
+
         InjectedIntoBean model = (InjectedIntoBean) getBeanManager().getReference(bean, InjectedIntoBean.class, cc);
         
         Assert.assertFalse(model.isBeanNull());
-        
+
         shutDownContainer();
         
         //Disposer should only be called once
-        Assert.assertEquals(1, DependentProducer.disposerCount); 
-    } 
+        Assert.assertEquals(1, DependentModelProducer.disposerCount);
+    }
+
+    //X @Test temporarily disabled
+    @SuppressWarnings("unchecked")
+    public void testDisposerMethodWithRequestScoped()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(DependentModelProducer.class);
+        beanClasses.add(DependentModel.class);
+        beanClasses.add(RequestModel.class);
+        beanClasses.add(RequestModelProducer.class);
+
+        startContainer(beanClasses, beanXmls);
+
+        RequestModelProducer.producerGotDestroyed = false;
+        DependentModelProducer.producerGotDestroyed = false;
+        DependentModelProducer.disposerCount = 0;
+
+        RequestModel model = getInstance(RequestModel.class);
+
+        Assert.assertEquals(0, model.getID());
+
+        getLifecycle().getContextService().endContext(RequestScoped.class, null);
+
+        Assert.assertFalse(DependentModelProducer.producerGotDestroyed);
+        Assert.assertFalse(RequestModelProducer.producerGotDestroyed);
+
+        shutDownContainer();
+
+        //Disposer should only be called once
+        Assert.assertEquals(1, DependentModelProducer.disposerCount);
+    }
+
+
 
 }

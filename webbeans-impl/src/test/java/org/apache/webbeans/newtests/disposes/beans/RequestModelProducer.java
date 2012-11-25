@@ -23,23 +23,34 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.webbeans.newtests.disposes.common.DependentModel;
+import org.apache.webbeans.newtests.disposes.common.HttpHeader;
 import org.apache.webbeans.newtests.disposes.common.RequestModel;
 
 @ApplicationScoped
 @Named("org.apache.webbeans.newtests.disposes.beans.RequestBean")
-public class RequestBean {
+public class RequestModelProducer {
+
+    @Inject @HttpHeader
+    private DependentModel dependentModel;
+
+    public static boolean producerGotDestroyed = false;
 
     @Produces @RequestScoped @Named("rproduce")
-    public RequestModel rproduce(@New RequestModel rmodel)
+    public RequestModel rproduce()
     {
+        RequestModel rmodel =  new RequestModel();
+        rmodel.setDisposeModel(dependentModel);
+
     	System.out.println("produced RequestModel=" + rmodel);
     	return rmodel;
     }
     
     public void rdispose(@Disposes RequestModel rmodel)
     {
-    	System.out.println("disposed RequestModel=" + rmodel);
+        producerGotDestroyed = true;
     }    
 }
