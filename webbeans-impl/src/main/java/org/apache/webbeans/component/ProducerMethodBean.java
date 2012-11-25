@@ -54,6 +54,8 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     /** Disposal method */
     protected Method disposalMethod;
 
+    private static ThreadLocal<List<DependentCreationalContext<Object>>> dependentInstanceOfProducerMethods =
+            new ThreadLocal<List<DependentCreationalContext<Object>>>();
     /**
      * Creates a new instance.
      * 
@@ -119,13 +121,13 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     @Override
     protected T createInstance(CreationalContext<T> creationalContext)
     {
-        T instance = null;
-        instance = createDefaultInstance(creationalContext);
+        T instance = createDefaultInstance(creationalContext);
         // Check null instance
         checkNullInstance(instance);
 
         // Check scope type
         checkScopeType();
+
         return instance;
     }
 
@@ -141,14 +143,14 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         T instance = null;
         Object parentInstance = null;
         CreationalContext<?> parentCreational = null;
-        InjectableMethods<T> m = null;
+        InjectableMethods<T> m;
         List<DependentCreationalContext<Object>> oldDependents =
-                AbstractInjectable.dependentInstanceOfProducerMethods.get();
+                dependentInstanceOfProducerMethods.get();
 
         try
         {
             //X TODO dependentInstanceOfProducerMethods MUST NOT be public! 
-            AbstractInjectable.dependentInstanceOfProducerMethods.set(new ArrayList<DependentCreationalContext<Object>>());
+            dependentInstanceOfProducerMethods.set(new ArrayList<DependentCreationalContext<Object>>());
             parentCreational = getManager().createCreationalContext(ownerComponent);
             
             if (!Modifier.isStatic(creatorMethod.getModifiers()))
@@ -184,7 +186,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
             else
             {
                 List<DependentCreationalContext<Object>> dependents =
-                        AbstractInjectable.dependentInstanceOfProducerMethods.get();
+                        dependentInstanceOfProducerMethods.get();
                 if(dependents != null)
                 {
                     for(int i = 0, size = dependents.size(); i < size; i++)
@@ -243,12 +245,12 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
             
             if(oldDependents != null)
             {
-                AbstractInjectable.dependentInstanceOfProducerMethods.set(oldDependents);   
+                dependentInstanceOfProducerMethods.set(oldDependents);
             }
             else
             {
-                AbstractInjectable.dependentInstanceOfProducerMethods.set(null);
-                AbstractInjectable.dependentInstanceOfProducerMethods.remove();
+                dependentInstanceOfProducerMethods.set(null);
+                dependentInstanceOfProducerMethods.remove();
             }
         }
 

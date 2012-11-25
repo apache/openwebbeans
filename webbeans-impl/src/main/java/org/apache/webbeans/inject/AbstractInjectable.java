@@ -39,7 +39,6 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.context.creational.DependentCreationalContext;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -67,10 +66,6 @@ public abstract class AbstractInjectable implements Injectable
     
     //X TODO refactor. public static variables are utterly ugly
     public static ThreadLocal<Object> instanceUnderInjection = new ThreadLocal<Object>();
-
-    //X TODO this MUST NOT be public! 
-    public static ThreadLocal<List<DependentCreationalContext<Object>>> dependentInstanceOfProducerMethods = 
-        new ThreadLocal<List<DependentCreationalContext<Object>>>();
 
     /**
      * Creates a new injectable.
