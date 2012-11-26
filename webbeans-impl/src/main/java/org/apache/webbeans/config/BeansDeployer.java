@@ -40,13 +40,12 @@ import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.interceptor.Interceptor;
+
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.InterceptedMarker;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
@@ -790,8 +789,7 @@ public class BeansDeployer
             if(processInjectionTargetEvent.isSet())
             {
                 //Adding injection target
-                manager.putInjectionTargetWrapperForJavaEeComponents(clazz,
-                        new InjectionTargetWrapper<T>(processInjectionTargetEvent.getInjectionTarget()));
+                manager.putInjectionTargetWrapperForJavaEeComponents(clazz, processInjectionTargetEvent.getInjectionTarget());
             }
             
             //Checks that not contains @Inject InjectionPoint
@@ -884,7 +882,7 @@ public class BeansDeployer
                             .fireProcessInjectionTargetEvent(processInjectionTarget).getInjectionTarget();
                     if (updatedInjectionTarget != originalInjectionTarget)
                     {
-                        webBeansContext.getBeanManagerImpl().putInjectionTargetWrapper(managedBean, updatedInjectionTarget);
+                        webBeansContext.getBeanManagerImpl().putProducer(managedBean, updatedInjectionTarget);
                     }
                 }
             }

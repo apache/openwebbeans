@@ -18,13 +18,13 @@
  */
 package org.apache.webbeans.web.tomcat;
 
-import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.inject.OWBInjector;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.Producer;
 
 public class TomcatUtil
 {
@@ -54,10 +54,10 @@ public class TomcatUtil
         try
         {
             final BeanManagerImpl beanManager = WebBeansContext.currentInstance().getBeanManagerImpl();
-            final InjectionTargetWrapper wrapper = beanManager.getInjectionTargetWrapper(instance.object.getClass());
-            if (wrapper != null)
+            final Producer producer = beanManager.getInjectionTargetWrapper(instance.object.getClass());
+            if (producer != null)
             {
-                wrapper.dispose(instance.object);
+                producer.dispose(instance.object);
             }
             else if (instance.context != null)
             {

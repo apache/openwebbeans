@@ -63,7 +63,6 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
@@ -184,13 +183,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     private ConcurrentHashMap<String, Bean<?>> passivationBeans = new ConcurrentHashMap<String, Bean<?>>(); 
 
-    //X TODO rename to reflect producers
-    private Map<Contextual<?>, Producer<?>> injectionTargetWrappers =
+    private Map<Contextual<?>, Producer<?>> producers =
         Collections.synchronizedMap(new IdentityHashMap<Contextual<?>, Producer<?>>());
     
     /**InjectionTargets for Java EE component instances that supports injections*/
-    private Map<Class<?>, InjectionTargetWrapper<?>> injectionTargetForJavaEeComponents = 
-        new ConcurrentHashMap<Class<?>, InjectionTargetWrapper<?>>();
+    private Map<Class<?>, Producer<?>> injectionTargetForJavaEeComponents =
+        new ConcurrentHashMap<Class<?>, Producer<?>>();
 
     private AnnotatedElementFactory annotatedElementFactory;
 
@@ -217,21 +215,21 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
     }
 
-    public <T> void putInjectionTargetWrapper(Contextual<T> contextual, Producer<T> wrapper)
+    public <T> void putProducer(Contextual<T> contextual, Producer<T> producer)
     {
         Asserts.assertNotNull(contextual);
-        Asserts.assertNotNull(wrapper);
+        Asserts.assertNotNull(producer);
 
-        injectionTargetWrappers.put(contextual, wrapper);
+        producers.put(contextual, producer);
     }
     
-    public <T> Producer<T> getInjectionTargetWrapper(Contextual<T> contextual)
+    public <T> Producer<T> getProducer(Contextual<T> contextual)
     {
         Asserts.assertNotNull(contextual);
-        return (Producer<T>) injectionTargetWrappers.get(contextual);
+        return (Producer<T>) producers.get(contextual);
     }
     
-    public <T> void putInjectionTargetWrapperForJavaEeComponents(Class<T> javaEeComponentClass, InjectionTargetWrapper<T> wrapper)
+    public <T> void putInjectionTargetWrapperForJavaEeComponents(Class<T> javaEeComponentClass, Producer<T> wrapper)
     {
         Asserts.assertNotNull(javaEeComponentClass);
         Asserts.assertNotNull(wrapper);
@@ -239,10 +237,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         injectionTargetForJavaEeComponents.put(javaEeComponentClass, wrapper);
     }
     
-    public <T> InjectionTargetWrapper<T> getInjectionTargetWrapper(Class<T> javaEeComponentClass)
+    public <T> Producer<T> getInjectionTargetWrapper(Class<T> javaEeComponentClass)
     {
         Asserts.assertNotNull(javaEeComponentClass);
-        return (InjectionTargetWrapper<T>) injectionTargetForJavaEeComponents.get(javaEeComponentClass);
+        return (Producer<T>) injectionTargetForJavaEeComponents.get(javaEeComponentClass);
     }    
     
     public ErrorStack getErrorStack()
@@ -1113,7 +1111,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         deploymentBeans.clear();
         errorStack.clear();
         injectionTargetForJavaEeComponents.clear();
-        injectionTargetWrappers.clear();
+        producers.clear();
         passivationBeans.clear();
         webBeansDecorators.clear();
         webBeansInterceptors.clear();

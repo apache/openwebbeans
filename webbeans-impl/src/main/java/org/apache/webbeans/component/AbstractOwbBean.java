@@ -176,7 +176,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
                         creationalContext, this); 
             }
            
-            Producer<T> wrapper = getManager().getInjectionTargetWrapper(this);
+            Producer<T> wrapper = getManager().getProducer(this);
             //If wrapper not null
             if(wrapper != null)
             {
@@ -247,7 +247,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     {
         try
         {
-            Producer<T> wrapper = getManager().getInjectionTargetWrapper(this);
+            Producer<T> wrapper = getManager().getProducer(this);
             if(wrapper != null)
             {
                 // instance might be null if we only created a proxy

@@ -32,8 +32,8 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.Producer;
 
-import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
@@ -105,7 +105,7 @@ public final class EjbUtility
         webBeansContext.getWebBeansUtil().inspectErrorStack(
             "There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
         //Put final InjectionTarget instance
-        manager.putInjectionTargetWrapper(ejbBean, processInjectionTargetEvent.getInjectionTarget());
+        manager.putProducer(ejbBean, processInjectionTargetEvent.getInjectionTarget());
         
         Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods = new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>(); 
         for(ProducerMethodBean<?> producerMethod : producerMethodBeans)
@@ -118,7 +118,7 @@ public final class EjbUtility
                 "There are errors that are added by ProcessProducer event observers for ProducerMethods. Look at logs for further details");
 
             annotatedMethods.put(producerMethod, method);
-            manager.putInjectionTargetWrapper(producerMethod, new InjectionTargetWrapper(producerEvent.getProducer()));
+            manager.putProducer(producerMethod, (Producer) producerEvent.getProducer());
         }
         
         Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields = new HashMap<ProducerFieldBean<?>, AnnotatedField<?>>();
@@ -131,7 +131,7 @@ public final class EjbUtility
                 "There are errors that are added by ProcessProducer event observers for ProducerFields. Look at logs for further details");
 
             annotatedFields.put(producerField, field);
-            manager.putInjectionTargetWrapper(producerField, new InjectionTargetWrapper(producerEvent.getProducer()));
+            manager.putProducer(producerField, (Producer) producerEvent.getProducer());
         }
         
         Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap = new HashMap<ObserverMethod<?>, AnnotatedMethod<?>>(); 
@@ -204,7 +204,7 @@ public final class EjbUtility
             webBeansContext.getWebBeansUtil().inspectErrorStack(String.format(message, "ProcessProducer", "ProducerMethods"));
 
             annotatedMethods.put(producerMethod, method);
-            manager.putInjectionTargetWrapper(producerMethod, new InjectionTargetWrapper(producerEvent.getProducer()));
+            manager.putProducer(producerMethod, (Producer)producerEvent.getProducer());
         }
 
         // PRODUCER FIELDS
@@ -218,7 +218,7 @@ public final class EjbUtility
             webBeansContext.getWebBeansUtil().inspectErrorStack(String.format(message, "ProcessProducer", "ProducerFields"));
 
             annotatedFields.put(producerField, field);
-            manager.putInjectionTargetWrapper(producerField, new InjectionTargetWrapper(producerEvent.getProducer()));
+            manager.putProducer(producerField, (Producer) producerEvent.getProducer());
         }
 
         //Fires ProcessProducerMethod

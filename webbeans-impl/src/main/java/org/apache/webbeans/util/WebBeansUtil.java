@@ -2614,7 +2614,7 @@ public final class WebBeansUtil
             }
 
             //Put final InjectionTarget instance
-            manager.putInjectionTargetWrapper(managedBean, processInjectionTargetEvent.getInjectionTarget());
+            manager.putProducer(managedBean, processInjectionTargetEvent.getInjectionTarget());
 
             Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods =
                     new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>();
@@ -2628,7 +2628,7 @@ public final class WebBeansUtil
                                                + "ProducerMethods. Look at logs for further details");
 
                 annotatedMethods.put(producerMethod, method);
-                manager.putInjectionTargetWrapper(producerMethod, (Producer) producerEvent.getProducer());
+                manager.putProducer(producerMethod, (Producer) producerEvent.getProducer());
             }
 
             Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields =
@@ -2642,7 +2642,7 @@ public final class WebBeansUtil
                                                + " ProducerFields. Look at logs for further details");
 
                 annotatedFields.put(producerField, field);
-                manager.putInjectionTargetWrapper(producerField, (Producer) producerEvent.getProducer());
+                manager.putProducer(producerField, (Producer) producerEvent.getProducer());
             }
 
             Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap =

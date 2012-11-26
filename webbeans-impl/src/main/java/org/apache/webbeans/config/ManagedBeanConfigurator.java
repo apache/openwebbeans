@@ -25,7 +25,6 @@ import java.util.Set;
 import javax.decorator.Decorator;
 import javax.interceptor.Interceptor;
 
-import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
@@ -133,7 +132,7 @@ public final class ManagedBeanConfigurator
         }
 
         ManagedBean<T> component = new ManagedBean<T>(clazz, type, webBeansContext);
-        manager.putInjectionTargetWrapper(component, new InjectionTargetProducer(component));
+        manager.putProducer(component, new InjectionTargetProducer(component));
 
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(component);
 
@@ -164,7 +163,7 @@ public final class ManagedBeanConfigurator
         {
             // add them one after the other to enable serialization handling et al
             manager.addBean(producerMethod);
-            manager.putInjectionTargetWrapper(producerMethod, new InjectionTargetWrapper(new ProducerBeansProducer(producerMethod)));
+            manager.putProducer(producerMethod, new ProducerBeansProducer(producerMethod));
         }
 
         Set<ProducerFieldBean<?>> producerFields = definitionUtil.defineProducerFields(component);
@@ -172,7 +171,7 @@ public final class ManagedBeanConfigurator
         {
             // add them one after the other to enable serialization handling et al
             manager.addBean(producerField);
-            manager.putInjectionTargetWrapper(producerField, new InjectionTargetWrapper(new ProducerBeansProducer(producerField)));
+            manager.putProducer(producerField, new ProducerBeansProducer(producerField));
         }
 
 
