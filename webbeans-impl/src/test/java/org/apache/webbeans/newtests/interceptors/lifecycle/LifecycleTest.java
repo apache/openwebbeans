@@ -54,13 +54,13 @@ public class LifecycleTest extends AbstractUnitTest
 
         startContainer(beanClasses, beanXmls);        
         
-        Set<Bean<?>> beans = getBeanManager().getBeans("org.apache.webbeans.newtests.interceptors.lifecycle.LifecycleBean");
-        Assert.assertNotNull(beans);        
+        Set<Bean<?>> beans = getBeanManager().getBeans(LifecycleBean.class);
+        Assert.assertNotNull(beans);
         Bean<LifecycleBean> lifecycleBean = (Bean<LifecycleBean>)beans.iterator().next();
+
+        CreationalContext<LifecycleBean> creationalContext = getBeanManager().createCreationalContext(lifecycleBean);
         
-        CreationalContext<LifecycleBean> ctx = getBeanManager().createCreationalContext(lifecycleBean);
-        
-        Object reference = getBeanManager().getReference(lifecycleBean, LifecycleBean.class, ctx);
+        Object reference = getBeanManager().getReference(lifecycleBean, LifecycleBean.class, creationalContext);
         Assert.assertNotNull(reference);
         
         Assert.assertTrue(reference instanceof LifecycleBean);
@@ -71,7 +71,7 @@ public class LifecycleTest extends AbstractUnitTest
         
         Assert.assertTrue(!LifecycleInterceptor.PRE_DESTROY);
         
-        lifecycleBean.destroy((LifecycleBean)reference, ctx);
+        lifecycleBean.destroy((LifecycleBean)reference, creationalContext);
         
         shutDownContainer();
         

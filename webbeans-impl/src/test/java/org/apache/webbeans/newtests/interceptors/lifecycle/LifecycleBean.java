@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 @LifecycleBinding
-@Named("org.apache.webbeans.newtests.interceptors.lifecycle.LifecycleBean")
 public class LifecycleBean
 {
     public static String CONSTRUCTOR_INJECTED = null; 
