@@ -56,31 +56,7 @@ import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.AfterDeploymentValidation;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.BeforeShutdown;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.PassivationCapable;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.inject.spi.ProcessBean;
-import javax.enterprise.inject.spi.ProcessInjectionTarget;
-import javax.enterprise.inject.spi.ProcessManagedBean;
-import javax.enterprise.inject.spi.ProcessObserverMethod;
-import javax.enterprise.inject.spi.ProcessProducer;
-import javax.enterprise.inject.spi.ProcessProducerField;
-import javax.enterprise.inject.spi.ProcessProducerMethod;
-import javax.enterprise.inject.spi.ProcessSessionBean;
+import javax.enterprise.inject.spi.*;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -107,7 +83,6 @@ import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
@@ -139,7 +114,6 @@ import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorDataImpl;
-import javax.enterprise.inject.spi.InterceptionType;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
@@ -2640,23 +2614,21 @@ public final class WebBeansUtil
             }
 
             //Put final InjectionTarget instance
-            manager.putInjectionTargetWrapper(managedBean,
-                    new InjectionTargetWrapper(processInjectionTargetEvent.getInjectionTarget()));
+            manager.putInjectionTargetWrapper(managedBean, processInjectionTargetEvent.getInjectionTarget());
 
             Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods =
                     new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>();
 
             for(ProducerMethodBean<?> producerMethod : producerMethods)
             {
-                AnnotatedMethod<?> method = webBeansContext.getAnnotatedElementFactory().newAnnotatedMethod(producerMethod.getCreatorMethod(),
-                                                                                       annotatedType);
+                AnnotatedMethod<?> method = webBeansContext.getAnnotatedElementFactory().newAnnotatedMethod(producerMethod.getCreatorMethod(), annotatedType);
                 ProcessProducerImpl<?, ?> producerEvent = fireProcessProducerEventForMethod(producerMethod,
                                                                                                         method);
                 inspectErrorStack("There are errors that are added by ProcessProducer event observers for "
                                                + "ProducerMethods. Look at logs for further details");
 
                 annotatedMethods.put(producerMethod, method);
-                manager.putInjectionTargetWrapper(producerMethod, new InjectionTargetWrapper(producerEvent.getProducer()));
+                manager.putInjectionTargetWrapper(producerMethod, (Producer) producerEvent.getProducer());
             }
 
             Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields =
@@ -2664,15 +2636,13 @@ public final class WebBeansUtil
 
             for(ProducerFieldBean<?> producerField : producerFields)
             {
-                AnnotatedField<?> field = webBeansContext.getAnnotatedElementFactory().newAnnotatedField(producerField.getCreatorField(),
-                                                                                    annotatedType);
-                ProcessProducerImpl<?, ?> producerEvent = fireProcessProducerEventForField(producerField,
-                                                                                                        field);
+                AnnotatedField<?> field = webBeansContext.getAnnotatedElementFactory().newAnnotatedField(producerField.getCreatorField(), annotatedType);
+                ProcessProducerImpl<?, ?> producerEvent = fireProcessProducerEventForField(producerField, field);
                 inspectErrorStack("There are errors that are added by ProcessProducer event observers for"
                                                + " ProducerFields. Look at logs for further details");
 
                 annotatedFields.put(producerField, field);
-                manager.putInjectionTargetWrapper(producerField, new InjectionTargetWrapper(producerEvent.getProducer()));
+                manager.putInjectionTargetWrapper(producerField, (Producer) producerEvent.getProducer());
             }
 
             Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap =
@@ -2681,8 +2651,7 @@ public final class WebBeansUtil
             for(ObserverMethod<?> observerMethod : observerMethods)
             {
                 ObserverMethodImpl<?> impl = (ObserverMethodImpl<?>)observerMethod;
-                AnnotatedMethod<?> method = webBeansContext.getAnnotatedElementFactory().newAnnotatedMethod(impl.getObserverMethod(),
-                                                                                       annotatedType);
+                AnnotatedMethod<?> method = webBeansContext.getAnnotatedElementFactory().newAnnotatedMethod(impl.getObserverMethod(), annotatedType);
 
                 observerMethodsMap.put(observerMethod, method);
             }

@@ -884,7 +884,7 @@ public class BeansDeployer
                             .fireProcessInjectionTargetEvent(processInjectionTarget).getInjectionTarget();
                     if (updatedInjectionTarget != originalInjectionTarget)
                     {
-                        webBeansContext.getBeanManagerImpl().putInjectionTargetWrapper(managedBean, new InjectionTargetWrapper<T>(updatedInjectionTarget));
+                        webBeansContext.getBeanManagerImpl().putInjectionTargetWrapper(managedBean, updatedInjectionTarget);
                     }
                 }
             }

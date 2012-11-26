@@ -34,6 +34,9 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.Producer;
+
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -173,13 +176,16 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
                         creationalContext, this); 
             }
            
-            InjectionTargetWrapper<T> wrapper = getManager().getInjectionTargetWrapper(this);
+            Producer<T> wrapper = getManager().getInjectionTargetWrapper(this);
             //If wrapper not null
             if(wrapper != null)
             {
                 instance = wrapper.produce(creationalContext);
-                wrapper.inject(instance, creationalContext);
-                wrapper.postConstruct(instance);
+                if (wrapper instanceof InjectionTarget)
+                {
+                    ((InjectionTarget)wrapper).inject(instance, creationalContext);
+                    ((InjectionTarget)wrapper).postConstruct(instance);
+                }
             }
             else
             {
@@ -241,14 +247,13 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     {
         try
         {
-            InjectionTargetWrapper<T> wrapper = getManager().getInjectionTargetWrapper(this);
+            Producer<T> wrapper = getManager().getInjectionTargetWrapper(this);
             if(wrapper != null)
             {
                 // instance might be null if we only created a proxy
                 // but no actual contextual instance for this bean!
                 if (instance != null)
                 {
-                    wrapper.preDestroy(instance);
                     wrapper.dispose(instance);
                 }
             }

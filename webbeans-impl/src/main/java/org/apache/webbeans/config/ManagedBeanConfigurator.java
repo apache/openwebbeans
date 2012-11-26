@@ -133,7 +133,7 @@ public final class ManagedBeanConfigurator
         }
 
         ManagedBean<T> component = new ManagedBean<T>(clazz, type, webBeansContext);
-        manager.putInjectionTargetWrapper(component, new InjectionTargetWrapper(new InjectionTargetProducer(component)));
+        manager.putInjectionTargetWrapper(component, new InjectionTargetProducer(component));
 
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(component);
 

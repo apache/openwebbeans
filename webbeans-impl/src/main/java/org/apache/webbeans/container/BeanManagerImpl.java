@@ -52,6 +52,7 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.Producer;
 import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
 import javax.naming.NamingException;
@@ -182,9 +183,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * This is used as a reference for serialization.
      */
     private ConcurrentHashMap<String, Bean<?>> passivationBeans = new ConcurrentHashMap<String, Bean<?>>(); 
-    
-    private Map<Contextual<?>, InjectionTargetWrapper<?>> injectionTargetWrappers = 
-        Collections.synchronizedMap(new IdentityHashMap<Contextual<?>, InjectionTargetWrapper<?>>());
+
+    //X TODO rename to reflect producers
+    private Map<Contextual<?>, Producer<?>> injectionTargetWrappers =
+        Collections.synchronizedMap(new IdentityHashMap<Contextual<?>, Producer<?>>());
     
     /**InjectionTargets for Java EE component instances that supports injections*/
     private Map<Class<?>, InjectionTargetWrapper<?>> injectionTargetForJavaEeComponents = 
@@ -215,7 +217,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
     }
 
-    public <T> void putInjectionTargetWrapper(Contextual<T> contextual, InjectionTargetWrapper<T> wrapper)
+    public <T> void putInjectionTargetWrapper(Contextual<T> contextual, Producer<T> wrapper)
     {
         Asserts.assertNotNull(contextual);
         Asserts.assertNotNull(wrapper);
@@ -223,10 +225,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         injectionTargetWrappers.put(contextual, wrapper);
     }
     
-    public <T> InjectionTargetWrapper<T> getInjectionTargetWrapper(Contextual<T> contextual)
+    public <T> Producer<T> getInjectionTargetWrapper(Contextual<T> contextual)
     {
         Asserts.assertNotNull(contextual);
-        return (InjectionTargetWrapper<T>) injectionTargetWrappers.get(contextual);
+        return (Producer<T>) injectionTargetWrappers.get(contextual);
     }
     
     public <T> void putInjectionTargetWrapperForJavaEeComponents(Class<T> javaEeComponentClass, InjectionTargetWrapper<T> wrapper)
