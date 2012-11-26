@@ -59,19 +59,14 @@ public class DependentContext extends AbstractContext
     @Override
     protected <T> T getInstance(Contextual<T> component,CreationalContext<T> creationalContext)
     {
-        T object = null;
-        
         if(creationalContext == null)
         {
             return null;
         }
         else
         {
-            object = component.create(creationalContext);   
+            return component.create(creationalContext);
         }
-        
-
-        return object;
     }
 
     
