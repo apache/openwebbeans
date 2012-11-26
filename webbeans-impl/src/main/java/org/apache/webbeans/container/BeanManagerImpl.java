@@ -187,7 +187,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         Collections.synchronizedMap(new IdentityHashMap<Contextual<?>, Producer<?>>());
     
     /**InjectionTargets for Java EE component instances that supports injections*/
-    private Map<Class<?>, Producer<?>> injectionTargetForJavaEeComponents =
+    private Map<Class<?>, Producer<?>> producersForJavaEeComponents =
         new ConcurrentHashMap<Class<?>, Producer<?>>();
 
     private AnnotatedElementFactory annotatedElementFactory;
@@ -229,18 +229,18 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return (Producer<T>) producers.get(contextual);
     }
     
-    public <T> void putInjectionTargetWrapperForJavaEeComponents(Class<T> javaEeComponentClass, Producer<T> wrapper)
+    public <T> void putProducerForJavaEeComponent(Class<T> javaEeComponentClass, Producer<T> wrapper)
     {
         Asserts.assertNotNull(javaEeComponentClass);
         Asserts.assertNotNull(wrapper);
 
-        injectionTargetForJavaEeComponents.put(javaEeComponentClass, wrapper);
+        producersForJavaEeComponents.put(javaEeComponentClass, wrapper);
     }
     
-    public <T> Producer<T> getInjectionTargetWrapper(Class<T> javaEeComponentClass)
+    public <T> Producer<T> getProducerForJavaEeComponent(Class<T> javaEeComponentClass)
     {
         Asserts.assertNotNull(javaEeComponentClass);
-        return (Producer<T>) injectionTargetForJavaEeComponents.get(javaEeComponentClass);
+        return (Producer<T>) producersForJavaEeComponents.get(javaEeComponentClass);
     }    
     
     public ErrorStack getErrorStack()
@@ -1110,7 +1110,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         contextMap.clear();
         deploymentBeans.clear();
         errorStack.clear();
-        injectionTargetForJavaEeComponents.clear();
+        producersForJavaEeComponents.clear();
         producers.clear();
         passivationBeans.clear();
         webBeansDecorators.clear();

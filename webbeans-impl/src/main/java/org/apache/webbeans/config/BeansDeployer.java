@@ -789,7 +789,7 @@ public class BeansDeployer
             if(processInjectionTargetEvent.isSet())
             {
                 //Adding injection target
-                manager.putInjectionTargetWrapperForJavaEeComponents(clazz, processInjectionTargetEvent.getInjectionTarget());
+                manager.putProducerForJavaEeComponent(clazz, processInjectionTargetEvent.getInjectionTarget());
             }
             
             //Checks that not contains @Inject InjectionPoint

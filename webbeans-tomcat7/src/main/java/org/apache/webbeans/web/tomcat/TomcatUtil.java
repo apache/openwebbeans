@@ -54,7 +54,7 @@ public class TomcatUtil
         try
         {
             final BeanManagerImpl beanManager = WebBeansContext.currentInstance().getBeanManagerImpl();
-            final Producer producer = beanManager.getInjectionTargetWrapper(instance.object.getClass());
+            final Producer producer = beanManager.getProducerForJavaEeComponent(instance.object.getClass());
             if (producer != null)
             {
                 producer.dispose(instance.object);
