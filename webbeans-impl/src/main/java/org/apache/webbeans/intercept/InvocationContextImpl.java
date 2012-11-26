@@ -227,8 +227,7 @@ public class InvocationContextImpl implements InvocationContext
                 owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(aroundInvokeMethod, true);
             }
             
-            Object t = intc.createNewInstance(ccKey != null ? ccKey : target,
-                    (CreationalContextImpl<?>) creationalContext);
+            Object t = intc.createNewInstance(ccKey != null ? ccKey : target, (CreationalContextImpl<?>) creationalContext);
 
             if (t == null)
             {
@@ -284,8 +283,7 @@ public class InvocationContextImpl implements InvocationContext
                 owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(aroundTimeoutMethod, true);
             }
             
-            Object t = intc.createNewInstance(ccKey != null ? ccKey : target,
-                    (CreationalContextImpl<?>) creationalContext);
+            Object t = intc.createNewInstance(ccKey != null ? ccKey : target, (CreationalContextImpl<?>) creationalContext);
 
             if (t == null)
             {
@@ -369,8 +367,7 @@ public class InvocationContextImpl implements InvocationContext
 
             currentMethod++;
 
-            Object t = intc.createNewInstance(ccKey != null ? ccKey : target,
-                    (CreationalContextImpl<?>) creationalContext);
+            Object t = intc.createNewInstance(ccKey != null ? ccKey : target, (CreationalContextImpl<?>) creationalContext);
 
             //In bean class
             if (t == null)
