@@ -38,9 +38,9 @@ class CustomContextImpl implements Context
         return context.getScope();
     }
 
-    public <T> T get(Contextual<T> component, CreationalContext<T> crreationalContext)
+    public <T> T get(Contextual<T> component, CreationalContext<T> creationalContext)
     {
-        return context.get(component, crreationalContext);
+        return context.get(component, creationalContext);
     }
 
     public <T> T get(Contextual<T> component)
