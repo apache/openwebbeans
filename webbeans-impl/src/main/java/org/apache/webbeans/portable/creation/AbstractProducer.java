@@ -39,7 +39,10 @@ public abstract class AbstractProducer<T> implements Producer<T>
     /**Bean instance*/
     protected OwbBean<T> bean;
 
-    /**Passing creational context*/
+    /**
+     * Passing creational context
+     * @deprecated WTF, what pot did we smoke? We must not store state information at this point!
+     */
     protected CreationalContext<T> creationalContext = null;
     
     /**
@@ -76,8 +79,8 @@ public abstract class AbstractProducer<T> implements Producer<T>
         this.creationalContext = creationalContext;
         
         //Create an instance of the bean
-        instance = bean.createNewInstance(this.creationalContext);
-                
+        instance = bean.createNewInstance(creationalContext);
+
         return instance; 
     }
     
