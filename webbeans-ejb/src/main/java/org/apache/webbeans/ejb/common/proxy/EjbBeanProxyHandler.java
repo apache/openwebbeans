@@ -58,21 +58,21 @@ import org.apache.webbeans.proxy.MethodHandler;
 public class EjbBeanProxyHandler implements InvocationHandler, MethodHandler, Serializable, Externalizable
 {
     //Logger instance
-    private final static Logger logger = WebBeansLoggerFacade.getLogger(EjbBeanProxyHandler.class);
+    protected final static Logger logger = WebBeansLoggerFacade.getLogger(EjbBeanProxyHandler.class);
     
     /**Proxy ejb bean instance*/
-    private BaseEjbBean<?> ejbBean;
+    protected BaseEjbBean<?> ejbBean;
     
     /**Dependent ejb instance*/
-    private Object dependentEJB;
+    protected Object dependentEJB;
     
     /**Scope is dependent*/
-    private boolean isDependent = false;
+    protected boolean isDependent = false;
     
     /**Creational Context*/
-    private CreationalContext<?> creationalContext;
+    protected CreationalContext<?> creationalContext;
 
-    private WebBeansContext webBeansContext;
+    protected WebBeansContext webBeansContext;
 
     //DO NOT REMOVE, used by PASSIVATION.
     public EjbBeanProxyHandler() 
@@ -86,8 +86,9 @@ public class EjbBeanProxyHandler implements InvocationHandler, MethodHandler, Se
     public EjbBeanProxyHandler(BaseEjbBean<?> ejbBean, CreationalContext<?> creationalContext)
     {
         this.ejbBean = ejbBean;
-
-        if(ejbBean.getWebBeansContext().getWebBeansUtil().isScopeTypeNormal(ejbBean.getScope()))
+        this.webBeansContext = ejbBean.getWebBeansContext();
+        
+        if(this.webBeansContext.getWebBeansUtil().isScopeTypeNormal(ejbBean.getScope()))
         {
             initiateBeanBag((OwbBean<Object>)ejbBean, (CreationalContext<Object>)creationalContext);
         }
@@ -101,7 +102,6 @@ public class EjbBeanProxyHandler implements InvocationHandler, MethodHandler, Se
             isDependent = true;
             dependentEJB = null;
         }
-        webBeansContext = ejbBean.getWebBeansContext();
     }
     
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Throwable

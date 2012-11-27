@@ -38,7 +38,10 @@ public class JavassistFactory
     {
         ProxyFactory fact = new ProxyFactory();
         fact.setInterfaces(interfaces);
-        fact.setSuperclass(superClass);
+        if(superClass != null)
+        {
+            fact.setSuperclass(superClass);   
+        }
         fact.setFilter(FinalizeMethodFilter.INSTANCE);
 
         return getProxyClass(fact);
