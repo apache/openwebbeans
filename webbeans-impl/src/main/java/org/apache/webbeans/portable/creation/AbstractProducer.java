@@ -20,11 +20,14 @@ package org.apache.webbeans.portable.creation;
 
 import java.util.Set;
 
+import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.context.AbstractContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 
 /**
@@ -39,9 +42,6 @@ public abstract class AbstractProducer<T> implements Producer<T>
     /**Bean instance*/
     protected OwbBean<T> bean;
 
-    /**Passing creational context*/
-    protected CreationalContext<T> creationalContext = null;
-    
     /**
      * Create a new producer with given bean.
      * 
@@ -72,11 +72,8 @@ public abstract class AbstractProducer<T> implements Producer<T>
             creationalContext = bean.getWebBeansContext().getCreationalContextFactory().wrappedCreationalContext(creationalContext, bean);
         }
         
-        //Save it
-        this.creationalContext = creationalContext;
-        
         //Create an instance of the bean
-        instance = bean.createNewInstance(this.creationalContext);
+        instance = bean.createNewInstance(creationalContext);
                 
         return instance; 
     }
@@ -86,8 +83,35 @@ public abstract class AbstractProducer<T> implements Producer<T>
      */
     public void dispose(T instance)
     {
-        bean.destroyCreatedInstance(instance, creationalContext);
+        CreationalContext<T> cc= getCreationalContext();
+        bean.destroyCreatedInstance(instance, cc);
     }
+
+    /**
+     * This is a quirks mode function :(
+     * The problem is that we also need the CC for detecting the
+     * interceptors for PreDestroy and PostConstruct methods for example.
+     * But sadly the CDI SPI doesn't pass the CC :/
+     *
+     * @return
+     */
+    protected CreationalContext<T> getCreationalContext()
+    {
+        CreationalContext<T> cc = null;
+        BeanManager bm = bean.getWebBeansContext().getBeanManagerImpl();
+        Context ctx = bm.getContext(bean.getScope());
+        if (ctx instanceof AbstractContext)
+        {
+            cc = ((AbstractContext) ctx).getCreationalContext(bean);
+        }
+
+        if (cc == null)
+        {
+            cc = bm.createCreationalContext(bean);
+        }
+        return cc;
+    }
+
 
     /**
      * Returns actual bean instance.

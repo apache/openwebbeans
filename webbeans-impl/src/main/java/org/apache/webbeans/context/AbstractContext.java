@@ -177,6 +177,12 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     @SuppressWarnings("unchecked")
     public <T> CreationalContext<T> getCreationalContext(Contextual<T> contextual)
     {
+        if (componentInstanceMap == null)
+        {
+            // this happens with @Dependent scoped beans
+            return null;
+        }
+
         BeanInstanceBag<?> bag = componentInstanceMap.get(contextual);
         if (bag != null)
         {

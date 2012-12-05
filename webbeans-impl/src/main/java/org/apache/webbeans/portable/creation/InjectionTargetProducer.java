@@ -119,7 +119,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
         InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);    
         if(!(bean instanceof EnterpriseBeanMarker))
         {
-            bean.postConstruct(instance, creationalContext);
+            bean.postConstruct(instance, getCreationalContext());
         }
     }
 
@@ -129,7 +129,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
     public void preDestroy(T instance)
     {
         InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);
-        bean.destroyCreatedInstance(instance, creationalContext);
+        bean.destroyCreatedInstance(instance, getCreationalContext());
     }
 
 }
