@@ -20,6 +20,7 @@ package org.apache.webbeans.portable.creation;
 
 import java.util.Set;
 
+import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.BeanManager;
@@ -99,10 +100,19 @@ public abstract class AbstractProducer<T> implements Producer<T>
     {
         CreationalContext<T> cc = null;
         BeanManager bm = bean.getWebBeansContext().getBeanManagerImpl();
-        Context ctx = bm.getContext(bean.getScope());
-        if (ctx instanceof AbstractContext)
+        try
         {
-            cc = ((AbstractContext) ctx).getCreationalContext(bean);
+            Context ctx = bm.getContext(bean.getScope());
+            if (ctx instanceof AbstractContext)
+            {
+                cc = ((AbstractContext) ctx).getCreationalContext(bean);
+            }
+        }
+        catch (ContextNotActiveException ccne)
+        {
+            // another dirty workaround for a quirksmode.
+            // This happens if contexts from other threads get bulk cleaned up.
+            // It's at least not worse as it was before ;)
         }
 
         if (cc == null)
