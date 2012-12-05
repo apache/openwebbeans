@@ -38,15 +38,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.decorator.Decorator;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -85,7 +82,6 @@ import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
-import javax.inject.Scope;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
@@ -125,7 +121,6 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
@@ -1769,7 +1764,7 @@ public final class WebBeansUtil
         Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
 
         //Unproxiable test for NormalScoped beans
-        if (isScopeTypeNormal(scopeType))
+        if (webBeansContext.getBeanManagerImpl().isScopeTypeNormal(scopeType))
         {
             ViolationMessageBuilder violationMessage = ViolationMessageBuilder.newViolation();
 
@@ -2018,61 +2013,6 @@ public final class WebBeansUtil
             }
         }
     }
-
-    /**
-     * The result of this invocation get's cached
-     * @see #isScopeTypeNormalCache
-     * @param scopeType
-     * @return <code>true</code> if the given scopeType represents a
-     *         {@link javax.enterprise.context.NormalScope}d bean
-     */
-    public boolean isScopeTypeNormal(Class<? extends Annotation> scopeType)
-    {
-        Asserts.assertNotNull(scopeType, "scopeType argument can not be null");
-
-        Boolean isNormal = isScopeTypeNormalCache.get(scopeType);
-
-        if (isNormal != null)
-        {
-            return isNormal.booleanValue();
-        }
-
-
-        if (scopeType.isAnnotationPresent(NormalScope.class))
-        {
-            isScopeTypeNormalCache.put(scopeType, Boolean.TRUE);
-            return true;
-        }
-
-        if(scopeType.isAnnotationPresent(Scope.class))
-        {
-            isScopeTypeNormalCache.put(scopeType, Boolean.FALSE);
-            return false;
-        }
-
-        List<ExternalScope> additionalScopes = webBeansContext.getBeanManagerImpl().getAdditionalScopes();
-        for (ExternalScope additionalScope : additionalScopes)
-        {
-            if (additionalScope.getScope().equals(scopeType))
-            {
-                isNormal = additionalScope.isNormal() ? Boolean.TRUE : Boolean.FALSE;
-                isScopeTypeNormalCache.put(scopeType, isNormal);
-                return isNormal.booleanValue();
-            }
-        }
-
-        // no scopetype found so far -> kawumms
-        throw new IllegalArgumentException("scopeType argument must be annotated with @Scope or @NormalScope");
-    }
-
-    /**
-     * we cache results of calls to {@link #isScopeTypeNormalCache} because
-     * this doesn't change at runtime.
-     * We don't need to take special care about classloader
-     * hierarchies, because each cl has other classes.
-     */
-    private static Map<Class<? extends Annotation>, Boolean> isScopeTypeNormalCache =
-            new ConcurrentHashMap<Class<? extends Annotation>, Boolean>();
     
     public static void checkNullInstance(Object instance, Class<? > scopeType, String errorMessage, 
             Object... errorMessageArgs)

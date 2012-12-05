@@ -203,6 +203,15 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
 
     /**
+     * we cache results of calls to {@link #isScopeTypeNormalCache} because
+     * this doesn't change at runtime.
+     * We don't need to take special care about classloader
+     * hierarchies, because each cl has other classes.
+     */
+    private static Map<Class<? extends Annotation>, Boolean> isScopeTypeNormalCache =
+            new ConcurrentHashMap<Class<? extends Annotation>, Boolean>();
+
+    /**
      * Creates a new {@link BeanManager} instance.
      * Called by the system. Do not use outside of the
      * system.
@@ -824,7 +833,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
                 
         //Scope is normal
-        if (webBeansContext.getWebBeansUtil().isScopeTypeNormal(bean.getScope()))
+        if (isScopeTypeNormal(bean.getScope()))
         {
             instance = getEjbOrJmsProxyReference(bean, beanType,creationalContext);
             
@@ -871,7 +880,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Create session bean proxy
         if(bean instanceof EnterpriseBeanMarker)
         {
-            if(webBeansContext.getWebBeansUtil().isScopeTypeNormal(bean.getScope()))
+            if(isScopeTypeNormal(bean.getScope()))
             {
                 //Maybe it is cached
                 if(cacheProxies.containsKey(bean))
@@ -1125,6 +1134,52 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public boolean isInUse()
     {
         return inUse;
+    }
+
+    /**
+     * The result of this invocation get's cached
+     * @see #isScopeTypeNormalCache
+     * @param scopeType
+     * @return <code>true</code> if the given scopeType represents a
+     *         {@link javax.enterprise.context.NormalScope}d bean
+     */
+    public boolean isScopeTypeNormal(Class<? extends Annotation> scopeType)
+    {
+        Asserts.assertNotNull(scopeType, "scopeType argument can not be null");
+
+        Boolean isNormal = isScopeTypeNormalCache.get(scopeType);
+
+        if (isNormal != null)
+        {
+            return isNormal;
+        }
+
+
+        if (scopeType.isAnnotationPresent(NormalScope.class))
+        {
+            isScopeTypeNormalCache.put(scopeType, Boolean.TRUE);
+            return true;
+        }
+
+        if(scopeType.isAnnotationPresent(Scope.class))
+        {
+            isScopeTypeNormalCache.put(scopeType, Boolean.FALSE);
+            return false;
+        }
+
+        List<ExternalScope> additionalScopes = webBeansContext.getBeanManagerImpl().getAdditionalScopes();
+        for (ExternalScope additionalScope : additionalScopes)
+        {
+            if (additionalScope.getScope().equals(scopeType))
+            {
+                isNormal = additionalScope.isNormal();
+                isScopeTypeNormalCache.put(scopeType, isNormal);
+                return isNormal;
+            }
+        }
+
+        // no scopetype found so far -> kawumms
+        throw new IllegalArgumentException("scopeType argument must be annotated with @Scope or @NormalScope");
     }
 
 }

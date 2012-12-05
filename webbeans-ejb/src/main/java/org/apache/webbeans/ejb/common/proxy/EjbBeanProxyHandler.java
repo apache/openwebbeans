@@ -88,7 +88,7 @@ public class EjbBeanProxyHandler implements InvocationHandler, MethodHandler, Se
         this.ejbBean = ejbBean;
         this.webBeansContext = ejbBean.getWebBeansContext();
         
-        if(this.webBeansContext.getWebBeansUtil().isScopeTypeNormal(ejbBean.getScope()))
+        if(this.webBeansContext.getBeanManagerImpl().isScopeTypeNormal(ejbBean.getScope()))
         {
             initiateBeanBag((OwbBean<Object>)ejbBean, (CreationalContext<Object>)creationalContext);
         }
