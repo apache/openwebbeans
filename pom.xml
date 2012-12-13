@@ -229,6 +229,15 @@
                 <role>committer</role>
             </roles>
         </developer>
+        <developer>
+            <id>tandraschko</id>
+            <name>Thomas Andraschko</name>
+            <email>tandraschko at apache dot org</email>
+            <timezone>+1</timezone>
+            <roles>
+                <role>committer</role>
+            </roles>
+        </developer>
     </developers>
 
     <contributors>
