@@ -211,22 +211,25 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 
         synchronized(this)
         {
-            List<DependentCreationalContext<?>> values = dependentObjects.get(ownerInstance);
-            if(values != null && !values.isEmpty())
+            if (dependentObjects != null)
             {
-                Iterator<DependentCreationalContext<?>> it = values.iterator();
-                while(it.hasNext())
+                List<DependentCreationalContext<?>> values = dependentObjects.get(ownerInstance);
+                if (values != null && !values.isEmpty())
                 {
-                    DependentCreationalContext<?> dc = it.next();
-                    if(dc.getDependentType().equals(DependentType.INTERCEPTOR) &&
-                       dc.getContextual().equals(interceptor))
+                    Iterator<DependentCreationalContext<?>> it = values.iterator();
+                    while (it.hasNext())
                     {
-                        return dc.getInstance();
+                        DependentCreationalContext<?> dc = it.next();
+                        if (dc.getDependentType().equals(DependentType.INTERCEPTOR) &&
+                                dc.getContextual().equals(interceptor))
+                        {
+                            return dc.getInstance();
+                        }
                     }
-
                 }
             }
         }
+        
         return null;
     }
 
@@ -246,18 +249,21 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 
         synchronized(this)
         {
-            List<DependentCreationalContext<?>> values = dependentObjects.get(ownerInstance);
-            if (values != null && values.size() > 0)
+            if (dependentObjects != null)
             {
-                Iterator<DependentCreationalContext<?>> it = values.iterator();
-                while (it.hasNext())
+                List<DependentCreationalContext<?>> values = dependentObjects.get(ownerInstance);
+                if (values != null && values.size() > 0)
                 {
-                    DependentCreationalContext<?> dc = it.next();
-
-                    if(dc.getDependentType().equals(DependentType.DECORATOR) &&
-                       dc.getContextual().equals(decorator))
+                    Iterator<DependentCreationalContext<?>> it = values.iterator();
+                    while (it.hasNext())
                     {
-                        return dc.getInstance();
+                        DependentCreationalContext<?> dc = it.next();
+
+                        if (dc.getDependentType().equals(DependentType.DECORATOR) &&
+                                dc.getContextual().equals(decorator))
+                        {
+                            return dc.getInstance();
+                        }
                     }
                 }
             }
@@ -278,32 +284,35 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 
         synchronized(this)
         {
-            Collection<List<DependentCreationalContext<?>>> values = dependentObjects.values();
-            if(values != null)
+            if (dependentObjects != null)
             {
-                for(List<DependentCreationalContext<?>> value : values)
+                Collection<List<DependentCreationalContext<?>>> values = dependentObjects.values();
+                if (values != null)
                 {
-                    // this is kind of an emergency valve...
-                    int maxRemoval = value.size() * 3;
-                    while(!value.isEmpty() && maxRemoval > 0)
+                    for (List<DependentCreationalContext<?>> value : values)
                     {
-                        // we don't use an iterator because the destroyal might register a 
-                        // fresh PreDestroy interceptor as dependent object...
-                        DependentCreationalContext<T> dependent = (DependentCreationalContext<T>)value.get(0);
-                        dependent.getContextual().destroy((T)dependent.getInstance(), this);
+                        // this is kind of an emergency valve...
+                        int maxRemoval = value.size() * 3;
+                        while (!value.isEmpty() && maxRemoval > 0)
+                        {
+                            // we don't use an iterator because the destroyal might register a 
+                            // fresh PreDestroy interceptor as dependent object...
+                            DependentCreationalContext<T> dependent = (DependentCreationalContext<T>) value.get(0);
+                            dependent.getContextual().destroy((T) dependent.getInstance(), this);
                         
-                        value.remove(0);
-                        maxRemoval--;
-                    }
+                            value.remove(0);
+                            maxRemoval--;
+                        }
                     
-                    if (maxRemoval == 0)
-                    {
-                        throw new WebBeansException("infinite loop detected while destroying bean " + contextual);
+                        if (maxRemoval == 0)
+                        {
+                            throw new WebBeansException("infinite loop detected while destroying bean " + contextual);
+                        }
                     }
                 }
-            }
 
-            dependentObjects = null;
+                dependentObjects = null;
+            }
         }
 
         // the instances are managed as normal dependent instances already
