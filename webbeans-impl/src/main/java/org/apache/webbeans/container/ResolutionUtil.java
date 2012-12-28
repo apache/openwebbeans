@@ -18,17 +18,12 @@
  */
 package org.apache.webbeans.container;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
-
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.InjectionExceptionUtils;
 
 public final class ResolutionUtil
 {
@@ -66,22 +61,5 @@ public final class ResolutionUtil
         }
 
         return false;
-    }
-
-    public void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] qualifiers, InjectionPoint injectionPoint)
-    {
-        if (resolvedSet.isEmpty())
-        {
-            InjectionExceptionUtils.throwUnsatisfiedResolutionException(type, injectionPoint, qualifiers);
-        }
-
-        if (resolvedSet.size() > 1)
-        {
-            InjectionExceptionUtils.throwAmbiguousResolutionException(resolvedSet, type, injectionPoint, qualifiers);
-        }
-
-        Bean<?> bean = resolvedSet.iterator().next();
-        webBeansContext.getWebBeansUtil().checkUnproxiableApiType(bean, bean.getScope());
-
     }
 }

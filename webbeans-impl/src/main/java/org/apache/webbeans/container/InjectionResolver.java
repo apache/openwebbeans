@@ -641,9 +641,26 @@ public class InjectionResolver
 
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
     {
-        if (beans == null || beans.isEmpty())
+        Set set = resolveAll(beans);
+        
+        if (set.isEmpty())
         {
             return null;
+        }
+
+        if(set.size() > 1)
+        {
+            throwAmbiguousResolutionException(set);
+        }
+
+        return (Bean<? extends X>)set.iterator().next();
+    }
+
+    public <X> Set<Bean<? extends X>> resolveAll(Set<Bean<? extends X>> beans)
+    {
+        if (beans == null || beans.isEmpty())
+        {
+            return Collections.emptySet();
         }
 
         Set set = new HashSet<Bean<Object>>();
@@ -656,7 +673,7 @@ public class InjectionResolver
 
         if (set == null || set.isEmpty())
         {
-            return null;
+            return Collections.emptySet();
         }
 
         if(set.size() > 1)
@@ -664,14 +681,8 @@ public class InjectionResolver
             set = findBySpecialization(set);
         }
 
-        if(set.size() > 1)
-        {
-            throwAmbiguousResolutionException(set);
-        }
-
-        return (Bean<? extends X>)set.iterator().next();
+        return set;
     }
-
 
     private boolean isAltBeanInInjectionPointBDA(String bdaBeansXMLFilePath, Bean<?> altBean)
     {
