@@ -31,6 +31,7 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -38,6 +39,7 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.InjectionExceptionUtils;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -107,10 +109,13 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         
         Set<Bean<?>> beans = resolveBeans();
 
-        webBeansContext.getResolutionUtil().checkResolvedBeans(beans, ClassUtil.getClazz(injectionClazz), anns, null);
         BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
-
         Bean<?> bean = beanManager.resolve(beans);
+            
+        if (bean == null)
+        {
+            InjectionExceptionUtils.throwUnsatisfiedResolutionException(ClassUtil.getClazz(injectionClazz), (InjectionPoint) null, anns);
+        }
 
         // since Instance<T> is Dependent, we we gonna use the parent CreationalContext by default
         CreationalContext<?> creationalContext = parentCreationalContext;
@@ -147,7 +152,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
 
         InjectionResolver resolver = injectionResolver;
         Set<Bean<?>> beans = resolver.implResolveByType(injectionClazz, injectionPointClazz, anns);
-        return beans;
+        return resolver.resolveAll(beans);
     }
     
     /**
