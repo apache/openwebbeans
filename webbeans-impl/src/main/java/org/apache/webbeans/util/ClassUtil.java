@@ -51,7 +51,6 @@ import java.util.logging.Logger;
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-@SuppressWarnings("unchecked")
 public final class ClassUtil
 {
     public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPERS_MAP = new HashMap<Class<?>, Class<?>>();
@@ -1039,7 +1038,6 @@ public final class ClassUtil
 
         Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
 
-        int j = 0;
         for (Method method : methods)
         {
             if (method.getName().equals(methodName))
@@ -1060,9 +1058,9 @@ public final class ClassUtil
 
                 if (!ok)
                 {
-                    for (Class<?> defineType : defineTypes)
+                    for (int i = 0; i < defineTypes.length; i++)
                     {
-                        if (defineType.isAssignableFrom(parameterTypes.get(j)))
+                        if (defineTypes[i].isAssignableFrom(parameterTypes.get(i)))
                         {
                             ok = true;
                         }
@@ -1070,8 +1068,6 @@ public final class ClassUtil
                         {
                             ok = false;
                         }
-
-                        j++;
                     }
                 }
 
