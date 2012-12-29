@@ -28,6 +28,27 @@ import org.junit.Test;
 public class EventTest extends AbstractUnitTest {
 
     @Test
+    public void multipleObserverMethodsWithSameName()
+    {
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Painter.class);
+        startContainer(beanClasses, null);
+
+        final Orange orange = new Orange();
+        getBeanManager().fireEvent(orange);
+
+        final Green green = new Green();
+        getBeanManager().fireEvent(green);
+
+        final Painter painter = getInstance(Painter.class);
+        Assert.assertEquals(2, painter.getObserved().size());
+        Assert.assertSame(orange, painter.getObserved().get(0));
+        Assert.assertSame(green, painter.getObserved().get(1));
+
+        shutDownContainer();
+    }
+
+    @Test
     public void testOverriddenObserverMethodsInSubclasses()
     {
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
