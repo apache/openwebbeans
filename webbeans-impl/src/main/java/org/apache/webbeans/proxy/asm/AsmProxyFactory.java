@@ -48,8 +48,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
-public class AsmProxyFactory
-    implements Opcodes
+public class AsmProxyFactory implements Opcodes
 {
 
     private static final AtomicInteger ID = new AtomicInteger(1);
