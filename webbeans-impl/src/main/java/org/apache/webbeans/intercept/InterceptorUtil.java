@@ -521,7 +521,7 @@ public final class InterceptorUtil
 
     /**
      * Returns true if this interceptor data is not related
-     * false othwewise.
+     * false otherwise.
      * @param id interceptor data
      * @param method called method
      * @return true if this interceptor data is not related

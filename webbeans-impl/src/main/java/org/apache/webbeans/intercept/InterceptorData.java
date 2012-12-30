@@ -55,7 +55,7 @@ public interface InterceptorData
     public Method getPostConstruct();
 
     /**
-     * Gets {@link javax.ejb.PostActivate} annotated method if exist
+     * Gets <code>javax.ejb.PostActivate</code> annotated method if exist
      * return null otherwise. 
      * @return post-activate method
      */
@@ -69,7 +69,7 @@ public interface InterceptorData
     public Method getPreDestroy();
 
     /**
-     * Gets {@link javax.ejb.PrePassivate} annotated method if exist
+     * Gets <code>javax.ejb.PrePassivate</code> annotated method if exist
      * return null otherwise. 
      * @return pre-passivate method
      */

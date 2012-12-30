@@ -58,11 +58,11 @@ import java.util.logging.Level;
 /**
  * Defines the webbeans specific interceptors.
  * <p>
- * WebBeans interceotor classes has at least one {@link javax.interceptor.InterceptorBinding}
+ * WebBeans interceptor classes has at least one {@link javax.interceptor.InterceptorBinding}
  * annotation. It can be defined on the class or method level at the component.
  * WebBeans interceptors are called after the EJB related interceptors are
  * called in the chain. Semantics of the interceptors are specified by the EJB
- * specificatin.
+ * specification.
  * </p>
  * 
  * @version $Rev$ $Date$
