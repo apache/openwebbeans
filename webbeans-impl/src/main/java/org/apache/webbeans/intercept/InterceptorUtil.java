@@ -91,8 +91,48 @@ public final class InterceptorUtil
     /**
      * Check if the given method is a 'business method'
      * in the sense of the Interceptor specification
+     * @param annotatedMethod
+     * @return <code>true</code> if the given method is an interceptable business method
+     */
+    public boolean isWebBeansBusinessMethod(AnnotatedMethod annotatedMethod)
+    {
+        Method method = annotatedMethod.getJavaMember();
+        int modifiers = method.getModifiers();
+
+        if ((modifiers & MODIFIER_STATIC_FINAL_PRIVATE) != 0)
+        {
+            // static, final and private methods are NO business methods!
+            return false;
+        }
+
+        Set<Annotation> anns = annotatedMethod.getAnnotations();
+
+        // filter out all container 'special' methods
+        for (Annotation ann : anns)
+        {
+            Class <? extends Annotation> annCls = ann.annotationType();
+            if (annCls.equals(Inject.class)        ||
+                    annCls.equals(PreDestroy.class)    ||
+                    annCls.equals(PostConstruct.class) ||
+                    annCls.equals(AroundInvoke.class)  ||
+                    annCls.equals(AroundTimeout.class) ||    // JSR-299 7.2
+                    ((ejbPlugin != null)              &&
+                            (annCls.equals(prePassivateClass)   ||  // JSR-299 7.2
+                                    annCls.equals(postActivateClass))))    // JSR-299 7.2
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if the given method is a 'business method'
+     * in the sense of the Interceptor specification
      * @param method
      * @return <code>true</code> if the given method is an interceptable business method
+     * @deprecated TODO remove this class as it does not take AnnotatedType/Extensions into account
      */
     public boolean isWebBeansBusinessMethod(Method method)
     {
@@ -158,7 +198,6 @@ public final class InterceptorUtil
         }
     }
 
-    @SuppressWarnings("unchecked")
     public <T> boolean isBusinessMethodInterceptor(AnnotatedType<T> annotatedType)
     {
         Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
@@ -365,6 +404,7 @@ public final class InterceptorUtil
 
     /**
      * @param clazz AUTSCH! we should use the AnnotatedType for all that stuff!
+     * @deprecated TODO remove and only use the AnnotatedType version for all
      */
     public <T> void checkLifecycleConditions(Class<T> clazz, Annotation[] annots, String errorMessage)
     {
