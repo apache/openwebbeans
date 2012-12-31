@@ -1766,7 +1766,7 @@ public final class WebBeansUtil
                     violationMessage.addLine("It isn't possible to proxy a primitive type (" + beanClass.getName(), ")");
                 }
 
-                if(ClassUtil.isArray(beanClass))
+                if(beanClass.isArray())
                 {
                     violationMessage.addLine("It isn't possible to proxy an array type (", beanClass.getName(), ")");
                 }

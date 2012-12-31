@@ -194,18 +194,6 @@ public final class ClassUtil
         return getClazz(type);
     }
 
-    /**
-     * Gets the declared methods of the given class.
-     * 
-     * @param clazz class instance
-     * @return the declared methods
-     * @deprecated inherently unsafe!
-     */
-    public static Method[] getDeclaredMethods(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        return SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
-    }
 
     /**
      * Check method throws checked exception or not.
@@ -277,15 +265,6 @@ public final class ClassUtil
 
     }
 
-    /**
-     * @deprecated it's better to do such easy things directly in the code
-     */
-    public static Class<?>[] getMethodParameterTypes(Method method)
-    {
-        Asserts.nullCheckForMethod(method);
-        return method.getParameterTypes();
-    }
-
     private static Set<String> getObjectMethodNames()
     {
         if (objectMethodNames == null)
@@ -333,20 +312,6 @@ public final class ClassUtil
         }
 
         return methodCount > 1;
-    }
-
-    /**
-     * Gets java package if exist.
-     * 
-     * @param packageName package name
-     * @return the package with given name
-     * @deprecated it's better to do such easy things directly in the code
-     */
-    public Package getPackage(String packageName)
-    {
-        Asserts.assertNotNull(packageName, "packageName parameter can not be null");
-
-        return Package.getPackage(packageName);
     }
 
     /**
@@ -1048,16 +1013,6 @@ public final class ClassUtil
         }
 
         return null;
-    }
-
-    /**
-     * @deprecated it's better to do such easy things directly in the code
-     */
-    public static boolean isArray(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-
-        return clazz.isArray();
     }
 
     /**
