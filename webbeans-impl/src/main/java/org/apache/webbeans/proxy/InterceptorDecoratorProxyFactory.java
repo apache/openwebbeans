@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.proxy.asm;
+package org.apache.webbeans.proxy;
 
 
 import java.lang.reflect.Constructor;
@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.proxy.ProxyGenerationException;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;

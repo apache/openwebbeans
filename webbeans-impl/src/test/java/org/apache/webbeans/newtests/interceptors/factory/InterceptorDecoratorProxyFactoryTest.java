@@ -24,14 +24,14 @@ import java.util.Collection;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
-import org.apache.webbeans.proxy.asm.InterceptorDecoratorProxyFactory;
+import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 
 /**
- * Test the {@link org.apache.webbeans.proxy.asm.InterceptorDecoratorProxyFactory}
+ * Test the {@link org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory}
  */
 public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
 {
