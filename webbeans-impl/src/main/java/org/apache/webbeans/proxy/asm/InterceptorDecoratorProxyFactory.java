@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.proxy.ProxyGenerationException;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
@@ -54,6 +55,16 @@ public class InterceptorDecoratorProxyFactory
 
     /** the name of the field which stores the proxied instance */
     public static final String FIELD_PROXIED_INSTANCE = "owbIntDecProxiedInstance";
+
+    //X TODO add caching of created proxy classes. This is needed to prevent class loading clashes.
+    //X a generated proxy cannot easily get redefined later!
+
+    private WebBeansContext webBeansContext;
+
+    public InterceptorDecoratorProxyFactory(WebBeansContext webBeansContext)
+    {
+        this.webBeansContext = webBeansContext;
+    }
 
     public <T> T createProxyInstance(Class<T> proxyClass, T instance)
             throws ProxyGenerationException

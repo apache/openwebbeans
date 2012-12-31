@@ -19,7 +19,10 @@
 package org.apache.webbeans.newtests.interceptors.factory;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
 
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
 import org.apache.webbeans.proxy.asm.InterceptorDecoratorProxyFactory;
 
@@ -30,13 +33,16 @@ import org.junit.Test;
 /**
  * Test the {@link org.apache.webbeans.proxy.asm.InterceptorDecoratorProxyFactory}
  */
-public class InterceptorDecoratorProxyFactoryTest
+public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
 {
 
     @Test
     public void textSimpleProxyCreation() throws Exception
     {
-        InterceptorDecoratorProxyFactory pf = new InterceptorDecoratorProxyFactory();
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        startContainer(beanClasses, null);
+
+        InterceptorDecoratorProxyFactory pf = new InterceptorDecoratorProxyFactory(getWebBeansContext());
 
         ClassLoader classLoader = this.getClass().getClassLoader();
 
@@ -58,5 +64,8 @@ public class InterceptorDecoratorProxyFactoryTest
         proxy.setMeaningOfLife(42);
 
         Assert.assertEquals(42, proxy.getMeaningOfLife());
+
+
+        shutDownContainer();
     }
 }
