@@ -959,7 +959,7 @@ public final class WebBeansUtil
                             + method.getName() + " in class : " + clazz.getName() + " must return Object type");
                 }
 
-                if (Modifier.isStatic(method.getModifiers()) || ClassUtil.isFinal(method.getModifiers()))
+                if (Modifier.isStatic(method.getModifiers()) || Modifier.isFinal(method.getModifiers()))
                 {
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
                             + method.getName() + " in class : " + clazz.getName() + " can not be static or final");
@@ -1022,7 +1022,7 @@ public final class WebBeansUtil
                 }
 
                 if (Modifier.isStatic(method.getJavaMember().getModifiers()) ||
-                    ClassUtil.isFinal(method.getJavaMember().getModifiers()))
+                    Modifier.isFinal(method.getJavaMember().getModifiers()))
                 {
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
                             + method.getJavaMember().getName( )+ " in class : " + annotatedType.getJavaClass().getName()
@@ -1773,7 +1773,7 @@ public final class WebBeansUtil
 
                 if(!violationMessage.containsViolation())
                 {
-                    if (ClassUtil.isFinal(beanClass.getModifiers()))
+                    if (Modifier.isFinal(beanClass.getModifiers()))
                     {
                         violationMessage.addLine(beanClass.getName(), " is a final class! CDI doesn't allow to proxy that.");
                     }
@@ -1782,7 +1782,7 @@ public final class WebBeansUtil
                     for (Method m : methods)
                     {
                         int modifiers = m.getModifiers();
-                        if (ClassUtil.isFinal(modifiers) && !Modifier.isPrivate(modifiers) &&
+                        if (Modifier.isFinal(modifiers) && !Modifier.isPrivate(modifiers) &&
                             !m.isSynthetic() && !m.isBridge())
                         {
                             violationMessage.addLine(beanClass.getName(), " has final method "+ m + " CDI doesn't allow to proxy that.");
@@ -3035,7 +3035,7 @@ public final class WebBeansUtil
             checkManagedWebBeansInterceptorConditions(type);
         }
 
-        if (ClassUtil.isInterface(modifier))
+        if (Modifier.isInterface(modifier))
         {
             throw new WebBeansConfigurationException("ManagedBean implementation class : " + type.getJavaClass().getName() + " may not defined as interface");
         }
@@ -3065,7 +3065,7 @@ public final class WebBeansUtil
             }
         }
 
-        if(ClassUtil.isFinal(clazz.getModifiers()) && hasClassInterceptors)
+        if(Modifier.isFinal(clazz.getModifiers()) && hasClassInterceptors)
         {
             throw new WebBeansConfigurationException("Final managed bean class with name : " + clazz.getName() + " can not define any InterceptorBindings");
         }
@@ -3075,7 +3075,7 @@ public final class WebBeansUtil
         {
             Method method = methodA.getJavaMember();
             int modifiers = method.getModifiers();
-            if (!method.isSynthetic() && !method.isBridge() && !Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
+            if (!method.isSynthetic() && !method.isBridge() && !Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers) && Modifier.isFinal(modifiers))
             {
                 if (hasClassInterceptors)
                 {

@@ -107,7 +107,7 @@ public final class DecoratorUtil
         if (!decoratorList.isEmpty())
         {
             Class<?> clazz = bean.getReturnType();
-            if (ClassUtil.isFinal(clazz.getModifiers()))
+            if (Modifier.isFinal(clazz.getModifiers()))
             {
                 throw new WebBeansConfigurationException("Bean : " + bean.getReturnType().getName() + " can not be declared final, because it has one or more decorators");
             }
@@ -116,7 +116,7 @@ public final class DecoratorUtil
             for (Method method : methods)
             {
                 int modifiers = method.getModifiers();
-                if (!method.isSynthetic() && !method.isBridge() && !Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
+                if (!method.isSynthetic() && !method.isBridge() && !Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers) && Modifier.isFinal(modifiers))
                 {
                     // Check decorator implements this
                     Iterator<Decorator<?>> itDecorator = decoratorList.iterator();

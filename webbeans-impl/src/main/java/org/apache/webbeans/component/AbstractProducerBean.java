@@ -19,11 +19,11 @@
 package org.apache.webbeans.component;
 
 import java.io.Serializable;
+import java.lang.reflect.Modifier;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -146,7 +146,7 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
 
     protected boolean isPassivationCapable(Class<?> returnType, Integer modifiers)
     {
-        if(ClassUtil.isFinal(modifiers) && !(Serializable.class.isAssignableFrom(returnType)))
+        if(Modifier.isFinal(modifiers) && !(Serializable.class.isAssignableFrom(returnType)))
         {
             return false;
         }

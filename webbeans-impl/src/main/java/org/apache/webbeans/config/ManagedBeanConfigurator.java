@@ -20,6 +20,7 @@ package org.apache.webbeans.config;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.Set;
 
 import javax.decorator.Decorator;
@@ -34,7 +35,6 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
 import org.apache.webbeans.portable.creation.ProducerBeansProducer;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -70,7 +70,7 @@ public final class ManagedBeanConfigurator
             webBeansContext.getInterceptorUtil().checkSimpleWebBeansInterceptorConditions(clazz);
         }
 
-        if (ClassUtil.isInterface(modifier))
+        if (Modifier.isInterface(modifier))
         {
             throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not _defined as interface");
         }
@@ -126,7 +126,7 @@ public final class ManagedBeanConfigurator
             webBeansContext.getInterceptorUtil().checkSimpleWebBeansInterceptorConditions(clazz);
         }
 
-        if (ClassUtil.isInterface(modifier))
+        if (Modifier.isInterface(modifier))
         {
             throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not _defined as interface");
         }

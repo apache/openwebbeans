@@ -222,7 +222,7 @@ public final class InterceptorUtil
                             {
                                 if (!ClassUtil.isMethodHasCheckedException(method.getJavaMember()))
                                 {
-                                    if (!Modifier.isStatic(method.getJavaMember().getModifiers()) && !ClassUtil.isFinal(method.getJavaMember().getModifiers()))
+                                    if (!Modifier.isStatic(method.getJavaMember().getModifiers()) && !Modifier.isFinal(method.getJavaMember().getModifiers()))
                                     {
                                         return true;
                                     }
@@ -252,7 +252,7 @@ public final class InterceptorUtil
                     {
                         if (ClassUtil.getReturnType(method).equals(Object.class))
                         {
-                            if (!Modifier.isStatic(method.getModifiers()) && !ClassUtil.isFinal(method.getModifiers()))
+                            if (!Modifier.isStatic(method.getModifiers()) && !Modifier.isFinal(method.getModifiers()))
                             {
                                 return true;
                             }
@@ -474,7 +474,7 @@ public final class InterceptorUtil
         }
 
         //Simple webbeans
-        if(ClassUtil.isFinal(clazz.getModifiers()) && hasClassInterceptors)
+        if(Modifier.isFinal(clazz.getModifiers()) && hasClassInterceptors)
         {
             throw new WebBeansConfigurationException("Final Simple class with name : " + clazz.getName() + " can not define any InterceptorBindings");
         }
@@ -484,7 +484,7 @@ public final class InterceptorUtil
         for (Method method : methods)
         {
             int modifiers = method.getModifiers();
-            if (!method.isSynthetic() && !method.isBridge() && !Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
+            if (!method.isSynthetic() && !method.isBridge() && !Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers) && Modifier.isFinal(modifiers))
             {
                 if (hasClassInterceptors)
                 {

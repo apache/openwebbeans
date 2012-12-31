@@ -78,6 +78,9 @@ public final class ClassUtil
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @deprecated having this static public method is most probably a security risk
+     */
     public static Object newInstance(WebBeansContext webBeansContext, Class<?> clazz)
     {
         try
@@ -107,8 +110,8 @@ public final class ClassUtil
 
     public static Class<?> getClassFromName(String name)
     {
-        Class<?> clazz = null;
-        ClassLoader loader = null;
+        Class<?> clazz;
+        ClassLoader loader;
         try
         {
             loader = WebBeansUtil.getCurrentClassLoader();
@@ -140,74 +143,8 @@ public final class ClassUtil
                 {
                     return null;
                 }
-
             }
         }
-
-    }
-
-    /**
-     * Check final modifier.
-     * 
-     * @param modifier modifier
-     * @return true or false
-     * @deprecated use Modifier.... directly
-     */
-    public static boolean isFinal(Integer modifier)
-    {
-        Asserts.nullCheckForModifier(modifier);
-
-        return Modifier.isFinal(modifier);
-    }
-
-    /**
-     * Check abstract modifier.
-     * 
-     * @param modifier modifier
-     * @return true or false
-     * @deprecated use Modifier.... directly
-     */
-    public static boolean isAbstract(Integer modifier)
-    {
-        Asserts.nullCheckForModifier(modifier);
-
-        return Modifier.isAbstract(modifier);
-    }
-
-    /**
-     * Check interface modifier.
-     * 
-     * @param modifier modifier
-     * @return true or false
-     * @deprecated use Modifier.... directly
-     */
-    public static boolean isInterface(Integer modifier)
-    {
-        Asserts.nullCheckForModifier(modifier);
-
-        return Modifier.isInterface(modifier);
-    }
-
-    /**
-     * Check for class that has a final method or not.
-     * 
-     * @param clazz check methods of it
-     * @return true or false
-     */
-    public static boolean hasFinalMethod(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
-        for (Method m : methods)
-        {
-            if (isFinal(m.getModifiers()))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -231,7 +168,7 @@ public final class ClassUtil
 
     }
 
-    public static Class<?>  identityOrGetPrimitiveWrapper(Class<?> clazz)
+    public static Class<?> identityOrGetPrimitiveWrapper(Class<?> clazz)
     {
         if (clazz.isPrimitive())
         {
