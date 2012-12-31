@@ -105,28 +105,29 @@ public class InterceptorDecoratorProxyFactory
     /**
      * Create a decorator and interceptor proxy for the given type.
      *
-     * TODO: we also need to pass in the decorator and interceptor stack definition
-     *       plus the list of methods which are intercepted
-     *
-     * TODO: create a way to access the internal delegation point for invoking private methods later.
      *
      * @param classLoader to use for creating the class in
      * @param classToProxy
+     * @param interceptedMethods the list of intercepted or decorated methods
+     * @param nonInterceptedMethods all methods which are <b>not</b> intercepted nor decorated and shall get delegated directly
      * @param <T>
      * @return the proxy class
      */
-    public synchronized <T> Class<T> createInterceptorDecoratorProxyClass(ClassLoader classLoader, Class<T> classToProxy)
+    public synchronized <T> Class<T> createProxyClass(ClassLoader classLoader, Class<T> classToProxy,
+                                                      List<Method> interceptedMethods, List<Method> nonInterceptedMethods)
             throws ProxyGenerationException
     {
         String proxyClassName = classToProxy.getName() + "$OwbInterceptProxy";
         String proxyClassFileName = proxyClassName.replace('.', '/');
 
-        final byte[] proxyBytes = generateProxy(classToProxy, proxyClassName, proxyClassFileName);
+        final byte[] proxyBytes = generateProxy(classToProxy, proxyClassName, proxyClassFileName, interceptedMethods, nonInterceptedMethods);
+
         return defineAndLoadClass(classLoader, proxyClassName, proxyBytes);
     }
 
 
-    private byte[] generateProxy(Class<?> classToProxy, String proxyClassName, String proxyClassFileName)
+    private byte[] generateProxy(Class<?> classToProxy, String proxyClassName, String proxyClassFileName,
+                                 List<Method> interceptedMethods, List<Method> nonInterceptedMethods)
             throws ProxyGenerationException
     {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
@@ -210,6 +211,10 @@ public class InterceptorDecoratorProxyFactory
     }
 
 
+    /**
+     * @deprecated move this method to some other place. The proxy should get the list of methods from outside.
+     *             Otherwise we would drag in business logic into the purely technical interceptor code.
+     */
     private Map<String, List<Method>> getNonPrivateMethods(Class<?> clazz)
     {
         Map<String, List<Method>> methodMap = new HashMap<String, List<Method>>();
@@ -260,6 +265,9 @@ public class InterceptorDecoratorProxyFactory
         return methodMap;
     }
 
+    /**
+     * @deprecated see explanation in {@link #getNonPrivateMethods(Class)}
+     */
     private boolean isOverridden(final List<Method> methods, final Method method)
     {
         for (final Method m : methods)

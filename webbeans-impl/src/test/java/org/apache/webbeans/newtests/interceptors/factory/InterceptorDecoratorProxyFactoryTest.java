@@ -46,7 +46,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
 
         ClassLoader classLoader = this.getClass().getClassLoader();
 
-        Class<ClassInterceptedClass> proxyClass = pf.createInterceptorDecoratorProxyClass(classLoader, ClassInterceptedClass.class);
+        Class<ClassInterceptedClass> proxyClass = pf.createProxyClass(classLoader, ClassInterceptedClass.class, null, null);
         Assert.assertNotNull(proxyClass);
 
         ClassInterceptedClass proxy = pf.createProxyInstance(proxyClass, new ClassInterceptedClass(), null);
