@@ -113,7 +113,6 @@ public final class ClassUtil
         {
             loader = WebBeansUtil.getCurrentClassLoader();
             clazz = Class.forName(name, true , loader);
-            //X clazz = loader.loadClass(name);
             return clazz;
 
         }
@@ -152,6 +151,7 @@ public final class ClassUtil
      * 
      * @param modifier modifier
      * @return true or false
+     * @deprecated use Modifier.... directly
      */
     public static boolean isFinal(Integer modifier)
     {
@@ -165,6 +165,7 @@ public final class ClassUtil
      * 
      * @param modifier modifier
      * @return true or false
+     * @deprecated use Modifier.... directly
      */
     public static boolean isAbstract(Integer modifier)
     {
@@ -178,6 +179,7 @@ public final class ClassUtil
      * 
      * @param modifier modifier
      * @return true or false
+     * @deprecated use Modifier.... directly
      */
     public static boolean isInterface(Integer modifier)
     {
@@ -260,6 +262,7 @@ public final class ClassUtil
      * 
      * @param clazz class instance
      * @return the declared methods
+     * @deprecated inherently unsafe!
      */
     public static Method[] getDeclaredMethods(Class<?> clazz)
     {
@@ -272,6 +275,7 @@ public final class ClassUtil
      * 
      * @param method method instance
      * @return true or false
+     * @deprecated it's better to do such easy things directly in the code
      */
     public static boolean isMethodHasParameter(Method method)
     {
@@ -285,6 +289,7 @@ public final class ClassUtil
      * 
      * @param method method instance
      * @return return type
+     * @deprecated it's better to do such easy things directly in the code
      */
     public static Class<?> getReturnType(Method method)
     {
@@ -362,6 +367,9 @@ public final class ClassUtil
 
     }
 
+    /**
+     * @deprecated it's better to do such easy things directly in the code
+     */
     public static Class<?>[] getMethodParameterTypes(Method method)
     {
         Asserts.nullCheckForMethod(method);
@@ -387,9 +395,13 @@ public final class ClassUtil
         return objectMethodNames;
     }
     private static volatile Set<String> objectMethodNames= null;
-    
 
 
+    /**
+     * Checks if the given method if from Object.class
+     * @param methodName
+     * @return <code>true</code> if the given method is from Object.class (either directly or overloaded)
+     */
     public static boolean isObjectMethod(String methodName)
     {
         return getObjectMethodNames().contains(methodName);
@@ -411,7 +423,6 @@ public final class ClassUtil
         }
 
         return methodCount > 1;
-
     }
 
     /**
@@ -419,6 +430,7 @@ public final class ClassUtil
      * 
      * @param packageName package name
      * @return the package with given name
+     * @deprecated it's better to do such easy things directly in the code
      */
     public Package getPackage(String packageName)
     {
@@ -437,12 +449,8 @@ public final class ClassUtil
     public static boolean isParametrizedType(Type type)
     {
         Asserts.assertNotNull(type, "type parameter can not be null");
-        if (type instanceof ParameterizedType)
-        {
-            return true;
-        }
 
-        return false;
+        return type instanceof ParameterizedType;
     }
     
     /**
@@ -526,7 +534,7 @@ public final class ClassUtil
 
         Integer modifier = clazz.getModifiers();
 
-        if (!isAbstract(modifier) && !isInterface(modifier))
+        if (!Modifier.isAbstract(modifier) && !Modifier.isInterface(modifier))
         {
             return true;
         }
@@ -1132,6 +1140,9 @@ public final class ClassUtil
         return null;
     }
 
+    /**
+     * @deprecated it's better to do such easy things directly in the code
+     */
     public static boolean isArray(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
