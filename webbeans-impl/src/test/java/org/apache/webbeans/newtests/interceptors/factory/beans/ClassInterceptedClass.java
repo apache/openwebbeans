@@ -26,7 +26,7 @@ import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactio
 @Transactional
 public class ClassInterceptedClass
 {
-    public boolean defaultCtInvoked = false;
+    private boolean defaultCtInvoked = false;
 
     private int meaningOfLife;
 
@@ -37,6 +37,8 @@ public class ClassInterceptedClass
 
     public int getMeaningOfLife()
     {
+        System.out.println("answering the question about life, the universe and everything!");
+        System.out.println("and being in " + this.getClass());
         return meaningOfLife;
     }
 
@@ -44,4 +46,5 @@ public class ClassInterceptedClass
     {
         this.meaningOfLife = meaningOfLife;
     }
+
 }

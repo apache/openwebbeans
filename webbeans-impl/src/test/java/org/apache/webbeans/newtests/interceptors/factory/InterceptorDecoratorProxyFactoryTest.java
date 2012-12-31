@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.newtests.interceptors.factory;
 
+import java.lang.reflect.Field;
+
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
 import org.apache.webbeans.proxy.asm.InterceptorDecoratorProxyFactory;
 
@@ -41,12 +43,20 @@ public class InterceptorDecoratorProxyFactoryTest
         Class<ClassInterceptedClass> proxyClass = pf.createInterceptorDecoratorProxyClass(classLoader, ClassInterceptedClass.class);
         Assert.assertNotNull(proxyClass);
 
-        ClassInterceptedClass instance = proxyClass.newInstance();
-        Assert.assertNotNull(instance);
-        Assert.assertTrue(instance.defaultCtInvoked);
+        ClassInterceptedClass proxy = pf.createProxyInstance(proxyClass, new ClassInterceptedClass());
+        Assert.assertNotNull(proxy);
 
-        instance.setMeaningOfLife(42);
+        // we need to get the field from the proxy via reflection
+        // otherwise we will end up seeing the proxied method on the internal state
+        Field field = proxy.getClass().getSuperclass().getDeclaredField("defaultCtInvoked");
+        Assert.assertNotNull(field);
+        field.setAccessible(true);
 
-        Assert.assertEquals(42, instance.getMeaningOfLife());
+        Boolean isDefaultCtInvoked = (Boolean) field.get(proxy);
+        Assert.assertTrue(isDefaultCtInvoked);
+
+        proxy.setMeaningOfLife(42);
+
+        Assert.assertEquals(42, proxy.getMeaningOfLife());
     }
 }
