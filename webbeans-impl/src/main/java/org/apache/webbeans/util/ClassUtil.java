@@ -253,6 +253,83 @@ public final class ClassUtil
     }
     private static volatile Set<String> objectMethodNames= null;
 
+    /**
+     * collect all non-private, non-static and non-abstract methods from the given class.
+     * This method removes any overloaded methods from the list automatically.
+     *
+     * The returned Map contains the methods divided by the methodName as key in the map
+     * following all the methods with the same methodName in a List.
+     *
+     * Note: we filter out the {@link Object#finalize()} method as users must not deal with it
+     */
+    public static List<Method> getNonPrivateMethods(Class<?> clazz)
+    {
+        Map<String, List<Method>> methodMap = new HashMap<String, List<Method>>();
+        List<Method> allMethods = new ArrayList<Method>(10);
+
+        while (clazz != null)
+        {
+            for (Method method : clazz.getDeclaredMethods())
+            {
+                final int modifiers = method.getModifiers();
+
+                if (Modifier.isFinal(modifiers) || Modifier.isPrivate(modifiers) ||
+                    Modifier.isStatic(modifiers) || Modifier.isAbstract(modifiers))
+                {
+                    continue;
+                }
+
+                if ("finalize".equals(method.getName()))
+                {
+                    // we do not proxy finalize()
+                    continue;
+                }
+
+                List<Method> methods = methodMap.get(method.getName());
+                if (methods == null)
+                {
+                    methods = new ArrayList<Method>();
+                    methods.add(method);
+                    methodMap.put(method.getName(), methods);
+                }
+                else
+                {
+                    if (isOverridden(methods, method))
+                    {
+                        // method is overridden in superclass, so do nothing
+                    }
+                    else
+                    {
+                        // method is not overridden, so add it
+                        methods.add(method);
+                        allMethods.add(method);
+                    }
+                }
+            }
+
+            clazz = clazz.getSuperclass();
+        }
+
+        return allMethods;
+    }
+
+    /**
+     * Check if the method is already defined in a subclass
+     * @param methods
+     * @param method
+     */
+    private static boolean isOverridden(final List<Method> methods, final Method method)
+    {
+        for (final Method m : methods)
+        {
+            if (Arrays.equals(m.getParameterTypes(), method.getParameterTypes()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Checks if the given method if from Object.class
@@ -1148,7 +1225,7 @@ public final class ClassUtil
     }
 
     /**
-     * Learn whether <code>superClassMethod</code> is overridden by <code>subClassMethod</code>.
+     * Check whether <code>superClassMethod</code> is overridden by <code>subClassMethod</code>.
      * @param subClassMethod potentially overriding
      * @param superClassMethod potentially overridden
      * @return true if overridden

@@ -19,13 +19,16 @@
 package org.apache.webbeans.newtests.interceptors.factory;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 
+import org.apache.webbeans.util.ClassUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -46,7 +49,9 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
 
         ClassLoader classLoader = this.getClass().getClassLoader();
 
-        Class<ClassInterceptedClass> proxyClass = pf.createProxyClass(classLoader, ClassInterceptedClass.class, null, null);
+        List<Method> methods = ClassUtil.getNonPrivateMethods(ClassInterceptedClass.class);
+
+        Class<ClassInterceptedClass> proxyClass = pf.createProxyClass(classLoader, ClassInterceptedClass.class, null, methods);
         Assert.assertNotNull(proxyClass);
 
         ClassInterceptedClass proxy = pf.createProxyInstance(proxyClass, new ClassInterceptedClass(), null);

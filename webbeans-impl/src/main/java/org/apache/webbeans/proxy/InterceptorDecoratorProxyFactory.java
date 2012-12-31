@@ -24,12 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.objectweb.asm.ClassWriter;
@@ -143,12 +138,7 @@ public class InterceptorDecoratorProxyFactory
         createConstructor(cw, proxyClassFileName, classToProxy, classFileName);
 
 
-        //X TODO filter out clone() and handle it seperately?
-        Map<String, List<Method>> methodMap = getNonPrivateMethods(classToProxy);
-
-        //X TODO select all non-intercepted and non-decorated methods
-
-        delegateNonInterceptedMethods(cw, proxyClassFileName, classToProxy, classFileName, methodMap);
+        delegateNonInterceptedMethods(cw, proxyClassFileName, classToProxy, classFileName, nonInterceptedMethods);
 
 
 
@@ -210,126 +200,52 @@ public class InterceptorDecoratorProxyFactory
         }
     }
 
-
-    /**
-     * @deprecated move this method to some other place. The proxy should get the list of methods from outside.
-     *             Otherwise we would drag in business logic into the purely technical interceptor code.
-     */
-    private Map<String, List<Method>> getNonPrivateMethods(Class<?> clazz)
-    {
-        Map<String, List<Method>> methodMap = new HashMap<String, List<Method>>();
-
-        while (clazz != null)
-        {
-            for (Method method : clazz.getDeclaredMethods())
-            {
-                final int modifiers = method.getModifiers();
-
-                if (Modifier.isFinal(modifiers) || Modifier.isPrivate(modifiers) ||
-                    Modifier.isStatic(modifiers) || Modifier.isAbstract(modifiers) ||
-                    Modifier.isNative(modifiers)) //X TODO deal with proxying native methods (clone) later
-                {
-                    continue;
-                }
-
-                if ("finalize".equals(method.getName()))
-                {
-                    // we do not proxy finalize()
-                    continue;
-                }
-
-                List<Method> methods = methodMap.get(method.getName());
-                if (methods == null)
-                {
-                    methods = new ArrayList<Method>();
-                    methods.add(method);
-                    methodMap.put(method.getName(), methods);
-                }
-                else
-                {
-                    if (isOverridden(methods, method))
-                    {
-                        // method is overridden in superclass, so do nothing
-                    }
-                    else
-                    {
-                        // method is not overridden, so add it
-                        methods.add(method);
-                    }
-                }
-            }
-
-            clazz = clazz.getSuperclass();
-        }
-
-        return methodMap;
-    }
-
-    /**
-     * @deprecated see explanation in {@link #getNonPrivateMethods(Class)}
-     */
-    private boolean isOverridden(final List<Method> methods, final Method method)
-    {
-        for (final Method m : methods)
-        {
-            if (Arrays.equals(m.getParameterTypes(), method.getParameterTypes()))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * Directly delegate all non intercepted nor decorated methods to the internal instance.
      *
      * @param noninterceptedMethods all methods which are neither intercepted nor decorated
      */
     private static void delegateNonInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName,
-                                                      Map<String, List<Method>> noninterceptedMethods)
+                                                      List<Method> noninterceptedMethods)
     {
-        for (List<Method> methodsPerName : noninterceptedMethods.values())
+        for (Method proxiedMethod : noninterceptedMethods)
         {
-            for (Method proxiedMethod : methodsPerName)
+            String methodDescriptor = Type.getMethodDescriptor(proxiedMethod);
+
+            //X TODO handle generic exception types?
+            Class[] exceptionTypes = proxiedMethod.getExceptionTypes();
+            String[] exceptionTypeNames = new String[exceptionTypes.length];
+            for (int i = 0; i < exceptionTypes.length; i++)
             {
-                String methodDescriptor = Type.getMethodDescriptor(proxiedMethod);
-
-                //X TODO handle generic exception types?
-                Class[] exceptionTypes = proxiedMethod.getExceptionTypes();
-                String[] exceptionTypeNames = new String[exceptionTypes.length];
-                for (int i = 0; i < exceptionTypes.length; i++)
-                {
-                    exceptionTypeNames[i] = Type.getType(exceptionTypes[i]).getInternalName();
-                }
-
-                MethodVisitor mv = cw.visitMethod(proxiedMethod.getModifiers(), proxiedMethod.getName(), methodDescriptor, null, exceptionTypeNames);
-
-                // fill method body
-                mv.visitCode();
-
-                // load the delegate variable
-                mv.visitVarInsn(Opcodes.ALOAD, 0);
-                mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy));
-
-                int offset = 1;
-                for (Class<?> aClass : proxiedMethod.getParameterTypes())
-                {
-                    final Type type = Type.getType(aClass);
-                    mv.visitVarInsn(type.getOpcode(Opcodes.ILOAD), offset);
-                    offset += type.getSize();
-                }
-
-                final Type declaringClass = Type.getType(proxiedMethod.getDeclaringClass());
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, declaringClass.getInternalName(), proxiedMethod.getName(), methodDescriptor);
-
-                final Type returnType = Type.getType(proxiedMethod.getReturnType());
-                mv.visitInsn(returnType.getOpcode(Opcodes.IRETURN));
-
-                mv.visitMaxs(-1, -1);
-
-                mv.visitEnd();
-
+                exceptionTypeNames[i] = Type.getType(exceptionTypes[i]).getInternalName();
             }
+
+            MethodVisitor mv = cw.visitMethod(proxiedMethod.getModifiers(), proxiedMethod.getName(), methodDescriptor, null, exceptionTypeNames);
+
+            // fill method body
+            mv.visitCode();
+
+            // load the delegate variable
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy));
+
+            int offset = 1;
+            for (Class<?> aClass : proxiedMethod.getParameterTypes())
+            {
+                final Type type = Type.getType(aClass);
+                mv.visitVarInsn(type.getOpcode(Opcodes.ILOAD), offset);
+                offset += type.getSize();
+            }
+
+            final Type declaringClass = Type.getType(proxiedMethod.getDeclaringClass());
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, declaringClass.getInternalName(), proxiedMethod.getName(), methodDescriptor);
+
+            final Type returnType = Type.getType(proxiedMethod.getReturnType());
+            mv.visitInsn(returnType.getOpcode(Opcodes.IRETURN));
+
+            mv.visitMaxs(-1, -1);
+
+            mv.visitEnd();
         }
     }
 
