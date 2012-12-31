@@ -21,6 +21,7 @@ package org.apache.webbeans.proxy;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -47,13 +48,17 @@ import org.objectweb.asm.Type;
  *
  * This factory will create and cache the proxy classes for a given type.
  *
- * TODO: clarify how serialisation works! The proxy classes might need to get created on deserialisation!
+ *
  */
+//X TODO: clarify how serialisation works! The proxy classes might need to get created on deserialisation!
 public class InterceptorDecoratorProxyFactory
 {
 
     /** the name of the field which stores the proxied instance */
     public static final String FIELD_PROXIED_INSTANCE = "owbIntDecProxiedInstance";
+
+    /** the name of the field which stores the Interceptor + Decorator stack InvocationHandler */
+    public static final String FIELD_INVOCATION_HANDLER = "owbIntDecInvocationHandler";
 
     //X TODO add caching of created proxy classes. This is needed to prevent class loading clashes.
     //X a generated proxy cannot easily get redefined later!
@@ -65,7 +70,7 @@ public class InterceptorDecoratorProxyFactory
         this.webBeansContext = webBeansContext;
     }
 
-    public <T> T createProxyInstance(Class<T> proxyClass, T instance)
+    public <T> T createProxyInstance(Class<T> proxyClass, T instance, InvocationHandler interceptorDecoratorStack)
             throws ProxyGenerationException
     {
         try
@@ -75,6 +80,10 @@ public class InterceptorDecoratorProxyFactory
             Field delegateField = proxy.getClass().getDeclaredField(FIELD_PROXIED_INSTANCE);
             delegateField.setAccessible(true);
             delegateField.set(proxy, instance);
+
+            Field invocationHandlerField = proxy.getClass().getDeclaredField(FIELD_INVOCATION_HANDLER);
+            invocationHandlerField.setAccessible(true);
+            invocationHandlerField.set(proxy, interceptorDecoratorStack);
 
             return proxy;
         }
@@ -151,8 +160,11 @@ public class InterceptorDecoratorProxyFactory
 
     private void createInstanceVariables(ClassWriter cw, Class<?> classToProxy, String classFileName)
     {
-        // variable #1
-        createDelegationPoint(cw, classToProxy, classFileName);
+        // variable #1, the delegation point
+        cw.visitField(Opcodes.ACC_FINAL | Opcodes.ACC_PRIVATE, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy), null, null).visitEnd();
+
+        // variable #2, the invocation handler
+        cw.visitField(Opcodes.ACC_FINAL | Opcodes.ACC_PRIVATE, FIELD_INVOCATION_HANDLER, Type.getDescriptor(InvocationHandler.class), null, null).visitEnd();
     }
 
     /**
@@ -183,6 +195,10 @@ public class InterceptorDecoratorProxyFactory
             mv.visitInsn(Opcodes.ACONST_NULL);
             mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy));
 
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitInsn(Opcodes.ACONST_NULL);
+            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_INVOCATION_HANDLER, Type.getDescriptor(InvocationHandler.class));
+
             mv.visitInsn(Opcodes.RETURN);
             mv.visitMaxs(-1, -1);
             mv.visitEnd();
@@ -191,17 +207,6 @@ public class InterceptorDecoratorProxyFactory
         {
             throw new ProxyGenerationException(e);
         }
-    }
-
-    /**
-     * Create the private field to point to the internal contextual instance.
-     * @param cw
-     * @param classToProxy
-     * @param classFileName
-     */
-    private void createDelegationPoint(ClassWriter cw, Class<?> classToProxy, String classFileName)
-    {
-        cw.visitField(Opcodes.ACC_FINAL | Opcodes.ACC_PRIVATE, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy), null, null).visitEnd();
     }
 
 
