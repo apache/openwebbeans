@@ -19,7 +19,7 @@
 package org.apache.webbeans.proxy;
 
 /**
- * @version $Rev$ $Date$
+ * @deprecated replaced via {@link org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory}
  */
 public interface Factory
 {

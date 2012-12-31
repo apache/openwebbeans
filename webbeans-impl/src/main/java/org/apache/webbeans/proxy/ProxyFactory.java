@@ -52,6 +52,9 @@ import org.apache.webbeans.proxy.javassist.JavassistFactory;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
+/**
+ * @deprecated TODO remove! replaced via {@link org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory}
+ */
 public final class ProxyFactory
 {
     private ConcurrentMap<OwbBean<?>, Class<?>> buildInBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();

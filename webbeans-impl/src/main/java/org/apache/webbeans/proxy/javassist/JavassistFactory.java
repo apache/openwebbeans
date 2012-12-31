@@ -29,8 +29,8 @@ import org.apache.webbeans.proxy.Factory;
 import org.apache.webbeans.proxy.MethodHandler;
 
 /**
-* @version $Rev$ $Date$
-*/
+ * @deprecated TODO remove! replaced via {@link org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory}
+ */
 public class JavassistFactory
     implements Factory
 {

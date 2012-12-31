@@ -21,7 +21,7 @@ package org.apache.webbeans.proxy.javassist;
 import javassist.util.proxy.ProxyFactory;
 
 /**
- * Allows to switch to the {@link ClassLoader} of the current thread
+ * @deprecated TODO remove! replaced via {@link org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory}
  */
 public class OpenWebBeansClassLoaderProvider implements ProxyFactory.ClassLoaderProvider
 {

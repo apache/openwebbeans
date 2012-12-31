@@ -21,7 +21,7 @@ package org.apache.webbeans.proxy;
 import java.lang.reflect.InvocationHandler;
 
 /**
- * @version $Rev$ $Date$
+ * @deprecated TODO remove! replaced via {@link InterceptorDecoratorProxyFactory}
  */
 public interface MethodHandler extends javassist.util.proxy.MethodHandler, InvocationHandler
 {

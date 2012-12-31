@@ -48,6 +48,9 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
+/**
+ * @deprecated TODO remove! replaced via {@link org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory}
+ */
 public class AsmProxyFactory implements Opcodes
 {
 

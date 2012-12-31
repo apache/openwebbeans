@@ -31,6 +31,9 @@ import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.ResourceInjectionService;
 
+/**
+ * TODO adopt for new  {@link org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory}
+ */
 public class ResourceProxyHandler implements InvocationHandler, MethodHandler, Serializable, Externalizable
 {
     /**
