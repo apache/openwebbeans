@@ -755,7 +755,7 @@ public final class WebBeansUtil
     {
         Asserts.nullCheckForClass(clazz);
 
-        Method[] methods = ClassUtil.getDeclaredMethods(clazz);
+        Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(clazz);
         Method result = null;
         boolean found = false;
         for (Method method : methods)
@@ -777,10 +777,10 @@ public final class WebBeansUtil
                 result = method;
 
                 // Check method criterias
-                if (ClassUtil.isMethodHasParameter(method))
+                Class<?>[] params = method.getParameterTypes();
+                if (params.length > 0)
                 {
                     // Check method criterias
-                    Class<?>[] params = ClassUtil.getMethodParameterTypes(method);
                     if (params.length != 1 || !params[0].equals(InvocationContext.class))
                     {
                         throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
@@ -794,7 +794,7 @@ public final class WebBeansUtil
                     return null;
                 }
 
-                if (!ClassUtil.getReturnType(method).equals(Void.TYPE))
+                if (!method.getReturnType().equals(Void.TYPE))
                 {
                     throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
                             + " annotated method : " + method.getName() + " in class : " + clazz.getName()
@@ -878,7 +878,7 @@ public final class WebBeansUtil
                             + " must take a parameter with class type javax.interceptor.InvocationContext.");
                 }
 
-                if (!ClassUtil.getReturnType(method).equals(Void.TYPE))
+                if (!method.getReturnType().equals(Void.TYPE))
                 {
                     throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
                             + " annotated method : " + method.getName() + " in class : " + clazz.getName()
@@ -918,11 +918,11 @@ public final class WebBeansUtil
      * @param clazz checked class
      * @return around invoke method
      */
-    public static Method checkAroundInvokeAnnotationCriterias(Class<?> clazz, Class<? extends Annotation> annot)
+    public Method checkAroundInvokeAnnotationCriterias(Class<?> clazz, Class<? extends Annotation> annot)
     {
         Asserts.nullCheckForClass(clazz);
 
-        Method[] methods = ClassUtil.getDeclaredMethods(clazz);
+        Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(clazz);
         Method result = null;
         boolean found = false;
         for (Method method : methods)
@@ -945,7 +945,7 @@ public final class WebBeansUtil
                 result = method;
 
                 // Check method criterias
-                Class<?>[] params = ClassUtil.getMethodParameterTypes(method);
+                Class<?>[] params = method.getParameterTypes();
                 if (params.length != 1 || !params[0].equals(InvocationContext.class))
                 {
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
@@ -953,7 +953,7 @@ public final class WebBeansUtil
                             + " can not take any formal arguments other than InvocationContext");
                 }
 
-                if (!ClassUtil.getReturnType(method).equals(Object.class))
+                if (!method.getReturnType().equals(Object.class))
                 {
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
                             + method.getName() + " in class : " + clazz.getName() + " must return Object type");
@@ -970,7 +970,7 @@ public final class WebBeansUtil
         return result;
     }
 
-    public static <T> Method checkAroundInvokeAnnotationCriterias(AnnotatedType<T> annotatedType, Class<? extends Annotation> annot)
+    public <T> Method checkAroundInvokeAnnotationCriterias(AnnotatedType<T> annotatedType, Class<? extends Annotation> annot)
     {
         Method result = null;
         boolean found = false;
@@ -1014,7 +1014,7 @@ public final class WebBeansUtil
                             + " can not take any formal arguments other than InvocationContext");
                 }
 
-                if (!ClassUtil.getReturnType(method.getJavaMember()).equals(Object.class))
+                if (!method.getJavaMember().getReturnType().equals(Object.class))
                 {
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
                             + method.getJavaMember().getName()+ " in class : " + annotatedType.getJavaClass().getName()
@@ -1059,9 +1059,9 @@ public final class WebBeansUtil
                                              Method annotatedInterceptorClassMethod,
                                              boolean defineWithInterceptorBinding)
     {
-        InterceptorData intData = null;
+        InterceptorData intData;
         Method method = null;
-        OpenWebBeansEjbLCAPlugin ejbPlugin = null;
+        OpenWebBeansEjbLCAPlugin ejbPlugin;
         Class<? extends Annotation> prePassivateClass  = null;
         Class<? extends Annotation> postActivateClass  = null;
 
@@ -1088,7 +1088,7 @@ public final class WebBeansUtil
 
         if (interceptionType.equals(AroundInvoke.class) || interceptionType.equals(AroundTimeout.class))
         {
-            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(interceptorClass, interceptionType);
+            method = checkAroundInvokeAnnotationCriterias(interceptorClass, interceptionType);
         }
         else if (interceptionType.equals(PostConstruct.class) || ((postActivateClass != null) && (interceptionType.equals(postActivateClass)))
                  || interceptionType.equals(PreDestroy.class) || ((prePassivateClass != null) && (interceptionType.equals(prePassivateClass))))
@@ -1124,9 +1124,9 @@ public final class WebBeansUtil
                                                  List<InterceptorData> stack,
                                                  Method annotatedInterceptorClassMethod)
     {
-        InterceptorData intData = null;
+        InterceptorData intData;
         Method method = null;
-        OpenWebBeansEjbLCAPlugin ejbPlugin = null;
+        OpenWebBeansEjbLCAPlugin ejbPlugin;
         Class<? extends Annotation> prePassivateClass  = null;
         Class<? extends Annotation> postActivateClass  = null;
 
@@ -1140,7 +1140,7 @@ public final class WebBeansUtil
         if (annotation.equals(AroundInvoke.class) ||
                 annotation.equals(AroundTimeout.class))
         {
-            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(annotatedType, annotation);
+            method = checkAroundInvokeAnnotationCriterias(annotatedType, annotation);
         }
         else if (annotation.equals(PostConstruct.class) || ((postActivateClass != null) && (annotation.equals(postActivateClass)))
                  || annotation.equals(PreDestroy.class) || ((prePassivateClass != null) && (annotation.equals(prePassivateClass))))

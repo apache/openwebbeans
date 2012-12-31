@@ -30,7 +30,6 @@ import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.intercept.OwbInterceptor;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
@@ -254,12 +253,12 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
         
         if(type.equals(InterceptionType.AROUND_INVOKE))
         {
-            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(getClazz(),AroundInvoke.class);
+            method = webBeansContext.getWebBeansUtil().checkAroundInvokeAnnotationCriterias(getClazz(), AroundInvoke.class);
         }
 
         else if(type.equals(InterceptionType.AROUND_TIMEOUT))
         {
-            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(getClazz(),AroundTimeout.class);
+            method = webBeansContext.getWebBeansUtil().checkAroundInvokeAnnotationCriterias(getClazz(), AroundTimeout.class);
         }
         
         else

@@ -218,7 +218,7 @@ public final class InterceptorUtil
                         Class<?>[] params = clazzParameters.toArray(new Class<?>[clazzParameters.size()]);
                         if (params.length == 1 && params[0].equals(InvocationContext.class))
                         {
-                            if (ClassUtil.getReturnType(method.getJavaMember()).equals(Object.class))
+                            if (method.getJavaMember().getReturnType().equals(Object.class))
                             {
                                 if (!ClassUtil.isMethodHasCheckedException(method.getJavaMember()))
                                 {
@@ -245,12 +245,12 @@ public final class InterceptorUtil
         {
             if (AnnotationUtil.hasMethodAnnotation(method, AroundInvoke.class))
             {
-                if (ClassUtil.isMethodHasParameter(method))
+                Class<?>[] params = method.getParameterTypes();
+                if (params.length > 0)
                 {
-                    Class<?>[] params = ClassUtil.getMethodParameterTypes(method);
                     if (params.length == 1 && params[0].equals(InvocationContext.class))
                     {
-                        if (ClassUtil.getReturnType(method).equals(Object.class))
+                        if (method.getReturnType().equals(Object.class))
                         {
                             if (!Modifier.isStatic(method.getModifiers()) && !Modifier.isFinal(method.getModifiers()))
                             {
@@ -258,7 +258,6 @@ public final class InterceptorUtil
                             }
                         }
                     }
-
                 }
             }
         }
@@ -277,12 +276,13 @@ public final class InterceptorUtil
                 || AnnotationUtil.hasMethodAnnotation(method, prePassivateClass)
                )
             {
-                if (ClassUtil.isMethodHasParameter(method))
+                Class<?>[] params = method.getParameterTypes();
+                if (params.length > 0)
                 {
-                    Class<?>[] params = ClassUtil.getMethodParameterTypes(method);
+
                     if (params.length == 1 && params[0].equals(InvocationContext.class))
                     {
-                        if (ClassUtil.getReturnType(method).equals(Void.TYPE))
+                        if (method.getReturnType().equals(Void.TYPE))
                         {
                             if (!ClassUtil.isMethodHasCheckedException(method))
                             {
@@ -325,7 +325,7 @@ public final class InterceptorUtil
                         Class<?>[] params = clazzParameters.toArray(new Class<?>[clazzParameters.size()]);
                         if (params.length == 1 && params[0].equals(InvocationContext.class))
                         {
-                            if (ClassUtil.getReturnType(method.getJavaMember()).equals(Void.TYPE))
+                            if (method.getJavaMember().getReturnType().equals(Void.TYPE))
                             {
                                 if (!ClassUtil.isMethodHasCheckedException(method.getJavaMember()))
                                 {

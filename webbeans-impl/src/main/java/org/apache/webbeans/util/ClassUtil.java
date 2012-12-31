@@ -208,33 +208,6 @@ public final class ClassUtil
     }
 
     /**
-     * Check that method has any formal arguments.
-     * 
-     * @param method method instance
-     * @return true or false
-     * @deprecated it's better to do such easy things directly in the code
-     */
-    public static boolean isMethodHasParameter(Method method)
-    {
-        Asserts.nullCheckForMethod(method);
-
-        return method.getParameterTypes().length > 0;
-    }
-
-    /**
-     * Gets the return type of the method.
-     * 
-     * @param method method instance
-     * @return return type
-     * @deprecated it's better to do such easy things directly in the code
-     */
-    public static Class<?> getReturnType(Method method)
-    {
-        Asserts.nullCheckForMethod(method);
-        return method.getReturnType();
-    }
-
-    /**
      * Check method throws checked exception or not.
      * 
      * @param method method instance
