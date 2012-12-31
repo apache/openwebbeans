@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -60,6 +61,7 @@ import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -243,7 +245,7 @@ public class BeansDeployer
         Class<?> beanClass = ClassUtil.getClassFromName(className);
         if(beanClass != null)
         {
-            bean  = (Bean)ClassUtil.newInstance(webBeansContext, beanClass);
+            bean  = (Bean)newInstance( beanClass);
         }
         
         if(bean != null)
@@ -251,7 +253,36 @@ public class BeansDeployer
             manager.addInternalBean(bean);
         }
     }
-    
+
+    /**
+     * create a new instance of the class
+     */
+    private Object newInstance(Class<?> clazz)
+    {
+        try
+        {
+            if(System.getSecurityManager() != null)
+            {
+                return webBeansContext.getSecurityService().doPrivilegedObjectCreate(clazz);
+            }
+
+            return clazz.newInstance();
+
+        }
+        catch(Exception e)
+        {
+            Throwable cause = e;
+            if(e instanceof PrivilegedActionException)
+            {
+                cause = e.getCause();
+            }
+
+            String error = "Error occurred while creating an instance of class : " + clazz.getName();
+            logger.log(Level.SEVERE, error, cause);
+            throw new WebBeansException(error,cause);
+        }
+    }
+
     /**
      * Fires event before bean discovery.
      */

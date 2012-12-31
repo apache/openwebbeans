@@ -34,7 +34,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,7 +41,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -76,36 +74,6 @@ public final class ClassUtil
     private ClassUtil()
     {
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @deprecated having this static public method is most probably a security risk
-     */
-    public static Object newInstance(WebBeansContext webBeansContext, Class<?> clazz)
-    {
-        try
-        {
-            if(System.getSecurityManager() != null)
-            {
-                return webBeansContext.getSecurityService().doPrivilegedObjectCreate(clazz);
-            }            
-            
-            return clazz.newInstance();
-            
-        }
-        catch(Exception e)
-        {
-            Throwable cause = e;
-            if(e instanceof PrivilegedActionException)
-            {
-                cause = e.getCause();
-            }
-            
-            String error = "Error occurred while creating an instance of class : " + clazz.getName(); 
-            logger.log(Level.SEVERE, error, cause);
-            throw new WebBeansException(error,cause); 
-        
-        }
     }
 
     public static Class<?> getClassFromName(String name)
