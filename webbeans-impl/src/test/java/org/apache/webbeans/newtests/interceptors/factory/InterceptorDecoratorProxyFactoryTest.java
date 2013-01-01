@@ -20,6 +20,8 @@ package org.apache.webbeans.newtests.interceptors.factory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -47,14 +49,36 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
 
         InterceptorDecoratorProxyFactory pf = new InterceptorDecoratorProxyFactory(getWebBeansContext());
 
-        ClassLoader classLoader = this.getClass().getClassLoader();
+        // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
+        ClassLoader classLoader = new URLClassLoader(new URL[0]);
 
         List<Method> methods = ClassUtil.getNonPrivateMethods(ClassInterceptedClass.class);
 
         Class<ClassInterceptedClass> proxyClass = pf.createProxyClass(classLoader, ClassInterceptedClass.class, null, methods);
         Assert.assertNotNull(proxyClass);
 
-        ClassInterceptedClass proxy = pf.createProxyInstance(proxyClass, new ClassInterceptedClass(), null);
+/*X
+        for (Method m : methods)
+        {
+            List<Method> ms = new ArrayList<Method>();
+            ms.add(m);
+
+            try
+            {
+                Class<ClassInterceptedClass> pc = pf.createProxyClass(cl, ClassInterceptedClass.class, null, ms);
+                Assert.assertNotNull(pc);
+            }
+            catch (Exception e)
+            {
+                System.out.println("hab die sau :) " + m.toString());
+            }
+        }
+*/
+
+        ClassInterceptedClass internalInstance = new ClassInterceptedClass();
+        internalInstance.init();
+
+        ClassInterceptedClass proxy = pf.createProxyInstance(proxyClass, internalInstance, null);
         Assert.assertNotNull(proxy);
 
         // we need to get the field from the proxy via reflection
@@ -69,7 +93,9 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         proxy.setMeaningOfLife(42);
 
         Assert.assertEquals(42, proxy.getMeaningOfLife());
-
+        Assert.assertEquals(internalInstance.getFloat(), proxy.getFloat(), 0f);
+        Assert.assertEquals('c', proxy.getChar());
+        Assert.assertEquals(internalInstance, proxy.getSelf());
 
         shutDownContainer();
     }

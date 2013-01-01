@@ -29,10 +29,18 @@ public class ClassInterceptedClass
     private boolean defaultCtInvoked = false;
 
     private int meaningOfLife;
+    private float f;
+    private char c;
 
     public ClassInterceptedClass()
     {
         defaultCtInvoked = true;
+    }
+
+    public void init()
+    {
+        f = 2.4f;
+        c = 'c';
     }
 
     public int getMeaningOfLife()
@@ -45,6 +53,21 @@ public class ClassInterceptedClass
     public void setMeaningOfLife(int meaningOfLife)
     {
         this.meaningOfLife = meaningOfLife;
+    }
+
+    public float getFloat()
+    {
+        return f;
+    }
+
+    public ClassInterceptedClass getSelf()
+    {
+        return this;
+    }
+
+    public char getChar()
+    {
+        return c;
     }
 
 }

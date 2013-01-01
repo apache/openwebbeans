@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -138,13 +139,15 @@ public class InterceptorDecoratorProxyFactory
         createConstructor(cw, proxyClassFileName, classToProxy, classFileName);
 
 
-        delegateNonInterceptedMethods(cw, proxyClassFileName, classToProxy, classFileName, nonInterceptedMethods);
+        if (nonInterceptedMethods != null)
+        {
+            delegateNonInterceptedMethods(cw, proxyClassFileName, classToProxy, classFileName, nonInterceptedMethods);
+        }
 
-
-
-        //X TODO invoke all
-
-        //X TODO continue;
+        if (interceptedMethods != null)
+        {
+            delegateInterceptedMethods(cw, proxyClassFileName, classToProxy, classFileName, interceptedMethods);
+        }
 
         return cw.toByteArray();
     }
@@ -205,22 +208,31 @@ public class InterceptorDecoratorProxyFactory
      *
      * @param noninterceptedMethods all methods which are neither intercepted nor decorated
      */
-    private static void delegateNonInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName,
-                                                      List<Method> noninterceptedMethods)
+    private void delegateNonInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName,
+                                               List<Method> noninterceptedMethods)
     {
-        for (Method proxiedMethod : noninterceptedMethods)
+        for (Method delegatedMethod : noninterceptedMethods)
         {
-            String methodDescriptor = Type.getMethodDescriptor(proxiedMethod);
+            int modifiers = delegatedMethod.getModifiers();
+
+            if (unproxyableMethod(delegatedMethod))
+            {
+                continue;
+            }
+
+            String methodDescriptor = Type.getMethodDescriptor(delegatedMethod);
 
             //X TODO handle generic exception types?
-            Class[] exceptionTypes = proxiedMethod.getExceptionTypes();
+            Class[] exceptionTypes = delegatedMethod.getExceptionTypes();
             String[] exceptionTypeNames = new String[exceptionTypes.length];
             for (int i = 0; i < exceptionTypes.length; i++)
             {
                 exceptionTypeNames[i] = Type.getType(exceptionTypes[i]).getInternalName();
             }
 
-            MethodVisitor mv = cw.visitMethod(proxiedMethod.getModifiers(), proxiedMethod.getName(), methodDescriptor, null, exceptionTypeNames);
+            int targetModifiers = delegatedMethod.getModifiers() & (Modifier.PROTECTED | Modifier.PUBLIC);
+
+            MethodVisitor mv = cw.visitMethod(targetModifiers, delegatedMethod.getName(), methodDescriptor, null, exceptionTypeNames);
 
             // fill method body
             mv.visitCode();
@@ -230,18 +242,17 @@ public class InterceptorDecoratorProxyFactory
             mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy));
 
             int offset = 1;
-            for (Class<?> aClass : proxiedMethod.getParameterTypes())
+            for (Class<?> aClass : delegatedMethod.getParameterTypes())
             {
                 final Type type = Type.getType(aClass);
                 mv.visitVarInsn(type.getOpcode(Opcodes.ILOAD), offset);
                 offset += type.getSize();
             }
 
-            final Type declaringClass = Type.getType(proxiedMethod.getDeclaringClass());
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, declaringClass.getInternalName(), proxiedMethod.getName(), methodDescriptor);
+            final Type declaringClass = Type.getType(delegatedMethod.getDeclaringClass());
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, declaringClass.getInternalName(), delegatedMethod.getName(), methodDescriptor);
 
-            final Type returnType = Type.getType(proxiedMethod.getReturnType());
-            mv.visitInsn(returnType.getOpcode(Opcodes.IRETURN));
+            generateReturn(mv, delegatedMethod);
 
             mv.visitMaxs(-1, -1);
 
@@ -249,6 +260,81 @@ public class InterceptorDecoratorProxyFactory
         }
     }
 
+    private boolean unproxyableMethod(Method delegatedMethod)
+    {
+        int modifiers = delegatedMethod.getModifiers();
+
+        //X TODO how to deal with native functions?
+        return (modifiers & (Modifier.PRIVATE | Modifier.ABSTRACT | Modifier.STATIC | Modifier.FINAL | Modifier.NATIVE)) > 0 ||
+               "finalize".equals(delegatedMethod.getName());
+    }
+
+    private void delegateInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName,
+                                            List<Method> interceptedMethods)
+    {
+        for (Method proxiedMethod : interceptedMethods)
+        {
+
+        }
+    }
+
+
+    private void generateReturn(MethodVisitor mv, Method delegatedMethod)
+    {
+        final Class<?> returnType = delegatedMethod.getReturnType();
+        mv.visitInsn(getReturnInsn(returnType));
+    }
+
+    /**
+     * Gets the appropriate bytecode instruction for RETURN, according to what type we need to return
+     *
+     * @param type Type the needs to be returned
+     * @return The matching bytecode instruction
+     */
+    private int getReturnInsn(final Class<?> type)
+    {
+        if (type.isPrimitive())
+        {
+            if (Void.TYPE.equals(type))
+            {
+                return Opcodes.RETURN;
+            }
+            if (Integer.TYPE.equals(type))
+            {
+                return Opcodes.IRETURN;
+            }
+            else if (Boolean.TYPE.equals(type))
+            {
+                return Opcodes.IRETURN;
+            }
+            else if (Character.TYPE.equals(type))
+            {
+                return Opcodes.IRETURN;
+            }
+            else if (Byte.TYPE.equals(type))
+            {
+                return Opcodes.IRETURN;
+            }
+            else if (Short.TYPE.equals(type))
+            {
+                return Opcodes.IRETURN;
+            }
+            else if (Float.TYPE.equals(type))
+            {
+                return Opcodes.FRETURN;
+            }
+            else if (Long.TYPE.equals(type))
+            {
+                return Opcodes.LRETURN;
+            }
+            else if (Double.TYPE.equals(type))
+            {
+                return Opcodes.DRETURN;
+            }
+        }
+
+        return Opcodes.ARETURN;
+    }
 
     /**
      * The 'defineClass' method on the ClassLoader is protected, thus we need to invoke it via reflection.

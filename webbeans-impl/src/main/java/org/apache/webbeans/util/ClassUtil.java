@@ -290,6 +290,7 @@ public final class ClassUtil
                 {
                     methods = new ArrayList<Method>();
                     methods.add(method);
+                    allMethods.add(method);
                     methodMap.put(method.getName(), methods);
                 }
                 else
