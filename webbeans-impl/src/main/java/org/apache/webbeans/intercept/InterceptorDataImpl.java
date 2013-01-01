@@ -36,7 +36,7 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.context.creational.EjbInterceptorContext;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
 import org.apache.webbeans.inject.OWBInjector;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 
@@ -426,13 +426,13 @@ public class InterceptorDataImpl implements InterceptorData
             {
                 BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
 
-                WebBeansInterceptor<Object> actualInterceptor = (WebBeansInterceptor<Object>) webBeansInterceptor;
+                WebBeansInterceptorBean<Object> actualInterceptor = (WebBeansInterceptorBean<Object>) webBeansInterceptor;
                 CreationalContext<Object> creationalContext = manager.createCreationalContext(actualInterceptor);
                 interceptor = manager.getReference(actualInterceptor, actualInterceptor.getBeanClass(), creationalContext);
 
                 actualInterceptor.setInjections(interceptor, creationalContext);
 
-                ownerCreationalContext.addDependent(ownerInstance, (WebBeansInterceptor<Object>) webBeansInterceptor, interceptor);
+                ownerCreationalContext.addDependent(ownerInstance, (WebBeansInterceptorBean<Object>) webBeansInterceptor, interceptor);
             }
             return interceptor;
         }

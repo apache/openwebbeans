@@ -23,7 +23,7 @@ import java.util.Comparator;
 import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean;
 
 public class InterceptorComparator<T> implements Comparator<Interceptor<T>>
 {
@@ -37,8 +37,8 @@ public class InterceptorComparator<T> implements Comparator<Interceptor<T>>
 
     public int compare(Interceptor<T> o1, Interceptor<T> o2)
     {
-        WebBeansInterceptor<T> src = (WebBeansInterceptor<T>) o1;
-        WebBeansInterceptor<T> target = (WebBeansInterceptor<T>) o2;
+        WebBeansInterceptorBean<T> src = (WebBeansInterceptorBean<T>) o1;
+        WebBeansInterceptorBean<T> target = (WebBeansInterceptorBean<T>) o2;
 
         if (o1.equals(o2))
         {

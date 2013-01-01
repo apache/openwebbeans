@@ -21,7 +21,7 @@ package org.apache.webbeans.intercept;
 import java.util.Comparator;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean;
 
 public class InterceptorDataComparator implements Comparator<InterceptorData>
 {
@@ -44,8 +44,8 @@ public class InterceptorDataComparator implements Comparator<InterceptorData>
         }
         else
         {
-            WebBeansInterceptor<?> interceptorFirst = (WebBeansInterceptor<?>) o1.getWebBeansInterceptor();
-            WebBeansInterceptor<?> interceptorSecond = (WebBeansInterceptor<?>) o2.getWebBeansInterceptor();
+            WebBeansInterceptorBean<?> interceptorFirst = (WebBeansInterceptorBean<?>) o1.getWebBeansInterceptor();
+            WebBeansInterceptorBean<?> interceptorSecond = (WebBeansInterceptorBean<?>) o2.getWebBeansInterceptor();
 
             if (interceptorFirst == null && interceptorSecond == null)
             {

@@ -34,7 +34,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
-import org.apache.webbeans.intercept.custom.CustomInterceptor;
+import org.apache.webbeans.intercept.custom.CustomInterceptorBean;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
 import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
@@ -81,7 +81,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
                 webBeansContext.getWebBeansUtil().defineManagedBeanWithoutFireEvents(
                     (AnnotatedType<?>) annotatedType);
             
-            CustomInterceptor<?> interceptor = new CustomInterceptor(managedBean, (Interceptor<?>)bean);
+            CustomInterceptorBean<?> interceptor = new CustomInterceptorBean(managedBean, (Interceptor<?>)bean);
             if(interceptor.getScope() != Dependent.class)
             {
                 if(logger.isLoggable(Level.WARNING))

@@ -66,7 +66,7 @@ import java.util.logging.Level;
  * 
  * @version $Rev$ $Date$
  */
-public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInterceptor<T>
+public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements OwbInterceptor<T>
 {
     /** InterceptorBindingTypes exist on the interceptor class */
     private Map<Class<? extends Annotation>, Annotation> interceptorBindingSet = new HashMap<Class<? extends Annotation>, Annotation>();
@@ -78,7 +78,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
     private AbstractInjectionTargetBean<T> delegateBean;
     private final WebBeansContext webBeansContext;
 
-    public WebBeansInterceptor(AbstractInjectionTargetBean<T> delegateBean)
+    public WebBeansInterceptorBean(AbstractInjectionTargetBean<T> delegateBean)
     {
         super(WebBeansType.INTERCEPTOR,delegateBean.getReturnType(), delegateBean.getWebBeansContext());
         

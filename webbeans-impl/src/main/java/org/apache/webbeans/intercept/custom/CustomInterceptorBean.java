@@ -29,13 +29,13 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean;
 
-public class CustomInterceptor<T> extends WebBeansInterceptor<T> implements Interceptor<T>
+public class CustomInterceptorBean<T> extends WebBeansInterceptorBean<T> implements Interceptor<T>
 {
     private Interceptor<T> actualInterceptor;
 
-    public CustomInterceptor(AbstractInjectionTargetBean<T> delegateBean, Interceptor<T> actualInterceptor)
+    public CustomInterceptorBean(AbstractInjectionTargetBean<T> delegateBean, Interceptor<T> actualInterceptor)
     {
         super(delegateBean);
         this.actualInterceptor = actualInterceptor;
@@ -162,7 +162,7 @@ public class CustomInterceptor<T> extends WebBeansInterceptor<T> implements Inte
         {
             return false;
         }
-        CustomInterceptor other = (CustomInterceptor) obj;
+        CustomInterceptorBean other = (CustomInterceptorBean) obj;
         if (actualInterceptor == null)
         {
             if (other.actualInterceptor != null)

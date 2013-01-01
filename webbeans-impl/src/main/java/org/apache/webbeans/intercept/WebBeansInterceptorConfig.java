@@ -25,7 +25,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
@@ -57,7 +57,7 @@ import java.util.logging.Logger;
  *
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @version $Rev$ $Date$
- * @see WebBeansInterceptor
+ * @see org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean
  */
 public final class WebBeansInterceptorConfig
 {
@@ -106,7 +106,7 @@ public final class WebBeansInterceptorConfig
         {
             logger.log(Level.FINE, "Configuring interceptor class : [{0}]", delegate.getReturnType());
         }
-        WebBeansInterceptor<T> interceptor = new WebBeansInterceptor<T>(delegate);
+        WebBeansInterceptorBean<T> interceptor = new WebBeansInterceptorBean<T>(delegate);
 
         List<Annotation> anns = Arrays.asList(interceptorBindingTypes);
 
@@ -302,7 +302,7 @@ public final class WebBeansInterceptorConfig
         Iterator<Interceptor<?>> it = set.iterator();
         while (it.hasNext())
         {
-            WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) it.next();
+            WebBeansInterceptorBean<?> interceptor = (WebBeansInterceptorBean<?>) it.next();
             AnnotatedType<?> annotatedType = interceptor.getAnnotatedType();
 
             OpenWebBeansEjbLCAPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
@@ -444,7 +444,7 @@ public final class WebBeansInterceptorConfig
 
                 while (it.hasNext())
                 {
-                    WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) it.next();
+                    WebBeansInterceptorBean<?> interceptor = (WebBeansInterceptorBean<?>) it.next();
 
                     webBeansContext.getWebBeansUtil().configureInterceptorMethods(interceptor,
                                                                                  interceptor.getClazz(),
@@ -554,7 +554,7 @@ public final class WebBeansInterceptorConfig
 
                 while (it.hasNext())
                 {
-                    WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) it.next();
+                    WebBeansInterceptorBean<?> interceptor = (WebBeansInterceptorBean<?>) it.next();
 
                     AnnotatedType<?> interAnnoType = interceptor.getAnnotatedType();
 
@@ -608,7 +608,7 @@ public final class WebBeansInterceptorConfig
         Set<Interceptor<?>> set = new HashSet<Interceptor<?>>();
 
         Iterator<Interceptor<?>> it = webBeansContext.getBeanManagerImpl().getInterceptors().iterator();
-        WebBeansInterceptor<?> interceptor;
+        WebBeansInterceptorBean<?> interceptor;
 
         List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();
         List<Annotation> listAnnot = new ArrayList<Annotation>();
@@ -620,7 +620,7 @@ public final class WebBeansInterceptorConfig
 
         while (it.hasNext())
         {
-            interceptor = (WebBeansInterceptor<?>) it.next();
+            interceptor = (WebBeansInterceptorBean<?>) it.next();
 
             if (interceptor.hasBinding(bindingTypes, listAnnot))
             {

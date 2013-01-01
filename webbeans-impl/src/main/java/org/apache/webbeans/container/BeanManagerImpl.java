@@ -78,7 +78,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.intercept.InterceptorComparator;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
@@ -548,7 +548,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         List<Interceptor<?>> interceptorList = new ArrayList<Interceptor<?>>();
         while (itSet.hasNext())
         {
-            WebBeansInterceptor interceptor = (WebBeansInterceptor) itSet.next();
+            WebBeansInterceptorBean interceptor = (WebBeansInterceptorBean) itSet.next();
 
             if (interceptor.intercepts(type))
             {

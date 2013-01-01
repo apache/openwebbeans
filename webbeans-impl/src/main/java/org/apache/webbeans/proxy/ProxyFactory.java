@@ -47,7 +47,7 @@ import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandler;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorHandler;
 import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean;
 import org.apache.webbeans.proxy.javassist.JavassistFactory;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -223,7 +223,7 @@ public final class ProxyFactory
 
             result = createProxy(proxyClass);
             
-            if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptor<?>))
+            if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptorBean<?>))
             {
                 InterceptorHandler interceptorHandler = createInterceptorHandler(bean, creationalContext);
 
@@ -413,7 +413,7 @@ public final class ProxyFactory
             }
 
             Object result = createProxy(proxyClass);
-            if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptor<?>))
+            if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptorBean<?>))
             {
                 setHandler(result, new DependentScopedBeanInterceptorHandler(bean, actualInstance, creastionalContext));
             }
