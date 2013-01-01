@@ -125,7 +125,7 @@ public class InterceptorDecoratorProxyFactory
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         String classFileName = classToProxy.getName().replace('.', '/');
 
-        String[] interfaceNames = new String[]{Type.getInternalName(OwbProxy.class)};
+        String[] interfaceNames = new String[]{Type.getInternalName(OwbInterceptorProxy.class)};
 
         cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER + Opcodes.ACC_SYNTHETIC, proxyClassFileName, null, classFileName, interfaceNames);
         cw.visitSource(classFileName + ".java", null);

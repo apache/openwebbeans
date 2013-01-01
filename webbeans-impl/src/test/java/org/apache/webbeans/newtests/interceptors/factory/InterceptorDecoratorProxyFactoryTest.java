@@ -30,7 +30,7 @@ import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 
-import org.apache.webbeans.proxy.OwbProxy;
+import org.apache.webbeans.proxy.OwbInterceptorProxy;
 import org.apache.webbeans.util.ClassUtil;
 import org.junit.Assert;
 import org.junit.Test;
@@ -45,11 +45,6 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
     @Test
     public void textSimpleProxyCreation() throws Exception
     {
-/*X not needed so far
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        startContainer(beanClasses, null);
-*/
-
         InterceptorDecoratorProxyFactory pf = new InterceptorDecoratorProxyFactory();
 
         // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
@@ -80,7 +75,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         Boolean isDefaultCtInvoked = (Boolean) field.get(proxy);
         Assert.assertTrue(isDefaultCtInvoked);
 
-        Assert.assertTrue(proxy instanceof OwbProxy);
+        Assert.assertTrue(proxy instanceof OwbInterceptorProxy);
 
         proxy.setMeaningOfLife(42);
 
@@ -89,7 +84,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         Assert.assertEquals('c', proxy.getChar());
         Assert.assertEquals(internalInstance, proxy.getSelf());
 
-        //X shutDownContainer();
+        Assert.assertEquals(5, testInvocationHandler.invokedMethodNames.size());
     }
 
     public static class TestInvocationHandler implements InvocationHandler

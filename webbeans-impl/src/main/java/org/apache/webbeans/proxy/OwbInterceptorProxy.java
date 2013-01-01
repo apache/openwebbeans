@@ -19,8 +19,8 @@
 package org.apache.webbeans.proxy;
 
 /**
- * Marker Interface for all OpenWebBeans Proxies.
+ * Marker Interface for all OpenWebBeans Interceptor+Decorator Proxies.
  */
-public interface OwbProxy
+public interface OwbInterceptorProxy
 {
 }
