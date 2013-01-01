@@ -19,17 +19,18 @@
 package org.apache.webbeans.newtests.interceptors.factory;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 
+import org.apache.webbeans.proxy.OwbProxy;
 import org.apache.webbeans.util.ClassUtil;
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,41 +45,31 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
     @Test
     public void textSimpleProxyCreation() throws Exception
     {
+/*X not needed so far
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         startContainer(beanClasses, null);
+*/
 
-        InterceptorDecoratorProxyFactory pf = new InterceptorDecoratorProxyFactory(getWebBeansContext());
+        InterceptorDecoratorProxyFactory pf = new InterceptorDecoratorProxyFactory();
 
         // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
         ClassLoader classLoader = new URLClassLoader(new URL[0]);
 
         List<Method> methods = ClassUtil.getNonPrivateMethods(ClassInterceptedClass.class);
 
-        Class<ClassInterceptedClass> proxyClass = pf.createProxyClass(classLoader, ClassInterceptedClass.class, null, methods);
+        List<Method> interceptedMethods = methods;
+        List<Method> nonInterceptedMethods = null;
+
+
+        Class<ClassInterceptedClass> proxyClass = pf.createProxyClass(classLoader, ClassInterceptedClass.class, interceptedMethods, nonInterceptedMethods);
         Assert.assertNotNull(proxyClass);
-
-/*X
-        for (Method m : methods)
-        {
-            List<Method> ms = new ArrayList<Method>();
-            ms.add(m);
-
-            try
-            {
-                Class<ClassInterceptedClass> pc = pf.createProxyClass(cl, ClassInterceptedClass.class, null, ms);
-                Assert.assertNotNull(pc);
-            }
-            catch (Exception e)
-            {
-                System.out.println("hab die sau :) " + m.toString());
-            }
-        }
-*/
 
         ClassInterceptedClass internalInstance = new ClassInterceptedClass();
         internalInstance.init();
 
-        ClassInterceptedClass proxy = pf.createProxyInstance(proxyClass, internalInstance, null);
+        TestInvocationHandler testInvocationHandler = new TestInvocationHandler(internalInstance);
+
+        ClassInterceptedClass proxy = pf.createProxyInstance(proxyClass, internalInstance, testInvocationHandler);
         Assert.assertNotNull(proxy);
 
         // we need to get the field from the proxy via reflection
@@ -86,9 +77,10 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         Field field = proxy.getClass().getSuperclass().getDeclaredField("defaultCtInvoked");
         Assert.assertNotNull(field);
         field.setAccessible(true);
-
         Boolean isDefaultCtInvoked = (Boolean) field.get(proxy);
         Assert.assertTrue(isDefaultCtInvoked);
+
+        Assert.assertTrue(proxy instanceof OwbProxy);
 
         proxy.setMeaningOfLife(42);
 
@@ -97,6 +89,28 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         Assert.assertEquals('c', proxy.getChar());
         Assert.assertEquals(internalInstance, proxy.getSelf());
 
-        shutDownContainer();
+        //X shutDownContainer();
+    }
+
+    public static class TestInvocationHandler implements InvocationHandler
+    {
+        public List<String> invokedMethodNames = new ArrayList<String>();
+
+        private final Object instance;
+
+        public TestInvocationHandler(Object instance)
+        {
+            this.instance = instance;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+        {
+            invokedMethodNames.add(method.getName());
+
+            System.out.println("TestInvocationHandler got properly invoked for method " + method.getName());
+
+            return method.invoke(instance, args);
+        }
     }
 }
