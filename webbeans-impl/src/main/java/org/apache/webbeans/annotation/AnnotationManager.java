@@ -98,6 +98,46 @@ public final class AnnotationManager
     }
 
 
+    /**
+     * This method searches for all direct and indirect annotations which
+     * represent an {@link InterceptorBinding}.
+     * InterceptorBindings in stereotypes will also be found!
+     *
+     * @return the effective interceptor annotations of the array of given annotations
+     */
+    public Set<Annotation> getInterceptorAnnotations(Annotation[] typeAnns)
+    {
+        Set<Annotation> bindingTypeSet = new HashSet<Annotation>();
+
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
+
+        Annotation[] anns = annotationManager.getInterceptorBindingMetaAnnotations(typeAnns);
+
+        for (Annotation ann : anns)
+        {
+            bindingTypeSet.add(ann);
+        }
+
+        // check for stereotypes _explicitly_ declared on the bean class (not
+        // inherited)
+        Annotation[] stereoTypes =
+                annotationManager.getStereotypeMetaAnnotations(typeAnns);
+        for (Annotation stereoType : stereoTypes)
+        {
+            if (annotationManager.hasInterceptorBindingMetaAnnotation(stereoType.annotationType().getDeclaredAnnotations()))
+            {
+                Annotation[] steroInterceptorBindings = annotationManager.getInterceptorBindingMetaAnnotations(
+                        stereoType.annotationType().getDeclaredAnnotations());
+
+                for (Annotation ann : steroInterceptorBindings)
+                {
+                    bindingTypeSet.add(ann);
+                }
+            }
+        }
+
+        return bindingTypeSet;
+    }
 
     /**
      * If any Annotations in the input is an interceptor binding annotation type then return
@@ -140,7 +180,7 @@ public final class AnnotationManager
                 interAnns.add(ann);
 
                 //check for transitive
-                Annotation[] transitives = getTransitiveInterceptorBindings(ann.annotationType().getDeclaredAnnotations());
+                Annotation[] transitives = getInterceptorBindingMetaAnnotations(ann.annotationType().getDeclaredAnnotations());
 
                 for(Annotation transitive : transitives)
                 {
@@ -156,10 +196,6 @@ public final class AnnotationManager
         return ret;
     }
 
-    private Annotation[] getTransitiveInterceptorBindings(Annotation[] anns)
-    {
-        return getInterceptorBindingMetaAnnotations(anns);
-    }
 
     /**
      * Returns true if the annotation is defined in xml or annotated with
