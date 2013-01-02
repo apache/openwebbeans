@@ -19,12 +19,15 @@
 package org.apache.webbeans.portable;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.util.ClassUtil;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
@@ -74,26 +77,7 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
             fields = new HashSet<AnnotatedField<? super X>>();
             methods = new HashSet<AnnotatedMethod<? super X>>();
 
-            Field[] decFields = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredFields(annotatedClass);
-            Method[] decMethods = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(annotatedClass);
             Constructor<?>[] decCtxs = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructors(annotatedClass);
-            for(Field f : decFields)
-            {
-                if (!f.isSynthetic())
-                {
-                    AnnotatedField<X> af = new AnnotatedFieldImpl<X>(getWebBeansContext(), f, this);
-                    fields.add(af);
-                }
-            }
-
-            for(Method m : decMethods)
-            {
-                if (!m.isSynthetic() && !m.isBridge())
-                {
-                    AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(getWebBeansContext(), m,this);
-                    methods.add(am);
-                }
-            }
 
             for(Constructor<?> ct : decCtxs)
             {
@@ -103,6 +87,33 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
                     constructors.add(ac);
                 }
             }
+
+            Class<?> currentClass = annotatedClass;
+            List<Method> addedMethods = new ArrayList<Method>();
+            do
+            {
+                Field[] decFields = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredFields(currentClass);
+                Method[] decMethods = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(currentClass);
+                for(Field f : decFields)
+                {
+                    if (!f.isSynthetic())
+                    {
+                        AnnotatedField<X> af = new AnnotatedFieldImpl<X>(getWebBeansContext(), f, this);
+                        fields.add(af);
+                    }
+                }
+
+                for(Method m : decMethods)
+                {
+                    if (!m.isSynthetic() && !m.isBridge() && !ClassUtil.isOverridden(addedMethods, m))
+                    {
+                        AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(getWebBeansContext(), m,this);
+                        methods.add(am);
+                        addedMethods.add(m);
+                    }
+                }
+                currentClass = currentClass.getSuperclass();
+            } while (currentClass != Object.class);
         }
     }
 

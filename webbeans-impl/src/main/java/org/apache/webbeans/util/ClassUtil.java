@@ -319,11 +319,11 @@ public final class ClassUtil
      * @param methods
      * @param method
      */
-    private static boolean isOverridden(final List<Method> methods, final Method method)
+    public static boolean isOverridden(final List<Method> methods, final Method method)
     {
         for (final Method m : methods)
         {
-            if (Arrays.equals(m.getParameterTypes(), method.getParameterTypes()))
+            if (isOverridden(m, method))
             {
                 return true;
             }
