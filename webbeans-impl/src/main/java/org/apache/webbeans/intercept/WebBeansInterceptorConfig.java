@@ -108,11 +108,9 @@ public final class WebBeansInterceptorConfig
         }
         WebBeansInterceptorBean<T> interceptor = new WebBeansInterceptorBean<T>(delegate);
 
-        List<Annotation> anns = Arrays.asList(interceptorBindingTypes);
-
         for (Annotation ann : interceptorBindingTypes)
         {
-            checkAnns(anns, ann, delegate);
+            checkInterceptorAnnotations(interceptorBindingTypes, ann, delegate);
             interceptor.addInterceptorBinding(ann.annotationType(), ann);
         }
 
@@ -121,9 +119,9 @@ public final class WebBeansInterceptorConfig
 
     }
 
-    private void checkAnns(List<Annotation> list, Annotation ann, Bean<?> bean)
+    private void checkInterceptorAnnotations(Annotation[] interceptorBindingTypes, Annotation ann, Bean<?> bean)
     {
-        for(Annotation old : list)
+        for(Annotation old : interceptorBindingTypes)
         {
             if(old.annotationType().equals(ann.annotationType()))
             {
@@ -135,6 +133,8 @@ public final class WebBeansInterceptorConfig
         }
     }
 
+
+
     /**
      * Configures the given class for applicable interceptors.
      *
@@ -143,54 +143,13 @@ public final class WebBeansInterceptorConfig
     {
         Class<?> clazz = ((AbstractOwbBean<?>)component).getReturnType();
         AnnotatedType<?> annotatedType = component.getAnnotatedType();
-        Set<Annotation> annotations = null;
 
-        if(annotatedType != null)
-        {
-            annotations = annotatedType.getAnnotations();
-        }
+        Annotation[] anns;
+
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
         Set<Interceptor<?>> componentInterceptors = null;
-
-        Set<Annotation> bindingTypeSet = new HashSet<Annotation>();
-        Annotation[] anns;
-        Annotation[] typeAnns = null;
-        if(annotations != null)
-        {
-            typeAnns = annotations.toArray(new Annotation[annotations.size()]);
-        }
-        else
-        {
-            typeAnns = clazz.getDeclaredAnnotations();
-        }
-        AnnotationManager annotationManager = component.getWebBeansContext().getAnnotationManager();
-        if (annotationManager.hasInterceptorBindingMetaAnnotation(typeAnns))
-        {
-            anns = annotationManager.getInterceptorBindingMetaAnnotations(typeAnns);
-
-            for (Annotation ann : anns)
-            {
-                bindingTypeSet.add(ann);
-            }
-        }
-
-        // check for stereotypes _explicitly_ declared on the bean class (not
-        // inherited)
-        Annotation[] stereoTypes =
-            annotationManager.getStereotypeMetaAnnotations(typeAnns);
-        for (Annotation stero : stereoTypes)
-        {
-            if (annotationManager.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
-            {
-                Annotation[] steroInterceptorBindings = annotationManager.getInterceptorBindingMetaAnnotations(
-                        stero.annotationType().getDeclaredAnnotations());
-
-                for (Annotation ann : steroInterceptorBindings)
-                {
-                    bindingTypeSet.add(ann);
-                }
-            }
-        }
+        Set<Annotation> bindingTypeSet = getComponentInterceptors(annotatedType, clazz);
 
         // Look for inherited binding types, keeping in mind that
         // IBeanInheritedMetaData knows nothing of the transitive
@@ -239,10 +198,9 @@ public final class WebBeansInterceptorConfig
         anns = bindingTypeSet.toArray(anns);
 
         //Spec Section 9.5.2
-        List<Annotation> beanAnnots = Arrays.asList(anns);
         for(Annotation checkAnn : anns)
         {
-            checkAnns(beanAnnots, checkAnn, component);
+            checkInterceptorAnnotations(anns, checkAnn, component);
         }
 
         if (anns.length > 0)
@@ -266,6 +224,58 @@ public final class WebBeansInterceptorConfig
 
         Collections.sort(stack, new InterceptorDataComparator(component.getWebBeansContext()));
 
+    }
+
+    private Set<Annotation> getComponentInterceptors(AnnotatedType<?> annotatedType, Class clazz)
+    {
+        Set<Annotation> annotations = null;
+
+        if(annotatedType != null)
+        {
+            annotations = annotatedType.getAnnotations();
+        }
+
+        Set<Annotation> bindingTypeSet = new HashSet<Annotation>();
+        Annotation[] anns;
+
+        Annotation[] typeAnns;
+        if(annotations != null)
+        {
+            typeAnns = annotations.toArray(new Annotation[annotations.size()]);
+        }
+        else
+        {
+            typeAnns = clazz.getDeclaredAnnotations();
+        }
+
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
+
+        anns = annotationManager.getInterceptorBindingMetaAnnotations(typeAnns);
+
+        for (Annotation ann : anns)
+        {
+            bindingTypeSet.add(ann);
+        }
+
+        // check for stereotypes _explicitly_ declared on the bean class (not
+        // inherited)
+        Annotation[] stereoTypes =
+                annotationManager.getStereotypeMetaAnnotations(typeAnns);
+        for (Annotation stero : stereoTypes)
+        {
+            if (annotationManager.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
+            {
+                Annotation[] steroInterceptorBindings = annotationManager.getInterceptorBindingMetaAnnotations(
+                        stero.annotationType().getDeclaredAnnotations());
+
+                for (Annotation ann : steroInterceptorBindings)
+                {
+                    bindingTypeSet.add(ann);
+                }
+            }
+        }
+
+        return bindingTypeSet;
     }
 
     private void filterInterceptorsPerBDA(AbstractInjectionTargetBean<?> component, List<InterceptorData> stack)

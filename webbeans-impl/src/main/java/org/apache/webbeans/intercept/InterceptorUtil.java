@@ -132,7 +132,7 @@ public final class InterceptorUtil
      * in the sense of the Interceptor specification
      * @param method
      * @return <code>true</code> if the given method is an interceptable business method
-     * @deprecated TODO remove this class as it does not take AnnotatedType/Extensions into account
+     * @deprecated TODO remove this method as it does not take AnnotatedType/Extensions into account
      */
     public boolean isWebBeansBusinessMethod(Method method)
     {

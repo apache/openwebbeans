@@ -427,8 +427,8 @@ public class InterceptorDataImpl implements InterceptorData
                 BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
 
                 WebBeansInterceptorBean<Object> actualInterceptor = (WebBeansInterceptorBean<Object>) webBeansInterceptor;
-                CreationalContext<Object> creationalContext = manager.createCreationalContext(actualInterceptor);
-                interceptor = manager.getReference(actualInterceptor, actualInterceptor.getBeanClass(), creationalContext);
+                CreationalContext<?> creationalContext = manager.createCreationalContext(webBeansInterceptor);
+                interceptor = manager.getReference(webBeansInterceptor, actualInterceptor.getBeanClass(), creationalContext);
 
                 actualInterceptor.setInjections(interceptor, creationalContext);
 

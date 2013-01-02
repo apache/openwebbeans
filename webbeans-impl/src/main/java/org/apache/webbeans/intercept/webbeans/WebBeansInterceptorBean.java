@@ -247,6 +247,9 @@ public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements Ow
         return set;
     }
 
+    /**
+     * TODO WTF? these checks must not be done at runtime but boot time!
+     */
     private Method getMethod(InterceptionType type)
     {
         Method method = null;
@@ -390,7 +393,10 @@ public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements Ow
         return delegateBean.getStereotypes();
     }
 
-    public Object intercept(InterceptionType type, T instance,InvocationContext ctx)
+    /**
+     * This is the main invocation point for an interceptor!
+     */
+    public Object intercept(InterceptionType type, T instance, InvocationContext ctx)
     {
         Method method = getMethod(type);
         try

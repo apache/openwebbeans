@@ -1985,6 +1985,7 @@ public final class WebBeansUtil
 
             if (delegate != null)
             {
+                delegate.setAnnotatedType(processInjectionTargetEvent.getAnnotatedType());
                 WebBeansDecoratorConfig.configureDecoratorClass(delegate);
             }
             else
