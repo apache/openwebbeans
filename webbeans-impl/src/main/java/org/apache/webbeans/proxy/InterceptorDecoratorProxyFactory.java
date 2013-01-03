@@ -51,8 +51,8 @@ public class InterceptorDecoratorProxyFactory
     /** the name of the field which stores the proxied instance */
     public static final String FIELD_PROXIED_INSTANCE = "owbIntDecProxiedInstance";
 
-    /** the name of the field which stores the Interceptor + Decorator stack InvocationHandler */
-    public static final String FIELD_INVOCATION_HANDLER = "owbIntDecInvocationHandler";
+    /** the name of the field which stores the Interceptor + Decorator stack InterceptorHandler */
+    public static final String FIELD_INTERCEPTOR_HANDLER = "owbDecoratorHandler";
 
     //X TODO add caching of created proxy classes. This is needed to prevent class loading clashes.
     //X a generated proxy cannot easily get redefined later!
@@ -72,7 +72,7 @@ public class InterceptorDecoratorProxyFactory
             delegateField.setAccessible(true);
             delegateField.set(proxy, instance);
 
-            Field invocationHandlerField = proxy.getClass().getDeclaredField(FIELD_INVOCATION_HANDLER);
+            Field invocationHandlerField = proxy.getClass().getDeclaredField(FIELD_INTERCEPTOR_HANDLER);
             invocationHandlerField.setAccessible(true);
             invocationHandlerField.set(proxy, interceptorDecoratorStack);
 
@@ -153,7 +153,7 @@ public class InterceptorDecoratorProxyFactory
         cw.visitField(Opcodes.ACC_FINAL | Opcodes.ACC_PRIVATE, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy), null, null).visitEnd();
 
         // variable #2, the invocation handler
-        cw.visitField(Opcodes.ACC_FINAL | Opcodes.ACC_PRIVATE, FIELD_INVOCATION_HANDLER, Type.getDescriptor(InterceptorHandler.class), null, null).visitEnd();
+        cw.visitField(Opcodes.ACC_FINAL | Opcodes.ACC_PRIVATE, FIELD_INTERCEPTOR_HANDLER, Type.getDescriptor(InterceptorHandler.class), null, null).visitEnd();
     }
 
     /**
@@ -186,7 +186,7 @@ public class InterceptorDecoratorProxyFactory
 
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitInsn(Opcodes.ACONST_NULL);
-            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_INVOCATION_HANDLER, Type.getDescriptor(InterceptorHandler.class));
+            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_INTERCEPTOR_HANDLER, Type.getDescriptor(InterceptorHandler.class));
 
             mv.visitInsn(Opcodes.RETURN);
             mv.visitMaxs(-1, -1);
@@ -367,7 +367,7 @@ public class InterceptorDecoratorProxyFactory
 
         // get the invocationHandler field from this class
 //X        mv.visitFieldInsn(Opcodes.GETFIELD, proxyName, FIELD_INVOCATION_HANDLER, "Ljava/lang/reflect/InvocationHandler;");
-        mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_INVOCATION_HANDLER, Type.getDescriptor(InterceptorHandler.class));
+        mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_INTERCEPTOR_HANDLER, Type.getDescriptor(InterceptorHandler.class));
 
         // we want to pass "this" in as the first parameter
         //X mv.visitVarInsn(Opcodes.ALOAD, 0);
