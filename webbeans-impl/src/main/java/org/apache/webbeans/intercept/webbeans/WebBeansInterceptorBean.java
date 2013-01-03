@@ -214,7 +214,7 @@ public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements Ow
             if (anns != null && anns.length > 0)
             {
                 // For example : @Transactional @Action Interceptor
-                Set<Interceptor<?>> metas = webBeansContext.getWebBeansInterceptorConfig().findDeployedWebBeansInterceptor(anns, webBeansContext);
+                Set<Interceptor<?>> metas = webBeansContext.getWebBeansInterceptorConfig().findDeployedWebBeansInterceptor(anns);
                 set.addAll(metas);
 
                 // For each @Transactional and @Action Interceptor
@@ -222,7 +222,7 @@ public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements Ow
                 {
                     Annotation[] simple = new Annotation[1];
                     simple[0] = ann;
-                    metas = webBeansContext.getWebBeansInterceptorConfig().findDeployedWebBeansInterceptor(simple, webBeansContext);
+                    metas = webBeansContext.getWebBeansInterceptorConfig().findDeployedWebBeansInterceptor(simple);
                     set.addAll(metas);
                 }
 

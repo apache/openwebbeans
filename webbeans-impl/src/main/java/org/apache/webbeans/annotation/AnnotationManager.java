@@ -118,16 +118,14 @@ public final class AnnotationManager
             bindingTypeSet.add(ann);
         }
 
-        // check for stereotypes _explicitly_ declared on the bean class (not
-        // inherited)
-        Annotation[] stereoTypes =
-                annotationManager.getStereotypeMetaAnnotations(typeAnns);
+        // check for stereotypes _explicitly_ declared on the bean class (not inherited)
+        Annotation[] stereoTypes = annotationManager.getStereotypeMetaAnnotations(typeAnns);
         for (Annotation stereoType : stereoTypes)
         {
             if (annotationManager.hasInterceptorBindingMetaAnnotation(stereoType.annotationType().getDeclaredAnnotations()))
             {
-                Annotation[] steroInterceptorBindings = annotationManager.getInterceptorBindingMetaAnnotations(
-                        stereoType.annotationType().getDeclaredAnnotations());
+                Annotation[] steroInterceptorBindings =
+                        annotationManager.getInterceptorBindingMetaAnnotations(stereoType.annotationType().getDeclaredAnnotations());
 
                 for (Annotation ann : steroInterceptorBindings)
                 {

@@ -72,7 +72,6 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @version $Rev$ $Date$
  *
  */
-    
 public class OpenWebBeansEjbInterceptor implements Serializable
 {
     private static final long serialVersionUID = -4317127341083031217L;

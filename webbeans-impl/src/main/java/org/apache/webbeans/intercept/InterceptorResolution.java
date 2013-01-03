@@ -20,9 +20,11 @@ package org.apache.webbeans.intercept;
 
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,8 +33,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
@@ -59,16 +63,33 @@ public class InterceptorResolution
         List<AnnotatedMethod> interceptableAnnotatedMethods = getInterceptableAnnotatedMethods(annotatedType);
 
         InterceptorUtil interceptorUtils = webBeansContext.getInterceptorUtil();
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
+        BeanManager bm = webBeansContext.getBeanManagerImpl();
 
         List<Interceptor> classLevelCdiInterceptors = new ArrayList<Interceptor>();
         List<Interceptor> classLevelEjbInterceptors = new ArrayList<Interceptor>();
 
 
-        //X TODO pick up CDI interceptors from a class level
+        // pick up CDI interceptors from a class level
+        //X TODO should work but can surely be improved!
+        Set<Annotation> classInterceptorBindings
+                = annotationManager.getInterceptorAnnotations(AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()));
+
         //X TODO pick up EJB interceptors from a class level
         //X TODO pick up the decorators
 
-        //X TODO iterate over all methods and build up the interceptor stack
+        // iterate over all methods and build up the interceptor stack
+        for (AnnotatedMethod interceptableAnnotatedMethod : interceptableAnnotatedMethods)
+        {
+            Set<Annotation> methodInterceptorBindings
+                    = annotationManager.getInterceptorAnnotations(AnnotationUtil.getAnnotationsFromSet(interceptableAnnotatedMethod.getAnnotations()));
+
+            List<Annotation> cummulatedInterceptorBindings = new ArrayList<Annotation>();
+            cummulatedInterceptorBindings.addAll(methodInterceptorBindings);
+            cummulatedInterceptorBindings.addAll(classInterceptorBindings);
+
+        }
+
         //X TODO sort the CDI interceptors
 
         return interceptorInfo;
@@ -109,12 +130,12 @@ public class InterceptorResolution
          * All the Interceptor Beans which are active on this class somewhere.
          * This is only used to create the Interceptor instances.
          */
-        private List<Interceptor> interceptors = new ArrayList<Interceptor>();
+        private Set<Interceptor<?>> interceptors = null;
 
         /**
          * All the Decorator Beans active on this class.
          */
-        private List<Decorator> decorators = new ArrayList<Decorator>();
+        private Set<Decorator<?>> decorators = null;
 
         /**
          * For each method which is either decorated or intercepted we keep an entry.

@@ -542,7 +542,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         webBeansContext.getAnnotationManager().checkInterceptorResolverParams(interceptorBindings);
 
-        Set<Interceptor<?>> intsSet = webBeansContext.getWebBeansInterceptorConfig().findDeployedWebBeansInterceptor(interceptorBindings, webBeansContext);
+        Set<Interceptor<?>> intsSet = webBeansContext.getWebBeansInterceptorConfig().findDeployedWebBeansInterceptor(interceptorBindings);
         Iterator<Interceptor<?>> itSet = intsSet.iterator();
 
         List<Interceptor<?>> interceptorList = new ArrayList<Interceptor<?>>();
@@ -554,7 +554,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             {
                 interceptorList.add(interceptor);
             }
-
         }
 
         Collections.sort(interceptorList, new InterceptorComparator(webBeansContext));

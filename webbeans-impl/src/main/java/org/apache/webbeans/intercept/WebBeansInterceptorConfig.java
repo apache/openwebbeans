@@ -218,7 +218,7 @@ public final class WebBeansInterceptorConfig
 
         if (anns.length > 0)
         {
-            componentInterceptors = findDeployedWebBeansInterceptor(anns, component.getWebBeansContext());
+            componentInterceptors = findDeployedWebBeansInterceptor(anns);
 
             // Adding class interceptors
             addComponentInterceptors(componentInterceptors, stack);
@@ -404,7 +404,7 @@ public final class WebBeansInterceptorConfig
                 Annotation[] result = new Annotation[interceptorAnns.size()];
                 result = interceptorAnns.toArray(result);
 
-                Set<Interceptor<?>> setInterceptors = findDeployedWebBeansInterceptor(result, webBeansContext);
+                Set<Interceptor<?>> setInterceptors = findDeployedWebBeansInterceptor(result);
 
                 if (componentInterceptors != null)
                 {
@@ -514,7 +514,7 @@ public final class WebBeansInterceptorConfig
                 Annotation[] result = new Annotation[interceptorAnns.size()];
                 result = interceptorAnns.toArray(result);
 
-                Set<Interceptor<?>> setInterceptors = findDeployedWebBeansInterceptor(result, webBeansContext);
+                Set<Interceptor<?>> setInterceptors = findDeployedWebBeansInterceptor(result);
 
                 if(componentInterceptors != null)
                 {
@@ -574,7 +574,7 @@ public final class WebBeansInterceptorConfig
     /*
      * Find the deployed interceptors with given interceptor binding types.
      */
-    public Set<Interceptor<?>> findDeployedWebBeansInterceptor(Annotation[] anns, WebBeansContext webBeansContext)
+    public Set<Interceptor<?>> findDeployedWebBeansInterceptor(Annotation[] anns)
     {
         Set<Interceptor<?>> set = new HashSet<Interceptor<?>>();
 
