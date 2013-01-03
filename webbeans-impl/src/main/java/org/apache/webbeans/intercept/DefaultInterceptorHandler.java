@@ -26,6 +26,7 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.proxy.InterceptorHandler;
+import org.apache.webbeans.util.ExceptionUtil;
 
 public class DefaultInterceptorHandler<T> implements InterceptorHandler
 {
@@ -58,7 +59,7 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler
         }
         catch (Exception e)
         {
-            throw new IllegalStateException(e);
+            return ExceptionUtil.throwAsRuntimeException(e);
         }
     }
 }
