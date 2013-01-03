@@ -139,13 +139,15 @@ import org.apache.webbeans.util.ClassUtil;
  * @see org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean
  * @see org.apache.webbeans.decorator.WebBeansDecorator
  * @see org.apache.webbeans.intercept.ejb.EJBInterceptorConfig
+ *
+ * @deprecated the whole interceptor stack will be changed to the new ASM based proxying.
  */
-public abstract class InterceptorHandler implements InvocationHandler, MethodHandler, Serializable
+public abstract class InterceptorHandlerPleaseRemove implements InvocationHandler, MethodHandler, Serializable
 {
     /**Default serial id*/
     private static final long serialVersionUID = 1L;
     
-    private final static Logger logger = WebBeansLoggerFacade.getLogger(InterceptorHandler.class);
+    private final static Logger logger = WebBeansLoggerFacade.getLogger(InterceptorHandlerPleaseRemove.class);
     
     /**Proxied bean*/
     protected OwbBean<?> bean = null;
@@ -161,7 +163,7 @@ public abstract class InterceptorHandler implements InvocationHandler, MethodHan
      * Creates a new handler.
      * @param bean proxied bean
      */
-    protected InterceptorHandler(OwbBean<?> bean)
+    protected InterceptorHandlerPleaseRemove(OwbBean<?> bean)
     {
         this.bean = bean;
         webBeansContext = bean.getWebBeansContext();

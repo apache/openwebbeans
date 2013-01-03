@@ -40,7 +40,7 @@ import javax.enterprise.inject.spi.Bean;
  *  </li>
  *  <li>
  *   Store the Contextual Reference for each name per request thread. This is a performance
- *   tuning strategy, because creating a {@link org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler}
+ *   tuning strategy, because creating a {@link org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandlerRemove}
  *   for each and every EL call is very expensive. This needs to be cleaned up with
  *   {@link #destroyELContextStore()} at the end of each request. 
  *  </li>

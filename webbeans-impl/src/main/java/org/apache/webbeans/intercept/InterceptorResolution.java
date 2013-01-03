@@ -56,9 +56,9 @@ public class InterceptorResolution
     }
 
 
-    public ClassInterceptorInfo calculateInterceptorInfo(AnnotatedType annotatedType)
+    public BeanInterceptorInfo calculateInterceptorInfo(AnnotatedType annotatedType)
     {
-        ClassInterceptorInfo interceptorInfo = new ClassInterceptorInfo();
+        BeanInterceptorInfo interceptorInfo = new BeanInterceptorInfo();
 
         List<AnnotatedMethod> interceptableAnnotatedMethods = getInterceptableAnnotatedMethods(annotatedType);
 
@@ -124,7 +124,7 @@ public class InterceptorResolution
      * static information about interceptors and decorators for a
      * single bean.
      */
-    public static class ClassInterceptorInfo
+    public static class BeanInterceptorInfo
     {
         /**
          * All the Interceptor Beans which are active on this class somewhere.

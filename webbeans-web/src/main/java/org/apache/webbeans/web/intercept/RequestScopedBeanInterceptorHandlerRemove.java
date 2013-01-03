@@ -19,7 +19,7 @@
 package org.apache.webbeans.web.intercept;
 
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
+import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandlerRemove;
 
 import javax.enterprise.context.spi.CreationalContext;
 import java.util.HashMap;
@@ -33,7 +33,7 @@ import java.util.HashMap;
  * we can simply cache this instance inside our bean. We only need to reload this instance
  * if it is null or if the thread ends.</p>
  */
-public class RequestScopedBeanInterceptorHandler extends NormalScopedBeanInterceptorHandler
+public class RequestScopedBeanInterceptorHandlerRemove extends NormalScopedBeanInterceptorHandlerRemove
 {
     /**default serial id*/
     private static final long serialVersionUID = 1L;
@@ -55,7 +55,7 @@ public class RequestScopedBeanInterceptorHandler extends NormalScopedBeanInterce
      * @param bean bean
      * @param creationalContext creaitonal context
      */
-    public RequestScopedBeanInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
+    public RequestScopedBeanInterceptorHandlerRemove(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         super(bean, creationalContext);
     }

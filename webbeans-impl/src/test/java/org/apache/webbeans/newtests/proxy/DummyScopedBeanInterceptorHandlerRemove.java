@@ -19,7 +19,7 @@
 package org.apache.webbeans.newtests.proxy;
 
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
+import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandlerRemove;
 
 import javax.enterprise.context.spi.CreationalContext;
 
@@ -27,9 +27,9 @@ import javax.enterprise.context.spi.CreationalContext;
  * We don't do anything special. This is just for testing the
  * configuration of our scope->proxyMethodHandler mapping.
  */
-public class DummyScopedBeanInterceptorHandler extends NormalScopedBeanInterceptorHandler
+public class DummyScopedBeanInterceptorHandlerRemove extends NormalScopedBeanInterceptorHandlerRemove
 {
-    public DummyScopedBeanInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
+    public DummyScopedBeanInterceptorHandlerRemove(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         super(bean, creationalContext);
     }

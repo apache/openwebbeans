@@ -32,7 +32,7 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
  * @version $Rev$ $Date$
  *
  */
-public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
+public class DependentScopedBeanInterceptorHandlerRemove extends InterceptorHandlerPleaseRemove
 {
     /**default servial id*/
     private static final long serialVersionUID = 1L;
@@ -49,7 +49,7 @@ public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
      * @param instance bean instance
      * @param creationalContext creational context
      */
-    public DependentScopedBeanInterceptorHandler(OwbBean<?> bean, Object instance, CreationalContext<?> creationalContext)
+    public DependentScopedBeanInterceptorHandlerRemove(OwbBean<?> bean, Object instance, CreationalContext<?> creationalContext)
     {
         super(bean);
         actualInstance = instance;

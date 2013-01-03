@@ -41,7 +41,7 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
  *
  */
 @SuppressWarnings("unchecked")
-public class NormalScopedBeanInterceptorHandler extends InterceptorHandler 
+public class NormalScopedBeanInterceptorHandlerRemove extends InterceptorHandlerPleaseRemove
 {
     /**Serial id*/
     private static final long serialVersionUID = 1L;
@@ -54,7 +54,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
      * @param bean bean 
      * @param creationalContext creational context
      */
-    public NormalScopedBeanInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
+    public NormalScopedBeanInterceptorHandlerRemove(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         super(bean);    
         

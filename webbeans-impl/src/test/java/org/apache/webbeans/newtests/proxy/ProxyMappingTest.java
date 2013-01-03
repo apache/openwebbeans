@@ -20,8 +20,8 @@ package org.apache.webbeans.newtests.proxy;
 
 
 import javassist.util.proxy.ProxyObject;
-import org.apache.webbeans.intercept.ApplicationScopedBeanInterceptorHandler;
-import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
+import org.apache.webbeans.intercept.ApplicationScopedBeanInterceptorHandlerRemove;
+import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandlerRemove;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.proxy.beans.ApplicationBean;
 import org.apache.webbeans.newtests.proxy.beans.ConversationBean;
@@ -52,14 +52,14 @@ public class ProxyMappingTest extends AbstractUnitTest
         Assert.assertNotNull(conversationBean);
         Assert.assertTrue(conversationBean instanceof ProxyObject);
         Assert.assertNotNull(((ProxyObject) conversationBean).getHandler());
-        Assert.assertEquals(((ProxyObject) conversationBean).getHandler().getClass(), NormalScopedBeanInterceptorHandler.class);
+        Assert.assertEquals(((ProxyObject) conversationBean).getHandler().getClass(), NormalScopedBeanInterceptorHandlerRemove.class);
 
 
         ApplicationBean applicationBean = getInstance(ApplicationBean.class);
         Assert.assertNotNull(applicationBean);
         Assert.assertTrue(applicationBean instanceof ProxyObject);
         Assert.assertNotNull(((ProxyObject) applicationBean).getHandler());
-        Assert.assertEquals(((ProxyObject) applicationBean).getHandler().getClass(), ApplicationScopedBeanInterceptorHandler.class);
+        Assert.assertEquals(((ProxyObject) applicationBean).getHandler().getClass(), ApplicationScopedBeanInterceptorHandlerRemove.class);
 
     }
 

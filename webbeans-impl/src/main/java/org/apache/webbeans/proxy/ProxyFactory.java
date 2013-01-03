@@ -43,10 +43,10 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandler;
+import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandlerRemove;
 import org.apache.webbeans.intercept.InterceptorData;
-import org.apache.webbeans.intercept.InterceptorHandler;
-import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
+import org.apache.webbeans.intercept.InterceptorHandlerPleaseRemove;
+import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandlerRemove;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean;
 import org.apache.webbeans.proxy.javassist.JavassistFactory;
 import org.apache.webbeans.util.ClassUtil;
@@ -78,10 +78,10 @@ public final class ProxyFactory
 
     /**
      * This map contains all configured special Scope->InterceptorHandler mappings.
-     * If no mapping is configured, a {@link org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler} will get created.
+     * If no mapping is configured, a {@link org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandlerRemove} will get created.
      */
-    private Map<String, Class<? extends InterceptorHandler>> interceptorHandlerClasses =
-            new ConcurrentHashMap<String, Class<? extends InterceptorHandler>>();
+    private Map<String, Class<? extends InterceptorHandlerPleaseRemove>> interceptorHandlerClasses =
+            new ConcurrentHashMap<String, Class<? extends InterceptorHandlerPleaseRemove>>();
 
     public void setHandler(Object proxy, MethodHandler handler)
     {
@@ -225,7 +225,7 @@ public final class ProxyFactory
             
             if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptorBean<?>))
             {
-                InterceptorHandler interceptorHandler = createInterceptorHandler(bean, creationalContext);
+                InterceptorHandlerPleaseRemove interceptorHandler = createInterceptorHandler(bean, creationalContext);
 
                 setHandler(result, interceptorHandler);
             }
@@ -244,10 +244,10 @@ public final class ProxyFactory
         return factory.createProxy(proxyClass);
     }
 
-    private InterceptorHandler createInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
+    private InterceptorHandlerPleaseRemove createInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         String scopeClassName = bean.getScope().getName();
-        Class<? extends InterceptorHandler> interceptorHandlerClass = null;
+        Class<? extends InterceptorHandlerPleaseRemove> interceptorHandlerClass = null;
         if (!interceptorHandlerClasses.containsKey(scopeClassName))
         {
             String proxyMappingConfigKey = OpenWebBeansConfiguration.PROXY_MAPPING_PREFIX + scopeClassName;
@@ -256,7 +256,7 @@ public final class ProxyFactory
             {
                 try
                 {
-                    interceptorHandlerClass = (Class<? extends InterceptorHandler>) Class.forName(className, true, WebBeansUtil.getCurrentClassLoader());
+                    interceptorHandlerClass = (Class<? extends InterceptorHandlerPleaseRemove>) Class.forName(className, true, WebBeansUtil.getCurrentClassLoader());
                 }
                 catch (ClassNotFoundException e)
                 {
@@ -269,7 +269,7 @@ public final class ProxyFactory
             else
             {
                 // we need to explicitely store a class because ConcurrentHashMap will throw a NPE if value == null
-                interceptorHandlerClass = NormalScopedBeanInterceptorHandler.class;
+                interceptorHandlerClass = NormalScopedBeanInterceptorHandlerRemove.class;
             }
 
             interceptorHandlerClasses.put(scopeClassName, interceptorHandlerClass);
@@ -279,17 +279,17 @@ public final class ProxyFactory
             interceptorHandlerClass = interceptorHandlerClasses.get(scopeClassName);
         }
 
-        if (interceptorHandlerClass.equals(NormalScopedBeanInterceptorHandler.class))
+        if (interceptorHandlerClass.equals(NormalScopedBeanInterceptorHandlerRemove.class))
         {
             // this is faster that way...
-            return new NormalScopedBeanInterceptorHandler(bean, creationalContext);
+            return new NormalScopedBeanInterceptorHandlerRemove(bean, creationalContext);
         }
         else
         {
             try
             {
                 Constructor ct = interceptorHandlerClass.getConstructor(OwbBean.class, CreationalContext.class);
-                return (InterceptorHandler) ct.newInstance(bean, creationalContext);
+                return (InterceptorHandlerPleaseRemove) ct.newInstance(bean, creationalContext);
             }
             catch (NoSuchMethodException e)
             {
@@ -415,7 +415,7 @@ public final class ProxyFactory
             Object result = createProxy(proxyClass);
             if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptorBean<?>))
             {
-                setHandler(result, new DependentScopedBeanInterceptorHandler(bean, actualInstance, creastionalContext));
+                setHandler(result, new DependentScopedBeanInterceptorHandlerRemove(bean, actualInstance, creastionalContext));
             }
 
             return result;

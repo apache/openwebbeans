@@ -31,7 +31,7 @@ import org.apache.webbeans.component.OwbBean;
  * we can simply cache this instance inside our bean. We only need to reload this instance
  * if it is null. This happens at the first usage and after the MethodHandler got deserialized</p> 
  */
-public class ApplicationScopedBeanInterceptorHandler extends NormalScopedBeanInterceptorHandler
+public class ApplicationScopedBeanInterceptorHandlerRemove extends NormalScopedBeanInterceptorHandlerRemove
 {
     /**default serial id*/
     private static final long serialVersionUID = 1L;
@@ -55,7 +55,7 @@ public class ApplicationScopedBeanInterceptorHandler extends NormalScopedBeanInt
      * @param bean bean
      * @param creationalContext creaitonal context
      */
-    public ApplicationScopedBeanInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
+    public ApplicationScopedBeanInterceptorHandlerRemove(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         super(bean, creationalContext);
     }
