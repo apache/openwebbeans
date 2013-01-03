@@ -19,12 +19,14 @@
 package org.apache.webbeans.newtests.interceptors.factory;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
@@ -62,7 +64,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         ClassInterceptedClass internalInstance = new ClassInterceptedClass();
         internalInstance.init();
 
-        TestInvocationHandler testInvocationHandler = new TestInvocationHandler(interceptedMethods);
+        TestInvocationHandler testInvocationHandler = new TestInvocationHandler(internalInstance, interceptedMethods);
 
         ClassInterceptedClass proxy = pf.createProxyInstance(proxyClass, internalInstance, testInvocationHandler);
         Assert.assertNotNull(proxy);
@@ -91,21 +93,34 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
     {
         public List<String> invokedMethodNames = new ArrayList<String>();
 
+        private Object instance;
         private List<Method> interceptedMethods;
 
-        public TestInvocationHandler(List<Method> interceptedMethods)
+        public TestInvocationHandler(Object instance, List<Method> interceptedMethods)
         {
+            this.instance = instance;
             this.interceptedMethods = interceptedMethods;
         }
 
         @Override
-        public Object invoke(Object instance, int methodIndex, Object[] args) throws Throwable
+        public Object invoke(int methodIndex, Object[] args)
         {
             invokedMethodNames.add(interceptedMethods.get(methodIndex).getName());
 
             System.out.println("TestInvocationHandler got properly invoked for method " + interceptedMethods.get(methodIndex).getName());
 
-            return interceptedMethods.get(methodIndex).invoke(instance, args);
+            try
+            {
+                return interceptedMethods.get(methodIndex).invoke(instance, args);
+            }
+            catch (IllegalAccessException e)
+            {
+                throw new WebBeansException(e);
+            }
+            catch (InvocationTargetException e)
+            {
+                throw new WebBeansException(e);
+            }
         }
     }
 }

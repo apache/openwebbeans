@@ -25,11 +25,10 @@ public interface InterceptorHandler
 
     /**
      *
-     * @param instance
      * @param methodIndex index to find the Method
      * @param args
      * @return
      * @throws Throwable
      */
-    public Object invoke(Object instance, int methodIndex, Object[] args) throws Throwable;
+    public Object invoke(int methodIndex, Object[] args);
 }

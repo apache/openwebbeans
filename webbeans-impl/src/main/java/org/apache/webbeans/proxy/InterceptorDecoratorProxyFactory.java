@@ -349,41 +349,20 @@ public class InterceptorDecoratorProxyFactory
             }
         }
 
-/*X TODO remove. we dont resolve the methods dynamically
-        // invoke getMethod() with the method name and the array of types
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Class", "getDeclaredMethod",
-                "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;");
-
-        // store the returned method for later
-        mv.visitVarInsn(Opcodes.ASTORE, length);
-*/
-
         // the following code generates bytecode equivalent to:
-        // return ((<returntype>) invocationHandler.invoke(this, method, new Object[] { <function arguments }))[.<primitive>Value()];
+        // return ((<returntype>) invocationHandler.invoke(this, {methodIndex}, new Object[] { <function arguments }))[.<primitive>Value()];
 
         final Label l4 = new Label();
         mv.visitLabel(l4);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
 
         // get the invocationHandler field from this class
-//X        mv.visitFieldInsn(Opcodes.GETFIELD, proxyName, FIELD_INVOCATION_HANDLER, "Ljava/lang/reflect/InvocationHandler;");
         mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_INTERCEPTOR_HANDLER, Type.getDescriptor(InterceptorHandler.class));
-
-        // we want to pass "this" in as the first parameter
-        //X mv.visitVarInsn(Opcodes.ALOAD, 0);
-
-        // load the delegate variable as first parameter
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy));
 
         // add the methodIndex as context as second parameter
         mv.visitIntInsn(Opcodes.BIPUSH, methodIndex);
 
-        // and the method we fetched earlier
-        //X mv.visitVarInsn(Opcodes.ALOAD, length);
-
         // need to construct the array of objects passed in
-
         // create the Object[]
         createArrayDefinition(mv, parameterTypes.length, Object.class);
 
@@ -427,7 +406,7 @@ public class InterceptorDecoratorProxyFactory
 
         // invoke the invocationHandler
         mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, Type.getInternalName(InterceptorHandler.class), "invoke",
-                "(Ljava/lang/Object;I[Ljava/lang/Object;)Ljava/lang/Object;");
+                "(I[Ljava/lang/Object;)Ljava/lang/Object;");
 
         // cast the result
         mv.visitTypeInsn(Opcodes.CHECKCAST, getCastType(returnType));
