@@ -21,7 +21,6 @@ package org.apache.webbeans.proxy;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -62,7 +61,7 @@ public class InterceptorDecoratorProxyFactory
     {
     }
 
-    public <T> T createProxyInstance(Class<T> proxyClass, T instance, InvocationHandler interceptorDecoratorStack)
+    public <T> T createProxyInstance(Class<T> proxyClass, T instance, InterceptorHandler interceptorDecoratorStack)
             throws ProxyGenerationException
     {
         try
@@ -154,7 +153,7 @@ public class InterceptorDecoratorProxyFactory
         cw.visitField(Opcodes.ACC_FINAL | Opcodes.ACC_PRIVATE, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy), null, null).visitEnd();
 
         // variable #2, the invocation handler
-        cw.visitField(Opcodes.ACC_FINAL | Opcodes.ACC_PRIVATE, FIELD_INVOCATION_HANDLER, Type.getDescriptor(InvocationHandler.class), null, null).visitEnd();
+        cw.visitField(Opcodes.ACC_FINAL | Opcodes.ACC_PRIVATE, FIELD_INVOCATION_HANDLER, Type.getDescriptor(InterceptorHandler.class), null, null).visitEnd();
     }
 
     /**
@@ -187,7 +186,7 @@ public class InterceptorDecoratorProxyFactory
 
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitInsn(Opcodes.ACONST_NULL);
-            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_INVOCATION_HANDLER, Type.getDescriptor(InvocationHandler.class));
+            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_INVOCATION_HANDLER, Type.getDescriptor(InterceptorHandler.class));
 
             mv.visitInsn(Opcodes.RETURN);
             mv.visitMaxs(-1, -1);
@@ -265,13 +264,14 @@ public class InterceptorDecoratorProxyFactory
     private void delegateInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, List<Method> interceptedMethods)
             throws ProxyGenerationException
     {
-        for (Method proxiedMethod : interceptedMethods)
+        for (int i = 0; i < interceptedMethods.size(); i++)
         {
-            generateInvocationHandlerMethod(cw, proxiedMethod, proxyClassFileName);
+            Method proxiedMethod = interceptedMethods.get(i);
+            generateInvocationHandlerMethod(cw, proxiedMethod, i, classToProxy, proxyClassFileName);
         }
     }
 
-    private void generateInvocationHandlerMethod(ClassWriter cw, Method method, String proxyName)
+    private void generateInvocationHandlerMethod(ClassWriter cw, Method method, int methodIndex, Class<?> classToProxy, String proxyClassFileName)
             throws ProxyGenerationException
     {
         if ("<init>".equals(method.getName()))
@@ -349,12 +349,14 @@ public class InterceptorDecoratorProxyFactory
             }
         }
 
+/*X TODO remove. we dont resolve the methods dynamically
         // invoke getMethod() with the method name and the array of types
         mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Class", "getDeclaredMethod",
                 "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;");
 
         // store the returned method for later
         mv.visitVarInsn(Opcodes.ASTORE, length);
+*/
 
         // the following code generates bytecode equivalent to:
         // return ((<returntype>) invocationHandler.invoke(this, method, new Object[] { <function arguments }))[.<primitive>Value()];
@@ -364,13 +366,21 @@ public class InterceptorDecoratorProxyFactory
         mv.visitVarInsn(Opcodes.ALOAD, 0);
 
         // get the invocationHandler field from this class
-        mv.visitFieldInsn(Opcodes.GETFIELD, proxyName, FIELD_INVOCATION_HANDLER, "Ljava/lang/reflect/InvocationHandler;");
+//X        mv.visitFieldInsn(Opcodes.GETFIELD, proxyName, FIELD_INVOCATION_HANDLER, "Ljava/lang/reflect/InvocationHandler;");
+        mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_INVOCATION_HANDLER, Type.getDescriptor(InterceptorHandler.class));
 
         // we want to pass "this" in as the first parameter
+        //X mv.visitVarInsn(Opcodes.ALOAD, 0);
+
+        // load the delegate variable as first parameter
         mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy));
+
+        // add the methodIndex as context as second parameter
+        mv.visitIntInsn(Opcodes.BIPUSH, methodIndex);
 
         // and the method we fetched earlier
-        mv.visitVarInsn(Opcodes.ALOAD, length);
+        //X mv.visitVarInsn(Opcodes.ALOAD, length);
 
         // need to construct the array of objects passed in
 
@@ -416,8 +426,8 @@ public class InterceptorDecoratorProxyFactory
         }
 
         // invoke the invocationHandler
-        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/lang/reflect/InvocationHandler", "invoke",
-                "(Ljava/lang/Object;Ljava/lang/reflect/Method;[Ljava/lang/Object;)Ljava/lang/Object;");
+        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, Type.getInternalName(InterceptorHandler.class), "invoke",
+                "(Ljava/lang/Object;I[Ljava/lang/Object;)Ljava/lang/Object;");
 
         // cast the result
         mv.visitTypeInsn(Opcodes.CHECKCAST, getCastType(returnType));

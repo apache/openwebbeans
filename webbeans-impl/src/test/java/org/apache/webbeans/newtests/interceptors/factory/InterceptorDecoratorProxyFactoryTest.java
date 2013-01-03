@@ -19,7 +19,6 @@
 package org.apache.webbeans.newtests.interceptors.factory;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -30,6 +29,7 @@ import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 
+import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.proxy.OwbInterceptorProxy;
 import org.apache.webbeans.util.ClassUtil;
 import org.junit.Assert;
@@ -62,7 +62,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         ClassInterceptedClass internalInstance = new ClassInterceptedClass();
         internalInstance.init();
 
-        TestInvocationHandler testInvocationHandler = new TestInvocationHandler(internalInstance);
+        TestInvocationHandler testInvocationHandler = new TestInvocationHandler(interceptedMethods);
 
         ClassInterceptedClass proxy = pf.createProxyInstance(proxyClass, internalInstance, testInvocationHandler);
         Assert.assertNotNull(proxy);
@@ -87,25 +87,25 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         Assert.assertEquals(5, testInvocationHandler.invokedMethodNames.size());
     }
 
-    public static class TestInvocationHandler implements InvocationHandler
+    public static class TestInvocationHandler implements InterceptorHandler
     {
         public List<String> invokedMethodNames = new ArrayList<String>();
 
-        private final Object instance;
+        private List<Method> interceptedMethods;
 
-        public TestInvocationHandler(Object instance)
+        public TestInvocationHandler(List<Method> interceptedMethods)
         {
-            this.instance = instance;
+            this.interceptedMethods = interceptedMethods;
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+        public Object invoke(Object instance, int methodIndex, Object[] args) throws Throwable
         {
-            invokedMethodNames.add(method.getName());
+            invokedMethodNames.add(interceptedMethods.get(methodIndex).getName());
 
-            System.out.println("TestInvocationHandler got properly invoked for method " + method.getName());
+            System.out.println("TestInvocationHandler got properly invoked for method " + interceptedMethods.get(methodIndex).getName());
 
-            return method.invoke(instance, args);
+            return interceptedMethods.get(methodIndex).invoke(instance, args);
         }
     }
 }
