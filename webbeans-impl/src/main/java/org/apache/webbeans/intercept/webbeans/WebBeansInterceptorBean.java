@@ -401,15 +401,13 @@ public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements Ow
         Method method = getMethod(type);
         try
         {
-            method.invoke(instance, ctx);
+            return method.invoke(instance, ctx);
         }
         catch (Exception e)
         {
             getLogger().log(Level.SEVERE, e.getMessage(), e);
             throw new WebBeansException(e);
         }
-
-        return null;
     }
 
     public boolean intercepts(InterceptionType type)

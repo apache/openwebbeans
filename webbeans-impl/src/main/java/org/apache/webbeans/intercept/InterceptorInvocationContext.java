@@ -36,6 +36,7 @@ public class InterceptorInvocationContext<T> extends AbstractInvocationContext<T
     public InterceptorInvocationContext(T target, InterceptionType type, List<Interceptor<T>> interceptors, Map<Interceptor<T>, T> instances, Method method, Object[] parameters)
     {
         super(target, method, parameters);
+        this.type = type;
         this.interceptors = interceptors;
         this.instances = instances;
     }
