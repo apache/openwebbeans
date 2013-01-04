@@ -26,7 +26,6 @@ import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 
 /**
  * Abstract implementation of {@link InjectedTargetBeanCreator}.
@@ -65,16 +64,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
      */
     public void defineInjectedFields()
     {
-        AbstractInjectionTargetBean bean = getBean();
-        if(isDefaultMetaDataProvider())
-        {
-            bean.getWebBeansContext().getDefinitionUtil().defineInjectedFields(bean);
-        }
-        else
-        {
-            WebBeansAnnotatedTypeUtil.defineInjectedFields(bean, getAnnotatedType());
-        }
-        
+        webBeansContext.getAnnotatedTypeUtil().defineInjectedFields(getBean(), getAnnotatedType());
     }
 
     /**

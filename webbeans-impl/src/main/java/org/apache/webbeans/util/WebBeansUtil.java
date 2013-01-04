@@ -585,7 +585,7 @@ public final class WebBeansUtil
             comp.setConstructor(defineConstructor(clazz));
             definitionUtil.addConstructorInjectionPointMetaData(comp, comp.getConstructor());
 
-            definitionUtil.defineInjectedFields(comp);
+            webBeansContext.getAnnotatedTypeUtil().defineInjectedFields(comp, comp.getAnnotatedType());
             definitionUtil.defineInjectedMethods(comp);
         }
         else if (EJBWebBeansConfigurator.isSessionBean(clazz, webBeansContext))

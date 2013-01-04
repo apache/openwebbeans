@@ -36,7 +36,6 @@ import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.api.ResourceReference;
 
-import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
@@ -165,9 +164,14 @@ public final class WebBeansAnnotatedTypeUtil
         }
     }
     
-    public static <T,X> void addFieldInjectionPointMetaData(AbstractOwbBean<T> owner, AnnotatedField<X> annotField)
+    public <T,X> void addFieldInjectionPointMetaData(AbstractOwbBean<T> owner, AnnotatedField<X> annotField)
     {
-        owner.addInjectionPoint(owner.getWebBeansContext().getInjectionPointFactory().getFieldInjectionPointData(owner, annotField));
+        InjectionPoint injectionPoint = owner.getWebBeansContext().getInjectionPointFactory().getFieldInjectionPointData(owner, annotField);
+        if (injectionPoint != null)
+        {
+            webBeansContext.getDefinitionUtil().addImplicitComponentForInjectionPoint(injectionPoint);
+            owner.addInjectionPoint(injectionPoint);
+        }
     }
     
     @SuppressWarnings("unchecked")
@@ -335,23 +339,31 @@ public final class WebBeansAnnotatedTypeUtil
         webBeansContext.getDefinitionUtil().defineInternalInjectedMethodsRecursively(bean, annotatedType.getJavaClass());
     }
     
-    public static <X> void defineInjectedFields(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
+    public <X> void defineInjectedFields(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
     {
         AnnotationManager annotationManager = bean.getWebBeansContext().getAnnotationManager();
 
         Set<AnnotatedField<? super X>> annotatedFields = annotatedType.getFields();   
         for(AnnotatedField<? super X> annotatedField: annotatedFields)
         {
+            if(Modifier.isPublic(annotatedField.getJavaMember().getModifiers()) && !annotatedField.isStatic())
+            {
+                if(webBeansContext.getBeanManagerImpl().isNormalScope(bean.getScope()))
+                {
+                    throw new WebBeansConfigurationException("If bean has a public field, bean scope must be defined as @Scope. Bean is : "
+                            + bean.toString());
+                }
+            }                
+            
             if(!annotatedField.isAnnotationPresent(Inject.class))
             {
                 continue;
             }
 
-            if (annotatedField.isAnnotationPresent(Produces.class) || annotatedField.isAnnotationPresent(Delegate.class))
+            if (annotatedField.isAnnotationPresent(Produces.class))
             {
-                continue;
+                throw new WebBeansConfigurationException("Injection fields can not be annotated with @Produces");
             }
-            
             
             Field field = annotatedField.getJavaMember();
             Annotation[] anns = AnnotationUtil.getAnnotationsFromSet(annotatedField.getAnnotations());
@@ -382,8 +394,6 @@ public final class WebBeansAnnotatedTypeUtil
                 }
             }                                    
         }
-        
-        bean.getWebBeansContext().getDefinitionUtil().defineInternalInjectedFieldsRecursively(bean, annotatedType.getJavaClass());
     }
     
     
