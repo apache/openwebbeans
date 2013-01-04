@@ -72,16 +72,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
      */
     public void defineInjectedMethods()
     {
-        AbstractInjectionTargetBean bean = getBean();
-        if(isDefaultMetaDataProvider())
-        {
-            bean.getWebBeansContext().getDefinitionUtil().defineInjectedMethods(bean);
-        }
-        else
-        {
-            bean.getWebBeansContext().getAnnotatedTypeUtil().defineInjectedMethods(bean, getAnnotatedType());
-        }
-        
+        webBeansContext.getAnnotatedTypeUtil().defineInjectedMethods(getBean(), getAnnotatedType());
     }
 
     /**

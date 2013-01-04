@@ -335,8 +335,6 @@ public final class WebBeansAnnotatedTypeUtil
                 addMethodInjectionPointMetaData(bean, annotatedMethod);
             }
         }
-        
-        webBeansContext.getDefinitionUtil().defineInternalInjectedMethodsRecursively(bean, annotatedType.getJavaClass());
     }
     
     public <X> void defineInjectedFields(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)

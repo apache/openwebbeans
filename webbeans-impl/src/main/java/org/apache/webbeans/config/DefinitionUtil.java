@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -827,122 +826,6 @@ public final class DefinitionUtil
         defineName(component, fieldAnns, field.getName());
 
         return component;
-    }
-
-    public <T> void defineInjectedMethods(AbstractInjectionTargetBean<T> bean)
-    {
-        Asserts.assertNotNull(bean, "bean parameter can not be null");
-
-        Class<T> clazz = bean.getReturnType();
-
-        // From bean class definition
-        defineInternalInjectedMethods(bean, clazz, false);
-
-        // From inheritance hierarchy
-        defineInternalInjectedMethodsRecursively(bean, clazz);
-    }
-
-    public <T> void defineInternalInjectedMethodsRecursively(AbstractInjectionTargetBean<T> component, Class<T> clazz)
-    {
-        // From inheritance
-        Class<?> superClazz = clazz.getSuperclass();
-        if (!superClazz.equals(Object.class))
-        {
-            // From super class
-            defineInternalInjectedMethods(component, (Class<T>) superClazz, true);
-
-            // From super class type hierarchy
-            defineInternalInjectedMethodsRecursively(component, (Class<T>) superClazz);
-        }
-
-    }
-
-    private <T> void defineInternalInjectedMethods(AbstractInjectionTargetBean<T> component, Class<T> clazz, boolean fromInherited)
-    {
-
-        Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(clazz);
-        
-        for (Method method : methods)
-        {
-            boolean isInitializer = AnnotationUtil.hasMethodAnnotation(method, Inject.class);
-            
-            if (isInitializer)
-            {
-                //Do not support static
-                if(Modifier.isStatic(method.getModifiers()))
-                {
-                    continue;
-                }
-                
-                checkForInjectedInitializerMethod(clazz, method, webBeansContext);
-            }
-            else
-            {
-                continue;
-            }
-
-            if (!Modifier.isStatic(method.getModifiers()))
-            {
-                if (!fromInherited)
-                {
-                    component.addInjectedMethod(method);
-                    addMethodInjectionPointMetaData(component, method);
-                }
-                else
-                {                    
-                    Method[] beanMethods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(component.getReturnType());
-                    boolean defined = false;
-                    for (Method beanMethod : beanMethods)
-                    {
-                        if(ClassUtil.isOverridden(beanMethod, method))                        
-                        {
-                            defined = true;
-                            break;
-                        }
-                    }
-                    
-                    if(!defined)
-                    {
-                        component.addInjectedMethodToSuper(method);
-                        addMethodInjectionPointMetaData(component, method);                        
-                    }
-                }
-            }
-        }
-
-    }
-
-    /**
-     * add the definitions for a &#x0040;Initializer method.
-     */
-    private static <T> void checkForInjectedInitializerMethod(Class<T> clazz, Method method,
-                                                              WebBeansContext webBeansContext)
-    {
-        TypeVariable<?>[] args = method.getTypeParameters();
-        if(args.length > 0)
-        {
-            throw new WebBeansConfigurationException("Initializer methods must not be generic but method : " + method.getName() + " in bean class : "
-                                                     + clazz + " is defined as generic");
-        }
-        
-        Annotation[][] anns = method.getParameterAnnotations();
-        Type[] type = method.getGenericParameterTypes();
-        for (int i = 0; i < anns.length; i++)
-        {
-            Annotation[] a = anns[i];
-            Type t = type[i];
-            webBeansContext.getAnnotationManager().checkForNewQualifierForDeployment(t, clazz, method.getName(), a);
-        }
-
-        if (method.getAnnotation(Produces.class) == null)
-        {
-            WebBeansUtil.checkInjectedMethodParameterConditions(method, clazz);
-        }
-        else
-        {
-            throw new WebBeansConfigurationException("Initializer method : " + method.getName() + " in class : " + clazz.getName()
-                                                     + " can not be annotated with @Produces");
-        }
     }
 
     /**
