@@ -41,7 +41,7 @@ public class ExtensionBean<T> extends AbstractInjectionTargetBean<T>
      */
     public ExtensionBean(Class<T> returnType, WebBeansContext webBeansContext)
     {
-        super(WebBeansType.EXTENSION,returnType, webBeansContext);
+        super(WebBeansType.EXTENSION, returnType, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(returnType), webBeansContext);
         setImplScopeType(new ApplicationScopeLiteral());
     }
     

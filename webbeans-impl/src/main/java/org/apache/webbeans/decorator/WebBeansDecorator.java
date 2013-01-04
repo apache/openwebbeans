@@ -91,7 +91,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
      */
     public WebBeansDecorator(AbstractInjectionTargetBean<T> wrappedBean, Decorator<T> customDecorator)
     {
-        super(WebBeansType.DECORATOR,wrappedBean.getReturnType(), wrappedBean.getWebBeansContext());
+        super(WebBeansType.DECORATOR, wrappedBean.getReturnType(), wrappedBean.getAnnotatedType(), wrappedBean.getWebBeansContext());
         this.wrappedBean = wrappedBean;
         this.customDecorator = customDecorator;
         ignoredDecoratorInterfaces = getIgnoredDecoratorInterfaces(wrappedBean);
@@ -104,7 +104,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
      */
     public WebBeansDecorator(AbstractInjectionTargetBean<T> wrappedBean)
     {
-        super(WebBeansType.DECORATOR,wrappedBean.getReturnType(), wrappedBean.getWebBeansContext());
+        super(WebBeansType.DECORATOR,wrappedBean.getReturnType(), wrappedBean.getAnnotatedType(), wrappedBean.getWebBeansContext());
         
         this.wrappedBean = wrappedBean;
         clazz = wrappedBean.getReturnType();

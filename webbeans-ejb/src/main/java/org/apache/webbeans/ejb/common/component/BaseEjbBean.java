@@ -57,7 +57,7 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
      */
     public BaseEjbBean(Class<T> ejbClassType, SessionBeanType type, WebBeansContext webBeansContext)
     {
-        super(WebBeansType.ENTERPRISE,ejbClassType, webBeansContext);
+        super(WebBeansType.ENTERPRISE, ejbClassType, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(ejbClassType), webBeansContext);
         
         //type of the ejb
         this.ejbType = type;

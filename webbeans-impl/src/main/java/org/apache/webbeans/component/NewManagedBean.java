@@ -19,6 +19,7 @@
 package org.apache.webbeans.component;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.config.WebBeansContext;
 
@@ -34,9 +35,9 @@ public class NewManagedBean<T> extends ManagedBean<T> implements NewBean<T>
 {
     private WebBeansType definedType;
 
-    public NewManagedBean(Class<T> returnType, WebBeansType definedType, WebBeansContext webBeansContext)
+    public NewManagedBean(Class<T> returnType, WebBeansType definedType, AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
-        super(returnType, webBeansContext);
+        super(returnType, annotatedType, webBeansContext);
         this.definedType = definedType;        
     }
 

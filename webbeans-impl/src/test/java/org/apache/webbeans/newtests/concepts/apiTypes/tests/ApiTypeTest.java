@@ -40,7 +40,7 @@ public class ApiTypeTest extends AbstractUnitTest
     @Test
     public void testApiType()
     {
-        ManagedBean<ApiTypeBean> bean = new ManagedBean<ApiTypeBean>(ApiTypeBean.class, WebBeansContext.getInstance());
+        ManagedBean<ApiTypeBean> bean = new ManagedBean<ApiTypeBean>(ApiTypeBean.class, WebBeansContext.currentInstance().getAnnotatedElementFactory().newAnnotatedType(ApiTypeBean.class), WebBeansContext.currentInstance());
         DefinitionUtil.defineApiTypes(bean, ApiTypeBean.class);
         
         Set<Type> type = bean.getTypes();

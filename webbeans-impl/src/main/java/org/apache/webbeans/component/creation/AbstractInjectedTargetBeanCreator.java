@@ -43,7 +43,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
      */
     public AbstractInjectedTargetBeanCreator(AbstractInjectionTargetBean<T> bean)
     {
-        super(bean, bean.getReturnType().getDeclaredAnnotations());
+        super(bean, bean.getAnnotatedType());
     }
     
  

@@ -53,6 +53,7 @@ import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.ProxyFactory;
 import org.apache.webbeans.spi.ResourceInjectionService;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -100,9 +101,11 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      * @param returnType bean class type
      * @param webBeansContext
      */
-    protected AbstractInjectionTargetBean(WebBeansType webBeansType, Class<T> returnType, WebBeansContext webBeansContext)
+    protected AbstractInjectionTargetBean(WebBeansType webBeansType, Class<T> returnType, AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
         super(webBeansType, returnType, webBeansContext);
+        Asserts.assertNotNull(annotatedType, "AnnotatedType may not be null");
+        this.annotatedType = annotatedType;
     }
 
     /**
@@ -576,14 +579,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     public AnnotatedType<T> getAnnotatedType()
     {
         return annotatedType;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void setAnnotatedType(AnnotatedType<T> annotatedType)
-    {
-        this.annotatedType = annotatedType;
     }
     
     /* (non-Javadoc)

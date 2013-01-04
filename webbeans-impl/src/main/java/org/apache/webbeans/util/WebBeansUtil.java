@@ -580,7 +580,7 @@ public final class WebBeansUtil
 
         if (webBeansContext.getManagedBeanConfigurator().isManagedBean(clazz))
         {
-            comp = new NewManagedBean<T>(clazz, WebBeansType.MANAGED, webBeansContext);
+            comp = new NewManagedBean<T>(clazz, WebBeansType.MANAGED, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz), webBeansContext);
             comp.setImplScopeType(new DependentScopeLiteral());
             comp.setConstructor(defineConstructor(clazz));
             definitionUtil.addConstructorInjectionPointMetaData(comp, comp.getConstructor());
@@ -590,7 +590,7 @@ public final class WebBeansUtil
         }
         else if (EJBWebBeansConfigurator.isSessionBean(clazz, webBeansContext))
         {
-            comp = new NewManagedBean<T>(clazz, WebBeansType.ENTERPRISE, webBeansContext);
+            comp = new NewManagedBean<T>(clazz, WebBeansType.ENTERPRISE, webBeansContext.getAnnotatedElementFactory().getAnnotatedType(clazz), webBeansContext);
             comp.setImplScopeType(new DependentScopeLiteral());
         }
         else
@@ -1044,7 +1044,7 @@ public final class WebBeansUtil
      * Configures the interceptor stack of the web beans component.
      *
      * @param interceptorClass interceptor class
-     * @param interceptionType annotation type
+     * @param annotation annotation type
      * @param definedInInterceptorClass check if annotation is defined in
      *            interceptor class (as opposed to bean class)
      * @param definedInMethod check if the interceptor is defined in the comp.
@@ -1057,7 +1057,7 @@ public final class WebBeansUtil
      */
     public void configureInterceptorMethods(Interceptor<?> webBeansInterceptor,
                                              Class<?> interceptorClass,
-                                             Class<? extends Annotation> interceptionType,
+                                             Class<? extends Annotation> annotation,
                                              boolean definedInInterceptorClass,
                                              boolean definedInMethod,
                                              List<InterceptorData> stack,
@@ -1091,14 +1091,14 @@ public final class WebBeansUtil
             }
         }
 
-        if (interceptionType.equals(AroundInvoke.class) || interceptionType.equals(AroundTimeout.class))
+        if (annotation.equals(AroundInvoke.class) || annotation.equals(AroundTimeout.class))
         {
-            methods = checkAroundInvokeAnnotationCriterias(interceptorClass, interceptionType);
+            methods = checkAroundInvokeAnnotationCriterias(interceptorClass, annotation);
         }
-        else if (interceptionType.equals(PostConstruct.class) || ((postActivateClass != null) && (interceptionType.equals(postActivateClass)))
-                 || interceptionType.equals(PreDestroy.class) || ((prePassivateClass != null) && (interceptionType.equals(prePassivateClass))))
+        else if (annotation.equals(PostConstruct.class) || ((postActivateClass != null) && (annotation.equals(postActivateClass)))
+                 || annotation.equals(PreDestroy.class) || ((prePassivateClass != null) && (annotation.equals(prePassivateClass))))
         {
-            methods = checkCommonAnnotationCriterias(interceptorClass, interceptionType, definedInInterceptorClass);
+            methods = checkCommonAnnotationCriterias(interceptorClass, annotation, definedInInterceptorClass);
         }
 
         if (methods != null && !methods.isEmpty())
@@ -1116,7 +1116,7 @@ public final class WebBeansUtil
                     intData.setInterceptorClass(interceptorClass);
                 }
 
-                intData.setInterceptorMethod(method, interceptionType);
+                intData.setInterceptorMethod(method, annotation);
 
                 stack.add(intData);
             }
@@ -2526,10 +2526,8 @@ public final class WebBeansUtil
     {
         Class<T> clazz = type.getJavaClass();
 
-        ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED, webBeansContext);
-        managedBean.setAnnotatedType(type);
+        ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED, type, webBeansContext);
         ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
-        managedBeanCreator.setAnnotatedType(type);
 
         managedBeanCreator.defineApiType();
 
@@ -2688,10 +2686,8 @@ public final class WebBeansUtil
     {
         Class<T> clazz = type.getJavaClass();
 
-        ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED, webBeansContext);
-        managedBean.setAnnotatedType(type);
+        ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED, type, webBeansContext);
         AnnotatedTypeBeanCreatorImpl<T> managedBeanCreator = new AnnotatedTypeBeanCreatorImpl<T>(managedBean);
-        managedBeanCreator.setAnnotatedType(type);
 
         managedBeanCreator.defineApiType();
 

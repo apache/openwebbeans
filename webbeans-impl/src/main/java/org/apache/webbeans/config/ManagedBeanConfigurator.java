@@ -24,6 +24,7 @@ import java.lang.reflect.Modifier;
 import java.util.Set;
 
 import javax.decorator.Decorator;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.component.ManagedBean;
@@ -107,7 +108,7 @@ public final class ManagedBeanConfigurator
      * @deprecated
      */
     @SuppressWarnings("unchecked")
-    public <T> ManagedBean<T> define(Class<T> clazz, WebBeansType type) throws WebBeansConfigurationException
+    public <T> ManagedBean<T> define(Class<T> clazz, WebBeansType type, AnnotatedType<T> anntotatedType) throws WebBeansConfigurationException
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
@@ -131,7 +132,7 @@ public final class ManagedBeanConfigurator
             throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not _defined as interface");
         }
 
-        ManagedBean<T> component = new ManagedBean<T>(clazz, type, webBeansContext);
+        ManagedBean<T> component = new ManagedBean<T>(clazz, type, anntotatedType, webBeansContext);
         manager.putProducer(component, new InjectionTargetProducer(component));
 
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(component);

@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.component.creation;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Set;
@@ -45,9 +44,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     /**Default metadata provider*/
     private MetaDataProvider metadataProvider = MetaDataProvider.DEFAULT;
     
-    /**Bean annotations*/
-    private final Annotation[] beanAnnotations;
-    
     /**
      * If annotated type is set by ProcessAnnotatedType event, used this annotated type
      * to define bean instance instead of using class artifacts.
@@ -62,10 +58,10 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      * @param bean bean instance
      * @param beanAnnotations annotations
      */
-    public AbstractBeanCreator(AbstractOwbBean<T> bean, Annotation[] beanAnnotations)
+    public AbstractBeanCreator(AbstractOwbBean<T> bean, AnnotatedType<T> annotatedType)
     {
         this.bean = bean;
-        this.beanAnnotations = beanAnnotations;
+        this.annotatedType = annotatedType;
         definitionUtil = bean.getWebBeansContext().getDefinitionUtil();
     }
 
@@ -82,15 +78,8 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      */
     public void defineApiType()
     {
-        if(isDefaultMetaDataProvider())
-        {
-            DefinitionUtil.defineApiTypes(bean, bean.getReturnType());
-        }
-        else
-        {
-            Set<Type> types = annotatedType.getTypeClosure();
-            bean.getTypes().addAll(types);
-        }
+        Set<Type> types = annotatedType.getTypeClosure();
+        bean.getTypes().addAll(types);
         Set<String> ignored = bean.getWebBeansContext().getOpenWebBeansConfiguration().getIgnoredInterfaces();
         for (Iterator<Type> i = bean.getTypes().iterator(); i.hasNext();)
         {
@@ -107,15 +96,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      */
     public void defineQualifier()
     {
-        if(isDefaultMetaDataProvider())
-        {
-            definitionUtil.defineQualifiers(bean, beanAnnotations);
-        }
-        else
-        {
-            definitionUtil.defineQualifiers(bean, AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()));
-        }
-        
+        definitionUtil.defineQualifiers(bean, AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()));
     }
     
     /**
@@ -123,16 +104,8 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      */
     public void defineName(String defaultName)
     {
-        if(isDefaultMetaDataProvider())
-        {
-            definitionUtil.defineName(bean, beanAnnotations, defaultName);
-        }
-        else
-        {
-            definitionUtil.defineName(bean, AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()),
+        definitionUtil.defineName(bean, AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()),
                     WebBeansUtil.getManagedBeanDefaultName(annotatedType.getJavaClass().getSimpleName()));
-        }
-        
     }
 
     /**
@@ -140,14 +113,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      */
     public void defineScopeType(String errorMessage, boolean allowLazyInit)
     {
-        if(isDefaultMetaDataProvider())
-        {
-            definitionUtil.defineScopeType(bean, beanAnnotations, errorMessage, allowLazyInit);
-        }
-        else
-        {
-            definitionUtil.defineScopeType(bean, AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()), errorMessage, false);
-        }
+        definitionUtil.defineScopeType(bean, AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()), errorMessage, false);
     }
 
     /**
@@ -163,15 +129,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      */
     public void defineStereoTypes()
     {
-        if(isDefaultMetaDataProvider())
-        {
-            definitionUtil.defineStereoTypes(bean, beanAnnotations);
-        }
-        else
-        {
-            definitionUtil.defineStereoTypes(bean, AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()));
-        }
-        
+        definitionUtil.defineStereoTypes(bean, AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()));
     }
     
     /**
@@ -209,13 +167,8 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         return bean;
     }
 
-   protected AnnotatedType<T> getAnnotatedType()
+    protected AnnotatedType<T> getAnnotatedType()
     {
         return annotatedType;
-    }
-    
-    public void setAnnotatedType(AnnotatedType<T> annotatedType)
-    {
-        this.annotatedType = annotatedType;
     }
 }

@@ -38,7 +38,7 @@ public class ConversationBean extends AbstractInjectionTargetBean<Conversation>
      */
     public ConversationBean(WebBeansContext webBeansContext)
     {
-        super(WebBeansType.CONVERSATION, Conversation.class, webBeansContext);
+        super(WebBeansType.CONVERSATION, Conversation.class, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(Conversation.class), webBeansContext);
     }
 
     /**

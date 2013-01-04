@@ -834,15 +834,13 @@ public class BeansDeployer
             webBeansContext.getManagedBeanConfigurator().checkManagedBeanCondition(clazz);
 
             //Temporary managed bean instance creationa
-            ManagedBean<T> managedBean = new ManagedBean<T>(clazz, webBeansContext);
+            ManagedBean<T> managedBean = new ManagedBean<T>(clazz, annotatedType, webBeansContext);
             ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
 
             boolean annotationTypeSet = false;
             if(processAnnotatedEvent.isModifiedAnnotatedType())
             {
                 annotationTypeSet = true;
-                managedBean.setAnnotatedType(annotatedType);
-                managedBeanCreator.setAnnotatedType(annotatedType);
                 managedBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
             }
 

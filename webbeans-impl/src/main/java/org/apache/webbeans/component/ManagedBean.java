@@ -19,12 +19,13 @@
 package org.apache.webbeans.component;
 
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
@@ -56,9 +57,9 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     private volatile boolean fullInit = true;
 
 
-    public ManagedBean(Class<T> returnType, WebBeansContext webBeansContext)
+    public ManagedBean(Class<T> returnType, AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
-        this(returnType, WebBeansType.MANAGED, webBeansContext);
+        this(returnType, WebBeansType.MANAGED, annotatedType, webBeansContext);
     }
 
     /**
@@ -68,9 +69,9 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
      * @param type webbeans type
      * @param webBeansContext
      */
-    public ManagedBean(Class<T> returnType, WebBeansType type, WebBeansContext webBeansContext)
+    public ManagedBean(Class<T> returnType, WebBeansType type, AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
-        super(type, returnType, webBeansContext);
+        super(type, returnType, annotatedType, webBeansContext);
         
         //Setting inherited meta data instance
         setInheritedMetaData();
@@ -108,7 +109,6 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
         {
             fullInit = true;
             ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(this);
-            managedBeanCreator.setAnnotatedType(getAnnotatedType());
 
             managedBeanCreator.lazyInitializeManagedBean(getBeanClass(), this);
         }

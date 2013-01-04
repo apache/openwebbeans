@@ -263,7 +263,7 @@ public abstract class TestContext implements ITestContext
         ManagedBean<T> bean;
 
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        bean = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.MANAGED);
+        bean = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.MANAGED, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
         if (bean != null)
         {
             DecoratorUtil.checkManagedBeanDecoratorConditions(bean,null);
@@ -297,7 +297,7 @@ public abstract class TestContext implements ITestContext
         webBeansContext.getInterceptorsManager().addNewInterceptor(clazz);
         AnnotatedType annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
         webBeansContext.getInterceptorUtil().checkInterceptorConditions(annotatedType);
-        component = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.INTERCEPTOR);
+        component = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.INTERCEPTOR, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
         webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass((ManagedBean<Object>) component,
                                                             webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(
                                                                 clazz.getDeclaredAnnotations()));
@@ -321,7 +321,7 @@ public abstract class TestContext implements ITestContext
         if (webBeansContext.getDecoratorsManager().isDecoratorEnabled(clazz))
         {
             DecoratorUtil.checkDecoratorConditions(clazz);
-            component = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.DECORATOR);
+            component = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.DECORATOR, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
 
             if (component != null)
             {

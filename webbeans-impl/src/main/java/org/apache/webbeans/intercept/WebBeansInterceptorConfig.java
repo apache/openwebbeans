@@ -141,24 +141,12 @@ public final class WebBeansInterceptorConfig
     {
         Class<?> clazz = ((AbstractOwbBean<?>)component).getReturnType();
         AnnotatedType<?> annotatedType = component.getAnnotatedType();
-        Set<Annotation> annotations = null;
-
-        if(annotatedType != null)
-        {
-            annotations = annotatedType.getAnnotations();
-        }
+        Set<Annotation> annotations = annotatedType.getAnnotations();
 
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
         Annotation[] typeAnns;
-        if(annotations != null)
-        {
-            typeAnns = annotations.toArray(new Annotation[annotations.size()]);
-        }
-        else
-        {
-            typeAnns = clazz.getDeclaredAnnotations();
-        }
+        typeAnns = annotations.toArray(new Annotation[annotations.size()]);
         Set<Annotation> bindingTypeSet = annotationManager.getInterceptorAnnotations(typeAnns);
 
         Annotation[] anns;
@@ -225,14 +213,7 @@ public final class WebBeansInterceptorConfig
         }
 
         // Method level interceptors.
-        if(annotatedType == null)
-        {
-            addMethodInterceptors(component, clazz, stack, componentInterceptors, bindingTypeSet);
-        }
-        else
-        {
-            addMethodInterceptors(annotatedType, stack, componentInterceptors);
-        }
+        addMethodInterceptors(annotatedType, stack, componentInterceptors);
         filterInterceptorsPerBDA(component,stack);
 
         Collections.sort(stack, new InterceptorDataComparator(component.getWebBeansContext()));

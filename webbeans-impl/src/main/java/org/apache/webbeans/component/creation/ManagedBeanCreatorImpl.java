@@ -336,7 +336,6 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
 
             if (delegate != null)
             {
-                delegate.setAnnotatedType(processInjectionTargetEvent.getAnnotatedType());
                 WebBeansDecoratorConfig.configureDecoratorClass(delegate);
             }
             else

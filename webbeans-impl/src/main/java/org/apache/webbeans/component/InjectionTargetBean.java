@@ -174,12 +174,6 @@ public interface InjectionTargetBean<T> extends OwbBean<T>
     public void preDestroy(T instance, CreationalContext<T> creationalContext);    
     
     /**
-     * Sets annotated type.
-     * @param annotatedType annotated type
-     */
-    public void setAnnotatedType(AnnotatedType<T> annotatedType);    
-    
-    /**
      * Gets annotated type.
      * @return annotated type
      */

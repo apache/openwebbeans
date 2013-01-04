@@ -91,7 +91,7 @@ public class InterceptorsManager
     {
         for(Class<?> interceptorClass : enabledInterceptors)
         {
-            AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(interceptorClass);
+            AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(interceptorClass);
 
             //Validate decorator classes
             if(!annotatedType.isAnnotationPresent(Interceptor.class) && !manager.containsCustomInterceptorClass(interceptorClass))

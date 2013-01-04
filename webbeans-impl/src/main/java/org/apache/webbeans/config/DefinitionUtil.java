@@ -1140,21 +1140,16 @@ public final class DefinitionUtil
             return;
         }
 
-        AnnotatedType<?> annotatedType;
-
         // If bean is not session bean
         if(!(bean instanceof EnterpriseBeanMarker))
         {
-            annotatedType = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(bean.getReturnType());
-
-            bean.getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, bean.getInterceptorStack());
+            bean.getWebBeansContext().getEJBInterceptorConfig().configure(bean.getAnnotatedType(), bean.getInterceptorStack());
         }
         else
         {
             //Check for injected fields in EJB @Interceptors
             List<InterceptorData> stack = new ArrayList<InterceptorData>();
-            annotatedType = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(bean.getBeanClass());
-            bean.getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, stack);
+            bean.getWebBeansContext().getEJBInterceptorConfig().configure(bean.getAnnotatedType(), stack);
 
             final OpenWebBeansEjbPlugin ejbPlugin = bean.getWebBeansContext().getPluginLoader().getEjbPlugin();
             final boolean isStateful = ejbPlugin.isStatefulBean(bean.getBeanClass());
