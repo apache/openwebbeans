@@ -745,7 +745,7 @@ public final class WebBeansUtil
      *            interceptors defiend outside of the bean class.
      * @return post construct or predestroy method
      */
-    public Method checkCommonAnnotationCriterias(Class<?> clazz, Class<? extends Annotation> commonAnnotation, boolean invocationContext)
+    public Set<Method> checkCommonAnnotationCriterias(Class<?> clazz, Class<? extends Annotation> commonAnnotation, boolean invocationContext)
     {
         Asserts.nullCheckForClass(clazz);
 
@@ -811,14 +811,23 @@ public final class WebBeansUtil
             }
         }
 
-        return result;
+        if (result != null)
+        {
+            Set<Method> resultSet = new HashSet<Method>();
+            resultSet.add(result);
+            return resultSet;
+        }
+        else
+        {
+            return null;
+        }
     }
 
-    public <T> Method checkCommonAnnotationCriterias(AnnotatedType<T> annotatedType, Class<? extends Annotation> commonAnnotation, boolean invocationContext)
+    public <T> Set<Method> checkCommonAnnotationCriterias(AnnotatedType<T> annotatedType, Class<? extends Annotation> commonAnnotation, boolean invocationContext)
     {
         Class<?> clazz = annotatedType.getJavaClass();
 
-        Method result = null;
+        Set<Method> result = new HashSet<Method>();
         Set<Class<?>> foundInClass = new HashSet<Class<?>>();
         Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
         for(AnnotatedMethod<? super T> methodA : methods)
@@ -837,8 +846,8 @@ public final class WebBeansUtil
                     throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
                             + " annotation is declared more than one method in the class : " + clazz.getName());
                 }
+                result.add(method);
                 foundInClass.add(method.getDeclaringClass());
-                result = method;
 
                 // Check method criterias
                 if (!methodB.getParameters().isEmpty())
@@ -896,7 +905,7 @@ public final class WebBeansUtil
      * @param clazz checked class
      * @return around invoke method
      */
-    public Method checkAroundInvokeAnnotationCriterias(Class<?> clazz, Class<? extends Annotation> annot)
+    public Set<Method> checkAroundInvokeAnnotationCriterias(Class<?> clazz, Class<? extends Annotation> annot)
     {
         Asserts.nullCheckForClass(clazz);
 
@@ -945,10 +954,19 @@ public final class WebBeansUtil
             }
         }
 
-        return result;
+        if (result != null)
+        {
+            Set<Method> resultSet = new HashSet<Method>();
+            resultSet.add(result);
+            return resultSet;
+        }
+        else
+        {
+            return null;
+        }
     }
 
-    public <T> Method checkAroundInvokeAnnotationCriterias(AnnotatedType<T> annotatedType, Class<? extends Annotation> annot)
+    public <T> Set<Method> checkAroundInvokeAnnotationCriterias(AnnotatedType<T> annotatedType, Class<? extends Annotation> annot)
     {
         Method result = null;
         boolean found = false;
@@ -1009,7 +1027,16 @@ public final class WebBeansUtil
             }
         }
 
-        return result;
+        if (result != null)
+        {
+            Set<Method> resultSet = new HashSet<Method>();
+            resultSet.add(result);
+            return resultSet;
+        }
+        else
+        {
+            return null;
+        }
     }
 
 
@@ -1038,7 +1065,7 @@ public final class WebBeansUtil
                                              boolean defineWithInterceptorBinding)
     {
         InterceptorData intData;
-        Method method = null;
+        Set<Method> methods = null;
         OpenWebBeansEjbLCAPlugin ejbPlugin;
         Class<? extends Annotation> prePassivateClass  = null;
         Class<? extends Annotation> postActivateClass  = null;
@@ -1066,30 +1093,33 @@ public final class WebBeansUtil
 
         if (interceptionType.equals(AroundInvoke.class) || interceptionType.equals(AroundTimeout.class))
         {
-            method = checkAroundInvokeAnnotationCriterias(interceptorClass, interceptionType);
+            methods = checkAroundInvokeAnnotationCriterias(interceptorClass, interceptionType);
         }
         else if (interceptionType.equals(PostConstruct.class) || ((postActivateClass != null) && (interceptionType.equals(postActivateClass)))
                  || interceptionType.equals(PreDestroy.class) || ((prePassivateClass != null) && (interceptionType.equals(prePassivateClass))))
         {
-            method = checkCommonAnnotationCriterias(interceptorClass, interceptionType, definedInInterceptorClass);
+            methods = checkCommonAnnotationCriterias(interceptorClass, interceptionType, definedInInterceptorClass);
         }
 
-        if (method != null)
+        if (methods != null && !methods.isEmpty())
         {
-            intData = new InterceptorDataImpl(defineWithInterceptorBinding, webBeansContext);
-            intData.setDefinedInInterceptorClass(definedInInterceptorClass);
-            intData.setDefinedInMethod(definedInMethod);
-            intData.setInterceptorBindingMethod(annotatedInterceptorClassMethod);
-            intData.setWebBeansInterceptor(webBeansInterceptor);
-
-            if (definedInInterceptorClass)
+            for (Method method : methods)
             {
-                intData.setInterceptorClass(interceptorClass);
+                intData = new InterceptorDataImpl(defineWithInterceptorBinding, webBeansContext);
+                intData.setDefinedInInterceptorClass(definedInInterceptorClass);
+                intData.setDefinedInMethod(definedInMethod);
+                intData.setInterceptorBindingMethod(annotatedInterceptorClassMethod);
+                intData.setWebBeansInterceptor(webBeansInterceptor);
+
+                if (definedInInterceptorClass)
+                {
+                    intData.setInterceptorClass(interceptorClass);
+                }
+
+                intData.setInterceptorMethod(method, interceptionType);
+
+                stack.add(intData);
             }
-
-            intData.setInterceptorMethod(method, interceptionType);
-
-            stack.add(intData);
         }
     }
 
@@ -1104,7 +1134,7 @@ public final class WebBeansUtil
                                                  boolean defineWithInterceptorBinding)
     {
         InterceptorData intData;
-        Method method = null;
+        Set<Method> methods = null;
         OpenWebBeansEjbLCAPlugin ejbPlugin;
         Class<? extends Annotation> prePassivateClass  = null;
         Class<? extends Annotation> postActivateClass  = null;
@@ -1133,29 +1163,32 @@ public final class WebBeansUtil
         if (annotation.equals(AroundInvoke.class) ||
                 annotation.equals(AroundTimeout.class))
         {
-            method = checkAroundInvokeAnnotationCriterias(annotatedType, annotation);
+            methods = checkAroundInvokeAnnotationCriterias(annotatedType, annotation);
         }
         else if (annotation.equals(PostConstruct.class) || ((postActivateClass != null) && (annotation.equals(postActivateClass)))
                  || annotation.equals(PreDestroy.class) || ((prePassivateClass != null) && (annotation.equals(prePassivateClass))))
         {
-            method = checkCommonAnnotationCriterias(annotatedType, annotation, definedInInterceptorClass);
+            methods = checkCommonAnnotationCriterias(annotatedType, annotation, definedInInterceptorClass);
         }
 
-        if (method != null)
+        if (methods != null && !methods.isEmpty())
         {
-            intData = new InterceptorDataImpl(defineWithInterceptorBinding, webBeansContext);
-            intData.setDefinedInInterceptorClass(definedInInterceptorClass);
-            intData.setDefinedInMethod(definedInMethod);
-            intData.setInterceptorBindingMethod(annotatedInterceptorClassMethod);
-            intData.setWebBeansInterceptor(webBeansInterceptor);
-
-            if (definedInInterceptorClass)
+            for (Method method : methods)
             {
-                intData.setInterceptorClass(annotatedType.getJavaClass());
-            }
+                intData = new InterceptorDataImpl(defineWithInterceptorBinding, webBeansContext);
+                intData.setDefinedInInterceptorClass(definedInInterceptorClass);
+                intData.setDefinedInMethod(definedInMethod);
+                intData.setInterceptorBindingMethod(annotatedInterceptorClassMethod);
+                intData.setWebBeansInterceptor(webBeansInterceptor);
 
-            intData.setInterceptorMethod(method, annotation);
-            stack.add(intData);
+                if (definedInInterceptorClass)
+                {
+                    intData.setInterceptorClass(annotatedType.getJavaClass());
+                }
+
+                intData.setInterceptorMethod(method, annotation);
+                stack.add(intData);
+            }
         }
     }
 

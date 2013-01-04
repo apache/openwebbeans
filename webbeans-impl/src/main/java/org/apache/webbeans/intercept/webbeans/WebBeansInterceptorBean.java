@@ -256,12 +256,14 @@ public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements Ow
         
         if(type.equals(InterceptionType.AROUND_INVOKE))
         {
-            method = webBeansContext.getWebBeansUtil().checkAroundInvokeAnnotationCriterias(getClazz(), AroundInvoke.class);
+            method = webBeansContext.getWebBeansUtil().checkAroundInvokeAnnotationCriterias(getClazz(), AroundInvoke.class)
+                    .iterator().next();
         }
 
         else if(type.equals(InterceptionType.AROUND_TIMEOUT))
         {
-            method = webBeansContext.getWebBeansUtil().checkAroundInvokeAnnotationCriterias(getClazz(), AroundTimeout.class);
+            method = webBeansContext.getWebBeansUtil().checkAroundInvokeAnnotationCriterias(getClazz(), AroundTimeout.class)
+                    .iterator().next();
         }
         
         else
@@ -269,7 +271,8 @@ public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements Ow
             Class<? extends Annotation> interceptorTypeAnnotationClazz =
                 webBeansContext.getInterceptorUtil().getInterceptorAnnotationClazz(type);
             method
-                = getWebBeansContext().getWebBeansUtil().checkCommonAnnotationCriterias(getClazz(), interceptorTypeAnnotationClazz, true);
+                = getWebBeansContext().getWebBeansUtil().checkCommonAnnotationCriterias(getClazz(), interceptorTypeAnnotationClazz, true)
+                    .iterator().next();
         }
         
         return method;
