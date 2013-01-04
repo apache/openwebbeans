@@ -268,9 +268,8 @@ public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements Ow
         {
             Class<? extends Annotation> interceptorTypeAnnotationClazz =
                 webBeansContext.getInterceptorUtil().getInterceptorAnnotationClazz(type);
-            method = getWebBeansContext().getWebBeansUtil().checkCommonAnnotationCriterias(getClazz(),
-                                                                                                     interceptorTypeAnnotationClazz,
-                                                                                                     true);
+            method
+                = getWebBeansContext().getWebBeansUtil().checkCommonAnnotationCriterias(getClazz(), interceptorTypeAnnotationClazz, true);
         }
         
         return method;

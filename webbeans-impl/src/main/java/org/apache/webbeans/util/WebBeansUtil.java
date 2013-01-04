@@ -819,7 +819,7 @@ public final class WebBeansUtil
         Class<?> clazz = annotatedType.getJavaClass();
 
         Method result = null;
-        boolean found = false;
+        Set<Class<?>> foundInClass = new HashSet<Class<?>>();
         Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
         for(AnnotatedMethod<? super T> methodA : methods)
         {
@@ -832,33 +832,18 @@ public final class WebBeansUtil
                     continue;
                 }
 
-                if (found)
+                if (foundInClass.contains(method.getDeclaringClass()))
                 {
                     throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
                             + " annotation is declared more than one method in the class : " + clazz.getName());
                 }
-                found = true;
+                foundInClass.add(method.getDeclaringClass());
                 result = method;
 
                 // Check method criterias
-                if (methodB.getParameters().isEmpty())
+                if (!methodB.getParameters().isEmpty())
                 {
-                    if (!invocationContext)
-                    {
-                        throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
-                                + " annotated method : " + method.getName() + " in class : " + clazz.getName()
-                                + " can not take any formal arguments");
-                    }
-
-                    List<AnnotatedParameter<T>> parameters = methodB.getParameters();
-                    List<Class<?>> clazzParameters = new ArrayList<Class<?>>();
-                    for(AnnotatedParameter<T> parameter : parameters)
-                    {
-                        clazzParameters.add(ClassUtil.getClazz(parameter.getBaseType()));
-                    }
-
-                    Class<?>[] params = clazzParameters.toArray(new Class<?>[clazzParameters.size()]);
-                    if (params.length != 1 || !params[0].equals(InvocationContext.class))
+                    if (methodB.getParameters().size() != 1 || !ClassUtil.getClass(methodB.getParameters().get(0).getBaseType()).equals(InvocationContext.class))
                     {
                         throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
                                 + " annotated method : " + method.getName() + " in class : " + clazz.getName()
@@ -867,9 +852,8 @@ public final class WebBeansUtil
                 }
                 else if(invocationContext)
                 {
-                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
-                            + " annotated method : " + method.getName() + " in class : " + clazz.getName()
-                            + " must take a parameter with class type javax.interceptor.InvocationContext.");
+                    // Maybe it just intercepts itself, but we were looking at it like an @Interceptor
+                    return null;
                 }
 
                 if (!method.getReturnType().equals(Void.TYPE))
@@ -1116,7 +1100,8 @@ public final class WebBeansUtil
                                                  boolean definedInInterceptorClass,
                                                  boolean definedInMethod,
                                                  List<InterceptorData> stack,
-                                                 Method annotatedInterceptorClassMethod)
+                                                 Method annotatedInterceptorClassMethod,
+                                                 boolean defineWithInterceptorBinding)
     {
         InterceptorData intData;
         Method method = null;
@@ -1129,6 +1114,20 @@ public final class WebBeansUtil
         {
             prePassivateClass  = ejbPlugin.getPrePassivateClass();
             postActivateClass  = ejbPlugin.getPostActivateClass();
+        }
+
+        //Check for default constructor of EJB based interceptor
+        if(webBeansInterceptor == null)
+        {
+            if(definedInInterceptorClass)
+            {
+                Constructor<?> ct = getNoArgConstructor(annotatedType.getJavaClass());
+                if (ct == null)
+                {
+                    throw new WebBeansConfigurationException("class : " + annotatedType.getJavaClass().getName()
+                            + " must have no-arg constructor");
+                }
+            }
         }
 
         if (annotation.equals(AroundInvoke.class) ||
@@ -1144,14 +1143,18 @@ public final class WebBeansUtil
 
         if (method != null)
         {
-            intData = new InterceptorDataImpl(true, webBeansContext);
+            intData = new InterceptorDataImpl(defineWithInterceptorBinding, webBeansContext);
             intData.setDefinedInInterceptorClass(definedInInterceptorClass);
             intData.setDefinedInMethod(definedInMethod);
             intData.setInterceptorBindingMethod(annotatedInterceptorClassMethod);
             intData.setWebBeansInterceptor(webBeansInterceptor);
-            intData.setInterceptorMethod(method, annotation);
-            intData.setInterceptorClass(webBeansInterceptor.getBeanClass());
 
+            if (definedInInterceptorClass)
+            {
+                intData.setInterceptorClass(annotatedType.getJavaClass());
+            }
+
+            intData.setInterceptorMethod(method, annotation);
             stack.add(intData);
         }
     }

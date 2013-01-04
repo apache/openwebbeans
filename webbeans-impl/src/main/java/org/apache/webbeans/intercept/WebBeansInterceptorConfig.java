@@ -290,13 +290,13 @@ public final class WebBeansInterceptorConfig
                 // interceptor binding
                 webBeansContext.getWebBeansUtil().configureInterceptorMethods(interceptor, annotatedType,
                                                                              AroundInvoke.class, true,
-                                                                             false, stack, null);
+                                                                             false, stack, null, true);
                 webBeansContext.getWebBeansUtil().configureInterceptorMethods(interceptor, annotatedType,
                                                                              PostConstruct.class, true,
-                                                                             false, stack, null);
+                                                                             false, stack, null, true);
                 webBeansContext.getWebBeansUtil().configureInterceptorMethods(interceptor, annotatedType,
                                                                              PreDestroy.class, true,
-                                                                             false, stack, null);
+                                                                             false, stack, null, true);
 
                 if (null != ejbPlugin)
                 {
@@ -304,12 +304,12 @@ public final class WebBeansInterceptorConfig
                                                                                  annotatedType,
                                                                                  prePassivateClass,
                                                                                  true, false, stack,
-                                                                                 null);
+                                                                                 null, true);
                     webBeansContext.getWebBeansUtil().configureInterceptorMethods(interceptor,
                                                                                  annotatedType,
                                                                                  postActivateClass,
                                                                                  true, false, stack,
-                                                                                 null);
+                                                                                 null, true);
 
                 }
             }
@@ -553,17 +553,17 @@ public final class WebBeansInterceptorConfig
                                                                                      interAnnoType,
                                                                                      AroundInvoke.class,
                                                                                      true, true, stack,
-                                                                                     method);
+                                                                                     method, true);
                         webBeansContext.getWebBeansUtil().configureInterceptorMethods(interceptor,
                                                                                      interAnnoType,
                                                                                      PostConstruct.class,
                                                                                      true, true, stack,
-                                                                                     method);
+                                                                                     method, true);
                         webBeansContext.getWebBeansUtil().configureInterceptorMethods(interceptor,
                                                                                      interAnnoType,
                                                                                      PreDestroy.class,
                                                                                      true, true, stack,
-                                                                                     method);
+                                                                                     method, true);
                     }
                 }
             }
