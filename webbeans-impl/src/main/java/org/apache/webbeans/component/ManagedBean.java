@@ -108,9 +108,7 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
         if (!fullInit)
         {
             fullInit = true;
-            ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(this);
-
-            managedBeanCreator.lazyInitializeManagedBean(getBeanClass(), this);
+            ManagedBeanCreatorImpl.lazyInitializeManagedBean(this);
         }
     }
 

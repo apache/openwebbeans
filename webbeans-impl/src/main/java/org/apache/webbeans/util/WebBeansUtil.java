@@ -2526,8 +2526,7 @@ public final class WebBeansUtil
     {
         Class<T> clazz = type.getJavaClass();
 
-        ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED, type, webBeansContext);
-        ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
+        ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(type, webBeansContext);
 
         managedBeanCreator.defineApiType();
 
@@ -2541,7 +2540,7 @@ public final class WebBeansUtil
         managedBeanCreator.defineSerializable();
 
         //Check for Enabled via Alternative
-        setInjectionTargetBeanEnableFlag(managedBean);
+        setInjectionTargetBeanEnableFlag(managedBeanCreator.getBean());
         managedBeanCreator.checkCreateConditions();
         managedBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
         managedBeanCreator.defineQualifier();
@@ -2553,12 +2552,12 @@ public final class WebBeansUtil
         managedBeanCreator.defineObserverMethods();
 
         DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
-        definitionUtil.defineDecoratorStack(managedBean);
-        definitionUtil.defineBeanInterceptorStack(managedBean);
+        definitionUtil.defineDecoratorStack(managedBeanCreator.getBean());
+        definitionUtil.defineBeanInterceptorStack(managedBeanCreator.getBean());
 
         managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
 
-        return managedBean;
+        return managedBeanCreator.getBean();
     }
 
 

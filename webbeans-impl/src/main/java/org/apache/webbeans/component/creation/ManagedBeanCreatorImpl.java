@@ -67,11 +67,10 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
      */
     public ManagedBeanCreatorImpl(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
-        super(new ManagedBean<T>(annotatedType.getJavaClass(), annotatedType, webBeansContext));
-        this.webBeansContext = webBeansContext;
+        this(new ManagedBean<T>(annotatedType.getJavaClass(), annotatedType, webBeansContext));
     }
     
-    public ManagedBeanCreatorImpl(ManagedBean<T> managedBean)
+    private ManagedBeanCreatorImpl(ManagedBean<T> managedBean)
     {
         super(managedBean);
         webBeansContext = managedBean.getWebBeansContext();
@@ -126,6 +125,13 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
     public ManagedBean<T> getBean()
     {
         return (ManagedBean<T>)super.getBean();
+    }
+
+    public static <T> void lazyInitializeManagedBean(ManagedBean<T> bean)
+    {
+        ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(bean);
+
+        managedBeanCreator.lazyInitializeManagedBean(bean.getBeanClass(), bean);
     }
 
     public void lazyInitializeManagedBean(Class<?> clazz, ManagedBean<?> managedBean)
