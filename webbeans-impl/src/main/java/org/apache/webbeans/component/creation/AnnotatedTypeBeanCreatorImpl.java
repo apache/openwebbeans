@@ -23,9 +23,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
+import javax.enterprise.inject.spi.AnnotatedType;
 
-import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 
@@ -33,9 +34,9 @@ public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
 {
     private final static Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedTypeBeanCreatorImpl.class);
 
-    public AnnotatedTypeBeanCreatorImpl(ManagedBean<T> managedBean)
+    public AnnotatedTypeBeanCreatorImpl(AnnotatedType<T> annotatedType, WebBeansContext context)
     {
-        super(managedBean);
+        super(annotatedType, context);
         setMetaDataProvider(MetaDataProvider.THIRDPARTY);
     }
     

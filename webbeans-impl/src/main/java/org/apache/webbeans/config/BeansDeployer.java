@@ -48,7 +48,6 @@ import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.InterceptedMarker;
-import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
@@ -833,9 +832,7 @@ public class BeansDeployer
             //Check conditions
             webBeansContext.getManagedBeanConfigurator().checkManagedBeanCondition(clazz);
 
-            //Temporary managed bean instance creationa
-            ManagedBean<T> managedBean = new ManagedBean<T>(clazz, annotatedType, webBeansContext);
-            ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
+            ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(annotatedType, webBeansContext);
 
             boolean annotationTypeSet = false;
             if(processAnnotatedEvent.isModifiedAnnotatedType())
@@ -847,7 +844,7 @@ public class BeansDeployer
             GProcessInjectionTarget processInjectionTarget = null;
             if(processInjectionTargetEvent == null)
             {
-                processInjectionTarget = webBeansContext.getWebBeansUtil().createProcessInjectionTargetEvent(managedBean);
+                processInjectionTarget = webBeansContext.getWebBeansUtil().createProcessInjectionTargetEvent(managedBeanCreator.getBean());
                 processInjectionTargetEvent = processInjectionTarget;
             }
 
@@ -908,7 +905,7 @@ public class BeansDeployer
                             .fireProcessInjectionTargetEvent(processInjectionTarget).getInjectionTarget();
                     if (updatedInjectionTarget != originalInjectionTarget)
                     {
-                        webBeansContext.getBeanManagerImpl().putProducer(managedBean, updatedInjectionTarget);
+                        webBeansContext.getBeanManagerImpl().putProducer(managedBeanCreator.getBean(), updatedInjectionTarget);
                     }
                 }
             }

@@ -23,12 +23,10 @@ import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
-import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.AnnotatedTypeBeanCreatorImpl;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
@@ -717,16 +715,14 @@ public final class WebBeansAnnotatedTypeUtil
                 Class<T> clazz = type.getJavaClass();
                 
                 //Just creating temporary for getting injected fields
-                ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED, type, webBeansContext);
-                managedBean.setImplScopeType(new DependentScopeLiteral());
-                            
-                AnnotatedTypeBeanCreatorImpl<T> managedBeanCreator = new AnnotatedTypeBeanCreatorImpl<T>(managedBean);            
+                AnnotatedTypeBeanCreatorImpl<T> managedBeanCreator = new AnnotatedTypeBeanCreatorImpl<T>(type, webBeansContext);            
+                managedBeanCreator.getBean().setImplScopeType(new DependentScopeLiteral());
                 
                 //Just define injections
                 managedBeanCreator.defineInjectedFields();
                 managedBeanCreator.defineInjectedMethods();
                 
-                return managedBean.getInjectionPoints();
+                return managedBeanCreator.getBean().getInjectionPoints();
                 
             }            
         }

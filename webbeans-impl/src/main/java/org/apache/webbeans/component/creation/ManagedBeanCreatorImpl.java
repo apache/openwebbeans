@@ -64,16 +64,19 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
 
     /**
      * Creates a new creator.
-     * 
-     * @param managedBean managed bean instance
      */
+    public ManagedBeanCreatorImpl(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
+    {
+        super(new ManagedBean<T>(annotatedType.getJavaClass(), annotatedType, webBeansContext));
+        this.webBeansContext = webBeansContext;
+    }
+    
     public ManagedBeanCreatorImpl(ManagedBean<T> managedBean)
     {
         super(managedBean);
         webBeansContext = managedBean.getWebBeansContext();
     }
-    
-    
+
     /**
      * {@inheritDoc}
      */
