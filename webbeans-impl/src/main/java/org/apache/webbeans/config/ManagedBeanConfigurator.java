@@ -179,7 +179,7 @@ public final class ManagedBeanConfigurator
         webBeansContext.getAnnotatedTypeUtil().defineDisposalMethods(component, component.getAnnotatedType());
         webBeansContext.getAnnotatedTypeUtil().defineInjectedFields(component, component.getAnnotatedType());
         webBeansContext.getAnnotatedTypeUtil().defineInjectedMethods(component, component.getAnnotatedType());
-        definitionUtil.defineObserverMethods(component, clazz);
+        webBeansContext.getAnnotatedTypeUtil().defineObserverMethods(component, component.getAnnotatedType());
 
         return component;
     }

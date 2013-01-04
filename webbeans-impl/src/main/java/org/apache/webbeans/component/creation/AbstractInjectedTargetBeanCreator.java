@@ -80,15 +80,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
      */
     public Set<ObserverMethod<?>> defineObserverMethods()
     {   
-        AbstractInjectionTargetBean bean = getBean();
-        if(isDefaultMetaDataProvider())
-        {
-            return bean.getWebBeansContext().getDefinitionUtil().defineObserverMethods(bean, bean.getReturnType());
-        }
-        else
-        {
-            return bean.getWebBeansContext().getAnnotatedTypeUtil().defineObserverMethods(bean, getAnnotatedType());
-        }
+        return webBeansContext.getAnnotatedTypeUtil().defineObserverMethods(getBean(), getAnnotatedType());
     }
 
     /**

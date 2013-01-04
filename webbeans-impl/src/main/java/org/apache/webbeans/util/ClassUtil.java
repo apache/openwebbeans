@@ -1237,7 +1237,7 @@ public final class ClassUtil
         if (subClassMethod.getName().equals(superClassMethod.getName()) && Arrays.equals(subClassMethod.getParameterTypes(), superClassMethod.getParameterTypes()))
         {
             int modifiers = superClassMethod.getModifiers();
-            if(Modifier.isPrivate(modifiers))
+            if(Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers))
             {
                 return false;
             }

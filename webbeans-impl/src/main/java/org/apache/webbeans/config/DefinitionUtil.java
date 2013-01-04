@@ -32,7 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
@@ -43,7 +42,6 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -68,7 +66,6 @@ import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.EventUtil;
-import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.spi.api.ResourceReference;
@@ -883,47 +880,6 @@ public final class DefinitionUtil
     public void defineDecoratorStack(AbstractInjectionTargetBean<?> bean)
     {
         WebBeansDecoratorConfig.configureDecorators(bean);
-    }
-
-    public <T> Set<ObserverMethod<?>> defineObserverMethods(InjectionTargetBean<T> component, Class<T> clazz)
-    {
-        Asserts.assertNotNull(component, "component parameter can not be null");
-        Asserts.nullCheckForClass(clazz);
-
-        NotificationManager manager = webBeansContext.getBeanManagerImpl().getNotificationManager();
-
-        Method[] candidateMethods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz, Observes.class);
-
-        // From normal
-        createObserverMethods(component, clazz, candidateMethods);
-
-        return manager.addObservableComponentMethods(component);
-
-    }
-
-    private <T> void createObserverMethods(InjectionTargetBean<T> component, Class<?> clazz, Method[] candidateMethods)
-    {
-        // TODO Overriding an event method disables it (cdi 1.0: section 4.2)
-        for (Method candidateMethod : candidateMethods)
-        {
-
-            EventUtil.checkObserverMethodConditions(candidateMethod, clazz);
-            AbstractOwbBean<?> bean = (AbstractOwbBean<?>) component;
-            if(bean.getScope().equals(Dependent.class))
-            {
-                //Check Reception
-                if(EventUtil.isReceptionIfExist(candidateMethod))
-                {
-                    throw new WebBeansConfigurationException("Dependent Bean : " + bean + " can not define observer method with @Receiver = IF_EXIST");
-                }
-            }
-            
-            
-            component.addObservableMethod(candidateMethod);
-
-            addMethodInjectionPointMetaData((AbstractOwbBean<T>) component, candidateMethod);
-        }
-
     }
 
     public <T> void defineSerializable(AbstractOwbBean<T> component)

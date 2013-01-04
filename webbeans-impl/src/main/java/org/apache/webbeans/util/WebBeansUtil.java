@@ -636,7 +636,7 @@ public final class WebBeansUtil
         comp.setImplScopeType(new ApplicationScopeLiteral());
         comp.addQualifier(new DefaultLiteral());
 
-        definitionUtil.defineObserverMethods(comp, clazz);
+        webBeansContext.getAnnotatedTypeUtil().defineObserverMethods(comp, comp.getAnnotatedType());
 
         return comp;
     }
