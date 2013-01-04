@@ -28,6 +28,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,17 +59,15 @@ public class InterceptorResolution
 
     public BeanInterceptorInfo calculateInterceptorInfo(AnnotatedType annotatedType)
     {
-        BeanInterceptorInfo interceptorInfo = new BeanInterceptorInfo();
-
         List<AnnotatedMethod> interceptableAnnotatedMethods = getInterceptableAnnotatedMethods(annotatedType);
 
         InterceptorUtil interceptorUtils = webBeansContext.getInterceptorUtil();
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         BeanManager bm = webBeansContext.getBeanManagerImpl();
 
-        List<Interceptor> classLevelCdiInterceptors = new ArrayList<Interceptor>();
         List<Interceptor> classLevelEjbInterceptors = new ArrayList<Interceptor>();
 
+        Map<Method, List<Annotation>> methodInterceptorBindings = new HashMap<Method, List<Annotation>>();
 
         // pick up CDI interceptors from a class level
         //X TODO should work but can surely be improved!
@@ -78,21 +77,27 @@ public class InterceptorResolution
         //X TODO pick up EJB interceptors from a class level
         //X TODO pick up the decorators
 
-        // iterate over all methods and build up the interceptor stack
+        // iterate over all methods and build up the CDI interceptor stack
         for (AnnotatedMethod interceptableAnnotatedMethod : interceptableAnnotatedMethods)
         {
-            Set<Annotation> methodInterceptorBindings
-                    = annotationManager.getInterceptorAnnotations(AnnotationUtil.getAnnotationsFromSet(interceptableAnnotatedMethod.getAnnotations()));
-
             List<Annotation> cummulatedInterceptorBindings = new ArrayList<Annotation>();
-            cummulatedInterceptorBindings.addAll(methodInterceptorBindings);
+            cummulatedInterceptorBindings.addAll(
+                    annotationManager.getInterceptorAnnotations(AnnotationUtil.getAnnotationsFromSet(interceptableAnnotatedMethod.getAnnotations())));
+
             cummulatedInterceptorBindings.addAll(classInterceptorBindings);
 
+            // we collect all interceptor binding annotations on all the class.
+            classInterceptorBindings.addAll(cummulatedInterceptorBindings);
+
+            methodInterceptorBindings.put(interceptableAnnotatedMethod.getJavaMember(), cummulatedInterceptorBindings);
         }
 
         //X TODO sort the CDI interceptors
 
-        return interceptorInfo;
+        Set<Interceptor> classLevelCdiInterceptors = new HashSet<Interceptor>();
+
+
+        return new BeanInterceptorInfo(null, null, null);
     }
 
     /**
@@ -126,6 +131,13 @@ public class InterceptorResolution
      */
     public static class BeanInterceptorInfo
     {
+        public BeanInterceptorInfo(Set<Decorator<?>> decorators, Set<Interceptor<?>> interceptors, MethodInterceptorInfo[] methodsInfo)
+        {
+            this.decorators = decorators;
+            this.interceptors = interceptors;
+            this.methodsInfo = methodsInfo;
+        }
+
         /**
          * All the Interceptor Beans which are active on this class somewhere.
          * This is only used to create the Interceptor instances.
@@ -141,9 +153,22 @@ public class InterceptorResolution
          * For each method which is either decorated or intercepted we keep an entry.
          * If there is no entry then the method has neither a decorator nor an interceptor.
          */
-        private Map<Method, MethodInterceptorInfo> methodsInfo = new HashMap<Method, MethodInterceptorInfo>();
+        private MethodInterceptorInfo[] methodsInfo = null;
 
+        public Set<Decorator<?>> getDecorators()
+        {
+            return decorators;
+        }
 
+        public Set<Interceptor<?>> getInterceptors()
+        {
+            return interceptors;
+        }
+
+        public MethodInterceptorInfo[] getMethodsInfo()
+        {
+            return methodsInfo;
+        }
     }
 
     /**
@@ -160,6 +185,7 @@ public class InterceptorResolution
             this.methodEjbInterceptors = methodEjbInterceptors;
         }
 
+        private Method            method;
         private InterceptionType  interceptionType;
         private List<Interceptor> methodEjbInterceptors = null;
         private List<Interceptor> methodCdiInterceptors = null;

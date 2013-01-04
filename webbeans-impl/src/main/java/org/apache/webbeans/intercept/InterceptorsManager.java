@@ -29,6 +29,9 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.Asserts;
 
+/**
+ * This class keeps all the enabled interceptor classes of a certain BeanManager.
+ */
 public class InterceptorsManager
 {
     private List<Class<?>> enabledInterceptors = new CopyOnWriteArrayList<Class<?>>();
@@ -42,6 +45,9 @@ public class InterceptorsManager
         manager = webBeansContext.getBeanManagerImpl();
     }
 
+    /**
+     * Add a certain class to the enabled interceptors list.
+     */
     public void addNewInterceptor(Class<?> interceptorClazz)
     {
         Asserts.nullCheckForClass(interceptorClazz, "interceptorClazz can not be null");
@@ -52,19 +58,26 @@ public class InterceptorsManager
         }
     }
 
+    /**
+     * Helper to compare the order of different interceptor classes
+     */
     public int compare(Class<?> src, Class<?> target)
     {
         Asserts.assertNotNull(src, "src parameter can not be  null");
         Asserts.assertNotNull(target, "target parameter can not be null");
 
         int srcIndex = enabledInterceptors.indexOf(src);
-        int targetIndex = enabledInterceptors.indexOf(target);
-
-        if (srcIndex == -1 || targetIndex == -1)
+        if (srcIndex == -1)
         {
-            throw new IllegalArgumentException("One of the compare class of the list : [" + src.getName() + "," + target.getName() + "]"
-                                               + " is not contained in the enabled interceptors list!");
+            throw new IllegalArgumentException(src.getName() + " is not an enabled interceptor!");
         }
+
+        int targetIndex = enabledInterceptors.indexOf(target);
+        if (targetIndex == -1)
+        {
+            throw new IllegalArgumentException(target.getName() + " is not an enabled interceptor!");
+        }
+
 
         if (srcIndex == targetIndex)
         {
@@ -80,6 +93,9 @@ public class InterceptorsManager
         }
     }
 
+    /**
+     * Check if the given interceptor class is in the list of enabled interceptors.
+     */
     public boolean isInterceptorEnabled(Class<?> interceptorClazz)
     {
         Asserts.nullCheckForClass(interceptorClazz, "interceptorClazz can not be null");
@@ -93,7 +109,7 @@ public class InterceptorsManager
         {
             AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(interceptorClass);
 
-            //Validate decorator classes
+            // Validate decorator classes
             if(!annotatedType.isAnnotationPresent(Interceptor.class) && !manager.containsCustomInterceptorClass(interceptorClass))
             {
                 throw new WebBeansConfigurationException("Given class : " + interceptorClass + " is not a interceptor class");

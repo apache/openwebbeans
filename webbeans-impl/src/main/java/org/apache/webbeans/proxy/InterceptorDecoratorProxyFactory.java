@@ -52,7 +52,7 @@ public class InterceptorDecoratorProxyFactory
     public static final String FIELD_PROXIED_INSTANCE = "owbIntDecProxiedInstance";
 
     /** the name of the field which stores the Interceptor + Decorator stack InterceptorHandler */
-    public static final String FIELD_INTERCEPTOR_HANDLER = "owbDecoratorHandler";
+    public static final String FIELD_INTERCEPTOR_HANDLER = "owbIntDecHandler";
 
     //X TODO add caching of created proxy classes. This is needed to prevent class loading clashes.
     //X a generated proxy cannot easily get redefined later!

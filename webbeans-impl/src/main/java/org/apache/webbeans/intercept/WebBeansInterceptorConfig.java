@@ -20,7 +20,6 @@ package org.apache.webbeans.intercept;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
-import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
@@ -139,7 +138,6 @@ public final class WebBeansInterceptorConfig
      */
     public void configure(AbstractInjectionTargetBean<?> component, List<InterceptorData> stack)
     {
-        Class<?> clazz = ((AbstractOwbBean<?>)component).getReturnType();
         AnnotatedType<?> annotatedType = component.getAnnotatedType();
         Set<Annotation> annotations = annotatedType.getAnnotations();
 
@@ -195,8 +193,7 @@ public final class WebBeansInterceptorConfig
             }
         }
 
-        anns = new Annotation[bindingTypeSet.size()];
-        anns = bindingTypeSet.toArray(anns);
+        anns = bindingTypeSet.toArray(new Annotation[bindingTypeSet.size()]);
 
         //Spec Section 9.5.2
         for(Annotation checkAnn : anns)
