@@ -384,18 +384,19 @@ public final class WebBeansInterceptorConfig
     }
 
     /*
-     * Find the deployed interceptors with given interceptor binding types.
+     * Find the deployed interceptors with all the given interceptor binding types.
+     * The reason why we can face multiple InterceptorBindings is because of the transitive
+     * behaviour of &#064;InterceptorBinding. See section 9.1.1 of the CDI spec.
      */
-    public Set<Interceptor<?>> findDeployedWebBeansInterceptor(Annotation[] anns)
+    public Set<Interceptor<?>> findDeployedWebBeansInterceptor(Annotation[] interceptorBindingTypes)
     {
         Set<Interceptor<?>> set = new HashSet<Interceptor<?>>();
 
         Iterator<Interceptor<?>> it = webBeansContext.getInterceptorsManager().getInterceptors().iterator();
-        WebBeansInterceptorBean<?> interceptor;
 
         List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();
         List<Annotation> listAnnot = new ArrayList<Annotation>();
-        for (Annotation ann : anns)
+        for (Annotation ann : interceptorBindingTypes)
         {
             bindingTypes.add(ann.annotationType());
             listAnnot.add(ann);
@@ -403,7 +404,7 @@ public final class WebBeansInterceptorConfig
 
         while (it.hasNext())
         {
-            interceptor = (WebBeansInterceptorBean<?>) it.next();
+            WebBeansInterceptorBean<?> interceptor = (WebBeansInterceptorBean<?>) it.next();
 
             if (interceptor.hasBinding(bindingTypes, listAnnot))
             {
