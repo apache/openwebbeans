@@ -24,7 +24,7 @@ import java.util.Set;
 
 import javax.enterprise.inject.spi.ObserverMethod;
 
-import org.apache.webbeans.component.creation.AbstractInjectedTargetBeanCreator;
+import org.apache.webbeans.component.creation.AbstractInjecionTargetBeanCreator;
 import org.apache.webbeans.ejb.common.util.EjbValidator;
 
 /**
@@ -34,7 +34,7 @@ import org.apache.webbeans.ejb.common.util.EjbValidator;
  *
  * @param <T> ejb class type
  */
-public class EjbBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> implements EjbBeanCreator<T>
+public class EjbBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator<T> implements EjbBeanCreator<T>
 {
     public EjbBeanCreatorImpl(BaseEjbBean<T> ejbBean)
     {

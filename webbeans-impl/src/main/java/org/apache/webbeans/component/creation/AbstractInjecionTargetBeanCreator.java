@@ -34,7 +34,7 @@ import org.apache.webbeans.config.WebBeansContext;
  *
  * @param <T> bean class type
  */
-public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanCreator<T> implements InjectedTargetBeanCreator<T>
+public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanCreator<T> implements InjectedTargetBeanCreator<T>
 {    
     
     private WebBeansContext webBeansContext;
@@ -44,7 +44,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
      * 
      * @param bean bean instance
      */
-    public AbstractInjectedTargetBeanCreator(AbstractInjectionTargetBean<T> bean)
+    public AbstractInjecionTargetBeanCreator(AbstractInjectionTargetBean<T> bean)
     {
         super(bean, bean.getAnnotatedType());
         webBeansContext = bean.getWebBeansContext();
