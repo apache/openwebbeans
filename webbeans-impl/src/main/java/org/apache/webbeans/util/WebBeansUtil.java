@@ -32,7 +32,6 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -103,13 +102,10 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.conversation.ConversationImpl;
-import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
-import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
 import org.apache.webbeans.exception.inject.DefinitionException;
-import org.apache.webbeans.exception.inject.DeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -119,8 +115,6 @@ import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
 import org.apache.webbeans.portable.creation.ProducerBeansProducer;
-import org.apache.webbeans.portable.events.ProcessBeanImpl;
-import org.apache.webbeans.portable.events.ProcessProducerImpl;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
@@ -1931,71 +1925,6 @@ public final class WebBeansUtil
         return true;
     }
 
-    public <T> void defineInterceptor(ManagedBeanCreatorImpl<T> managedBeanCreator, ProcessInjectionTarget<T> injectionTargetEvent)
-    {
-        Class<?> clazz = injectionTargetEvent.getAnnotatedType().getJavaClass();
-        AnnotatedType annotatedType = injectionTargetEvent.getAnnotatedType();
-
-        if (webBeansContext.getInterceptorsManager().isInterceptorEnabled(clazz))
-        {
-            ManagedBean<T> component;
-
-            webBeansContext.getInterceptorUtil().checkInterceptorConditions(annotatedType);
-            component = defineManagedBean(managedBeanCreator, injectionTargetEvent, false);
-
-            if (component != null)
-            {
-                Annotation[] anns = annotatedType.getAnnotations().toArray(new Annotation[annotatedType.getAnnotations().size()]);
-                webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass(component,
-                        webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(anns));
-            }
-            else
-            {
-                // TODO could probably be a bit more descriptive
-                throw new DeploymentException("Cannot create Interceptor for class" + injectionTargetEvent.getAnnotatedType());
-            }
-        }
-
-    }
-
-
-    /**
-     * Define decorator bean.
-     * @param <T> type info
-     * @param creator bean creator
-     * @param processInjectionTargetEvent
-     */
-    public <T> void defineDecorator(ManagedBeanCreatorImpl<T> creator, ProcessInjectionTarget<T> processInjectionTargetEvent)
-    {
-        Class<T> clazz = processInjectionTargetEvent.getAnnotatedType().getJavaClass();
-        if (webBeansContext.getDecoratorsManager().isDecoratorEnabled(clazz))
-        {
-            ManagedBean<T> delegate = null;
-
-            DecoratorUtil.checkDecoratorConditions(clazz);
-
-            if(Modifier.isAbstract(clazz.getModifiers()))
-            {
-                delegate = defineAbstractDecorator(creator, processInjectionTargetEvent);
-            }
-            else
-            {
-                delegate = defineManagedBean(creator, processInjectionTargetEvent, false);
-            }
-
-            if (delegate != null)
-            {
-                delegate.setAnnotatedType(processInjectionTargetEvent.getAnnotatedType());
-                WebBeansDecoratorConfig.configureDecoratorClass(delegate);
-            }
-            else
-            {
-                // TODO could probably be a bit more descriptive
-                throw new DeploymentException("Cannot create Decorator for class" + processInjectionTargetEvent.getAnnotatedType());
-            }
-        }
-    }
-
     /**
      * The result of this invocation get's cached
      * @see #isScopeTypeNormalCache
@@ -2554,169 +2483,6 @@ public final class WebBeansUtil
         return null;
     }
 
-    public <T> ManagedBean<T> defineAbstractDecorator(ManagedBeanCreatorImpl<T> managedBeanCreator, ProcessInjectionTarget<T> processInjectionTargetEvent)
-    {
-
-        ManagedBean<T> bean = defineManagedBean(managedBeanCreator, processInjectionTargetEvent, false);
-        if (bean == null)
-        {
-            // TODO could probably be a bit more descriptive
-            throw new DeploymentException("Cannot create ManagedBean for class" + processInjectionTargetEvent.getAnnotatedType());
-        }
-
-        //X TODO move proxy instance creation into JavassistProxyFactory!
-        Class clazz = webBeansContext.getProxyFactory().createAbstractDecoratorProxyClass(bean);
-
-        bean.setConstructor(defineConstructor(clazz));
-        bean.setIsAbstractDecorator(true);
-        return bean;
-    }
-
-
-    public <T> ManagedBean<T> defineManagedBean(ManagedBeanCreatorImpl<T> managedBeanCreator, ProcessInjectionTarget<T> processInjectionTargetEvent, boolean allowLazyInit)
-    {
-        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-
-        //Annotated type
-        AnnotatedType<T> annotatedType = processInjectionTargetEvent.getAnnotatedType();
-        ManagedBean<T> managedBean = managedBeanCreator.getBean();
-
-        Class<T> clazz = annotatedType.getJavaClass();
-
-        managedBeanCreator.defineApiType();
-
-        //Define meta-data
-        managedBeanCreator.defineStereoTypes();
-        //Scope type
-        managedBeanCreator.defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
-                WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE), allowLazyInit);
-
-        managedBeanCreator.defineSerializable();
-
-        //Check for Enabled via Alternative
-        setInjectionTargetBeanEnableFlag(managedBean);
-
-        managedBeanCreator.checkCreateConditions();
-        managedBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
-        managedBeanCreator.defineQualifier();
-
-        if (managedBean.isFullInit())
-        {
-            managedBeanCreator.defineConstructor();
-            Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods();
-            Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields();
-            managedBeanCreator.defineInjectedFields();
-            managedBeanCreator.defineInjectedMethods();
-
-            Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
-            if(managedBean.isEnabled())
-            {
-                observerMethods = managedBeanCreator.defineObserverMethods();
-            }
-
-            //Put final InjectionTarget instance
-            manager.putProducer(managedBean, processInjectionTargetEvent.getInjectionTarget());
-
-            Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods =
-                    new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>();
-
-            for(ProducerMethodBean<?> producerMethod : producerMethods)
-            {
-                AnnotatedMethod<?> method = webBeansContext.getAnnotatedElementFactory().newAnnotatedMethod(producerMethod.getCreatorMethod(), annotatedType);
-                ProcessProducerImpl<?, ?> producerEvent = fireProcessProducerEventForMethod(producerMethod,
-                                                                                                        method);
-                inspectErrorStack("There are errors that are added by ProcessProducer event observers for "
-                                               + "ProducerMethods. Look at logs for further details");
-
-                annotatedMethods.put(producerMethod, method);
-                manager.putProducer(producerMethod, (Producer) producerEvent.getProducer());
-            }
-
-            Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields =
-                    new HashMap<ProducerFieldBean<?>, AnnotatedField<?>>();
-
-            for(ProducerFieldBean<?> producerField : producerFields)
-            {
-                AnnotatedField<?> field = webBeansContext.getAnnotatedElementFactory().newAnnotatedField(producerField.getCreatorField(), annotatedType);
-                ProcessProducerImpl<?, ?> producerEvent = fireProcessProducerEventForField(producerField, field);
-                inspectErrorStack("There are errors that are added by ProcessProducer event observers for"
-                                               + " ProducerFields. Look at logs for further details");
-
-                annotatedFields.put(producerField, field);
-                manager.putProducer(producerField, (Producer) producerEvent.getProducer());
-            }
-
-            Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap =
-                    new HashMap<ObserverMethod<?>, AnnotatedMethod<?>>();
-
-            for(ObserverMethod<?> observerMethod : observerMethods)
-            {
-                ObserverMethodImpl<?> impl = (ObserverMethodImpl<?>)observerMethod;
-                AnnotatedMethod<?> method = webBeansContext.getAnnotatedElementFactory().newAnnotatedMethod(impl.getObserverMethod(), annotatedType);
-
-                observerMethodsMap.put(observerMethod, method);
-            }
-
-            BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
-
-            //Fires ProcessManagedBean
-            ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean, annotatedType);
-            beanManager.fireEvent(processBeanEvent);
-            inspectErrorStack("There are errors that are added by ProcessManagedBean event observers for " +
-                    "managed beans. Look at logs for further details");
-
-            //Fires ProcessProducerMethod
-            fireProcessProducerMethodBeanEvent(annotatedMethods, annotatedType);
-            inspectErrorStack("There are errors that are added by ProcessProducerMethod event observers for " +
-                    "producer method beans. Look at logs for further details");
-
-            //Fires ProcessProducerField
-            fireProcessProducerFieldBeanEvent(annotatedFields);
-            inspectErrorStack("There are errors that are added by ProcessProducerField event observers for " +
-                    "producer field beans. Look at logs for further details");
-
-            //Fire ObservableMethods
-            fireProcessObservableMethodBeanEvent(observerMethodsMap);
-            inspectErrorStack("There are errors that are added by ProcessObserverMethod event observers for " +
-                    "observer methods. Look at logs for further details");
-
-            if(!isAnnotatedTypeDecoratorOrInterceptor(annotatedType))
-            {
-                beanManager.addBean(managedBean);
-                for (ProducerMethodBean<?> producerMethod : producerMethods)
-                {
-                    // add them one after the other to enable serialization handling et al
-                    beanManager.addBean(producerMethod);
-                }
-                managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
-                for (ProducerFieldBean<?> producerField : producerFields)
-                {
-                    // add them one after the other to enable serialization handling et al
-                    beanManager.addBean(producerField);
-                }
-            }
-        }
-        else
-        {
-            // we still need to fire a ProcessManagedBean event, even for lazily initiated beans
-            // (which most probably are no beans at all...)
-
-            BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
-
-            //Fires ProcessManagedBean
-            ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean, annotatedType);
-            beanManager.fireEvent(processBeanEvent);
-            inspectErrorStack("There are errors that are added by ProcessManagedBean event observers for " +
-                    "managed beans. Look at logs for further details");
-            if(!isAnnotatedTypeDecoratorOrInterceptor(annotatedType))
-            {
-                beanManager.addBean(managedBean);
-            }
-        }
-
-        return managedBean;
-    }
-
     /**
      * This method will be used in {@link AfterBeanDiscovery#addBean(javax.enterprise.inject.spi.Bean)}}
      */
@@ -2919,20 +2685,6 @@ public final class WebBeansUtil
         managedBeanCreator.defineDisposalMethods(); //Define disposal method after adding producers
 
         return managedBean;
-    }
-
-    public void lazyInitializeManagedBean(Class<?> clazz, ManagedBean<?> managedBean, ManagedBeanCreatorImpl<?> managedBeanCreator)
-    {
-        managedBeanCreator.defineConstructor();
-        managedBeanCreator.defineProducerMethods();
-        managedBeanCreator.defineProducerFields();
-        managedBeanCreator.defineInjectedFields();
-        managedBeanCreator.defineInjectedMethods();
-        managedBeanCreator.defineObserverMethods();
-        webBeansContext.getDefinitionUtil().defineDecoratorStack(managedBean);
-        webBeansContext.getDefinitionUtil().defineBeanInterceptorStack(managedBean);
-
-        managedBeanCreator.defineDisposalMethods(); //Define disposal method after adding producers
     }
 
     @SuppressWarnings("unchecked")

@@ -110,7 +110,7 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
             ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(this);
             managedBeanCreator.setAnnotatedType(getAnnotatedType());
 
-            getWebBeansContext().getWebBeansUtil().lazyInitializeManagedBean(getBeanClass(), this, managedBeanCreator);
+            managedBeanCreator.lazyInitializeManagedBean(getBeanClass(), this);
         }
     }
 
