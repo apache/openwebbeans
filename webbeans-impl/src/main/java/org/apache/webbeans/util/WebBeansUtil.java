@@ -1043,7 +1043,6 @@ public final class WebBeansUtil
     /**
      * Configures the interceptor stack of the web beans component.
      *
-     * @param interceptorClass interceptor class
      * @param annotation annotation type
      * @param definedInInterceptorClass check if annotation is defined in
      *            interceptor class (as opposed to bean class)
@@ -2558,18 +2557,11 @@ public final class WebBeansUtil
     }
 
     /**
-     * Return true if this annotated type represents a decorator.
-     * @param annotatedType annotated type
-     * @return true if decorator
+     * @return <code>true</code> if this annotated type represents a decorator.
      */
-    public static boolean isAnnotatedTypeDecorator(AnnotatedType<?> annotatedType)
+    public static boolean isDecorator(AnnotatedType<?> annotatedType)
     {
-        if(annotatedType.isAnnotationPresent(Decorator.class))
-        {
-            return true;
-        }
-
-        return false;
+        return annotatedType.isAnnotationPresent(Decorator.class);
     }
 
     /**
@@ -2579,8 +2571,8 @@ public final class WebBeansUtil
      */
     public boolean isAnnotatedTypeDecoratorOrInterceptor(AnnotatedType<?> annotatedType)
     {
-        if(isAnnotatedTypeDecorator(annotatedType) ||
-                isAnnotatedTypeInterceptor(annotatedType))
+        if(isDecorator(annotatedType) ||
+           isInterceptor(annotatedType))
         {
             return true;
         }
@@ -2598,18 +2590,11 @@ public final class WebBeansUtil
     }
 
     /**
-     * Return true if this annotated type represents a decorator.
-     * @param annotatedType annotated type
-     * @return true if decorator
+     * @return <code>true</code> if this AnnotatedType represents an Interceptor
      */
-    public static boolean isAnnotatedTypeInterceptor(AnnotatedType<?> annotatedType)
+    public static boolean isInterceptor(AnnotatedType<?> annotatedType)
     {
-        if(annotatedType.isAnnotationPresent(javax.interceptor.Interceptor.class))
-        {
-            return true;
-        }
-
-        return false;
+        return annotatedType.isAnnotationPresent(javax.interceptor.Interceptor.class);
     }
 
     public <T> ManagedBean<T> defineManagedBean(AnnotatedType<T> type)

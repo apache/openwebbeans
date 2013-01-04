@@ -398,8 +398,8 @@ public class BeansDeployer
                 {
                     //Decorators not applied to interceptors/decorators/@NewBean
                     if(!(bean instanceof Decorator) && 
-                            !(bean instanceof javax.enterprise.inject.spi.Interceptor) &&
-                            !(bean instanceof NewBean))
+                       !(bean instanceof javax.enterprise.inject.spi.Interceptor) &&
+                       !(bean instanceof NewBean))
                     {
                         webBeansContext.getDefinitionUtil().defineDecoratorStack((AbstractInjectionTargetBean<Object>)bean);
                     }
@@ -849,8 +849,7 @@ public class BeansDeployer
             }
 
 
-            //Decorator
-            if(WebBeansUtil.isAnnotatedTypeDecorator(annotatedType))
+            if(WebBeansUtil.isDecorator(annotatedType))
             {
                 if (logger.isLoggable(Level.FINE))
                 {
@@ -865,8 +864,7 @@ public class BeansDeployer
                     managedBeanCreator.defineDecorator(processInjectionTargetEvent);
                 }
             }
-            //Interceptor
-            else if(WebBeansUtil.isAnnotatedTypeInterceptor(annotatedType))
+            else if(WebBeansUtil.isInterceptor(annotatedType))
             {
                 if (logger.isLoggable(Level.FINE))
                 {

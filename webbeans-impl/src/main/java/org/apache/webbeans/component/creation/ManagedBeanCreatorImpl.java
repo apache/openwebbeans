@@ -321,8 +321,6 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
 
     /**
      * Define decorator bean.
-     * @param <T> type info
-     * @param creator bean creator
      * @param processInjectionTargetEvent
      */
     public void defineDecorator(ProcessInjectionTarget<T> processInjectionTargetEvent)

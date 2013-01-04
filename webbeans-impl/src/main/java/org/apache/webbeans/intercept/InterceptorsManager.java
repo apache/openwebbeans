@@ -30,7 +30,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.Asserts;
 
 /**
- * This class keeps all the enabled interceptor classes of a certain BeanManager.
+ * This class keeps all the enabled interceptor classes information of a certain BeanManager.
  */
 public class InterceptorsManager
 {
