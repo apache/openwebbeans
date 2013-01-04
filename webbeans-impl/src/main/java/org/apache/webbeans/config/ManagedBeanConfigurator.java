@@ -176,7 +176,7 @@ public final class ManagedBeanConfigurator
         }
 
 
-        definitionUtil.defineDisposalMethods(component);
+        webBeansContext.getAnnotatedTypeUtil().defineDisposalMethods(component, component.getAnnotatedType());
         definitionUtil.defineInjectedFields(component);
         definitionUtil.defineInjectedMethods(component);
         definitionUtil.defineObserverMethods(component, clazz);

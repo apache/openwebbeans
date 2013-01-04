@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.config;
 
-import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnsatisfiedResolutionException;
-
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -45,7 +43,6 @@ import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.Nonbinding;
@@ -70,7 +67,6 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.ExternalScope;
-import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.event.NotificationManager;
@@ -831,93 +827,6 @@ public final class DefinitionUtil
         defineName(component, fieldAnns, field.getName());
 
         return component;
-    }
-
-    public <T> void defineDisposalMethods(AbstractOwbBean<T> component)
-    {
-        Class<?> clazz = component.getReturnType();
-
-        defineDisposalMethods(component, clazz);
-
-    }
-
-    public <T> void defineDisposalMethods(AbstractOwbBean<T> component, Class<?> clazz)
-    {
-        Method[] methods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz, Disposes.class);
-
-        // From Normal
-        createDisposalMethods(component, methods, clazz);
-    }
-
-    private <T> void createDisposalMethods(AbstractOwbBean<T> component, Method[] methods, Class<?> clazz)
-    {
-        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-
-        ProducerMethodBean<?> previous = null;
-        for (Method declaredMethod : methods)
-        {
-
-            WebBeansUtil.checkProducerMethodDisposal(declaredMethod, clazz.getName());
-
-            Type type = AnnotationUtil.getMethodFirstParameterWithAnnotation(declaredMethod, Disposes.class);
-            Annotation[] annot = annotationManager.getMethodFirstParameterQualifierWithGivenAnnotation(declaredMethod, Disposes.class);
-
-            InjectionResolver injectionResolver = webBeansContext.getBeanManagerImpl().getInjectionResolver();
-
-            Set<Bean<?>> set = injectionResolver.implResolveByType(type, annot);
-            Bean<?> bean = injectionResolver.resolve(set);
-            if (bean == null)
-            {
-                throwUnsatisfiedResolutionException(clazz, declaredMethod, annot);
-            }
-            
-            ProducerMethodBean<?> pr = null;
-
-            if (!(bean instanceof ProducerMethodBean))
-            {
-                throwUnsatisfiedResolutionException(clazz, declaredMethod);
-            }
-
-            else
-            {
-                pr = (ProducerMethodBean<?>) bean;
-            }
-
-            if (previous == null)
-            {
-                previous = pr;
-            }
-            else
-            {
-                // multiple same producer
-                if (previous.equals(pr))
-                {
-                    throw new WebBeansConfigurationException("There are multiple disposal method for the producer method : " + pr.getCreatorMethod().getName()
-                                                             + " in class : " + clazz.getName());
-                }
-            }
-
-            addMethodInjectionPointMetaData(component, declaredMethod);
-
-            if (component instanceof EnterpriseBeanMarker)
-            {
-                final OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
-                declaredMethod = ejbPlugin.resolveViewMethod(component, declaredMethod);
-            }
-
-            pr.setDisposalMethod(declaredMethod);
-
-            Method producerMethod = pr.getCreatorMethod();
-
-            //Disposer methods and producer methods must be in the same class
-            if(!producerMethod.getDeclaringClass().getName().equals(declaredMethod.getDeclaringClass().getName()))
-            {
-                throw new WebBeansConfigurationException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : "
-                                                         + clazz.getName() + " must be in the same class!");
-            }
-
-
-        }
     }
 
     public <T> void defineInjectedFields(AbstractInjectionTargetBean<T> component)

@@ -25,6 +25,7 @@ import javax.enterprise.inject.spi.ObserverMethod;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 
 /**
@@ -36,6 +37,9 @@ import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
  */
 public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanCreator<T> implements InjectedTargetBeanCreator<T>
 {    
+    
+    private WebBeansContext webBeansContext;
+
     /**
      * Creates a new instance.
      * 
@@ -44,6 +48,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     public AbstractInjectedTargetBeanCreator(AbstractInjectionTargetBean<T> bean)
     {
         super(bean, bean.getAnnotatedType());
+        webBeansContext = bean.getWebBeansContext();
     }
     
  
@@ -52,17 +57,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
      */
     public void defineDisposalMethods()
     {
-        AbstractInjectionTargetBean bean = getBean();
-        if(isDefaultMetaDataProvider())
-        {
-
-            bean.getWebBeansContext().getDefinitionUtil().defineDisposalMethods(getBean());
-        }
-        else
-        {
-            bean.getWebBeansContext().getAnnotatedTypeUtil().defineDisposalMethods(getBean(), getAnnotatedType());
-        }
-        
+        webBeansContext.getAnnotatedTypeUtil().defineDisposalMethods(getBean(), getAnnotatedType());
     }
 
     /**

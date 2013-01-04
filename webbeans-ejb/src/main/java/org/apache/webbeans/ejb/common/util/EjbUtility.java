@@ -233,7 +233,7 @@ public final class EjbUtility
         manager.getBeans().addAll(producerMethodBeans);
         manager.getBeans().addAll(producerFieldBeans);
 
-        util.defineDisposalMethods(ejbBean, clazz);
+        webBeansContext.getAnnotatedTypeUtil().defineDisposalMethods(ejbBean, ejbBean.getAnnotatedType());
 
     }
 
