@@ -58,7 +58,7 @@ public class XMLSpecStrictTest extends TestContext
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
         configurator.configureSpecSpecific(stream, "interceptors.xml");
 
-        boolean enable = WebBeansContext.getInstance().getInterceptorsManager().isInterceptorEnabled(DummyInterceptor.class);
+        boolean enable = WebBeansContext.getInstance().getInterceptorsManager().isInterceptorClassEnabled(DummyInterceptor.class);
         Assert.assertTrue(enable);
     }
     

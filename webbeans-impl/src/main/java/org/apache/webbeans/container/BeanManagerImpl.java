@@ -131,9 +131,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**Deployment archive beans*/
     private Set<Bean<?>> deploymentBeans = new CopyOnWriteArraySet<Bean<?>>();
 
-    /**Activity interceptors*/
-    private List<Interceptor<?>> webBeansInterceptors = new ArrayList<Interceptor<?>>();
-    
     /**Normal scoped cache proxies*/
     private Map<Contextual<?>, Object> cacheProxies = new ConcurrentHashMap<Contextual<?>, Object>();
 
@@ -389,7 +386,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * @param bean
      * @throws DefinitionException if the id is not unique.
      */
-    protected void addPassivationInfo(OwbBean<?> bean) throws DefinitionException
+    public void addPassivationInfo(OwbBean<?> bean) throws DefinitionException
     {
         String id = bean.getId();
         if(id != null)
@@ -411,7 +408,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return this;
 
     }
-    
+
+    //X TODO move to InterceptorsManager
     public void addCustomInterceptorClass(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
@@ -496,22 +494,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return this;
     }
 
-    
-    public BeanManager addInterceptor(Interceptor interceptor)
-    {
-        webBeansInterceptors.add(interceptor);
-        if (interceptor instanceof OwbBean)
-        {
-            OwbBean<?> owbBean = (OwbBean<?>)interceptor;
-            if(owbBean.isPassivationCapable())
-            {
-                addPassivationInfo((OwbBean)interceptor);
-            }
-            
-        }       
-        return this;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -565,11 +547,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public Set<Bean<?>> getBeans()
     {
         return deploymentBeans;
-    }
-
-    public List<Interceptor<?>> getInterceptors()
-    {
-        return webBeansInterceptors;
     }
 
     public Set<Decorator<?>> getDecorators()
@@ -1113,7 +1090,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         producers.clear();
         passivationBeans.clear();
         webBeansDecorators.clear();
-        webBeansInterceptors.clear();
+        webBeansContext.getInterceptorsManager().getInterceptors().clear();
     }
 
     public void clearCacheProxies()

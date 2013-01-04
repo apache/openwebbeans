@@ -114,7 +114,7 @@ public final class WebBeansInterceptorConfig
         }
 
 
-        delegate.getWebBeansContext().getBeanManagerImpl().addInterceptor(interceptor);
+        delegate.getWebBeansContext().getInterceptorsManager().addInterceptor(interceptor);
 
     }
 
@@ -390,7 +390,7 @@ public final class WebBeansInterceptorConfig
     {
         Set<Interceptor<?>> set = new HashSet<Interceptor<?>>();
 
-        Iterator<Interceptor<?>> it = webBeansContext.getBeanManagerImpl().getInterceptors().iterator();
+        Iterator<Interceptor<?>> it = webBeansContext.getInterceptorsManager().getInterceptors().iterator();
         WebBeansInterceptorBean<?> interceptor;
 
         List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();

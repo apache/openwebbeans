@@ -19,6 +19,6 @@ under the License.
 -->
 <beans>
    <interceptors>
-      <class>org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional</class>
+      <class>org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor</class>
    </interceptors>
 </beans>

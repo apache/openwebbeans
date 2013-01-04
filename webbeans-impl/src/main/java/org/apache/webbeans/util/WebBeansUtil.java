@@ -2576,7 +2576,7 @@ public final class WebBeansUtil
         {
             return true;
         }
-        else if(webBeansContext.getInterceptorsManager().isInterceptorEnabled(annotatedType.getJavaClass()))
+        else if(webBeansContext.getInterceptorsManager().isInterceptorClassEnabled(annotatedType.getJavaClass()))
         {
             return true;
         }
@@ -2695,7 +2695,7 @@ public final class WebBeansUtil
     public <T> void defineInterceptor(AnnotatedType<T> annotatedType)
     {
         Class<?> clazz = annotatedType.getJavaClass();
-        if (webBeansContext.getInterceptorsManager().isInterceptorEnabled(clazz))
+        if (webBeansContext.getInterceptorsManager().isInterceptorClassEnabled(clazz))
         {
             ManagedBean<T> delegate = null;
 

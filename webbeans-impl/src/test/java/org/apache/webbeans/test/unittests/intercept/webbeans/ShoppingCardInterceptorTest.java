@@ -53,7 +53,7 @@ public class ShoppingCardInterceptorTest extends TestContext
         webBeansContext.getContextFactory().initSessionContext(null);
 
         // Interceptors must explicitly get enabled via XML. We fake this:
-        webBeansContext.getInterceptorsManager().addNewInterceptor(TransactionalInterceptor.class);
+        webBeansContext.getInterceptorsManager().addNewInterceptorClass(TransactionalInterceptor.class);
         
         defineInterceptor(TransactionalInterceptor.class);
         

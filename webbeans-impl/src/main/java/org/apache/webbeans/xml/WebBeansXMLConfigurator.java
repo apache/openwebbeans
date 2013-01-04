@@ -322,14 +322,14 @@ public final class WebBeansXMLConfigurator
                 interceptorsInFile.add(clazz);
 
                 boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());
-                if ((!isBDAScanningEnabled && manager.isInterceptorEnabled(clazz)) ||
+                if ((!isBDAScanningEnabled && manager.isInterceptorClassEnabled(clazz)) ||
                         (isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addInterceptor(clazz, fileName)))
                 {
                     logger.warning( "Interceptor class : " + child.getTextContent().trim() + " is already defined");
                 }
                 else
                 {
-                    manager.addNewInterceptor(clazz);
+                    manager.addNewInterceptorClass(clazz);
                 }
             }
 

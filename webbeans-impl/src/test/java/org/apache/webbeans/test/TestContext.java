@@ -294,7 +294,7 @@ public abstract class TestContext implements ITestContext
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         webBeansContext.getManagedBeanConfigurator().checkManagedBeanCondition(clazz);
 
-        webBeansContext.getInterceptorsManager().addNewInterceptor(clazz);
+        webBeansContext.getInterceptorsManager().addNewInterceptorClass(clazz);
         AnnotatedType annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
         webBeansContext.getInterceptorUtil().checkInterceptorConditions(annotatedType);
         component = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.INTERCEPTOR, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
@@ -435,7 +435,7 @@ public abstract class TestContext implements ITestContext
      */
     protected void initializeInterceptorType(Class<?> interceptorClazz)
     {
-        WebBeansContext.getInstance().getInterceptorsManager().addNewInterceptor(interceptorClazz);
+        WebBeansContext.getInstance().getInterceptorsManager().addNewInterceptorClass(interceptorClazz);
 
     }
 

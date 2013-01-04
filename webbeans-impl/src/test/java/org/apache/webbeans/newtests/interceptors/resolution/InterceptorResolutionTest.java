@@ -25,6 +25,7 @@ import java.util.Collection;
 import org.apache.webbeans.intercept.InterceptorResolution;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
+import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
 
@@ -46,8 +47,9 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(ClassInterceptedClass.class);
         beanClasses.add(Transactional.class);
+        beanClasses.add(TransactionalInterceptor.class);
 
-        startContainer(beanClasses, null);
+        startContainer(beanClasses, beanXmls);
 
         InterceptorResolution ir = new InterceptorResolution(getWebBeansContext());
         AnnotatedType<ClassInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(ClassInterceptedClass.class);
@@ -55,7 +57,7 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
         InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
-/*X TODO implement!
+/*X
         Assert.assertNotNull(interceptorInfo.getInterceptors());
         Assert.assertEquals(1, interceptorInfo.getInterceptors().size());
 
@@ -63,8 +65,6 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         Assert.assertNotNull(interceptorInfo.getMethodsInfo());
 */
-
-
         shutDownContainer();
     }
 }

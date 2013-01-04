@@ -65,6 +65,7 @@ import java.util.logging.Level;
  * </p>
  * 
  * @version $Rev$ $Date$
+ * @deprecated this should get replaced via a new version which does <b>not</b> delegate to a ManagedBean!
  */
 public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements OwbInterceptor<T>
 {
@@ -74,8 +75,13 @@ public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements Ow
     /** Interceptor class */
     private Class<?> clazz;
 
-    /**Delegate Bean*/
+    /**
+     * The Delegate Bean.
+     * OWB currently scans any &#064;Interceptor class as standard bean and then 'wraps'
+     * it with this Bean. Imo this is wrong as an InterceptorBean has different rules alltogether.
+     */
     private AbstractInjectionTargetBean<T> delegateBean;
+
     private final WebBeansContext webBeansContext;
 
     public WebBeansInterceptorBean(AbstractInjectionTargetBean<T> delegateBean)

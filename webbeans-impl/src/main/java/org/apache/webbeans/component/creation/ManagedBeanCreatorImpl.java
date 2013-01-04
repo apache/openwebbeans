@@ -297,7 +297,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
         Class<?> clazz = injectionTargetEvent.getAnnotatedType().getJavaClass();
         AnnotatedType annotatedType = injectionTargetEvent.getAnnotatedType();
 
-        if (webBeansContext.getInterceptorsManager().isInterceptorEnabled(clazz))
+        if (webBeansContext.getInterceptorsManager().isInterceptorClassEnabled(clazz))
         {
             ManagedBean<T> component;
 

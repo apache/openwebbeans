@@ -18,12 +18,14 @@
  */
 package org.apache.webbeans.intercept;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.interceptor.Interceptor;
+import javax.enterprise.inject.spi.Interceptor;
 
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -34,27 +36,30 @@ import org.apache.webbeans.util.Asserts;
  */
 public class InterceptorsManager
 {
-    private List<Class<?>> enabledInterceptors = new CopyOnWriteArrayList<Class<?>>();
     private final WebBeansContext webBeansContext;
+    private final BeanManagerImpl beanManager;
 
-    private final BeanManagerImpl manager;
+    private List<Class<?>> enabledInterceptorClasses = new CopyOnWriteArrayList<Class<?>>();
+
+    /**Active interceptors*/
+    private List<Interceptor<?>> webBeansInterceptors = new ArrayList<Interceptor<?>>();
 
     public InterceptorsManager(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-        manager = webBeansContext.getBeanManagerImpl();
+        beanManager = webBeansContext.getBeanManagerImpl();
     }
 
     /**
      * Add a certain class to the enabled interceptors list.
      */
-    public void addNewInterceptor(Class<?> interceptorClazz)
+    public void addNewInterceptorClass(Class<?> interceptorClazz)
     {
         Asserts.nullCheckForClass(interceptorClazz, "interceptorClazz can not be null");
 
-        if (!enabledInterceptors.contains(interceptorClazz))
+        if (!enabledInterceptorClasses.contains(interceptorClazz))
         {
-            enabledInterceptors.add(interceptorClazz);
+            enabledInterceptorClasses.add(interceptorClazz);
         }
     }
 
@@ -66,13 +71,13 @@ public class InterceptorsManager
         Asserts.assertNotNull(src, "src parameter can not be  null");
         Asserts.assertNotNull(target, "target parameter can not be null");
 
-        int srcIndex = enabledInterceptors.indexOf(src);
+        int srcIndex = enabledInterceptorClasses.indexOf(src);
         if (srcIndex == -1)
         {
             throw new IllegalArgumentException(src.getName() + " is not an enabled interceptor!");
         }
 
-        int targetIndex = enabledInterceptors.indexOf(target);
+        int targetIndex = enabledInterceptorClasses.indexOf(target);
         if (targetIndex == -1)
         {
             throw new IllegalArgumentException(target.getName() + " is not an enabled interceptor!");
@@ -96,21 +101,43 @@ public class InterceptorsManager
     /**
      * Check if the given interceptor class is in the list of enabled interceptors.
      */
-    public boolean isInterceptorEnabled(Class<?> interceptorClazz)
+    public boolean isInterceptorClassEnabled(Class<?> interceptorClazz)
     {
         Asserts.nullCheckForClass(interceptorClazz, "interceptorClazz can not be null");
 
-        return enabledInterceptors.contains(interceptorClazz);
+        return enabledInterceptorClasses.contains(interceptorClazz);
     }
-    
+
+
+    public void addInterceptor(Interceptor interceptor)
+    {
+        webBeansInterceptors.add(interceptor);
+        if (interceptor instanceof OwbBean)
+        {
+            OwbBean<?> owbBean = (OwbBean<?>)interceptor;
+            if(owbBean.isPassivationCapable())
+            {
+                beanManager.addPassivationInfo((OwbBean)interceptor);
+            }
+
+        }
+    }
+
+
+    public List<Interceptor<?>> getInterceptors()
+    {
+        return webBeansInterceptors;
+    }
+
     public void validateInterceptorClasses()
     {
-        for(Class<?> interceptorClass : enabledInterceptors)
+        for(Class<?> interceptorClass : enabledInterceptorClasses)
         {
             AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(interceptorClass);
 
             // Validate decorator classes
-            if(!annotatedType.isAnnotationPresent(Interceptor.class) && !manager.containsCustomInterceptorClass(interceptorClass))
+            if(!annotatedType.isAnnotationPresent(javax.interceptor.Interceptor.class) &&
+               !beanManager.containsCustomInterceptorClass(interceptorClass))
             {
                 throw new WebBeansConfigurationException("Given class : " + interceptorClass + " is not a interceptor class");
             }   

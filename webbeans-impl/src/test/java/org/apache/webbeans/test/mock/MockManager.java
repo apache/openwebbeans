@@ -108,12 +108,6 @@ public class MockManager implements BeanManager
         return manager.addDecorator(decorator);
     }
 
-    public BeanManager addInterceptor(Interceptor<?> interceptor)
-    {
-        manager.addInterceptor(interceptor);
-        return this;
-    }
-
     public void fireEvent(Object event, Annotation... bindings)
     {
         manager.fireEvent(event, bindings);

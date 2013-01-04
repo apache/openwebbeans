@@ -28,11 +28,11 @@ import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean;
 public class InterceptorComparator<T> implements Comparator<Interceptor<T>>
 {
 
-    private final WebBeansContext webBeansContext;
+    private final InterceptorsManager interceptorsManager;
 
     public InterceptorComparator(WebBeansContext webBeansContext)
     {
-        this.webBeansContext = webBeansContext;
+        this.interceptorsManager = webBeansContext.getInterceptorsManager();
     }
 
     public int compare(Interceptor<T> o1, Interceptor<T> o2)
@@ -49,7 +49,7 @@ public class InterceptorComparator<T> implements Comparator<Interceptor<T>>
             Class<?> o1Clazz = src.getClazz();
             Class<?> o2Clazz = target.getClazz();
 
-            return webBeansContext.getInterceptorsManager().compare(o1Clazz, o2Clazz);
+            return interceptorsManager.compare(o1Clazz, o2Clazz);
 
         }
     }
