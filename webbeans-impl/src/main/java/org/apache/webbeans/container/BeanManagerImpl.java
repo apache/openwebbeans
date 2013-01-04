@@ -148,13 +148,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     /**Additional decorator class*/
     private List<Class<?>> additionalDecoratorClasses = new ArrayList<Class<?>>();
-    
-    /**Additional interceptor class*/
-    private List<Class<?>> additionalInterceptorClasses = new ArrayList<Class<?>>();
-
-    /**Additional interceptor binding types we got via Extensions */
-    private Map<Class<? extends Annotation>, Set<Annotation>> additionalInterceptorBindingTypes
-            = new HashMap<Class<? extends Annotation>, Set<Annotation>>();
 
     /**
      * This list contains additional qualifiers which got set via the
@@ -409,55 +402,16 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     }
 
-    //X TODO move to InterceptorsManager
-    public void addCustomInterceptorClass(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        additionalInterceptorClasses.add(clazz);
-    }
-
     public void addCustomDecoratorClass(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
         additionalDecoratorClasses.add(clazz);
-    }
-    
-    public boolean containsCustomInterceptorClass(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        return additionalInterceptorClasses.contains(clazz);
     }
 
     public boolean containsCustomDecoratorClass(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
         return additionalDecoratorClasses.contains(clazz);
-    }
-
-    public void addInterceptorBindingType(Class<? extends Annotation> bindingType, Annotation... inheritsArray)
-    {
-        Set<Annotation> inherits = additionalInterceptorBindingTypes.get(bindingType);
-        if (inherits == null)
-        {
-            inherits = new HashSet<Annotation>();
-            additionalInterceptorBindingTypes.put(bindingType, inherits);
-        }
-        for(Annotation ann : inheritsArray)
-        {
-            inherits.add(ann);
-        }
-
-    }
-
-    public boolean hasInterceptorBindingType(Class<? extends Annotation> bindingType)
-    {
-        return additionalInterceptorBindingTypes.keySet().contains(bindingType);
-    }
-
-
-    public Set<Annotation> getInterceptorBindingTypeMetaAnnotations(Class<? extends Annotation> interceptorBindingType)
-    {
-        return Collections.unmodifiableSet(additionalInterceptorBindingTypes.get(interceptorBindingType));
     }
 
     /**
@@ -1077,8 +1031,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         additionalAnnotatedTypes.clear();
         additionalDecoratorClasses.clear();
-        additionalInterceptorClasses.clear();
-        additionalInterceptorBindingTypes.clear();
         additionalQualifiers.clear();
         additionalScopes.clear();
         clearCacheProxies();
@@ -1090,7 +1042,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         producers.clear();
         passivationBeans.clear();
         webBeansDecorators.clear();
-        webBeansContext.getInterceptorsManager().getInterceptors().clear();
+        webBeansContext.getInterceptorsManager().clear();
     }
 
     public void clearCacheProxies()

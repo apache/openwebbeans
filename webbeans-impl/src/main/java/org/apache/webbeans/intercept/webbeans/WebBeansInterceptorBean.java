@@ -199,9 +199,9 @@ public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements Ow
             Set<Annotation> declared = null;
             Annotation[] anns = null;
 
-            if (webBeansContext.getBeanManagerImpl().hasInterceptorBindingType(clazzAnnot))
+            if (webBeansContext.getInterceptorsManager().hasInterceptorBindingType(clazzAnnot))
             {
-                declared = webBeansContext.getBeanManagerImpl().getInterceptorBindingTypeMetaAnnotations(clazzAnnot);
+                declared = webBeansContext.getInterceptorsManager().getInterceptorBindingTypeMetaAnnotations(clazzAnnot);
                 anns = new Annotation[declared.size()];
                 anns = declared.toArray(anns);
             }

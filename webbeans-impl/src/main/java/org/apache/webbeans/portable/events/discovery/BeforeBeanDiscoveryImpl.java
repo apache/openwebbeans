@@ -68,7 +68,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
      */
     public void addInterceptorBinding(Class<? extends Annotation> binding, Annotation... bindingDef)
     {
-        webBeansContext.getBeanManagerImpl().addInterceptorBindingType(binding, bindingDef);
+        webBeansContext.getInterceptorsManager().addInterceptorBindingType(binding, bindingDef);
     }
 
     /**

@@ -94,7 +94,7 @@ public final class AnnotationManager
         Asserts.nullCheckForClass(clazz);
 
         return clazz.isAnnotationPresent(InterceptorBinding.class)
-               || beanManagerImpl.hasInterceptorBindingType(clazz);
+               || webBeansContext.getInterceptorsManager().hasInterceptorBindingType(clazz);
     }
 
 

@@ -18,8 +18,14 @@
  */
 package org.apache.webbeans.intercept;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -39,10 +45,25 @@ public class InterceptorsManager
     private final WebBeansContext webBeansContext;
     private final BeanManagerImpl beanManager;
 
-    private List<Class<?>> enabledInterceptorClasses = new CopyOnWriteArrayList<Class<?>>();
+    /**
+     * Interceptor classes which got added via beans.xml
+     */
+    private List<Class<?>> configuredInterceptorClasses = new CopyOnWriteArrayList<Class<?>>();
 
-    /**Active interceptors*/
+    /**
+     * Active interceptors
+     */
     private List<Interceptor<?>> webBeansInterceptors = new ArrayList<Interceptor<?>>();
+
+    /**Additional interceptor class*/
+    private List<Class<?>> additionalInterceptorClasses = new ArrayList<Class<?>>();
+
+    /**
+     * Additional interceptor binding types we got via Extensions
+     */
+    private Map<Class<? extends Annotation>, Set<Annotation>> additionalInterceptorBindingTypes
+            = new HashMap<Class<? extends Annotation>, Set<Annotation>>();
+
 
     public InterceptorsManager(WebBeansContext webBeansContext)
     {
@@ -51,15 +72,27 @@ public class InterceptorsManager
     }
 
     /**
+     * Clears all info.
+     * This must only be called by the BeanManager.
+     */
+    public void clear()
+    {
+        additionalInterceptorBindingTypes.clear();
+        additionalInterceptorClasses.clear();
+        configuredInterceptorClasses.clear();
+    }
+
+
+    /**
      * Add a certain class to the enabled interceptors list.
      */
     public void addNewInterceptorClass(Class<?> interceptorClazz)
     {
         Asserts.nullCheckForClass(interceptorClazz, "interceptorClazz can not be null");
 
-        if (!enabledInterceptorClasses.contains(interceptorClazz))
+        if (!configuredInterceptorClasses.contains(interceptorClazz))
         {
-            enabledInterceptorClasses.add(interceptorClazz);
+            configuredInterceptorClasses.add(interceptorClazz);
         }
     }
 
@@ -71,13 +104,13 @@ public class InterceptorsManager
         Asserts.assertNotNull(src, "src parameter can not be  null");
         Asserts.assertNotNull(target, "target parameter can not be null");
 
-        int srcIndex = enabledInterceptorClasses.indexOf(src);
+        int srcIndex = configuredInterceptorClasses.indexOf(src);
         if (srcIndex == -1)
         {
             throw new IllegalArgumentException(src.getName() + " is not an enabled interceptor!");
         }
 
-        int targetIndex = enabledInterceptorClasses.indexOf(target);
+        int targetIndex = configuredInterceptorClasses.indexOf(target);
         if (targetIndex == -1)
         {
             throw new IllegalArgumentException(target.getName() + " is not an enabled interceptor!");
@@ -105,7 +138,7 @@ public class InterceptorsManager
     {
         Asserts.nullCheckForClass(interceptorClazz, "interceptorClazz can not be null");
 
-        return enabledInterceptorClasses.contains(interceptorClazz);
+        return configuredInterceptorClasses.contains(interceptorClazz);
     }
 
 
@@ -117,7 +150,7 @@ public class InterceptorsManager
             OwbBean<?> owbBean = (OwbBean<?>)interceptor;
             if(owbBean.isPassivationCapable())
             {
-                beanManager.addPassivationInfo((OwbBean)interceptor);
+                beanManager.addPassivationInfo((OwbBean) interceptor);
             }
 
         }
@@ -129,15 +162,54 @@ public class InterceptorsManager
         return webBeansInterceptors;
     }
 
+    public void addCustomInterceptorClass(Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+        additionalInterceptorClasses.add(clazz);
+    }
+
+    public boolean containsCustomInterceptorClass(Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+        return additionalInterceptorClasses.contains(clazz);
+    }
+
+    public void addInterceptorBindingType(Class<? extends Annotation> bindingType, Annotation... inheritsArray)
+    {
+        Set<Annotation> inherits = additionalInterceptorBindingTypes.get(bindingType);
+        if (inherits == null)
+        {
+            inherits = new HashSet<Annotation>();
+            additionalInterceptorBindingTypes.put(bindingType, inherits);
+        }
+        for(Annotation ann : inheritsArray)
+        {
+            inherits.add(ann);
+        }
+
+    }
+
+    public boolean hasInterceptorBindingType(Class<? extends Annotation> bindingType)
+    {
+        return additionalInterceptorBindingTypes.keySet().contains(bindingType);
+    }
+
+
+    public Set<Annotation> getInterceptorBindingTypeMetaAnnotations(Class<? extends Annotation> interceptorBindingType)
+    {
+        return Collections.unmodifiableSet(additionalInterceptorBindingTypes.get(interceptorBindingType));
+    }
+
+
     public void validateInterceptorClasses()
     {
-        for(Class<?> interceptorClass : enabledInterceptorClasses)
+        for(Class<?> interceptorClass : configuredInterceptorClasses)
         {
             AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(interceptorClass);
 
             // Validate decorator classes
             if(!annotatedType.isAnnotationPresent(javax.interceptor.Interceptor.class) &&
-               !beanManager.containsCustomInterceptorClass(interceptorClass))
+               !containsCustomInterceptorClass(interceptorClass))
             {
                 throw new WebBeansConfigurationException("Given class : " + interceptorClass + " is not a interceptor class");
             }   
