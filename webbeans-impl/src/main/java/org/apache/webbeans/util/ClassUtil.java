@@ -316,14 +316,14 @@ public final class ClassUtil
 
     /**
      * Check if the method is already defined in a subclass
-     * @param methods
-     * @param method
+     * @param subclassMethods
+     * @param superclassMethod
      */
-    public static boolean isOverridden(final List<Method> methods, final Method method)
+    public static boolean isOverridden(final List<Method> subclassMethods, final Method superclassMethod)
     {
-        for (final Method m : methods)
+        for (final Method m : subclassMethods)
         {
-            if (isOverridden(m, method))
+            if (isOverridden(m, superclassMethod))
             {
                 return true;
             }

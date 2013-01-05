@@ -167,7 +167,7 @@ public final class ManagedBeanConfigurator
             manager.putProducer(producerMethod, new ProducerBeansProducer(producerMethod));
         }
 
-        Set<ProducerFieldBean<?>> producerFields = definitionUtil.defineProducerFields(component);
+        Set<ProducerFieldBean<?>> producerFields = webBeansContext.getAnnotatedTypeUtil().defineProducerFields(component, component.getAnnotatedType());
         for (ProducerFieldBean<?> producerField : producerFields)
         {
             // add them one after the other to enable serialization handling et al

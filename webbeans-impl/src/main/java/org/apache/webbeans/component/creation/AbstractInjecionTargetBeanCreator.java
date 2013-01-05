@@ -88,15 +88,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
      */
     public Set<ProducerFieldBean<?>> defineProducerFields()
     {
-        AbstractInjectionTargetBean bean = getBean();
-        if(isDefaultMetaDataProvider())
-        {
-            return bean.getWebBeansContext().getDefinitionUtil().defineProducerFields(bean);
-        }
-        else
-        {
-            return bean.getWebBeansContext().getAnnotatedTypeUtil().defineProducerFields(bean, getAnnotatedType());
-        }
+        return webBeansContext.getAnnotatedTypeUtil().defineProducerFields(getBean(), getAnnotatedType());
     }
 
     /**

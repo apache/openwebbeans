@@ -116,7 +116,12 @@ public final class AnnotatedElementFactory
         {
             try
             {
-                annotatedType = new AnnotatedTypeImpl<X>(webBeansContext, annotatedClass);
+                AnnotatedType<? super X> supertype = null;
+                if (annotatedClass.getSuperclass() != null && !annotatedClass.getSuperclass().equals(Object.class))
+                {
+                    supertype = (AnnotatedTypeImpl<? super X>) newAnnotatedType(annotatedClass.getSuperclass());
+                }
+                annotatedType = new AnnotatedTypeImpl<X>(webBeansContext, annotatedClass, (AnnotatedTypeImpl<? super X>) supertype);
 
                 AnnotatedType<X> oldType = (AnnotatedType<X>)annotatedTypeCache.putIfAbsent(annotatedClass, annotatedType);
                 if(oldType != null)

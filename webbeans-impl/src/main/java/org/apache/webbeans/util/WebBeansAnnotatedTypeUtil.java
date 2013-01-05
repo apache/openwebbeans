@@ -403,10 +403,14 @@ public final class WebBeansAnnotatedTypeUtil
         Set<AnnotatedField<? super X>> annotatedFields = annotatedType.getFields();        
         for(AnnotatedField<? super X> annotatedField: annotatedFields)
         {
-            if(annotatedField.isAnnotationPresent(Produces.class))
+            if(annotatedField.isAnnotationPresent(Produces.class) && annotatedField.getDeclaringType().equals(annotatedType))
             {
                 Type genericType = annotatedField.getBaseType();
                 
+                if(ClassUtil.isTypeVariable(genericType))
+                {
+                    throw new WebBeansConfigurationException("Producer annotated field : " + annotatedField + " can not be Wildcard type or Type variable");
+                }
                 if(ClassUtil.isParametrizedType(genericType))
                 {
                     if(!ClassUtil.checkParametrizedType((ParameterizedType)genericType))
@@ -451,18 +455,23 @@ public final class WebBeansAnnotatedTypeUtil
                     ProducerFieldBean<X> producerFieldBean = new ProducerFieldBean<X>(bean, (Class<X>)ClassUtil.getClass(annotatedField.getBaseType()));
                     producerFieldBean.setProducerField(field);
                     
-                    if (ClassUtil.getClass(annotatedField.getBaseType()).isPrimitive())
+                    if (producerFieldBean.getReturnType().isPrimitive())
                     {
                         producerFieldBean.setNullable(false);
                     }                    
 
                     definitionUtil.defineSerializable(producerFieldBean);
                     definitionUtil.defineStereoTypes(producerFieldBean, anns);
-                    webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
-                                                                                                      producerFieldBean,
-                                                                                                      anns);
-                    Set<Type> types = annotatedField.getTypeClosure();
-                    producerFieldBean.getTypes().addAll(types);
+                    webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean, producerFieldBean, anns);
+                    if (producerFieldBean.getReturnType().isArray())
+                    {
+                        producerFieldBean.getTypes().add(Object.class);
+                        producerFieldBean.getTypes().add(producerFieldBean.getReturnType());
+                    }
+                    else
+                    {
+                        producerFieldBean.getTypes().addAll(annotatedField.getTypeClosure());
+                    }
                     definitionUtil.defineScopeType(producerFieldBean, anns, "Annotated producer field: " + annotatedField +  "must declare default @Scope annotation", false);
                     webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerFieldBean,
                                                                                              producerFieldBean.getScope());
@@ -488,7 +497,7 @@ public final class WebBeansAnnotatedTypeUtil
         
         for(AnnotatedMethod<? super X> annotatedMethod: annotatedMethods)
         {
-            if(annotatedMethod.isAnnotationPresent(Produces.class))
+            if(annotatedMethod.isAnnotationPresent(Produces.class) && annotatedMethod.getDeclaringType().equals(annotatedType))
             {
                 checkProducerMethodForDeployment(annotatedMethod);
                 boolean specialize = false;

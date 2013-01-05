@@ -188,7 +188,7 @@ public final class EjbUtility
 
         final Set<ProducerMethodBean<?>> producerMethodBeans = util.defineProducerMethods(ejbBean, clazz);
 
-        final Set<ProducerFieldBean<?>> producerFieldBeans = util.defineProducerFields(ejbBean, clazz);
+        final Set<ProducerFieldBean<?>> producerFieldBeans = webBeansContext.getAnnotatedTypeUtil().defineProducerFields(ejbBean, annotatedType);
 
         checkProducerMethods(producerMethodBeans, ejbBean);
 

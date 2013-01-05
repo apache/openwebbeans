@@ -24,7 +24,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -59,16 +58,13 @@ import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
-import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorData;
-import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -110,7 +106,7 @@ public final class DefinitionUtil
         removeIgnoredInterfaces(bean);
     }
 
-    private static <T> void removeIgnoredInterfaces(AbstractOwbBean<T> bean)
+    public static <T> void removeIgnoredInterfaces(AbstractOwbBean<T> bean)
     {
         Set<String> ignoredInterfaces = bean.getWebBeansContext().getOpenWebBeansConfiguration().getIgnoredInterfaces();
         for (Iterator<Type> i = bean.getTypes().iterator(); i.hasNext(); )
@@ -200,7 +196,7 @@ public final class DefinitionUtil
         removeIgnoredInterfaces(producerBean);
     }
     
-    private static <T> void defineNormalProducerMethodApi(AbstractProducerBean<T> producerBean, Type type)
+    public static <T> void defineNormalProducerMethodApi(AbstractProducerBean<T> producerBean, Type type)
     {
         Set<Type> types = producerBean.getTypes();
         types.add(Object.class);
@@ -614,55 +610,6 @@ public final class DefinitionUtil
     }
 
     /**
-     * Defines the set of {@link ProducerFieldBean} components.
-     * 
-     * @param component producer field owner component
-     * @return the set of producer field components
-     */
-    public Set<ProducerFieldBean<?>> defineProducerFields(InjectionTargetBean<?> component)
-    {
-
-        final Class<?> returnType = component.getReturnType();
-
-        return defineProducerFields(component, returnType);
-    }
-
-    public Set<ProducerFieldBean<?>> defineProducerFields(InjectionTargetBean<?> component, Class<?> returnType)
-    {
-        final Field[] fields = webBeansContext.getSecurityService().doPrivilegedGetDeclaredFields(returnType);
-
-        final Set<ProducerFieldBean<?>> producerFields = new HashSet<ProducerFieldBean<?>>();
-
-        for (Field field : fields)
-        {
-            final Type genericType = field.getGenericType();
-
-            // Producer field
-            if (AnnotationUtil.hasAnnotation(field.getDeclaredAnnotations(), Produces.class))
-            {
-                if(ClassUtil.isParametrizedType(genericType))
-                {
-                    if(!ClassUtil.checkParametrizedType((ParameterizedType)genericType))
-                    {
-                        throw new WebBeansConfigurationException("Producer field : " + field.getName() + " return type in class : " +
-                                field.getDeclaringClass().getName() + " can not be Wildcard type or Type variable");
-                    }
-                }
-
-                final ProducerFieldBean<?> newComponent = createProducerFieldComponent(field.getType(), field, component);
-
-                if (newComponent != null)
-                {
-                    producerFields.add(newComponent);
-                }
-            }
-
-        }
-
-        return producerFields;
-    }
-
-    /**
      * Defines the {@link Bean} producer methods. Moreover, it configures the
      * producer methods with using the {@link Produces} annotations.
      * 
@@ -765,62 +712,6 @@ public final class DefinitionUtil
         WebBeansUtil.checkProducerGenericType(component,method);
         defineName(component, methodAnns, WebBeansUtil.getProducerDefaultName(method.getName()));
         defineQualifiers(component, methodAnns);
-
-        return component;
-    }
-
-    private <T> ProducerFieldBean<T> createProducerFieldComponent(Class<T> returnType, Field field, InjectionTargetBean<?> parent)
-    {
-        ProducerFieldBean<T> component = new ProducerFieldBean<T>(parent, returnType);
-        
-        //Producer field for resource
-        Annotation resourceAnnotation = AnnotationUtil.hasOwbInjectableResource(field.getDeclaredAnnotations());
-        if(resourceAnnotation != null)
-        {
-            //Check for valid resource annotation
-            //WebBeansUtil.checkForValidResources(field.getDeclaringClass(), field.getType(), field.getName(), field.getDeclaredAnnotations());
-            if(!Modifier.isStatic(field.getModifiers()))
-            {
-                ResourceReference<T,Annotation> resourceRef = new ResourceReference<T, Annotation>(field.getDeclaringClass(), field.getName(),returnType, resourceAnnotation);
-
-                //Can not define EL name
-                if(field.isAnnotationPresent(Named.class))
-                {
-                    throw new WebBeansConfigurationException("Resource producer field : " + field + " can not define EL name");
-                }
-                
-                ResourceBean<T,Annotation> resourceBean = new ResourceBean(returnType,parent, resourceRef);
-                
-                defineProducerMethodApiTypes(resourceBean, field.getGenericType() , field.getDeclaredAnnotations());
-                defineQualifiers(resourceBean, field.getDeclaredAnnotations());
-                resourceBean.setImplScopeType(new DependentScopeLiteral());
-                resourceBean.setProducerField(field);
-                
-                return resourceBean;                
-            }
-        }
-        
-        component.setProducerField(field);
-
-        if (returnType.isPrimitive())
-        {
-            component.setNullable(false);
-        }
-
-        defineSerializable(component);
-        defineStereoTypes(component, field.getDeclaredAnnotations());
-
-        Annotation[] fieldAnns = field.getDeclaredAnnotations();
-
-        webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(parent, component, fieldAnns);
-
-        defineProducerMethodApiTypes(component, field.getGenericType(), fieldAnns);
-        defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName()
-                                                             + " must declare default @Scope annotation", false);
-        webBeansContext.getWebBeansUtil().checkUnproxiableApiType(component, component.getScope());
-        WebBeansUtil.checkProducerGenericType(component,field);
-        defineQualifiers(component, fieldAnns);
-        defineName(component, fieldAnns, field.getName());
 
         return component;
     }

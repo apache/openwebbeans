@@ -24,10 +24,8 @@ import org.apache.webbeans.util.ClassUtil;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
@@ -44,6 +42,9 @@ import javax.enterprise.inject.spi.AnnotatedType;
  */
 class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
 {
+    /**parent class*/
+    private final AnnotatedType<? super X> supertype;
+    
     /**Annotated class*/
     private final Class<X> annotatedClass;
     
@@ -61,9 +62,10 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
      * 
      * @param annotatedClass class
      */
-    AnnotatedTypeImpl(WebBeansContext webBeansContext, Class<X> annotatedClass)
+    AnnotatedTypeImpl(WebBeansContext webBeansContext, Class<X> annotatedClass, AnnotatedTypeImpl<? super X> supertype)
     {
         super(webBeansContext, annotatedClass);
+        this.supertype = supertype;
         this.annotatedClass = annotatedClass;     
         
         setAnnotations(annotatedClass.getDeclaredAnnotations());
@@ -88,32 +90,37 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
                 }
             }
 
-            Class<?> currentClass = annotatedClass;
-            List<Method> addedMethods = new ArrayList<Method>();
-            do
+            Field[] decFields = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredFields(annotatedClass);
+            Method[] decMethods = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(annotatedClass);
+            for(Field f : decFields)
             {
-                Field[] decFields = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredFields(currentClass);
-                Method[] decMethods = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(currentClass);
-                for(Field f : decFields)
+                if (!f.isSynthetic())
                 {
-                    if (!f.isSynthetic())
-                    {
-                        AnnotatedField<X> af = new AnnotatedFieldImpl<X>(getWebBeansContext(), f, this);
-                        fields.add(af);
-                    }
+                    AnnotatedField<X> af = new AnnotatedFieldImpl<X>(getWebBeansContext(), f, this);
+                    fields.add(af);
                 }
+            }
 
-                for(Method m : decMethods)
+            for(Method m : decMethods)
+            {
+                if (!m.isSynthetic() && !m.isBridge())
                 {
-                    if (!m.isSynthetic() && !m.isBridge() && !ClassUtil.isOverridden(addedMethods, m))
+                    AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(getWebBeansContext(), m,this);
+                    methods.add(am);
+                }
+            }
+
+            if (supertype != null)
+            {
+                fields.addAll(supertype.getFields());
+                for (AnnotatedMethod<? super X> method : supertype.getMethods())
+                {
+                    if (!isOverridden(method))
                     {
-                        AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(getWebBeansContext(), m,this);
-                        methods.add(am);
-                        addedMethods.add(m);
+                        methods.add(method);
                     }
                 }
-                currentClass = currentClass.getSuperclass();
-            } while (currentClass != Object.class);
+            }
         }
     }
 
@@ -207,4 +214,15 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
         return Collections.unmodifiableSet(methods);
     }
 
+    private boolean isOverridden(AnnotatedMethod<? super X> superclassMethod)
+    {
+        for (AnnotatedMethod<? super X> subclassMethod : methods)
+        {
+            if (ClassUtil.isOverridden(subclassMethod.getJavaMember(), superclassMethod.getJavaMember()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
