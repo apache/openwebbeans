@@ -24,7 +24,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.List;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -53,6 +52,9 @@ public class InterceptorDecoratorProxyFactory
 
     /** the name of the field which stores the Interceptor + Decorator stack InterceptorHandler */
     public static final String FIELD_INTERCEPTOR_HANDLER = "owbIntDecHandler";
+
+    /** the name of the field which stores the Method[] of all intercepted methods */
+    public static final String FIELD_INTERCEPTED_METHODS = "owbIntDecMethods";
 
     //X TODO add caching of created proxy classes. This is needed to prevent class loading clashes.
     //X a generated proxy cannot easily get redefined later!
@@ -105,7 +107,7 @@ public class InterceptorDecoratorProxyFactory
      * @return the proxy class
      */
     public synchronized <T> Class<T> createProxyClass(ClassLoader classLoader, Class<T> classToProxy,
-                                                      List<Method> interceptedMethods, List<Method> nonInterceptedMethods)
+                                                      Method[] interceptedMethods, Method[] nonInterceptedMethods)
             throws ProxyGenerationException
     {
         String proxyClassName = classToProxy.getName() + "$OwbInterceptProxy";
@@ -113,12 +115,25 @@ public class InterceptorDecoratorProxyFactory
 
         final byte[] proxyBytes = generateProxy(classToProxy, proxyClassName, proxyClassFileName, interceptedMethods, nonInterceptedMethods);
 
-        return defineAndLoadClass(classLoader, proxyClassName, proxyBytes);
+        Class<T> clazz = defineAndLoadClass(classLoader, proxyClassName, proxyBytes);
+
+        try
+        {
+            Field interceptedMethodsField = clazz.getDeclaredField(FIELD_INTERCEPTED_METHODS);
+            interceptedMethodsField.setAccessible(true);
+            interceptedMethodsField.set(null, interceptedMethods);
+        }
+        catch (Exception e)
+        {
+            throw new ProxyGenerationException(e);
+        }
+
+        return clazz;
     }
 
 
     private byte[] generateProxy(Class<?> classToProxy, String proxyClassName, String proxyClassFileName,
-                                 List<Method> interceptedMethods, List<Method> nonInterceptedMethods)
+                                 Method[] interceptedMethods, Method[] nonInterceptedMethods)
             throws ProxyGenerationException
     {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
@@ -150,10 +165,16 @@ public class InterceptorDecoratorProxyFactory
     private void createInstanceVariables(ClassWriter cw, Class<?> classToProxy, String classFileName)
     {
         // variable #1, the delegation point
-        cw.visitField(Opcodes.ACC_FINAL | Opcodes.ACC_PRIVATE, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy), null, null).visitEnd();
+        cw.visitField(Opcodes.ACC_PRIVATE,
+                FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy), null, null).visitEnd();
 
         // variable #2, the invocation handler
-        cw.visitField(Opcodes.ACC_FINAL | Opcodes.ACC_PRIVATE, FIELD_INTERCEPTOR_HANDLER, Type.getDescriptor(InterceptorHandler.class), null, null).visitEnd();
+        cw.visitField(Opcodes.ACC_PRIVATE,
+                FIELD_INTERCEPTOR_HANDLER, Type.getDescriptor(InterceptorHandler.class), null, null).visitEnd();
+
+        // variable #3, the Method[] of all intercepted methods.
+        cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC,
+                FIELD_INTERCEPTED_METHODS, Type.getDescriptor(Method[].class), null, null).visitEnd();
     }
 
     /**
@@ -203,7 +224,7 @@ public class InterceptorDecoratorProxyFactory
      *
      * @param noninterceptedMethods all methods which are neither intercepted nor decorated
      */
-    private void delegateNonInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, List<Method> noninterceptedMethods)
+    private void delegateNonInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] noninterceptedMethods)
     {
         for (Method delegatedMethod : noninterceptedMethods)
         {
@@ -261,17 +282,17 @@ public class InterceptorDecoratorProxyFactory
                "finalize".equals(delegatedMethod.getName());
     }
 
-    private void delegateInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, List<Method> interceptedMethods)
+    private void delegateInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] interceptedMethods)
             throws ProxyGenerationException
     {
-        for (int i = 0; i < interceptedMethods.size(); i++)
+        for (int i = 0; i < interceptedMethods.length; i++)
         {
-            Method proxiedMethod = interceptedMethods.get(i);
-            generateInvocationHandlerMethod(cw, proxiedMethod, i, classToProxy, proxyClassFileName);
+            Method proxiedMethod = interceptedMethods[i];
+            generateInterceptorHandledMethod(cw, proxiedMethod, i, classToProxy, proxyClassFileName);
         }
     }
 
-    private void generateInvocationHandlerMethod(ClassWriter cw, Method method, int methodIndex, Class<?> classToProxy, String proxyClassFileName)
+    private void generateInterceptorHandledMethod(ClassWriter cw, Method method, int methodIndex, Class<?> classToProxy, String proxyClassFileName)
             throws ProxyGenerationException
     {
         if ("<init>".equals(method.getName()))
@@ -359,8 +380,14 @@ public class InterceptorDecoratorProxyFactory
         // get the invocationHandler field from this class
         mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_INTERCEPTOR_HANDLER, Type.getDescriptor(InterceptorHandler.class));
 
-        // add the methodIndex as context as second parameter
+        // add the Method from the static array as first parameter
+        mv.visitFieldInsn(Opcodes.GETSTATIC, proxyClassFileName, FIELD_INTERCEPTED_METHODS, Type.getDescriptor(Method[].class));
+
+        // push the methodIndex of the current method
         mv.visitIntInsn(Opcodes.BIPUSH, methodIndex);
+
+        // and now load the Method from the array
+        mv.visitInsn(Opcodes.AALOAD);
 
         // need to construct the array of objects passed in
         // create the Object[]
@@ -406,7 +433,7 @@ public class InterceptorDecoratorProxyFactory
 
         // invoke the invocationHandler
         mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, Type.getInternalName(InterceptorHandler.class), "invoke",
-                "(I[Ljava/lang/Object;)Ljava/lang/Object;");
+                "(Ljava/lang/reflect/Method;[Ljava/lang/Object;)Ljava/lang/Object;");
 
         // cast the result
         mv.visitTypeInsn(Opcodes.CHECKCAST, getCastType(returnType));

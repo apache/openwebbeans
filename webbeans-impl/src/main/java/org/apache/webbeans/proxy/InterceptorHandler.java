@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.proxy;
 
+import java.lang.reflect.Method;
+
 /**
  */
 public interface InterceptorHandler
@@ -25,10 +27,10 @@ public interface InterceptorHandler
 
     /**
      *
-     * @param methodIndex index to find the Method
+     * @param method Method which should get invoked
      * @param args
      * @return
      * @throws Throwable
      */
-    public Object invoke(int methodIndex, Object[] args);
+    public Object invoke(Method method, Object[] args);
 }

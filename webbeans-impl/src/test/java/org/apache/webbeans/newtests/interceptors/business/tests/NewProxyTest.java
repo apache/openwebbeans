@@ -69,15 +69,18 @@ public class NewProxyTest extends AbstractUnitTest
         RuntimeExceptionBindingTypeBean target = (RuntimeExceptionBindingTypeBean) beanManager.getContext(RequestScoped.class).get(bean, creationalContext);
         RuntimeExceptionsInterceptor interceptor = (RuntimeExceptionsInterceptor) beanManager.getReference(interceptorBean, RuntimeExceptionsInterceptor.class, creationalContext);
 
-        List<Method> interceptedMethods = Arrays.asList(RuntimeExceptionBindingTypeBean.class.getMethod("business"));
+        Method[] interceptedMethods = {RuntimeExceptionBindingTypeBean.class.getMethod("business")};
         Map<Method, List<Interceptor<RuntimeExceptionBindingTypeBean>>> interceptors = new HashMap<Method, List<Interceptor<RuntimeExceptionBindingTypeBean>>>();
-        interceptors.put(interceptedMethods.iterator().next(), Arrays.<Interceptor<RuntimeExceptionBindingTypeBean>> asList(interceptorBean));
+        interceptors.put(interceptedMethods[0], Arrays.<Interceptor<RuntimeExceptionBindingTypeBean>> asList(interceptorBean));
         Map instances = new HashMap();
         instances.put(interceptorBean, interceptor);
-        InterceptorHandler interceptorHandler = new DefaultInterceptorHandler<RuntimeExceptionBindingTypeBean>(target, interceptedMethods, interceptors, (Map<Interceptor<RuntimeExceptionBindingTypeBean>, RuntimeExceptionBindingTypeBean>) instances);
+        InterceptorHandler interceptorHandler
+                = new DefaultInterceptorHandler<RuntimeExceptionBindingTypeBean>(target, interceptors, (Map<Interceptor<RuntimeExceptionBindingTypeBean>, RuntimeExceptionBindingTypeBean>) instances);
         
         InterceptorDecoratorProxyFactory factory = new InterceptorDecoratorProxyFactory();
-        Class<RuntimeExceptionBindingTypeBean> proxyClass = factory.createProxyClass(Thread.currentThread().getContextClassLoader(), RuntimeExceptionBindingTypeBean.class, interceptedMethods, new ArrayList<Method>());
+        Class<RuntimeExceptionBindingTypeBean> proxyClass
+                = factory.createProxyClass(Thread.currentThread().getContextClassLoader(), RuntimeExceptionBindingTypeBean.class, interceptedMethods, null);
+
         RuntimeExceptionBindingTypeBean instance = factory.createProxyInstance(proxyClass, target, interceptorHandler);
         int result = instance.business();
         Assert.assertEquals(42, result);

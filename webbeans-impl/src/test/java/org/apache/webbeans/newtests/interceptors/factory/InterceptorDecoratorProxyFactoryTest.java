@@ -54,8 +54,8 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
 
         List<Method> methods = ClassUtil.getNonPrivateMethods(ClassInterceptedClass.class);
 
-        List<Method> interceptedMethods = methods;
-        List<Method> nonInterceptedMethods = null;
+        Method[] interceptedMethods = methods.toArray(new Method[methods.size()]);
+        Method[] nonInterceptedMethods = null;
 
 
         Class<ClassInterceptedClass> proxyClass = pf.createProxyClass(classLoader, ClassInterceptedClass.class, interceptedMethods, nonInterceptedMethods);
@@ -64,7 +64,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         ClassInterceptedClass internalInstance = new ClassInterceptedClass();
         internalInstance.init();
 
-        TestInvocationHandler testInvocationHandler = new TestInvocationHandler(internalInstance, interceptedMethods);
+        TestInvocationHandler testInvocationHandler = new TestInvocationHandler(internalInstance);
 
         ClassInterceptedClass proxy = pf.createProxyInstance(proxyClass, internalInstance, testInvocationHandler);
         Assert.assertNotNull(proxy);
@@ -94,24 +94,25 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         public List<String> invokedMethodNames = new ArrayList<String>();
 
         private Object instance;
-        private List<Method> interceptedMethods;
 
-        public TestInvocationHandler(Object instance, List<Method> interceptedMethods)
+        public TestInvocationHandler(Object instance)
         {
             this.instance = instance;
-            this.interceptedMethods = interceptedMethods;
         }
 
         @Override
-        public Object invoke(int methodIndex, Object[] args)
+        public Object invoke(Method method, Object[] args)
         {
-            invokedMethodNames.add(interceptedMethods.get(methodIndex).getName());
+            if (!method.getName().equals("toString"))
+            {
+                invokedMethodNames.add(method.getName());
+            }
 
-            System.out.println("TestInvocationHandler got properly invoked for method " + interceptedMethods.get(methodIndex).getName());
+            System.out.println("TestInvocationHandler got properly invoked for method " + method.getName());
 
             try
             {
-                return interceptedMethods.get(methodIndex).invoke(instance, args);
+                return method.invoke(instance, args);
             }
             catch (IllegalAccessException e)
             {
