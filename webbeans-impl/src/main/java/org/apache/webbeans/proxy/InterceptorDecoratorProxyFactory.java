@@ -21,7 +21,6 @@ package org.apache.webbeans.proxy;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -44,7 +43,7 @@ import org.objectweb.asm.Type;
  *
  */
 //X TODO: clarify how serialisation works! The proxy classes might need to get created on deserialisation!
-public class InterceptorDecoratorProxyFactory
+public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
 {
 
     /** the name of the field which stores the proxied instance */
@@ -147,11 +146,8 @@ public class InterceptorDecoratorProxyFactory
             throws ProxyGenerationException
     {
         String proxyClassName = classToProxy.getName() + "$OwbInterceptProxy";
-        String proxyClassFileName = proxyClassName.replace('.', '/');
 
-        final byte[] proxyBytes = generateProxy(classToProxy, proxyClassName, proxyClassFileName, interceptedMethods, nonInterceptedMethods);
-
-        Class<T> clazz = defineAndLoadClass(classLoader, proxyClassName, proxyBytes);
+        Class<T> clazz = createProxyClass(classLoader, proxyClassName, classToProxy, interceptedMethods, nonInterceptedMethods);
 
         try
         {
@@ -168,37 +164,8 @@ public class InterceptorDecoratorProxyFactory
     }
 
 
-    private byte[] generateProxy(Class<?> classToProxy, String proxyClassName, String proxyClassFileName,
-                                 Method[] interceptedMethods, Method[] nonInterceptedMethods)
-            throws ProxyGenerationException
-    {
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-        String classFileName = classToProxy.getName().replace('.', '/');
 
-        String[] interfaceNames = new String[]{Type.getInternalName(OwbInterceptorProxy.class)};
-
-        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER + Opcodes.ACC_SYNTHETIC, proxyClassFileName, null, classFileName, interfaceNames);
-        cw.visitSource(classFileName + ".java", null);
-
-        createInstanceVariables(cw, classToProxy, classFileName);
-
-        createConstructor(cw, proxyClassFileName, classToProxy, classFileName);
-
-
-        if (nonInterceptedMethods != null)
-        {
-            delegateNonInterceptedMethods(cw, proxyClassFileName, classToProxy, nonInterceptedMethods);
-        }
-
-        if (interceptedMethods != null)
-        {
-            delegateInterceptedMethods(cw, proxyClassFileName, classToProxy, interceptedMethods);
-        }
-
-        return cw.toByteArray();
-    }
-
-    private void createInstanceVariables(ClassWriter cw, Class<?> classToProxy, String classFileName)
+    protected void createInstanceVariables(ClassWriter cw, Class<?> classToProxy, String classFileName)
     {
         // variable #1, the delegation point
         cw.visitField(Opcodes.ACC_PRIVATE,
@@ -217,14 +184,12 @@ public class InterceptorDecoratorProxyFactory
      * Each of our interceptor/decorator proxies has exactly 1 constructor
      * which invokes the super ct + sets the delegation field.
      *
-     * //X TODO set delegation instance
-     *
      * @param cw
      * @param classToProxy
      * @param classFileName
      * @throws ProxyGenerationException
      */
-    private void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName)
+    protected void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName)
             throws ProxyGenerationException
     {
         try
@@ -260,7 +225,7 @@ public class InterceptorDecoratorProxyFactory
      *
      * @param noninterceptedMethods all methods which are neither intercepted nor decorated
      */
-    private void delegateNonInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] noninterceptedMethods)
+    protected void delegateNonInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] noninterceptedMethods)
     {
         for (Method delegatedMethod : noninterceptedMethods)
         {
@@ -309,16 +274,7 @@ public class InterceptorDecoratorProxyFactory
         }
     }
 
-    private boolean unproxyableMethod(Method delegatedMethod)
-    {
-        int modifiers = delegatedMethod.getModifiers();
-
-        //X TODO how to deal with native functions?
-        return (modifiers & (Modifier.PRIVATE | Modifier.ABSTRACT | Modifier.STATIC | Modifier.FINAL | Modifier.NATIVE)) > 0 ||
-               "finalize".equals(delegatedMethod.getName());
-    }
-
-    private void delegateInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] interceptedMethods)
+    protected void delegateInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] interceptedMethods)
             throws ProxyGenerationException
     {
         for (int i = 0; i < interceptedMethods.length; i++)
@@ -619,262 +575,5 @@ public class InterceptorDecoratorProxyFactory
         mv.visitTypeInsn(Opcodes.ANEWARRAY, type.getCanonicalName().replace('.', '/'));
     }
 
-    /**
-     * @return the wrapper type for a primitive, e.g. java.lang.Integer for int
-     */
-    private String getWrapperType(final Class<?> type)
-    {
-        if (Integer.TYPE.equals(type))
-        {
-            return Integer.class.getCanonicalName().replace('.', '/');
-        }
-        else if (Boolean.TYPE.equals(type))
-        {
-            return Boolean.class.getCanonicalName().replace('.', '/');
-        }
-        else if (Character.TYPE.equals(type))
-        {
-            return Character.class.getCanonicalName().replace('.', '/');
-        }
-        else if (Byte.TYPE.equals(type))
-        {
-            return Byte.class.getCanonicalName().replace('.', '/');
-        }
-        else if (Short.TYPE.equals(type))
-        {
-            return Short.class.getCanonicalName().replace('.', '/');
-        }
-        else if (Float.TYPE.equals(type))
-        {
-            return Float.class.getCanonicalName().replace('.', '/');
-        }
-        else if (Long.TYPE.equals(type))
-        {
-            return Long.class.getCanonicalName().replace('.', '/');
-        }
-        else if (Double.TYPE.equals(type))
-        {
-            return Double.class.getCanonicalName().replace('.', '/');
-        }
-        else if (Void.TYPE.equals(type))
-        {
-            return Void.class.getCanonicalName().replace('.', '/');
-        }
-
-        throw new IllegalStateException("Type: " + type.getCanonicalName() + " is not a primitive type");
-    }
-
-    /**
-     * Returns the appropriate bytecode instruction to load a value from a variable to the stack
-     *
-     * @param type Type to load
-     * @return Bytecode instruction to use
-     */
-    private int getVarInsn(final Class<?> type)
-    {
-        if (type.isPrimitive())
-        {
-            if (Integer.TYPE.equals(type))
-            {
-                return Opcodes.ILOAD;
-            }
-            else if (Boolean.TYPE.equals(type))
-            {
-                return Opcodes.ILOAD;
-            }
-            else if (Character.TYPE.equals(type))
-            {
-                return Opcodes.ILOAD;
-            }
-            else if (Byte.TYPE.equals(type))
-            {
-                return Opcodes.ILOAD;
-            }
-            else if (Short.TYPE.equals(type))
-            {
-                return Opcodes.ILOAD;
-            }
-            else if (Float.TYPE.equals(type))
-            {
-                return Opcodes.FLOAD;
-            }
-            else if (Long.TYPE.equals(type))
-            {
-                return Opcodes.LLOAD;
-            }
-            else if (Double.TYPE.equals(type))
-            {
-                return Opcodes.DLOAD;
-            }
-        }
-
-        throw new IllegalStateException("Type: " + type.getCanonicalName() + " is not a primitive type");
-    }
-
-    /**
-     * Invokes the most appropriate bytecode instruction to put a number on the stack
-     *
-     * @param mv
-     * @param i
-     */
-    private void pushIntOntoStack(final MethodVisitor mv, final int i)
-    {
-        if (i == 0)
-        {
-            mv.visitInsn(Opcodes.ICONST_0);
-        }
-        else if (i == 1)
-        {
-            mv.visitInsn(Opcodes.ICONST_1);
-        }
-        else if (i == 2)
-        {
-            mv.visitInsn(Opcodes.ICONST_2);
-        }
-        else if (i == 3)
-        {
-            mv.visitInsn(Opcodes.ICONST_3);
-        }
-        else if (i == 4)
-        {
-            mv.visitInsn(Opcodes.ICONST_4);
-        }
-        else if (i == 5)
-        {
-            mv.visitInsn(Opcodes.ICONST_5);
-        }
-        else if (i > 5 && i <= 255)
-        {
-            mv.visitIntInsn(Opcodes.BIPUSH, i);
-        }
-        else
-        {
-            mv.visitIntInsn(Opcodes.SIPUSH, i);
-        }
-    }
-
-
-    /**
-     * Gets the appropriate bytecode instruction for RETURN, according to what type we need to return
-     *
-     * @param type Type the needs to be returned
-     * @return The matching bytecode instruction
-     */
-    private int getReturnInsn(final Class<?> type)
-    {
-        if (type.isPrimitive())
-        {
-            if (Void.TYPE.equals(type))
-            {
-                return Opcodes.RETURN;
-            }
-            if (Integer.TYPE.equals(type))
-            {
-                return Opcodes.IRETURN;
-            }
-            else if (Boolean.TYPE.equals(type))
-            {
-                return Opcodes.IRETURN;
-            }
-            else if (Character.TYPE.equals(type))
-            {
-                return Opcodes.IRETURN;
-            }
-            else if (Byte.TYPE.equals(type))
-            {
-                return Opcodes.IRETURN;
-            }
-            else if (Short.TYPE.equals(type))
-            {
-                return Opcodes.IRETURN;
-            }
-            else if (Float.TYPE.equals(type))
-            {
-                return Opcodes.FRETURN;
-            }
-            else if (Long.TYPE.equals(type))
-            {
-                return Opcodes.LRETURN;
-            }
-            else if (Double.TYPE.equals(type))
-            {
-                return Opcodes.DRETURN;
-            }
-        }
-
-        return Opcodes.ARETURN;
-    }
-
-    /**
-     * Gets the string to use for CHECKCAST instruction, returning the correct value for any type, including primitives and arrays
-     *
-     * @param returnType The type to cast to with CHECKCAST
-     * @return CHECKCAST parameter
-     */
-    private String getCastType(final Class<?> returnType)
-    {
-        if (returnType.isPrimitive())
-        {
-            return getWrapperType(returnType);
-        }
-        else
-        {
-            return Type.getInternalName(returnType);
-        }
-    }
-
-    /**
-     * The 'defineClass' method on the ClassLoader is protected, thus we need to invoke it via reflection.
-     * @return the Class which got loaded in the classloader
-     */
-    private <T> Class<T> defineAndLoadClass(ClassLoader classLoader, String proxyName, byte[] proxyBytes)
-            throws ProxyGenerationException
-    {
-        Class<?> clazz = classLoader.getClass();
-
-        Method defineClassMethod = null;
-        do
-        {
-            try
-            {
-                defineClassMethod = clazz.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
-            }
-            catch (NoSuchMethodException e)
-            {
-                // do nothing, we need to search the superclass
-            }
-
-            clazz = clazz.getSuperclass();
-        } while (defineClassMethod == null && clazz != Object.class);
-
-        if (defineClassMethod == null)
-        {
-            throw new ProxyGenerationException("could not find 'defineClass' method in the ClassLoader!");
-        }
-
-        defineClassMethod.setAccessible(true);
-        try
-        {
-            Class<T> definedClass = (Class<T>) defineClassMethod.invoke(classLoader, proxyName, proxyBytes, 0, proxyBytes.length);
-
-            try
-            {
-                Class<T> loadedClass = (Class<T>) classLoader.loadClass(definedClass.getName());
-                return loadedClass;
-            }
-            catch (ClassNotFoundException e)
-            {
-                throw new ProxyGenerationException(e);
-            }
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new ProxyGenerationException(e);
-        }
-        catch (InvocationTargetException e)
-        {
-            throw new ProxyGenerationException(e);
-        }
-    }
 
 }
