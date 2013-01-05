@@ -19,36 +19,16 @@
 package org.apache.webbeans.annotation;
 
 import javax.enterprise.inject.Default;
-import javax.enterprise.util.AnnotationLiteral;
 
 /**
  * {@link Default} literal annotation.
  * 
  * @since 1.0
  */
-public class DefaultLiteral extends AnnotationLiteral<Default> implements Default
+public class DefaultLiteral extends AbstractAnnotationLiteral<Default> implements Default
 {
     private static final String TOSTRING = "@javax.enterprise.inject.Default()";
     private static final long serialVersionUID = 6788272256977634238L;
-
-    @Override
-    public int hashCode()
-    {
-        // implemented for performance reasons
-        // currently this is needed because AnnotationLiteral always returns 0 as hashCode
-        return 0;
-    }
-
-    @Override
-    public boolean equals(Object other)
-    {
-        // implemented for performance reasons
-        if (other instanceof Default)
-        {
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public String toString()
