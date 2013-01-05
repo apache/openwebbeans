@@ -27,10 +27,10 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor;
+import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor2;
 import org.apache.webbeans.test.component.intercept.webbeans.WInterceptorComponent;
 import org.apache.webbeans.test.component.intercept.webbeans.WMetaInterceptorComponent;
-import org.apache.webbeans.test.component.intercept.webbeans.WebBeansInterceptor;
-import org.apache.webbeans.test.component.intercept.webbeans.WebBeanswithMetaInterceptor;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,8 +47,8 @@ public class WebBeansInterceptComponentTest extends TestContext
     public void init()
     {
         super.init();
-        initializeInterceptorType(WebBeansInterceptor.class);
-        initializeInterceptorType(WebBeanswithMetaInterceptor.class);
+        initializeInterceptorType(TransactionalInterceptor2.class);
+        initializeInterceptorType(ActionInterceptor.class);
     }
 
     @Test
@@ -58,7 +58,7 @@ public class WebBeansInterceptComponentTest extends TestContext
 
         try
         {
-            defineInterceptor(WebBeansInterceptor.class);
+            defineInterceptor(TransactionalInterceptor2.class);
             defineManagedBean(WInterceptorComponent.class);
 
         }
@@ -77,7 +77,7 @@ public class WebBeansInterceptComponentTest extends TestContext
     {
         getComponents().clear();
 
-        defineInterceptor(WebBeansInterceptor.class);
+        defineInterceptor(TransactionalInterceptor2.class);
         defineManagedBean(WInterceptorComponent.class);
 
         ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
@@ -101,8 +101,8 @@ public class WebBeansInterceptComponentTest extends TestContext
     {
         getComponents().clear();
 
-        defineInterceptor(WebBeansInterceptor.class);
-        defineInterceptor(WebBeanswithMetaInterceptor.class);
+        defineInterceptor(TransactionalInterceptor2.class);
+        defineInterceptor(ActionInterceptor.class);
         defineManagedBean(WMetaInterceptorComponent.class);
 
         ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();

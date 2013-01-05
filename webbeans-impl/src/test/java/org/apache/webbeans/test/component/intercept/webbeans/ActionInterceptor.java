@@ -22,21 +22,23 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
-import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
+import org.apache.webbeans.test.component.intercept.webbeans.bindings.Action;
 
-@Transactional
+/**
+ * This is an interceptor for an InterceptorBinding annotation (Action)
+ * which has another InterceptorBinding (Transactional) as meta-annotation.
+ */
+@Action
 @Interceptor
-public class WebBeansInterceptor
+public class ActionInterceptor
 {
 
     @AroundInvoke
     public Object call(InvocationContext context) throws Exception
     {
-        System.out.println("Call Transactional Around Invoke");
-
-        WInterceptorComponent.s = 5;
-        WMetaInterceptorComponent.s = 5;
-
+        System.out.println("Call Action ArondInvoke");
+        WInterceptorComponent.sWithMeta = 10;
+        WMetaInterceptorComponent.sWithMeta = 10;
         return context.proceed();
     }
 }

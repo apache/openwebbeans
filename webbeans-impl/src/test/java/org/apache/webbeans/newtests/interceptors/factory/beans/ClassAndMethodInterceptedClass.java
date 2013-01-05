@@ -18,46 +18,24 @@
  */
 package org.apache.webbeans.newtests.interceptors.factory.beans;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
 /**
- * A simple class which is not intercepted
+ * A simple class which is not intercepted but has some
+ * methods which are.
  */
-@Transactional
-public class ClassInterceptedClass
+public class ClassAndMethodInterceptedClass
 {
     private boolean defaultCtInvoked = false;
 
     private int meaningOfLife;
-    private float f;
-    private char c;
 
-    public ClassInterceptedClass()
+    public ClassAndMethodInterceptedClass()
     {
         defaultCtInvoked = true;
     }
 
-    @PostConstruct
-    public void postConstruct()
-    {
-        System.out.println("postConstruct invoked");
-    }
-
-    @PreDestroy
-    private void preDestroy()
-    {
-        System.out.println("preDestroy invoked");
-    }
-
-    public void init()
-    {
-        f = 2.4f;
-        c = 'c';
-    }
-
+    @Transactional
     public int getMeaningOfLife()
     {
         System.out.println("answering the question about life, the universe and everything!");
@@ -65,24 +43,14 @@ public class ClassInterceptedClass
         return meaningOfLife;
     }
 
+    @Transactional
     public void setMeaningOfLife(int meaningOfLife)
     {
         this.meaningOfLife = meaningOfLife;
     }
 
-    public float getFloat()
+    public int nonTransactionalGetter()
     {
-        return f;
+        return meaningOfLife + 2;
     }
-
-    public ClassInterceptedClass getSelf()
-    {
-        return this;
-    }
-
-    public char getChar()
-    {
-        return c;
-    }
-
 }

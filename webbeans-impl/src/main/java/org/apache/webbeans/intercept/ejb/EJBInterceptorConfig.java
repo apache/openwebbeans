@@ -39,6 +39,7 @@ import org.apache.webbeans.util.Asserts;
  *
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
+ * @deprecated This is not needed at all. EJB interceptors are _solely_ treated by the EJB container!
  */
 public final class EJBInterceptorConfig
 {

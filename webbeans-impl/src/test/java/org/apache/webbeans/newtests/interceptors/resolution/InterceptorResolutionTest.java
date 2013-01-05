@@ -19,13 +19,22 @@
 package org.apache.webbeans.newtests.interceptors.resolution;
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.webbeans.intercept.InterceptorResolution;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
+
+import org.apache.webbeans.newtests.interceptors.factory.beans.ClassMultiInterceptedClass;
+import org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor;
+import org.apache.webbeans.test.component.intercept.webbeans.SecureInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
+
+import org.apache.webbeans.test.component.intercept.webbeans.bindings.Action;
+import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
 
@@ -39,7 +48,7 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 {
 
     @Test
-    public void testClassLevelInterceptors() throws Exception
+    public void testClassLevelSingleInterceptor() throws Exception
     {
         Collection<String> beanXmls = new ArrayList<String>();
         beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
@@ -62,8 +71,57 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         Assert.assertNull(interceptorInfo.getDecorators());
 
-        Assert.assertNotNull(interceptorInfo.getMethodsInfo());
+        Map<Method, InterceptorResolution.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getMethodsInfo();
+        Assert.assertNotNull(methodInterceptorInfos);
+        Assert.assertEquals(6, methodInterceptorInfos.size());
+
+        for (InterceptorResolution.MethodInterceptorInfo mi : methodInterceptorInfos.values())
+        {
+            Assert.assertEquals(1, mi.getMethodCdiInterceptors().size());
+        }
 
         shutDownContainer();
     }
+
+    @Test
+    public void testClassLevelMultipleInterceptor() throws Exception
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(ClassMultiInterceptedClass.class);
+        beanClasses.add(Transactional.class);
+        beanClasses.add(Secure.class);
+        beanClasses.add(Action.class);
+        beanClasses.add(ActionInterceptor.class);
+        beanClasses.add(SecureInterceptor.class);
+        beanClasses.add(TransactionalInterceptor.class);
+
+        startContainer(beanClasses, beanXmls);
+
+        InterceptorResolution ir = new InterceptorResolution(getWebBeansContext());
+        AnnotatedType<ClassMultiInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(ClassMultiInterceptedClass.class);
+
+        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(annotatedType);
+        Assert.assertNotNull(interceptorInfo);
+
+        Assert.assertNotNull(interceptorInfo.getInterceptors());
+        Assert.assertEquals(3, interceptorInfo.getInterceptors().size());
+
+        Assert.assertNull(interceptorInfo.getDecorators());
+
+        Map<Method, InterceptorResolution.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getMethodsInfo();
+        Assert.assertNotNull(methodInterceptorInfos);
+        Assert.assertEquals(6, methodInterceptorInfos.size());
+
+        for (InterceptorResolution.MethodInterceptorInfo mi : methodInterceptorInfos.values())
+        {
+            Assert.assertEquals(3, mi.getMethodCdiInterceptors().size());
+        }
+
+        shutDownContainer();
+    }
+
+
 }

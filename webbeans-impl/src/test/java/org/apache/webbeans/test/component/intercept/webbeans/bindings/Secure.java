@@ -34,5 +34,4 @@ public @interface Secure {
 
     @Nonbinding
     String[] rolesAllowed() default {};
-
 }

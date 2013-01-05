@@ -21,13 +21,17 @@ package org.apache.webbeans.newtests.interceptors.factory.beans;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.webbeans.test.component.intercept.webbeans.bindings.Action;
+import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
 /**
  * A simple class which is not intercepted
  */
 @Transactional
-public class ClassInterceptedClass
+@Action
+@Secure
+public class ClassMultiInterceptedClass
 {
     private boolean defaultCtInvoked = false;
 
@@ -35,7 +39,7 @@ public class ClassInterceptedClass
     private float f;
     private char c;
 
-    public ClassInterceptedClass()
+    public ClassMultiInterceptedClass()
     {
         defaultCtInvoked = true;
     }
@@ -75,7 +79,7 @@ public class ClassInterceptedClass
         return f;
     }
 
-    public ClassInterceptedClass getSelf()
+    public ClassMultiInterceptedClass getSelf()
     {
         return this;
     }

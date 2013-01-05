@@ -20,5 +20,7 @@ under the License.
 <beans>
    <interceptors>
       <class>org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor</class>
+      <class>org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor</class>
+      <class>org.apache.webbeans.test.component.intercept.webbeans.SecureInterceptor</class>
    </interceptors>
 </beans>

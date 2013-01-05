@@ -51,8 +51,8 @@ import org.apache.webbeans.test.component.decorator.broken.MoreThanOneDelegateAt
 import org.apache.webbeans.test.component.decorator.broken.PaymentDecorator;
 import org.apache.webbeans.test.component.decorator.clean.LargeTransactionDecorator;
 import org.apache.webbeans.test.component.decorator.clean.ServiceDecorator;
-import org.apache.webbeans.test.component.intercept.webbeans.WebBeansInterceptor;
-import org.apache.webbeans.test.component.intercept.webbeans.WebBeanswithMetaInterceptor;
+import org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor;
+import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor2;
 import org.apache.webbeans.test.containertests.ComponentResolutionByTypeTest;
 import org.apache.webbeans.test.mock.MockManager;
 import org.apache.webbeans.test.servlet.ITestContext;
@@ -142,8 +142,8 @@ public abstract class TestContext implements ITestContext
      */
     protected void initInterceptors()
     {
-        initializeInterceptorType(WebBeansInterceptor.class);
-        initializeInterceptorType(WebBeanswithMetaInterceptor.class);
+        initializeInterceptorType(TransactionalInterceptor2.class);
+        initializeInterceptorType(ActionInterceptor.class);
 
     }
 
