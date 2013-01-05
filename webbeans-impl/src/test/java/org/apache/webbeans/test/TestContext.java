@@ -19,6 +19,8 @@
 package org.apache.webbeans.test;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -36,14 +38,21 @@ import javax.interceptor.Interceptor;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.component.ProducerFieldBean;
+import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.StereoTypeModel;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.portable.creation.InjectionTargetProducer;
+import org.apache.webbeans.portable.creation.ProducerBeansProducer;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeIsnotInterface;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeMustImplementAllDecoratedTypes;
@@ -61,6 +70,9 @@ import org.apache.webbeans.test.sterotype.StereoWithNonScope;
 import org.apache.webbeans.test.sterotype.StereoWithRequestScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope2;
+import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 /**
@@ -263,7 +275,7 @@ public abstract class TestContext implements ITestContext
         ManagedBean<T> bean;
 
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        bean = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.MANAGED, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
+        bean = define(clazz, WebBeansType.MANAGED, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
         if (bean != null)
         {
             DecoratorUtil.checkManagedBeanDecoratorConditions(bean,null);
@@ -297,7 +309,7 @@ public abstract class TestContext implements ITestContext
         webBeansContext.getInterceptorsManager().addNewInterceptorClass(clazz);
         AnnotatedType annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
         webBeansContext.getInterceptorUtil().checkInterceptorConditions(annotatedType);
-        component = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.INTERCEPTOR, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
+        component = define(clazz, WebBeansType.INTERCEPTOR, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
         webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass((ManagedBean<Object>) component,
                                                             webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(
                                                                 clazz.getDeclaredAnnotations()));
@@ -321,7 +333,7 @@ public abstract class TestContext implements ITestContext
         if (webBeansContext.getDecoratorsManager().isDecoratorEnabled(clazz))
         {
             DecoratorUtil.checkDecoratorConditions(clazz);
-            component = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.DECORATOR, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
+            component = define(clazz, WebBeansType.DECORATOR, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
 
             if (component != null)
             {
@@ -475,4 +487,88 @@ public abstract class TestContext implements ITestContext
     {
     }     
 
+    /**
+     * Returns the newly created Simple WebBean Component.
+     *
+     * @param clazz Simple WebBean Component implementation class
+     * @return the newly created Simple WebBean Component
+     * @throws WebBeansConfigurationException if any configuration exception occurs
+     */
+    @SuppressWarnings("unchecked")
+    private <T> ManagedBean<T> define(Class<T> clazz, WebBeansType type, AnnotatedType<T> anntotatedType) throws WebBeansConfigurationException
+    {
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
+        DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
+        WebBeansAnnotatedTypeUtil annotatedTypeUtil = webBeansContext.getAnnotatedTypeUtil();
+
+        int modifier = clazz.getModifiers();
+
+        if (AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class))
+        {
+            throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName()
+                                                     + " may not annotated with both @Interceptor and @Decorator annotation");
+        }
+
+        if (!AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && !AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class))
+        {
+            webBeansContext.getInterceptorUtil().checkSimpleWebBeansInterceptorConditions(clazz);
+        }
+
+        if (Modifier.isInterface(modifier))
+        {
+            throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not _defined as interface");
+        }
+
+        ManagedBean<T> component = new ManagedBean<T>(clazz, type, anntotatedType, webBeansContext);
+        manager.putProducer(component, new InjectionTargetProducer(component));
+
+        webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(component);
+
+        definitionUtil.defineSerializable(component);
+        definitionUtil.defineStereoTypes(component, clazz.getDeclaredAnnotations());
+
+        Annotation[] clazzAnns = clazz.getDeclaredAnnotations();
+
+        definitionUtil.defineApiTypes(component, clazz);
+        definitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName()
+                                                             + " stereotypes must declare same @Scope annotations", false);
+        // we fully initialize the bean in this case.
+        component.setFullInit(true);
+
+        WebBeansUtil.checkGenericType(component);
+        definitionUtil.defineName(component, clazzAnns, WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
+        definitionUtil.defineQualifiers(component, clazzAnns);
+
+        Constructor<T> constructor = webBeansContext.getWebBeansUtil().defineConstructor(clazz);
+        component.setConstructor(constructor);
+        definitionUtil.addConstructorInjectionPointMetaData(component, constructor);
+
+        //Dropped from the speicification
+        //WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "Simple WebBean Component implementation class : " + clazz.getName());
+
+        Set<ProducerMethodBean<?>> producerMethods = annotatedTypeUtil.defineProducerMethods(component, component.getAnnotatedType());
+        for (ProducerMethodBean<?> producerMethod : producerMethods)
+        {
+            // add them one after the other to enable serialization handling et al
+            manager.addBean(producerMethod);
+            manager.putProducer(producerMethod, new ProducerBeansProducer(producerMethod));
+        }
+
+        Set<ProducerFieldBean<?>> producerFields = annotatedTypeUtil.defineProducerFields(component, component.getAnnotatedType());
+        for (ProducerFieldBean<?> producerField : producerFields)
+        {
+            // add them one after the other to enable serialization handling et al
+            manager.addBean(producerField);
+            manager.putProducer(producerField, new ProducerBeansProducer(producerField));
+        }
+
+
+        annotatedTypeUtil.defineDisposalMethods(component, component.getAnnotatedType());
+        annotatedTypeUtil.defineInjectedFields(component, component.getAnnotatedType());
+        annotatedTypeUtil.defineInjectedMethods(component, component.getAnnotatedType());
+        annotatedTypeUtil.defineObserverMethods(component, component.getAnnotatedType());
+
+        return component;
+    }
 }

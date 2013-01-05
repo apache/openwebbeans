@@ -88,7 +88,6 @@ public class WebBeansContext
     private final InterceptorUtil interceptorUtil = new InterceptorUtil(this);
     private final DefinitionUtil definitionUtil = new DefinitionUtil(this);
     private final WebBeansAnnotatedTypeUtil annotatedTypeUtil = new WebBeansAnnotatedTypeUtil(this);
-    private final ManagedBeanConfigurator managedBeanConfigurator = new ManagedBeanConfigurator(this);
     private final SecurityService securityService;
     private final LoaderService loaderService;
     private ScannerService scannerService;
@@ -222,11 +221,6 @@ public class WebBeansContext
             return null;
         }
         return serviceInterface.cast(get(implName));
-    }
-
-    public ManagedBeanConfigurator getManagedBeanConfigurator()
-    {
-        return managedBeanConfigurator;
     }
 
     public InterceptorUtil getInterceptorUtil()
