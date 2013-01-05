@@ -36,7 +36,6 @@ import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
-import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
@@ -77,11 +76,6 @@ public final class EjbUtility
         if(processAnnotatedEvent.isVeto())
         {
             return;
-        }
-        
-        if(processAnnotatedEvent.isModifiedAnnotatedType())
-        {
-            ejbBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
         }
         
         //Define meta-data

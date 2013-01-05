@@ -19,7 +19,6 @@
 package org.apache.webbeans.ejb.common.component;
 
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.ObserverMethod;
@@ -67,32 +66,10 @@ public class EjbBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator<T> 
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public void defineApiType()
     {
-        if(isDefaultMetaDataProvider())
-        {
-            List<Class<?>> businessLocals = getBean().getBusinessLocalInterfaces();
-            for(Class clazz : businessLocals)
-            {
-                getBean().addApiType(clazz);
-            }
-            
-            getBean().addApiType(Object.class);
-            
-            if (getBean().needsBeanLocalViewAddedToTypes())
-            {
-                for(Class<?> clazz = getBean().getBeanClass(); !clazz.equals(Object.class); clazz = clazz.getSuperclass()) 
-                { 
-                    getBean().addApiType(clazz);    
-                }   
-            }
-        }
-        else
-        {  
-            Set<Type> types = getAnnotatedType().getTypeClosure();
-            getBean().getTypes().addAll(types);
-        }
+        Set<Type> types = getAnnotatedType().getTypeClosure();
+        getBean().getTypes().addAll(types);
     }
     
     

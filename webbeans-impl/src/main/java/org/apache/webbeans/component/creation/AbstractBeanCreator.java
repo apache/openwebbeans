@@ -41,9 +41,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     /**Bean instance*/
     private final AbstractOwbBean<T> bean;    
     
-    /**Default metadata provider*/
-    private MetaDataProvider metadataProvider = MetaDataProvider.DEFAULT;
-    
     /**
      * If annotated type is set by ProcessAnnotatedType event, used this annotated type
      * to define bean instance instead of using class artifacts.
@@ -130,33 +127,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     public void defineStereoTypes()
     {
         definitionUtil.defineStereoTypes(bean, AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()));
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public MetaDataProvider getMetaDataProvider()
-    {
-        return metadataProvider;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void setMetaDataProvider(MetaDataProvider metadataProvider)
-    {
-        this.metadataProvider = metadataProvider;
-    }
-    
-    /**
-     * Returns true if metadata provider is default,
-     * false otherwise
-     * 
-     * @return true if metadata provider is default
-     */
-    protected boolean isDefaultMetaDataProvider()
-    {
-        return metadataProvider.equals(MetaDataProvider.DEFAULT);
     }
 
     /**

@@ -37,7 +37,6 @@ public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
     public AnnotatedTypeBeanCreatorImpl(AnnotatedType<T> annotatedType, WebBeansContext context)
     {
         super(annotatedType, context);
-        setMetaDataProvider(MetaDataProvider.THIRDPARTY);
     }
     
     /**

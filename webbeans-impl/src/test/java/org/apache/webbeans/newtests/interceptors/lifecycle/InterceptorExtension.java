@@ -24,11 +24,14 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.util.ExceptionUtil;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class InterceptorExtension implements Extension
@@ -73,7 +76,7 @@ public class InterceptorExtension implements Extension
     public static class AnnotatedTypeImpl<X> implements AnnotatedType<X>
     {
         private Class<X> javaClass;
-        private Set<AnnotatedConstructor<X>>    annotatedConstructors = Collections.EMPTY_SET;
+        private Set<AnnotatedConstructor<X>>    annotatedConstructors = new HashSet<AnnotatedConstructor<X>>();
         private Set<AnnotatedMethod<? super X>> annotatedMethods = Collections.EMPTY_SET;
         private Set<AnnotatedField<? super X>>  annotatedFields = Collections.EMPTY_SET;
         private Set<Type>                       typeClosures  = Collections.EMPTY_SET;
@@ -83,6 +86,7 @@ public class InterceptorExtension implements Extension
         public AnnotatedTypeImpl(Class<X> javaClass)
         {
             this.javaClass = javaClass;
+            this.annotatedConstructors.add(new AnnotatedConstructorImpl<X>(this));
         }
 
         public Set<AnnotatedConstructor<X>> getConstructors()
@@ -169,4 +173,68 @@ public class InterceptorExtension implements Extension
         }
     }
 
+    public static class AnnotatedConstructorImpl<X> implements AnnotatedConstructor<X> {
+
+        private AnnotatedType<X> declaringType;
+        private Constructor<X> javaMember;
+        private List<AnnotatedParameter<X>> parameters = Collections.EMPTY_LIST;
+        private Set<Annotation> annotations = Collections.EMPTY_SET;
+        
+        public AnnotatedConstructorImpl(AnnotatedType<X> declaringType)
+        {
+            try {
+                this.declaringType = declaringType;
+                this.javaMember = declaringType.getJavaClass().getConstructor();
+            } catch (SecurityException e) {
+                ExceptionUtil.throwAsRuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                ExceptionUtil.throwAsRuntimeException(e);
+            }
+        }
+
+        @Override
+        public List<AnnotatedParameter<X>> getParameters() {
+            return parameters;
+        }
+
+        @Override
+        public boolean isStatic() {
+            return false;
+        }
+
+        @Override
+        public AnnotatedType<X> getDeclaringType() {
+            return declaringType;
+        }
+
+        @Override
+        public Type getBaseType() {
+            return javaMember.getDeclaringClass();
+        }
+
+        @Override
+        public Set<Type> getTypeClosure() {
+            return declaringType.getTypeClosure();
+        }
+
+        @Override
+        public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
+            return null;
+        }
+
+        @Override
+        public Set<Annotation> getAnnotations() {
+            return annotations;
+        }
+
+        @Override
+        public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
+            return false;
+        }
+
+        @Override
+        public Constructor<X> getJavaMember() {
+            return javaMember;
+        }
+    }
 }

@@ -55,7 +55,10 @@ public class ManagedSecurityService implements SecurityService
 
     private static final int METHOD_CLASS_GETDECLAREDFIELDS = 0x06;
 
+    private static final int METHOD_CLASS_GETCONSTRUCTOR = 0x07;
+
     private static final PrivilegedActionGetSystemProperties SYSTEM_PROPERTY_ACTION = new PrivilegedActionGetSystemProperties();
+
 
     public ManagedSecurityService()
     {
@@ -100,6 +103,17 @@ public class ManagedSecurityService implements SecurityService
     {
         Object obj = AccessController.doPrivileged(
                 new PrivilegedActionForClass(clazz, parameterTypes, METHOD_CLASS_GETDECLAREDCONSTRUCTOR));
+        if (obj instanceof NoSuchMethodException)
+        {
+            return null;
+        }
+        return (Constructor<T>)obj;
+    }
+
+    public <T> Constructor<T> doPrivilegedGetConstructor(Class<T> clazz, Class<?>... parameterTypes)
+    {
+        Object obj = AccessController.doPrivileged(
+                new PrivilegedActionForClass(clazz, parameterTypes, METHOD_CLASS_GETCONSTRUCTOR));
         if (obj instanceof NoSuchMethodException)
         {
             return null;
@@ -218,7 +232,8 @@ public class ManagedSecurityService implements SecurityService
                         return clazz.getDeclaredField((String)parameters);
                     case METHOD_CLASS_GETDECLAREDFIELDS:
                         return clazz.getDeclaredFields();
-
+                    case METHOD_CLASS_GETCONSTRUCTOR:
+                        return clazz.getConstructor((Class<?>[])parameters);
                     default:
                         return new WebBeansException("unknown security method: " + method);
                 }

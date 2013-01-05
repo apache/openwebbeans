@@ -56,6 +56,18 @@ public class SimpleSecurityService implements SecurityService
         }
     }
 
+    public <T> Constructor<T> doPrivilegedGetConstructor(Class<T> clazz, Class<?>... parameterTypes)
+    {
+        try
+        {
+            return clazz.getConstructor(parameterTypes);
+        }
+        catch (NoSuchMethodException e)
+        {
+            return null;
+        }
+    }
+
     public <T> Constructor<?>[] doPrivilegedGetDeclaredConstructors(Class<T> clazz)
     {
         return clazz.getDeclaredConstructors();

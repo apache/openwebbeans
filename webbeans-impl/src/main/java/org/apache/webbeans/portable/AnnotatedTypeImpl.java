@@ -89,6 +89,12 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
                     constructors.add(ac);
                 }
             }
+            if (constructors.isEmpty())
+            {
+                // must be implicit default constructor
+                Constructor<X> constructor = getWebBeansContext().getSecurityService().doPrivilegedGetConstructor(annotatedClass);
+                constructors.add(new AnnotatedConstructorImpl<X>(getWebBeansContext(), constructor, this));
+            }
 
             Field[] decFields = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredFields(annotatedClass);
             Method[] decMethods = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(annotatedClass);

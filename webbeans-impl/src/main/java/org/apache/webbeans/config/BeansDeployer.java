@@ -50,7 +50,6 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.InterceptedMarker;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
 import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
@@ -838,7 +837,6 @@ public class BeansDeployer
             if(processAnnotatedEvent.isModifiedAnnotatedType())
             {
                 annotationTypeSet = true;
-                managedBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
             }
 
             GProcessInjectionTarget processInjectionTarget = null;

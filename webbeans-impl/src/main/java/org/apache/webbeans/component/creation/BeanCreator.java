@@ -33,17 +33,6 @@ import org.apache.webbeans.component.AbstractOwbBean;
  */
 public interface BeanCreator<T>
 {
-    /**
-     * MetaDataProvider. 
-     */
-    public enum MetaDataProvider
-    {
-        //Default meta-data is used
-        DEFAULT,
-        //Third party overriden meta-data will be used. 
-        //It is overriden with event ProcessAnnotatedType
-        THIRDPARTY
-    }
     
     /**
      * Check conditions on creating bean instance.
@@ -64,20 +53,6 @@ public interface BeanCreator<T>
      * Define api type.
      */
     public void defineApiType();
-    
-    /**
-     * Returns metadata provider.
-     * 
-     * @return metadata provider
-     */
-    public MetaDataProvider getMetaDataProvider();
-    
-    /**
-     * Sets meta-data provider.
-     * 
-     * @param metadataProvider metadata provider
-     */
-    public void setMetaDataProvider(MetaDataProvider metadataProvider);
         
     /**
      * Define scope type of the bean.

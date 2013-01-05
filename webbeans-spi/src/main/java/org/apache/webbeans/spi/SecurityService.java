@@ -53,6 +53,11 @@ public interface SecurityService
     public <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes);
 
     /**
+     * @see Class#getDeclaredConstructor(Class[])
+     */
+    public <T> Constructor<T> doPrivilegedGetConstructor(Class<T> clazz, Class<?>... parameterTypes);
+
+    /**
      * @see Class#getDeclaredConstructors()
      */
     public <T> Constructor<?>[] doPrivilegedGetDeclaredConstructors(Class<T> clazz);

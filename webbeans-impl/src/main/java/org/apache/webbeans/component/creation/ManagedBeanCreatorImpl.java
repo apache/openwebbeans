@@ -82,15 +82,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
     @Override
     public void checkCreateConditions()
     {
-        if(isDefaultMetaDataProvider())
-        {
-            webBeansContext.getManagedBeanConfigurator().checkManagedBeanCondition(getBean().getReturnType());
-        }
-        else
-        {
-            webBeansContext.getWebBeansUtil().checkManagedBeanCondition(getAnnotatedType());
-        }
-        
+        webBeansContext.getWebBeansUtil().checkManagedBeanCondition(getAnnotatedType());
         WebBeansUtil.checkGenericType(getBean());
         //Check Unproxiable
         webBeansContext.getWebBeansUtil().checkUnproxiableApiType(getBean(), getBean().getScope());
@@ -102,21 +94,10 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
      */
     public void defineConstructor()
     {
-        Constructor<T> constructor;
-        if(isDefaultMetaDataProvider())
-        {
-            constructor = webBeansContext.getWebBeansUtil().defineConstructor(getBean().getReturnType());
-            webBeansContext.getDefinitionUtil().addConstructorInjectionPointMetaData(getBean(), constructor);
-        }
-        else
-        {
-           AnnotatedConstructor<T> annotated = WebBeansAnnotatedTypeUtil.getBeanConstructor(getAnnotatedType());
-           constructor = annotated.getJavaMember();
-           webBeansContext.getAnnotatedTypeUtil().addConstructorInjectionPointMetaData(getBean(), annotated);
-        }
-        
+        AnnotatedConstructor<T> annotated = WebBeansAnnotatedTypeUtil.getBeanConstructor(getAnnotatedType());
+        Constructor<T> constructor = annotated.getJavaMember();
+        webBeansContext.getAnnotatedTypeUtil().addConstructorInjectionPointMetaData(getBean(), annotated);
         getBean().setConstructor(constructor);
-        
     }
 
     /**
