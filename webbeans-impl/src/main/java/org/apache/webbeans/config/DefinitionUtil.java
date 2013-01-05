@@ -22,15 +22,11 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
-import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Named;
@@ -43,7 +39,6 @@ import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.NamedLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
@@ -70,112 +65,6 @@ public final class DefinitionUtil
     public DefinitionUtil(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-    }
-    
-    /**
-     * Configures the web bean api types.
-     * 
-     * @param <T> generic class type
-     * @param bean configuring web beans component
-     * @param clazz bean implementation class
-     */
-    public static <T> void defineApiTypes(AbstractOwbBean<T> bean, Class<T> clazz)
-    {
-        //Looking for bean types
-        Typed beanTypes = clazz.getAnnotation(Typed.class);
-        if(beanTypes != null)
-        {
-            defineUserDefinedBeanTypes(bean, null, beanTypes);            
-        }
-        else
-        {
-            defineNormalApiTypes(bean, clazz);
-        }
-        removeIgnoredInterfaces(bean);
-    }
-
-    private static <T> void removeIgnoredInterfaces(AbstractOwbBean<T> bean)
-    {
-        Set<String> ignoredInterfaces = bean.getWebBeansContext().getOpenWebBeansConfiguration().getIgnoredInterfaces();
-        for (Iterator<Type> i = bean.getTypes().iterator(); i.hasNext(); )
-        {
-            Type t = i.next();
-            if (t instanceof Class && ignoredInterfaces.contains(((Class<?>) t).getName()))
-            {
-                i.remove();
-            }
-        }
-    }
-
-
-    private static <T> void defineNormalApiTypes(AbstractOwbBean<T> bean, Class<T> clazz)
-    {
-        bean.getTypes().add(Object.class);
-        ClassUtil.setTypeHierarchy(bean.getTypes(), clazz);           
-    }
-    
-    private static <T> void defineUserDefinedBeanTypes(AbstractOwbBean<T> bean, Type producerGenericReturnType, Typed beanTypes)
-    {
-        if(producerGenericReturnType != null)
-        {
-            defineNormalProducerMethodApi((AbstractProducerBean<T>)bean, producerGenericReturnType);
-        }
-        else
-        {
-            defineNormalApiTypes(bean, bean.getReturnType());
-        }
-        
-        //@Type values
-        Class<?>[] types = beanTypes.value();        
-        
-        //Normal api types
-        Set<Type> apiTypes = bean.getTypes();
-        //New api types
-        Set<Type> newTypes = new HashSet<Type>();
-        for(Class<?> type : types)
-        {
-            Type foundType = null;
-            
-            for(Type apiType : apiTypes)
-            {
-                if(ClassUtil.getClazz(apiType) == type)
-                {
-                    foundType = apiType;
-                    break;
-                }
-            }
-            
-            if(foundType == null)
-            {
-                throw new WebBeansConfigurationException("@Type values must be in bean api types : " + bean.getTypes());
-            }
-            
-            newTypes.add(foundType);
-        }
-        
-        apiTypes.clear();
-        apiTypes.addAll(newTypes);
-        
-        apiTypes.add(Object.class);
-    }
-    
-    
-
-    private static <T> void defineNormalProducerMethodApi(AbstractProducerBean<T> producerBean, Type type)
-    {
-        Set<Type> types = producerBean.getTypes();
-        types.add(Object.class);
-        
-        Class<?> clazz  = ClassUtil.getClazz(type);
-        
-        if (clazz != null && (clazz.isPrimitive() || clazz.isArray()))
-        {
-            types.add(clazz);
-        }
-        else
-        {
-            ClassUtil.setTypeHierarchy(producerBean.getTypes(), type);
-        }                    
     }
 
     /**
