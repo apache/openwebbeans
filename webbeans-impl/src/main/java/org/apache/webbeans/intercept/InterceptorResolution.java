@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.intercept;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
@@ -27,16 +29,15 @@ import javax.enterprise.inject.spi.Interceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -48,12 +49,30 @@ public class InterceptorResolution
 {
     private static final Logger logger = WebBeansLoggerFacade.getLogger(InterceptorResolution.class);
 
+    private final WebBeansContext webBeansContext;
 
-    private WebBeansContext webBeansContext;
+    private final OpenWebBeansEjbLCAPlugin ejbPlugin;
+    private final Class<? extends Annotation> prePassivateClass;
+    private final Class<? extends Annotation> postActivateClass;
+    private final Class<? extends Annotation> aroundTimeoutClass;
+
 
     public InterceptorResolution(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
+        ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
+        if (ejbPlugin != null)
+        {
+            prePassivateClass = ejbPlugin.getPrePassivateClass();
+            postActivateClass = ejbPlugin.getPostActivateClass();
+            aroundTimeoutClass = ejbPlugin.getAroundTimeoutClass();
+        }
+        else
+        {
+            prePassivateClass = null;
+            postActivateClass = null;
+            aroundTimeoutClass = null;
+        }
     }
 
 
@@ -63,11 +82,11 @@ public class InterceptorResolution
 
         InterceptorUtil interceptorUtils = webBeansContext.getInterceptorUtil();
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-        BeanManager bm = webBeansContext.getBeanManagerImpl();
+        BeanManager beanManager = webBeansContext.getBeanManagerImpl();
 
         List<Interceptor> classLevelEjbInterceptors = new ArrayList<Interceptor>();
 
-        Map<Method, List<Annotation>> methodInterceptorBindings = new HashMap<Method, List<Annotation>>();
+        List<MethodInterceptorInfo> methodInterceptorInfos = new ArrayList<MethodInterceptorInfo>();
 
         // pick up CDI interceptors from a class level
         //X TODO should work but can surely be improved!
@@ -77,27 +96,70 @@ public class InterceptorResolution
         //X TODO pick up EJB interceptors from a class level
         //X TODO pick up the decorators
 
+        Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
+
+
         // iterate over all methods and build up the CDI interceptor stack
         for (AnnotatedMethod interceptableAnnotatedMethod : interceptableAnnotatedMethods)
         {
-            List<Annotation> cummulatedInterceptorBindings = new ArrayList<Annotation>();
+            Set<Annotation> cummulatedInterceptorBindings = new HashSet<Annotation>();
             cummulatedInterceptorBindings.addAll(
                     annotationManager.getInterceptorAnnotations(AnnotationUtil.getAnnotationsFromSet(interceptableAnnotatedMethod.getAnnotations())));
 
             cummulatedInterceptorBindings.addAll(classInterceptorBindings);
 
-            // we collect all interceptor binding annotations on all the class.
-            classInterceptorBindings.addAll(cummulatedInterceptorBindings);
+            if (cummulatedInterceptorBindings.size() == 0)
+            {
+                continue;
+            }
 
-            methodInterceptorBindings.put(interceptableAnnotatedMethod.getJavaMember(), cummulatedInterceptorBindings);
+            InterceptionType interceptionType = calculateInterceptionType(interceptableAnnotatedMethod);
+
+            MethodInterceptorInfo methodInterceptorInfo = new MethodInterceptorInfo(interceptableAnnotatedMethod.getJavaMember(), interceptionType);
+
+            List<Interceptor<?>> methodInterceptors = beanManager.resolveInterceptors(interceptionType, AnnotationUtil.getAnnotationsFromSet(cummulatedInterceptorBindings));
+            methodInterceptorInfo.setMethodCdiInterceptors(methodInterceptors);
+
+            allUsedCdiInterceptors.addAll(methodInterceptors);
+
+            methodInterceptorInfos.add(methodInterceptorInfo);
         }
 
-        //X TODO sort the CDI interceptors
+        return new BeanInterceptorInfo(null, allUsedCdiInterceptors, methodInterceptorInfos.toArray(new MethodInterceptorInfo[methodInterceptorInfos.size()]));
+    }
 
-        Set<Interceptor> classLevelCdiInterceptors = new HashSet<Interceptor>();
 
+    /**
+     * Determine the {@link InterceptionType} of the given AnnotatedMethod
+     * of an intercepted method.
+     */
+    private InterceptionType calculateInterceptionType(AnnotatedMethod interceptableAnnotatedMethod)
+    {
+        for (Annotation annotation : interceptableAnnotatedMethod.getAnnotations())
+        {
+            if (annotation.equals(PostConstruct.class))
+            {
+                return InterceptionType.POST_CONSTRUCT;
+            }
+            if (annotation.equals(PreDestroy.class))
+            {
+                return InterceptionType.PRE_DESTROY;
+            }
+            if (null != ejbPlugin && annotation.equals(prePassivateClass))
+            {
+                return InterceptionType.PRE_PASSIVATE;
+            }
+            if (null != ejbPlugin && annotation.equals(postActivateClass))
+            {
+                return InterceptionType.POST_ACTIVATE;
+            }
+            if (null != ejbPlugin && annotation.equals(aroundTimeoutClass))
+            {
+                return InterceptionType.AROUND_TIMEOUT;
+            }
+        }
 
-        return new BeanInterceptorInfo(null, null, null);
+        return InterceptionType.AROUND_INVOKE;
     }
 
     /**
@@ -114,14 +176,25 @@ public class InterceptorResolution
         {
             for (AnnotatedMethod<?> annotatedMethod : annotatedMethods)
             {
-                if (annotatedMethod.getJavaMember() == interceptableMethod)
+                if (annotatedMethod.getJavaMember().equals(interceptableMethod))
                 {
+                    if (!webBeansContext.getInterceptorUtil().isWebBeansBusinessMethod(annotatedMethod))
+                    {
+                        // we must only intercept business methods
+                        continue;
+                    }
+
                     interceptableAnnotatedMethods.add(annotatedMethod);
                 }
             }
         }
 
         return interceptableAnnotatedMethods;
+    }
+
+    private boolean isBusinessMethod(Method interceptableMethod)
+    {
+        return false;  //To change body of created methods use File | Settings | File Templates.
     }
 
 
@@ -176,21 +249,25 @@ public class InterceptorResolution
      */
     public static class MethodInterceptorInfo
     {
-        public MethodInterceptorInfo(InterceptionType interceptionType, List<Interceptor> methodEjbInterceptors, List<Interceptor> methodCdiInterceptors,
-                                     List<Decorator> methodDecorators)
+        private Method               method;
+        private InterceptionType     interceptionType;
+        private List<Interceptor<?>> methodEjbInterceptors = null;
+        private List<Interceptor<?>> methodCdiInterceptors = null;
+        private List<Decorator<?>>   methodDecorators = null;
+
+        public MethodInterceptorInfo(Method method, InterceptionType interceptionType)
         {
+            this.method = method;
             this.interceptionType = interceptionType;
-            this.methodCdiInterceptors = methodCdiInterceptors;
-            this.methodDecorators = methodDecorators;
-            this.methodEjbInterceptors = methodEjbInterceptors;
         }
 
-        private Method            method;
-        private InterceptionType  interceptionType;
-        private List<Interceptor> methodEjbInterceptors = null;
-        private List<Interceptor> methodCdiInterceptors = null;
-        private List<Decorator>   methodDecorators = null;
-
+        /**
+         * @return the Method this entry is for.
+         */
+        public Method getMethod()
+        {
+            return method;
+        }
 
         /**
          * This is needed for later invoking the correct
@@ -208,7 +285,7 @@ public class InterceptorResolution
          * if no Interceptor exists for this method.
          * They must be called <i>before</i> the {@link #methodCdiInterceptors}!
          */
-        public List<Interceptor> getMethodEjbInterceptors()
+        public List<Interceptor<?>> getMethodEjbInterceptors()
         {
             return methodEjbInterceptors;
         }
@@ -217,7 +294,7 @@ public class InterceptorResolution
          * The (sorted) CDI Interceptor Beans for a specific method or <code>null</code>
          * if no Interceptor exists for this method.
          */
-        public List<Interceptor> getMethodCdiInterceptors()
+        public List<Interceptor<?>> getMethodCdiInterceptors()
         {
             return methodCdiInterceptors;
         }
@@ -226,10 +303,24 @@ public class InterceptorResolution
          * The (sorted) Decorator Beans for a specific method or <code>null</code>
          * if no Decorator exists for this method.
          */
-        public List<Decorator> getMethodDecorators()
+        public List<Decorator<?>> getMethodDecorators()
         {
             return methodDecorators;
         }
 
+        public void setMethodCdiInterceptors(List<Interceptor<?>> methodCdiInterceptors)
+        {
+            this.methodCdiInterceptors = methodCdiInterceptors;
+        }
+
+        public void setMethodDecorators(List<Decorator<?>> methodDecorators)
+        {
+            this.methodDecorators = methodDecorators;
+        }
+
+        public void setMethodEjbInterceptors(List<Interceptor<?>> methodEjbInterceptors)
+        {
+            this.methodEjbInterceptors = methodEjbInterceptors;
+        }
     }
 }
