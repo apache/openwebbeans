@@ -29,6 +29,7 @@ import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
 
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassMultiInterceptedClass;
+import org.apache.webbeans.newtests.interceptors.factory.beans.MethodInterceptedClass;
 import org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
@@ -118,6 +119,51 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
         for (InterceptorResolution.MethodInterceptorInfo mi : methodInterceptorInfos.values())
         {
             Assert.assertEquals(3, mi.getMethodCdiInterceptors().size());
+        }
+
+        shutDownContainer();
+    }
+
+    @Test
+    public void testMethodLevelInterceptor() throws Exception
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(MethodInterceptedClass.class);
+        beanClasses.add(Transactional.class);
+        beanClasses.add(Secure.class);
+        beanClasses.add(SecureInterceptor.class);
+        beanClasses.add(TransactionalInterceptor.class);
+
+        startContainer(beanClasses, beanXmls);
+
+        InterceptorResolution ir = new InterceptorResolution(getWebBeansContext());
+        AnnotatedType<MethodInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(MethodInterceptedClass.class);
+
+        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(annotatedType);
+        Assert.assertNotNull(interceptorInfo);
+
+        Assert.assertNotNull(interceptorInfo.getInterceptors());
+        Assert.assertEquals(2, interceptorInfo.getInterceptors().size());
+
+        Assert.assertNull(interceptorInfo.getDecorators());
+
+        Map<Method, InterceptorResolution.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getMethodsInfo();
+        Assert.assertNotNull(methodInterceptorInfos);
+        Assert.assertEquals(2, methodInterceptorInfos.size());
+
+        for (Map.Entry<Method, InterceptorResolution.MethodInterceptorInfo> mi : methodInterceptorInfos.entrySet())
+        {
+            if (mi.getKey().getName().equals("getMeaningOfLife"))
+            {
+                Assert.assertEquals(1, mi.getValue().getMethodCdiInterceptors().size());
+            }
+            else if (mi.getKey().getName().equals("setMeaningOfLife"))
+            {
+                Assert.assertEquals(2, mi.getValue().getMethodCdiInterceptors().size());
+            }
         }
 
         shutDownContainer();

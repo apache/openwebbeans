@@ -19,6 +19,7 @@
 package org.apache.webbeans.newtests.interceptors.factory.beans;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
+import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
 
 /**
  * A simple class which is not intercepted but has some
@@ -44,6 +45,7 @@ public class MethodInterceptedClass
     }
 
     @Transactional
+    @Secure
     public void setMeaningOfLife(int meaningOfLife)
     {
         this.meaningOfLife = meaningOfLife;
