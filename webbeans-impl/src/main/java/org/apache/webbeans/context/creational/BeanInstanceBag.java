@@ -45,16 +45,6 @@ public class BeanInstanceBag<T> implements Serializable
     {
         return beanCreationalContext;
     }
-    
-    
-
-    /**
-     * @param beanInstance the beanInstance to set
-     */
-    public void setBeanInstance(T beanInstance)
-    {
-        this.beanInstance = beanInstance;
-    }
 
     /**
      * @return the beanInstance

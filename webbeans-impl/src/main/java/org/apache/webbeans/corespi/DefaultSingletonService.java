@@ -76,29 +76,6 @@ public class DefaultSingletonService implements SingletonService<WebBeansContext
             singletonMap.remove(classLoader);
         }
     }
-    
-    /**
-     * Gets classloader with given singelton instance.
-     * @param object singleton instance
-     * @return the classloader that instance is created within
-     */
-    public ClassLoader getSingletonClassLoader(Object object)
-    {
-        Asserts.assertNotNull(object, "object is null");
-        synchronized (objectToClassLoaderMap)
-        {
-            if(objectToClassLoaderMap.containsKey(object))
-            {
-                WeakReference<ClassLoader> current = objectToClassLoaderMap.get(object);
-                if(current != null)
-                {
-                    return current.get();
-                }                
-            }              
-        }
-        
-        return null;
-    }
 
     /**
      * {@inheritDoc}

@@ -615,42 +615,6 @@ public final class AnnotationUtil
         return Collections.emptyList();
     }
 
-
-    /**
-     * Gets array of methods that has parameter with given annotation type.
-     * 
-     * @param clazz class for check
-     * @param annotation for check
-     * @return array of methods
-     */
-    public static Method[] getMethodsWithParameterAnnotation(Class<?> clazz, Class<? extends Annotation> annotation)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(annotation, "Annotation argument can not be null");
-        List<Method> methodsWithParameterAnnotation = new ArrayList<Method>();
-        List<Method> allMethods = new ArrayList<Method>();
-
-        do
-        {
-            Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
-
-            for (Method m : methods)
-            {
-                if (hasMethodParameterAnnotation(m, annotation) && !isMethodOverridden(m, allMethods))
-                {
-                    methodsWithParameterAnnotation.add(m);
-                }
-                allMethods.add(m);
-            }
-            clazz = clazz.getSuperclass();
-        } while (clazz != null && clazz != Object.class);
-
-        Method[] rMethod = methodsWithParameterAnnotation.toArray(new Method[methodsWithParameterAnnotation.size()]);
-
-        return rMethod;
-    }
-
-
     /**
      * Check whether or not class contains the given annotation.
      * 

@@ -60,7 +60,7 @@ public class EventBean<T> extends AbstractOwbBean<Event<T>>
         Event<T> instance = null;
 
         InjectionPoint injectionPoint = local.get();
-        Type eventType = null;
+        Type eventType;
         
         if(injectionPoint != null)
         {

@@ -54,14 +54,6 @@ public class NewManagedBean<T> extends ManagedBean<T> implements NewBean<T>
     }
 
     /**
-     * @return the definedType
-     */
-    public WebBeansType getDefinedType()
-    {
-        return definedType;
-    }
-
-    /**
      * always true for New qualifier
      */
     @Override

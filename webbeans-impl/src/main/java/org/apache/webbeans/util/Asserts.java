@@ -65,16 +65,6 @@ public final class Asserts
     }
 
     /**
-     * Null check for type modifiers.
-     * 
-     * @param modifier modifier parameter check
-     */
-    public static void nullCheckForModifier(Integer modifier)
-    {
-        Asserts.assertNotNull(modifier, "modifier argument can not be null");
-    }
-
-    /**
      * Null check for class parameter.
      * 
      * @param clazz parameter

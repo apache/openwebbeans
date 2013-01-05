@@ -218,21 +218,6 @@ public final class ClassUtil
 
     }
 
-    public static List<Class<?>> getSuperClasses(Class<?> clazz, List<Class<?>> list)
-    {
-        Asserts.nullCheckForClass(clazz);
-
-        Class<?> sc = clazz.getSuperclass();
-        if (sc != null)
-        {
-            list.add(sc);
-            getSuperClasses(sc, list);
-        }
-
-        return list;
-
-    }
-
     private static Set<String> getObjectMethodNames()
     {
         if (objectMethodNames == null)

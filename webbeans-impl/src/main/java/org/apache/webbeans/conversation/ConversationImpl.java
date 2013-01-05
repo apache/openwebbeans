@@ -215,15 +215,6 @@ public class ConversationImpl implements Conversation, Serializable
     }
     
     /**
-     * Sets transient.
-     * @param value transient value
-     */
-    public void setTransient(boolean value)
-    {
-        isTransient = value;
-    }
-    
-    /**
      * {@inheritDoc}
      */    
     public String getId()

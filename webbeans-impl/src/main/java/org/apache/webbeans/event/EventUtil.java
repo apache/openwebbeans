@@ -27,12 +27,8 @@ import java.lang.reflect.Type;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
-import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
-import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Inject;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -84,44 +80,6 @@ public final class EventUtil
         
         return null;
     }
-
-    public static void checkObserverMethodConditions(Method candidateObserverMethod, Class<?> clazz)
-    {
-        Asserts.assertNotNull(candidateObserverMethod, "candidateObserverMethod parameter can not be null");
-        Asserts.nullCheckForClass(clazz);
-
-        if (AnnotationUtil.hasMethodMultipleParameterAnnotation(candidateObserverMethod, Observes.class))
-        {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName()
-                                                     + " can not define two parameters with annotated @Observes");
-        }
-
-        if (AnnotationUtil.hasMethodAnnotation(candidateObserverMethod, Produces.class) || AnnotationUtil.hasMethodAnnotation(candidateObserverMethod, Inject.class))
-        {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : "
-                                                     + clazz.getName() + " can not annotated with annotation in the list {@Produces, @Initializer, @Destructor}");
-
-        }
-
-        if (AnnotationUtil.hasMethodParameterAnnotation(candidateObserverMethod, Disposes.class))
-        {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : "
-                                                     + clazz.getName() + " can not annotated with annotation @Disposes");
-        }                
-    }
-    
-    public static boolean isReceptionIfExist(Method observerMethod)
-    {
-        Observes observes = AnnotationUtil.getMethodFirstParameterAnnotation(observerMethod, Observes.class);
-        Reception reception = observes.notifyObserver();
-        if(reception.equals(Reception.IF_EXISTS))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
 
     public static boolean checkObservableInjectionPointConditions(InjectionPoint injectionPoint)
     {

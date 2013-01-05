@@ -22,7 +22,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -135,35 +134,6 @@ public class InjectionPointFactory
 
         return injectionPoint;
 
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<InjectionPoint> getMethodInjectionPointData(Bean<?> owner, Method member)
-    {
-        Asserts.assertNotNull(owner, "owner parameter can not be null");
-        Asserts.assertNotNull(member, "member parameter can not be null");
-
-        List<InjectionPoint> lists = new ArrayList<InjectionPoint>();
-
-        AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
-        AnnotatedType<?> annotated = annotatedElementFactory.newAnnotatedType(member.getDeclaringClass());
-        AnnotatedMethod method = annotatedElementFactory.newAnnotatedMethod(member, annotated);
-        List<AnnotatedParameter<?>> parameters = method.getParameters();
-
-        InjectionPoint point = null;
-
-        for(AnnotatedParameter<?> parameter : parameters)
-        {
-            //@Observes is not injection point type for method parameters
-            if(parameter.getAnnotation(Observes.class) == null)
-            {
-                point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]),
-                                                 parameter.getBaseType(), member , parameter);
-                lists.add(point);
-            }
-        }
-
-        return lists;
     }
 
     public <X> List<InjectionPoint> getMethodInjectionPointData(Bean<?> owner, AnnotatedMethod<X> method)

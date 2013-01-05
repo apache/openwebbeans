@@ -46,14 +46,6 @@ public class ErrorStack
         errorStack.addElement(e);
     }
 
-    public Throwable[] popErrors()
-    {
-        Throwable[] list = new Throwable[errorStack.size()];
-        list = errorStack.toArray(list);
-        
-        return list;
-    }
-    
     public void logErrors()
     {
         if(!errorStack.isEmpty())

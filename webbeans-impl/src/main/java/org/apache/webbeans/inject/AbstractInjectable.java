@@ -211,15 +211,5 @@ public abstract class AbstractInjectable implements Injectable
         
         return false;
     }
-    
-    /**
-     * Gets the component.
-     * 
-     * @return the component
-     */
-    public OwbBean<?> getInjectionOwnerComponent()
-    {
-        return injectionOwnerBean;
-    }
 
 }
