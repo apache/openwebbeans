@@ -18,16 +18,24 @@
  */
 package org.apache.webbeans.annotation;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.util.AnnotationLiteral;
+import java.lang.annotation.Annotation;
 
-/**
- * {@link RequestScoped} literal annotation.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
- */
-public class RequestedScopeLiteral extends AbstractAnnotationLiteral<RequestScoped> implements RequestScoped
+public class AbstractAnnotationLiteral<T extends Annotation> extends AnnotationLiteral<T>
 {
+    @Override
+    public int hashCode()
+    {
+        // implemented for performance reasons
+        // currently this is needed because AnnotationLiteral always returns 0 as hashCode
+        return 0;
+    }
 
-    private static final long serialVersionUID = -7333612898060695008L;
+    @Override
+    public boolean equals(final Object other)
+    {
+        // implemented for performance reasons
+        return Annotation.class.isInstance(other) &&
+                Annotation.class.cast(other).annotationType().equals(annotationType());
+    }
 }

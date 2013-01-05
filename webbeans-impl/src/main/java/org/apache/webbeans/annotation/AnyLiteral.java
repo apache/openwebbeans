@@ -19,31 +19,11 @@
 package org.apache.webbeans.annotation;
 
 import javax.enterprise.inject.Any;
-import javax.enterprise.util.AnnotationLiteral;
 
-public class AnyLiteral extends AnnotationLiteral<Any> implements Any
+public class AnyLiteral extends AbstractAnnotationLiteral<Any> implements Any
 {
     private static final String TOSTRING = "@javax.enterprise.inject.Any()";
     private static final long serialVersionUID = -8922048102786275371L;
-
-    @Override
-    public int hashCode()
-    {
-        // implemented for performance reasons
-        // currently this is needed because AnnotationLiteral always returns 0 as hashCode
-        return 0;
-    }
-
-    @Override
-    public boolean equals(Object other)
-    {
-        // implemented for performance reasons
-        if (other instanceof Any)
-        {
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public String toString()
