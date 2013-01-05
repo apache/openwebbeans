@@ -44,6 +44,7 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -524,7 +525,8 @@ public abstract class TestContext implements ITestContext
             throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not _defined as interface");
         }
 
-        ManagedBean<T> component = new ManagedBean<T>(clazz, type, anntotatedType, webBeansContext);
+        ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(anntotatedType, webBeansContext);
+        ManagedBean<T> component = managedBeanCreator.getBean();
         component.setProducer(new InjectionTargetProducer(component));
 
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(component);
@@ -567,8 +569,7 @@ public abstract class TestContext implements ITestContext
             producerField.setProducer(new ProducerBeansProducer(producerField));
         }
 
-
-        annotatedTypeUtil.defineDisposalMethods(component, component.getAnnotatedType());
+        managedBeanCreator.defineDisposalMethods();
         annotatedTypeUtil.defineInjectedFields(component, component.getAnnotatedType());
         annotatedTypeUtil.defineInjectedMethods(component, component.getAnnotatedType());
         annotatedTypeUtil.defineObserverMethods(component, component.getAnnotatedType());

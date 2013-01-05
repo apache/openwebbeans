@@ -29,7 +29,6 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.spi.api.ResourceReference;
@@ -45,7 +44,6 @@ import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.inject.Inject;
@@ -61,8 +59,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnsatisfiedResolutionException;
 
 public final class WebBeansAnnotatedTypeUtil
 {
@@ -219,81 +215,6 @@ public final class WebBeansAnnotatedTypeUtil
         }
         
         return definedObservers;
-    }
-    
-    @SuppressWarnings("unchecked")
-    public <X> void defineDisposalMethods(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
-    {
-        final AnnotationManager annotationManager = bean.getWebBeansContext().getAnnotationManager();
-        Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();    
-        ProducerMethodBean<?> previous = null;
-        for (AnnotatedMethod<? super X> annotatedMethod : annotatedMethods)
-        {
-            Method declaredMethod = annotatedMethod.getJavaMember();
-            AnnotatedMethod<X> annt = (AnnotatedMethod<X>)annotatedMethod;
-            List<AnnotatedParameter<X>> parameters = annt.getParameters();
-            boolean found = false;
-            for(AnnotatedParameter<X> parameter : parameters)
-            {
-                if(parameter.isAnnotationPresent(Disposes.class))
-                {
-                    found = true;
-                    break;
-                }
-            }
-            
-            if(found)
-            {
-                checkProducerMethodDisposal(annotatedMethod);
-                Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Disposes.class);
-                Annotation[] annot = annotationManager.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
-
-                InjectionResolver injectionResolver = bean.getWebBeansContext().getBeanManagerImpl().getInjectionResolver();
-
-                Set<Bean<?>> set = injectionResolver.implResolveByType(type, annot);
-                if (set.isEmpty())
-                {
-                    throwUnsatisfiedResolutionException(type, declaredMethod, annot);
-                }
-                
-                Bean<?> foundBean = set.iterator().next();
-                ProducerMethodBean<?> pr = null;
-
-                if (foundBean == null || !(foundBean instanceof ProducerMethodBean))
-                {
-                    throwUnsatisfiedResolutionException(annotatedMethod.getDeclaringType().getJavaClass(), declaredMethod, annot);
-                }
-
-                pr = (ProducerMethodBean<?>) foundBean;
-
-                if (previous == null)
-                {
-                    previous = pr;
-                }
-                else
-                {
-                    // multiple same producer
-                    if (previous.equals(pr))
-                    {
-                        throw new WebBeansConfigurationException("There are multiple disposal method for the producer method : " + pr.getCreatorMethod().getName() + " in class : "
-                                                                 + annotatedMethod.getDeclaringType().getJavaClass());
-                    }
-                }
-
-                Method producerMethod = pr.getCreatorMethod();
-                //Disposer methods and producer methods must be in the same class
-                if(!producerMethod.getDeclaringClass().getName().equals(declaredMethod.getDeclaringClass().getName()))
-                {
-                    throw new WebBeansConfigurationException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : "
-                                                             + annotatedMethod.getDeclaringType().getJavaClass() + " must be in the same class!");
-                }
-                
-                pr.setDisposalMethod(declaredMethod);
-
-                addMethodInjectionPointMetaData(bean, annotatedMethod);
-                
-            }
-        }
     }
     
     @SuppressWarnings("unchecked")

@@ -227,8 +227,8 @@ public final class EjbUtility
         manager.getBeans().addAll(producerMethodBeans);
         manager.getBeans().addAll(producerFieldBeans);
 
-        util.defineDisposalMethods(ejbBean, ejbBean.getAnnotatedType());
-
+        EjbBeanCreatorImpl<T> ejbBeanCreator = new EjbBeanCreatorImpl<T>(ejbBean);
+        ejbBeanCreator.defineDisposalMethods();
     }
 
     private static void checkProducerMethods(Set<ProducerMethodBean<?>> producerMethodBeans, BaseEjbBean<?> bean)
