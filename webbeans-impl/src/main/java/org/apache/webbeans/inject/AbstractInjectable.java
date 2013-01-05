@@ -61,9 +61,6 @@ public abstract class AbstractInjectable implements Injectable
     /**Creational context instance that is passed to bean's create*/
     protected CreationalContext<?> injectionOwnerCreationalContext;
     
-    /**Field, method or constructor injection*/
-    protected Member injectionMember;
-    
     //X TODO refactor. public static variables are utterly ugly
     public static ThreadLocal<Object> instanceUnderInjection = new ThreadLocal<Object>();
 

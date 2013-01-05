@@ -195,14 +195,6 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     }
 
     /**
-     * @return the logger
-     */
-    protected Logger getLogger()
-    {
-        return logger;
-    }
-
-    /**
      * @return the contextsService
      */
     public ContextsService getContextService()

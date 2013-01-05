@@ -21,11 +21,9 @@ package org.apache.webbeans.util;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -157,45 +155,6 @@ public final class AnnotationUtil
         return false;
     }
 
-    /**
-     * Check given annotation exist in the multiple parameter of the given
-     * method. Return true if exist false otherwise.
-     * 
-     * @param method method
-     * @param clazz checking annotation
-     * @return true or false
-     */
-    public static boolean hasMethodMultipleParameterAnnotation(Method method, Class<? extends Annotation> clazz)
-    {
-        Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.nullCheckForClass(clazz);
-
-        Annotation[][] parameterAnns = method.getParameterAnnotations();
-
-        boolean found = false;
-
-        for (Annotation[] parameters : parameterAnns)
-        {
-            for (Annotation param : parameters)
-            {
-
-                if (param.annotationType().equals(clazz))
-                {
-                    if (!found)
-                    {
-                        found = true;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-
-        }
-        return false;
-    }
-    
     public static <X> boolean hasAnnotatedMethodMultipleParameterAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
@@ -222,42 +181,7 @@ public final class AnnotationUtil
         
         return false;
     }
-    
 
-    /**
-     * Gets the method first found parameter type that is annotated with the
-     * given annotation.
-     * 
-     * @param method method
-     * @param clazz checking annotation
-     * @return type
-     */
-    public static Type getMethodFirstParameterWithAnnotation(Method method, Class<? extends Annotation> clazz)
-    {
-        Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.nullCheckForClass(clazz);
-
-        Annotation[][] parameterAnns = method.getParameterAnnotations();
-        Type[] params = method.getGenericParameterTypes();
-
-        int index = 0;
-        for (Annotation[] parameters : parameterAnns)
-        {
-            for (Annotation param : parameters)
-            {
-                Class<? extends Annotation> btype = param.annotationType();
-                if (btype.equals(clazz))
-                {
-                    return params[index];
-                }
-            }
-
-            index++;
-
-        }
-        return null;
-    }
-    
     public static <X> Type getAnnotatedMethodFirstParameterWithAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
@@ -408,47 +332,6 @@ public final class AnnotationUtil
         }
 
         return true;
-    }
-
-    /**
-     * Checks if the specified method is overridden by another method from the list.
-     *
-     * @param method the method to check
-     * @param overridingCandidates the collection of methods potentially overriding the specified method
-     * @return
-     */
-    public static boolean isMethodOverridden(Method method, Collection<Method> overridingCandidates)
-    {
-        if (overridingCandidates.isEmpty() || Modifier.isPrivate(method.getModifiers()) || Modifier.isStatic(method.getModifiers()))
-        {
-            return false;
-        }
-        Class<?>[] methodParameterTypes = method.getParameterTypes();
-        boolean isOverridden = false;
-        candidates:
-        for (Method candidate : overridingCandidates)
-        {
-            if (!candidate.getName().equals(method.getName()))
-            {
-                continue;
-            }
-            Class<?>[] candidateParameterTypes = candidate.getParameterTypes();
-            if (candidateParameterTypes.length != methodParameterTypes.length)
-            {
-                continue;
-            }
-            for (int i = 0; i < methodParameterTypes.length; i++)
-            {
-                if (!candidateParameterTypes[i].equals(methodParameterTypes[i]))
-                {
-                    continue candidates;
-                }
-            }
-            // we don't need to check the return type as that is done by the java compiler
-            isOverridden = true;
-            break;
-        }
-        return isOverridden;
     }
 
     /**

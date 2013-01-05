@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.corespi;
 
-import java.lang.ref.WeakReference;
-import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -35,9 +33,6 @@ public class DefaultSingletonService implements SingletonService<WebBeansContext
      */
     private final Map<ClassLoader, WebBeansContext> singletonMap = new WeakHashMap<ClassLoader, WebBeansContext>();
     
-    private final Map<Object, WeakReference<ClassLoader>> objectToClassLoaderMap = new IdentityHashMap<Object, WeakReference<ClassLoader>>();
-
- 
     /**
      * Gets singleton instance for deployment.
      * @return signelton instance for this deployment

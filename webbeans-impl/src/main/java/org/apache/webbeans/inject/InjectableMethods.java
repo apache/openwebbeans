@@ -66,7 +66,6 @@ public class InjectableMethods<T> extends AbstractInjectable
         super(owner,creationalContext);
         method = m;
         this.instance = instance;
-        injectionMember = m;
     }
 
     /*

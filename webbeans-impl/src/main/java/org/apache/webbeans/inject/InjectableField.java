@@ -42,7 +42,6 @@ public class InjectableField extends AbstractInjectable
         super(owner,creationalContext);
         this.field = field;
         this.instance = instance;
-        injectionMember = field;
     }
 
     public Object doInjection()

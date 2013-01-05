@@ -84,18 +84,7 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
     {
         return inheritedScopeType;
     }
-    
-    protected AbstractOwbBean<T> getComponent()
-    {
-        return component;
-    }
-    
-    protected Class<?> getInheritedClazz()
-    {
-        return inheritedClazz;
-    }
-     
-    
+
     /**
      * Internally set the inheritedBindingTypes
      */
