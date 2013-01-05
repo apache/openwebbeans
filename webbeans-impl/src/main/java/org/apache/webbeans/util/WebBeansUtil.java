@@ -315,6 +315,28 @@ public final class WebBeansUtil
     }
 
     /**
+     * Returns true if this class can be candidate for simple web bean, false otherwise.
+     *
+     * @param clazz implementation class
+     * @return true if this class can be candidate for simple web bean
+     * @throws WebBeansConfigurationException if any configuration exception occurs
+     */
+    public boolean isManagedBean(Class<?> clazz) throws WebBeansConfigurationException
+    {
+        try
+        {
+            isManagedBeanClass(clazz);
+
+        }
+        catch (WebBeansConfigurationException e)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Return <code>true</code> if the given class is ok for manage bean conditions,
      * <code>false</code> otherwise.
      *
@@ -376,6 +398,27 @@ public final class WebBeansUtil
             {
                 PluginLoader.throwsException(e);
             }
+        }
+    }
+
+    public void checkManagedBeanCondition(Class<?> clazz) throws WebBeansConfigurationException
+    {
+        int modifier = clazz.getModifiers();
+
+        if (AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && AnnotationUtil.hasClassAnnotation(clazz, javax.interceptor.Interceptor.class))
+        {
+            throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName()
+                                                     + " may not annotated with both @Interceptor and @Decorator annotation");
+        }
+
+        if (!AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && !AnnotationUtil.hasClassAnnotation(clazz, javax.interceptor.Interceptor.class))
+        {
+            webBeansContext.getInterceptorUtil().checkSimpleWebBeansInterceptorConditions(clazz);
+        }
+
+        if (Modifier.isInterface(modifier))
+        {
+            throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not _defined as interface");
         }
     }
 
@@ -578,7 +621,7 @@ public final class WebBeansUtil
         DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
 
 
-        if (webBeansContext.getManagedBeanConfigurator().isManagedBean(clazz))
+        if (webBeansContext.getWebBeansUtil().isManagedBean(clazz))
         {
             comp = new NewManagedBean<T>(clazz, WebBeansType.MANAGED, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz), webBeansContext);
             comp.setImplScopeType(new DependentScopeLiteral());

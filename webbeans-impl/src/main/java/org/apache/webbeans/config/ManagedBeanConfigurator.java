@@ -57,49 +57,6 @@ public final class ManagedBeanConfigurator
         this.webBeansContext = webBeansContext;
     }
 
-    public void checkManagedBeanCondition(Class<?> clazz) throws WebBeansConfigurationException
-    {
-        int modifier = clazz.getModifiers();
-
-        if (AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class))
-        {
-            throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName()
-                                                     + " may not annotated with both @Interceptor and @Decorator annotation");
-        }
-
-        if (!AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && !AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class))
-        {
-            webBeansContext.getInterceptorUtil().checkSimpleWebBeansInterceptorConditions(clazz);
-        }
-
-        if (Modifier.isInterface(modifier))
-        {
-            throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not _defined as interface");
-        }
-    }
-
-    /**
-     * Returns true if this class can be candidate for simple web bean, false otherwise.
-     *
-     * @param clazz implementation class
-     * @return true if this class can be candidate for simple web bean
-     * @throws WebBeansConfigurationException if any configuration exception occurs
-     */
-    public boolean isManagedBean(Class<?> clazz) throws WebBeansConfigurationException
-    {
-        try
-        {
-            webBeansContext.getWebBeansUtil().isManagedBeanClass(clazz);
-
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
     /**
      * Returns the newly created Simple WebBean Component.
      *

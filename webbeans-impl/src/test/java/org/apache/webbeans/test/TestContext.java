@@ -292,7 +292,7 @@ public abstract class TestContext implements ITestContext
         ManagedBean<T> component = null;
 
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        webBeansContext.getManagedBeanConfigurator().checkManagedBeanCondition(clazz);
+        webBeansContext.getWebBeansUtil().checkManagedBeanCondition(clazz);
 
         webBeansContext.getInterceptorsManager().addNewInterceptorClass(clazz);
         AnnotatedType annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);

@@ -826,10 +826,10 @@ public class BeansDeployer
         }
         
         //Check for whether this class is candidate for Managed Bean
-        if (webBeansContext.getManagedBeanConfigurator().isManagedBean(clazz))
+        if (webBeansContext.getWebBeansUtil().isManagedBean(clazz))
         {
             //Check conditions
-            webBeansContext.getManagedBeanConfigurator().checkManagedBeanCondition(clazz);
+            webBeansContext.getWebBeansUtil().checkManagedBeanCondition(clazz);
 
             ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(annotatedType, webBeansContext);
 
