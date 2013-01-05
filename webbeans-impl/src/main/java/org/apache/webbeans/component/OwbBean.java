@@ -38,6 +38,13 @@ import org.apache.webbeans.config.WebBeansContext;
 public interface OwbBean<T> extends Bean<T>
 {
     /**
+     * Sets the producer for this bean
+     *
+     * @param producer
+     */
+    public void setProducer(Producer<T> producer);
+
+    /**
      * Sets bean scope type annotation.
      * 
      * @param scopeType bean scope type annotation

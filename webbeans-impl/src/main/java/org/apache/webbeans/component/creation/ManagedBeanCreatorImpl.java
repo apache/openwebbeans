@@ -171,7 +171,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
             }
 
             //Put final InjectionTarget instance
-            manager.putProducer(managedBean, processInjectionTargetEvent.getInjectionTarget());
+            managedBean.setProducer(processInjectionTargetEvent.getInjectionTarget());
 
             Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods =
                     new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>();
@@ -185,7 +185,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
                                                + "ProducerMethods. Look at logs for further details");
 
                 annotatedMethods.put(producerMethod, method);
-                manager.putProducer(producerMethod, (Producer) producerEvent.getProducer());
+                producerMethod.setProducer((Producer) producerEvent.getProducer());
             }
 
             Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields =
@@ -199,7 +199,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
                                                + " ProducerFields. Look at logs for further details");
 
                 annotatedFields.put(producerField, field);
-                manager.putProducer(producerField, (Producer) producerEvent.getProducer());
+                producerField.setProducer((Producer) producerEvent.getProducer());
             }
 
             Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap =

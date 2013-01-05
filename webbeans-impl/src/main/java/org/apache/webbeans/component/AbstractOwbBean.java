@@ -96,6 +96,9 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     /**Beans injection points*/
     protected Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
 
+    /** The producer */
+    private Producer<T> producer;
+
     /**
      * We gonna cache the hashCode since it is used millions of times per second.
      * Beans are pretty much static once they got constructed. So it's easy to
@@ -176,7 +179,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
                         creationalContext, this); 
             }
            
-            Producer<T> wrapper = getManager().getProducer(this);
+            Producer<T> wrapper = producer;
             //If wrapper not null
             if(wrapper != null)
             {
@@ -247,7 +250,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     {
         try
         {
-            Producer<T> wrapper = getManager().getProducer(this);
+            Producer<T> wrapper = producer;
             if(wrapper != null)
             {
                 // instance might be null if we only created a proxy
@@ -345,6 +348,11 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         }
         
         return getReturnType();
+    }
+    
+    public void setProducer(Producer<T> producer)
+    {
+        this.producer = producer;
     }
 
     /**

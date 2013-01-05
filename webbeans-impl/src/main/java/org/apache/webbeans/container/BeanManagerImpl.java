@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -173,8 +172,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     private ConcurrentHashMap<String, Bean<?>> passivationBeans = new ConcurrentHashMap<String, Bean<?>>(); 
 
-    private Map<Contextual<?>, Producer<?>> producers =
-        Collections.synchronizedMap(new IdentityHashMap<Contextual<?>, Producer<?>>());
+//    private Map<Contextual<?>, Producer<?>> producers =
+//        Collections.synchronizedMap(new IdentityHashMap<Contextual<?>, Producer<?>>());
     
     /**InjectionTargets for Java EE component instances that supports injections*/
     private Map<Class<?>, Producer<?>> producersForJavaEeComponents =
@@ -205,20 +204,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
     }
 
-    public <T> void putProducer(Contextual<T> contextual, Producer<T> producer)
-    {
-        Asserts.assertNotNull(contextual);
-        Asserts.assertNotNull(producer);
-
-        producers.put(contextual, producer);
-    }
-    
-    public <T> Producer<T> getProducer(Contextual<T> contextual)
-    {
-        Asserts.assertNotNull(contextual);
-        return (Producer<T>) producers.get(contextual);
-    }
-    
     public <T> void putProducerForJavaEeComponent(Class<T> javaEeComponentClass, Producer<T> wrapper)
     {
         Asserts.assertNotNull(javaEeComponentClass);
@@ -1039,7 +1024,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         deploymentBeans.clear();
         errorStack.clear();
         producersForJavaEeComponents.clear();
-        producers.clear();
         passivationBeans.clear();
         webBeansDecorators.clear();
         webBeansContext.getInterceptorsManager().clear();

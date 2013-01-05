@@ -525,7 +525,7 @@ public abstract class TestContext implements ITestContext
         }
 
         ManagedBean<T> component = new ManagedBean<T>(clazz, type, anntotatedType, webBeansContext);
-        manager.putProducer(component, new InjectionTargetProducer(component));
+        component.setProducer(new InjectionTargetProducer(component));
 
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(component);
 
@@ -556,7 +556,7 @@ public abstract class TestContext implements ITestContext
         {
             // add them one after the other to enable serialization handling et al
             manager.addBean(producerMethod);
-            manager.putProducer(producerMethod, new ProducerBeansProducer(producerMethod));
+            producerMethod.setProducer(new ProducerBeansProducer(producerMethod));
         }
 
         Set<ProducerFieldBean<?>> producerFields = annotatedTypeUtil.defineProducerFields(component, component.getAnnotatedType());
@@ -564,7 +564,7 @@ public abstract class TestContext implements ITestContext
         {
             // add them one after the other to enable serialization handling et al
             manager.addBean(producerField);
-            manager.putProducer(producerField, new ProducerBeansProducer(producerField));
+            producerField.setProducer(new ProducerBeansProducer(producerField));
         }
 
 
