@@ -21,9 +21,7 @@ package org.apache.webbeans.config;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,17 +30,9 @@ import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.Typed;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.Nonbinding;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Scope;
 
@@ -58,7 +48,6 @@ import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
@@ -74,7 +63,6 @@ import org.apache.webbeans.util.WebBeansUtil;
 /**
  * Defines the web beans components common properties.
  */
-@SuppressWarnings("unchecked")
 public final class DefinitionUtil
 {
     private final WebBeansContext webBeansContext;
@@ -106,7 +94,7 @@ public final class DefinitionUtil
         removeIgnoredInterfaces(bean);
     }
 
-    public static <T> void removeIgnoredInterfaces(AbstractOwbBean<T> bean)
+    private static <T> void removeIgnoredInterfaces(AbstractOwbBean<T> bean)
     {
         Set<String> ignoredInterfaces = bean.getWebBeansContext().getOpenWebBeansConfiguration().getIgnoredInterfaces();
         for (Iterator<Type> i = bean.getTypes().iterator(); i.hasNext(); )
@@ -173,30 +161,7 @@ public final class DefinitionUtil
     
     
 
-    /**
-     * Configures the producer method web bean api types.
-     * 
-     * @param <T> generic class type
-     * @param producerBean configuring web beans component
-     * @param type bean implementation class
-     */
-    public static <T> void defineProducerMethodApiTypes(AbstractProducerBean<T> producerBean, Type type, Annotation[] annots)
-    {
-        
-        //Looking for bean types
-        Typed beanTypes = AnnotationUtil.getAnnotation(annots, Typed.class);
-        if(beanTypes != null)
-        {
-            defineUserDefinedBeanTypes(producerBean, type, beanTypes);
-        }
-        else
-        {
-            defineNormalProducerMethodApi(producerBean, type);
-        }
-        removeIgnoredInterfaces(producerBean);
-    }
-    
-    public static <T> void defineNormalProducerMethodApi(AbstractProducerBean<T> producerBean, Type type)
+    private static <T> void defineNormalProducerMethodApi(AbstractProducerBean<T> producerBean, Type type)
     {
         Set<Type> types = producerBean.getTypes();
         types.add(Object.class);
@@ -436,7 +401,7 @@ public final class DefinitionUtil
         
     }
 
-    public void defineDefaultScopeType(OwbBean<?> component, String exceptionMessage, boolean allowLazyInit)
+    private void defineDefaultScopeType(OwbBean<?> component, String exceptionMessage, boolean allowLazyInit)
     {
         // Frist look for inherited scope
         IBeanInheritedMetaData metaData = null;
@@ -675,26 +640,6 @@ public final class DefinitionUtil
         }
     }
 
-    public <T> void addFieldInjectionPointMetaData(AbstractOwbBean<T> owner, Field field)
-    {
-        InjectionPoint injectionPoint = owner.getWebBeansContext().getInjectionPointFactory().getFieldInjectionPointData(owner, field);
-        if (injectionPoint != null)
-        {
-            addImplicitComponentForInjectionPoint(injectionPoint);
-            owner.addInjectionPoint(injectionPoint);
-        }
-    }
-
-    public <T> void addMethodInjectionPointMetaData(AbstractOwbBean<T> owner, Method method)
-    {
-        List<InjectionPoint> injectionPoints = owner.getWebBeansContext().getInjectionPointFactory().getMethodInjectionPointData(owner, method);
-        for (InjectionPoint injectionPoint : injectionPoints)
-        {
-            addImplicitComponentForInjectionPoint(injectionPoint);
-            owner.addInjectionPoint(injectionPoint);
-        }
-    }
-
     public <T> void addConstructorInjectionPointMetaData(AbstractOwbBean<T> owner, Constructor<T> constructor)
     {
         List<InjectionPoint> injectionPoints = owner.getWebBeansContext().getInjectionPointFactory().getConstructorInjectionPointData(owner, constructor);
@@ -712,103 +657,4 @@ public final class DefinitionUtil
             EventUtil.checkObservableInjectionPointConditions(injectionPoint);
         }        
     }
-    
-    public <X> Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
-    {
-        Set<ProducerMethodBean<?>> producerComponents = new HashSet<ProducerMethodBean<?>>();
-        Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();
-        
-        for(AnnotatedMethod annotatedMethod: annotatedMethods)
-        {
-            createProducerBeansFromAnnotatedType(bean, producerComponents, annotatedMethod, bean.getReturnType(), false);
-        }
-        
-        return producerComponents;
-    }
-    
-    private <X> void createProducerBeansFromAnnotatedType(InjectionTargetBean<X> bean, Set<ProducerMethodBean<?>> producerComponents,
-                                                          AnnotatedMethod<X> annotatedMethod, Class<?> clazz, boolean isSpecializes)
-    {
-        boolean specializes = isSpecializes;
-        Set<Annotation> annSet = annotatedMethod.getAnnotations();
-        if (annSet == null || annSet.isEmpty())
-        {
-            return;
-        }
-
-        Annotation[] anns = annSet.toArray(new Annotation[annSet.size()]);
-        
-        List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
-        // Producer Method
-        if (AnnotationUtil.hasAnnotation(anns, Produces.class))
-        {
-            for(AnnotatedParameter<X> parameter : parameters)
-            {
-                Set<Annotation> paramAnnSet = parameter.getAnnotations();
-                Annotation[] parameterAnns = paramAnnSet.toArray(new Annotation[parameter.getAnnotations().size()]);
-                if (AnnotationUtil.hasAnnotation(anns, Inject.class) ||
-                    AnnotationUtil.hasAnnotation(parameterAnns, Disposes.class) ||
-                    AnnotationUtil.hasAnnotation(parameterAnns, Observes.class))
-                {
-                    throw new WebBeansConfigurationException("Producer Method Bean with name : " + annotatedMethod.getJavaMember().getName() + " in bean class : " + clazz
-                                                             + " can not be annotated with @Initializer/@Destructor annotation "
-                                                             + "or has a parameter annotated with @Disposes/@Observes");
-                }
-                
-            }
-            
-            if (AnnotationUtil.hasAnnotation(anns, Specializes.class))
-            {
-                if (Modifier.isStatic(annotatedMethod.getJavaMember().getModifiers()))
-                {
-                    throw new WebBeansConfigurationException("Specializing producer method : " + annotatedMethod.getJavaMember().getName() + " in class : " + clazz.getName()
-                                                             + " can not be static");
-                }
-
-                specializes = true;
-            }
-
-            ProducerMethodBean<?> newComponent = createProducerBeanFromAnnotatedType((Class<X>)annotatedMethod.getJavaMember().getReturnType(),
-                                                                                     annotatedMethod, bean, specializes);
-            if (newComponent != null)
-            {
-                producerComponents.add(newComponent);
-                addMethodInjectionPointMetaData(newComponent, annotatedMethod.getJavaMember());
-            }
-        }
-
-    }
-
-    public <X> ProducerMethodBean<X> createProducerBeanFromAnnotatedType(Class<X> returnType, AnnotatedMethod<X> method,
-                                                                                InjectionTargetBean<?> parent, boolean isSpecializes)
-    {
-        ProducerMethodBean<X> bean = new ProducerMethodBean<X>(parent, returnType);
-        bean.setCreatorMethod(method.getJavaMember());
-
-        if (isSpecializes)
-        {
-            WebBeansUtil.configureProducerSpecialization(bean, method.getJavaMember(), parent.getReturnType().getSuperclass());
-        }
-
-        if (returnType.isPrimitive())
-        {
-            bean.setNullable(false);
-        }
-
-        Set<Annotation> annSet = method.getAnnotations();
-        Annotation[] anns = annSet.toArray(new Annotation[annSet.size()]);
-        
-        defineSerializable(bean);
-        defineStereoTypes(bean, anns);
-
-        defineProducerMethodApiTypes(bean, method.getBaseType(), anns);
-        defineScopeType(bean, anns, "Bean producer method : " + method.getJavaMember().getName() + " in class "
-                                                   + parent.getReturnType().getName() + " must declare default @Scope annotation", false);
-        WebBeansUtil.checkProducerGenericType(bean,method.getJavaMember());        
-        defineName(bean, anns, WebBeansUtil.getProducerDefaultName(method.getJavaMember().getName()));
-        defineQualifiers(bean, anns);
-
-        return bean;
-    }
-    
 }
