@@ -96,7 +96,8 @@ public class InterceptorResolution
         //X TODO pick up the decorators
 
         Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
-        Map<Method, MethodInterceptorInfo> methodInterceptorInfos = new HashMap<Method, MethodInterceptorInfo>();
+        Map<Method, MethodInterceptorInfo> businessMethodInterceptorInfos = new HashMap<Method, MethodInterceptorInfo>();
+
 
         // iterate over all methods and build up the CDI interceptor stack
         for (AnnotatedMethod interceptableAnnotatedMethod : interceptableAnnotatedMethods)
@@ -113,18 +114,19 @@ public class InterceptorResolution
             }
 
             InterceptionType interceptionType = calculateInterceptionType(interceptableAnnotatedMethod);
-
             MethodInterceptorInfo methodInterceptorInfo = new MethodInterceptorInfo(interceptionType);
-
             List<Interceptor<?>> methodInterceptors = beanManager.resolveInterceptors(interceptionType, AnnotationUtil.getAnnotationsFromSet(cummulatedInterceptorBindings));
-            methodInterceptorInfo.setMethodCdiInterceptors(methodInterceptors);
+            methodInterceptorInfo.setCdiInterceptors(methodInterceptors);
 
             allUsedCdiInterceptors.addAll(methodInterceptors);
 
-            methodInterceptorInfos.put(interceptableAnnotatedMethod.getJavaMember(), methodInterceptorInfo);
+            if (interceptionType.equals(InterceptionType.AROUND_INVOKE))
+            {
+                businessMethodInterceptorInfos.put(interceptableAnnotatedMethod.getJavaMember(), methodInterceptorInfo);
+            }
         }
 
-        return new BeanInterceptorInfo(null, allUsedCdiInterceptors, methodInterceptorInfos);
+        return new BeanInterceptorInfo(null, allUsedCdiInterceptors, businessMethodInterceptorInfos);
     }
 
 
@@ -198,11 +200,12 @@ public class InterceptorResolution
      */
     public static class BeanInterceptorInfo
     {
-        public BeanInterceptorInfo(Set<Decorator<?>> decorators, Set<Interceptor<?>> interceptors, Map<Method, MethodInterceptorInfo> methodsInfo)
+        public BeanInterceptorInfo(Set<Decorator<?>> decorators, Set<Interceptor<?>> interceptors,
+                                   Map<Method, MethodInterceptorInfo> businessMethodsInfo)
         {
             this.decorators = decorators;
             this.interceptors = interceptors;
-            this.methodsInfo = methodsInfo;
+            this.businessMethodsInfo = businessMethodsInfo;
         }
 
         /**
@@ -217,10 +220,11 @@ public class InterceptorResolution
         private Set<Decorator<?>> decorators = null;
 
         /**
-         * For each method which is either decorated or intercepted we keep an entry.
+         * For each business method which is either decorated or intercepted we keep an entry.
          * If there is no entry then the method has neither a decorator nor an interceptor.
          */
-        private Map<Method, MethodInterceptorInfo> methodsInfo = new HashMap<Method, MethodInterceptorInfo>();
+        private Map<Method, MethodInterceptorInfo> businessMethodsInfo = new HashMap<Method, MethodInterceptorInfo>();
+
 
         public Set<Decorator<?>> getDecorators()
         {
@@ -232,9 +236,9 @@ public class InterceptorResolution
             return interceptors;
         }
 
-        public Map<Method, MethodInterceptorInfo> getMethodsInfo()
+        public Map<Method, MethodInterceptorInfo> getBusinessMethodsInfo()
         {
-            return methodsInfo;
+            return businessMethodsInfo;
         }
     }
 
@@ -243,10 +247,10 @@ public class InterceptorResolution
      */
     public static class MethodInterceptorInfo
     {
-        private InterceptionType     interceptionType;
-        private List<Interceptor<?>> methodEjbInterceptors = null;
-        private List<Interceptor<?>> methodCdiInterceptors = null;
-        private List<Decorator<?>>   methodDecorators = null;
+        private InterceptionType interceptionType;
+        private Interceptor<?>[] ejbInterceptors = null;
+        private Interceptor<?>[] cdiInterceptors = null;
+        private Decorator<?>[]   methodDecorators = null;
 
         public MethodInterceptorInfo(InterceptionType interceptionType)
         {
@@ -267,44 +271,66 @@ public class InterceptorResolution
          * The (sorted) EJB-style ({@link javax.interceptor.Interceptors})
          * Interceptor Beans for a specific method or <code>null</code>
          * if no Interceptor exists for this method.
-         * They must be called <i>before</i> the {@link #methodCdiInterceptors}!
+         * They must be called <i>before</i> the {@link #cdiInterceptors}!
          */
-        public List<Interceptor<?>> getMethodEjbInterceptors()
+        public Interceptor<?>[] getEjbInterceptors()
         {
-            return methodEjbInterceptors;
+            return ejbInterceptors;
         }
 
         /**
          * The (sorted) CDI Interceptor Beans for a specific method or <code>null</code>
          * if no Interceptor exists for this method.
          */
-        public List<Interceptor<?>> getMethodCdiInterceptors()
+        public Interceptor<?>[] getCdiInterceptors()
         {
-            return methodCdiInterceptors;
+            return cdiInterceptors;
         }
 
         /**
          * The (sorted) Decorator Beans for a specific method or <code>null</code>
          * if no Decorator exists for this method.
          */
-        public List<Decorator<?>> getMethodDecorators()
+        public Decorator<?>[] getMethodDecorators()
         {
             return methodDecorators;
         }
 
-        public void setMethodCdiInterceptors(List<Interceptor<?>> methodCdiInterceptors)
+        public void setCdiInterceptors(List<Interceptor<?>> cdiInterceptors)
         {
-            this.methodCdiInterceptors = methodCdiInterceptors;
+            if (cdiInterceptors == null || cdiInterceptors.isEmpty())
+            {
+                this.cdiInterceptors = null;
+            }
+            else
+            {
+                this.cdiInterceptors = cdiInterceptors.toArray(new Interceptor[cdiInterceptors.size()]);
+            }
         }
 
         public void setMethodDecorators(List<Decorator<?>> methodDecorators)
         {
-            this.methodDecorators = methodDecorators;
+            if (methodDecorators == null || methodDecorators.isEmpty())
+            {
+                this.methodDecorators = null;
+            }
+            else
+            {
+                this.methodDecorators = methodDecorators.toArray(new Decorator[methodDecorators.size()]);
+            }
         }
 
-        public void setMethodEjbInterceptors(List<Interceptor<?>> methodEjbInterceptors)
+        public void setEjbInterceptors(List<Interceptor<?>> ejbInterceptors)
         {
-            this.methodEjbInterceptors = methodEjbInterceptors;
+            if (ejbInterceptors == null || ejbInterceptors.isEmpty())
+            {
+                this.ejbInterceptors = null;
+            }
+            else
+            {
+                this.ejbInterceptors = ejbInterceptors.toArray(new Interceptor[ejbInterceptors.size()]);
+            }
+
         }
     }
 }

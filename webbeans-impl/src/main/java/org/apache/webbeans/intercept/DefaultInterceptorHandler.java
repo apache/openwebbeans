@@ -48,9 +48,11 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler
     {
         try
         {
-            List<Interceptor<T>> interceptors = this.interceptors.get(method);
+            List<Interceptor<T>> methodInterceptors = interceptors.get(method);
+
             InterceptorInvocationContext<T> ctx
-                = new InterceptorInvocationContext<T>(target, InterceptionType.AROUND_INVOKE, interceptors, instances, method, parameters);
+                = new InterceptorInvocationContext<T>(target, InterceptionType.AROUND_INVOKE, methodInterceptors, instances, method, parameters);
+
             return ctx.proceed();
         }
         catch (Exception e)

@@ -72,13 +72,13 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         Assert.assertNull(interceptorInfo.getDecorators());
 
-        Map<Method, InterceptorResolution.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getMethodsInfo();
+        Map<Method, InterceptorResolution.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
         Assert.assertNotNull(methodInterceptorInfos);
         Assert.assertEquals(6, methodInterceptorInfos.size());
 
         for (InterceptorResolution.MethodInterceptorInfo mi : methodInterceptorInfos.values())
         {
-            Assert.assertEquals(1, mi.getMethodCdiInterceptors().size());
+            Assert.assertEquals(1, mi.getCdiInterceptors().length);
         }
 
         shutDownContainer();
@@ -112,13 +112,13 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         Assert.assertNull(interceptorInfo.getDecorators());
 
-        Map<Method, InterceptorResolution.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getMethodsInfo();
+        Map<Method, InterceptorResolution.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
         Assert.assertNotNull(methodInterceptorInfos);
         Assert.assertEquals(6, methodInterceptorInfos.size());
 
         for (InterceptorResolution.MethodInterceptorInfo mi : methodInterceptorInfos.values())
         {
-            Assert.assertEquals(3, mi.getMethodCdiInterceptors().size());
+            Assert.assertEquals(3, mi.getCdiInterceptors().length);
         }
 
         shutDownContainer();
@@ -150,7 +150,7 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         Assert.assertNull(interceptorInfo.getDecorators());
 
-        Map<Method, InterceptorResolution.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getMethodsInfo();
+        Map<Method, InterceptorResolution.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
         Assert.assertNotNull(methodInterceptorInfos);
         Assert.assertEquals(2, methodInterceptorInfos.size());
 
@@ -158,11 +158,11 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
         {
             if (mi.getKey().getName().equals("getMeaningOfLife"))
             {
-                Assert.assertEquals(1, mi.getValue().getMethodCdiInterceptors().size());
+                Assert.assertEquals(1, mi.getValue().getCdiInterceptors().length);
             }
             else if (mi.getKey().getName().equals("setMeaningOfLife"))
             {
-                Assert.assertEquals(2, mi.getValue().getMethodCdiInterceptors().size());
+                Assert.assertEquals(2, mi.getValue().getCdiInterceptors().length);
             }
         }
 
