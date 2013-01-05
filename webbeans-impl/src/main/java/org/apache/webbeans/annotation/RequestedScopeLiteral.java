@@ -26,7 +26,7 @@ import javax.enterprise.context.RequestScoped;
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-public class RequestedScopeLiteral extends AbstractAnnotationLiteral<RequestScoped> implements RequestScoped
+public class RequestedScopeLiteral extends EmptyAnnotationLiteral<RequestScoped> implements RequestScoped
 {
 
     private static final long serialVersionUID = -7333612898060695008L;

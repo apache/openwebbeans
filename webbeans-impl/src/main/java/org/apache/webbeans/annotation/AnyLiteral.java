@@ -20,7 +20,7 @@ package org.apache.webbeans.annotation;
 
 import javax.enterprise.inject.Any;
 
-public class AnyLiteral extends AbstractAnnotationLiteral<Any> implements Any
+public class AnyLiteral extends EmptyAnnotationLiteral<Any> implements Any
 {
     private static final String TOSTRING = "@javax.enterprise.inject.Any()";
     private static final long serialVersionUID = -8922048102786275371L;

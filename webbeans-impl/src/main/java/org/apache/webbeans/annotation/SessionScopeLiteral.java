@@ -26,7 +26,7 @@ import javax.enterprise.context.SessionScoped;
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-public class SessionScopeLiteral extends AbstractAnnotationLiteral<SessionScoped> implements SessionScoped
+public class SessionScopeLiteral extends EmptyAnnotationLiteral<SessionScoped> implements SessionScoped
 {
 
     private static final long serialVersionUID = -7469945140661485990L;

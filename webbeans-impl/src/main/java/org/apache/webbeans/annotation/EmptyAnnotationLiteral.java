@@ -21,16 +21,32 @@ package org.apache.webbeans.annotation;
 import javax.enterprise.util.AnnotationLiteral;
 import java.lang.annotation.Annotation;
 
-public class AbstractAnnotationLiteral<T extends Annotation> extends AnnotationLiteral<T>
+/**
+ * Base class for AnnotationLiterals which have no members.
+ * @param <T>
+ */
+public abstract class EmptyAnnotationLiteral<T extends Annotation> extends AnnotationLiteral<T>
 {
+    /**
+     * Implemented for performance reasons.
+     * This is needed because an Annotation always returns 0 as hashCode
+     * if there is no method in it.
+     * Contrary to this the generic {@link javax.enterprise.util.AnnotationLiteral#hashCode()}
+     * always does search for methods via reflection and only then returns 0.
+     * Not very well performing ...
+     * @return always 0
+     */
     @Override
     public int hashCode()
     {
-        // implemented for performance reasons
-        // currently this is needed because AnnotationLiteral always returns 0 as hashCode
         return 0;
     }
 
+    /**
+     * Just checks whether the 2 classes have the same annotationType.
+     * We do not need to dynamically evaluate the member values via reflection
+     * as there are no members in this annotation at all.
+     */
     @Override
     public boolean equals(final Object other)
     {
