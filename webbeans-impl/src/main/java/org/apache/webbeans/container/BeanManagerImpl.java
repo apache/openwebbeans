@@ -740,7 +740,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Check type if bean type is given
         if(beanType != null)
         {
-            if(!ResolutionUtil.checkBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean))
+            if(!webBeansContext.getResolutionUtil().checkBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean))
             {
                 throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
             }

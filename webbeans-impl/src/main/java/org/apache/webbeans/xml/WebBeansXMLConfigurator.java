@@ -89,17 +89,6 @@ public final class WebBeansXMLConfigurator
         }
 
     }
-    
-    /**
-     * Configures XML configuration file.
-     *
-     * @param xmlStream xml configuration file
-     * @param fileName  file name
-     */
-    public void configure(InputStream xmlStream, String fileName)
-    {
-        configure(xmlStream, fileName, null);
-    }
 
     /**
      * Configures XML configuration file.

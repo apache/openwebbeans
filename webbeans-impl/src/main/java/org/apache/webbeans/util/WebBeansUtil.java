@@ -582,53 +582,6 @@ public final class WebBeansUtil
     }
 
     /**
-     * Check producer method is ok for deployment.
-     *
-     * @param method producer method
-     * @param parentImplClazzName parent class name
-     */
-    public static void checkProducerMethodForDeployment(Method method, String parentImplClazzName)
-    {
-        Asserts.assertNotNull(method, "Method argument can not be null");
-
-        if (AnnotationUtil.hasMethodAnnotation(method, Inject.class) ||
-            AnnotationUtil.hasMethodParameterAnnotation(method, Disposes.class) ||
-            AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
-        {
-            throw new WebBeansConfigurationException("Producer Method Bean with name : " + method.getName()
-                                                     + " in bean class : " + parentImplClazzName
-                                                     + " can not be annotated with @Initializer/@Destructor annotation "
-                                                     + "or has a parameter annotated with @Disposes/@Observes");
-        }
-    }
-
-    /**
-     * CheckProducerMethodDisposal.
-     * @param disposalMethod disposal method
-     * @param definedBeanClassName bean class name
-     */
-    public static void checkProducerMethodDisposal(Method disposalMethod, String definedBeanClassName)
-    {
-        if (AnnotationUtil.hasMethodMultipleParameterAnnotation(disposalMethod, Disposes.class))
-        {
-            throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName() + " in class "
-                                                     + definedBeanClassName
-                                                     + " has multiple @Disposes annotation parameter");
-        }
-
-        if (AnnotationUtil.hasMethodAnnotation(disposalMethod, Inject.class) ||
-            AnnotationUtil.hasMethodParameterAnnotation(disposalMethod, Observes.class) ||
-            AnnotationUtil.hasMethodAnnotation(disposalMethod, Produces.class))
-        {
-            throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName()
-                                                     + " in the class : " + definedBeanClassName
-                                                     + " can not be annotated with @Initializer/@Destructor/@Produces "
-                                                     + "annotation or has a parameter annotated with @Observes");
-        }
-
-    }
-
-    /**
      * New WebBeans component class.
      *
      * @param <T>
@@ -1833,36 +1786,6 @@ public final class WebBeansUtil
     }
 
     /**
-     * Configures the producer method specialization.
-     *
-     * @param component producer method component
-     * @param method specialized producer method
-     * @param superClass bean super class that has overriden method
-     * @throws DefinitionException if the name is exist on the producer method when
-     *         parent also has name
-     * @throws WebBeansConfigurationException any other exceptions
-     */
-    public static void configureProducerSpecialization(AbstractOwbBean<?> component, Method method, Class<?> superClass)
-    {
-        Method superMethod = ClassUtil.getClassMethodWithTypes(superClass, method.getName(), Arrays.asList(method.getParameterTypes()));
-        if (superMethod == null)
-        {
-            throw new WebBeansConfigurationException("Producer method specialization is failed. Method "
-                    + method.getName() + " not found in super class : " + superClass.getName());
-        }
-
-        if (!AnnotationUtil.hasAnnotation(superMethod.getAnnotations(), Produces.class))
-        {
-            throw new WebBeansConfigurationException("Producer method specialization is failed. Method "
-                    + method.getName() + " found in super class : " + superClass.getName()
-                    + " is not annotated with @Produces");
-        }
-
-        component.setSpecializedBean(true);
-
-    }
-
-    /**
      * Configures the name of the producer method for specializing the parent.
      *
      * @param component producer method component
@@ -1872,21 +1795,6 @@ public final class WebBeansUtil
     public boolean configuredProducerSpecializedName(AbstractOwbBean<?> component, Method method, Method superMethod)
     {
         return webBeansContext.getAnnotationManager().configuredProducerSpecializedName(component, method, superMethod);
-    }
-
-    public static void checkInjectedMethodParameterConditions(Method method, Class<?> clazz)
-    {
-        Asserts.assertNotNull(method, "method parameter can not be null");
-        Asserts.nullCheckForClass(clazz);
-
-        if (AnnotationUtil.hasMethodParameterAnnotation(method, Disposes.class) ||
-            AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
-        {
-            throw new WebBeansConfigurationException("Initializer method parameters in method : " + method.getName()
-                    + " in class : " + clazz.getName() + " can not be annotated with @Disposes or @Observers");
-
-        }
-
     }
 
     /**

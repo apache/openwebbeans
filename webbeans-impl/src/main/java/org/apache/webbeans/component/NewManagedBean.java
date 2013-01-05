@@ -33,12 +33,9 @@ import org.apache.webbeans.config.WebBeansContext;
  */
 public class NewManagedBean<T> extends ManagedBean<T> implements NewBean<T>
 {
-    private WebBeansType definedType;
-
     public NewManagedBean(Class<T> returnType, WebBeansType definedType, AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
         super(returnType, annotatedType, webBeansContext);
-        this.definedType = definedType;        
     }
 
     @Override

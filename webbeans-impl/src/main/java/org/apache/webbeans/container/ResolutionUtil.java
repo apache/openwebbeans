@@ -28,14 +28,11 @@ import org.apache.webbeans.util.ClassUtil;
 public final class ResolutionUtil
 {
 
-    private final WebBeansContext webBeansContext;
-
     public ResolutionUtil(WebBeansContext webBeansContext)
     {
-        this.webBeansContext = webBeansContext;
     }
 
-    public static boolean checkBeanTypeAssignableToGivenType(Set<Type> beanTypes, Type givenType, boolean newBean)
+    public boolean checkBeanTypeAssignableToGivenType(Set<Type> beanTypes, Type givenType, boolean newBean)
     {
         Iterator<Type> itBeanApiTypes = beanTypes.iterator();
         while (itBeanApiTypes.hasNext())

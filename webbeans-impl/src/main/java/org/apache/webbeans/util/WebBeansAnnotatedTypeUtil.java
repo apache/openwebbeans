@@ -27,13 +27,11 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
-import org.apache.webbeans.component.creation.AnnotatedTypeBeanCreatorImpl;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.api.ResourceReference;
 
 import javax.enterprise.context.Dependent;
@@ -60,19 +58,14 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnsatisfiedResolutionException;
 
 public final class WebBeansAnnotatedTypeUtil
 {
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansAnnotatedTypeUtil.class);
-
     private final WebBeansContext webBeansContext;
 
     public WebBeansAnnotatedTypeUtil(WebBeansContext webBeansContext)
@@ -751,43 +744,5 @@ public final class WebBeansAnnotatedTypeUtil
         }                
     }
 
-    /**
-     * Gets injection points for the given javaee component annotated type.
-     * @param webBeansContext
-     *@param type annotated type for the class  @return injection points of the java ee component class
-     * @throws IllegalArgumentException if any exception occurs
-     */
-    public static <T> Set<InjectionPoint> getJavaEeComponentInstanceInjectionPoints(WebBeansContext webBeansContext,
-                                                                                    AnnotatedType<T> type) throws IllegalArgumentException
-    {
-        try
-        {
-            if(type == null)
-            {
-                return Collections.emptySet();
-            }
-            else
-            {
-                //Class of the component
-                Class<T> clazz = type.getJavaClass();
-                
-                //Just creating temporary for getting injected fields
-                AnnotatedTypeBeanCreatorImpl<T> managedBeanCreator = new AnnotatedTypeBeanCreatorImpl<T>(type, webBeansContext);            
-                managedBeanCreator.getBean().setImplScopeType(new DependentScopeLiteral());
-                
-                //Just define injections
-                managedBeanCreator.defineInjectedFields();
-                managedBeanCreator.defineInjectedMethods();
-                
-                return managedBeanCreator.getBean().getInjectionPoints();
-                
-            }            
-        }
-        catch(Exception e)
-        {
-            String message = "Error is occured while getting injection points for the Java EE component instance class, " + type.getJavaClass(); 
-            logger.log(Level.SEVERE, message, e);
-            throw new IllegalArgumentException(message, e);
-        }
-    }
+
 }

@@ -498,39 +498,6 @@ public final class NotificationManager
         }
     }
 
-    public <T> Set<ObserverMethod<?>> addObservableComponentMethods(InjectionTargetBean<?> component)
-    {
-        Asserts.assertNotNull(component, "component parameter can not be null");
-        Set<Method> observableMethods = component.getObservableMethods();
-        Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
-        
-        //check for null
-        if(observableMethods != null)
-        {
-            for (Method observableMethod : observableMethods)
-            {
-                Observes observes = AnnotationUtil.getMethodFirstParameterAnnotation(observableMethod, Observes.class);
-
-                boolean ifExist = false;
-
-                if (observes.notifyObserver().equals(Reception.IF_EXISTS))
-                {
-                    ifExist = true;
-                }
-
-                ObserverMethodImpl<T> observer = new ObserverMethodImpl(component, observableMethod, ifExist);
-
-                Type type = AnnotationUtil.getMethodFirstParameterWithAnnotation(observableMethod, Observes.class);
-
-                addObserver(observer, type);
-                
-                observerMethods.add(observer);
-            }            
-        }
-
-        return observerMethods;
-    }
-    
     /**
      * Gets observer method from given annotated method.
      * @param <T> bean type info
