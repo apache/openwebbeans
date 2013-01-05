@@ -94,14 +94,50 @@ public class InterceptorDecoratorProxyFactory
         }
     }
 
+    /**
+     * @return the internal instance which gets proxied.
+     */
+    public <T> T getInternalInstance(OwbInterceptorProxy proxyInstance)
+    {
+        try
+        {
+            Field internalInstanceField = proxyInstance.getClass().getDeclaredField(FIELD_PROXIED_INSTANCE);
+            internalInstanceField.setAccessible(true);
+            return (T) internalInstanceField.get(proxyInstance);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     /**
-     * Create a decorator and interceptor proxy for the given type.
+     * <p>Create a decorator and interceptor proxy for the given type. A single instance
+     * of such a proxy class has exactly one single internal instance.</p>
+     *
+     * <p>There are 3 different kind of methods:
+     * <ol>
+     *     <li>
+     *         private methods - they do not get proxied at all! If you like to invoke a private method,
+     *         then you can use {@link #getInternalInstance(OwbInterceptorProxy)} and use reflection on it.
+     *     </li>
+     *     <li>
+     *         non-proxied methods - all methods which do not have a business interceptor nor decorator
+     *         will get delegated to the internal instance without invoking any InterceptorHandler nor
+     *         doing reflection. Just plain java bytecode will get generated!
+     *     </li>
+     *     <li>
+     *         proxied methods - all calls to such a proxied method will get forwarded to the
+     *         InterceptorHandler which got set for this instance.
+     *     </li>
+     * </ol>
+     * </p>
      *
      *
      * @param classLoader to use for creating the class in
-     * @param classToProxy
-     * @param interceptedMethods the list of intercepted or decorated methods
+     * @param classToProxy the class for which a subclass will get generated
+     * @param interceptedMethods the list of intercepted or decorated business methods.
      * @param nonInterceptedMethods all methods which are <b>not</b> intercepted nor decorated and shall get delegated directly
      * @param <T>
      * @return the proxy class
