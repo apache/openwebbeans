@@ -28,13 +28,13 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.config.WebBeansContext;
 
 /**
- * Abstract implementation of {@link InjectedTargetBeanCreator}.
+ * Abstract implementation of {@link InjectionTargetBeanCreator}.
  * 
  * @version $Rev$ $Date$
  *
  * @param <T> bean class type
  */
-public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanCreator<T> implements InjectedTargetBeanCreator<T>
+public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanCreator<T> implements InjectionTargetBeanCreator<T>
 {    
     
     private WebBeansContext webBeansContext;

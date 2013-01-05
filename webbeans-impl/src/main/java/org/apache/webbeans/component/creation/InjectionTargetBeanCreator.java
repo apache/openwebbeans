@@ -36,7 +36,7 @@ import org.apache.webbeans.component.ProducerMethodBean;
  *
  * @param <T> bean class info
  */
-public interface InjectedTargetBeanCreator<T>
+public interface InjectionTargetBeanCreator<T>
 {
     /**
      * Defines bean's producer methods.

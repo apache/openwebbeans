@@ -25,7 +25,7 @@ package org.apache.webbeans.component.creation;
  *
  * @param <T> bean class
  */
-public interface ManagedBeanCreator<T> extends InjectedTargetBeanCreator<T>
+public interface ManagedBeanCreator<T> extends InjectionTargetBeanCreator<T>
 {
     /**
      * Define managed bean constructor.

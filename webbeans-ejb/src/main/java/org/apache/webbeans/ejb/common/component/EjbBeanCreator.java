@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.ejb.common.component;
 
-import org.apache.webbeans.component.creation.InjectedTargetBeanCreator;
+import org.apache.webbeans.component.creation.InjectionTargetBeanCreator;
 
-public interface EjbBeanCreator<T> extends InjectedTargetBeanCreator<T> 
+public interface EjbBeanCreator<T> extends InjectionTargetBeanCreator<T> 
 {
 
 }
