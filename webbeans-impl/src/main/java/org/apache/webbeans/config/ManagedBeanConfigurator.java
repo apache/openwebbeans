@@ -36,6 +36,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
 import org.apache.webbeans.portable.creation.ProducerBeansProducer;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -112,7 +113,7 @@ public final class ManagedBeanConfigurator
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
-
+        WebBeansAnnotatedTypeUtil annotatedTypeUtil = webBeansContext.getAnnotatedTypeUtil();
 
         int modifier = clazz.getModifiers();
 
@@ -159,7 +160,7 @@ public final class ManagedBeanConfigurator
         //Dropped from the speicification
         //WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "Simple WebBean Component implementation class : " + clazz.getName());
 
-        Set<ProducerMethodBean<?>> producerMethods = definitionUtil.defineProducerMethods(component);
+        Set<ProducerMethodBean<?>> producerMethods = annotatedTypeUtil.defineProducerMethods(component, component.getAnnotatedType());
         for (ProducerMethodBean<?> producerMethod : producerMethods)
         {
             // add them one after the other to enable serialization handling et al
@@ -167,7 +168,7 @@ public final class ManagedBeanConfigurator
             manager.putProducer(producerMethod, new ProducerBeansProducer(producerMethod));
         }
 
-        Set<ProducerFieldBean<?>> producerFields = webBeansContext.getAnnotatedTypeUtil().defineProducerFields(component, component.getAnnotatedType());
+        Set<ProducerFieldBean<?>> producerFields = annotatedTypeUtil.defineProducerFields(component, component.getAnnotatedType());
         for (ProducerFieldBean<?> producerField : producerFields)
         {
             // add them one after the other to enable serialization handling et al
@@ -176,10 +177,10 @@ public final class ManagedBeanConfigurator
         }
 
 
-        webBeansContext.getAnnotatedTypeUtil().defineDisposalMethods(component, component.getAnnotatedType());
-        webBeansContext.getAnnotatedTypeUtil().defineInjectedFields(component, component.getAnnotatedType());
-        webBeansContext.getAnnotatedTypeUtil().defineInjectedMethods(component, component.getAnnotatedType());
-        webBeansContext.getAnnotatedTypeUtil().defineObserverMethods(component, component.getAnnotatedType());
+        annotatedTypeUtil.defineDisposalMethods(component, component.getAnnotatedType());
+        annotatedTypeUtil.defineInjectedFields(component, component.getAnnotatedType());
+        annotatedTypeUtil.defineInjectedMethods(component, component.getAnnotatedType());
+        annotatedTypeUtil.defineObserverMethods(component, component.getAnnotatedType());
 
         return component;
     }

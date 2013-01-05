@@ -37,7 +37,6 @@ import javax.enterprise.inject.spi.Producer;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
@@ -51,6 +50,7 @@ import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
 import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
 import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
+import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 @SuppressWarnings("unchecked")
@@ -184,11 +184,11 @@ public final class EjbUtility
 
         final AnnotatedType<T> annotatedType = annotatedElementFactory.newAnnotatedType(clazz);
 
-        final DefinitionUtil util = webBeansContext.getDefinitionUtil();
+        final WebBeansAnnotatedTypeUtil util = webBeansContext.getAnnotatedTypeUtil();
 
-        final Set<ProducerMethodBean<?>> producerMethodBeans = util.defineProducerMethods(ejbBean, clazz);
+        final Set<ProducerMethodBean<?>> producerMethodBeans = util.defineProducerMethods(ejbBean, annotatedType);
 
-        final Set<ProducerFieldBean<?>> producerFieldBeans = webBeansContext.getAnnotatedTypeUtil().defineProducerFields(ejbBean, annotatedType);
+        final Set<ProducerFieldBean<?>> producerFieldBeans = util.defineProducerFields(ejbBean, annotatedType);
 
         checkProducerMethods(producerMethodBeans, ejbBean);
 
@@ -233,7 +233,7 @@ public final class EjbUtility
         manager.getBeans().addAll(producerMethodBeans);
         manager.getBeans().addAll(producerFieldBeans);
 
-        webBeansContext.getAnnotatedTypeUtil().defineDisposalMethods(ejbBean, ejbBean.getAnnotatedType());
+        util.defineDisposalMethods(ejbBean, ejbBean.getAnnotatedType());
 
     }
 

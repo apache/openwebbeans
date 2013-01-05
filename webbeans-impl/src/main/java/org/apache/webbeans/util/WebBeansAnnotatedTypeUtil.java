@@ -465,6 +465,7 @@ public final class WebBeansAnnotatedTypeUtil
                     webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean, producerFieldBean, anns);
                     if (producerFieldBean.getReturnType().isArray())
                     {
+                        // TODO this special handling should not be necessary, seems to be a bug in the tck
                         producerFieldBean.getTypes().add(Object.class);
                         producerFieldBean.getTypes().add(producerFieldBean.getReturnType());
                     }
@@ -530,8 +531,16 @@ public final class WebBeansAnnotatedTypeUtil
                                                                                    producerMethodBean,
                                                                                    AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
 
-                Set<Type> types = annotatedMethod.getTypeClosure();
-                producerMethodBean.getTypes().addAll(types);
+                if (producerMethodBean.getReturnType().isArray())
+                {
+                    // TODO this special handling should not be necessary, seems to be a bug in the tck
+                    producerMethodBean.getTypes().add(Object.class);
+                    producerMethodBean.getTypes().add(producerMethodBean.getReturnType());
+                }
+                else
+                {
+                    producerMethodBean.getTypes().addAll(annotatedMethod.getTypeClosure());
+                }
                 definitionUtil.defineScopeType(producerMethodBean,
                                                AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()),
                                                                                     "Annotated producer method : " + annotatedMethod +  "must declare default @Scope annotation",

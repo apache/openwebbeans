@@ -96,15 +96,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
      */
     public Set<ProducerMethodBean<?>> defineProducerMethods()
     {
-        AbstractInjectionTargetBean bean = getBean();
-        if(isDefaultMetaDataProvider())
-        {
-            return bean.getWebBeansContext().getDefinitionUtil().defineProducerMethods(bean);
-        }
-        else
-        {
-            return bean.getWebBeansContext().getAnnotatedTypeUtil().defineProducerMethods(bean, getAnnotatedType());
-        }
+        return webBeansContext.getAnnotatedTypeUtil().defineProducerMethods(getBean(), getAnnotatedType());
     }
     
     /**
