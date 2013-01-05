@@ -73,12 +73,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     /** Injected methods of the bean */
     private Set<Method> injectedMethods = new HashSet<Method>();
     
-    /** Injected fields of the bean */
-    private Set<Field> injectedFromSuperFields = new HashSet<Field>();
-
-    /** Injected methods of the bean */
-    private Set<Method> injectedFromSuperMethods = new HashSet<Method>();
-    
     /**Annotated type for bean*/
     private AnnotatedType<T> annotatedType;
     
@@ -148,10 +142,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 //Therefore we inject dependencies of this instance
                 //Otherwise we loose injection
                 injectResources(instance, creationalContext);
-                injectSuperFields(instance, creationalContext);
-                injectSuperMethods(instance, creationalContext);
-                injectFields(instance, creationalContext);
-                injectMethods(instance, creationalContext);            
+                injectFieldsAndMethods(instance, creationalContext);
                 
                 //Dependent proxy
                 dependentProxy = result;
@@ -219,14 +210,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         //Inject resources
         injectResources(instance, creationalContext);
         
-        injectSuperFields(instance, creationalContext);
-        injectSuperMethods(instance, creationalContext);
-        
-        // Inject fields
-        injectFields(instance, creationalContext);
-
-        // Inject methods
-        injectMethods(instance, creationalContext);
+        injectFieldsAndMethods(instance, creationalContext);
         
         //Post construct
         postConstruct(instance, creationalContext);
@@ -310,16 +294,38 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     }
 
     /**
-     * Injects fields of the bean after constructing.
+     * Injects fields and methods of the bean after constructing.
+     * First the fields and methods of the superclasses are injected, then the fields and methdos of this class
      * 
      * @param instance bean instance
      * @param creationalContext creational context
      */
-    public void injectFields(T instance, CreationalContext<T> creationalContext)
+    public void injectFieldsAndMethods(T instance, CreationalContext<T> creationalContext)
+    {
+        injectFieldsAndMethods(annotatedType.getJavaClass(), instance, creationalContext);
+    }
+    
+    private void injectFieldsAndMethods(Class<?> type, T instance, CreationalContext<T> creationalContext)
+    {
+        if (type == null || type.equals(Object.class))
+        {
+            return;
+        }
+        injectFieldsAndMethods(type.getSuperclass(), instance, creationalContext);
+        injectFields(type, instance, creationalContext);
+        injectMethods(type, instance, creationalContext);
+    }    
+    
+    private void injectFields(Class<?> type, T instance, CreationalContext<T> creationalContext)
     {
         Set<Field> fields = getInjectedFields();
         for (Field field : fields)
         {
+            if (!field.getDeclaringClass().equals(type))
+            {
+                // will be injected at another run
+                continue;
+            }
             if (field.getAnnotation(Delegate.class) == null)
             {
                 if(!field.getType().equals(InjectionPoint.class))
@@ -361,48 +367,22 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         }
     }
 
-    public void injectSuperFields(T instance, CreationalContext<T> creationalContext)
-    {
-        Set<Field> fields = getInjectedFromSuperFields();
-        for (Field field : fields)
-        {
-            if (field.getAnnotation(Delegate.class) == null)
-            {
-                injectField(field, instance, creationalContext);
-            }
-        }                        
-    }
-    
-    public void injectSuperMethods(T instance, CreationalContext<T> creationalContext)
-    {
-        Set<Method> methods = getInjectedFromSuperMethods();
-
-        for (Method method : methods)
-        {
-            injectMethod(method, instance, creationalContext);
-        }        
-    }
-    
-    
     private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
     {
         InjectableField f = new InjectableField(field, instance, this, creationalContext);
         f.doInjection();        
     }
 
-    /**
-     * Injects all {@link javax.inject.Inject} methods of the bean instance.
-     * 
-     * @param instance bean instance
-     * @param creationalContext creational context instance
-     */
-    public void injectMethods(T instance, CreationalContext<T> creationalContext)
+    private void injectMethods(Class<?> type, T instance, CreationalContext<T> creationalContext)
     {
         Set<Method> methods = getInjectedMethods();
 
         for (Method method : methods)
         {
-            injectMethod(method, instance, creationalContext);
+            if (method.getDeclaringClass().equals(type))
+            {
+                injectMethod(method, instance, creationalContext);
+            }
         }
     }
     
@@ -484,27 +464,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     }
     
     /**
-     * Gets injected from super fields.
-     * 
-     * @return injected fields
-     */
-    public Set<Field> getInjectedFromSuperFields()
-    {
-        return injectedFromSuperFields;
-    }
-
-    /**
-     * Add new injected field.
-     * 
-     * @param field new injected field
-     */
-    public void addInjectedFieldToSuper(Field field)
-    {
-        injectedFromSuperFields.add(field);
-    }
-    
-
-    /**
      * Gets injected methods.
      * 
      * @return injected methods
@@ -524,26 +483,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         injectedMethods.add(method);
     }
 
-    /**
-     * Gets injected from super methods.
-     * 
-     * @return injected methods
-     */
-    public Set<Method> getInjectedFromSuperMethods()
-    {
-        return injectedFromSuperMethods;
-    }
-
-    /**
-     * Add new injected method.
-     * 
-     * @param method new injected method
-     */
-    public void addInjectedMethodToSuper(Method method)
-    {
-        injectedFromSuperMethods.add(method);
-    }
-    
     /**
      * {@inheritDoc}
      */

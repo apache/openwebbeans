@@ -62,36 +62,12 @@ public interface InjectionTargetBean<T> extends OwbBean<T>
     public void injectResources(T instance, CreationalContext<T> creationalContext);
     
     /**
-     * Inject fields of the bean instance.
+     * Inject fields and methods of the bean instance.
      * 
      * @param instance bean instance
      * @param creationalContext creational context
      */
-    public void injectFields(T instance, CreationalContext<T> creationalContext);
-    
-    /**
-     * Inject initializer methods of the bean instance.
-     * 
-     * @param instance bean instance
-     * @param creationalContext creational context
-     */
-    public void injectMethods(T instance, CreationalContext<T> creationalContext);
-    
-    /**
-     * Inject fields of the bean instance.
-     * 
-     * @param instance bean instance
-     * @param creationalContext creational context
-     */
-    public void injectSuperFields(T instance, CreationalContext<T> creationalContext);
-    
-    /**
-     * Inject initializer methods of the bean instance.
-     * 
-     * @param instance bean instance
-     * @param creationalContext creational context
-     */
-    public void injectSuperMethods(T instance, CreationalContext<T> creationalContext);
+    public void injectFieldsAndMethods(T instance, CreationalContext<T> creationalContext);
         
     /**
      * Gets all injected fields of bean.
@@ -106,18 +82,6 @@ public interface InjectionTargetBean<T> extends OwbBean<T>
     public void addInjectedField(Field field);
     
     /**
-     * Gets injected fields from super class.
-     * @return injected fields from super class 
-     */
-    public Set<Field> getInjectedFromSuperFields();
-
-    /**
-     * Adds new super injected field.
-     * @param field add to super
-     */
-    public void addInjectedFieldToSuper(Field field);    
-    
-    /**
      * Gets injected methods.
      * @return injected(initializer) methods
      */
@@ -129,18 +93,6 @@ public interface InjectionTargetBean<T> extends OwbBean<T>
      */
     public void addInjectedMethod(Method method);
 
-    /**
-     * Gets injected methods from super class.
-     * @return injected method from super class
-     */
-    public Set<Method> getInjectedFromSuperMethods();
-
-    /**
-     * Add injected method to super list.
-     * @param method injected method
-     */
-    public void addInjectedMethodToSuper(Method method);
-    
     /**
      * Gets inherited meta data.
      * @return inherited meta data

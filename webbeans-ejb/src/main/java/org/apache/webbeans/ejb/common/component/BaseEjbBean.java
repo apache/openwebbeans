@@ -82,18 +82,6 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
     }
 
     /**
-     * Inject session bean injected fields. It is called from
-     * interceptor.
-     * @param instance bean instance
-     * @param creationalContext creational context instance
-     */
-    @SuppressWarnings("unchecked")
-    public void injectFieldInInterceptor(Object instance, CreationalContext<?> creationalContext)
-    {
-        super.injectFields((T)instance, (CreationalContext<T>)creationalContext);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override

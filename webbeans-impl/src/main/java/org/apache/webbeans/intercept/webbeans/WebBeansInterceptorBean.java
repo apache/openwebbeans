@@ -299,26 +299,14 @@ public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements Ow
         // Set injected fields
         ManagedBean<T> delegate = (ManagedBean<T>) delegateBean;
 
-        Set<Field> injectedFields = delegate.getInjectedFromSuperFields();
-        for (Field injectedField : injectedFields)
-        {
-            injectField(injectedField, proxy, creationalContext);
-        }
-
-        Set<Method> injectedMethods = delegate.getInjectedFromSuperMethods();
-        for (Method injectedMethod : injectedMethods)
-        {
-            injectMethod(injectedMethod, proxy, creationalContext);
-        }
-        
-        injectedFields = delegate.getInjectedFields();
+        Set<Field> injectedFields = delegate.getInjectedFields();
         for (Field injectedField : injectedFields)
         {
             injectField(injectedField, proxy, creationalContext);            
         }
         
 
-        injectedMethods = delegate.getInjectedMethods();
+        Set<Method> injectedMethods = delegate.getInjectedMethods();
         for (Method injectedMethod : injectedMethods)
         {
             injectMethod(injectedMethod, proxy, creationalContext);            

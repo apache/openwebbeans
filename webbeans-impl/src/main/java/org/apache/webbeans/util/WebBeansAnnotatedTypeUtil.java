@@ -330,44 +330,13 @@ public final class WebBeansAnnotatedTypeUtil
         }
     }
     
-    public <X> void defineInjectedFields(AbstractInjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
+    public <X> void defineInjectedFields(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
     {
-        // we start with the actual class and it will define the fields from the uppermost
-        // base class down to this very class
-        defineInjectedFields(bean, annotatedType, annotatedType.getJavaClass());
-    }
-
-    /**
-     * The &#064;Inject fields must be defined in a specific order. Fields in a Superclass must get defined
-     * before the fields in the Subclasses.
-     *
-     * @param bean which should get filled
-     * @param annotatedType to get the annotation information from
-     * @param targetClass the current class which should get introspected. Only fields from this very class will get defined.
-     */
-    private <X> void defineInjectedFields(AbstractInjectionTargetBean<X> bean, AnnotatedType<X> annotatedType, Class<?> targetClass)
-    {
-        if (targetClass.equals(Object.class))
-        {
-            return;
-        }
-
-        // we first recurse to the top level superclass
-        Class<?> superclass = targetClass.getSuperclass();
-        defineInjectedFields(bean, annotatedType, superclass);
-
-        // and start our field definition in the uppermost non-Object class :)
-
         AnnotationManager annotationManager = bean.getWebBeansContext().getAnnotationManager();
 
         Set<AnnotatedField<? super X>> annotatedFields = annotatedType.getFields();   
         for(AnnotatedField<? super X> annotatedField: annotatedFields)
         {
-            if (!targetClass.equals(annotatedField.getJavaMember().getDeclaringClass()))
-            {
-                // only scan fields of the current targetClass
-                continue;
-            }
             if(Modifier.isPublic(annotatedField.getJavaMember().getModifiers()) && !annotatedField.isStatic())
             {
                 if(webBeansContext.getBeanManagerImpl().isNormalScope(bean.getScope()))

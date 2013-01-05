@@ -90,10 +90,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
                 }
                 
                 bean.injectResources(instance, ctx);
-                bean.injectSuperFields(instance, ctx);
-                bean.injectSuperMethods(instance, ctx);
-                bean.injectFields(instance, ctx);
-                bean.injectMethods(instance, ctx);            
+                bean.injectFieldsAndMethods(instance, ctx);
             }                    
         }
         finally

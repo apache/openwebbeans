@@ -393,7 +393,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
             // Set injected fields
             ManagedBean<T> delegate = (ManagedBean<T>) wrappedBean;
 
-            Set<Field> injectedFields = delegate.getInjectedFromSuperFields();
+            Set<Field> injectedFields = delegate.getInjectedFields();
             for (Field injectedField : injectedFields)
             {
                 boolean isDecorates = injectedField.isAnnotationPresent(Delegate.class);
@@ -404,24 +404,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
                 }
             }
             
-            Set<Method> injectedMethods = delegate.getInjectedFromSuperMethods();
-            for (Method injectedMethod : injectedMethods)
-            {
-                injectMethod(injectedMethod, proxy, cretionalContext);
-            }        
-
-            injectedFields = delegate.getInjectedFields();
-            for (Field injectedField : injectedFields)
-            {
-                boolean isDecorates = injectedField.isAnnotationPresent(Delegate.class);
-
-                if (!isDecorates)
-                {
-                    injectField(injectedField, proxy, cretionalContext);
-                }
-            }
-            
-            injectedMethods = delegate.getInjectedMethods();
+            Set<Method> injectedMethods = delegate.getInjectedMethods();
             for (Method injectedMethod : injectedMethods)
             {
                 injectMethod(injectedMethod, proxy, cretionalContext);
