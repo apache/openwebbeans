@@ -22,11 +22,13 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -65,7 +67,13 @@ public class AbstractBeanCreator<T>
     private final AbstractOwbBean<T> bean;    
     
     private Annotated annotated;
+    
+    private WebBeansContext webBeansContext;
+    
+    private String beanName;
 
+    private Set<Annotation> qualifiers = new HashSet<Annotation>();
+    
     /**
      * Creates a bean instance.
      * 
@@ -76,6 +84,12 @@ public class AbstractBeanCreator<T>
     {
         this.bean = bean;
         this.annotated = annotated;
+        this.webBeansContext = bean.getWebBeansContext();
+    }
+
+    protected Set<Annotation> getQualifiers()
+    {
+        return qualifiers;
     }
 
     /**
@@ -121,7 +135,7 @@ public class AbstractBeanCreator<T>
         if (nameAnnot == null) // no @Named
         {
             // Check for stereottype
-            if (getBean().getWebBeansContext().getAnnotationManager().hasNamedOnStereoTypes(getBean()))
+            if (webBeansContext.getAnnotationManager().hasNamedOnStereoTypes(getBean()))
             {
                 isDefault = true;
             }
@@ -136,14 +150,14 @@ public class AbstractBeanCreator<T>
             }
             else
             {
-                getBean().setName(nameAnnot.value());
+                beanName = nameAnnot.value();
             }
 
         }
 
         if (isDefault)
         {
-            getBean().setName(name);
+            beanName = name;
         }
     }
 
@@ -153,7 +167,7 @@ public class AbstractBeanCreator<T>
     public void defineQualifiers()
     {
         Annotation[] annotations = AnnotationUtil.asSet(annotated.getAnnotations());
-        final AnnotationManager annotationManager = getBean().getWebBeansContext().getAnnotationManager();
+        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
         for (Annotation annotation : annotations)
         {
@@ -161,7 +175,7 @@ public class AbstractBeanCreator<T>
 
             if (annotationManager.isQualifierAnnotation(type))
             {
-                Method[] methods = getBean().getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(type);
+                Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(type);
 
                 for (Method method : methods)
                 {
@@ -170,75 +184,62 @@ public class AbstractBeanCreator<T>
                     {
                         if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), Nonbinding.class))
                         {
-                            throw new WebBeansConfigurationException("WebBeans definition class : " + getBean().getReturnType().getName() + " @Qualifier : "
+                            throw new WebBeansConfigurationException("WebBeans definition class : " + method.getDeclaringClass().getName() + " @Qualifier : "
                                                                      + annotation.annotationType().getName()
                                                                      + " must have @NonBinding valued members for its array-valued and annotation valued members");
                         }
                     }
                 }
 
-                if (annotation.annotationType().equals(Named.class) && getBean().getName() != null)
+                if (annotation.annotationType().equals(Named.class) && beanName != null)
                 {
-                    getBean().addQualifier(new NamedLiteral(getBean().getName()));
+                    qualifiers.add(new NamedLiteral(beanName));
                 }
                 else
                 {
-                    getBean().addQualifier(annotation);
+                    qualifiers.add(annotation);
                 }
             }
         }
         
-        // Adding inherited qualifiers
-        IBeanInheritedMetaData inheritedMetaData = null;
-        
-        if(getBean() instanceof InjectionTargetBean)
-        {
-            inheritedMetaData = ((InjectionTargetBean<?>) getBean()).getInheritedMetaData();
-        }
-        
-        if (inheritedMetaData != null)
-        {
-            Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedQualifiers();
-            for (Annotation inherited : inheritedTypes)
-            {
-                Set<Annotation> qualifiers = getBean().getQualifiers();
-                boolean found = false;
-                for (Annotation existQualifier : qualifiers)
-                {
-                    if (existQualifier.annotationType().equals(inherited.annotationType()))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    getBean().addQualifier(inherited);
-                }
-            }
-        }
-        
+        configureInheritedQualifiers();
 
         // No-binding annotation
-        if (getBean().getQualifiers().size() == 0 )
+        if (qualifiers.size() == 0 )
         {
-            getBean().addQualifier(new DefaultLiteral());
+            qualifiers.add(new DefaultLiteral());
         }
-        else if(getBean().getQualifiers().size() == 1)
+        else if(qualifiers.size() == 1)
         {
-            Annotation annot = getBean().getQualifiers().iterator().next();
+            Annotation annot = qualifiers.iterator().next();
             if(annot.annotationType().equals(Named.class))
             {
-                getBean().addQualifier(new DefaultLiteral());
+                qualifiers.add(new DefaultLiteral());
             }
         }
         
         //Add @Any support
-        if(!AnnotationUtil.hasAnyQualifier(getBean()))
+        if(!hasAnyQualifier())
         {
-            getBean().addQualifier(new AnyLiteral());
+            qualifiers.add(new AnyLiteral());
         }
         
+    }
+
+    protected void configureInheritedQualifiers()
+    {
+        // hook for subclasses
+    }
+
+    /**
+     * Returns true if any binding exist
+     * 
+     * @param bean bean
+     * @return true if any binding exist
+     */
+    private boolean hasAnyQualifier()
+    {
+        return AnnotationUtil.getAnnotation(qualifiers, Any.class) != null;
     }
 
     /**
@@ -249,7 +250,7 @@ public class AbstractBeanCreator<T>
         Annotation[] annotations = AnnotationUtil.asSet(annotated.getAnnotations());
         boolean found = false;
 
-        List<ExternalScope> additionalScopes = getBean().getWebBeansContext().getBeanManagerImpl().getAdditionalScopes();
+        List<ExternalScope> additionalScopes = webBeansContext.getBeanManagerImpl().getAdditionalScopes();
         
         for (Annotation annotation : annotations)
         {   
@@ -396,7 +397,7 @@ public class AbstractBeanCreator<T>
                 {
                     getBean().setImplScopeType(new DependentScopeLiteral());
 
-                    if (allowLazyInit && getBean() instanceof ManagedBean && isPurePojoBean(getBean().getWebBeansContext(), getBean().getBeanClass()))
+                    if (allowLazyInit && getBean() instanceof ManagedBean && isPurePojoBean(webBeansContext, getBean().getBeanClass()))
                     {
                         // take the bean as Dependent but we could lazily initialize it
                         // because the bean doesn't contains any CDI feature
@@ -525,6 +526,8 @@ public class AbstractBeanCreator<T>
      */
     public AbstractOwbBean<T> getBean()
     {
+        bean.setName(beanName);
+        bean.getQualifiers().addAll(qualifiers);
         return bean;
     }
 

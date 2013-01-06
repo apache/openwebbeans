@@ -443,7 +443,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
             this.name = name;
             cachedHashCode = 0;
         }
-        else
+        else if (!this.name.equals(name))
         {
             throw new UnsupportedOperationException("Component name is already set to: " + this.name);
         }

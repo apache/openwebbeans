@@ -28,10 +28,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.Nonbinding;
 
 import org.apache.webbeans.exception.WebBeansException;
@@ -597,21 +595,6 @@ public final class AnnotationUtil
         result = annots.toArray(result);
 
         return result;
-    }
-
-
-    /**
-     * Returns true if any binding exist
-     * 
-     * @param bean bean
-     * @return true if any binding exist
-     */
-    public static boolean hasAnyQualifier(Bean<?> bean)
-    {
-        Asserts.assertNotNull(bean, "bean parameter can not be null");
-        Set<Annotation> qualifiers = bean.getQualifiers();
-
-        return getAnnotation(qualifiers, Any.class) != null;
     }
 
     /**

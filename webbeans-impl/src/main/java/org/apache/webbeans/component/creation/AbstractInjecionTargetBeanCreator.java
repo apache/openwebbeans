@@ -54,6 +54,7 @@ import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.spi.api.ResourceReference;
@@ -507,7 +508,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                     producerFieldBeanCreator.defineQualifiers();
                     producerFieldBeanCreator.defineName(WebBeansUtil.getProducerDefaultName(annotatedField.getJavaMember().getName()));
                     
-                    producerBeans.add(producerFieldBean);
+                    producerBeans.add(producerFieldBeanCreator.getBean());
                 }
             }
         }
@@ -578,7 +579,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 producerMethodBeanCreator.defineQualifiers();
                 
                 producerMethodBeanCreator.addMethodInjectionPointMetaData(annotatedMethod);
-                producerBeans.add(producerMethodBean);
+                producerBeans.add(producerMethodBeanCreator.getBean());
                 
             }
             
@@ -626,5 +627,32 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
     protected AnnotatedType<T> getAnnotated()
     {
         return (AnnotatedType<T>) super.getAnnotated();
+    }
+
+    protected void configureInheritedQualifiers()
+    {
+        // Adding inherited qualifiers
+        IBeanInheritedMetaData inheritedMetaData = getBean().getInheritedMetaData();
+        
+        if (inheritedMetaData != null)
+        {
+            Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedQualifiers();
+            for (Annotation inherited : inheritedTypes)
+            {
+                boolean found = false;
+                for (Annotation existQualifier : getQualifiers())
+                {
+                    if (existQualifier.annotationType().equals(inherited.annotationType()))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    getQualifiers().add(inherited);
+                }
+            }
+        }
     }
 }
