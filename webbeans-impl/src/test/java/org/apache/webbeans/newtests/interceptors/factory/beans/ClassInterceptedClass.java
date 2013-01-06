@@ -24,7 +24,7 @@ import javax.annotation.PreDestroy;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
 /**
- * A simple class which is not intercepted
+ * A simple class which is class-level intercepted
  */
 @Transactional
 public class ClassInterceptedClass

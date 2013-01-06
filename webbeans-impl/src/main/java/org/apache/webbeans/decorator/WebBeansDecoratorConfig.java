@@ -175,7 +175,7 @@ public final class WebBeansDecoratorConfig
         }
     }
 
-    public static Set<Decorator<?>> findDeployedWebBeansDecorator(BeanManagerImpl beanManagerImpl, Set<Type> apiType, Annotation... anns)
+    public static Set<Decorator<?>> findDeployedWebBeansDecorator(BeanManagerImpl beanManagerImpl, Set<Type> apiTypes, Annotation... anns)
     {
         Set<Decorator<?>> set = new HashSet<Decorator<?>>();
 
@@ -199,7 +199,7 @@ public final class WebBeansDecoratorConfig
         {
             decorator = (WebBeansDecorator<?>) it.next();
 
-            if (decorator.isDecoratorMatch(apiType, listAnnot))
+            if (decorator.isDecoratorMatch(apiTypes, listAnnot))
             {
                 set.add(decorator);
             }

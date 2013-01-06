@@ -231,7 +231,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
             }
             
             Field field = annotatedField.getJavaMember();
-            Annotation[] anns = AnnotationUtil.asSet(annotatedField.getAnnotations());
+            Annotation[] anns = AnnotationUtil.asArray(annotatedField.getAnnotations());
             if(Modifier.isPublic(field.getModifiers()))
             {
                 if(!getBean().getScope().equals(Dependent.class))
@@ -324,7 +324,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
         for (AnnotatedParameter<T> annotatedParameter : annotatedParameters)
         {
             annotationManager.checkForNewQualifierForDeployment(annotatedParameter.getBaseType(), annotatedMethod.getDeclaringType().getJavaClass(),
-                    method.getName(), AnnotationUtil.asSet(annotatedParameter.getAnnotations()));
+                    method.getName(), AnnotationUtil.asArray(annotatedParameter.getAnnotations()));
 
             if(annotatedParameter.isAnnotationPresent(Disposes.class) ||
                     annotatedParameter.isAnnotationPresent(Observes.class))
@@ -444,7 +444,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                     }
                 }
                 
-                Annotation[] anns = AnnotationUtil.asSet(annotatedField.getAnnotations());
+                Annotation[] anns = AnnotationUtil.asArray(annotatedField.getAnnotations());
                 Field field = annotatedField.getJavaMember();
                 
                 //Producer field for resource
@@ -558,7 +558,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 producerMethodBeanCreator.defineStereoTypes();
                 webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(getBean(),
                                                                                    producerMethodBean,
-                                                                                   AnnotationUtil.asSet(annotatedMethod.getAnnotations()));
+                                                                                   AnnotationUtil.asArray(annotatedMethod.getAnnotations()));
 
                 if (producerMethodBean.getReturnType().isArray())
                 {

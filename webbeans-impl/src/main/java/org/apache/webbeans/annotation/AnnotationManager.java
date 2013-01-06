@@ -168,7 +168,7 @@ public final class AnnotationManager
      */
     public Annotation[] getInterceptorBindingMetaAnnotations(Set<Annotation> anns)
     {
-        return getInterceptorBindingMetaAnnotations(AnnotationUtil.asSet(anns));
+        return getInterceptorBindingMetaAnnotations(AnnotationUtil.asArray(anns));
     }
 
     /**
@@ -241,7 +241,7 @@ public final class AnnotationManager
         {
             if(parameter.isAnnotationPresent(clazz))
             {
-                Annotation[] anns = AnnotationUtil.asSet(parameter.getAnnotations());
+                Annotation[] anns = AnnotationUtil.asArray(parameter.getAnnotations());
                 for(Annotation ann : anns)
                 {
                     if(isQualifierAnnotation(ann.annotationType()))

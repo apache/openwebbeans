@@ -1943,7 +1943,7 @@ public final class WebBeansUtil
          if (component instanceof EnterpriseBeanMarker)
          {
              beans = new HashSet<Bean<?>>();
-             Set<Bean<?>> allBeans = ((BeanManagerImpl)(manager)).getBeans(Object.class, AnnotationUtil.asSet(component.getQualifiers()));
+             Set<Bean<?>> allBeans = ((BeanManagerImpl)(manager)).getBeans(Object.class, AnnotationUtil.asArray(component.getQualifiers()));
 
              for(Bean<?> candidateBean : allBeans)
              {
@@ -1964,7 +1964,7 @@ public final class WebBeansUtil
          else
          {
              beans = manager.getBeans(component.getBeanClass(),
-                     AnnotationUtil.asSet(component.getQualifiers()));
+                     AnnotationUtil.asArray(component.getQualifiers()));
          }
 
         for(Bean<?> bean : beans)
@@ -2080,7 +2080,7 @@ public final class WebBeansUtil
         {
             ProducerMethodBean<?> bean = beanEntry.getKey();
             AnnotatedMethod<?> annotatedMethod = beanEntry.getValue();
-            Annotation[] annotationsFromSet = AnnotationUtil.asSet(bean.getQualifiers());
+            Annotation[] annotationsFromSet = AnnotationUtil.asArray(bean.getQualifiers());
             Method disposal = annotationManager.getDisposalWithGivenAnnotatedMethod(annotatedType, bean.getReturnType(), annotationsFromSet);
 
             AnnotatedMethod<?> disposalAnnotated = null;
@@ -2705,7 +2705,7 @@ public final class WebBeansUtil
 
     private <X> void checkManagedWebBeansInterceptorConditions(AnnotatedType<X> type)
     {
-        Annotation[] anns = AnnotationUtil.asSet(type.getAnnotations());
+        Annotation[] anns = AnnotationUtil.asArray(type.getAnnotations());
 
         Class<?> clazz = type.getJavaClass();
         boolean hasClassInterceptors = false;
@@ -2746,7 +2746,7 @@ public final class WebBeansUtil
                 }
 
                 if (annotationManager.hasInterceptorBindingMetaAnnotation(
-                    AnnotationUtil.asSet(methodA.getAnnotations())))
+                    AnnotationUtil.asArray(methodA.getAnnotations())))
                 {
                     throw new WebBeansConfigurationException("Method : " + method.getName() + "in managed bean class : " + clazz.getName()
                                                     + " can not be defined as non-static, non-private and final . Because it is annotated with at least one @InterceptorBinding");

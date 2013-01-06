@@ -20,6 +20,7 @@ package org.apache.webbeans.newtests.interceptors.resolution;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.util.AnnotationLiteral;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,9 +29,11 @@ import java.util.Map;
 import org.apache.webbeans.intercept.InterceptorResolution;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
-
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassMultiInterceptedClass;
+import org.apache.webbeans.newtests.interceptors.factory.beans.DecoratedClass;
 import org.apache.webbeans.newtests.interceptors.factory.beans.MethodInterceptedClass;
+import org.apache.webbeans.test.annotation.binding.Binding1;
+import org.apache.webbeans.test.component.decorator.clean.ServiceDecorator;
 import org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
@@ -173,5 +176,34 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
         shutDownContainer();
     }
 
+
+    @Test
+    public void testDecoratorResolution() throws Exception
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(DecoratedClass.class);
+        beanClasses.add(ServiceDecorator.class);
+
+        startContainer(beanClasses, beanXmls);
+
+        InterceptorResolution ir = new InterceptorResolution(getWebBeansContext());
+        AnnotatedType<DecoratedClass> annotatedType = getBeanManager().createAnnotatedType(DecoratedClass.class);
+        Bean<DecoratedClass> bean = (Bean<DecoratedClass>) getBeanManager().resolve(
+                getBeanManager().getBeans(DecoratedClass.class, new AnnotationLiteral<Binding1>() {}));
+
+        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
+        Assert.assertNotNull(interceptorInfo);
+
+        Assert.assertNotNull(interceptorInfo.getBusinessMethodsInfo());
+        Assert.assertEquals(1, interceptorInfo.getBusinessMethodsInfo().size());
+
+        Assert.assertNotNull(interceptorInfo.getDecorators());
+        Assert.assertEquals(1, interceptorInfo.getDecorators().size());
+
+        shutDownContainer();
+    }
 
 }

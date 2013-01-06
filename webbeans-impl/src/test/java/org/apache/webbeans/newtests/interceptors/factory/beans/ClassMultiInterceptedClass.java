@@ -26,7 +26,7 @@ import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
 /**
- * A simple class which is not intercepted
+ * A simple class which has multiple interceptors
  */
 @Transactional
 @Action

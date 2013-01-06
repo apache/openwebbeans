@@ -44,6 +44,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
@@ -83,6 +84,9 @@ public class InterceptorResolution
 
     public <T> BeanInterceptorInfo  calculateInterceptorInfo(Bean<T> bean, AnnotatedType<T> annotatedType)
     {
+        Asserts.assertNotNull(bean, "Bean must not be null!");
+        Asserts.assertNotNull(annotatedType, "AnnotatedType must not be null!");
+
         List<AnnotatedMethod> interceptableAnnotatedMethods = getInterceptableBusinessMethods(annotatedType);
 
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
@@ -95,8 +99,12 @@ public class InterceptorResolution
 
         //X TODO pick up EJB-style interceptors from a class level
 
-        //X TODO pick up the decorators
-        List<Decorator<?>> decorators = beanManager.resolveDecorators(bean.getTypes(), AnnotationUtil.asSet(bean.getQualifiers()));
+        // pick up the decorators
+        List<Decorator<?>> decorators = beanManager.resolveDecorators(bean.getTypes(), AnnotationUtil.asArray(bean.getQualifiers()));
+        if (decorators.size() == 0)
+        {
+            decorators = null; // less to store
+        }
 
         Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
         Map<Method, MethodInterceptorInfo> businessMethodInterceptorInfos = new HashMap<Method, MethodInterceptorInfo>();
@@ -123,7 +131,7 @@ public class InterceptorResolution
             }
         }
 
-        return new BeanInterceptorInfo(null, allUsedCdiInterceptors, businessMethodInterceptorInfos);
+        return new BeanInterceptorInfo(decorators, allUsedCdiInterceptors, businessMethodInterceptorInfos);
     }
 
 
@@ -134,11 +142,14 @@ public class InterceptorResolution
             return;
         }
 
-        Set<Decorator<?>> appliedDecorators = new HashSet<Decorator<?>>();
+        List<Decorator<?>> appliedDecorators = new ArrayList<Decorator<?>>();
 
         for (Decorator decorator : decorators)
         {
-            isDecoratorInterceptsMethod(decorator, annotatedMethod, appliedDecorators);
+            if (isDecoratorInterceptsMethod(decorator, annotatedMethod))
+            {
+                appliedDecorators.add(decorator);
+            }
         }
 
         if (appliedDecorators.size() > 0)
@@ -147,7 +158,7 @@ public class InterceptorResolution
         }
     }
 
-    private boolean isDecoratorInterceptsMethod(Decorator decorator, AnnotatedMethod annotatedMethod, Set<Decorator<?>> appliedDecorators)
+    private boolean isDecoratorInterceptsMethod(Decorator decorator, AnnotatedMethod annotatedMethod)
     {
         String annotatedMethodName = annotatedMethod.getJavaMember().getName();
 
@@ -162,8 +173,8 @@ public class InterceptorResolution
                 {
                     int modifiers = decoratorMethod.getModifiers();
                     if (Modifier.isFinal(modifiers) ||
-                            Modifier.isPrivate(modifiers) ||
-                            Modifier.isStatic(modifiers))
+                        Modifier.isPrivate(modifiers) ||
+                        Modifier.isStatic(modifiers))
                     {
                         continue;
                     }
@@ -187,7 +198,6 @@ public class InterceptorResolution
                             if (paramsMatch)
                             {
                                 // yikes our method is decorated by this very decorator type.
-                                appliedDecorators.add(decorator);
                                 return true;
                             }
                         }
@@ -220,7 +230,7 @@ public class InterceptorResolution
 
         List<Interceptor<?>> methodInterceptors
                 = webBeansContext.getBeanManagerImpl().resolveInterceptors(methodInterceptorInfo.getInterceptionType(),
-                                                                           AnnotationUtil.asSet(cummulatedInterceptorBindings));
+                                                                           AnnotationUtil.asArray(cummulatedInterceptorBindings));
 
         methodInterceptorInfo.setCdiInterceptors(methodInterceptors);
 
@@ -298,7 +308,7 @@ public class InterceptorResolution
      */
     public static class BeanInterceptorInfo
     {
-        public BeanInterceptorInfo(Set<Decorator<?>> decorators, Set<Interceptor<?>> interceptors,
+        public BeanInterceptorInfo(List<Decorator<?>> decorators, Set<Interceptor<?>> interceptors,
                                    Map<Method, MethodInterceptorInfo> businessMethodsInfo)
         {
             this.decorators = decorators;
@@ -315,7 +325,7 @@ public class InterceptorResolution
         /**
          * All the Decorator Beans active on this class.
          */
-        private Set<Decorator<?>> decorators = null;
+        private List<Decorator<?>> decorators = null;
 
         /**
          * For each business method which is either decorated or intercepted we keep an entry.
@@ -324,7 +334,7 @@ public class InterceptorResolution
         private Map<Method, MethodInterceptorInfo> businessMethodsInfo = new HashMap<Method, MethodInterceptorInfo>();
 
 
-        public Set<Decorator<?>> getDecorators()
+        public List<Decorator<?>> getDecorators()
         {
             return decorators;
         }

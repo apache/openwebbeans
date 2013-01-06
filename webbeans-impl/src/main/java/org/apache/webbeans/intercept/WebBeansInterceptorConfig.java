@@ -305,7 +305,7 @@ public final class WebBeansInterceptorConfig
             Method method = methodB.getJavaMember();
             Set<Annotation> interceptorAnns = new HashSet<Annotation>();
 
-            Annotation[] methodAnns = AnnotationUtil.asSet(methodB.getAnnotations());
+            Annotation[] methodAnns = AnnotationUtil.asArray(methodB.getAnnotations());
             if (annotationManager.hasInterceptorBindingMetaAnnotation(methodAnns))
             {
                 Annotation[] anns =
@@ -313,7 +313,7 @@ public final class WebBeansInterceptorConfig
                         methodAnns);
                 Annotation[] annsClazz =
                     annotationManager.getInterceptorBindingMetaAnnotations(
-                        AnnotationUtil.asSet(annotatedType.getAnnotations()));
+                        AnnotationUtil.asArray(annotatedType.getAnnotations()));
 
                 for (Annotation ann : anns)
                 {
@@ -328,7 +328,7 @@ public final class WebBeansInterceptorConfig
 
             Annotation[] stereoTypes =
                 annotationManager.getStereotypeMetaAnnotations(
-                    AnnotationUtil.asSet(annotatedType.getAnnotations()));
+                    AnnotationUtil.asArray(annotatedType.getAnnotations()));
             for (Annotation stero : stereoTypes)
             {
                 if (annotationManager.hasInterceptorBindingMetaAnnotation(

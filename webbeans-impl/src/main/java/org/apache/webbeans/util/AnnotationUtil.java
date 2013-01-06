@@ -638,7 +638,7 @@ public final class AnnotationUtil
         return null;        
     }
 
-    public static Annotation[] asSet(Set<Annotation> set)
+    public static Annotation[] asArray(Set<Annotation> set)
     {
         if(set != null)
         {

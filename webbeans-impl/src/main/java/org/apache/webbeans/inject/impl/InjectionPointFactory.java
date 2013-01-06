@@ -74,7 +74,7 @@ public class InjectionPointFactory
         Asserts.assertNotNull(annotField, "annotField parameter can not be null");
         Field member = annotField.getJavaMember();
 
-        Annotation[] annots = AnnotationUtil.asSet(annotField.getAnnotations());
+        Annotation[] annots = AnnotationUtil.asArray(annotField.getAnnotations());
 
         return getGenericInjectionPoint(owner, annots, annotField.getBaseType(), member, annotField);
     }

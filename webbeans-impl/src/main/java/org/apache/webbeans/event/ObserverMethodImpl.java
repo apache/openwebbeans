@@ -455,7 +455,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 //Get parameter annotations
                 Annotation[] bindingTypes =
                     annotationManager.getQualifierAnnotations(AnnotationUtil.
-                            asSet(parameter.getAnnotations()));
+                            asArray(parameter.getAnnotations()));
 
                 InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(bean, parameter.getBaseType(),
                         parameter.getDeclaringCallable().getJavaMember(), parameter, bindingTypes);

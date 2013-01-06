@@ -18,9 +18,12 @@ specific language governing permissions and limitations
 under the License.
 -->
 <beans>
-   <interceptors>
-      <class>org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor</class>
-      <class>org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor</class>
-      <class>org.apache.webbeans.test.component.intercept.webbeans.SecureInterceptor</class>
-   </interceptors>
+    <interceptors>
+        <class>org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor</class>
+        <class>org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor</class>
+        <class>org.apache.webbeans.test.component.intercept.webbeans.SecureInterceptor</class>
+    </interceptors>
+    <decorators>
+        <class>org.apache.webbeans.test.component.decorator.clean.ServiceDecorator</class>
+    </decorators>
 </beans>

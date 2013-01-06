@@ -18,39 +18,28 @@
  */
 package org.apache.webbeans.newtests.interceptors.factory.beans;
 
-import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
+
+import javax.enterprise.context.RequestScoped;
+import org.apache.webbeans.test.annotation.binding.Binding1;
+import org.apache.webbeans.test.component.service.IService;
 
 /**
- * A simple class which is not intercepted but has some
- * methods which are.
+ * A simple class which has a Decorator of type
+ * {@link org.apache.webbeans.test.component.decorator.clean.ServiceDecorator}
  */
-public class ClassAndMethodInterceptedClass
+@RequestScoped
+@Binding1
+public class DecoratedClass implements IService
 {
-    private boolean defaultCtInvoked = false;
 
-    private int meaningOfLife;
-
-    public ClassAndMethodInterceptedClass()
+    @Override
+    public String service()
     {
-        defaultCtInvoked = true;
+        return "theOriginalValue";
     }
 
-    @Transactional
-    public int getMeaningOfLife()
+    public int nonDecoratedMethod()
     {
-        System.out.println("answering the question about life, the universe and everything!");
-        System.out.println("and being in " + this.getClass());
-        return meaningOfLife;
-    }
-
-    @Transactional
-    public void setMeaningOfLife(int meaningOfLife)
-    {
-        this.meaningOfLife = meaningOfLife;
-    }
-
-    public int nonTransactionalGetter()
-    {
-        return meaningOfLife + 2;
+        return 42;
     }
 }
