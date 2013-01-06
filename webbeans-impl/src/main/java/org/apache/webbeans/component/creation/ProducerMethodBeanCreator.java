@@ -18,10 +18,18 @@
  */
 package org.apache.webbeans.component.creation;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
 public class ProducerMethodBeanCreator<T> extends AbstractProducerBeanCreator<T>
@@ -38,5 +46,45 @@ public class ProducerMethodBeanCreator<T> extends AbstractProducerBeanCreator<T>
     public ProducerMethodBean<T> getBean()
     {
         return (ProducerMethodBean<T>)super.getBean();
+    }
+
+    public void configureProducerSpecialization(AnnotatedMethod<T> annotatedMethod)
+    {
+        List<AnnotatedParameter<T>> annotatedParameters = annotatedMethod.getParameters();
+        List<Class<?>> parameters = new ArrayList<Class<?>>();
+        for(AnnotatedParameter<T> annotatedParam : annotatedParameters)
+        {
+            parameters.add(ClassUtil.getClass(annotatedParam.getBaseType()));
+        }
+        
+        Method superMethod = ClassUtil.getClassMethodWithTypes(annotatedMethod.getDeclaringType().getJavaClass().getSuperclass(), 
+                annotatedMethod.getJavaMember().getName(), parameters);
+        if (superMethod == null)
+        {
+            throw new WebBeansConfigurationException("Anontated producer method specialization is failed : " + annotatedMethod.getJavaMember().getName()
+                                                     + " not found in super class : " + annotatedMethod.getDeclaringType().getJavaClass().getSuperclass().getName()
+                                                     + " for annotated method : " + annotatedMethod);
+        }
+        
+        if (!AnnotationUtil.hasAnnotation(superMethod.getAnnotations(), Produces.class))
+        {
+            throw new WebBeansConfigurationException("Anontated producer method specialization is failed : " + annotatedMethod.getJavaMember().getName()
+                                                     + " found in super class : " + annotatedMethod.getDeclaringType().getJavaClass().getSuperclass().getName()
+                                                     + " is not annotated with @Produces" + " for annotated method : " + annotatedMethod);
+        }
+
+        /* To avoid multiple invocations of setBeanName(), following code is delayed to
+         * configSpecializedProducerMethodBeans() when checkSpecializations.
+        Annotation[] anns = AnnotationUtil.getQualifierAnnotations(superMethod.getAnnotations());
+
+        for (Annotation ann : anns)
+        {
+            bean.addQualifier(ann);
+        }
+        
+        WebBeansUtil.configuredProducerSpecializedName(bean, annotatedMethod.getJavaMember(), superMethod);
+        */
+        
+        getBean().setSpecializedBean(true);        
     }
 }

@@ -20,7 +20,6 @@ package org.apache.webbeans.util;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
-import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 
 import javax.enterprise.event.Observes;
@@ -31,69 +30,10 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.inject.Inject;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
 import java.util.List;
 
 public final class WebBeansAnnotatedTypeUtil
-{
-    
-    /**
-     * Check producer method is ok for deployment.
-     * 
-     * @param annotatedMethod producer method
-     */
-    public static <X> void checkProducerMethodForDeployment(AnnotatedMethod<X> annotatedMethod)
-    {
-        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
-
-        if (annotatedMethod.isAnnotationPresent(Inject.class) || 
-                annotatedMethod.isAnnotationPresent(Disposes.class) ||  
-                annotatedMethod.isAnnotationPresent(Observes.class))
-        {
-            throw new WebBeansConfigurationException("Producer annotated method : " + annotatedMethod + " can not be annotated with"
-                                                     + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
-        }
-    }
-    
-    public static <X> void configureProducerSpecialization(AbstractOwbBean<X> bean,AnnotatedMethod<X> annotatedMethod)
-    {
-        List<AnnotatedParameter<X>> annotatedParameters = annotatedMethod.getParameters();
-        List<Class<?>> parameters = new ArrayList<Class<?>>();
-        for(AnnotatedParameter<X> annotatedParam : annotatedParameters)
-        {
-            parameters.add(ClassUtil.getClass(annotatedParam.getBaseType()));
-        }
-        
-        Method superMethod = ClassUtil.getClassMethodWithTypes(annotatedMethod.getDeclaringType().getJavaClass().getSuperclass(), 
-                annotatedMethod.getJavaMember().getName(), parameters);
-        if (superMethod == null)
-        {
-            throw new WebBeansConfigurationException("Anontated producer method specialization is failed : " + annotatedMethod.getJavaMember().getName()
-                                                     + " not found in super class : " + annotatedMethod.getDeclaringType().getJavaClass().getSuperclass().getName()
-                                                     + " for annotated method : " + annotatedMethod);
-        }
-        
-        if (!AnnotationUtil.hasAnnotation(superMethod.getAnnotations(), Produces.class))
-        {
-            throw new WebBeansConfigurationException("Anontated producer method specialization is failed : " + annotatedMethod.getJavaMember().getName()
-                                                     + " found in super class : " + annotatedMethod.getDeclaringType().getJavaClass().getSuperclass().getName()
-                                                     + " is not annotated with @Produces" + " for annotated method : " + annotatedMethod);
-        }
-
-        /* To avoid multiple invocations of setBeanName(), following code is delayed to
-         * configSpecializedProducerMethodBeans() when checkSpecializations.
-        Annotation[] anns = AnnotationUtil.getQualifierAnnotations(superMethod.getAnnotations());
-
-        for (Annotation ann : anns)
-        {
-            bean.addQualifier(ann);
-        }
-        
-        WebBeansUtil.configuredProducerSpecializedName(bean, annotatedMethod.getJavaMember(), superMethod);
-        */
-        
-        bean.setSpecializedBean(true);        
-    }
+{    
     
     /**
      * add the definitions for a &#x0040;Initializer method.

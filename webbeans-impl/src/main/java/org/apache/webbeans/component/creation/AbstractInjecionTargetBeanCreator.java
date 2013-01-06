@@ -57,6 +57,7 @@ import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -429,7 +430,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
         {
             if(annotatedMethod.isAnnotationPresent(Produces.class) && annotatedMethod.getDeclaringType().equals(getAnnotated()))
             {
-                WebBeansAnnotatedTypeUtil.checkProducerMethodForDeployment(annotatedMethod);
+                checkProducerMethodForDeployment(annotatedMethod);
                 boolean specialize = false;
                 if(annotatedMethod.isAnnotationPresent(Specializes.class))
                 {
@@ -447,7 +448,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 
                 if(specialize)
                 {
-                    WebBeansAnnotatedTypeUtil.configureProducerSpecialization(producerMethodBean, (AnnotatedMethod<T>)annotatedMethod);
+                    producerMethodBeanCreator.configureProducerSpecialization((AnnotatedMethod<T>) annotatedMethod);
                 }
                 
                 if (ClassUtil.getClass(annotatedMethod.getBaseType()).isPrimitive())
@@ -488,7 +489,25 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
         
         return producerBeans;
     }
-    
+
+    /**
+     * Check producer method is ok for deployment.
+     * 
+     * @param annotatedMethod producer method
+     */
+    private void checkProducerMethodForDeployment(AnnotatedMethod<? super T> annotatedMethod)
+    {
+        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
+
+        if (annotatedMethod.isAnnotationPresent(Inject.class) || 
+                annotatedMethod.isAnnotationPresent(Disposes.class) ||  
+                annotatedMethod.isAnnotationPresent(Observes.class))
+        {
+            throw new WebBeansConfigurationException("Producer annotated method : " + annotatedMethod + " can not be annotated with"
+                                                     + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
+        }
+    }
+
     private <X> void addFieldInjectionPointMetaData(AnnotatedField<X> annotField)
     {
         InjectionPoint injectionPoint = webBeansContext.getInjectionPointFactory().getFieldInjectionPointData(getBean(), annotField);
