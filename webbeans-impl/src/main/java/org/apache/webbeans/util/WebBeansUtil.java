@@ -2438,7 +2438,7 @@ public final class WebBeansUtil
         //Check for Enabled via Alternative
         setInjectionTargetBeanEnableFlag(managedBeanCreator.getBean());
         managedBeanCreator.checkCreateConditions();
-        managedBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
+        managedBeanCreator.defineName();
         managedBeanCreator.defineQualifiers();
         managedBeanCreator.defineConstructor();
         managedBeanCreator.defineProducerMethods();
@@ -2583,7 +2583,7 @@ public final class WebBeansUtil
         //Check for Enabled via Alternative
         setInjectionTargetBeanEnableFlag(managedBeanCreator.getBean());
         managedBeanCreator.checkCreateConditions();
-        managedBeanCreator.defineName(getManagedBeanDefaultName(clazz.getSimpleName()));
+        managedBeanCreator.defineName();
         managedBeanCreator.defineQualifiers();
         managedBeanCreator.defineConstructor();
         managedBeanCreator.defineProducerMethods();

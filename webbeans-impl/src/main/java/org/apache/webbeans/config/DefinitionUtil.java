@@ -18,13 +18,11 @@
  */
 package org.apache.webbeans.config;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Named;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
@@ -48,55 +46,6 @@ public final class DefinitionUtil
     public DefinitionUtil(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-    }
-
-    /**
-     * Configure web beans component name.
-     * 
-     * @param component configuring web beans component
-     * @param defaultName default name of the web bean
-     */
-    public <T> void defineName(AbstractOwbBean<T> component, Annotation[] anns, String defaultName)
-    {
-        Named nameAnnot = null;
-        boolean isDefault = false;
-        for (Annotation ann : anns)
-        {
-            if (ann.annotationType().equals(Named.class))
-            {
-                nameAnnot = (Named) ann;
-                break;
-            }
-        }
-
-        if (nameAnnot == null) // no @Named
-        {
-            // Check for stereottype
-            if (webBeansContext.getAnnotationManager().hasNamedOnStereoTypes(component))
-            {
-                isDefault = true;
-            }
-
-        }
-        else
-        // yes @Named
-        {
-            if (nameAnnot.value().equals(""))
-            {
-                isDefault = true;
-            }
-            else
-            {
-                component.setName(nameAnnot.value());
-            }
-
-        }
-
-        if (isDefault)
-        {
-            component.setName(defaultName);
-        }
-
     }
 
     /**

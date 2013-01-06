@@ -157,7 +157,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(managedBean);
 
         checkCreateConditions();
-        defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
+        defineName();
         defineQualifiers();
 
         if (managedBean.isFullInit())

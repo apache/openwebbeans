@@ -88,10 +88,9 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
     /**
      * {@inheritDoc}
      */
-    public void defineName(String defaultName)
+    public void defineName()
     {
-        webBeansContext.getDefinitionUtil().defineName(getBean(), AnnotationUtil.getAnnotationsFromSet(getAnnotated().getAnnotations()),
-                    WebBeansUtil.getManagedBeanDefaultName(getAnnotated().getJavaClass().getSimpleName()));
+        defineName(WebBeansUtil.getManagedBeanDefaultName(getAnnotated().getJavaClass().getSimpleName()));
     }
 
     /**
@@ -410,7 +409,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                                                                                              producerFieldBean.getScope());
                     WebBeansUtil.checkProducerGenericType(producerFieldBean,annotatedField.getJavaMember());
                     producerFieldBeanCreator.defineQualifiers();
-                    definitionUtil.defineName(producerFieldBean, anns, WebBeansUtil.getProducerDefaultName(annotatedField.getJavaMember().getName()));
+                    producerFieldBeanCreator.defineName(WebBeansUtil.getProducerDefaultName(annotatedField.getJavaMember().getName()));
                     
                     producerBeans.add(producerFieldBean);
                 }
@@ -480,9 +479,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerMethodBean,
                                                                                          producerMethodBean.getScope());
                 WebBeansUtil.checkProducerGenericType(producerMethodBean,annotatedMethod.getJavaMember());
-                definitionUtil.defineName(producerMethodBean,
-                                          AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()),
-                                                                               WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
+                producerMethodBeanCreator.defineName(WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
                 producerMethodBeanCreator.defineQualifiers();
                 
                 producerMethodBeanCreator.addMethodInjectionPointMetaData(annotatedMethod);

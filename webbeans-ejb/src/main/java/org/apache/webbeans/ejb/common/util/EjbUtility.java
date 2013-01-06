@@ -49,7 +49,6 @@ import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
 import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
 import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
-import org.apache.webbeans.util.WebBeansUtil;
 
 @SuppressWarnings("unchecked")
 public final class EjbUtility
@@ -82,7 +81,7 @@ public final class EjbUtility
         ejbBeanCreator.defineStereoTypes();
         ejbBeanCreator.defineApiType();
         ejbBeanCreator.defineScopeType("Session Bean implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations", false);
-        ejbBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));            
+        ejbBeanCreator.defineName();            
         ejbBeanCreator.defineQualifiers();
         Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods();        
         checkProducerMethods(producerMethodBeans, ejbBean);

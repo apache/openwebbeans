@@ -106,6 +106,49 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         }
     }
 
+    public void defineName(String name)
+    {
+        Annotation[] anns = AnnotationUtil.getAnnotationsFromSet(getAnnotated().getAnnotations());
+        Named nameAnnot = null;
+        boolean isDefault = false;
+        for (Annotation ann : anns)
+        {
+            if (ann.annotationType().equals(Named.class))
+            {
+                nameAnnot = (Named) ann;
+                break;
+            }
+        }
+
+        if (nameAnnot == null) // no @Named
+        {
+            // Check for stereottype
+            if (getBean().getWebBeansContext().getAnnotationManager().hasNamedOnStereoTypes(getBean()))
+            {
+                isDefault = true;
+            }
+
+        }
+        else
+        // yes @Named
+        {
+            if (nameAnnot.value().equals(""))
+            {
+                isDefault = true;
+            }
+            else
+            {
+                getBean().setName(nameAnnot.value());
+            }
+
+        }
+
+        if (isDefault)
+        {
+            getBean().setName(name);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
