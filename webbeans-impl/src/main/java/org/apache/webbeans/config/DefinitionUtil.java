@@ -23,7 +23,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Named;
@@ -32,9 +31,6 @@ import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
-import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -54,52 +50,6 @@ public final class DefinitionUtil
     public DefinitionUtil(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-    }
-
-    public <T> void defineStereoTypes(OwbBean<?> component, Annotation[] anns)
-    {
-        final AnnotationManager annotationManager = component.getWebBeansContext().getAnnotationManager();
-        if (annotationManager.hasStereoTypeMetaAnnotation(anns))
-        {
-            Annotation[] steroAnns =
-                annotationManager.getStereotypeMetaAnnotations(anns);
-
-            for (Annotation stereo : steroAnns)
-            {
-                component.addStereoType(stereo);
-            }
-        }
-        
-        // Adding inherited qualifiers
-        IBeanInheritedMetaData inheritedMetaData = null;
-        
-        if(component instanceof InjectionTargetBean)
-        {
-            inheritedMetaData = ((InjectionTargetBean<?>) component).getInheritedMetaData();
-        }
-        
-        if (inheritedMetaData != null)
-        {
-            Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedStereoTypes();        
-            for (Annotation inherited : inheritedTypes)
-            {
-                Set<Class<? extends Annotation>> qualifiers = component.getStereotypes();
-                boolean found = false;
-                for (Class<? extends Annotation> existQualifier : qualifiers)
-                {
-                    if (existQualifier.equals(inherited.annotationType()))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    component.addStereoType(inherited);
-                }
-            }
-        }
-        
     }
 
     /**

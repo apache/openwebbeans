@@ -532,7 +532,7 @@ public abstract class TestContext implements ITestContext
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(component);
 
         definitionUtil.defineSerializable(component);
-        definitionUtil.defineStereoTypes(component, clazz.getDeclaredAnnotations());
+        managedBeanCreator.defineStereoTypes();
 
         Annotation[] clazzAnns = clazz.getDeclaredAnnotations();
 

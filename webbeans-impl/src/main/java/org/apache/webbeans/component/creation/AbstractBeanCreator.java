@@ -410,7 +410,48 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      */
     public void defineStereoTypes()
     {
-        definitionUtil.defineStereoTypes(bean, AnnotationUtil.getAnnotationsFromSet(annotated.getAnnotations()));
+        Annotation[] anns = AnnotationUtil.getAnnotationsFromSet(annotated.getAnnotations());
+        final AnnotationManager annotationManager = getBean().getWebBeansContext().getAnnotationManager();
+        if (annotationManager.hasStereoTypeMetaAnnotation(anns))
+        {
+            Annotation[] steroAnns =
+                annotationManager.getStereotypeMetaAnnotations(anns);
+
+            for (Annotation stereo : steroAnns)
+            {
+                getBean().addStereoType(stereo);
+            }
+        }
+        
+        // Adding inherited qualifiers
+        IBeanInheritedMetaData inheritedMetaData = null;
+        
+        if(getBean() instanceof InjectionTargetBean)
+        {
+            inheritedMetaData = ((InjectionTargetBean<?>) getBean()).getInheritedMetaData();
+        }
+        
+        if (inheritedMetaData != null)
+        {
+            Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedStereoTypes();        
+            for (Annotation inherited : inheritedTypes)
+            {
+                Set<Class<? extends Annotation>> qualifiers = getBean().getStereotypes();
+                boolean found = false;
+                for (Class<? extends Annotation> existQualifier : qualifiers)
+                {
+                    if (existQualifier.equals(inherited.annotationType()))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    getBean().addStereoType(inherited);
+                }
+            }
+        }
     }
     
     protected <X> void addMethodInjectionPointMetaData(AnnotatedMethod<X> method)
