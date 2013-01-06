@@ -33,8 +33,14 @@ import org.objectweb.asm.Type;
 public abstract class AbstractProxyFactory
 {
     /**
+     * The name of the field which stores the passivationID of the Bean this proxy serves.
+     * This is needed in case the proxy gets de-serialized back into a JVM
+     * which didn't have this bean loaded yet.
+     */
+    public static final String FIELD_BEAN_PASSIVATION_ID = "owbBeanPassivationId";
+
+    /**
      * @return the marker interface which should be used for this proxy.
-     * TODO this must be a list and for NormalScopeProxy we need add Serializable
      */
     protected abstract Class getMarkerInterface();
 
@@ -102,6 +108,11 @@ public abstract class AbstractProxyFactory
         cw.visitSource(classFileName + ".java", null);
 
         createInstanceVariables(cw, classToProxy, classFileName);
+
+
+        // create a static String Field which contains the passivationId of the Bean or null if not PassivationCapable
+        cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC,
+                FIELD_BEAN_PASSIVATION_ID, Type.getDescriptor(String.class), null, null).visitEnd();
 
         createConstructor(cw, proxyClassFileName, classToProxy, classFileName);
 
