@@ -63,7 +63,7 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
- * Abstract implementation of {@link InjectionTargetBeanCreator}.
+ * Abstract implementation of {@link AbstractBeanCreator}.
  * 
  * @version $Rev$ $Date$
  *
@@ -230,7 +230,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
             }
             
             Field field = annotatedField.getJavaMember();
-            Annotation[] anns = AnnotationUtil.getAnnotationsFromSet(annotatedField.getAnnotations());
+            Annotation[] anns = AnnotationUtil.asSet(annotatedField.getAnnotations());
             if(Modifier.isPublic(field.getModifiers()))
             {
                 if(!getBean().getScope().equals(Dependent.class))
@@ -323,7 +323,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
         for (AnnotatedParameter<T> annotatedParameter : annotatedParameters)
         {
             annotationManager.checkForNewQualifierForDeployment(annotatedParameter.getBaseType(), annotatedMethod.getDeclaringType().getJavaClass(),
-                    method.getName(), AnnotationUtil.getAnnotationsFromSet(annotatedParameter.getAnnotations()));
+                    method.getName(), AnnotationUtil.asSet(annotatedParameter.getAnnotations()));
 
             if(annotatedParameter.isAnnotationPresent(Disposes.class) ||
                     annotatedParameter.isAnnotationPresent(Observes.class))
@@ -443,7 +443,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                     }
                 }
                 
-                Annotation[] anns = AnnotationUtil.getAnnotationsFromSet(annotatedField.getAnnotations());
+                Annotation[] anns = AnnotationUtil.asSet(annotatedField.getAnnotations());
                 Field field = annotatedField.getJavaMember();
                 
                 //Producer field for resource
@@ -557,7 +557,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 producerMethodBeanCreator.defineStereoTypes();
                 webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(getBean(),
                                                                                    producerMethodBean,
-                                                                                   AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
+                                                                                   AnnotationUtil.asSet(annotatedMethod.getAnnotations()));
 
                 if (producerMethodBean.getReturnType().isArray())
                 {

@@ -19,6 +19,7 @@
 package org.apache.webbeans.newtests.interceptors.resolution;
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,8 +64,9 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         InterceptorResolution ir = new InterceptorResolution(getWebBeansContext());
         AnnotatedType<ClassInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(ClassInterceptedClass.class);
+        Bean<ClassInterceptedClass> bean = (Bean<ClassInterceptedClass>) getBeanManager().resolve(getBeanManager().getBeans(ClassInterceptedClass.class));
 
-        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(annotatedType);
+        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getInterceptors());
@@ -103,8 +105,9 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         InterceptorResolution ir = new InterceptorResolution(getWebBeansContext());
         AnnotatedType<ClassMultiInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(ClassMultiInterceptedClass.class);
+        Bean<ClassMultiInterceptedClass> bean = (Bean<ClassMultiInterceptedClass>) getBeanManager().resolve(getBeanManager().getBeans(ClassMultiInterceptedClass.class));
 
-        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(annotatedType);
+        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getInterceptors());
@@ -141,8 +144,9 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         InterceptorResolution ir = new InterceptorResolution(getWebBeansContext());
         AnnotatedType<MethodInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(MethodInterceptedClass.class);
+        Bean<MethodInterceptedClass> bean = (Bean<MethodInterceptedClass>) getBeanManager().resolve(getBeanManager().getBeans(MethodInterceptedClass.class));
 
-        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(annotatedType);
+        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getInterceptors());

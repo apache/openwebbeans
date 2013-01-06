@@ -927,7 +927,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         // check for InjectionPoint injection
         if (rawType.equals(InjectionPoint.class))
         {
-            if (AnnotationUtil.hasAnnotation(AnnotationUtil.getAnnotationsFromSet(injectionPoint.getQualifiers()), Default.class))
+            if (AnnotationUtil.hasAnnotation(AnnotationUtil.asSet(injectionPoint.getQualifiers()), Default.class))
             {
                 if (!bean.getScope().equals(Dependent.class))
                 {

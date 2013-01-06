@@ -70,7 +70,7 @@ public class AbstractBeanCreator<T>
      * Creates a bean instance.
      * 
      * @param bean bean instance
-     * @param beanAnnotations annotations
+     * @param annotated
      */
     public AbstractBeanCreator(AbstractOwbBean<T> bean, Annotated annotated)
     {
@@ -106,7 +106,7 @@ public class AbstractBeanCreator<T>
 
     public void defineName(String name)
     {
-        Annotation[] anns = AnnotationUtil.getAnnotationsFromSet(getAnnotated().getAnnotations());
+        Annotation[] anns = AnnotationUtil.asSet(getAnnotated().getAnnotations());
         Named nameAnnot = null;
         boolean isDefault = false;
         for (Annotation ann : anns)
@@ -152,7 +152,7 @@ public class AbstractBeanCreator<T>
      */
     public void defineQualifiers()
     {
-        Annotation[] annotations = AnnotationUtil.getAnnotationsFromSet(annotated.getAnnotations());
+        Annotation[] annotations = AnnotationUtil.asSet(annotated.getAnnotations());
         final AnnotationManager annotationManager = getBean().getWebBeansContext().getAnnotationManager();
 
         for (Annotation annotation : annotations)
@@ -246,7 +246,7 @@ public class AbstractBeanCreator<T>
      */
     public void defineScopeType(String errorMessage, boolean allowLazyInit)
     {
-        Annotation[] annotations = AnnotationUtil.getAnnotationsFromSet(annotated.getAnnotations());
+        Annotation[] annotations = AnnotationUtil.asSet(annotated.getAnnotations());
         boolean found = false;
 
         List<ExternalScope> additionalScopes = getBean().getWebBeansContext().getBeanManagerImpl().getAdditionalScopes();
@@ -458,7 +458,7 @@ public class AbstractBeanCreator<T>
      */
     public void defineStereoTypes()
     {
-        Annotation[] anns = AnnotationUtil.getAnnotationsFromSet(annotated.getAnnotations());
+        Annotation[] anns = AnnotationUtil.asSet(annotated.getAnnotations());
         final AnnotationManager annotationManager = getBean().getWebBeansContext().getAnnotationManager();
         if (annotationManager.hasStereoTypeMetaAnnotation(anns))
         {
