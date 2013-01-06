@@ -74,7 +74,7 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         Map<Method, InterceptorResolution.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
         Assert.assertNotNull(methodInterceptorInfos);
-        Assert.assertEquals(6, methodInterceptorInfos.size());
+        Assert.assertEquals(7, methodInterceptorInfos.size());
 
         for (InterceptorResolution.MethodInterceptorInfo mi : methodInterceptorInfos.values())
         {

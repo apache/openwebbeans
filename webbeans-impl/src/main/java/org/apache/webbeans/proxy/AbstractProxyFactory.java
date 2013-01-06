@@ -32,7 +32,15 @@ import org.objectweb.asm.Type;
  */
 public abstract class AbstractProxyFactory
 {
+    /**
+     * @return the marker interface which should be used for this proxy.
+     * TODO this must be a list and for NormalScopeProxy we need add Serializable
+     */
+    protected abstract Class getMarkerInterface();
 
+    /**
+     * generate the bytecode for creating the instance variables of the class
+     */
     protected abstract void createInstanceVariables(ClassWriter cw, Class<?> classToProxy, String classFileName);
 
     /**
@@ -47,9 +55,15 @@ public abstract class AbstractProxyFactory
     protected abstract void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName)
             throws ProxyGenerationException;
 
+    /**
+     * generate the bytecode for invoking all intercepted methods
+     */
     protected abstract void delegateInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] interceptedMethods)
             throws ProxyGenerationException;
 
+    /**
+     * generate the bytecode for invoking all non-intercepted methods
+     */
     protected abstract void delegateNonInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] noninterceptedMethods)
             throws ProxyGenerationException;
 
@@ -82,7 +96,7 @@ public abstract class AbstractProxyFactory
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         String classFileName = classToProxy.getName().replace('.', '/');
 
-        String[] interfaceNames = new String[]{Type.getInternalName(OwbInterceptorProxy.class)};
+        String[] interfaceNames = new String[]{Type.getInternalName(getMarkerInterface())};
 
         cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER + Opcodes.ACC_SYNTHETIC, proxyClassFileName, null, classFileName, interfaceNames);
         cw.visitSource(classFileName + ".java", null);
@@ -104,6 +118,7 @@ public abstract class AbstractProxyFactory
 
         return cw.toByteArray();
     }
+
 
 
 
@@ -373,4 +388,55 @@ public abstract class AbstractProxyFactory
             return Type.getInternalName(returnType);
         }
     }
+
+    /**
+     * Returns the name of the Java method to call to get the primitive value from an Object - e.g. intValue for java.lang.Integer
+     *
+     * @param type Type whose primitive method we want to lookup
+     * @return The name of the method to use
+     */
+    protected String getPrimitiveMethod(final Class<?> type)
+    {
+        if (Integer.TYPE.equals(type))
+        {
+            return "intValue";
+        }
+        else if (Boolean.TYPE.equals(type))
+        {
+            return "booleanValue";
+        }
+        else if (Character.TYPE.equals(type))
+        {
+            return "charValue";
+        }
+        else if (Byte.TYPE.equals(type))
+        {
+            return "byteValue";
+        }
+        else if (Short.TYPE.equals(type))
+        {
+            return "shortValue";
+        }
+        else if (Float.TYPE.equals(type))
+        {
+            return "floatValue";
+        }
+        else if (Long.TYPE.equals(type))
+        {
+            return "longValue";
+        }
+        else if (Double.TYPE.equals(type))
+        {
+            return "doubleValue";
+        }
+
+        throw new IllegalStateException("Type: " + type.getCanonicalName() + " is not a primitive type");
+    }
+
+    protected void generateReturn(MethodVisitor mv, Method delegatedMethod)
+    {
+        final Class<?> returnType = delegatedMethod.getReturnType();
+        mv.visitInsn(getReturnInsn(returnType));
+    }
+
 }

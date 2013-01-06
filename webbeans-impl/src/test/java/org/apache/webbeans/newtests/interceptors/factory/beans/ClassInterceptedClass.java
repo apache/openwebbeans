@@ -56,9 +56,10 @@ public class ClassInterceptedClass
     {
         f = 2.4f;
         c = 'c';
+        meaningOfLife = 42;
     }
 
-    public int getMeaningOfLife()
+    public int getMeaningOfLife() throws NumberFormatException
     {
         System.out.println("answering the question about life, the universe and everything!");
         System.out.println("and being in " + this.getClass());
@@ -83,6 +84,11 @@ public class ClassInterceptedClass
     public char getChar()
     {
         return c;
+    }
+
+    public String doThaBlowup() throws NumberFormatException
+    {
+        throw new NumberFormatException("should fit");
     }
 
 }
