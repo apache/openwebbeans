@@ -19,20 +19,25 @@
 package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.inject.spi.Producer;
+import javax.inject.Inject;
 
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
@@ -43,12 +48,14 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.ObserverMethodImpl;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.DeploymentException;
+import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
-import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -82,7 +89,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
     @Override
     public void checkCreateConditions()
     {
-        webBeansContext.getWebBeansUtil().checkManagedBeanCondition(getAnnotatedType());
+        webBeansContext.getWebBeansUtil().checkManagedBeanCondition(getAnnotated());
         WebBeansUtil.checkGenericType(getBean());
         //Check Unproxiable
         webBeansContext.getWebBeansUtil().checkUnproxiableApiType(getBean(), getBean().getScope());
@@ -94,10 +101,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
      */
     public void defineConstructor()
     {
-        AnnotatedConstructor<T> annotated = WebBeansAnnotatedTypeUtil.getBeanConstructor(getAnnotatedType());
-        Constructor<T> constructor = annotated.getJavaMember();
-        webBeansContext.getAnnotatedTypeUtil().addConstructorInjectionPointMetaData(getBean(), annotated);
-        getBean().setConstructor(constructor);
+        addConstructorInjectionPointMetaData();
     }
 
     /**
@@ -298,6 +302,81 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
             }
         }
 
+    }
+    
+    protected AnnotatedConstructor<T> getBeanConstructor()
+    {
+        Asserts.assertNotNull(getAnnotated(),"Type is null");
+        AnnotatedConstructor<T> result = null;
+        
+        Set<AnnotatedConstructor<T>> annConsts = getAnnotated().getConstructors();
+        if(annConsts != null)
+        {
+            boolean found = false;
+            boolean noParamConsIsDefined = false;
+            for(AnnotatedConstructor<T> annConst : annConsts)
+            {
+                if(annConst.isAnnotationPresent(Inject.class))
+                {
+                    if (found)
+                    {
+                        throw new WebBeansConfigurationException("There are more than one constructor with @Inject annotation in annotation type : "
+                                                                 + getAnnotated());
+                    }
+                    
+                    found = true;
+                    result = annConst;
+                }
+                else
+                {
+                    if(!found && !noParamConsIsDefined)
+                    {
+                        List<AnnotatedParameter<T>> parameters = annConst.getParameters();
+                        if(parameters != null && parameters.isEmpty())
+                        {
+                            result = annConst;
+                            noParamConsIsDefined = true;
+                        }                        
+                    }
+                }
+            }
+        }
+        
+        if (result == null)
+        {
+            throw new WebBeansConfigurationException("No constructor is found for the annotated type : " + getAnnotated());
+        }
+        
+        List<AnnotatedParameter<T>> parameters = result.getParameters();
+        for(AnnotatedParameter<T> parameter : parameters)
+        {
+            if (parameter.isAnnotationPresent(Disposes.class))
+            {
+                throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Disposes annotation in annotated constructor : "
+                                                         + result);
+            }
+            
+            if(parameter.isAnnotationPresent(Observes.class))
+            {
+                throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Observes annotation in annotated constructor : " + result);
+            }
+            
+        }
+
+        return result;
+    }
+    
+    protected void addConstructorInjectionPointMetaData()
+    {
+        InjectionPointFactory injectionPointFactory = webBeansContext.getInjectionPointFactory();
+        AnnotatedConstructor<T> beanConstructor = getBeanConstructor();
+        List<InjectionPoint> injectionPoints = injectionPointFactory.getConstructorInjectionPointData(getBean(), beanConstructor);
+        for (InjectionPoint injectionPoint : injectionPoints)
+        {
+            webBeansContext.getDefinitionUtil().addImplicitComponentForInjectionPoint(injectionPoint);
+            getBean().addInjectionPoint(injectionPoint);
+        }
+        getBean().setConstructor(beanConstructor.getJavaMember());
     }
 
     /**

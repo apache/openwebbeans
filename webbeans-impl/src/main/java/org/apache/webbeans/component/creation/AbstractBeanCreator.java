@@ -20,14 +20,16 @@ package org.apache.webbeans.component.creation;
 
 import java.lang.reflect.Type;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Abstract implementation.
@@ -41,11 +43,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     /**Bean instance*/
     private final AbstractOwbBean<T> bean;    
     
-    /**
-     * If annotated type is set by ProcessAnnotatedType event, used this annotated type
-     * to define bean instance instead of using class artifacts.
-     */
-    private AnnotatedType<T> annotatedType;
+    private Annotated annotated;
 
     private final DefinitionUtil definitionUtil;
     
@@ -55,10 +53,10 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      * @param bean bean instance
      * @param beanAnnotations annotations
      */
-    public AbstractBeanCreator(AbstractOwbBean<T> bean, AnnotatedType<T> annotatedType)
+    public AbstractBeanCreator(AbstractOwbBean<T> bean, Annotated annotated)
     {
         this.bean = bean;
-        this.annotatedType = annotatedType;
+        this.annotated = annotated;
         definitionUtil = bean.getWebBeansContext().getDefinitionUtil();
     }
 
@@ -75,7 +73,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      */
     public void defineApiType()
     {
-        Set<Type> types = annotatedType.getTypeClosure();
+        Set<Type> types = annotated.getTypeClosure();
         bean.getTypes().addAll(types);
         Set<String> ignored = bean.getWebBeansContext().getOpenWebBeansConfiguration().getIgnoredInterfaces();
         for (Iterator<Type> i = bean.getTypes().iterator(); i.hasNext();)
@@ -93,16 +91,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      */
     public void defineQualifier()
     {
-        definitionUtil.defineQualifiers(bean, AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()));
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void defineName(String defaultName)
-    {
-        definitionUtil.defineName(bean, AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()),
-                    WebBeansUtil.getManagedBeanDefaultName(annotatedType.getJavaClass().getSimpleName()));
+        definitionUtil.defineQualifiers(bean, AnnotationUtil.getAnnotationsFromSet(annotated.getAnnotations()));
     }
 
     /**
@@ -110,7 +99,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      */
     public void defineScopeType(String errorMessage, boolean allowLazyInit)
     {
-        definitionUtil.defineScopeType(bean, AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()), errorMessage, false);
+        definitionUtil.defineScopeType(bean, AnnotationUtil.getAnnotationsFromSet(annotated.getAnnotations()), errorMessage, false);
     }
 
     /**
@@ -126,7 +115,17 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      */
     public void defineStereoTypes()
     {
-        definitionUtil.defineStereoTypes(bean, AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()));
+        definitionUtil.defineStereoTypes(bean, AnnotationUtil.getAnnotationsFromSet(annotated.getAnnotations()));
+    }
+    
+    protected <X> void addMethodInjectionPointMetaData(AnnotatedMethod<X> method)
+    {
+        List<InjectionPoint> injectionPoints = getBean().getWebBeansContext().getInjectionPointFactory().getMethodInjectionPointData(getBean(), method);
+        for (InjectionPoint injectionPoint : injectionPoints)
+        {
+            getBean().getWebBeansContext().getDefinitionUtil().addImplicitComponentForInjectionPoint(injectionPoint);
+            getBean().addInjectionPoint(injectionPoint);
+        }
     }
 
     /**
@@ -137,8 +136,8 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         return bean;
     }
 
-    protected AnnotatedType<T> getAnnotatedType()
+    protected Annotated getAnnotated()
     {
-        return annotatedType;
+        return annotated;
     }
 }

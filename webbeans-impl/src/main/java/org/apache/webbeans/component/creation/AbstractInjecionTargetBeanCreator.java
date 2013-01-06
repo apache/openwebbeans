@@ -39,7 +39,9 @@ import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -82,15 +84,23 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
         super(bean, bean.getAnnotatedType());
         webBeansContext = bean.getWebBeansContext();
     }
-    
- 
+        
+    /**
+     * {@inheritDoc}
+     */
+    public void defineName(String defaultName)
+    {
+        webBeansContext.getDefinitionUtil().defineName(getBean(), AnnotationUtil.getAnnotationsFromSet(getAnnotated().getAnnotations()),
+                    WebBeansUtil.getManagedBeanDefaultName(getAnnotated().getJavaClass().getSimpleName()));
+    }
+
     /**
      * {@inheritDoc}
      */
     public void defineDisposalMethods()
     {
         final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-        Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotatedType().getMethods();    
+        Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();    
         ProducerMethodBean<?> previous = null;
         for (AnnotatedMethod<? super T> annotatedMethod : annotatedMethods)
         {
@@ -155,7 +165,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 
                 pr.setDisposalMethod(declaredMethod);
 
-                webBeansContext.getAnnotatedTypeUtil().addMethodInjectionPointMetaData(getBean(), annotatedMethod);
+                addMethodInjectionPointMetaData(annotatedMethod);
                 
             }
         }
@@ -168,7 +178,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
     {
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
-        Set<AnnotatedField<? super T>> annotatedFields = getAnnotatedType().getFields();   
+        Set<AnnotatedField<? super T>> annotatedFields = getAnnotated().getFields();   
         for(AnnotatedField<? super T> annotatedField: annotatedFields)
         {
             if(Modifier.isPublic(annotatedField.getJavaMember().getModifiers()) && !annotatedField.isStatic())
@@ -215,7 +225,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod))
                 {
                     getBean().addInjectedField(field);
-                    webBeansContext.getAnnotatedTypeUtil().addFieldInjectionPointMetaData(getBean(), annotatedField);                                
+                    addFieldInjectionPointMetaData(annotatedField);                                
                 }
             }                                    
         }
@@ -226,7 +236,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
      */
     public void defineInjectedMethods()
     {
-        Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotatedType().getMethods();
+        Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();
         
         for (AnnotatedMethod<? super T> annotatedMethod : annotatedMethods)
         {            
@@ -252,7 +262,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
             if (!Modifier.isStatic(method.getModifiers()))
             {
                 getBean().addInjectedMethod(method);
-                webBeansContext.getAnnotatedTypeUtil().addMethodInjectionPointMetaData(getBean(), annotatedMethod);
+                addMethodInjectionPointMetaData(annotatedMethod);
             }
         }
     }
@@ -263,7 +273,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
     public Set<ObserverMethod<?>> defineObserverMethods()
     {   
         Set<ObserverMethod<?>> definedObservers = new HashSet<ObserverMethod<?>>();
-        Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotatedType().getMethods();    
+        Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();    
         for (AnnotatedMethod<? super T> annotatedMethod : annotatedMethods)
         {
             AnnotatedMethod<T> annt = (AnnotatedMethod<T>)annotatedMethod;
@@ -298,7 +308,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 getBean().addObservableMethod(annotatedMethod.getJavaMember());
 
                 //Add injection point data
-                webBeansContext.getAnnotatedTypeUtil().addMethodInjectionPointMetaData(getBean(), annotatedMethod);
+                addMethodInjectionPointMetaData(annotatedMethod);
                 
                 //Looking for ObserverMethod
                 ObserverMethod<?> definedObserver = webBeansContext.getBeanManagerImpl().getNotificationManager().getObservableMethodForAnnotatedMethod(annotatedMethod, getBean());
@@ -319,10 +329,10 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
     {
         DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
         Set<ProducerFieldBean<?>> producerBeans = new HashSet<ProducerFieldBean<?>>();
-        Set<AnnotatedField<? super T>> annotatedFields = getAnnotatedType().getFields();        
+        Set<AnnotatedField<? super T>> annotatedFields = getAnnotated().getFields();        
         for(AnnotatedField<? super T> annotatedField: annotatedFields)
         {
-            if(annotatedField.isAnnotationPresent(Produces.class) && annotatedField.getDeclaringType().equals(getAnnotatedType()))
+            if(annotatedField.isAnnotationPresent(Produces.class) && annotatedField.getDeclaringType().equals(getAnnotated()))
             {
                 Type genericType = annotatedField.getBaseType();
                 
@@ -414,11 +424,11 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
     {
         DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
         Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
-        Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotatedType().getMethods();
+        Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();
         
         for(AnnotatedMethod<? super T> annotatedMethod: annotatedMethods)
         {
-            if(annotatedMethod.isAnnotationPresent(Produces.class) && annotatedMethod.getDeclaringType().equals(getAnnotatedType()))
+            if(annotatedMethod.isAnnotationPresent(Produces.class) && annotatedMethod.getDeclaringType().equals(getAnnotated()))
             {
                 WebBeansAnnotatedTypeUtil.checkProducerMethodForDeployment(annotatedMethod);
                 boolean specialize = false;
@@ -432,7 +442,8 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                     specialize = true;
                 }
                 
-                ProducerMethodBean<T> producerMethodBean = new ProducerMethodBean<T>(getBean(), (Class<T>)ClassUtil.getClass(annotatedMethod.getBaseType()));
+                ProducerMethodBeanCreator<T> producerMethodBeanCreator = new ProducerMethodBeanCreator<T>(getBean(), annotatedMethod);
+                ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
                 producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
                 
                 if(specialize)
@@ -473,7 +484,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                                                                                WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
                 definitionUtil.defineQualifiers(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
                 
-                webBeansContext.getAnnotatedTypeUtil().addMethodInjectionPointMetaData(producerMethodBean, annotatedMethod);
+                producerMethodBeanCreator.addMethodInjectionPointMetaData(annotatedMethod);
                 producerBeans.add(producerMethodBean);
                 
             }
@@ -483,11 +494,26 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
         return producerBeans;
     }
     
+    private <X> void addFieldInjectionPointMetaData(AnnotatedField<X> annotField)
+    {
+        InjectionPoint injectionPoint = webBeansContext.getInjectionPointFactory().getFieldInjectionPointData(getBean(), annotField);
+        if (injectionPoint != null)
+        {
+            webBeansContext.getDefinitionUtil().addImplicitComponentForInjectionPoint(injectionPoint);
+            getBean().addInjectionPoint(injectionPoint);
+        }
+    }
+
     /**
      * Return type-safe bean instance.
      */
     public AbstractInjectionTargetBean<T> getBean()
     {
         return (AbstractInjectionTargetBean<T>)super.getBean();
+    }
+
+    protected AnnotatedType<T> getAnnotated()
+    {
+        return (AnnotatedType<T>) super.getAnnotated();
     }
 }

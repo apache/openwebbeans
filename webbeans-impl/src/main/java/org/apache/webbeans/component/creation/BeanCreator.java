@@ -69,13 +69,6 @@ public interface BeanCreator<T>
     public void defineQualifier();
     
     /**
-     * Defines bean name.
-     * 
-     * @param defaultName default bean name
-     */
-    public void defineName(String defaultName);   
-    
-    /**
      * Gets bean.
      * 
      * @return bean instance

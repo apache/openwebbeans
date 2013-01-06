@@ -21,129 +21,21 @@ package org.apache.webbeans.util;
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.inject.impl.InjectionPointFactory;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.AnnotatedConstructor;
-import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public final class WebBeansAnnotatedTypeUtil
 {
-    private final WebBeansContext webBeansContext;
-
-    public WebBeansAnnotatedTypeUtil(WebBeansContext webBeansContext)
-    {
-        this.webBeansContext = webBeansContext;
-    }
-    
-    public static <T> AnnotatedConstructor<T> getBeanConstructor(AnnotatedType<T> type)
-    {
-        Asserts.assertNotNull(type,"Type is null");
-        AnnotatedConstructor<T> result = null;
-        
-        Set<AnnotatedConstructor<T>> annConsts = type.getConstructors();
-        if(annConsts != null)
-        {
-            boolean found = false;
-            boolean noParamConsIsDefined = false;
-            for(AnnotatedConstructor<T> annConst : annConsts)
-            {
-                if(annConst.isAnnotationPresent(Inject.class))
-                {
-                    if (found)
-                    {
-                        throw new WebBeansConfigurationException("There are more than one constructor with @Inject annotation in annotation type : "
-                                                                 + type);
-                    }
-                    
-                    found = true;
-                    result = annConst;
-                }
-                else
-                {
-                    if(!found && !noParamConsIsDefined)
-                    {
-                        List<AnnotatedParameter<T>> parameters = annConst.getParameters();
-                        if(parameters != null && parameters.isEmpty())
-                        {
-                            result = annConst;
-                            noParamConsIsDefined = true;
-                        }                        
-                    }
-                }
-            }
-        }
-        
-        if (result == null)
-        {
-            throw new WebBeansConfigurationException("No constructor is found for the annotated type : " + type);
-        }
-        
-        List<AnnotatedParameter<T>> parameters = result.getParameters();
-        for(AnnotatedParameter<T> parameter : parameters)
-        {
-            if (parameter.isAnnotationPresent(Disposes.class))
-            {
-                throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Disposes annotation in annotated constructor : "
-                                                         + result);
-            }
-            
-            if(parameter.isAnnotationPresent(Observes.class))
-            {
-                throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Observes annotation in annotated constructor : " + result);
-            }
-            
-        }
-
-        
-        return result;
-    }
-    
-    public <T> void addConstructorInjectionPointMetaData(AbstractOwbBean<T> owner, AnnotatedConstructor<T> constructor)
-    {
-        InjectionPointFactory injectionPointFactory = owner.getWebBeansContext().getInjectionPointFactory();
-        List<InjectionPoint> injectionPoints = injectionPointFactory.getConstructorInjectionPointData(owner, constructor);
-        for (InjectionPoint injectionPoint : injectionPoints)
-        {
-            webBeansContext.getDefinitionUtil().addImplicitComponentForInjectionPoint(injectionPoint);
-            owner.addInjectionPoint(injectionPoint);
-        }
-    }
-    
-    public <T,X> void addMethodInjectionPointMetaData(OwbBean<T> owner, AnnotatedMethod<X> method)
-    {
-        List<InjectionPoint> injectionPoints = owner.getWebBeansContext().getInjectionPointFactory().getMethodInjectionPointData(owner, method);
-        for (InjectionPoint injectionPoint : injectionPoints)
-        {
-            webBeansContext.getDefinitionUtil().addImplicitComponentForInjectionPoint(injectionPoint);
-            owner.addInjectionPoint(injectionPoint);
-        }
-    }
-    
-    public <T,X> void addFieldInjectionPointMetaData(AbstractOwbBean<T> owner, AnnotatedField<X> annotField)
-    {
-        InjectionPoint injectionPoint = owner.getWebBeansContext().getInjectionPointFactory().getFieldInjectionPointData(owner, annotField);
-        if (injectionPoint != null)
-        {
-            webBeansContext.getDefinitionUtil().addImplicitComponentForInjectionPoint(injectionPoint);
-            owner.addInjectionPoint(injectionPoint);
-        }
-    }
     
     /**
      * Check producer method is ok for deployment.
@@ -162,7 +54,6 @@ public final class WebBeansAnnotatedTypeUtil
                                                      + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
         }
     }
-    
     
     public static <X> void configureProducerSpecialization(AbstractOwbBean<X> bean,AnnotatedMethod<X> annotatedMethod)
     {

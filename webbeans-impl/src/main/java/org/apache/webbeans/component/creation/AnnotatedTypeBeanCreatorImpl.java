@@ -18,17 +18,14 @@
  */
 package org.apache.webbeans.component.creation;
 
-import java.lang.reflect.Constructor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 
 public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
 {
@@ -45,22 +42,14 @@ public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
     @Override
     public void defineConstructor()
     {
-        Constructor<T> constructor;
         try
         {
-            WebBeansAnnotatedTypeUtil annotatedTypeUtil = getBean().getWebBeansContext().getAnnotatedTypeUtil();
-            AnnotatedConstructor<T> annotated = annotatedTypeUtil.getBeanConstructor(getAnnotatedType());
-            constructor = annotated.getJavaMember();
-            annotatedTypeUtil.addConstructorInjectionPointMetaData(getBean(), annotated);
-            
-            getBean().setConstructor(constructor);
-            
+            addConstructorInjectionPointMetaData();
         }
         catch(Exception e)
         {
             // if no constructor could be found, we just leave the empty set.
-            logger.log(Level.INFO, OWBLogConst.WARN_0012, getAnnotatedType().getJavaClass());
+            logger.log(Level.INFO, OWBLogConst.WARN_0012, getAnnotated().getJavaClass());
         }
     }
-    
 }

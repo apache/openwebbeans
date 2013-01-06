@@ -68,7 +68,7 @@ public class EjbBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator<T> 
     @Override
     public void defineApiType()
     {
-        Set<Type> types = getAnnotatedType().getTypeClosure();
+        Set<Type> types = getAnnotated().getTypeClosure();
         getBean().getTypes().addAll(types);
     }
     

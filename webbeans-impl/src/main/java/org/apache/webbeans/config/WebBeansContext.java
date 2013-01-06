@@ -87,7 +87,7 @@ public class WebBeansContext
     private final InjectionPointFactory injectionPointFactory = new InjectionPointFactory(this);
     private final InterceptorUtil interceptorUtil = new InterceptorUtil(this);
     private final DefinitionUtil definitionUtil = new DefinitionUtil(this);
-    private final WebBeansAnnotatedTypeUtil annotatedTypeUtil = new WebBeansAnnotatedTypeUtil(this);
+    private final WebBeansAnnotatedTypeUtil annotatedTypeUtil = new WebBeansAnnotatedTypeUtil();
     private final SecurityService securityService;
     private final LoaderService loaderService;
     private ScannerService scannerService;
