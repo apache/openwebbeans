@@ -184,8 +184,6 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             final Type declaringClass = Type.getType(delegatedMethod.getDeclaringClass());
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, declaringClass.getInternalName(), delegatedMethod.getName(), methodDescriptor);
 
-//X            mv.visitInsn(Opcodes.POP);
-
             generateReturn(mv, delegatedMethod);
 
             mv.visitMaxs(-1, -1);
