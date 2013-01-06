@@ -69,7 +69,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> bean class type
  */
-public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanCreator<T> implements InjectionTargetBeanCreator<T>
+public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanCreator<T>
 {    
     
     private WebBeansContext webBeansContext;

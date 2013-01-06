@@ -67,7 +67,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> bean type info
  */
-public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator<T> implements ManagedBeanCreator<T>
+public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator<T>
 {
     private final WebBeansContext webBeansContext;
 

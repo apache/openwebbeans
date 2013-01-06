@@ -33,7 +33,7 @@ import org.apache.webbeans.ejb.common.util.EjbValidator;
  *
  * @param <T> ejb class type
  */
-public class EjbBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator<T> implements EjbBeanCreator<T>
+public class EjbBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator<T>
 {
     public EjbBeanCreatorImpl(BaseEjbBean<T> ejbBean)
     {

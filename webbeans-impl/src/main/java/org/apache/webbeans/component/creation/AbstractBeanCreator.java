@@ -59,7 +59,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> bean class info
  */
-public class AbstractBeanCreator<T> implements BeanCreator<T>
+public class AbstractBeanCreator<T>
 {
     /**Bean instance*/
     private final AbstractOwbBean<T> bean;    
