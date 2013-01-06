@@ -53,7 +53,6 @@ import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -86,7 +85,6 @@ public class WebBeansContext
     private final ResolutionUtil resolutionUtil = new ResolutionUtil(this);
     private final InjectionPointFactory injectionPointFactory = new InjectionPointFactory(this);
     private final InterceptorUtil interceptorUtil = new InterceptorUtil(this);
-    private final WebBeansAnnotatedTypeUtil annotatedTypeUtil = new WebBeansAnnotatedTypeUtil();
     private final SecurityService securityService;
     private final LoaderService loaderService;
     private ScannerService scannerService;
@@ -225,11 +223,6 @@ public class WebBeansContext
     public InterceptorUtil getInterceptorUtil()
     {
         return interceptorUtil;
-    }
-
-    public WebBeansAnnotatedTypeUtil getAnnotatedTypeUtil()
-    {
-        return annotatedTypeUtil;
     }
 
     public InjectionPointFactory getInjectionPointFactory()

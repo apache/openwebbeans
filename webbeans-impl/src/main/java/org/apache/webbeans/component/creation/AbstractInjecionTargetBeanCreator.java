@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -59,7 +60,6 @@ import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -118,7 +118,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
             
             if(found)
             {
-                WebBeansAnnotatedTypeUtil.checkProducerMethodDisposal(annotatedMethod);
+                checkProducerMethodDisposal((AnnotatedMethod<T>) annotatedMethod);
                 Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Disposes.class);
                 Annotation[] annot = annotationManager.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
 
@@ -168,6 +168,36 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 
             }
         }
+    }
+
+    /**
+     * CheckProducerMethodDisposal.
+     * @param annotatedMethod disposal method
+     */
+    private void checkProducerMethodDisposal(AnnotatedMethod<T> annotatedMethod)
+    {
+        List<AnnotatedParameter<T>> parameters = annotatedMethod.getParameters();
+        boolean found = false;
+        for(AnnotatedParameter<T> parameter : parameters)
+        {
+            if(parameter.isAnnotationPresent(Disposes.class))
+            {
+                if(found)
+                {
+                    throw new WebBeansConfigurationException("Error in definining disposal method of annotated method : " + annotatedMethod
+                            + ". Multiple disposes annotation.");
+                }
+                found = true;
+            }
+        }
+        
+        if(annotatedMethod.isAnnotationPresent(Inject.class) 
+                || AnnotationUtil.hasAnnotatedMethodParameterAnnotation(annotatedMethod, Observes.class) 
+                || annotatedMethod.isAnnotationPresent(Produces.class))
+        {
+            throw new WebBeansConfigurationException("Error in definining disposal method of annotated method : " + annotatedMethod
+                    + ". Disposal methods  can not be annotated with" + " @Initializer/@Destructor/@Produces annotation or has a parameter annotated with @Observes.");
+        }        
     }
 
     /**
@@ -249,7 +279,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                     continue;
                 }
                 
-                WebBeansAnnotatedTypeUtil.checkForInjectedInitializerMethod(getBean(), (AnnotatedMethod<T>)annotatedMethod);
+                checkForInjectedInitializerMethod((AnnotatedMethod<T>)annotatedMethod);
             }
             else
             {
@@ -262,6 +292,45 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
             {
                 getBean().addInjectedMethod(method);
                 addMethodInjectionPointMetaData(annotatedMethod);
+            }
+        }
+    }
+
+    /**
+     * add the definitions for a &#x0040;Initializer method.
+     */
+    private void checkForInjectedInitializerMethod(AnnotatedMethod<T> annotatedMethod)
+    {
+        Method method = annotatedMethod.getJavaMember();
+        
+        TypeVariable<?>[] args = method.getTypeParameters();
+        if(args.length > 0)
+        {
+            throw new WebBeansConfigurationException("Error in defining injected methods in annotated method : " + annotatedMethod+ 
+                    ". Reason : Initializer methods must not be generic.");
+        }
+        
+        if (annotatedMethod.isAnnotationPresent(Produces.class))
+        {
+            throw new WebBeansConfigurationException("Error in defining injected methods in annotated method : " + annotatedMethod+ 
+            ". Reason : Initializer method can not be annotated with @Produces.");
+        
+        }
+
+        AnnotationManager annotationManager = getBean().getWebBeansContext().getAnnotationManager();
+
+        List<AnnotatedParameter<T>> annotatedParameters = annotatedMethod.getParameters();
+        for (AnnotatedParameter<T> annotatedParameter : annotatedParameters)
+        {
+            annotationManager.checkForNewQualifierForDeployment(annotatedParameter.getBaseType(), annotatedMethod.getDeclaringType().getJavaClass(),
+                    method.getName(), AnnotationUtil.getAnnotationsFromSet(annotatedParameter.getAnnotations()));
+
+            if(annotatedParameter.isAnnotationPresent(Disposes.class) ||
+                    annotatedParameter.isAnnotationPresent(Observes.class))
+            {
+                throw new WebBeansConfigurationException("Error in defining injected methods in annotated method : " + annotatedMethod+ 
+                ". Reason : Initializer method parameters does not contain @Observes or @Dispose annotations.");
+                
             }
         }
     }
@@ -289,7 +358,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
             
             if(found)
             {
-                WebBeansAnnotatedTypeUtil.checkObserverMethodConditions(annotatedMethod, annotatedMethod.getDeclaringType().getJavaClass());
+                checkObserverMethodConditions((AnnotatedMethod<T>) annotatedMethod, annotatedMethod.getDeclaringType().getJavaClass());
                 if (getBean().getScope().equals(Dependent.class))
                 {
                     //Check Reception
@@ -319,6 +388,34 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
         }
         
         return definedObservers;
+    }
+
+    private void checkObserverMethodConditions(AnnotatedMethod<T> annotatedMethod, Class<?> clazz)
+    {
+        Asserts.assertNotNull(annotatedMethod, "annotatedMethod parameter can not be null");
+        Asserts.nullCheckForClass(clazz);
+        
+        Method candidateObserverMethod = annotatedMethod.getJavaMember();
+        
+        if (AnnotationUtil.hasAnnotatedMethodMultipleParameterAnnotation(annotatedMethod, Observes.class))
+        {
+            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName()
+                                                     + " can not define two parameters with annotated @Observes");
+        }
+
+        if (annotatedMethod.isAnnotationPresent(Produces.class) 
+                || annotatedMethod.isAnnotationPresent(Inject.class))
+        {
+            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName()
+                                                     + " can not annotated with annotation in the list {@Produces, @Initializer, @Destructor}");
+
+        }
+
+        if (AnnotationUtil.hasAnnotatedMethodParameterAnnotation(annotatedMethod, Disposes.class))
+        {
+            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : "
+                                                     + clazz.getName() + " can not annotated with annotation @Disposes");
+        }                
     }
 
     /**
