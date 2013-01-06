@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.component.creation;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -47,6 +48,8 @@ import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Abstract implementation.
@@ -402,7 +405,11 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      */
     public void defineSerializable()
     {
-        definitionUtil.defineSerializable(bean);
+        Asserts.assertNotNull(getBean(), "component parameter can not be null");
+        if (ClassUtil.isClassAssignable(Serializable.class, getBean().getReturnType()))
+        {
+            getBean().setSerializable(true);
+        }
     }
 
     /**

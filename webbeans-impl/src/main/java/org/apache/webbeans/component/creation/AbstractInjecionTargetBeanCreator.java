@@ -392,7 +392,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                         producerFieldBean.setNullable(false);
                     }                    
 
-                    definitionUtil.defineSerializable(producerFieldBean);
+                    producerFieldBeanCreator.defineSerializable();
                     producerFieldBeanCreator.defineStereoTypes();
                     webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(getBean(), producerFieldBean, anns);
                     if (producerFieldBean.getReturnType().isArray())
@@ -459,7 +459,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                     producerMethodBean.setNullable(false);
                 }
                 
-                definitionUtil.defineSerializable(producerMethodBean);
+                producerMethodBeanCreator.defineSerializable();
                 producerMethodBeanCreator.defineStereoTypes();
                 webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(getBean(),
                                                                                    producerMethodBean,

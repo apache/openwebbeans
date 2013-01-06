@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.config;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -156,15 +154,6 @@ public final class DefinitionUtil
     public void defineDecoratorStack(AbstractInjectionTargetBean<?> bean)
     {
         WebBeansDecoratorConfig.configureDecorators(bean);
-    }
-
-    public <T> void defineSerializable(AbstractOwbBean<T> component)
-    {
-        Asserts.assertNotNull(component, "component parameter can not be null");
-        if (ClassUtil.isClassAssignable(Serializable.class, component.getReturnType()))
-        {
-            component.setSerializable(true);
-        }
     }
 
     public <T> void addConstructorInjectionPointMetaData(AbstractOwbBean<T> owner, Constructor<T> constructor)
