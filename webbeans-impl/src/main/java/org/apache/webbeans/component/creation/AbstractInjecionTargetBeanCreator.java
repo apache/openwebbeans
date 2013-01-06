@@ -660,6 +660,35 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
     }
 
     @Override
+    protected void defineInheritedStereotypes(Set<Class<? extends Annotation>> stereotypes)
+    {
+        // Adding inherited qualifiers
+        IBeanInheritedMetaData inheritedMetaData = getBean().getInheritedMetaData();
+        
+        if (inheritedMetaData != null)
+        {
+            Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedStereoTypes();        
+            for (Annotation inherited : inheritedTypes)
+            {
+                Set<Class<? extends Annotation>> qualifiers = stereotypes;
+                boolean found = false;
+                for (Class<? extends Annotation> existQualifier : qualifiers)
+                {
+                    if (existQualifier.equals(inherited.annotationType()))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    stereotypes.add(inherited.annotationType());
+                }
+            }
+        }
+    }
+    
+    @Override
     protected Class<? extends Annotation> defineInheritedScope()
     {
         IBeanInheritedMetaData metaData = getBean().getInheritedMetaData();

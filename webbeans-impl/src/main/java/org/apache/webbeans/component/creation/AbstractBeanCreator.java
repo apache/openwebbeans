@@ -46,16 +46,12 @@ import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.NamedLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -83,6 +79,8 @@ public abstract class AbstractBeanCreator<T>
     private Set<Annotation> qualifiers = new HashSet<Annotation>();
     
     private Set<Class<? extends Annotation>> stereotypes = new HashSet<Class<? extends Annotation>>();
+    
+    private boolean serializable = false;
 
     public AbstractBeanCreator(AbstractOwbBean<T> bean, Annotated annotated)
     {
@@ -242,10 +240,20 @@ public abstract class AbstractBeanCreator<T>
         // hook for subclasses
     }
     
+    protected void defineInheritedStereotypes(Set<Class<? extends Annotation>> stereotypes)
+    {
+        // hook for subclasses
+    }
+    
     protected Class<? extends Annotation> defineInheritedScope()
     {
         // hook for subclasses
         return null;
+    }
+
+    protected void defineLazyInit()
+    {
+        // hook for subclasses
     }
 
     /**
@@ -348,11 +356,11 @@ public abstract class AbstractBeanCreator<T>
             {
                 scope = Dependent.class;
 
-                if (allowLazyInit && getBean() instanceof ManagedBean && isPurePojoBean(webBeansContext, getBean().getBeanClass()))
+                if (allowLazyInit && isPurePojoBean(webBeansContext, getBeanType()))
                 {
                     // take the bean as Dependent but we could lazily initialize it
                     // because the bean doesn't contains any CDI feature
-                    ((ManagedBean) getBean()).setFullInit(false);
+                    defineLazyInit();
                 }
             }
             else
@@ -399,11 +407,11 @@ public abstract class AbstractBeanCreator<T>
                 {
                     scope = Dependent.class;
 
-                    if (allowLazyInit && getBean() instanceof ManagedBean && isPurePojoBean(webBeansContext, getBeanType()))
+                    if (allowLazyInit && isPurePojoBean(webBeansContext, getBeanType()))
                     {
                         // take the bean as Dependent but we could lazily initialize it
                         // because the bean doesn't contains any CDI feature
-                        ((ManagedBean) getBean()).setFullInit(false);
+                        defineLazyInit();
                     }
                 }
             }
@@ -458,7 +466,7 @@ public abstract class AbstractBeanCreator<T>
         {
             ViolationMessageBuilder violationMessage = ViolationMessageBuilder.newViolation();
 
-            Class<?> beanClass = getBean().getReturnType();
+            Class<?> beanClass = getBeanType();
             
             if(!beanClass.isInterface() && beanClass != Object.class)
             {
@@ -516,10 +524,9 @@ public abstract class AbstractBeanCreator<T>
      */
     public void defineSerializable()
     {
-        Asserts.assertNotNull(getBean(), "component parameter can not be null");
-        if (ClassUtil.isClassAssignable(Serializable.class, getBean().getReturnType()))
+        if (ClassUtil.isClassAssignable(Serializable.class, getBeanType()))
         {
-            getBean().setSerializable(true);
+            serializable = true;
         }
     }
 
@@ -540,41 +547,12 @@ public abstract class AbstractBeanCreator<T>
                 stereotypes.add(stereo.annotationType());
             }
         }
-        
-        // Adding inherited qualifiers
-        IBeanInheritedMetaData inheritedMetaData = null;
-        
-        if(getBean() instanceof InjectionTargetBean)
-        {
-            inheritedMetaData = ((InjectionTargetBean<?>) getBean()).getInheritedMetaData();
-        }
-        
-        if (inheritedMetaData != null)
-        {
-            Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedStereoTypes();        
-            for (Annotation inherited : inheritedTypes)
-            {
-                Set<Class<? extends Annotation>> qualifiers = stereotypes;
-                boolean found = false;
-                for (Class<? extends Annotation> existQualifier : qualifiers)
-                {
-                    if (existQualifier.equals(inherited.annotationType()))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    stereotypes.add(inherited.annotationType());
-                }
-            }
-        }
+        defineInheritedStereotypes(stereotypes);
     }
     
     protected <X> void addMethodInjectionPointMetaData(AnnotatedMethod<X> method)
     {
-        List<InjectionPoint> injectionPoints = getBean().getWebBeansContext().getInjectionPointFactory().getMethodInjectionPointData(getBean(), method);
+        List<InjectionPoint> injectionPoints = webBeansContext.getInjectionPointFactory().getMethodInjectionPointData(getBean(), method);
         for (InjectionPoint injectionPoint : injectionPoints)
         {
             addImplicitComponentForInjectionPoint(injectionPoint);
@@ -599,6 +577,7 @@ public abstract class AbstractBeanCreator<T>
         bean.setImplScopeType(scope);
         bean.getQualifiers().addAll(qualifiers);
         bean.getStereotypes().addAll(stereotypes);
+        bean.setSerializable(serializable);
         return bean;
     }
 

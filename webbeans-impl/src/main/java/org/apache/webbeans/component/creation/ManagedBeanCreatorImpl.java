@@ -425,6 +425,12 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
         }
     }
 
+    @Override
+    protected void defineLazyInit()
+    {
+        getBean().setFullInit(false);
+    }
+
     private ManagedBean<T> defineAbstractDecorator(ProcessInjectionTarget<T> processInjectionTargetEvent)
     {
 
