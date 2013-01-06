@@ -70,7 +70,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
         this(new ManagedBean<T>(annotatedType.getJavaClass(), annotatedType, webBeansContext));
     }
     
-    private ManagedBeanCreatorImpl(ManagedBean<T> managedBean)
+    protected ManagedBeanCreatorImpl(ManagedBean<T> managedBean)
     {
         super(managedBean);
         webBeansContext = managedBean.getWebBeansContext();

@@ -16,34 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.component;
+package org.apache.webbeans.component.creation;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 
+import org.apache.webbeans.component.NewManagedBean;
+import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 
-/**
- * Component definition with {@link javax.enterprise.inject.New} binding annotation.
- * 
- * <p>
- * It is defined as concrete java class component.
- * </p>
- * 
- */
-public class NewManagedBean<T> extends ManagedBean<T> implements NewBean<T>
+public class NewManagedBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
 {
-    public NewManagedBean(Class<T> returnType, WebBeansType definedType, AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
+
+    public NewManagedBeanCreatorImpl(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
-        super(returnType, annotatedType, webBeansContext);
+        super(new NewManagedBean<T>(annotatedType.getJavaClass(), WebBeansType.MANAGED, annotatedType, webBeansContext));
     }
 
     /**
-     * always true for New qualifier
+     * {@inheritDoc}
      */
-    @Override
-    public boolean isDependent()
+    public NewManagedBean<T> getBean()
     {
-        return true;
+        return (NewManagedBean<T>)super.getBean();
     }
-
 }

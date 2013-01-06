@@ -553,7 +553,7 @@ public abstract class TestContext implements ITestContext
         //Dropped from the speicification
         //WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "Simple WebBean Component implementation class : " + clazz.getName());
 
-        Set<ProducerMethodBean<?>> producerMethods = annotatedTypeUtil.defineProducerMethods(component, component.getAnnotatedType());
+        Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods();
         for (ProducerMethodBean<?> producerMethod : producerMethods)
         {
             // add them one after the other to enable serialization handling et al
@@ -561,7 +561,7 @@ public abstract class TestContext implements ITestContext
             producerMethod.setProducer(new ProducerBeansProducer(producerMethod));
         }
 
-        Set<ProducerFieldBean<?>> producerFields = annotatedTypeUtil.defineProducerFields(component, component.getAnnotatedType());
+        Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields();
         for (ProducerFieldBean<?> producerField : producerFields)
         {
             // add them one after the other to enable serialization handling et al
@@ -570,9 +570,9 @@ public abstract class TestContext implements ITestContext
         }
 
         managedBeanCreator.defineDisposalMethods();
-        annotatedTypeUtil.defineInjectedFields(component, component.getAnnotatedType());
-        annotatedTypeUtil.defineInjectedMethods(component, component.getAnnotatedType());
-        annotatedTypeUtil.defineObserverMethods(component, component.getAnnotatedType());
+        managedBeanCreator.defineInjectedFields();
+        managedBeanCreator.defineInjectedMethods();
+        managedBeanCreator.defineObserverMethods();
 
         return component;
     }

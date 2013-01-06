@@ -49,7 +49,6 @@ import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
 import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
 import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
-import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 @SuppressWarnings("unchecked")
@@ -169,6 +168,7 @@ public final class EjbUtility
     
     public static <T> void defineSpecializedData(Class<T> clazz, BaseEjbBean<T> ejbBean)
     {
+
         final String message = "There are errors that are added by %s event observers for %s. Look at logs for further details";
 
         final WebBeansContext webBeansContext = ejbBean.getWebBeansContext();
@@ -176,13 +176,13 @@ public final class EjbUtility
 
         final AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
 
-        final AnnotatedType<T> annotatedType = annotatedElementFactory.newAnnotatedType(clazz);
+        final AnnotatedType<T> annotatedType = ejbBean.getAnnotatedType();
 
-        final WebBeansAnnotatedTypeUtil util = webBeansContext.getAnnotatedTypeUtil();
+        final EjbBeanCreatorImpl<T> ejbBeanCreator = new EjbBeanCreatorImpl<T>(ejbBean);
 
-        final Set<ProducerMethodBean<?>> producerMethodBeans = util.defineProducerMethods(ejbBean, annotatedType);
+        final Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods();
 
-        final Set<ProducerFieldBean<?>> producerFieldBeans = util.defineProducerFields(ejbBean, annotatedType);
+        final Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields();
 
         checkProducerMethods(producerMethodBeans, ejbBean);
 
@@ -227,7 +227,6 @@ public final class EjbUtility
         manager.getBeans().addAll(producerMethodBeans);
         manager.getBeans().addAll(producerFieldBeans);
 
-        EjbBeanCreatorImpl<T> ejbBeanCreator = new EjbBeanCreatorImpl<T>(ejbBean);
         ejbBeanCreator.defineDisposalMethods();
     }
 

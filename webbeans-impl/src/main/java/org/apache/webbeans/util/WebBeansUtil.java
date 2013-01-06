@@ -117,7 +117,9 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.AnnotatedTypeBeanCreatorImpl;
+import org.apache.webbeans.component.creation.ExtensionBeanCreatorImpl;
 import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
+import org.apache.webbeans.component.creation.NewManagedBeanCreatorImpl;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.OWBLogConst;
@@ -598,13 +600,15 @@ public final class WebBeansUtil
 
         if (webBeansContext.getWebBeansUtil().isManagedBean(clazz))
         {
-            comp = new NewManagedBean<T>(clazz, WebBeansType.MANAGED, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz), webBeansContext);
+            NewManagedBeanCreatorImpl<T> newBeanCreator
+                = new NewManagedBeanCreatorImpl<T>(webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz), webBeansContext);
+            comp = newBeanCreator.getBean();
             comp.setImplScopeType(new DependentScopeLiteral());
             comp.setConstructor(defineConstructor(clazz));
             definitionUtil.addConstructorInjectionPointMetaData(comp, comp.getConstructor());
 
-            webBeansContext.getAnnotatedTypeUtil().defineInjectedFields(comp, comp.getAnnotatedType());
-            webBeansContext.getAnnotatedTypeUtil().defineInjectedMethods(comp, comp.getAnnotatedType());
+            newBeanCreator.defineInjectedFields();
+            newBeanCreator.defineInjectedMethods();
         }
         else if (EJBWebBeansConfigurator.isSessionBean(clazz, webBeansContext))
         {
@@ -643,12 +647,9 @@ public final class WebBeansUtil
     public <T> ExtensionBean<T> createExtensionComponent(Class<T> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-
-        ExtensionBean<T> comp = null;
-        comp = new ExtensionBean<T>(clazz, webBeansContext);
-        webBeansContext.getAnnotatedTypeUtil().defineObserverMethods(comp, comp.getAnnotatedType());
-
-        return comp;
+        ExtensionBeanCreatorImpl<T> extensionBeanCreator = new ExtensionBeanCreatorImpl<T>(clazz, webBeansContext);
+        extensionBeanCreator.defineObserverMethods();
+        return extensionBeanCreator.getBean();
     }
 
 

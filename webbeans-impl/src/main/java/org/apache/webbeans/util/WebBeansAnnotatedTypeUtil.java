@@ -19,44 +19,26 @@
 package org.apache.webbeans.util;
 
 import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.component.ProducerFieldBean;
-import org.apache.webbeans.component.ProducerMethodBean;
-import org.apache.webbeans.component.ResourceBean;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
-import org.apache.webbeans.spi.api.ResourceReference;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
-import javax.enterprise.event.Reception;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.ObserverMethod;
 import javax.inject.Inject;
-import javax.inject.Named;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -163,321 +145,6 @@ public final class WebBeansAnnotatedTypeUtil
         }
     }
     
-    @SuppressWarnings("unchecked")
-    public <X> Set<ObserverMethod<?>> defineObserverMethods(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
-    {
-        WebBeansContext webBeansContext = bean.getWebBeansContext();
-        Set<ObserverMethod<?>> definedObservers = new HashSet<ObserverMethod<?>>();
-        Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();    
-        for (AnnotatedMethod<? super X> annotatedMethod : annotatedMethods)
-        {
-            AnnotatedMethod<X> annt = (AnnotatedMethod<X>)annotatedMethod;
-            List<AnnotatedParameter<X>> parameters = annt.getParameters();
-            boolean found = false;
-            for(AnnotatedParameter<X> parameter : parameters)
-            {
-                if(parameter.isAnnotationPresent(Observes.class))
-                {
-                    found = true;
-                    break;
-                }
-            }
-            
-            if(found)
-            {
-                checkObserverMethodConditions(annotatedMethod, annotatedMethod.getDeclaringType().getJavaClass());
-                if(bean.getScope().equals(Dependent.class))
-                {
-                    //Check Reception
-                     AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Observes.class);
-                    
-                     Observes observes = AnnotationUtil.getAnnotatedMethodFirstParameterAnnotation(annotatedMethod, Observes.class);
-                     Reception reception = observes.notifyObserver();
-                     if(reception.equals(Reception.IF_EXISTS))
-                     {
-                         throw new WebBeansConfigurationException("Dependent Bean : " + bean + " can not define observer method with @Receiver = IF_EXIST");
-                     }
-                }
-                
-                //Add method
-                bean.addObservableMethod(annotatedMethod.getJavaMember());
-
-                //Add injection point data
-                addMethodInjectionPointMetaData(bean, annotatedMethod);
-                
-                //Looking for ObserverMethod
-                ObserverMethod<?> definedObserver = webBeansContext.getBeanManagerImpl().getNotificationManager().getObservableMethodForAnnotatedMethod(annotatedMethod, bean);
-                if(definedObserver != null)
-                {
-                    definedObservers.add(definedObserver);
-                }
-            }
-        }
-        
-        return definedObservers;
-    }
-    
-    @SuppressWarnings("unchecked")
-    public <X> void defineInjectedMethods(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
-    {
-        Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();
-        
-        for (AnnotatedMethod<? super X> annotatedMethod : annotatedMethods)
-        {            
-            boolean isInitializer = annotatedMethod.isAnnotationPresent(Inject.class);            
-
-            if (isInitializer)
-            {
-                //Do not support static
-                if(annotatedMethod.isStatic())
-                {
-                    continue;
-                }
-                
-                checkForInjectedInitializerMethod(bean, (AnnotatedMethod<X>)annotatedMethod);
-            }
-            else
-            {
-                continue;
-            }
-
-            Method method = annotatedMethod.getJavaMember();
-            
-            if (!Modifier.isStatic(method.getModifiers()))
-            {
-                bean.addInjectedMethod(method);
-                addMethodInjectionPointMetaData(bean, annotatedMethod);
-            }
-        }
-    }
-    
-    public <X> void defineInjectedFields(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
-    {
-        AnnotationManager annotationManager = bean.getWebBeansContext().getAnnotationManager();
-
-        Set<AnnotatedField<? super X>> annotatedFields = annotatedType.getFields();   
-        for(AnnotatedField<? super X> annotatedField: annotatedFields)
-        {
-            if(Modifier.isPublic(annotatedField.getJavaMember().getModifiers()) && !annotatedField.isStatic())
-            {
-                if(webBeansContext.getBeanManagerImpl().isNormalScope(bean.getScope()))
-                {
-                    throw new WebBeansConfigurationException("If bean has a public field, bean scope must be defined as @Scope. Bean is : "
-                            + bean.toString());
-                }
-            }                
-            
-            if(!annotatedField.isAnnotationPresent(Inject.class))
-            {
-                continue;
-            }
-
-            if (annotatedField.isAnnotationPresent(Produces.class))
-            {
-                throw new WebBeansConfigurationException("Injection fields can not be annotated with @Produces");
-            }
-            
-            Field field = annotatedField.getJavaMember();
-            Annotation[] anns = AnnotationUtil.getAnnotationsFromSet(annotatedField.getAnnotations());
-            if(Modifier.isPublic(field.getModifiers()))
-            {
-                if(!bean.getScope().equals(Dependent.class))
-                {
-                    throw new WebBeansConfigurationException("Error in annotated field : " + annotatedField
-                                                    +" while definining injected field. If bean has a public modifier injection point, bean scope must be defined as @Dependent");
-                }
-            }
-
-            Annotation[] qualifierAnns = annotationManager.getQualifierAnnotations(anns);
-
-            if (qualifierAnns.length > 0)
-            {
-                if (qualifierAnns.length > 0)
-                {
-                    annotationManager.checkForNewQualifierForDeployment(annotatedField.getBaseType(), annotatedField.getDeclaringType().getJavaClass(), field.getName(), anns);
-                }
-
-                int mod = field.getModifiers();
-                
-                if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod))
-                {
-                    bean.addInjectedField(field);
-                    addFieldInjectionPointMetaData(bean, annotatedField);                                
-                }
-            }                                    
-        }
-    }
-    
-    
-    @SuppressWarnings("unchecked")
-    public <X> Set<ProducerFieldBean<?>> defineProducerFields(InjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
-    {
-        DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
-        Set<ProducerFieldBean<?>> producerBeans = new HashSet<ProducerFieldBean<?>>();
-        Set<AnnotatedField<? super X>> annotatedFields = annotatedType.getFields();        
-        for(AnnotatedField<? super X> annotatedField: annotatedFields)
-        {
-            if(annotatedField.isAnnotationPresent(Produces.class) && annotatedField.getDeclaringType().equals(annotatedType))
-            {
-                Type genericType = annotatedField.getBaseType();
-                
-                if(ClassUtil.isTypeVariable(genericType))
-                {
-                    throw new WebBeansConfigurationException("Producer annotated field : " + annotatedField + " can not be Wildcard type or Type variable");
-                }
-                if(ClassUtil.isParametrizedType(genericType))
-                {
-                    if(!ClassUtil.checkParametrizedType((ParameterizedType)genericType))
-                    {
-                        throw new WebBeansConfigurationException("Producer annotated field : " + annotatedField + " can not be Wildcard type or Type variable");
-                    }
-                }
-                
-                Annotation[] anns = AnnotationUtil.getAnnotationsFromSet(annotatedField.getAnnotations());
-                Field field = annotatedField.getJavaMember();
-                
-                //Producer field for resource
-                Annotation resourceAnnotation = AnnotationUtil.hasOwbInjectableResource(anns);                
-                //Producer field for resource
-                if(resourceAnnotation != null)
-                {                    
-                    //Check for valid resource annotation
-                    //WebBeansUtil.checkForValidResources(annotatedField.getDeclaringType().getJavaClass(), field.getType(), field.getName(), anns);
-                    if(!Modifier.isStatic(field.getModifiers()))
-                    {
-                        ResourceReference<X,Annotation> resourceRef = new ResourceReference<X, Annotation>(bean.getBeanClass(), field.getName(),
-                                                                                                           (Class<X>)field.getType(), resourceAnnotation);
-                        
-                        //Can not define EL name
-                        if(annotatedField.isAnnotationPresent(Named.class))
-                        {
-                            throw new WebBeansConfigurationException("Resource producer annotated field : " + annotatedField + " can not define EL name");
-                        }
-                        
-                        ResourceBean<X,Annotation> resourceBean = new ResourceBean((Class<X>)field.getType(),bean, resourceRef);
-                        
-                        resourceBean.getTypes().addAll(annotatedField.getTypeClosure());
-                        definitionUtil.defineQualifiers(resourceBean, anns);
-                        resourceBean.setImplScopeType(new DependentScopeLiteral());
-                        resourceBean.setProducerField(field);
-                        
-                        producerBeans.add(resourceBean);                                            
-                    }
-                }
-                else
-                {
-                    ProducerFieldBean<X> producerFieldBean = new ProducerFieldBean<X>(bean, (Class<X>)ClassUtil.getClass(annotatedField.getBaseType()));
-                    producerFieldBean.setProducerField(field);
-                    
-                    if (producerFieldBean.getReturnType().isPrimitive())
-                    {
-                        producerFieldBean.setNullable(false);
-                    }                    
-
-                    definitionUtil.defineSerializable(producerFieldBean);
-                    definitionUtil.defineStereoTypes(producerFieldBean, anns);
-                    webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean, producerFieldBean, anns);
-                    if (producerFieldBean.getReturnType().isArray())
-                    {
-                        // TODO this special handling should not be necessary, seems to be a bug in the tck
-                        producerFieldBean.getTypes().add(Object.class);
-                        producerFieldBean.getTypes().add(producerFieldBean.getReturnType());
-                    }
-                    else
-                    {
-                        producerFieldBean.getTypes().addAll(annotatedField.getTypeClosure());
-                    }
-                    definitionUtil.defineScopeType(producerFieldBean, anns, "Annotated producer field: " + annotatedField +  "must declare default @Scope annotation", false);
-                    webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerFieldBean,
-                                                                                             producerFieldBean.getScope());
-                    WebBeansUtil.checkProducerGenericType(producerFieldBean,annotatedField.getJavaMember());
-                    definitionUtil.defineQualifiers(producerFieldBean, anns);
-                    definitionUtil.defineName(producerFieldBean, anns, WebBeansUtil.getProducerDefaultName(annotatedField.getJavaMember().getName()));
-                    
-                    producerBeans.add(producerFieldBean);
-                }
-            }
-        }
-        
-        return producerBeans;
-    }
-    
-    
-    @SuppressWarnings("unchecked")
-    public <X> Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
-    {
-        DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
-        Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
-        Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();
-        
-        for(AnnotatedMethod<? super X> annotatedMethod: annotatedMethods)
-        {
-            if(annotatedMethod.isAnnotationPresent(Produces.class) && annotatedMethod.getDeclaringType().equals(annotatedType))
-            {
-                checkProducerMethodForDeployment(annotatedMethod);
-                boolean specialize = false;
-                if(annotatedMethod.isAnnotationPresent(Specializes.class))
-                {
-                    if (annotatedMethod.isStatic())
-                    {
-                        throw new WebBeansConfigurationException("Specializing annotated producer method : " + annotatedMethod + " can not be static");
-                    }
-                    
-                    specialize = true;
-                }
-                
-                ProducerMethodBean<X> producerMethodBean = new ProducerMethodBean<X>(bean, (Class<X>)ClassUtil.getClass(annotatedMethod.getBaseType()));
-                producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
-                
-                if(specialize)
-                {
-                    configureProducerSpecialization(producerMethodBean, (AnnotatedMethod<X>)annotatedMethod);
-                }
-                
-                if (ClassUtil.getClass(annotatedMethod.getBaseType()).isPrimitive())
-                {
-                    producerMethodBean.setNullable(false);
-                }
-                
-                definitionUtil.defineSerializable(producerMethodBean);
-                definitionUtil.defineStereoTypes(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
-                webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
-                                                                                   producerMethodBean,
-                                                                                   AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
-
-                if (producerMethodBean.getReturnType().isArray())
-                {
-                    // TODO this special handling should not be necessary, seems to be a bug in the tck
-                    producerMethodBean.getTypes().add(Object.class);
-                    producerMethodBean.getTypes().add(producerMethodBean.getReturnType());
-                }
-                else
-                {
-                    producerMethodBean.getTypes().addAll(annotatedMethod.getTypeClosure());
-                }
-                definitionUtil.defineScopeType(producerMethodBean,
-                                               AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()),
-                                                                                    "Annotated producer method : " + annotatedMethod +  "must declare default @Scope annotation",
-                                                                                    false);
-                webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerMethodBean,
-                                                                                         producerMethodBean.getScope());
-                WebBeansUtil.checkProducerGenericType(producerMethodBean,annotatedMethod.getJavaMember());
-                definitionUtil.defineName(producerMethodBean,
-                                          AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()),
-                                                                               WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
-                definitionUtil.defineQualifiers(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
-                
-                addMethodInjectionPointMetaData(producerMethodBean, annotatedMethod);
-                producerBeans.add(producerMethodBean);
-                
-            }
-            
-        }
-        
-        return producerBeans;
-    }
-    
-    
     /**
      * Check producer method is ok for deployment.
      * 
@@ -540,7 +207,7 @@ public final class WebBeansAnnotatedTypeUtil
     /**
      * add the definitions for a &#x0040;Initializer method.
      */
-    private static <X> void checkForInjectedInitializerMethod(AbstractInjectionTargetBean<X> component, AnnotatedMethod<X> annotatedMethod)
+    public static <X> void checkForInjectedInitializerMethod(AbstractInjectionTargetBean<X> component, AnnotatedMethod<X> annotatedMethod)
     {
         Method method = annotatedMethod.getJavaMember();
         
@@ -633,6 +300,4 @@ public final class WebBeansAnnotatedTypeUtil
                                                      + clazz.getName() + " can not annotated with annotation @Disposes");
         }                
     }
-
-
 }
