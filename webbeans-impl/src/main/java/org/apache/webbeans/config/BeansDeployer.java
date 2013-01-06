@@ -324,11 +324,10 @@ public class BeansDeployer
         webBeansContext.getDecoratorsManager().validateDecoratorClasses();
         webBeansContext.getInterceptorsManager().validateInterceptorClasses();
 
-        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         Set<Bean<?>> beans = new HashSet<Bean<?>>();
         
         //Adding decorators to validate
-        Set<Decorator<?>> decorators = manager.getDecorators();
+        Set<Decorator<?>> decorators = webBeansContext.getDecoratorsManager().getDecorators();
         for(Decorator decorator : decorators)
         {
             WebBeansDecorator wbDec = (WebBeansDecorator)decorator;
@@ -358,7 +357,7 @@ public class BeansDeployer
         
         beans.clear();
         
-        beans = manager.getBeans();
+        beans = webBeansContext.getBeanManagerImpl().getBeans();
         
         //Validate Others
         validate(beans);                

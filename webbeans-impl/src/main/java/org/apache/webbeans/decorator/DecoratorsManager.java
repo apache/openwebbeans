@@ -18,29 +18,45 @@
  */
 package org.apache.webbeans.decorator;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.decorator.Decorator;
 
+import org.apache.webbeans.annotation.DefaultLiteral;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.Asserts;
 
 public class DecoratorsManager
 {
     private List<Class<?>> enabledDecorators = new CopyOnWriteArrayList<Class<?>>();
-    private final BeanManagerImpl manager;
+    private final WebBeansContext webBeansContext;
 
-    /**Additional decorator class*/
+    /**
+     * Additional decorator classes added by Extensions
+     */
     private List<Class<?>> additionalDecoratorClasses = new ArrayList<Class<?>>();
+
+    /**
+     * Active and enabled decorators
+     */
+    private Set<javax.enterprise.inject.spi.Decorator<?>> webBeansDecorators = new CopyOnWriteArraySet<javax.enterprise.inject.spi.Decorator<?>>();
+
 
 
     public DecoratorsManager(WebBeansContext webBeansContext)
     {
-        manager = webBeansContext.getBeanManagerImpl();
+        this.webBeansContext = webBeansContext;
     }
 
     public void addNewDecorator(Class<?> decoratorClazz)
@@ -99,7 +115,6 @@ public class DecoratorsManager
         }                
     }
 
-
     public void addCustomDecoratorClass(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
@@ -112,8 +127,63 @@ public class DecoratorsManager
         return additionalDecoratorClasses.contains(clazz);
     }
 
+    public Set<javax.enterprise.inject.spi.Decorator<?>> getDecorators()
+    {
+        return webBeansDecorators;
+    }
+
+    public void addDecorator(javax.enterprise.inject.spi.Decorator decorator)
+    {
+        webBeansDecorators.add(decorator);
+        if (decorator instanceof OwbBean)
+        {
+            OwbBean<?> owbBean = (OwbBean<?>)decorator;
+
+            if(owbBean.isPassivationCapable())
+            {
+                webBeansContext.getBeanManagerImpl().addPassivationInfo((OwbBean)decorator);
+            }
+        }
+    }
+
+    public  Set<javax.enterprise.inject.spi.Decorator<?>> findDeployedWebBeansDecorator(Set<Type> apiTypes, Annotation... anns)
+    {
+        Set<javax.enterprise.inject.spi.Decorator<?>> set = new HashSet<javax.enterprise.inject.spi.Decorator<?>>();
+
+        Iterator<javax.enterprise.inject.spi.Decorator<?>> it = Collections.unmodifiableSet(getDecorators()).iterator();
+        WebBeansDecorator<?> decorator = null;
+
+        List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();
+        Set<Annotation> listAnnot = new HashSet<Annotation>();
+        for (Annotation ann : anns)
+        {
+            bindingTypes.add(ann.annotationType());
+            listAnnot.add(ann);
+        }
+
+        if (listAnnot.isEmpty())
+        {
+            listAnnot.add(new DefaultLiteral());
+        }
+
+        while (it.hasNext())
+        {
+            decorator = (WebBeansDecorator<?>) it.next();
+
+            if (decorator.isDecoratorMatch(apiTypes, listAnnot))
+            {
+                set.add(decorator);
+            }
+        }
+
+        return set;
+
+    }
+
+
     public void clear()
     {
         additionalDecoratorClasses.clear();
+        webBeansDecorators.clear();
     }
 }

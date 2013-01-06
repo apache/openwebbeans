@@ -19,10 +19,7 @@
 package org.apache.webbeans.decorator;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -32,11 +29,9 @@ import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
-import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
@@ -83,7 +78,7 @@ public final class WebBeansDecoratorConfig
             logger.log(Level.FINE, "Configuring decorator class : [{0}]", delegate.getReturnType());
         }
         WebBeansDecorator<T> decorator = new WebBeansDecorator<T>(delegate);
-        delegate.getWebBeansContext().getBeanManagerImpl().addDecorator(decorator);
+        delegate.getWebBeansContext().getDecoratorsManager().addDecorator(decorator);
     }
 
     public static void configureDecorators(AbstractInjectionTargetBean<?> component)
@@ -175,38 +170,5 @@ public final class WebBeansDecoratorConfig
         }
     }
 
-    public static Set<Decorator<?>> findDeployedWebBeansDecorator(BeanManagerImpl beanManagerImpl, Set<Type> apiTypes, Annotation... anns)
-    {
-        Set<Decorator<?>> set = new HashSet<Decorator<?>>();
-
-        Iterator<Decorator<?>> it = Collections.unmodifiableSet(beanManagerImpl.getDecorators()).iterator();
-        WebBeansDecorator<?> decorator = null;
-
-        List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();
-        Set<Annotation> listAnnot = new HashSet<Annotation>();
-        for (Annotation ann : anns)
-        {
-            bindingTypes.add(ann.annotationType());
-            listAnnot.add(ann);
-        }
-
-        if (listAnnot.isEmpty())
-        {
-            listAnnot.add(new DefaultLiteral());
-        }
-
-        while (it.hasNext())
-        {
-            decorator = (WebBeansDecorator<?>) it.next();
-
-            if (decorator.isDecoratorMatch(apiTypes, listAnnot))
-            {
-                set.add(decorator);
-            }
-        }
-
-        return set;
-
-    }
 
 }

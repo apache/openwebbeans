@@ -71,7 +71,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DecoratorComparator;
 import org.apache.webbeans.decorator.WebBeansDecorator;
-import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
@@ -132,9 +131,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     /**Normal scoped cache proxies*/
     private Map<Contextual<?>, Object> cacheProxies = new ConcurrentHashMap<Contextual<?>, Object>();
-
-    /**Activity decorators*/
-    private Set<Decorator<?>> webBeansDecorators = new CopyOnWriteArraySet<Decorator<?>>();
 
     /**Event notification manager instance*/
     private NotificationManager notificationManager = null;
@@ -403,21 +399,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return deploymentBeans;
     }
     
-    
-    public BeanManager addDecorator(Decorator decorator)
-    {
-        webBeansDecorators.add(decorator);
-        if (decorator instanceof OwbBean)
-        {
-            OwbBean<?> owbBean = (OwbBean<?>)decorator;
-            
-            if(owbBean.isPassivationCapable())
-            {
-                addPassivationInfo((OwbBean)decorator);
-            }
-        }
-        return this;
-    }
 
     /**
      * {@inheritDoc}
@@ -425,7 +406,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
         webBeansContext.getAnnotationManager().checkDecoratorResolverParams(types, bindingTypes);
-        Set<Decorator<?>> intsSet = WebBeansDecoratorConfig.findDeployedWebBeansDecorator(this, types, bindingTypes);
+        Set<Decorator<?>> intsSet = webBeansContext.getDecoratorsManager().findDeployedWebBeansDecorator(types, bindingTypes);
         Iterator<Decorator<?>> itSet = intsSet.iterator();
 
         List<Decorator<?>> decoratorList = new ArrayList<Decorator<?>>();
@@ -473,12 +454,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         return deploymentBeans;
     }
-
-    public Set<Decorator<?>> getDecorators()
-    {
-        return webBeansDecorators;
-    }
-
 
     private void addContext(Class<? extends Annotation> scopeType, javax.enterprise.context.spi.Context context)
     {
@@ -1010,7 +985,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         errorStack.clear();
         producersForJavaEeComponents.clear();
         passivationBeans.clear();
-        webBeansDecorators.clear();
         webBeansContext.getInterceptorsManager().clear();
         webBeansContext.getDecoratorsManager().clear();
     }

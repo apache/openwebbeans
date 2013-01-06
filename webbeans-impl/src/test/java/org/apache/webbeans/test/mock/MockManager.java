@@ -103,11 +103,6 @@ public class MockManager implements BeanManager
         return manager.addContext(context);
     }
 
-    public BeanManager addDecorator(Decorator<?> decorator)
-    {
-        return manager.addDecorator(decorator);
-    }
-
     public void fireEvent(Object event, Annotation... bindings)
     {
         manager.fireEvent(event, bindings);
