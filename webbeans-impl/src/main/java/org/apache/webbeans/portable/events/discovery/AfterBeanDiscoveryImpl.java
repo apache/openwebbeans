@@ -144,7 +144,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
 
 
             beanManager.addDecorator(new WebBeansDecorator(managedBean, (Decorator) bean));
-            webBeansContext.getBeanManagerImpl().addCustomDecoratorClass(bean.getBeanClass());
+            webBeansContext.getDecoratorsManager().addCustomDecoratorClass(bean.getBeanClass());
         }
         else
         {

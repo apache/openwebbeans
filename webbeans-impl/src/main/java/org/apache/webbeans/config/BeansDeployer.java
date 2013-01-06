@@ -428,7 +428,7 @@ public class BeansDeployer
                         else
                         {
                             if(!bean.getBeanClass().isAnnotationPresent(javax.decorator.Decorator.class)
-                                    && !webBeansContext.getBeanManagerImpl().containsCustomDecoratorClass(bean.getBeanClass()))
+                                    && !webBeansContext.getDecoratorsManager().containsCustomDecoratorClass(bean.getBeanClass()))
                             {
                                 throw new WebBeansConfigurationException(
                                         "Delegate injection points can not defined by beans that are not decorator. Injection point : "
@@ -879,7 +879,7 @@ public class BeansDeployer
             }
             else
             {
-                if (webBeansContext.getBeanManagerImpl().containsCustomDecoratorClass(annotatedType.getJavaClass()) ||
+                if (webBeansContext.getDecoratorsManager().containsCustomDecoratorClass(annotatedType.getJavaClass()) ||
                     webBeansContext.getInterceptorsManager().containsCustomInterceptorClass(annotatedType.getJavaClass()))
                 {
                     return false;

@@ -145,8 +145,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**XML configurator instance*/
     private WebBeansXMLConfigurator xmlConfigurator = null;
     
-    /**Additional decorator class*/
-    private List<Class<?>> additionalDecoratorClasses = new ArrayList<Class<?>>();
 
     /**
      * This list contains additional qualifiers which got set via the
@@ -385,18 +383,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         return this;
 
-    }
-
-    public void addCustomDecoratorClass(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        additionalDecoratorClasses.add(clazz);
-    }
-
-    public boolean containsCustomDecoratorClass(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        return additionalDecoratorClasses.contains(clazz);
     }
 
     /**
@@ -1015,7 +1001,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public void clear()
     {
         additionalAnnotatedTypes.clear();
-        additionalDecoratorClasses.clear();
         additionalQualifiers.clear();
         additionalScopes.clear();
         clearCacheProxies();
@@ -1027,6 +1012,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         passivationBeans.clear();
         webBeansDecorators.clear();
         webBeansContext.getInterceptorsManager().clear();
+        webBeansContext.getDecoratorsManager().clear();
     }
 
     public void clearCacheProxies()

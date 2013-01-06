@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.decorator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -32,6 +33,10 @@ public class DecoratorsManager
 {
     private List<Class<?>> enabledDecorators = new CopyOnWriteArrayList<Class<?>>();
     private final BeanManagerImpl manager;
+
+    /**Additional decorator class*/
+    private List<Class<?>> additionalDecoratorClasses = new ArrayList<Class<?>>();
+
 
     public DecoratorsManager(WebBeansContext webBeansContext)
     {
@@ -87,11 +92,28 @@ public class DecoratorsManager
         for(Class<?> decoratorClazz : enabledDecorators)
         {
             //Validate decorator classes
-            if(!decoratorClazz.isAnnotationPresent(Decorator.class) && !manager.containsCustomDecoratorClass(decoratorClazz))
+            if(!decoratorClazz.isAnnotationPresent(Decorator.class) && !containsCustomDecoratorClass(decoratorClazz))
             {
                 throw new WebBeansConfigurationException("Given class : " + decoratorClazz + " is not a decorator class");
             }   
         }                
     }
 
+
+    public void addCustomDecoratorClass(Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+        additionalDecoratorClasses.add(clazz);
+    }
+
+    public boolean containsCustomDecoratorClass(Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+        return additionalDecoratorClasses.contains(clazz);
+    }
+
+    public void clear()
+    {
+        additionalDecoratorClasses.clear();
+    }
 }
