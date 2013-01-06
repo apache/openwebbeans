@@ -285,7 +285,7 @@ public abstract class TestContext implements ITestContext
         {
             DecoratorUtil.checkManagedBeanDecoratorConditions(bean,null);
             WebBeansDecoratorConfig.configureDecorators(bean);
-            webBeansContext.getDefinitionUtil().defineBeanInterceptorStack(bean);
+            DefinitionUtil.defineBeanInterceptorStack(bean);
 
             getComponents().add((AbstractOwbBean<?>) bean);
             manager.addBean(bean);
@@ -504,8 +504,6 @@ public abstract class TestContext implements ITestContext
     {
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
-        WebBeansAnnotatedTypeUtil annotatedTypeUtil = webBeansContext.getAnnotatedTypeUtil();
 
         int modifier = clazz.getModifiers();
 
@@ -548,7 +546,7 @@ public abstract class TestContext implements ITestContext
 
         Constructor<T> constructor = webBeansContext.getWebBeansUtil().defineConstructor(clazz);
         component.setConstructor(constructor);
-        definitionUtil.addConstructorInjectionPointMetaData(component, constructor);
+        managedBeanCreator.addConstructorInjectionPointMetaData(constructor);
 
         //Dropped from the speicification
         //WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "Simple WebBean Component implementation class : " + clazz.getName());

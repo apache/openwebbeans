@@ -52,7 +52,6 @@ import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -326,7 +325,6 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
      */
     public Set<ProducerFieldBean<?>> defineProducerFields()
     {
-        DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
         Set<ProducerFieldBean<?>> producerBeans = new HashSet<ProducerFieldBean<?>>();
         Set<AnnotatedField<? super T>> annotatedFields = getAnnotated().getFields();        
         for(AnnotatedField<? super T> annotatedField: annotatedFields)
@@ -424,7 +422,6 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
      */
     public Set<ProducerMethodBean<?>> defineProducerMethods()
     {
-        DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
         Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
         Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();
         
@@ -497,7 +494,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
         InjectionPoint injectionPoint = webBeansContext.getInjectionPointFactory().getFieldInjectionPointData(getBean(), annotField);
         if (injectionPoint != null)
         {
-            webBeansContext.getDefinitionUtil().addImplicitComponentForInjectionPoint(injectionPoint);
+            addImplicitComponentForInjectionPoint(injectionPoint);
             getBean().addInjectionPoint(injectionPoint);
         }
     }

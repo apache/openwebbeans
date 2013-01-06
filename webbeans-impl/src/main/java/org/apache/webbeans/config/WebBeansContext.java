@@ -86,7 +86,6 @@ public class WebBeansContext
     private final ResolutionUtil resolutionUtil = new ResolutionUtil(this);
     private final InjectionPointFactory injectionPointFactory = new InjectionPointFactory(this);
     private final InterceptorUtil interceptorUtil = new InterceptorUtil(this);
-    private final DefinitionUtil definitionUtil = new DefinitionUtil(this);
     private final WebBeansAnnotatedTypeUtil annotatedTypeUtil = new WebBeansAnnotatedTypeUtil();
     private final SecurityService securityService;
     private final LoaderService loaderService;
@@ -226,11 +225,6 @@ public class WebBeansContext
     public InterceptorUtil getInterceptorUtil()
     {
         return interceptorUtil;
-    }
-
-    public DefinitionUtil getDefinitionUtil()
-    {
-        return definitionUtil;
     }
 
     public WebBeansAnnotatedTypeUtil getAnnotatedTypeUtil()

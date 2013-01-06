@@ -42,14 +42,15 @@ import org.apache.webbeans.annotation.NamedLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.ExternalScope;
+import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Abstract implementation.
@@ -65,8 +66,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     
     private Annotated annotated;
 
-    private final DefinitionUtil definitionUtil;
-    
     /**
      * Creates a bean instance.
      * 
@@ -77,7 +76,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     {
         this.bean = bean;
         this.annotated = annotated;
-        definitionUtil = bean.getWebBeansContext().getDefinitionUtil();
     }
 
     /**
@@ -509,9 +507,17 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         List<InjectionPoint> injectionPoints = getBean().getWebBeansContext().getInjectionPointFactory().getMethodInjectionPointData(getBean(), method);
         for (InjectionPoint injectionPoint : injectionPoints)
         {
-            getBean().getWebBeansContext().getDefinitionUtil().addImplicitComponentForInjectionPoint(injectionPoint);
+            addImplicitComponentForInjectionPoint(injectionPoint);
             getBean().addInjectionPoint(injectionPoint);
         }
+    }
+    
+    protected void addImplicitComponentForInjectionPoint(InjectionPoint injectionPoint)
+    {
+        if(!WebBeansUtil.checkObtainsInjectionPointConditions(injectionPoint))
+        {
+            EventUtil.checkObservableInjectionPointConditions(injectionPoint);
+        }        
     }
 
     /**

@@ -18,41 +18,28 @@
  */
 package org.apache.webbeans.config;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.inject.spi.InjectionPoint;
-
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
-import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
-import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Defines the web beans components common properties.
  */
 public final class DefinitionUtil
 {
-    private final WebBeansContext webBeansContext;
-
-    public DefinitionUtil(WebBeansContext webBeansContext)
-    {
-        this.webBeansContext = webBeansContext;
-    }
-
     /**
      * Configure bean instance interceptor stack.
      * @param bean bean instance
      */
-    public void defineBeanInterceptorStack(AbstractInjectionTargetBean<?> bean)
+    public static void defineBeanInterceptorStack(AbstractInjectionTargetBean<?> bean)
     {
         Asserts.assertNotNull(bean, "bean parameter can no be null");
         if (!bean.getInterceptorStack().isEmpty())
@@ -100,26 +87,8 @@ public final class DefinitionUtil
      * Defines decorator stack of given bean.
      * @param bean injection target bean
      */
-    public void defineDecoratorStack(AbstractInjectionTargetBean<?> bean)
+    public static void defineDecoratorStack(AbstractInjectionTargetBean<?> bean)
     {
         WebBeansDecoratorConfig.configureDecorators(bean);
-    }
-
-    public <T> void addConstructorInjectionPointMetaData(AbstractOwbBean<T> owner, Constructor<T> constructor)
-    {
-        List<InjectionPoint> injectionPoints = owner.getWebBeansContext().getInjectionPointFactory().getConstructorInjectionPointData(owner, constructor);
-        for (InjectionPoint injectionPoint : injectionPoints)
-        {
-            addImplicitComponentForInjectionPoint(injectionPoint);
-            owner.addInjectionPoint(injectionPoint);
-        }
-    }
-    
-    public void addImplicitComponentForInjectionPoint(InjectionPoint injectionPoint)
-    {
-        if(!WebBeansUtil.checkObtainsInjectionPointConditions(injectionPoint))
-        {
-            EventUtil.checkObservableInjectionPointConditions(injectionPoint);
-        }        
     }
 }

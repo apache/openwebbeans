@@ -400,13 +400,13 @@ public class BeansDeployer
                        !(bean instanceof javax.enterprise.inject.spi.Interceptor) &&
                        !(bean instanceof NewBean))
                     {
-                        webBeansContext.getDefinitionUtil().defineDecoratorStack((AbstractInjectionTargetBean<Object>)bean);
+                        DefinitionUtil.defineDecoratorStack((AbstractInjectionTargetBean<Object>)bean);
                     }
                     
                     //If intercepted marker
                     if(bean instanceof InterceptedMarker)
                     {
-                        webBeansContext.getDefinitionUtil().defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>)bean);
+                        DefinitionUtil.defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>)bean);
                     }                                                            
                 }                
                 

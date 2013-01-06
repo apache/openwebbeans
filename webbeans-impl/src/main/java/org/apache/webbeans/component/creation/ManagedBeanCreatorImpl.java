@@ -19,6 +19,7 @@
 package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,6 +43,7 @@ import javax.inject.Inject;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -127,8 +129,8 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
         defineInjectedFields();
         defineInjectedMethods();
         defineObserverMethods();
-        webBeansContext.getDefinitionUtil().defineDecoratorStack(managedBean);
-        webBeansContext.getDefinitionUtil().defineBeanInterceptorStack(managedBean);
+        DefinitionUtil.defineDecoratorStack(managedBean);
+        DefinitionUtil.defineBeanInterceptorStack(managedBean);
 
         defineDisposalMethods(); //Define disposal method after adding producers
     }
@@ -373,10 +375,20 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
         List<InjectionPoint> injectionPoints = injectionPointFactory.getConstructorInjectionPointData(getBean(), beanConstructor);
         for (InjectionPoint injectionPoint : injectionPoints)
         {
-            webBeansContext.getDefinitionUtil().addImplicitComponentForInjectionPoint(injectionPoint);
+            addImplicitComponentForInjectionPoint(injectionPoint);
             getBean().addInjectionPoint(injectionPoint);
         }
         getBean().setConstructor(beanConstructor.getJavaMember());
+    }
+
+    public void addConstructorInjectionPointMetaData(Constructor<T> constructor)
+    {
+        List<InjectionPoint> injectionPoints = getBean().getWebBeansContext().getInjectionPointFactory().getConstructorInjectionPointData(getBean(), constructor);
+        for (InjectionPoint injectionPoint : injectionPoints)
+        {
+            addImplicitComponentForInjectionPoint(injectionPoint);
+            getBean().addInjectionPoint(injectionPoint);
+        }
     }
 
     /**

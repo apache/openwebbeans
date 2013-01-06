@@ -595,8 +595,6 @@ public final class WebBeansUtil
         Asserts.nullCheckForClass(clazz);
 
         NewManagedBean<T> comp;
-        DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
-
 
         if (webBeansContext.getWebBeansUtil().isManagedBean(clazz))
         {
@@ -605,7 +603,7 @@ public final class WebBeansUtil
             comp = newBeanCreator.getBean();
             comp.setImplScopeType(new DependentScopeLiteral());
             comp.setConstructor(defineConstructor(clazz));
-            definitionUtil.addConstructorInjectionPointMetaData(comp, comp.getConstructor());
+            newBeanCreator.addConstructorInjectionPointMetaData(comp.getConstructor());
 
             newBeanCreator.defineInjectedFields();
             newBeanCreator.defineInjectedMethods();
@@ -2447,9 +2445,8 @@ public final class WebBeansUtil
         managedBeanCreator.defineInjectedMethods();
         managedBeanCreator.defineObserverMethods();
 
-        DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
-        definitionUtil.defineDecoratorStack(managedBeanCreator.getBean());
-        definitionUtil.defineBeanInterceptorStack(managedBeanCreator.getBean());
+        DefinitionUtil.defineDecoratorStack(managedBeanCreator.getBean());
+        DefinitionUtil.defineBeanInterceptorStack(managedBeanCreator.getBean());
 
         managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
 
@@ -2591,8 +2588,8 @@ public final class WebBeansUtil
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
         managedBeanCreator.defineObserverMethods();
-        webBeansContext.getDefinitionUtil().defineDecoratorStack(managedBeanCreator.getBean());
-        webBeansContext.getDefinitionUtil().defineBeanInterceptorStack(managedBeanCreator.getBean());
+        DefinitionUtil.defineDecoratorStack(managedBeanCreator.getBean());
+        DefinitionUtil.defineBeanInterceptorStack(managedBeanCreator.getBean());
 
         managedBeanCreator.defineDisposalMethods(); //Define disposal method after adding producers
 
