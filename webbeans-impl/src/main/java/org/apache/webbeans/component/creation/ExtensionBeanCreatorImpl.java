@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.component.creation;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.config.WebBeansContext;
 
@@ -26,7 +28,7 @@ public class ExtensionBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreat
 
     public ExtensionBeanCreatorImpl(Class<T> type, WebBeansContext webBeansContext)
     {
-        super(new ExtensionBean<T>(type, webBeansContext));
+        super(new ExtensionBean<T>(type, webBeansContext), ApplicationScoped.class);
     }
 
     /**

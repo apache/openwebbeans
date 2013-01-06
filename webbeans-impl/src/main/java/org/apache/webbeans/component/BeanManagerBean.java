@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.component;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.BeanManager;
 
-import org.apache.webbeans.annotation.ApplicationScopeLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectableBeanManager;
 
@@ -32,7 +32,7 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
     public BeanManagerBean(WebBeansContext webBeansContext)
     {
         super(WebBeansType.MANAGER, BeanManager.class, webBeansContext);
-        setImplScopeType(new ApplicationScopeLiteral());
+        setImplScopeType(ApplicationScoped.class);
     }
 
     @Override

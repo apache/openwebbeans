@@ -357,10 +357,13 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      * 
      * @param scopeType scope type
      */
-    public void setImplScopeType(Annotation scopeType)
+    public void setImplScopeType(Class<? extends Annotation> scopeType)
     {
-        scopeClass = scopeType.annotationType();
-        cachedHashCode = 0;
+        if (scopeType != null)
+        {
+            scopeClass = scopeType;
+            cachedHashCode = 0;
+        }
     }
 
     /**

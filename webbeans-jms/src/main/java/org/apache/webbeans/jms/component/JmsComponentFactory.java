@@ -20,6 +20,7 @@ package org.apache.webbeans.jms.component;
 
 import java.lang.annotation.Annotation;
 
+import javax.enterprise.context.Dependent;
 import javax.jms.Queue;
 import javax.jms.QueueConnection;
 import javax.jms.QueueReceiver;
@@ -31,7 +32,6 @@ import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 
-import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.JMSModel.JMSType;
 import org.apache.webbeans.util.Asserts;
@@ -73,7 +73,7 @@ public final class JmsComponentFactory
             component.addApiType(TopicSubscriber.class);
         }
         
-        component.setImplScopeType(new DependentScopeLiteral());
+        component.setImplScopeType(Dependent.class);
         
         Annotation[] anns = model.getBindings();
         

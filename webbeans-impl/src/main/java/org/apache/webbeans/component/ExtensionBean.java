@@ -20,7 +20,6 @@ package org.apache.webbeans.component;
 
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.annotation.ApplicationScopeLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.events.ExtensionLoader;
@@ -44,7 +43,6 @@ public class ExtensionBean<T> extends AbstractInjectionTargetBean<T>
     {
         super(WebBeansType.EXTENSION, returnType, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(returnType), webBeansContext);
         setEnabled(true);
-        setImplScopeType(new ApplicationScopeLiteral());
         getTypes().addAll(getAnnotatedType().getTypeClosure());
         addQualifier(new DefaultLiteral());
     }

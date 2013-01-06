@@ -48,7 +48,7 @@ public interface OwbBean<T> extends Bean<T>
      * 
      * @param scopeType bean scope type annotation
      */
-    public void setImplScopeType(Annotation scopeType);    
+    public void setImplScopeType(Class<? extends Annotation> scopeType);    
 
     /**
      * Returns bean type.

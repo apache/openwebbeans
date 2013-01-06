@@ -48,7 +48,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
@@ -80,12 +79,17 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
      * 
      * @param bean bean instance
      */
-    public AbstractInjecionTargetBeanCreator(AbstractInjectionTargetBean<T> bean)
+    public AbstractInjecionTargetBeanCreator(AbstractInjectionTargetBean<T> bean, Class<? extends Annotation> scopeType)
     {
-        super(bean, bean.getAnnotatedType());
+        super(bean, bean.getAnnotatedType(), scopeType);
         webBeansContext = bean.getWebBeansContext();
     }
         
+    public AbstractInjecionTargetBeanCreator(AbstractInjectionTargetBean<T> bean)
+    {
+        this(bean, null);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -471,7 +475,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                         
                         resourceBean.getTypes().addAll(annotatedField.getTypeClosure());
                         resourceBeanCreator.defineQualifiers();
-                        resourceBean.setImplScopeType(new DependentScopeLiteral());
+                        resourceBean.setImplScopeType(Dependent.class);
                         resourceBean.setProducerField(field);
                         
                         producerBeans.add(resourceBean);                                            
@@ -502,8 +506,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                         producerFieldBean.getTypes().addAll(annotatedField.getTypeClosure());
                     }
                     producerFieldBeanCreator.defineScopeType("Annotated producer field: " + annotatedField +  "must declare default @Scope annotation", false);
-                    webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerFieldBean,
-                                                                                             producerFieldBean.getScope());
+                    producerFieldBeanCreator.checkUnproxiableApiType();
                     WebBeansUtil.checkProducerGenericType(producerFieldBean,annotatedField.getJavaMember());
                     producerFieldBeanCreator.defineQualifiers();
                     producerFieldBeanCreator.defineName(WebBeansUtil.getProducerDefaultName(annotatedField.getJavaMember().getName()));
@@ -572,9 +575,8 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 }
                 producerMethodBeanCreator.defineScopeType("Annotated producer method : " + annotatedMethod
                                                           +  "must declare default @Scope annotation", false);
-                webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerMethodBean,
-                                                                                         producerMethodBean.getScope());
-                WebBeansUtil.checkProducerGenericType(producerMethodBean,annotatedMethod.getJavaMember());
+                producerMethodBeanCreator.checkUnproxiableApiType();
+                WebBeansUtil.checkProducerGenericType(producerMethodBeanCreator.getBean(), annotatedMethod.getJavaMember());
                 producerMethodBeanCreator.defineName(WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
                 producerMethodBeanCreator.defineQualifiers();
                 
@@ -629,7 +631,8 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
         return (AnnotatedType<T>) super.getAnnotated();
     }
 
-    protected void configureInheritedQualifiers()
+    @Override
+    protected void defineInheritedQualifiers(Set<Annotation> qualifiers)
     {
         // Adding inherited qualifiers
         IBeanInheritedMetaData inheritedMetaData = getBean().getInheritedMetaData();
@@ -640,7 +643,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
             for (Annotation inherited : inheritedTypes)
             {
                 boolean found = false;
-                for (Annotation existQualifier : getQualifiers())
+                for (Annotation existQualifier : qualifiers)
                 {
                     if (existQualifier.annotationType().equals(inherited.annotationType()))
                     {
@@ -650,9 +653,30 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 }
                 if (!found)
                 {
-                    getQualifiers().add(inherited);
+                    qualifiers.add(inherited);
                 }
             }
         }
+    }
+
+    @Override
+    protected Class<? extends Annotation> defineInheritedScope()
+    {
+        IBeanInheritedMetaData metaData = getBean().getInheritedMetaData();
+        if (metaData != null)
+        {
+            Annotation inheritedScope = metaData.getInheritedScopeType();
+            if (inheritedScope != null)
+            {
+                return inheritedScope.annotationType();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected Class<?> getBeanType()
+    {
+        return getAnnotated().getJavaClass();
     }
 }

@@ -18,11 +18,11 @@
  */
 package org.apache.webbeans.ee.beans;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.transaction.UserTransaction;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.spi.TransactionService;
@@ -36,7 +36,7 @@ public class UserTransactionBean extends BuildInOwbBean<UserTransaction>
         addApiType(Object.class);
         addApiType(UserTransaction.class);
         addQualifier(new DefaultLiteral());
-        setImplScopeType(new DependentScopeLiteral());
+        setImplScopeType(Dependent.class);
     }
 
     @Override

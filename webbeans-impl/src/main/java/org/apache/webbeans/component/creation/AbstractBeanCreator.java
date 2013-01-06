@@ -18,15 +18,20 @@
  */
 package org.apache.webbeans.component.creation;
 
+import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnproxyableResolutionException;
+
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Annotated;
@@ -39,7 +44,6 @@ import javax.inject.Scope;
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.NamedLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -49,9 +53,11 @@ import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -61,7 +67,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> bean class info
  */
-public class AbstractBeanCreator<T>
+public abstract class AbstractBeanCreator<T>
 {
     /**Bean instance*/
     private final AbstractOwbBean<T> bean;    
@@ -71,27 +77,30 @@ public class AbstractBeanCreator<T>
     private WebBeansContext webBeansContext;
     
     private String beanName;
+    
+    private Class<? extends Annotation> scope;
 
     private Set<Annotation> qualifiers = new HashSet<Annotation>();
     
     private Set<Class<? extends Annotation>> stereotypes = new HashSet<Class<? extends Annotation>>();
-    
+
+    public AbstractBeanCreator(AbstractOwbBean<T> bean, Annotated annotated)
+    {
+        this(bean, annotated, null);
+    }
+
     /**
      * Creates a bean instance.
      * 
      * @param bean bean instance
      * @param annotated
      */
-    public AbstractBeanCreator(AbstractOwbBean<T> bean, Annotated annotated)
+    public AbstractBeanCreator(AbstractOwbBean<T> bean, Annotated annotated, Class<? extends Annotation> scopeType)
     {
         this.bean = bean;
         this.annotated = annotated;
+        this.scope = scopeType;
         this.webBeansContext = bean.getWebBeansContext();
-    }
-
-    protected Set<Annotation> getQualifiers()
-    {
-        return qualifiers;
     }
 
     /**
@@ -204,7 +213,7 @@ public class AbstractBeanCreator<T>
             }
         }
         
-        configureInheritedQualifiers();
+        defineInheritedQualifiers(qualifiers);
 
         // No-binding annotation
         if (qualifiers.size() == 0 )
@@ -228,9 +237,15 @@ public class AbstractBeanCreator<T>
         
     }
 
-    protected void configureInheritedQualifiers()
+    protected void defineInheritedQualifiers(Set<Annotation> qualifiers)
     {
         // hook for subclasses
+    }
+    
+    protected Class<? extends Annotation> defineInheritedScope()
+    {
+        // hook for subclasses
+        return null;
     }
 
     /**
@@ -289,7 +304,7 @@ public class AbstractBeanCreator<T>
             {
                 if(pseudo != null)
                 {
-                    throw new WebBeansConfigurationException("Not to define both @Scope and @NormalScope on bean : " + getBean());
+                    throw new WebBeansConfigurationException("Not to define both @Scope and @NormalScope on bean : " + getBeanType().getName());
                 }
                 
                 if (found)
@@ -298,7 +313,7 @@ public class AbstractBeanCreator<T>
                 }
 
                 found = true;
-                getBean().setImplScopeType(annotation);
+                scope = annotation.annotationType();
             }
             else
             {
@@ -310,7 +325,7 @@ public class AbstractBeanCreator<T>
                     }
 
                     found = true;
-                    getBean().setImplScopeType(annotation);
+                    scope = annotation.annotationType();
                 }
             }
         }
@@ -324,29 +339,14 @@ public class AbstractBeanCreator<T>
 
     private void defineDefaultScopeType(String exceptionMessage, boolean allowLazyInit)
     {
-        // Frist look for inherited scope
-        IBeanInheritedMetaData metaData = null;
-        if(getBean() instanceof InjectionTargetBean)
-        {
-            metaData = ((InjectionTargetBean<?>)getBean()).getInheritedMetaData();
-        }
-        boolean found = false;
-        if (metaData != null)
-        {
-            Annotation inheritedScope = metaData.getInheritedScopeType();
-            if (inheritedScope != null)
-            {
-                found = true;
-                getBean().setImplScopeType(inheritedScope);
-            }
-        }
-
-        if (!found)
+        scope = defineInheritedScope();
+        
+        if (scope == null)
         {
             Set<Class<? extends Annotation>> stereos = stereotypes;
             if (stereos.size() == 0)
             {
-                getBean().setImplScopeType(new DependentScopeLiteral());
+                scope = Dependent.class;
 
                 if (allowLazyInit && getBean() instanceof ManagedBean && isPurePojoBean(webBeansContext, getBean().getBeanClass()))
                 {
@@ -393,13 +393,13 @@ public class AbstractBeanCreator<T>
 
                 if (defined != null)
                 {
-                    getBean().setImplScopeType(defined);
+                    scope = defined.annotationType();
                 }
                 else
                 {
-                    getBean().setImplScopeType(new DependentScopeLiteral());
+                    scope = Dependent.class;
 
-                    if (allowLazyInit && getBean() instanceof ManagedBean && isPurePojoBean(webBeansContext, getBean().getBeanClass()))
+                    if (allowLazyInit && getBean() instanceof ManagedBean && isPurePojoBean(webBeansContext, getBeanType()))
                     {
                         // take the bean as Dependent but we could lazily initialize it
                         // because the bean doesn't contains any CDI feature
@@ -442,6 +442,73 @@ public class AbstractBeanCreator<T>
         }
 
         return true;
+    }
+
+    /**
+     * Checks the unproxiable condition.
+     * @param bean managed bean
+     * @param scopeType scope type
+     * @throws WebBeansConfigurationException if
+     *  bean is not proxied by the container
+     */
+    protected void checkUnproxiableApiType()
+    {
+        //Unproxiable test for NormalScoped beans
+        if (webBeansContext.getWebBeansUtil().isScopeTypeNormal(scope))
+        {
+            ViolationMessageBuilder violationMessage = ViolationMessageBuilder.newViolation();
+
+            Class<?> beanClass = getBean().getReturnType();
+            
+            if(!beanClass.isInterface() && beanClass != Object.class)
+            {
+                if(beanClass.isPrimitive())
+                {
+                    violationMessage.addLine("It isn't possible to proxy a primitive type (" + beanClass.getName(), ")");
+                }
+
+                if(beanClass.isArray())
+                {
+                    violationMessage.addLine("It isn't possible to proxy an array type (", beanClass.getName(), ")");
+                }
+
+                if(!violationMessage.containsViolation())
+                {
+                    if (Modifier.isFinal(beanClass.getModifiers()))
+                    {
+                        violationMessage.addLine(beanClass.getName(), " is a final class! CDI doesn't allow to proxy that.");
+                    }
+
+                    Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(beanClass);
+                    for (Method m : methods)
+                    {
+                        int modifiers = m.getModifiers();
+                        if (Modifier.isFinal(modifiers) && !Modifier.isPrivate(modifiers) &&
+                            !m.isSynthetic() && !m.isBridge())
+                        {
+                            violationMessage.addLine(beanClass.getName(), " has final method "+ m + " CDI doesn't allow to proxy that.");
+                        }
+                    }
+
+                    Constructor<?> cons = webBeansContext.getWebBeansUtil().getNoArgConstructor(beanClass);
+                    if (cons == null)
+                    {
+                        violationMessage.addLine(beanClass.getName(), " has no explicit no-arg constructor!",
+                                "A public or protected constructor without args is required!");
+                    }
+                    else if (Modifier.isPrivate(cons.getModifiers()))
+                    {
+                        violationMessage.addLine(beanClass.getName(), " has a >private< no-arg constructor! CDI doesn't allow to proxy that.");
+                    }
+                }
+
+                //Throw Exception
+                if(violationMessage.containsViolation())
+                {
+                    throwUnproxyableResolutionException(violationMessage);
+                }
+            }
+        }
     }
 
     /**
@@ -529,6 +596,7 @@ public class AbstractBeanCreator<T>
     public AbstractOwbBean<T> getBean()
     {
         bean.setName(beanName);
+        bean.setImplScopeType(scope);
         bean.getQualifiers().addAll(qualifiers);
         bean.getStereotypes().addAll(stereotypes);
         return bean;
@@ -538,4 +606,6 @@ public class AbstractBeanCreator<T>
     {
         return annotated;
     }
+    
+    protected abstract Class<?> getBeanType();
 }

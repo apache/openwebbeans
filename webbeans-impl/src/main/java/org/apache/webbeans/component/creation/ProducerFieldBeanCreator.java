@@ -44,4 +44,10 @@ public class ProducerFieldBeanCreator<T> extends AbstractProducerBeanCreator<T>
     {
         return (ProducerFieldBean<T>) super.getBean();
     }
+
+    @Override
+    protected Class<?> getBeanType()
+    {
+        return ((AnnotatedField<T>)getAnnotated()).getJavaMember().getType();
+    }
 }

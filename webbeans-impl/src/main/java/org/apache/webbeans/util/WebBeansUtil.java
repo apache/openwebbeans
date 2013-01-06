@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.util;
 
-import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnproxyableResolutionException;
-
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -47,6 +45,7 @@ import javax.decorator.Decorator;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -94,9 +93,7 @@ import javax.interceptor.InvocationContext;
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.NewLiteral;
-import org.apache.webbeans.annotation.RequestedScopeLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractProducerBean;
@@ -131,7 +128,6 @@ import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
@@ -601,7 +597,7 @@ public final class WebBeansUtil
             NewManagedBeanCreatorImpl<T> newBeanCreator
                 = new NewManagedBeanCreatorImpl<T>(webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz), webBeansContext);
             comp = newBeanCreator.getBean();
-            comp.setImplScopeType(new DependentScopeLiteral());
+            comp.setImplScopeType(Dependent.class);
             comp.setConstructor(defineConstructor(clazz));
             newBeanCreator.addConstructorInjectionPointMetaData(comp.getConstructor());
 
@@ -611,7 +607,7 @@ public final class WebBeansUtil
         else if (EJBWebBeansConfigurator.isSessionBean(clazz, webBeansContext))
         {
             comp = new NewManagedBean<T>(clazz, WebBeansType.ENTERPRISE, webBeansContext.getAnnotatedElementFactory().getAnnotatedType(clazz), webBeansContext);
-            comp.setImplScopeType(new DependentScopeLiteral());
+            comp.setImplScopeType(Dependent.class);
         }
         else
         {
@@ -659,7 +655,7 @@ public final class WebBeansUtil
     {
         BeanManagerBean managerComponent = new BeanManagerBean(webBeansContext);
 
-        managerComponent.setImplScopeType(new DependentScopeLiteral());
+        managerComponent.setImplScopeType(Dependent.class);
         managerComponent.addQualifier(new DefaultLiteral());
         managerComponent.addQualifier(new AnyLiteral());
         managerComponent.addApiType(BeanManager.class);
@@ -682,7 +678,7 @@ public final class WebBeansUtil
         instanceBean.addApiType(Object.class);
 
         instanceBean.addQualifier(new AnyLiteral());
-        instanceBean.setImplScopeType(new DependentScopeLiteral());
+        instanceBean.setImplScopeType(Dependent.class);
         instanceBean.setName(null);
 
         return instanceBean;
@@ -701,7 +697,7 @@ public final class WebBeansUtil
         eventBean.addApiType(Object.class);
 
         eventBean.addQualifier(new AnyLiteral());
-        eventBean.setImplScopeType(new DependentScopeLiteral());
+        eventBean.setImplScopeType(Dependent.class);
         eventBean.setName(null);
 
         return eventBean;
@@ -720,7 +716,7 @@ public final class WebBeansUtil
         conversationComp.addApiType(Conversation.class);
         conversationComp.addApiType(ConversationImpl.class);
         conversationComp.addApiType(Object.class);
-        conversationComp.setImplScopeType(new RequestedScopeLiteral());
+        conversationComp.setImplScopeType(RequestScoped.class);
         conversationComp.addQualifier(new DefaultLiteral());
         conversationComp.addQualifier(new AnyLiteral());
         conversationComp.setName("javax.enterprise.context.conversation");
@@ -1701,85 +1697,7 @@ public final class WebBeansUtil
         return beans;
     }
 
-    /**
-     * Checks the unproxiable condition.
-     * @param bean managed bean
-     * @param scopeType scope type
-     * @throws WebBeansConfigurationException if
-     *  bean is not proxied by the container
-     */
-    public void checkUnproxiableApiType(Bean<?> bean, Class<? extends Annotation> scopeType)
-    {
-        Asserts.assertNotNull("bean", "bean parameter can not be null");
-        Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
-
-        //Unproxiable test for NormalScoped beans
-        if (isScopeTypeNormal(scopeType))
-        {
-            ViolationMessageBuilder violationMessage = ViolationMessageBuilder.newViolation();
-
-            Class<?> beanClass;
-            if (bean instanceof OwbBean) 
-            {
-                beanClass = ((OwbBean)bean).getReturnType();
-            }
-            else 
-            {
-                beanClass = bean.getBeanClass();
-            }
-            
-            if(!beanClass.isInterface() && beanClass != Object.class)
-            {
-                if(beanClass.isPrimitive())
-                {
-                    violationMessage.addLine("It isn't possible to proxy a primitive type (" + beanClass.getName(), ")");
-                }
-
-                if(beanClass.isArray())
-                {
-                    violationMessage.addLine("It isn't possible to proxy an array type (", beanClass.getName(), ")");
-                }
-
-                if(!violationMessage.containsViolation())
-                {
-                    if (Modifier.isFinal(beanClass.getModifiers()))
-                    {
-                        violationMessage.addLine(beanClass.getName(), " is a final class! CDI doesn't allow to proxy that.");
-                    }
-
-                    Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(beanClass);
-                    for (Method m : methods)
-                    {
-                        int modifiers = m.getModifiers();
-                        if (Modifier.isFinal(modifiers) && !Modifier.isPrivate(modifiers) &&
-                            !m.isSynthetic() && !m.isBridge())
-                        {
-                            violationMessage.addLine(beanClass.getName(), " has final method "+ m + " CDI doesn't allow to proxy that.");
-                        }
-                    }
-
-                    Constructor<?> cons = getNoArgConstructor(beanClass);
-                    if (cons == null)
-                    {
-                        violationMessage.addLine(beanClass.getName(), " has no explicit no-arg constructor!",
-                                "A public or protected constructor without args is required!");
-                    }
-                    else if (Modifier.isPrivate(cons.getModifiers()))
-                    {
-                        violationMessage.addLine(beanClass.getName(), " has a >private< no-arg constructor! CDI doesn't allow to proxy that.");
-                    }
-                }
-
-                //Throw Exception
-                if(violationMessage.containsViolation())
-                {
-                    throwUnproxyableResolutionException(violationMessage);
-                }
-            }
-        }
-    }
-
-    private <T> Constructor<T> getNoArgConstructor(Class<T> clazz)
+    public <T> Constructor<T> getNoArgConstructor(Class<T> clazz)
     {
         return webBeansContext.getSecurityService().doPrivilegedGetDeclaredConstructor(clazz);
     }

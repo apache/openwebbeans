@@ -19,10 +19,11 @@
 package org.apache.webbeans.component;
 
 import java.util.Stack;
+
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 
 public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
@@ -67,7 +68,7 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
         super(WebBeansType.INJECTIONPOINT,InjectionPoint.class, webBeansContext);
         
         addQualifier(new DefaultLiteral());
-        setImplScopeType(new DependentScopeLiteral());
+        setImplScopeType(Dependent.class);
         addApiType(InjectionPoint.class);
         addApiType(Object.class);
     }

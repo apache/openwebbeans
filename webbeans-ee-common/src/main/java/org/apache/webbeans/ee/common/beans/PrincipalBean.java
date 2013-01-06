@@ -20,10 +20,10 @@ package org.apache.webbeans.ee.common.beans;
 
 import java.security.Principal;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.spi.SecurityService;
@@ -37,7 +37,7 @@ public class PrincipalBean extends BuildInOwbBean<Principal>
         addApiType(Object.class);
         addApiType(Principal.class);
         addQualifier(new DefaultLiteral());
-        setImplScopeType(new DependentScopeLiteral());
+        setImplScopeType(Dependent.class);
     }
 
     @Override

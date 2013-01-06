@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.component.creation;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.component.NewManagedBean;
@@ -29,7 +30,7 @@ public class NewManagedBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
 
     public NewManagedBeanCreatorImpl(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
-        super(new NewManagedBean<T>(annotatedType.getJavaClass(), WebBeansType.MANAGED, annotatedType, webBeansContext));
+        super(new NewManagedBean<T>(annotatedType.getJavaClass(), WebBeansType.MANAGED, annotatedType, webBeansContext), Dependent.class);
     }
 
     /**

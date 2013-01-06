@@ -22,7 +22,7 @@ import javax.enterprise.inject.spi.Annotated;
 
 import org.apache.webbeans.component.AbstractProducerBean;
 
-public class AbstractProducerBeanCreator<T> extends AbstractBeanCreator<T>
+public abstract class AbstractProducerBeanCreator<T> extends AbstractBeanCreator<T>
 {
 
     public AbstractProducerBeanCreator(AbstractProducerBean<T> bean, Annotated annotated)

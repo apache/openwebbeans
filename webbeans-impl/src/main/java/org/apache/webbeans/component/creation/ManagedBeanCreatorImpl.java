@@ -76,12 +76,12 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
      */
     public ManagedBeanCreatorImpl(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
-        this(new ManagedBean<T>(annotatedType.getJavaClass(), annotatedType, webBeansContext));
+        this(new ManagedBean<T>(annotatedType.getJavaClass(), annotatedType, webBeansContext), null);
     }
-    
-    protected ManagedBeanCreatorImpl(ManagedBean<T> managedBean)
+
+    protected ManagedBeanCreatorImpl(ManagedBean<T> managedBean, Class<? extends Annotation> scopeType)
     {
-        super(managedBean);
+        super(managedBean, scopeType);
         webBeansContext = managedBean.getWebBeansContext();
     }
 
@@ -94,7 +94,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
         webBeansContext.getWebBeansUtil().checkManagedBeanCondition(getAnnotated());
         WebBeansUtil.checkGenericType(getBean());
         //Check Unproxiable
-        webBeansContext.getWebBeansUtil().checkUnproxiableApiType(getBean(), getBean().getScope());
+        checkUnproxiableApiType();
     }
 
 
@@ -116,7 +116,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
 
     public static <T> void lazyInitializeManagedBean(ManagedBean<T> bean)
     {
-        ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(bean);
+        ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(bean, bean.getScope());
 
         managedBeanCreator.lazyInitializeManagedBean(bean.getBeanClass(), bean);
     }

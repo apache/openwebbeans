@@ -87,4 +87,10 @@ public class ProducerMethodBeanCreator<T> extends AbstractProducerBeanCreator<T>
         
         getBean().setSpecializedBean(true);        
     }
+
+    @Override
+    protected Class<?> getBeanType()
+    {
+        return ((AnnotatedMethod<T>)getAnnotated()).getJavaMember().getReturnType();
+    }
 }

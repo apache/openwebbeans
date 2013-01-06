@@ -110,6 +110,7 @@ public class ProducerFieldComponentTest extends TestContext
             defineManagedBean(TypeVariableProducerField.class);
         }
         catch(Exception caught){
+            caught.printStackTrace();
             System.out.println(caught.getMessage());
             expected = caught;
         }
