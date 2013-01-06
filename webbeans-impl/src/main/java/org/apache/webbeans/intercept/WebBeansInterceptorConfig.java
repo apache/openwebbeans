@@ -30,6 +30,7 @@ import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.ArrayUtil;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -145,7 +146,7 @@ public final class WebBeansInterceptorConfig
 
         Annotation[] typeAnns;
         typeAnns = annotations.toArray(new Annotation[annotations.size()]);
-        Set<Annotation> bindingTypeSet = annotationManager.getInterceptorAnnotations(typeAnns);
+        Set<Annotation> bindingTypeSet = annotationManager.getInterceptorAnnotations(ArrayUtil.asSet(typeAnns));
 
         Annotation[] anns;
         Set<Interceptor<?>> componentInterceptors = null;

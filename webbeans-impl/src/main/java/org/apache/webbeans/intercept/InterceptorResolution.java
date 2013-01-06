@@ -90,7 +90,7 @@ public class InterceptorResolution
         // pick up CDI interceptors from a class level
         //X TODO should work but can surely be improved!
         Set<Annotation> classInterceptorBindings
-                = annotationManager.getInterceptorAnnotations(AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()));
+                = annotationManager.getInterceptorAnnotations(annotatedType.getAnnotations());
 
         //X TODO pick up EJB interceptors from a class level
         //X TODO pick up the decorators
@@ -104,7 +104,7 @@ public class InterceptorResolution
         {
             Set<Annotation> cummulatedInterceptorBindings = new HashSet<Annotation>();
             cummulatedInterceptorBindings.addAll(
-                    annotationManager.getInterceptorAnnotations(AnnotationUtil.getAnnotationsFromSet(interceptableAnnotatedMethod.getAnnotations())));
+                    annotationManager.getInterceptorAnnotations(interceptableAnnotatedMethod.getAnnotations()));
 
             cummulatedInterceptorBindings.addAll(classInterceptorBindings);
 
@@ -115,7 +115,10 @@ public class InterceptorResolution
 
             InterceptionType interceptionType = calculateInterceptionType(interceptableAnnotatedMethod);
             MethodInterceptorInfo methodInterceptorInfo = new MethodInterceptorInfo(interceptionType);
-            List<Interceptor<?>> methodInterceptors = beanManager.resolveInterceptors(interceptionType, AnnotationUtil.getAnnotationsFromSet(cummulatedInterceptorBindings));
+
+            List<Interceptor<?>> methodInterceptors
+                    = beanManager.resolveInterceptors(interceptionType, AnnotationUtil.getAnnotationsFromSet(cummulatedInterceptorBindings));
+
             methodInterceptorInfo.setCdiInterceptors(methodInterceptors);
 
             allUsedCdiInterceptors.addAll(methodInterceptors);

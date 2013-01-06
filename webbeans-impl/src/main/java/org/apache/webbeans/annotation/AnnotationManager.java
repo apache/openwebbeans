@@ -105,7 +105,7 @@ public final class AnnotationManager
      *
      * @return the effective interceptor annotations of the array of given annotations
      */
-    public Set<Annotation> getInterceptorAnnotations(Annotation[] typeAnns)
+    public Set<Annotation> getInterceptorAnnotations(Set<Annotation> typeAnns)
     {
         Set<Annotation> bindingTypeSet = new HashSet<Annotation>();
 
@@ -158,6 +158,17 @@ public final class AnnotationManager
         }
 
         return false;
+    }
+
+    /**
+     * Collect the interceptor bindings from an array of annotations, including
+     * transitively defined interceptor bindings.
+     * @param anns An array of annotations
+     * @return an array of interceptor binding annotations, including the input and any transitively declared annotations
+     */
+    public Annotation[] getInterceptorBindingMetaAnnotations(Set<Annotation> anns)
+    {
+        return getInterceptorBindingMetaAnnotations(AnnotationUtil.getAnnotationsFromSet(anns));
     }
 
     /**
@@ -412,6 +423,36 @@ public final class AnnotationManager
         return false;
     }
 
+    public Annotation[] getStereotypeMetaAnnotations(Set<Annotation> anns)
+    {
+        Asserts.assertNotNull(anns, "anns parameter can not be null");
+        List<Annotation> interAnns = new ArrayList<Annotation>();
+
+        for (Annotation ann : anns)
+        {
+            if (isStereoTypeAnnotation(ann.annotationType()))
+            {
+                interAnns.add(ann);
+
+                //check for transitive
+                Annotation[] transitives = getTransitiveStereoTypes(ann.annotationType().getDeclaredAnnotations());
+
+                for(Annotation transitive : transitives)
+                {
+                    interAnns.add(transitive);
+                }
+            }
+        }
+
+        Annotation[] ret = new Annotation[interAnns.size()];
+        ret = interAnns.toArray(ret);
+
+        return ret;
+    }
+
+    /**
+     * Same like {@link #getStereotypeMetaAnnotations(java.util.Set)} but with an array
+     */
     public Annotation[] getStereotypeMetaAnnotations(Annotation[] anns)
     {
         Asserts.assertNotNull(anns, "anns parameter can not be null");
