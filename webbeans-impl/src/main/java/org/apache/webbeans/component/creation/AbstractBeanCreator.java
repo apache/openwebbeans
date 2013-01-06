@@ -25,20 +25,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Named;
+import javax.inject.Scope;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
+import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.NamedLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.DefinitionUtil;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
+import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 
@@ -196,7 +202,199 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      */
     public void defineScopeType(String errorMessage, boolean allowLazyInit)
     {
-        definitionUtil.defineScopeType(bean, AnnotationUtil.getAnnotationsFromSet(annotated.getAnnotations()), errorMessage, false);
+        Annotation[] annotations = AnnotationUtil.getAnnotationsFromSet(annotated.getAnnotations());
+        boolean found = false;
+
+        List<ExternalScope> additionalScopes = getBean().getWebBeansContext().getBeanManagerImpl().getAdditionalScopes();
+        
+        for (Annotation annotation : annotations)
+        {   
+            Class<? extends Annotation> annotationType = annotation.annotationType();
+            
+            /*Normal scope*/
+            Annotation var = annotationType.getAnnotation(NormalScope.class);
+            /*Pseudo scope*/
+            Annotation pseudo = annotationType.getAnnotation(Scope.class);
+        
+            if (var == null && pseudo == null)
+            {
+                // check for additional scopes registered via a CDI Extension
+                for (ExternalScope additionalScope : additionalScopes)
+                {
+                    if (annotationType.equals(additionalScope.getScope()))
+                    {
+                        // create a proxy which implements the given annotation
+                        Annotation scopeAnnotation = additionalScope.getScopeAnnotation();
+    
+                        if (additionalScope.isNormal())
+                        {
+                            var = scopeAnnotation;
+                        }
+                        else
+                        {
+                            pseudo = scopeAnnotation;
+                        }
+                    }
+                }
+            }
+            
+            if (var != null)
+            {
+                if(pseudo != null)
+                {
+                    throw new WebBeansConfigurationException("Not to define both @Scope and @NormalScope on bean : " + getBean());
+                }
+                
+                if (found)
+                {
+                    throw new WebBeansConfigurationException(errorMessage);
+                }
+
+                found = true;
+                getBean().setImplScopeType(annotation);
+            }
+            else
+            {
+                if(pseudo != null)
+                {
+                    if (found)
+                    {
+                        throw new WebBeansConfigurationException(errorMessage);
+                    }
+
+                    found = true;
+                    getBean().setImplScopeType(annotation);
+                }
+            }
+        }
+
+        if (!found)
+        {
+            defineDefaultScopeType(errorMessage, allowLazyInit);
+        }
+    }
+
+
+    private void defineDefaultScopeType(String exceptionMessage, boolean allowLazyInit)
+    {
+        // Frist look for inherited scope
+        IBeanInheritedMetaData metaData = null;
+        if(getBean() instanceof InjectionTargetBean)
+        {
+            metaData = ((InjectionTargetBean<?>)getBean()).getInheritedMetaData();
+        }
+        boolean found = false;
+        if (metaData != null)
+        {
+            Annotation inheritedScope = metaData.getInheritedScopeType();
+            if (inheritedScope != null)
+            {
+                found = true;
+                getBean().setImplScopeType(inheritedScope);
+            }
+        }
+
+        if (!found)
+        {
+            Set<Class<? extends Annotation>> stereos = getBean().getStereotypes();
+            if (stereos.size() == 0)
+            {
+                getBean().setImplScopeType(new DependentScopeLiteral());
+
+                if (allowLazyInit && getBean() instanceof ManagedBean && isPurePojoBean(getBean().getWebBeansContext(), getBean().getBeanClass()))
+                {
+                    // take the bean as Dependent but we could lazily initialize it
+                    // because the bean doesn't contains any CDI feature
+                    ((ManagedBean) getBean()).setFullInit(false);
+                }
+            }
+            else
+            {
+                Annotation defined = null;
+                Set<Class<? extends Annotation>> anns = getBean().getStereotypes();
+                for (Class<? extends Annotation> stero : anns)
+                {
+                    boolean containsNormal = AnnotationUtil.hasMetaAnnotation(stero.getDeclaredAnnotations(), NormalScope.class);
+                    
+                    if (AnnotationUtil.hasMetaAnnotation(stero.getDeclaredAnnotations(), NormalScope.class) ||
+                            AnnotationUtil.hasMetaAnnotation(stero.getDeclaredAnnotations(), Scope.class))
+                    {                        
+                        Annotation next;
+                        
+                        if(containsNormal)
+                        {
+                            next = AnnotationUtil.getMetaAnnotations(stero.getDeclaredAnnotations(), NormalScope.class)[0];
+                        }
+                        else
+                        {
+                            next = AnnotationUtil.getMetaAnnotations(stero.getDeclaredAnnotations(), Scope.class)[0];
+                        }
+
+                        if (defined == null)
+                        {
+                            defined = next;
+                        }
+                        else
+                        {
+                            if (!defined.equals(next))
+                            {
+                                throw new WebBeansConfigurationException(exceptionMessage);
+                            }
+                        }
+                    }
+                }
+
+                if (defined != null)
+                {
+                    getBean().setImplScopeType(defined);
+                }
+                else
+                {
+                    getBean().setImplScopeType(new DependentScopeLiteral());
+
+                    if (allowLazyInit && getBean() instanceof ManagedBean && isPurePojoBean(getBean().getWebBeansContext(), getBean().getBeanClass()))
+                    {
+                        // take the bean as Dependent but we could lazily initialize it
+                        // because the bean doesn't contains any CDI feature
+                        ((ManagedBean) getBean()).setFullInit(false);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * TODO this should get improved.
+     * It might be enough to check for instanceof Produces and Decorates
+     *
+     *
+     * Check if the bean uses CDI features
+     * @param cls the Class to check
+     * @return <code>false</code> if the bean uses CDI annotations which define other beans somewhere
+     */
+    private boolean isPurePojoBean(WebBeansContext webBeansContext, Class<?> cls)
+    {
+        Class<?> superClass = cls.getSuperclass();
+
+        if ( superClass == Object.class || !isPurePojoBean(webBeansContext, superClass))
+        {
+            return false;
+        }
+
+        Set<String> annotations = webBeansContext.getScannerService().getAllAnnotations(cls.getSimpleName());
+        if (annotations != null)
+        {
+            for (String ann : annotations)
+            {
+                if (ann.startsWith("javax.inject") || ann.startsWith("javax.enterprise") || ann.startsWith("javax.interceptors"))
+                {
+                    return false;
+                }
+            }
+
+        }
+
+        return true;
     }
 
     /**

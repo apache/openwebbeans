@@ -537,8 +537,8 @@ public abstract class TestContext implements ITestContext
         Annotation[] clazzAnns = clazz.getDeclaredAnnotations();
 
         defineApiTypes(component, clazz);
-        definitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName()
-                                                             + " stereotypes must declare same @Scope annotations", false);
+        managedBeanCreator.defineScopeType("Simple WebBean Component implementation class : " + clazz.getName()
+                                           + " stereotypes must declare same @Scope annotations", false);
         // we fully initialize the bean in this case.
         component.setFullInit(true);
 

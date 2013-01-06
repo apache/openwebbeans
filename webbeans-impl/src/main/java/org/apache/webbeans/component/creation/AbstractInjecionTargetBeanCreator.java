@@ -405,7 +405,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                     {
                         producerFieldBean.getTypes().addAll(annotatedField.getTypeClosure());
                     }
-                    definitionUtil.defineScopeType(producerFieldBean, anns, "Annotated producer field: " + annotatedField +  "must declare default @Scope annotation", false);
+                    producerFieldBeanCreator.defineScopeType("Annotated producer field: " + annotatedField +  "must declare default @Scope annotation", false);
                     webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerFieldBean,
                                                                                              producerFieldBean.getScope());
                     WebBeansUtil.checkProducerGenericType(producerFieldBean,annotatedField.getJavaMember());
@@ -475,10 +475,8 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 {
                     producerMethodBean.getTypes().addAll(annotatedMethod.getTypeClosure());
                 }
-                definitionUtil.defineScopeType(producerMethodBean,
-                                               AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()),
-                                                                                    "Annotated producer method : " + annotatedMethod +  "must declare default @Scope annotation",
-                                                                                    false);
+                producerMethodBeanCreator.defineScopeType("Annotated producer method : " + annotatedMethod
+                                                          +  "must declare default @Scope annotation", false);
                 webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerMethodBean,
                                                                                          producerMethodBean.getScope());
                 WebBeansUtil.checkProducerGenericType(producerMethodBean,annotatedMethod.getJavaMember());
