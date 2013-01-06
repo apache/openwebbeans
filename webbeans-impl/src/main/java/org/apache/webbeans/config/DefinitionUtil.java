@@ -21,22 +21,17 @@ package org.apache.webbeans.config;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.util.Nonbinding;
 import javax.inject.Named;
 import javax.inject.Scope;
 
 import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.annotation.AnyLiteral;
-import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
-import org.apache.webbeans.annotation.NamedLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
@@ -65,102 +60,6 @@ public final class DefinitionUtil
     public DefinitionUtil(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-    }
-
-    /**
-     * Configure web beans component qualifier.
-     * 
-     * @param component configuring web beans component
-     * @param annotations annotations
-     */
-    public <T> void defineQualifiers(AbstractOwbBean<T> component, Annotation[] annotations)
-    {
-        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-
-        for (Annotation annotation : annotations)
-        {
-            Class<? extends Annotation> type = annotation.annotationType();
-
-            if (annotationManager.isQualifierAnnotation(type))
-            {
-                Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(type);
-
-                for (Method method : methods)
-                {
-                    Class<?> clazz = method.getReturnType();
-                    if (clazz.isArray() || clazz.isAnnotation())
-                    {
-                        if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), Nonbinding.class))
-                        {
-                            throw new WebBeansConfigurationException("WebBeans definition class : " + component.getReturnType().getName() + " @Qualifier : "
-                                                                     + annotation.annotationType().getName()
-                                                                     + " must have @NonBinding valued members for its array-valued and annotation valued members");
-                        }
-                    }
-                }
-
-                if (annotation.annotationType().equals(Named.class) && component.getName() != null)
-                {
-                    component.addQualifier(new NamedLiteral(component.getName()));
-                }
-                else
-                {
-                    component.addQualifier(annotation);
-                }
-            }
-        }
-        
-        // Adding inherited qualifiers
-        IBeanInheritedMetaData inheritedMetaData = null;
-        
-        if(component instanceof InjectionTargetBean)
-        {
-            inheritedMetaData = ((InjectionTargetBean<?>) component).getInheritedMetaData();
-        }
-        
-        if (inheritedMetaData != null)
-        {
-            Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedQualifiers();
-            for (Annotation inherited : inheritedTypes)
-            {
-                Set<Annotation> qualifiers = component.getQualifiers();
-                boolean found = false;
-                for (Annotation existQualifier : qualifiers)
-                {
-                    if (existQualifier.annotationType().equals(inherited.annotationType()))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    component.addQualifier(inherited);
-                }
-            }
-        }
-        
-
-        // No-binding annotation
-        if (component.getQualifiers().size() == 0 )
-        {
-            component.addQualifier(new DefaultLiteral());
-        }
-        else if(component.getQualifiers().size() == 1)
-        {
-            Annotation annot = component.getQualifiers().iterator().next();
-            if(annot.annotationType().equals(Named.class))
-            {
-                component.addQualifier(new DefaultLiteral());
-            }
-        }
-        
-        //Add @Any support
-        if(!AnnotationUtil.hasAnyQualifier(component))
-        {
-            component.addQualifier(new AnyLiteral());
-        }
-        
     }
 
     /**

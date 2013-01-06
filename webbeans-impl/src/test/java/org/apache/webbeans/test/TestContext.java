@@ -544,7 +544,7 @@ public abstract class TestContext implements ITestContext
 
         WebBeansUtil.checkGenericType(component);
         definitionUtil.defineName(component, clazzAnns, WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
-        definitionUtil.defineQualifiers(component, clazzAnns);
+        managedBeanCreator.defineQualifiers();
 
         Constructor<T> constructor = webBeansContext.getWebBeansUtil().defineConstructor(clazz);
         component.setConstructor(constructor);

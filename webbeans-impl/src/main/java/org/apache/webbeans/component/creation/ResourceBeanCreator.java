@@ -18,30 +18,24 @@
  */
 package org.apache.webbeans.component.creation;
 
+import java.lang.annotation.Annotation;
+
 import javax.enterprise.inject.spi.AnnotatedField;
 
 import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.component.ProducerFieldBean;
-import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.component.ResourceBean;
+import org.apache.webbeans.spi.api.ResourceReference;
 
-public class ProducerFieldBeanCreator<T> extends AbstractProducerBeanCreator<T>
+public class ResourceBeanCreator<T, R extends Annotation> extends ProducerFieldBeanCreator<T>
 {
 
-    public ProducerFieldBeanCreator(InjectionTargetBean<T> parent, AnnotatedField<? super T> annotatedField)
+    public ResourceBeanCreator(InjectionTargetBean<T> parent, ResourceReference<T, R> resourceRef, AnnotatedField<? super T> annotatedField)
     {
-        super(new ProducerFieldBean<T>(parent, (Class<T>)ClassUtil.getClass(annotatedField.getBaseType())), annotatedField);
+        super(new ResourceBean<T, R>((Class<T>)annotatedField.getJavaMember().getType(), parent, resourceRef), annotatedField);
     }
 
-    protected ProducerFieldBeanCreator(ProducerFieldBean<T> bean, AnnotatedField<? super T> annotatedField)
+    public ResourceBean<T, R> getBean()
     {
-        super(bean, annotatedField);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ProducerFieldBean<T> getBean()
-    {
-        return (ProducerFieldBean<T>) super.getBean();
+        return (ResourceBean<T, R>) super.getBean();
     }
 }

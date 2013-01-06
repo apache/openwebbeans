@@ -66,7 +66,7 @@ public interface BeanCreator<T>
     /**
      * Defines qualifier.
      */
-    public void defineQualifier();
+    public void defineQualifiers();
     
     /**
      * Gets bean.

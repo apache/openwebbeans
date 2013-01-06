@@ -369,10 +369,12 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                             throw new WebBeansConfigurationException("Resource producer annotated field : " + annotatedField + " can not define EL name");
                         }
                         
-                        ResourceBean<T, Annotation> resourceBean = new ResourceBean<T, Annotation>((Class<T>)field.getType(), getBean(), resourceRef);
+                        ResourceBeanCreator<T, Annotation> resourceBeanCreator
+                            = new ResourceBeanCreator<T, Annotation>(getBean(), resourceRef, annotatedField);
+                        ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
                         
                         resourceBean.getTypes().addAll(annotatedField.getTypeClosure());
-                        definitionUtil.defineQualifiers(resourceBean, anns);
+                        resourceBeanCreator.defineQualifiers();
                         resourceBean.setImplScopeType(new DependentScopeLiteral());
                         resourceBean.setProducerField(field);
                         
@@ -381,7 +383,8 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 }
                 else
                 {
-                    ProducerFieldBean<T> producerFieldBean = new ProducerFieldBean<T>(getBean(), (Class<T>)ClassUtil.getClass(annotatedField.getBaseType()));
+                    ProducerFieldBeanCreator<T> producerFieldBeanCreator = new ProducerFieldBeanCreator<T>(getBean(), annotatedField);
+                    ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
                     producerFieldBean.setProducerField(field);
                     
                     if (producerFieldBean.getReturnType().isPrimitive())
@@ -406,7 +409,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                     webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerFieldBean,
                                                                                              producerFieldBean.getScope());
                     WebBeansUtil.checkProducerGenericType(producerFieldBean,annotatedField.getJavaMember());
-                    definitionUtil.defineQualifiers(producerFieldBean, anns);
+                    producerFieldBeanCreator.defineQualifiers();
                     definitionUtil.defineName(producerFieldBean, anns, WebBeansUtil.getProducerDefaultName(annotatedField.getJavaMember().getName()));
                     
                     producerBeans.add(producerFieldBean);
@@ -482,7 +485,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 definitionUtil.defineName(producerMethodBean,
                                           AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()),
                                                                                WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
-                definitionUtil.defineQualifiers(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
+                producerMethodBeanCreator.defineQualifiers();
                 
                 producerMethodBeanCreator.addMethodInjectionPointMetaData(annotatedMethod);
                 producerBeans.add(producerMethodBean);

@@ -37,8 +37,6 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
         super(ownerBean, returnType);
         this.resourceReference = resourceReference;
     }
-
-     
     
     @Override
     @SuppressWarnings("unchecked")
