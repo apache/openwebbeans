@@ -74,6 +74,8 @@ public class AbstractBeanCreator<T>
 
     private Set<Annotation> qualifiers = new HashSet<Annotation>();
     
+    private Set<Class<? extends Annotation>> stereotypes = new HashSet<Class<? extends Annotation>>();
+    
     /**
      * Creates a bean instance.
      * 
@@ -135,7 +137,7 @@ public class AbstractBeanCreator<T>
         if (nameAnnot == null) // no @Named
         {
             // Check for stereottype
-            if (webBeansContext.getAnnotationManager().hasNamedOnStereoTypes(getBean()))
+            if (webBeansContext.getAnnotationManager().hasNamedOnStereoTypes(stereotypes))
             {
                 isDefault = true;
             }
@@ -341,12 +343,12 @@ public class AbstractBeanCreator<T>
 
         if (!found)
         {
-            Set<Class<? extends Annotation>> stereos = getBean().getStereotypes();
+            Set<Class<? extends Annotation>> stereos = stereotypes;
             if (stereos.size() == 0)
             {
                 getBean().setImplScopeType(new DependentScopeLiteral());
 
-                if (allowLazyInit && getBean() instanceof ManagedBean && isPurePojoBean(getBean().getWebBeansContext(), getBean().getBeanClass()))
+                if (allowLazyInit && getBean() instanceof ManagedBean && isPurePojoBean(webBeansContext, getBean().getBeanClass()))
                 {
                     // take the bean as Dependent but we could lazily initialize it
                     // because the bean doesn't contains any CDI feature
@@ -356,7 +358,7 @@ public class AbstractBeanCreator<T>
             else
             {
                 Annotation defined = null;
-                Set<Class<? extends Annotation>> anns = getBean().getStereotypes();
+                Set<Class<? extends Annotation>> anns = stereotypes;
                 for (Class<? extends Annotation> stero : anns)
                 {
                     boolean containsNormal = AnnotationUtil.hasMetaAnnotation(stero.getDeclaredAnnotations(), NormalScope.class);
@@ -460,7 +462,7 @@ public class AbstractBeanCreator<T>
     public void defineStereoTypes()
     {
         Annotation[] anns = AnnotationUtil.asSet(annotated.getAnnotations());
-        final AnnotationManager annotationManager = getBean().getWebBeansContext().getAnnotationManager();
+        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         if (annotationManager.hasStereoTypeMetaAnnotation(anns))
         {
             Annotation[] steroAnns =
@@ -468,7 +470,7 @@ public class AbstractBeanCreator<T>
 
             for (Annotation stereo : steroAnns)
             {
-                getBean().addStereoType(stereo);
+                stereotypes.add(stereo.annotationType());
             }
         }
         
@@ -485,7 +487,7 @@ public class AbstractBeanCreator<T>
             Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedStereoTypes();        
             for (Annotation inherited : inheritedTypes)
             {
-                Set<Class<? extends Annotation>> qualifiers = getBean().getStereotypes();
+                Set<Class<? extends Annotation>> qualifiers = stereotypes;
                 boolean found = false;
                 for (Class<? extends Annotation> existQualifier : qualifiers)
                 {
@@ -497,7 +499,7 @@ public class AbstractBeanCreator<T>
                 }
                 if (!found)
                 {
-                    getBean().addStereoType(inherited);
+                    stereotypes.add(inherited.annotationType());
                 }
             }
         }
@@ -528,6 +530,7 @@ public class AbstractBeanCreator<T>
     {
         bean.setName(beanName);
         bean.getQualifiers().addAll(qualifiers);
+        bean.getStereotypes().addAll(stereotypes);
         return bean;
     }
 

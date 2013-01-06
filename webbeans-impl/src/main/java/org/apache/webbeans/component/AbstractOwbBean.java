@@ -75,11 +75,8 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     /** Return type of the bean */
     protected Class<T> returnType;
 
-    /** Stereotypes of the bean */
-    protected Set<Annotation> stereoTypes = new HashSet<Annotation>();
-
     /** this is only for public access and will be built from {@link #stereoTypes} on demand */
-    protected Set<Class<? extends Annotation>> stereoTypeClasses = null;
+    protected Set<Class<? extends Annotation>> stereoTypeClasses = new HashSet<Class<? extends Annotation>>();
 
     /**This bean is specialized or not*/
     protected boolean specializedBean;
@@ -393,9 +390,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     public void addStereoType(Annotation stereoType)
     {
-        stereoTypeClasses = null; // will get rebuilt on the next request
-
-        stereoTypes.add(stereoType);
+        stereoTypeClasses.add(stereoType.annotationType());
         cachedHashCode = 0;
     }
 
@@ -408,16 +403,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     {
         apiTypes.add(apiType);
         cachedHashCode = 0;
-    }
-
-    /**
-     * Gets the stereotypes.
-     *
-     * @return stereotypes of the bean
-     */
-    public Set<Annotation> getOwbStereotypes()
-    {
-        return stereoTypes;
     }
 
     /**
@@ -584,17 +569,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */    
     public Set<Class<? extends Annotation>> getStereotypes()
     {
-        if (stereoTypeClasses == null)
-        {
-            Set<Class<? extends Annotation>> set = new HashSet<Class<? extends Annotation>>();
-
-            for(Annotation ann : stereoTypes)
-            {
-                set.add(ann.annotationType());
-            }
-            stereoTypeClasses = set;
-        }
-
         return stereoTypeClasses;
     }
     
@@ -737,7 +711,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         result = prime * result + (serializable ? 1231 : 1237);
         result = prime * result + (specializedBean ? 1231 : 1237);
         result = prime * result + ((stereoTypeClasses == null) ? 0 : stereoTypeClasses.hashCode());
-        result = prime * result + ((stereoTypes == null) ? 0 : stereoTypes.hashCode());
         result = prime * result + ((webBeansType == null) ? 0 : webBeansType.hashCode());
         cachedHashCode = result;
         return result;
@@ -856,14 +829,14 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         {
             return false;
         }
-        if (stereoTypes == null)
+        if (stereoTypeClasses == null)
         {
-            if (other.stereoTypes != null)
+            if (other.stereoTypeClasses != null)
             {
                 return false;
             }
         }
-        else if (!stereoTypes.equals(other.stereoTypes))
+        else if (!stereoTypeClasses.equals(other.stereoTypeClasses))
         {
             return false;
         }

@@ -19,7 +19,6 @@
 package org.apache.webbeans.annotation;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -52,6 +51,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -119,7 +119,7 @@ public final class AnnotationManager
         }
 
         // check for stereotypes _explicitly_ declared on the bean class (not inherited)
-        Annotation[] stereoTypes = annotationManager.getStereotypeMetaAnnotations(typeAnns);
+        Annotation[] stereoTypes = annotationManager.getStereotypeMetaAnnotations(typeAnns.toArray(new Annotation[typeAnns.size()]));
         for (Annotation stereoType : stereoTypes)
         {
             if (annotationManager.hasInterceptorBindingMetaAnnotation(stereoType.annotationType().getDeclaredAnnotations()))
@@ -408,6 +408,21 @@ public final class AnnotationManager
         return clazz.isAnnotationPresent(Stereotype.class);
     }
 
+    public boolean hasStereoTypeMetaAnnotation(Set<Class<? extends Annotation>> anns)
+    {
+        Asserts.assertNotNull(anns, "anns parameter can not be null");
+
+        for (Class<? extends Annotation> ann : anns)
+        {
+            if (isStereoTypeAnnotation(ann))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public boolean hasStereoTypeMetaAnnotation(Annotation[] anns)
     {
         Asserts.assertNotNull(anns, "anns parameter can not be null");
@@ -423,7 +438,7 @@ public final class AnnotationManager
         return false;
     }
 
-    public Annotation[] getStereotypeMetaAnnotations(Set<Annotation> anns)
+    public Annotation[] getStereotypeMetaAnnotations(Annotation[] anns)
     {
         Asserts.assertNotNull(anns, "anns parameter can not be null");
         List<Annotation> interAnns = new ArrayList<Annotation>();
@@ -453,31 +468,27 @@ public final class AnnotationManager
     /**
      * Same like {@link #getStereotypeMetaAnnotations(java.util.Set)} but with an array
      */
-    public Annotation[] getStereotypeMetaAnnotations(Annotation[] anns)
+    public Set<Class<? extends Annotation>> getStereotypeMetaAnnotations(Set<Class<? extends Annotation>> stereotypes)
     {
-        Asserts.assertNotNull(anns, "anns parameter can not be null");
-        List<Annotation> interAnns = new ArrayList<Annotation>();
+        Asserts.assertNotNull(stereotypes, "anns parameter can not be null");
+        Set<Class<? extends Annotation>> interAnns = new HashSet<Class<? extends Annotation>>();
 
-        for (Annotation ann : anns)
+        for (Class<? extends Annotation> ann : stereotypes)
         {
-            if (isStereoTypeAnnotation(ann.annotationType()))
+            if (isStereoTypeAnnotation(ann))
             {
                 interAnns.add(ann);
 
                 //check for transitive
-                Annotation[] transitives = getTransitiveStereoTypes(ann.annotationType().getDeclaredAnnotations());
+                Annotation[] transitives = getTransitiveStereoTypes(ann.getDeclaredAnnotations());
 
                 for(Annotation transitive : transitives)
                 {
-                    interAnns.add(transitive);
+                    interAnns.add(transitive.annotationType());
                 }
             }
         }
-
-        Annotation[] ret = new Annotation[interAnns.size()];
-        ret = interAnns.toArray(ret);
-
-        return ret;
+        return interAnns;
     }
 
     private Annotation[] getTransitiveStereoTypes(Annotation[] anns)
@@ -486,38 +497,19 @@ public final class AnnotationManager
     }
 
     /**
-     * Returns true if array contains the StereoType meta annotation
-     *
-     * @return true if array contains the StereoType meta annotation
-     */
-    public boolean isComponentHasStereoType(OwbBean<?> component)
-    {
-        Asserts.assertNotNull(component, "component parameter can not be null");
-
-        Set<Annotation> set = component.getOwbStereotypes();
-        Annotation[] anns = new Annotation[set.size()];
-        anns = set.toArray(anns);
-        return hasStereoTypeMetaAnnotation(anns);
-    }
-
-    /**
      * Returns bean stereotypes.
      * @param bean bean instance
      * @return bean stereotypes
      */
-    public Annotation[] getComponentStereoTypes(OwbBean<?> bean)
+    public Set<Class<? extends Annotation>> getStereotypes(Set<Class<? extends Annotation>> anns)
     {
-        Asserts.assertNotNull(bean, "bean parameter can not be null");
-        if (isComponentHasStereoType(bean))
+        Asserts.assertNotNull(anns, "bean parameter can not be null");
+        if (hasStereoTypeMetaAnnotation(anns))
         {
-            Set<Annotation> set = bean.getOwbStereotypes();
-            Annotation[] anns = new Annotation[set.size()];
-            anns = set.toArray(anns);
-
             return getStereotypeMetaAnnotations(anns);
         }
 
-        return new Annotation[] {};
+        return Collections.<Class<? extends Annotation>>emptySet();
     }
 
     /**
@@ -525,13 +517,13 @@ public final class AnnotationManager
      * @param bean bean instance
      * @return true if name exists
      */
-    public boolean hasNamedOnStereoTypes(OwbBean<?> bean)
+    public boolean hasNamedOnStereoTypes(Set<Class<? extends Annotation>> stereotypes)
     {
-        Annotation[] types = getComponentStereoTypes(bean);
+        Set<Class<? extends Annotation>> types = getStereotypes(stereotypes);
 
-        for (Annotation ann : types)
+        for (Class<? extends Annotation> ann : types)
         {
-            if (AnnotationUtil.hasClassAnnotation(ann.annotationType(), Named.class))
+            if (AnnotationUtil.hasClassAnnotation(ann, Named.class))
             {
                 return true;
             }

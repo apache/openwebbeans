@@ -21,7 +21,6 @@ package org.apache.webbeans.component;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.util.List;
-import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.*;
@@ -108,11 +107,6 @@ public interface OwbBean<T> extends Bean<T>
      * @param injectionPoint injection point
      */
     public void addInjectionPoint(InjectionPoint injectionPoint);
-
-    /**
-     * Gets stereotypes annotations.
-     */
-    public Set<Annotation> getOwbStereotypes();
 
     /**
      * Sets name of the bean.
