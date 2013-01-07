@@ -38,6 +38,7 @@ import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -73,6 +74,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
 {    
     
     private WebBeansContext webBeansContext;
+    private Set<AnnotatedMember<? super T>> injectionPoints = new HashSet<AnnotatedMember<? super T>>();
 
     /**
      * Creates a new instance.
@@ -217,10 +219,10 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
         {
             if(Modifier.isPublic(annotatedField.getJavaMember().getModifiers()) && !annotatedField.isStatic())
             {
-                if(webBeansContext.getBeanManagerImpl().isNormalScope(getBean().getScope()))
+                if(webBeansContext.getBeanManagerImpl().isNormalScope(getScope()))
                 {
                     throw new WebBeansConfigurationException("If bean has a public field, bean scope must be defined as @Scope. Bean is : "
-                            + getBean().toString());
+                            + getBeanType().getName());
                 }
             }                
             
@@ -238,7 +240,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
             Annotation[] anns = AnnotationUtil.asArray(annotatedField.getAnnotations());
             if(Modifier.isPublic(field.getModifiers()))
             {
-                if(!getBean().getScope().equals(Dependent.class))
+                if(!getScope().equals(Dependent.class))
                 {
                     throw new WebBeansConfigurationException("Error in annotated field : " + annotatedField
                                                     +" while definining injected field. If bean has a public modifier injection point, bean scope must be defined as @Dependent");
@@ -322,7 +324,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
         
         }
 
-        AnnotationManager annotationManager = getBean().getWebBeansContext().getAnnotationManager();
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
         List<AnnotatedParameter<T>> annotatedParameters = annotatedMethod.getParameters();
         for (AnnotatedParameter<T> annotatedParameter : annotatedParameters)
@@ -364,7 +366,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
             if(found)
             {
                 checkObserverMethodConditions((AnnotatedMethod<T>) annotatedMethod, annotatedMethod.getDeclaringType().getJavaClass());
-                if (getBean().getScope().equals(Dependent.class))
+                if (getScope().equals(Dependent.class))
                 {
                     //Check Reception
                      AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Observes.class);
@@ -373,7 +375,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                      Reception reception = observes.notifyObserver();
                      if(reception.equals(Reception.IF_EXISTS))
                      {
-                         throw new WebBeansConfigurationException("Dependent Bean : " + getBean() + " can not define observer method with @Receiver = IF_EXIST");
+                         throw new WebBeansConfigurationException("Dependent Bean : " + getBeanType() + " can not define observer method with @Receiver = IF_EXIST");
                      }
                 }
                 
@@ -460,7 +462,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                     //WebBeansUtil.checkForValidResources(annotatedField.getDeclaringType().getJavaClass(), field.getType(), field.getName(), anns);
                     if(!Modifier.isStatic(field.getModifiers()))
                     {
-                        ResourceReference<T, Annotation> resourceRef = new ResourceReference<T, Annotation>(getBean().getBeanClass(), field.getName(),
+                        ResourceReference<T, Annotation> resourceRef = new ResourceReference<T, Annotation>(getBeanType(), field.getName(),
                                                                                                             (Class<T>)field.getType(), resourceAnnotation);
                         
                         //Can not define EL name
@@ -623,7 +625,19 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
      */
     public AbstractInjectionTargetBean<T> getBean()
     {
-        return (AbstractInjectionTargetBean<T>)super.getBean();
+        AbstractInjectionTargetBean<T> bean = (AbstractInjectionTargetBean<T>)super.getBean();
+        for (AnnotatedMember<? super T> member : injectionPoints)
+        {
+            if (member instanceof AnnotatedField)
+            {
+                addFieldInjectionPointMetaData((AnnotatedField<?>) member);
+            }
+            else if (member instanceof AnnotatedMethod)
+            {
+                addMethodInjectionPointMetaData((AnnotatedMethod<?>) member);
+            }
+        }
+        return bean;
     }
 
     protected AnnotatedType<T> getAnnotated()

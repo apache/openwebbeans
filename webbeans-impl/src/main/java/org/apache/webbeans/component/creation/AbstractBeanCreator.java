@@ -101,6 +101,11 @@ public abstract class AbstractBeanCreator<T>
         this.webBeansContext = bean.getWebBeansContext();
     }
 
+    public Class<? extends Annotation> getScope()
+    {
+        return scope;
+    }
+
     /**
      * {@inheritDoc}
      */
