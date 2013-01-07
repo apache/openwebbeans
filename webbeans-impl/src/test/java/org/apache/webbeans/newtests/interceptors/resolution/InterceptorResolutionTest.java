@@ -226,19 +226,16 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
-
-        /*X
+/*X
         Assert.assertNotNull(interceptorInfo.getBusinessMethodsInfo());
         Assert.assertEquals(1, interceptorInfo.getBusinessMethodsInfo().size());
-
 
         for (Map.Entry<Method, InterceptorResolution.MethodInterceptorInfo> mi : interceptorInfo.getBusinessMethodsInfo().entrySet())
         {
             Assert.assertNotNull(mi.getValue().getEjbInterceptors());
             Assert.assertEquals(1, mi.getValue().getEjbInterceptors().length);
         }
-        */
-
+*/
         shutDownContainer();
     }
 
