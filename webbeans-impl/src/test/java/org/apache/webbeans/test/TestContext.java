@@ -539,7 +539,8 @@ public abstract class TestContext implements ITestContext
         // we fully initialize the bean in this case.
         component.setFullInit(true);
 
-        WebBeansUtil.checkGenericType(managedBeanCreator.getBean());
+        ManagedBean<T> bean = managedBeanCreator.getBean();
+        WebBeansUtil.checkGenericType(bean.getReturnType(), bean.getScope());
         managedBeanCreator.defineName();
         managedBeanCreator.defineQualifiers();
 

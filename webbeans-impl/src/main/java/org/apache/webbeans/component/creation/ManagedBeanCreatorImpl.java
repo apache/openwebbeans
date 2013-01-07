@@ -70,6 +70,8 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator<T>
 {
     private final WebBeansContext webBeansContext;
+    
+    private boolean fullInit = true;
 
     /**
      * Creates a new creator.
@@ -92,7 +94,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
     public void checkCreateConditions()
     {
         webBeansContext.getWebBeansUtil().checkManagedBeanCondition(getAnnotated());
-        WebBeansUtil.checkGenericType(getBean());
+        WebBeansUtil.checkGenericType(getBeanType(), getScope());
         //Check Unproxiable
         checkUnproxiableApiType();
     }
@@ -111,7 +113,9 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
      */
     public ManagedBean<T> getBean()
     {
-        return (ManagedBean<T>)super.getBean();
+        ManagedBean<T> bean = (ManagedBean<T>)super.getBean();
+        bean.setFullInit(fullInit);
+        return bean;
     }
 
     public static <T> void lazyInitializeManagedBean(ManagedBean<T> bean)
@@ -381,7 +385,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
 
     public void addConstructorInjectionPointMetaData(Constructor<T> constructor)
     {
-        List<InjectionPoint> injectionPoints = getBean().getWebBeansContext().getInjectionPointFactory().getConstructorInjectionPointData(getBean(), constructor);
+        List<InjectionPoint> injectionPoints = webBeansContext.getInjectionPointFactory().getConstructorInjectionPointData(getBean(), constructor);
         for (InjectionPoint injectionPoint : injectionPoints)
         {
             addImplicitComponentForInjectionPoint(injectionPoint);
@@ -426,7 +430,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
     @Override
     protected void defineLazyInit()
     {
-        getBean().setFullInit(false);
+        fullInit = false;
     }
 
     private ManagedBean<T> defineAbstractDecorator(ProcessInjectionTarget<T> processInjectionTargetEvent)

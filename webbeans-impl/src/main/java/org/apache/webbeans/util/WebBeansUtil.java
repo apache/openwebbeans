@@ -231,15 +231,13 @@ public final class WebBeansUtil
      *
      * @param bean managed bean instance
      */
-    public static void checkGenericType(Bean<?> bean)
+    public static void checkGenericType(Class<?> clazz, Class<? extends Annotation> scope)
     {
-        Asserts.assertNotNull(bean);
-
-        Class<?> clazz = bean.getBeanClass();
+        Asserts.assertNotNull(clazz);
 
         if (ClassUtil.isDefinitionContainsTypeVariables(clazz))
         {
-            if(!bean.getScope().equals(Dependent.class))
+            if(!scope.equals(Dependent.class))
             {
                 throw new WebBeansConfigurationException("Generic type may only defined with scope @Dependent " +
                         "for ManagedBean class : " + clazz.getName());
