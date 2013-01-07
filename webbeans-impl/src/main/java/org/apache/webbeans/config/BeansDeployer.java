@@ -61,7 +61,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
@@ -346,7 +346,7 @@ public class BeansDeployer
         List<javax.enterprise.inject.spi.Interceptor<?>> interceptors = webBeansContext.getInterceptorsManager().getInterceptors();
         for(javax.enterprise.inject.spi.Interceptor interceptor : interceptors)
         {
-            WebBeansInterceptorBean wbInt = (WebBeansInterceptorBean)interceptor;
+            WebBeansInterceptorBeanPleaseRemove wbInt = (WebBeansInterceptorBeanPleaseRemove)interceptor;
             beans.add(wbInt);
         }
         

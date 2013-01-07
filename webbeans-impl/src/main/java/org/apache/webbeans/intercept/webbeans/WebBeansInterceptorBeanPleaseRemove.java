@@ -67,7 +67,7 @@ import java.util.logging.Level;
  * @version $Rev$ $Date$
  * @deprecated this should get replaced via a new version which does <b>not</b> delegate to a ManagedBean!
  */
-public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements OwbInterceptor<T>
+public class WebBeansInterceptorBeanPleaseRemove<T> extends AbstractOwbBean<T> implements OwbInterceptor<T>
 {
     /** InterceptorBindingTypes exist on the interceptor class */
     private Map<Class<? extends Annotation>, Annotation> interceptorBindingSet = new HashMap<Class<? extends Annotation>, Annotation>();
@@ -84,7 +84,7 @@ public class WebBeansInterceptorBean<T> extends AbstractOwbBean<T> implements Ow
 
     private final WebBeansContext webBeansContext;
 
-    public WebBeansInterceptorBean(AbstractInjectionTargetBean<T> delegateBean)
+    public WebBeansInterceptorBeanPleaseRemove(AbstractInjectionTargetBean<T> delegateBean)
     {
         super(WebBeansType.INTERCEPTOR,delegateBean.getReturnType(), delegateBean.getWebBeansContext());
         

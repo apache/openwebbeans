@@ -49,7 +49,7 @@ import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.intercept.InterceptorData;
 import javax.enterprise.inject.spi.InterceptionType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.ProxyFactory;
 import org.apache.webbeans.spi.ResourceInjectionService;
@@ -530,7 +530,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             InterceptorData interceptorData = interceptorStack.get(i);
             if(interceptorData.isDefinedWithWebBeansInterceptor())
             {
-                WebBeansInterceptorBean<?> interceptor = (WebBeansInterceptorBean<?>)interceptorData.getWebBeansInterceptor();
+                WebBeansInterceptorBeanPleaseRemove<?> interceptor = (WebBeansInterceptorBeanPleaseRemove<?>)interceptorData.getWebBeansInterceptor();
                 if(!interceptor.isPassivationCapable())
                 {
                     throw new WebBeansConfigurationException(MessageFormat.format(

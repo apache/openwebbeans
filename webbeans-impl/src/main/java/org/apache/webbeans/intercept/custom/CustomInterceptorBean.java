@@ -29,9 +29,9 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBean;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 
-public class CustomInterceptorBean<T> extends WebBeansInterceptorBean<T> implements Interceptor<T>
+public class CustomInterceptorBean<T> extends WebBeansInterceptorBeanPleaseRemove<T> implements Interceptor<T>
 {
     private Interceptor<T> actualInterceptor;
 
