@@ -103,7 +103,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jcdi_1.0_spec</artifactId>
+            <artifactId>geronimo-jcdi_1.1_spec</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

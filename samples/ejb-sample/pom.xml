@@ -69,7 +69,7 @@ under the License.
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.geronimo.specs</groupId>
-                    <artifactId>geronimo-jcdi_1.0_spec</artifactId>
+                    <artifactId>geronimo-jcdi_1.1_spec</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.apache.geronimo.specs</groupId>
@@ -81,7 +81,7 @@ under the License.
         <!-- JSR-299 API -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jcdi_1.0_spec</artifactId>
+            <artifactId>geronimo-jcdi_1.1_spec</artifactId>
             <scope>provided</scope>
         </dependency>
 
