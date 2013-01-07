@@ -35,7 +35,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.intercept.InterceptorsManager;
-import org.apache.webbeans.intercept.custom.CustomInterceptorBean;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
 import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
@@ -82,7 +81,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
                 webBeansContext.getWebBeansUtil().defineManagedBeanWithoutFireEvents(
                     (AnnotatedType<?>) annotatedType);
             
-            CustomInterceptorBean<?> interceptor = new CustomInterceptorBean(managedBean, (Interceptor<?>)bean);
+            Interceptor<?> interceptor =  (Interceptor<?>)bean;
             if(interceptor.getScope() != Dependent.class)
             {
                 if(logger.isLoggable(Level.WARNING))
@@ -109,7 +108,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
 
             InterceptorsManager interceptorsManager = webBeansContext.getInterceptorsManager();
             interceptorsManager.addInterceptor(interceptor);
-            webBeansContext.getInterceptorsManager().addCustomInterceptorClass(bean.getBeanClass());
+            interceptorsManager.addCustomInterceptorClass(bean.getBeanClass());
         }
         
         else if(bean instanceof Decorator)
