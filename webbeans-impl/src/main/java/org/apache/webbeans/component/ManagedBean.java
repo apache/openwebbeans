@@ -28,7 +28,7 @@ import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Decorator;
 
-import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
+import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.decorator.AbstractDecoratorMethodHandler;
 import org.apache.webbeans.inject.InjectableConstructor;
@@ -108,7 +108,7 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
         if (!fullInit)
         {
             fullInit = true;
-            ManagedBeanCreatorImpl.lazyInitializeManagedBean(this);
+            ManagedBeanBuilder.lazyInitializeManagedBean(this);
         }
     }
 

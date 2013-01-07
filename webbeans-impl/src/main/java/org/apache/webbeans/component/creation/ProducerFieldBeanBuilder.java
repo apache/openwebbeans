@@ -24,15 +24,15 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.util.ClassUtil;
 
-public class ProducerFieldBeanCreator<T> extends AbstractProducerBeanCreator<T>
+public class ProducerFieldBeanBuilder<T> extends AbstractProducerBeanBuilder<T>
 {
 
-    public ProducerFieldBeanCreator(InjectionTargetBean<T> parent, AnnotatedField<? super T> annotatedField)
+    public ProducerFieldBeanBuilder(InjectionTargetBean<T> parent, AnnotatedField<? super T> annotatedField)
     {
         super(new ProducerFieldBean<T>(parent, (Class<T>)ClassUtil.getClass(annotatedField.getBaseType())), annotatedField);
     }
 
-    protected ProducerFieldBeanCreator(ProducerFieldBean<T> bean, AnnotatedField<? super T> annotatedField)
+    protected ProducerFieldBeanBuilder(ProducerFieldBean<T> bean, AnnotatedField<? super T> annotatedField)
     {
         super(bean, annotatedField);
     }

@@ -18,26 +18,16 @@
  */
 package org.apache.webbeans.component.creation;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Annotated;
 
-import org.apache.webbeans.component.NewManagedBean;
-import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.component.AbstractProducerBean;
 
-public class NewManagedBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
+public abstract class AbstractProducerBeanBuilder<T> extends AbstractBeanBuilder<T>
 {
 
-    public NewManagedBeanCreatorImpl(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
+    public AbstractProducerBeanBuilder(AbstractProducerBean<T> bean, Annotated annotated)
     {
-        super(new NewManagedBean<T>(annotatedType.getJavaClass(), WebBeansType.MANAGED, annotatedType, webBeansContext), Dependent.class);
+        super(bean, annotated);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public NewManagedBean<T> getBean()
-    {
-        return (NewManagedBean<T>)super.getBean();
-    }
 }

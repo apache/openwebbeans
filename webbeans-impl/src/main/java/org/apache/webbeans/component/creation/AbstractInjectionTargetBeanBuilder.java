@@ -64,13 +64,13 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
- * Abstract implementation of {@link AbstractBeanCreator}.
+ * Abstract implementation of {@link AbstractBeanBuilder}.
  * 
  * @version $Rev$ $Date$
  *
  * @param <T> bean class type
  */
-public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanCreator<T>
+public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBeanBuilder<T>
 {    
     
     private WebBeansContext webBeansContext;
@@ -81,13 +81,13 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
      * 
      * @param bean bean instance
      */
-    public AbstractInjecionTargetBeanCreator(AbstractInjectionTargetBean<T> bean, Class<? extends Annotation> scopeType)
+    public AbstractInjectionTargetBeanBuilder(AbstractInjectionTargetBean<T> bean, Class<? extends Annotation> scopeType)
     {
         super(bean, bean.getAnnotatedType(), scopeType);
         webBeansContext = bean.getWebBeansContext();
     }
         
-    public AbstractInjecionTargetBeanCreator(AbstractInjectionTargetBean<T> bean)
+    public AbstractInjectionTargetBeanBuilder(AbstractInjectionTargetBean<T> bean)
     {
         this(bean, null);
     }
@@ -468,8 +468,8 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                             throw new WebBeansConfigurationException("Resource producer annotated field : " + annotatedField + " can not define EL name");
                         }
                         
-                        ResourceBeanCreator<T, Annotation> resourceBeanCreator
-                            = new ResourceBeanCreator<T, Annotation>(getBean(), resourceRef, annotatedField);
+                        ResourceBeanBuilder<T, Annotation> resourceBeanCreator
+                            = new ResourceBeanBuilder<T, Annotation>(getBean(), resourceRef, annotatedField);
                         ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
                         
                         resourceBean.getTypes().addAll(annotatedField.getTypeClosure());
@@ -482,7 +482,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                 }
                 else
                 {
-                    ProducerFieldBeanCreator<T> producerFieldBeanCreator = new ProducerFieldBeanCreator<T>(getBean(), annotatedField);
+                    ProducerFieldBeanBuilder<T> producerFieldBeanCreator = new ProducerFieldBeanBuilder<T>(getBean(), annotatedField);
                     ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
                     producerFieldBean.setProducerField(field);
                     
@@ -542,7 +542,7 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                     specialize = true;
                 }
                 
-                ProducerMethodBeanCreator<T> producerMethodBeanCreator = new ProducerMethodBeanCreator<T>(getBean(), annotatedMethod);
+                ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<T>(getBean(), annotatedMethod);
                 ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
                 producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
                 

@@ -39,7 +39,7 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
-import org.apache.webbeans.ejb.common.component.EjbBeanCreatorImpl;
+import org.apache.webbeans.ejb.common.component.EjbBeanBuilder;
 import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -68,7 +68,7 @@ public final class EjbUtility
         
         //Fires ProcessAnnotatedType
         ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = (ProcessAnnotatedTypeImpl<T>)event;             
-        EjbBeanCreatorImpl<T> ejbBeanCreator = new EjbBeanCreatorImpl<T>(ejbBean);
+        EjbBeanBuilder<T> ejbBeanCreator = new EjbBeanBuilder<T>(ejbBean);
         ejbBeanCreator.checkCreateConditions();
         
         if(processAnnotatedEvent.isVeto())
@@ -177,7 +177,7 @@ public final class EjbUtility
 
         final AnnotatedType<T> annotatedType = ejbBean.getAnnotatedType();
 
-        final EjbBeanCreatorImpl<T> ejbBeanCreator = new EjbBeanCreatorImpl<T>(ejbBean);
+        final EjbBeanBuilder<T> ejbBeanCreator = new EjbBeanBuilder<T>(ejbBean);
 
         final Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods();
 

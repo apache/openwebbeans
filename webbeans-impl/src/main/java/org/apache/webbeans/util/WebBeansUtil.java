@@ -113,10 +113,10 @@ import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.component.creation.AnnotatedTypeBeanCreatorImpl;
-import org.apache.webbeans.component.creation.ExtensionBeanCreatorImpl;
-import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
-import org.apache.webbeans.component.creation.NewManagedBeanCreatorImpl;
+import org.apache.webbeans.component.creation.AnnotatedTypeBeanBuilder;
+import org.apache.webbeans.component.creation.ExtensionBeanBuilder;
+import org.apache.webbeans.component.creation.ManagedBeanBuilder;
+import org.apache.webbeans.component.creation.NewManagedBeanBuilder;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.OWBLogConst;
@@ -592,8 +592,8 @@ public final class WebBeansUtil
 
         if (webBeansContext.getWebBeansUtil().isManagedBean(clazz))
         {
-            NewManagedBeanCreatorImpl<T> newBeanCreator
-                = new NewManagedBeanCreatorImpl<T>(webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz), webBeansContext);
+            NewManagedBeanBuilder<T> newBeanCreator
+                = new NewManagedBeanBuilder<T>(webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz), webBeansContext);
             comp = newBeanCreator.getBean();
             comp.setImplScopeType(Dependent.class);
             comp.setConstructor(defineConstructor(clazz));
@@ -639,7 +639,7 @@ public final class WebBeansUtil
     public <T> ExtensionBean<T> createExtensionComponent(Class<T> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        ExtensionBeanCreatorImpl<T> extensionBeanCreator = new ExtensionBeanCreatorImpl<T>(clazz, webBeansContext);
+        ExtensionBeanBuilder<T> extensionBeanCreator = new ExtensionBeanBuilder<T>(clazz, webBeansContext);
         extensionBeanCreator.defineObserverMethods();
         return extensionBeanCreator.getBean();
     }
@@ -2336,7 +2336,7 @@ public final class WebBeansUtil
     {
         Class<T> clazz = type.getJavaClass();
 
-        ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(type, webBeansContext);
+        ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(type, webBeansContext);
 
         managedBeanCreator.defineApiType();
 
@@ -2480,7 +2480,7 @@ public final class WebBeansUtil
     {
         Class<T> clazz = type.getJavaClass();
 
-        AnnotatedTypeBeanCreatorImpl<T> managedBeanCreator = new AnnotatedTypeBeanCreatorImpl<T>(type, webBeansContext);
+        AnnotatedTypeBeanBuilder<T> managedBeanCreator = new AnnotatedTypeBeanBuilder<T>(type, webBeansContext);
 
         managedBeanCreator.defineApiType();
 

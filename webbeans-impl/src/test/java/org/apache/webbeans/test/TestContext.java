@@ -44,7 +44,7 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
+import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -522,7 +522,7 @@ public abstract class TestContext implements ITestContext
             throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not _defined as interface");
         }
 
-        ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(anntotatedType, webBeansContext);
+        ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(anntotatedType, webBeansContext);
         ManagedBean<T> component = managedBeanCreator.getBean();
         component.setProducer(new InjectionTargetProducer(component));
 

@@ -63,7 +63,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> bean class info
  */
-public abstract class AbstractBeanCreator<T>
+public abstract class AbstractBeanBuilder<T>
 {
     /**Bean instance*/
     private final AbstractOwbBean<T> bean;    
@@ -82,7 +82,7 @@ public abstract class AbstractBeanCreator<T>
     
     private boolean serializable = false;
 
-    public AbstractBeanCreator(AbstractOwbBean<T> bean, Annotated annotated)
+    public AbstractBeanBuilder(AbstractOwbBean<T> bean, Annotated annotated)
     {
         this(bean, annotated, null);
     }
@@ -93,7 +93,7 @@ public abstract class AbstractBeanCreator<T>
      * @param bean bean instance
      * @param annotated
      */
-    public AbstractBeanCreator(AbstractOwbBean<T> bean, Annotated annotated, Class<? extends Annotation> scopeType)
+    public AbstractBeanBuilder(AbstractOwbBean<T> bean, Annotated annotated, Class<? extends Annotation> scopeType)
     {
         this.bean = bean;
         this.annotated = annotated;

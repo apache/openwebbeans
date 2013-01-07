@@ -27,11 +27,11 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
-public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
+public class AnnotatedTypeBeanBuilder<T> extends ManagedBeanBuilder<T>
 {
-    private final static Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedTypeBeanCreatorImpl.class);
+    private final static Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedTypeBeanBuilder.class);
 
-    public AnnotatedTypeBeanCreatorImpl(AnnotatedType<T> annotatedType, WebBeansContext context)
+    public AnnotatedTypeBeanBuilder(AnnotatedType<T> annotatedType, WebBeansContext context)
     {
         super(annotatedType, context);
     }

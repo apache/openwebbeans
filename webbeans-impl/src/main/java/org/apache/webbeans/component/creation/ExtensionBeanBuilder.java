@@ -18,16 +18,24 @@
  */
 package org.apache.webbeans.component.creation;
 
-import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.context.ApplicationScoped;
 
-import org.apache.webbeans.component.AbstractProducerBean;
+import org.apache.webbeans.component.ExtensionBean;
+import org.apache.webbeans.config.WebBeansContext;
 
-public abstract class AbstractProducerBeanCreator<T> extends AbstractBeanCreator<T>
+public class ExtensionBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
 {
 
-    public AbstractProducerBeanCreator(AbstractProducerBean<T> bean, Annotated annotated)
+    public ExtensionBeanBuilder(Class<T> type, WebBeansContext webBeansContext)
     {
-        super(bean, annotated);
+        super(new ExtensionBean<T>(type, webBeansContext), ApplicationScoped.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public ExtensionBean<T> getBean()
+    {
+        return (ExtensionBean<T>)super.getBean();
+    }
 }

@@ -18,24 +18,26 @@
  */
 package org.apache.webbeans.component.creation;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.spi.AnnotatedType;
 
-import org.apache.webbeans.component.ExtensionBean;
+import org.apache.webbeans.component.NewManagedBean;
+import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 
-public class ExtensionBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator<T>
+public class NewManagedBeanBuilder<T> extends ManagedBeanBuilder<T>
 {
 
-    public ExtensionBeanCreatorImpl(Class<T> type, WebBeansContext webBeansContext)
+    public NewManagedBeanBuilder(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
-        super(new ExtensionBean<T>(type, webBeansContext), ApplicationScoped.class);
+        super(new NewManagedBean<T>(annotatedType.getJavaClass(), WebBeansType.MANAGED, annotatedType, webBeansContext), Dependent.class);
     }
 
     /**
      * {@inheritDoc}
      */
-    public ExtensionBean<T> getBean()
+    public NewManagedBean<T> getBean()
     {
-        return (ExtensionBean<T>)super.getBean();
+        return (NewManagedBean<T>)super.getBean();
     }
 }

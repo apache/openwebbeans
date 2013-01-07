@@ -26,10 +26,10 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.spi.api.ResourceReference;
 
-public class ResourceBeanCreator<T, R extends Annotation> extends ProducerFieldBeanCreator<T>
+public class ResourceBeanBuilder<T, R extends Annotation> extends ProducerFieldBeanBuilder<T>
 {
 
-    public ResourceBeanCreator(InjectionTargetBean<T> parent, ResourceReference<T, R> resourceRef, AnnotatedField<? super T> annotatedField)
+    public ResourceBeanBuilder(InjectionTargetBean<T> parent, ResourceReference<T, R> resourceRef, AnnotatedField<? super T> annotatedField)
     {
         super(new ResourceBean<T, R>((Class<T>)annotatedField.getJavaMember().getType(), parent, resourceRef), annotatedField);
     }

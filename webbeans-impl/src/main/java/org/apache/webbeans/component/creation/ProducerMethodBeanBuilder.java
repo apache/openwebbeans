@@ -32,10 +32,10 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
-public class ProducerMethodBeanCreator<T> extends AbstractProducerBeanCreator<T>
+public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T>
 {
 
-    public ProducerMethodBeanCreator(InjectionTargetBean<T> parent, AnnotatedMethod<? super T> annotatedMethod)
+    public ProducerMethodBeanBuilder(InjectionTargetBean<T> parent, AnnotatedMethod<? super T> annotatedMethod)
     {
         super(new ProducerMethodBean<T>(parent, (Class<T>)ClassUtil.getClass(annotatedMethod.getBaseType())), annotatedMethod);
     }

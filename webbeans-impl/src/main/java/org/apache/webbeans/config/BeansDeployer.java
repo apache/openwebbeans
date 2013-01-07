@@ -50,7 +50,7 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.InterceptedMarker;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
+import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
@@ -830,7 +830,7 @@ public class BeansDeployer
             //Check conditions
             webBeansContext.getWebBeansUtil().checkManagedBeanCondition(clazz);
 
-            ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(annotatedType, webBeansContext);
+            ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(annotatedType, webBeansContext);
 
             boolean annotationTypeSet = false;
             if(processAnnotatedEvent.isModifiedAnnotatedType())

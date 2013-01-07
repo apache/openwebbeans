@@ -67,7 +67,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> bean type info
  */
-public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator<T>
+public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
 {
     private final WebBeansContext webBeansContext;
     
@@ -76,12 +76,12 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
     /**
      * Creates a new creator.
      */
-    public ManagedBeanCreatorImpl(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
+    public ManagedBeanBuilder(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
         this(new ManagedBean<T>(annotatedType.getJavaClass(), annotatedType, webBeansContext), null);
     }
 
-    protected ManagedBeanCreatorImpl(ManagedBean<T> managedBean, Class<? extends Annotation> scopeType)
+    protected ManagedBeanBuilder(ManagedBean<T> managedBean, Class<? extends Annotation> scopeType)
     {
         super(managedBean, scopeType);
         webBeansContext = managedBean.getWebBeansContext();
@@ -120,7 +120,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
 
     public static <T> void lazyInitializeManagedBean(ManagedBean<T> bean)
     {
-        ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(bean, bean.getScope());
+        ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(bean, bean.getScope());
 
         managedBeanCreator.lazyInitializeManagedBean(bean.getBeanClass(), bean);
     }
