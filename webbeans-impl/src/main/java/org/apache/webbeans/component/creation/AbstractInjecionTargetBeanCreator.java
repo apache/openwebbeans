@@ -379,9 +379,6 @@ public abstract class AbstractInjecionTargetBeanCreator<T> extends AbstractBeanC
                      }
                 }
                 
-                //Add method
-                getBean().addObservableMethod(annotatedMethod.getJavaMember());
-
                 //Add injection point data
                 addMethodInjectionPointMetaData(annotatedMethod);
                 

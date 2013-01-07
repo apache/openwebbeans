@@ -38,21 +38,7 @@ import org.apache.webbeans.intercept.InterceptorData;
  * @param <T> bean type
  */
 public interface InjectionTargetBean<T> extends OwbBean<T>
-{
-    /**
-     * Returns set of observable methods.
-     * 
-     * @return set of observable methods
-     */
-    public Set<Method> getObservableMethods();
-
-    /**
-     * Adds new observer method.
-     * 
-     * @param observerMethod observer method
-     */
-    public void addObservableMethod(Method observerMethod);
-    
+{    
     /**
      * Inject JavaEE resources.
      * 

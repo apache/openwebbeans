@@ -137,8 +137,6 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjecionTargetBeanCreator
 
     public ManagedBean<T> defineManagedBean(ProcessInjectionTarget<T> processInjectionTargetEvent, boolean allowLazyInit)
     {
-        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-
         //Annotated type
         AnnotatedType<T> annotatedType = processInjectionTargetEvent.getAnnotatedType();
         ManagedBean<T> managedBean = getBean();

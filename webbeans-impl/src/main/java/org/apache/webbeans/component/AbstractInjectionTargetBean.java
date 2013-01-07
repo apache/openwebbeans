@@ -64,9 +64,6 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> implements InjectionTargetBean<T>
 {
-    /** Bean observable method */
-    private Set<Method> observableMethods = new HashSet<Method>();
-
     /** Injected fields of the bean */
     private Set<Field> injectedFields = new HashSet<Field>();
 
@@ -425,22 +422,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                         WebBeansLoggerFacade.getTokenString(OWBLogConst.ERROR_0023), instance), e);
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void addObservableMethod(Method observerMethod)
-    {
-        observableMethods.add(observerMethod);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Set<Method> getObservableMethods()
-    {
-        return observableMethods;
     }
 
     /**
