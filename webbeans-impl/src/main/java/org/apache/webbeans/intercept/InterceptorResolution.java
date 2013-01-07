@@ -27,6 +27,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
+import javax.interceptor.Interceptors;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -97,7 +98,8 @@ public class InterceptorResolution
         // pick up CDI interceptors from a class level
         Set<Annotation> classInterceptorBindings = annotationManager.getInterceptorAnnotations(annotatedType.getAnnotations());
 
-        //X TODO pick up EJB-style interceptors from a class level
+        //X pick up EJB-style interceptors from a class level
+        Interceptors interceptorsAnnot = annotatedType.getAnnotation(Interceptors.class);
 
         // pick up the decorators
         List<Decorator<?>> decorators = beanManager.resolveDecorators(bean.getTypes(), AnnotationUtil.asArray(bean.getQualifiers()));
@@ -107,6 +109,7 @@ public class InterceptorResolution
         }
 
         Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
+        Set<Interceptor<?>> allUsedEjbInterceptors = new HashSet<Interceptor<?>>();
         Map<Method, MethodInterceptorInfo> businessMethodInterceptorInfos = new HashMap<Method, MethodInterceptorInfo>();
 
 
@@ -115,6 +118,8 @@ public class InterceptorResolution
         {
             InterceptionType interceptionType = calculateInterceptionType(annotatedMethod);
             MethodInterceptorInfo methodInterceptorInfo = new MethodInterceptorInfo(interceptionType);
+
+            calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, interceptorsAnnot);
 
             calculateCdiMethodInterceptors(methodInterceptorInfo, allUsedCdiInterceptors, annotatedMethod, classInterceptorBindings);
 
@@ -132,6 +137,17 @@ public class InterceptorResolution
         }
 
         return new BeanInterceptorInfo(decorators, allUsedCdiInterceptors, businessMethodInterceptorInfos);
+    }
+
+    private void calculateEjbMethodInterceptors(MethodInterceptorInfo methodInterceptorInfo, Set<Interceptor<?>> allUsedEjbInterceptors, Interceptors interceptorsAnnot)
+    {
+        if (interceptorsAnnot == null)
+        {
+            return;
+        }
+
+        Class<?>[] ejbInterceptorClasses = interceptorsAnnot.value();
+
     }
 
 

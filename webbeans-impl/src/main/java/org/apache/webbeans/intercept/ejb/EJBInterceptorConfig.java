@@ -81,7 +81,7 @@ public final class EJBInterceptorConfig
 
     /**
      * Configure {@link Interceptors} on bean class.
-     * @param clazz bean class
+     * @param annotatedType
      * @param stack interceptor stack of bean
      * @param isMethod if interceptor definition is on the bean
      * @param m if isMethod true, then it is intercepted method

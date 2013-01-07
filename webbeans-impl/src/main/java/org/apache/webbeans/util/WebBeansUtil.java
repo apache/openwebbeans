@@ -228,8 +228,6 @@ public final class WebBeansUtil
 
     /**
      * Checks the generic type requirements.
-     *
-     * @param bean managed bean instance
      */
     public static void checkGenericType(Class<?> clazz, Class<? extends Annotation> scope)
     {
