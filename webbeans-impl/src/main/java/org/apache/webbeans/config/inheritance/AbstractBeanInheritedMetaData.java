@@ -22,16 +22,11 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.webbeans.component.AbstractOwbBean;
-
 /**
  * Defines the bean inherited meta-datas.
  */
 abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaData
 {
-    /**Component that inherits the meta-datas*/
-    protected AbstractOwbBean<T> component;
-    
     /**Inherited class*/
     protected Class<?> inheritedClazz;
     
@@ -50,12 +45,10 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
     /**
      * Create a new bean inherited data.
      * 
-     * @param component webbeans component
      * @param inheritedClazz inherited class
      */
-    protected AbstractBeanInheritedMetaData(AbstractOwbBean<T> component, Class<?> inheritedClazz)
+    protected AbstractBeanInheritedMetaData(Class<?> inheritedClazz)
     {
-        this.component = component;
         this.inheritedClazz = inheritedClazz;
         
         setInheritedQualifiers();

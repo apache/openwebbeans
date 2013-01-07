@@ -35,7 +35,7 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
 {
     public BeanInheritedMetaData(AbstractOwbBean<T> component)
     {
-        super(component, component.getReturnType().getSuperclass());
+        super(component.getReturnType().getSuperclass());
     }
 
     

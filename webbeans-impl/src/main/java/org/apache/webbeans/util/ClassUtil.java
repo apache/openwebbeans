@@ -21,7 +21,6 @@ package org.apache.webbeans.util;
 import org.apache.webbeans.config.BeanTypeSetResolver;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -41,7 +40,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Utility classes with respect to the class operations.
@@ -52,8 +50,6 @@ import java.util.logging.Logger;
 public final class ClassUtil
 {
     public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPERS_MAP = new HashMap<Class<?>, Class<?>>();
-
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(ClassUtil.class);
 
     static
     {

@@ -37,6 +37,8 @@ import org.apache.webbeans.test.component.decorator.clean.ServiceDecorator;
 import org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
+import org.apache.webbeans.test.component.intercept.InterceptedComponent;
+import org.apache.webbeans.test.component.intercept.Interceptor1;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Action;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
@@ -202,6 +204,40 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         Assert.assertNotNull(interceptorInfo.getDecorators());
         Assert.assertEquals(1, interceptorInfo.getDecorators().size());
+
+        shutDownContainer();
+    }
+
+    @Test
+    public void testEjbStyleInterceptorResolution() throws Exception
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(InterceptedComponent.class);
+        beanClasses.add(Interceptor1.class);
+
+        startContainer(beanClasses, beanXmls);
+
+        InterceptorResolution ir = new InterceptorResolution(getWebBeansContext());
+        AnnotatedType<InterceptedComponent> annotatedType = getBeanManager().createAnnotatedType(InterceptedComponent.class);
+        Bean<InterceptedComponent> bean = (Bean<InterceptedComponent>) getBeanManager().resolve(getBeanManager().getBeans(InterceptedComponent.class));
+
+        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
+        Assert.assertNotNull(interceptorInfo);
+
+        /*X
+        Assert.assertNotNull(interceptorInfo.getBusinessMethodsInfo());
+        Assert.assertEquals(1, interceptorInfo.getBusinessMethodsInfo().size());
+
+
+        for (Map.Entry<Method, InterceptorResolution.MethodInterceptorInfo> mi : interceptorInfo.getBusinessMethodsInfo().entrySet())
+        {
+            Assert.assertNotNull(mi.getValue().getEjbInterceptors());
+            Assert.assertEquals(1, mi.getValue().getEjbInterceptors().length);
+        }
+        */
 
         shutDownContainer();
     }
