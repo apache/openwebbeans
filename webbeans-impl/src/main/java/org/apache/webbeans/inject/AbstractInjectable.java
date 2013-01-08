@@ -22,13 +22,15 @@ import java.io.Serializable;
 import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Provider;
 
 import org.apache.webbeans.component.AbstractProducerBean;
@@ -36,6 +38,7 @@ import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -53,27 +56,19 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @see InjectableConstructor
  * @see InjectableMethod
  */
-public abstract class AbstractInjectable implements Injectable
+public abstract class AbstractInjectable<T> implements Injectable<T>
 {
-    /** Owner bean of the injection point*/
-    protected OwbBean<?> injectionOwnerBean;
+
+    private InjectionTarget<?> owner;
     
-    /**Creational context instance that is passed to bean's create*/
-    protected CreationalContext<?> injectionOwnerCreationalContext;
+    private CreationalContextImpl<?> context;
     
-    //X TODO refactor. public static variables are utterly ugly
     public static ThreadLocal<Object> instanceUnderInjection = new ThreadLocal<Object>();
 
-    /**
-     * Creates a new injectable.
-     * 
-     * @param injectionOwnerBean owner bean
-     * @param injectionOwnerCreationalContext creational context instance
-     */
-    protected AbstractInjectable(OwbBean<?> injectionOwnerBean, CreationalContext<?> injectionOwnerCreationalContext)
+    protected AbstractInjectable(InjectionTarget<?> owner, CreationalContextImpl<?> creationalContext)
     {
-        this.injectionOwnerBean = injectionOwnerBean;
-        this.injectionOwnerCreationalContext = injectionOwnerCreationalContext;
+        this.owner = owner;
+        this.context = creationalContext;
     }
 
     /**
@@ -81,10 +76,10 @@ public abstract class AbstractInjectable implements Injectable
      * @param injectionPoint injection point definition  
      * @return current bean instance in the resolved bean scope
      */
-    public <T> Object inject(InjectionPoint injectionPoint)
+    public T inject(InjectionPoint injectionPoint)
     {
-        Object injected;
-        BeanManagerImpl beanManager = injectionOwnerBean.getWebBeansContext().getBeanManagerImpl();
+        T injected;
+        BeanManagerImpl beanManager = context.getWebBeansContext().getBeanManagerImpl();
 
         //Injected contextual beam
         InjectionResolver instance = beanManager.getInjectionResolver();
@@ -116,7 +111,7 @@ public abstract class AbstractInjectable implements Injectable
                 {
                     if(injectedBean instanceof AbstractProducerBean)
                     {
-                        if(injectionOwnerBean.isPassivationCapable())
+                        if((context.getBean() instanceof OwbBean) && ((OwbBean<?>) context.getBean()).isPassivationCapable())
                         {
                             dependentProducer = true;   
                         }
@@ -125,7 +120,7 @@ public abstract class AbstractInjectable implements Injectable
             }        
 
             //Gets injectable reference for injected bean
-            injected = beanManager.getInjectableReference(injectionPoint, injectionOwnerCreationalContext);
+            injected = (T) beanManager.getInjectableReference(injectionPoint, context);
 
             /*X TODO see spec issue CDI-140 */
             if(dependentProducer)
@@ -142,7 +137,7 @@ public abstract class AbstractInjectable implements Injectable
             {
                 if(instanceUnderInjection.get() != null)
                 {
-                    ((CreationalContextImpl<?>) injectionOwnerCreationalContext).addDependent(instanceUnderInjection.get(),injectedBean, injected);
+                    context.addDependent(instanceUnderInjection.get(), injectedBean, injected);
                 }
             }
         } 
@@ -158,6 +153,15 @@ public abstract class AbstractInjectable implements Injectable
         return injected;
     }
     
+    protected Contextual<?> getBean()
+    {
+        return context.getBean();
+    }
+
+    protected WebBeansContext getWebBeansContext()
+    {
+        return context.getWebBeansContext();
+    }
         
     /**
      * Returns injection points related with given member type of the bean.
@@ -166,10 +170,15 @@ public abstract class AbstractInjectable implements Injectable
      */
     protected List<InjectionPoint> getInjectedPoints(Member member)
     {
-        List<InjectionPoint> injectedFields = injectionOwnerBean.getInjectionPoint(member);
-        
-        return injectedFields;
-
+        List<InjectionPoint> injectionPoints = new ArrayList<InjectionPoint>();
+        for (InjectionPoint injectionPoint : owner.getInjectionPoints())
+        {
+            if (injectionPoint.getMember().equals(member))
+            {
+                injectionPoints.add(injectionPoint);
+            }
+        }
+        return injectionPoints;
     }
 
     private boolean isInstanceProviderInjection(InjectionPoint injectionPoint)
@@ -208,5 +217,4 @@ public abstract class AbstractInjectable implements Injectable
         
         return false;
     }
-
 }

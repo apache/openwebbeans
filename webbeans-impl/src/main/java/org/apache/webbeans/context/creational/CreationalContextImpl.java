@@ -18,8 +18,16 @@
  */
 package org.apache.webbeans.context.creational;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -73,6 +81,11 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         this.webBeansContext = webBeansContext;
     }
     
+    public WebBeansContext getWebBeansContext()
+    {
+        return webBeansContext;
+    }
+
     /**
      * Add interceptor instance.
      * @param ownerInstance

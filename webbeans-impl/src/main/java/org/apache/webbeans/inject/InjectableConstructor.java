@@ -22,11 +22,11 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 
-import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 
 /**
@@ -37,7 +37,7 @@ import org.apache.webbeans.exception.WebBeansException;
  * @since 1.0
  * @see AbstractInjectable
  */
-public class InjectableConstructor<T> extends AbstractInjectable
+public class InjectableConstructor<T> extends AbstractInjectable<T>
 {
     /** Injectable constructor instance */
     protected Constructor<T> con;
@@ -47,7 +47,7 @@ public class InjectableConstructor<T> extends AbstractInjectable
      * 
      * @param cons injectable constructor
      */
-    public InjectableConstructor(Constructor<T> cons, AbstractOwbBean<?> owner,CreationalContext<?> creationalContext)
+    public InjectableConstructor(Constructor<T> cons, InjectionTarget<T> owner, CreationalContextImpl<T> creationalContext)
     {
         super(owner,creationalContext);
         con = cons;
@@ -82,7 +82,7 @@ public class InjectableConstructor<T> extends AbstractInjectable
         {
             if(!con.isAccessible())
             {
-                injectionOwnerBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(con, true);
+                getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(con, true);
             }
             
             instance = con.newInstance(list.toArray());

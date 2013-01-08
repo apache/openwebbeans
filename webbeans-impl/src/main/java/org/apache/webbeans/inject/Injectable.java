@@ -36,7 +36,7 @@ package org.apache.webbeans.inject;
  * @see InjectableMethod
  * @see AbstractInjectable
  */
-public interface Injectable
+public interface Injectable<T>
 {
     /**
      * Responsible for injecting the owner required injected component
@@ -50,5 +50,5 @@ public interface Injectable
      * 
      * @return if the return instance if available
      */
-    public Object doInjection();
+    public T doInjection();
 }

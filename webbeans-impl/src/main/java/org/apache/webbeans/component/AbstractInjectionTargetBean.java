@@ -41,6 +41,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -51,6 +52,7 @@ import javax.enterprise.inject.spi.InterceptionType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.proxy.ProxyFactory;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.util.Asserts;
@@ -366,7 +368,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
 
     private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableField f = new InjectableField(field, instance, this, creationalContext);
+        InjectableField f = new InjectableField(field, instance, new InjectionTargetImpl<T>(getInjectionPoints()), (CreationalContextImpl) creationalContext);
         f.doInjection();        
     }
 
@@ -386,7 +388,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     @SuppressWarnings("unchecked")
     private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableMethod m = new InjectableMethod(method, instance, this, creationalContext);
+        InjectableMethod m = new InjectableMethod(method, instance, new InjectionTargetImpl<T>(getInjectionPoints()), (CreationalContextImpl) creationalContext);
         m.doInjection();        
     }
 

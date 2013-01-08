@@ -30,9 +30,11 @@ import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.AbstractDecoratorMethodHandler;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.intercept.InterceptorData;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 
 /**
  * Managed bean implementation of the {@link javax.enterprise.inject.spi.Bean}.
@@ -90,7 +92,7 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
 
 
         Constructor<T> con = getConstructor();
-        InjectableConstructor<T> ic = new InjectableConstructor<T>(con, this,creationalContext);
+        InjectableConstructor<T> ic = new InjectableConstructor<T>(con, new InjectionTargetImpl<T>(getInjectionPoints()), (CreationalContextImpl<T>) creationalContext);
 
         T instance = ic.doInjection();
         

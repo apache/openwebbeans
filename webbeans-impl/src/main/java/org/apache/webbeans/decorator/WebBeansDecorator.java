@@ -24,11 +24,13 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -458,14 +460,14 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     }
     private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableField f = new InjectableField(field, instance, wrappedBean, creationalContext);
+        InjectableField f = new InjectableField(field, instance, new InjectionTargetImpl<T>(wrappedBean.getInjectionPoints()), (CreationalContextImpl) creationalContext);
         f.doInjection();        
     }
 
     @SuppressWarnings("unchecked")
     private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableMethod m = new InjectableMethod(method, instance, wrappedBean, creationalContext);
+        InjectableMethod m = new InjectableMethod(method, instance, new InjectionTargetImpl<T>(wrappedBean.getInjectionPoints()), (CreationalContextImpl) creationalContext);
         m.doInjection();        
     }
         

@@ -24,11 +24,13 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.intercept.OwbInterceptor;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 
 import javax.enterprise.context.spi.Context;
@@ -315,14 +317,14 @@ public class WebBeansInterceptorBeanPleaseRemove<T> extends AbstractOwbBean<T> i
     
     private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableField f = new InjectableField(field, instance, delegateBean, creationalContext);
+        InjectableField f = new InjectableField(field, instance, new InjectionTargetImpl<T>(getInjectionPoints()), (CreationalContextImpl) creationalContext);
         f.doInjection();        
     }
 
     @SuppressWarnings("unchecked")
     private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableMethod m = new InjectableMethod(method, instance, delegateBean, creationalContext);
+        InjectableMethod m = new InjectableMethod(method, instance, new InjectionTargetImpl<T>(getInjectionPoints()), (CreationalContextImpl) creationalContext);
         m.doInjection();        
     }
     

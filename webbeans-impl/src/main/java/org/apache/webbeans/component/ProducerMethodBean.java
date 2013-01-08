@@ -36,6 +36,7 @@ import org.apache.webbeans.context.creational.DependentCreationalContext.Depende
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.AbstractInjectable;
 import org.apache.webbeans.inject.InjectableMethod;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -158,7 +159,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                 parentInstance = getParentInstance(parentCreational);
             }
 
-            m = new InjectableMethod<T>(creatorMethod, parentInstance, this, creationalContext);
+            m = new InjectableMethod<T>(creatorMethod, parentInstance, new InjectionTargetImpl<T>(getInjectionPoints()), (CreationalContextImpl<T>) creationalContext);
             //Injection of parameters
             instance = m.doInjection();
             
@@ -297,7 +298,8 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                     parentInstance = getParentInstance(parentCreational);
                 }
 
-                m = new InjectableMethod<T>(disposalMethod, parentInstance, ownerComponent, creationalContext);
+                InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(ownerComponent.getInjectionPoints());
+                m = new InjectableMethod<T>(disposalMethod, parentInstance, injectionTarget, (CreationalContextImpl<T>) creationalContext);
                 m.setDisposable(true);
                 m.setProducerMethodInstance(instance);
 

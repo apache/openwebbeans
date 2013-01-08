@@ -20,10 +20,10 @@ package org.apache.webbeans.inject;
 
 import java.lang.reflect.Field;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 
-import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 
 /**
@@ -32,19 +32,19 @@ import org.apache.webbeans.exception.WebBeansException;
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-public class InjectableField extends AbstractInjectable
+public class InjectableField<T> extends AbstractInjectable<T>
 {
     protected Field field;
     protected Object instance;
 
-    public InjectableField(Field field, Object instance, AbstractOwbBean<?> owner,CreationalContext<?> creationalContext)
+    public InjectableField(Field field, Object instance, InjectionTarget<T> owner, CreationalContextImpl<T> creationalContext)
     {
         super(owner,creationalContext);
         this.field = field;
         this.instance = instance;
     }
 
-    public Object doInjection()
+    public T doInjection()
     {
         try
         {
@@ -52,7 +52,7 @@ public class InjectableField extends AbstractInjectable
             
             if (!field.isAccessible())
             {
-                injectionOwnerBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(field, true);
+                getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(field, true);
             }
 
             Object object = inject(injectedField);

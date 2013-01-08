@@ -25,21 +25,21 @@ import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.container.InjectionResolver;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 
 @SuppressWarnings("unchecked")
-public class InjectableMethod<T> extends AbstractInjectable
+public class InjectableMethod<T> extends AbstractInjectable<T>
 {
     /** Injectable method */
     protected Method method;
@@ -53,7 +53,7 @@ public class InjectableMethod<T> extends AbstractInjectable
     /**Used in dispose method, represents produces method parameter instance*/
     private Object producerMethodInstance = null;
     
-    private Map<Bean<?>,Object> dependentParameters = new HashMap<Bean<?>, Object>();
+    private Map<Bean<?>, Object> dependentParameters = new HashMap<Bean<?>, Object>();
 
     /**
      * Constructs new instance.
@@ -61,7 +61,7 @@ public class InjectableMethod<T> extends AbstractInjectable
      * @param m injectable method
      * @param instance component instance
      */
-    public InjectableMethod(Method m, Object instance, OwbBean<?> owner, CreationalContext<?> creationalContext)
+    public InjectableMethod(Method m, Object instance, InjectionTarget<T> owner, CreationalContextImpl<T> creationalContext)
     {
         super(owner,creationalContext);
         method = m;
@@ -86,11 +86,11 @@ public class InjectableMethod<T> extends AbstractInjectable
                 if(parameter.getPosition() == i)
                 {
                     boolean injectionPoint = false;
-                    if(injectionOwnerBean instanceof ProducerMethodBean)
+                    if(getBean() instanceof ProducerMethodBean)
                     {
                         if(parameter.getBaseType().equals(InjectionPoint.class))
                         {
-                            BeanManager manager = injectionOwnerBean.getWebBeansContext().getBeanManagerImpl();
+                            BeanManager manager = getWebBeansContext().getBeanManagerImpl();
                             Bean<?> injectionPointBean = manager.getBeans(InjectionPoint.class, new DefaultLiteral()).iterator().next();
                             Object reference = manager.getReference(injectionPointBean, InjectionPoint.class, manager.createCreationalContext(injectionPointBean));
 
@@ -111,7 +111,7 @@ public class InjectableMethod<T> extends AbstractInjectable
                         else
                         {
                             Object instance = inject(point);
-                            InjectionResolver injectionResolver = injectionOwnerBean.getWebBeansContext().getBeanManagerImpl().getInjectionResolver();
+                            InjectionResolver injectionResolver = getWebBeansContext().getBeanManagerImpl().getInjectionResolver();
 
                             Bean<?> injectedBean = (Bean<?>) injectionResolver.getInjectionPointBean(point);
                             if(injectedBean.getScope() == Dependent.class)
@@ -132,7 +132,7 @@ public class InjectableMethod<T> extends AbstractInjectable
         {
             if (!method.isAccessible())
             {
-                injectionOwnerBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, true);
+                getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, true);
             }
 
             return (T) method.invoke(instance, list.toArray(new Object[list.size()]));
