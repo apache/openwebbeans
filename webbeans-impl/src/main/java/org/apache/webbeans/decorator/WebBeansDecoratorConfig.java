@@ -155,7 +155,7 @@ public final class WebBeansDecoratorConfig
                 decoratorInstance = ownerCreationalContext.getDependentDecorator(instance, decorator);
                 if(decoratorInstance == null)
                 {
-                    decoratorInstance = manager.getReference(decorator, decorator.getBeanClass(), ownerCreationalContext);
+                    decoratorInstance = manager.getReference(decorator, decorator.getDecoratorGenericType(), ownerCreationalContext);
 
                     decorator.setInjections(decoratorInstance, ownerCreationalContext);
                     decorator.setDelegate(decoratorInstance, delegate);

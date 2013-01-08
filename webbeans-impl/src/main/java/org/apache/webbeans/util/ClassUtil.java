@@ -1115,6 +1115,9 @@ public final class ClassUtil
         return raw;
     }
 
+    /**
+     *  @deprecated no longer used by core, not safe for generic types
+     */
     public static Set<Type> setInterfaceTypeHierarchy(Set<Type> set, Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);

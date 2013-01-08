@@ -22,6 +22,7 @@ import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -46,6 +47,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -71,6 +73,9 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     /** Delegate field class type */
     protected Type delegateType;
     
+    /** The type of this decorator */
+    protected Type decoratorGenericType;
+
     /** Delegate field bindings */
     protected Set<Annotation> delegateBindings = new HashSet<Annotation>();
     
@@ -122,8 +127,38 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
 
     protected void init()
     {
-        ClassUtil.setInterfaceTypeHierarchy(decoratedTypes, clazz);
+        Class<?> beanClass = getBeanClass();
+        decoratedTypes = new HashSet<Type>(this.getTypes());
+        
+        /* determine a safe Type for for a later BeanManager.getReference(...) */
+        if (ClassUtil.isDefinitionContainsTypeVariables(beanClass)) 
+        { 
+              OwbParametrizedTypeImpl pt = new OwbParametrizedTypeImpl(beanClass.getDeclaringClass(),beanClass);
+              TypeVariable<?>[] tvs = beanClass.getTypeParameters();
+              for(TypeVariable<?> tv : tvs)
+              {
+                  pt.addTypeArgument(tv);
+              }
+              decoratedTypes.remove(pt);
+              setDecoratorGenericType(pt);
+        }
+        else 
+        {               
+            decoratedTypes.remove(beanClass);
+            setDecoratorGenericType(beanClass);
+        }
 
+        /* drop any non-interface bean types */
+        Type superClass = beanClass.getGenericSuperclass();
+        while (superClass != Object.class) 
+        { 
+            decoratedTypes.remove(superClass);
+            superClass = superClass.getClass().getGenericSuperclass();
+        }
+        decoratedTypes.remove(Object.class);
+        decoratedTypes.remove(java.io.Serializable.class); /* 8.1 */
+
+        
         for (Iterator<Type> i = decoratedTypes.iterator(); i.hasNext(); )
         {
             Type t = i.next();
@@ -412,6 +447,15 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         }        
     }
     
+    public Type getDecoratorGenericType() 
+    {
+        return decoratorGenericType;
+    }
+
+    public void setDecoratorGenericType(Type decoratorGenericType) 
+    {
+        this.decoratorGenericType = decoratorGenericType;
+    }
     private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
     {
         InjectableField f = new InjectableField(field, instance, wrappedBean, creationalContext);

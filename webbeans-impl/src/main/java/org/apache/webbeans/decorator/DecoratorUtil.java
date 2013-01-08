@@ -21,8 +21,6 @@ package org.apache.webbeans.decorator;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -40,7 +38,6 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Decorator related utility class.
@@ -80,16 +77,6 @@ public final class DecoratorUtil
                 throw new WebBeansConfigurationException("Decorator class : " + decoratorClazz + " can not have observer methods but it has one with name : " + method.getName());
             }
         }
-        
-        Set<Type> decoratorSet = new HashSet<Type>();
-        ClassUtil.setInterfaceTypeHierarchy(decoratorSet, decoratorClazz);
-        
-        //Per section 8.1 do no consider Serializable a decorated type
-        if(decoratorSet.contains(java.io.Serializable.class))
-        {
-            decoratorSet.remove(java.io.Serializable.class);
-        }
-        
     }
    
     public static void checkManagedBeanDecoratorConditions(AbstractInjectionTargetBean<?> bean, List<Decorator<?>> decoratorList)

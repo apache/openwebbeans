@@ -71,7 +71,7 @@ public class GenericDecoratorTest extends AbstractUnitTest
         shutDownContainer();
     }
 
-    //X TODO currently broken @Test
+    @Test
     public void injection() throws Exception {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(DecoratedBean.class);
