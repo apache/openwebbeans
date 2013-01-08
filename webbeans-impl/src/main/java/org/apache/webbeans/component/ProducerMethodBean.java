@@ -35,7 +35,7 @@ import org.apache.webbeans.context.creational.DependentCreationalContext;
 import org.apache.webbeans.context.creational.DependentCreationalContext.DependentType;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.AbstractInjectable;
-import org.apache.webbeans.inject.InjectableMethods;
+import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -143,7 +143,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         T instance = null;
         Object parentInstance = null;
         CreationalContext<?> parentCreational = null;
-        InjectableMethods<T> m;
+        InjectableMethod<T> m;
         List<DependentCreationalContext<Object>> oldDependents =
                 dependentInstanceOfProducerMethods.get();
 
@@ -158,7 +158,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                 parentInstance = getParentInstance(parentCreational);
             }
 
-            m = new InjectableMethods<T>(creatorMethod, parentInstance, this, creationalContext);
+            m = new InjectableMethod<T>(creatorMethod, parentInstance, this, creationalContext);
             //Injection of parameters
             instance = m.doInjection();
             
@@ -287,7 +287,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         {
             Object parentInstance = null;
             CreationalContext<?> parentCreational = null;
-            InjectableMethods<T> m = null;
+            InjectableMethod<T> m = null;
             try
             {
                 parentCreational = getManager().createCreationalContext(ownerComponent);
@@ -297,7 +297,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                     parentInstance = getParentInstance(parentCreational);
                 }
 
-                m = new InjectableMethods<T>(disposalMethod, parentInstance, ownerComponent, creationalContext);
+                m = new InjectableMethod<T>(disposalMethod, parentInstance, ownerComponent, creationalContext);
                 m.setDisposable(true);
                 m.setProducerMethodInstance(instance);
 

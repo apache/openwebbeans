@@ -33,7 +33,7 @@ package org.apache.webbeans.inject;
  * @since 1.0
  * @see InjectableConstructor
  * @see InjectableField
- * @see InjectableMethods
+ * @see InjectableMethod
  * @see AbstractInjectable
  */
 public interface Injectable

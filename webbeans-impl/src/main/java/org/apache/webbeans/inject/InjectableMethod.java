@@ -39,7 +39,7 @@ import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansException;
 
 @SuppressWarnings("unchecked")
-public class InjectableMethods<T> extends AbstractInjectable
+public class InjectableMethod<T> extends AbstractInjectable
 {
     /** Injectable method */
     protected Method method;
@@ -61,7 +61,7 @@ public class InjectableMethods<T> extends AbstractInjectable
      * @param m injectable method
      * @param instance component instance
      */
-    public InjectableMethods(Method m, Object instance, OwbBean<?> owner,CreationalContext<?> creationalContext)
+    public InjectableMethod(Method m, Object instance, OwbBean<?> owner, CreationalContext<?> creationalContext)
     {
         super(owner,creationalContext);
         method = m;

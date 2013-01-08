@@ -51,7 +51,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * 
  * @see InjectableField
  * @see InjectableConstructor
- * @see InjectableMethods
+ * @see InjectableMethod
  */
 public abstract class AbstractInjectable implements Injectable
 {

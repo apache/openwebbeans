@@ -26,7 +26,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
-import org.apache.webbeans.inject.InjectableMethods;
+import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
@@ -421,7 +421,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     @SuppressWarnings("unchecked")
     private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableMethods m = new InjectableMethods(method, instance, wrappedBean, creationalContext);
+        InjectableMethod m = new InjectableMethod(method, instance, wrappedBean, creationalContext);
         m.doInjection();        
     }
         

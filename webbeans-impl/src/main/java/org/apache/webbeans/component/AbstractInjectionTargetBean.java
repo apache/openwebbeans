@@ -45,7 +45,7 @@ import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
-import org.apache.webbeans.inject.InjectableMethods;
+import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.intercept.InterceptorData;
 import javax.enterprise.inject.spi.InterceptionType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
@@ -386,7 +386,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     @SuppressWarnings("unchecked")
     private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableMethods m = new InjectableMethods(method, instance, this, creationalContext);
+        InjectableMethod m = new InjectableMethod(method, instance, this, creationalContext);
         m.doInjection();        
     }
 

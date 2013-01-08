@@ -27,7 +27,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
-import org.apache.webbeans.inject.InjectableMethods;
+import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.intercept.OwbInterceptor;
 import org.apache.webbeans.util.AnnotationUtil;
 
@@ -322,7 +322,7 @@ public class WebBeansInterceptorBeanPleaseRemove<T> extends AbstractOwbBean<T> i
     @SuppressWarnings("unchecked")
     private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableMethods m = new InjectableMethods(method, instance, delegateBean, creationalContext);
+        InjectableMethod m = new InjectableMethod(method, instance, delegateBean, creationalContext);
         m.doInjection();        
     }
     
