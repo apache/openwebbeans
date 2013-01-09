@@ -20,45 +20,43 @@ package org.apache.webbeans.component;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InterceptionType;
+import javax.enterprise.inject.spi.Interceptor;
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.Set;
 
 import org.apache.webbeans.config.WebBeansContext;
 
 /**
- * <p>{@link javax.enterprise.inject.spi.Interceptor}
- * Bean implementation for CDI-style Beans.
- * This is Interceptors which got defined using
- * &#064;{@link javax.interceptor.InterceptorBinding}.</p>
+ * <p>Implicit self-interceptor Bean implementation.
+ * This is Interceptors which got defined by having an &#064;AroundInvoke,
+ * &#064;AroundTimeout, etc method inside a bean itself. In that case
+ * all business method invocations on that bean are intercepted via those methods
+ * in the bean.</p>
  */
-public class CdiInterceptorBean<T> extends InterceptorBean<T>
+public class SelfInterceptorBean<T> extends InterceptorBean<T> implements Interceptor<T>
 {
     /**
      *
-     * @param returnType the return Type of the Bean
+     * @param returnType the return Type of the Bean. This is also the class of the Interceptor
      * @param annotatedType AnnotatedType will be returned by some methods in the SPI
      * @param webBeansContext
-     * @param interceptorBindings the &#064;{@link javax.interceptor.InterceptorBinding} annotations handled by this Interceptor
      * @param intercepts the InterceptionTypes this Bean handles on the intercepted target
      */
-    public CdiInterceptorBean(Class<T> returnType, AnnotatedType<T> annotatedType,
-                              WebBeansContext webBeansContext,
-                              Set<Annotation> interceptorBindings,
-                              Set<InterceptionType> intercepts)
+    public SelfInterceptorBean(Class<T> returnType, AnnotatedType<T> annotatedType,
+                               WebBeansContext webBeansContext,
+                               Set<InterceptionType> intercepts)
     {
         super(returnType, annotatedType, webBeansContext, intercepts);
-        this.interceptorBindings = interceptorBindings;
     }
 
-
-    private Set<Annotation> interceptorBindings;
-
-
+    /**
+     * @return always an empty Set as this interceptor doesn't have any InterceptorBindings
+     */
     @Override
     public Set<Annotation> getInterceptorBindings()
     {
-        return interceptorBindings;
+        return Collections.emptySet();
     }
-
 
 }

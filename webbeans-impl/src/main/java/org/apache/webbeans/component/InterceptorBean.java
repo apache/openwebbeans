@@ -24,8 +24,8 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -63,75 +63,85 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
     private Set<InterceptionType> intercepts;
 
     /**
-     * The Method to be called for InterceptionType.AROUND_INVOKE.
+     * The Methods to be called for InterceptionType.AROUND_INVOKE.
      * The method signature must be
      * <pre>Object <METHOD>(InvocationContext) throws Exception</pre>
      */
-    private Method aroundInvokeMethod;
+    private Method[] aroundInvokeMethods;
 
     /**
-     * The Method to be called for InterceptionType.AROUND_TIMEOUT.
+     * The Methods to be called for InterceptionType.AROUND_TIMEOUT.
+     * They must be ordered by methods from superclass-first!
      * The method signature must be
      * <pre>Object <METHOD>(InvocationContext) throws Exception</pre>
      */
-    private Method aroundTimeoutMethod;
+    private Method[] aroundTimeoutMethods;
 
     /**
-     * All &#064;PostConstruct interceptor method
+     * All &#064;PostConstruct interceptor methods.
+     * They must be ordered by methods from superclass-first!
      * The method signature must be
      * <pre>void <METHOD>(InvocationContext) throws Exception</pre>
      */
-    private Method postConstructMethod;
+    private Method[] postConstructMethods;
 
     /**
-     * All &#064;PreDestroy interceptor method
+     * All &#064;PreDestroy interceptor methods.
+     * They must be ordered by methods from superclass-first!
      * The method signature must be
      * <pre>void <METHOD>(InvocationContext) throws Exception</pre>
      */
-    private Method preDestroyMethod;
+    private Method[] preDestroyMethods;
 
     /**
-     * All &#064;PrePassivate interceptor method
+     * All &#064;PrePassivate interceptor methods.
+     * They must be ordered by methods from superclass-first!
      * The method signature must be
      * <pre>void <METHOD>(InvocationContext) throws Exception</pre>
      */
-    private Method prePassivateMethod;
+    private Method[] prePassivateMethods;
 
     /**
-     * All &#064;PostActivate interceptor method
+     * All &#064;PostActivate interceptor methods.
+     * They must be ordered by methods from superclass-first!
      * The method signature must be
      * <pre>void <METHOD>(InvocationContext) throws Exception</pre>
      */
-    private Method postActivateMethod;
+    private Method[] postActivateMethods;
 
-    public void setAroundInvokeMethod(Method aroundInvokeMethod)
+    public void setAroundInvokeMethods(Method[] aroundInvokeMethod)
     {
-        this.aroundInvokeMethod = aroundInvokeMethod;
+        this.aroundInvokeMethods = aroundInvokeMethods;
     }
 
-    public void setAroundTimeoutMethod(Method aroundTimeoutMethod)
+    public void setAroundTimeoutMethods(Method[] aroundTimeoutMethods)
     {
-        this.aroundTimeoutMethod = aroundTimeoutMethod;
+        this.aroundTimeoutMethods = aroundTimeoutMethods;
     }
 
-    public void setPostActivateMethod(Method postActivateMethod)
+    public void setIntercepts(Set<InterceptionType> intercepts)
     {
-        this.postActivateMethod = postActivateMethod;
+        this.intercepts = intercepts;
     }
 
-    public void setPostConstructMethod(Method postConstructMethod)
+    public void setPostActivateMethods(Method[] postActivateMethods)
     {
-        this.postConstructMethod = postConstructMethod;
+        this.postActivateMethods = postActivateMethods;
     }
 
-    public void setPreDestroyMethod(Method preDestroyMethod)
+    public void setPostConstructMethods(Method[] postConstructMethods)
     {
-        this.preDestroyMethod = preDestroyMethod;
+        this.postConstructMethods = postConstructMethods;
     }
 
-    public void setPrePassivateMethod(Method prePassivateMethod)
+    public void setPreDestroyMethods(Method[] preDestroyMethods)
     {
-        this.prePassivateMethod = prePassivateMethod;
+        this.preDestroyMethods = preDestroyMethods;
+    }
+
+    public void setPrePassivateMethods(Method[] prePassivateMethods)
+    {
+        this.prePassivateMethods = prePassivateMethods;
     }
 
     /**
@@ -147,31 +157,31 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
      * @param interceptionType
      * @return the underlying interceptor method for the given InterceptionType or <code>null</code>
      */
-    protected Method getInterceptorMethod(InterceptionType interceptionType)
+    protected Method[] getInterceptorMethods(InterceptionType interceptionType)
     {
         if (InterceptionType.AROUND_INVOKE.equals(interceptionType))
         {
-            return aroundInvokeMethod;
+            return aroundInvokeMethods;
         }
         if (InterceptionType.POST_CONSTRUCT.equals(interceptionType))
         {
-            return postConstructMethod;
+            return postConstructMethods;
         }
         if (InterceptionType.PRE_DESTROY.equals(interceptionType))
         {
-            return preDestroyMethod;
+            return preDestroyMethods;
         }
         if (InterceptionType.AROUND_TIMEOUT.equals(interceptionType))
         {
-            return aroundTimeoutMethod;
+            return aroundTimeoutMethods;
         }
         if (InterceptionType.POST_ACTIVATE.equals(interceptionType))
         {
-            return postActivateMethod;
+            return postActivateMethods;
         }
         if (InterceptionType.PRE_PASSIVATE.equals(interceptionType))
         {
-            return prePassivateMethod;
+            return prePassivateMethods;
         }
 
         throw new WebBeansException("InterceptionType not yet supported: " + interceptionType);
@@ -189,15 +199,130 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
     {
         try
         {
-            return getInterceptorMethod(interceptionType).invoke(instance, invocationContext);
+            Method[] interceptorMethods = getInterceptorMethods(interceptionType);
+
+            if (interceptorMethods == null || interceptorMethods.length == 0)
+            {
+                throw new WebBeansException("No Interceptor method found for handling " + invocationContext);
+            }
+            if (interceptorMethods.length == 1)
+            {
+                // directly invoke the InvocationContext
+                return interceptorMethods[0].invoke(instance, invocationContext);
+            }
+            else
+            {
+                // otherwise we need to wrap it for handling multiple interceptor methods
+
+                if (invocationContext instanceof MultiMethodInvocationContext)
+                {
+                    // this happens while we recurse through the interceptors which have multiple interceptor-methods
+                    MultiMethodInvocationContext mmInvocationContext = (MultiMethodInvocationContext) invocationContext;
+                    int methodIndex = mmInvocationContext.getCurrentInterceptorIdx();
+                    if (methodIndex < (interceptorMethods.length -1))
+                    {
+                        return interceptorMethods[methodIndex].invoke(instance, invocationContext);
+                    }
+                    else
+                    {
+                        return interceptorMethods[methodIndex].invoke(instance, mmInvocationContext.getWrapped());
+                    }
+                }
+                else
+                {
+                    // We need to create the wrapper InvocationContext on the first time.
+                    // This will internally walk through all the methods
+                    MultiMethodInvocationContext mmInvocationContext
+                            = new MultiMethodInvocationContext(invocationContext, interceptionType, instance, this);
+                    return mmInvocationContext.proceed();
+                }
+
+            }
+
         }
-        catch (InvocationTargetException ite)
+        catch (Exception e)
         {
-            throw ExceptionUtil.throwAsRuntimeException(ite);
+            throw ExceptionUtil.throwAsRuntimeException(e);
         }
-        catch (IllegalAccessException iae)
+    }
+
+    /**
+     * An InvocationContext wraper for handling multiple interceptor methods.
+     * We will first make sure the own interceptor methods get handled and only
+     * then continue with the wrapped InvocationHandler.
+     */
+    public static class MultiMethodInvocationContext implements InvocationContext
+    {
+        private final InvocationContext wrapped;
+        private final Interceptor interceptor;
+        private final InterceptionType interceptionType;
+        private final Object instance;
+        private int currentInterceptorIdx;
+
+        public MultiMethodInvocationContext(InvocationContext wrapped,
+                                            InterceptionType interceptionType,
+                                            Object instance,
+                                            Interceptor interceptor)
         {
-            throw ExceptionUtil.throwAsRuntimeException(iae);
+            this.wrapped = wrapped;
+            this.interceptor = interceptor;
+            this.interceptionType = interceptionType;
+            this.instance = instance;
+            this.currentInterceptorIdx = 0; // we start with method 0
+        }
+
+        public int getCurrentInterceptorIdx()
+        {
+            return currentInterceptorIdx;
+        }
+
+        public InvocationContext getWrapped()
+        {
+            return wrapped;
+        }
+
+        @Override
+        public Object proceed() throws Exception
+        {
+            currentInterceptorIdx++;
+            return interceptor.intercept(interceptionType, instance, this);
+        }
+
+
+        @Override
+        public Map<String, Object> getContextData()
+        {
+            return wrapped.getContextData();
+        }
+
+        @Override
+        public Method getMethod()
+        {
+            return wrapped.getMethod();
+        }
+
+        @Override
+        public Object getTarget()
+        {
+            return wrapped.getTarget();
+        }
+
+        @Override
+        public Object getTimer()
+        {
+            return wrapped.getTimer();
+        }
+
+        @Override
+        public Object[] getParameters()
+        {
+            return wrapped.getParameters();
+        }
+
+        @Override
+        public void setParameters(Object[] parameters)
+        {
+            wrapped.setParameters(parameters);
         }
     }
 
