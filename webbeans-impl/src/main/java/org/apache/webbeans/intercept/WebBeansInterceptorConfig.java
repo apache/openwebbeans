@@ -20,6 +20,7 @@ package org.apache.webbeans.intercept;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
@@ -29,8 +30,10 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
+import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ArrayUtil;
+import org.apache.webbeans.util.Asserts;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -71,6 +74,54 @@ public final class WebBeansInterceptorConfig
     public WebBeansInterceptorConfig(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
+    }
+
+    /**
+     * Configure bean instance interceptor stack.
+     * @param bean bean instance
+     */
+    public void defineBeanInterceptorStack(AbstractInjectionTargetBean<?> bean)
+    {
+        Asserts.assertNotNull(bean, "bean parameter can no be null");
+        if (!bean.getInterceptorStack().isEmpty())
+        {
+            // the interceptorstack already got defined!
+            return;
+        }
+
+        // If bean is not session bean
+        if(!(bean instanceof EnterpriseBeanMarker))
+        {
+            bean.getWebBeansContext().getEJBInterceptorConfig().configure(bean.getAnnotatedType(), bean.getInterceptorStack());
+        }
+        else
+        {
+            //Check for injected fields in EJB @Interceptors
+            List<InterceptorData> stack = new ArrayList<InterceptorData>();
+            bean.getWebBeansContext().getEJBInterceptorConfig().configure(bean.getAnnotatedType(), stack);
+
+            final OpenWebBeansEjbPlugin ejbPlugin = bean.getWebBeansContext().getPluginLoader().getEjbPlugin();
+            final boolean isStateful = ejbPlugin.isStatefulBean(bean.getBeanClass());
+
+            if (isStateful)
+            {
+                for (InterceptorData data : stack)
+                {
+                    if (data.isDefinedInInterceptorClass())
+                    {
+                        AnnotationManager annotationManager = bean.getWebBeansContext().getAnnotationManager();
+                        if (!annotationManager.checkInjectionPointForInterceptorPassivation(data.getInterceptorClass()))
+                        {
+                            throw new WebBeansConfigurationException("Enterprise bean : " + bean.toString() +
+                                    " interceptors must have serializable injection points");
+                        }
+                    }
+                }
+            }
+        }
+
+        // For every injection target bean
+        configure(bean, bean.getInterceptorStack());
     }
 
     /**

@@ -56,6 +56,7 @@ import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.corespi.se.DefaultJndiService;
 import org.apache.webbeans.decorator.WebBeansDecorator;
+import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
@@ -399,13 +400,13 @@ public class BeansDeployer
                        !(bean instanceof javax.enterprise.inject.spi.Interceptor) &&
                        !(bean instanceof NewBean))
                     {
-                        DefinitionUtil.defineDecoratorStack((AbstractInjectionTargetBean<Object>)bean);
+                        WebBeansDecoratorConfig.configureDecorators((AbstractInjectionTargetBean<Object>)bean);
                     }
                     
                     //If intercepted marker
                     if(bean instanceof InterceptedMarker)
                     {
-                        DefinitionUtil.defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>)bean);
+                        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>)bean);
                     }                                                            
                 }                
                 

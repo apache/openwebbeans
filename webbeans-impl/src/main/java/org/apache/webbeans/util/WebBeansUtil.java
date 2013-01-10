@@ -117,7 +117,6 @@ import org.apache.webbeans.component.creation.AnnotatedTypeBeanBuilder;
 import org.apache.webbeans.component.creation.ExtensionBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.component.creation.NewManagedBeanBuilder;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
@@ -2359,8 +2358,8 @@ public final class WebBeansUtil
         managedBeanCreator.defineInjectedMethods();
         managedBeanCreator.defineObserverMethods();
 
-        DefinitionUtil.defineDecoratorStack(managedBeanCreator.getBean());
-        DefinitionUtil.defineBeanInterceptorStack(managedBeanCreator.getBean());
+        WebBeansDecoratorConfig.configureDecorators(managedBeanCreator.getBean());
+        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(managedBeanCreator.getBean());
 
         managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
 
@@ -2502,8 +2501,8 @@ public final class WebBeansUtil
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
         managedBeanCreator.defineObserverMethods();
-        DefinitionUtil.defineDecoratorStack(managedBeanCreator.getBean());
-        DefinitionUtil.defineBeanInterceptorStack(managedBeanCreator.getBean());
+        WebBeansDecoratorConfig.configureDecorators(managedBeanCreator.getBean());
+        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(managedBeanCreator.getBean());
 
         managedBeanCreator.defineDisposalMethods(); //Define disposal method after adding producers
 

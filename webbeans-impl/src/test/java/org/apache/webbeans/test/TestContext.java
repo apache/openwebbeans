@@ -45,7 +45,6 @@ import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.DependentContext;
@@ -284,7 +283,7 @@ public abstract class TestContext implements ITestContext
         {
             DecoratorUtil.checkManagedBeanDecoratorConditions(bean,null);
             WebBeansDecoratorConfig.configureDecorators(bean);
-            DefinitionUtil.defineBeanInterceptorStack(bean);
+            webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(bean);
 
             getComponents().add((AbstractOwbBean<?>) bean);
             manager.addBean(bean);

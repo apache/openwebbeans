@@ -43,7 +43,6 @@ import javax.inject.Inject;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -134,8 +133,8 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         defineInjectedFields();
         defineInjectedMethods();
         defineObserverMethods();
-        DefinitionUtil.defineDecoratorStack(managedBean);
-        DefinitionUtil.defineBeanInterceptorStack(managedBean);
+        WebBeansDecoratorConfig.configureDecorators(managedBean);
+        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(managedBean);
 
         defineDisposalMethods(); //Define disposal method after adding producers
     }

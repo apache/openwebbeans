@@ -95,10 +95,10 @@ import org.apache.webbeans.util.ClassUtil;
  * instantiated by the container first time. This method can be found in the
  * AbstractInjectionTargetBean" class "afterConstructor()" method. Actual
  * configuration is done by the
- * {@link org.apache.webbeans.config.DefinitionUtil#defineBeanInterceptorStack
+ * {@link WebBeansInterceptorConfig#defineBeanInterceptorStack
  *        (org.apache.webbeans.component.AbstractInjectionTargetBean)} and
- * {@link org.apache.webbeans.config.DefinitionUtil#defineDecoratorStack}. In
- * "DefinitionUtil.defineBeanInterceptorStack", firstly it configures
+ * {@link WebBeansDecoratorConfig#configureDecorators(org.apache.webbeans.component.AbstractInjectionTargetBean)}}. In
+ * "webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack", firstly it configures
  * "EJB spec. interceptors" after that configures "JSR-299 spec. interceptors."
  * In "DefinitionUtil.defineDecoratorStack", it configures
  * decorator stack. "EJBInterceptorConfig" class is responsible for finding all
