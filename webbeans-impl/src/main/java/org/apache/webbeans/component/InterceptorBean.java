@@ -43,22 +43,15 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
 {
     /**
      *
-     * @param returnType the return Type of the Bean
      * @param annotatedType AnnotatedType will be returned by some methods in the SPI
      * @param webBeansContext
-     * @param intercepts the InterceptionTypes this Bean handles on the intercepted target
      */
-    public InterceptorBean(Class<T> returnType, AnnotatedType<T> annotatedType,
-                           WebBeansContext webBeansContext,
-                           Set<InterceptionType> intercepts)
+    public InterceptorBean(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
-        super(WebBeansType.INTERCEPTOR, returnType, annotatedType, webBeansContext);
+        super(WebBeansType.INTERCEPTOR, annotatedType.getJavaClass(), annotatedType, webBeansContext);
 
         Asserts.assertNotNull(intercepts, "Interceptor does not handle any InterceptionTypes!");
-        this.intercepts = intercepts;
     }
-
-
 
     private Set<InterceptionType> intercepts;
 
@@ -207,13 +200,13 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
             }
             if (interceptorMethods.length == 1)
             {
-                // directly invoke the InvocationContext
+                // directly invoke the interceptor method with the given InvocationContext
                 return interceptorMethods[0].invoke(instance, invocationContext);
             }
             else
             {
-                // otherwise we need to wrap it for handling multiple interceptor methods
-
+                // otherwise we need to wrap the InvocationContext into an own temporary InvocationContext
+                // which handles multiple interceptor methods at a time
                 if (invocationContext instanceof MultiMethodInvocationContext)
                 {
                     // this happens while we recurse through the interceptors which have multiple interceptor-methods
@@ -236,9 +229,7 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
                             = new MultiMethodInvocationContext(invocationContext, interceptionType, instance, this);
                     return mmInvocationContext.proceed();
                 }
-
             }
-
         }
         catch (Exception e)
         {

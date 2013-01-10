@@ -61,7 +61,8 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
- * Implementation of the {@link ManagedBeanCreator}.
+ * Bean builder for <i>Managed Beans</i>. A <i>ManagedBean</i> is a class
+ * which gets scanned and picked up as {@link javax.enterprise.inject.spi.Bean}.
  * 
  * @version $Rev$ $Date$
  *

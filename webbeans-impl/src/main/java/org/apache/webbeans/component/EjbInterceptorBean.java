@@ -19,7 +19,6 @@
 package org.apache.webbeans.component;
 
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
@@ -36,16 +35,13 @@ public class EjbInterceptorBean<T> extends InterceptorBean<T> implements Interce
 {
     /**
      *
-     * @param returnType the return Type of the Bean. This is also the class of the Interceptor
      * @param annotatedType AnnotatedType will be returned by some methods in the SPI
      * @param webBeansContext
-     * @param intercepts the InterceptionTypes this Bean handles on the intercepted target
      */
-    public EjbInterceptorBean(Class<T> returnType, AnnotatedType<T> annotatedType,
-                              WebBeansContext webBeansContext,
-                              Set<InterceptionType> intercepts)
+    public EjbInterceptorBean(WebBeansContext webBeansContext,
+                              AnnotatedType<T> annotatedType)
     {
-        super(returnType, annotatedType, webBeansContext, intercepts);
+        super(webBeansContext, annotatedType);
     }
 
     /**
