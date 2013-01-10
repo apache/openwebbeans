@@ -118,6 +118,9 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         return bean;
     }
 
+    /**
+     * @deprecated makes no sense as only Beans without any annotations are lazy inited. And they don'T have anything to handle...
+     */
     public static <T> void lazyInitializeManagedBean(ManagedBean<T> bean)
     {
         ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(bean, bean.getScope());
@@ -125,6 +128,9 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         managedBeanCreator.lazyInitializeManagedBean(bean.getBeanClass(), bean);
     }
 
+    /**
+     * @deprecated makes no sense as only Beans without any annotations are lazy inited. And they don'T have anything to handle...
+     */
     public void lazyInitializeManagedBean(Class<?> clazz, ManagedBean<?> managedBean)
     {
         defineConstructor();
@@ -139,7 +145,7 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         defineDisposalMethods(); //Define disposal method after adding producers
     }
 
-    public ManagedBean<T> defineManagedBean(ProcessInjectionTarget<T> processInjectionTargetEvent, boolean allowLazyInit)
+    public ManagedBean<T> defineManagedBean(ProcessInjectionTarget<T> processInjectionTargetEvent)
     {
         //Annotated type
         AnnotatedType<T> annotatedType = processInjectionTargetEvent.getAnnotatedType();
@@ -153,7 +159,7 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         defineStereoTypes();
         //Scope type
         defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
-                WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE), allowLazyInit);
+                WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
 
         defineSerializable();
 
@@ -291,7 +297,7 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
             ManagedBean<T> component;
 
             webBeansContext.getInterceptorUtil().checkInterceptorConditions(annotatedType);
-            component = defineManagedBean(injectionTargetEvent, false);
+            component = defineManagedBean(injectionTargetEvent);
 
             if (component != null)
             {
@@ -412,7 +418,7 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
             }
             else
             {
-                delegate = defineManagedBean(processInjectionTargetEvent, false);
+                delegate = defineManagedBean(processInjectionTargetEvent);
             }
 
             if (delegate != null)
@@ -436,7 +442,7 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
     private ManagedBean<T> defineAbstractDecorator(ProcessInjectionTarget<T> processInjectionTargetEvent)
     {
 
-        ManagedBean<T> bean = defineManagedBean(processInjectionTargetEvent, false);
+        ManagedBean<T> bean = defineManagedBean(processInjectionTargetEvent);
         if (bean == null)
         {
             // TODO could probably be a bit more descriptive

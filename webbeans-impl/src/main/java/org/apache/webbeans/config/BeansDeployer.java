@@ -889,7 +889,7 @@ public class BeansDeployer
                 {
                     logger.log(Level.FINE, "Found Managed Bean with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
-                managedBeanCreator.defineManagedBean(processInjectionTargetEvent, true);
+                managedBeanCreator.defineManagedBean(processInjectionTargetEvent);
             }
 
             if(processInjectionTarget != null)

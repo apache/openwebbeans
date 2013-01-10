@@ -264,7 +264,6 @@ public abstract class AbstractBeanBuilder<T>
     /**
      * Returns true if any binding exist
      * 
-     * @param bean bean
      * @return true if any binding exist
      */
     private boolean hasAnyQualifier()
@@ -272,8 +271,13 @@ public abstract class AbstractBeanBuilder<T>
         return AnnotationUtil.getAnnotation(qualifiers, Any.class) != null;
     }
 
+    public void defineScopeType(String errorMessage)
+    {
+        defineScopeType(errorMessage, false);
+    }
+
     /**
-     * {@inheritDoc}
+     * @deprecated as we need to get rid of allowLazyInit
      */
     public void defineScopeType(String errorMessage, boolean allowLazyInit)
     {
@@ -459,10 +463,7 @@ public abstract class AbstractBeanBuilder<T>
 
     /**
      * Checks the unproxiable condition.
-     * @param bean managed bean
-     * @param scopeType scope type
-     * @throws WebBeansConfigurationException if
-     *  bean is not proxied by the container
+     * @throws WebBeansConfigurationException if bean is not proxied by the container
      */
     protected void checkUnproxiableApiType()
     {

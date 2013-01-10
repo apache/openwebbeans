@@ -504,7 +504,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                     {
                         producerFieldBean.getTypes().addAll(annotatedField.getTypeClosure());
                     }
-                    producerFieldBeanCreator.defineScopeType("Annotated producer field: " + annotatedField +  "must declare default @Scope annotation", false);
+                    producerFieldBeanCreator.defineScopeType("Annotated producer field: " + annotatedField +  "must declare default @Scope annotation");
                     producerFieldBeanCreator.checkUnproxiableApiType();
                     WebBeansUtil.checkProducerGenericType(producerFieldBean,annotatedField.getJavaMember());
                     producerFieldBeanCreator.defineQualifiers();
@@ -573,7 +573,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                     producerMethodBean.getTypes().addAll(annotatedMethod.getTypeClosure());
                 }
                 producerMethodBeanCreator.defineScopeType("Annotated producer method : " + annotatedMethod
-                                                          +  "must declare default @Scope annotation", false);
+                                                          +  "must declare default @Scope annotation");
                 producerMethodBeanCreator.checkUnproxiableApiType();
                 WebBeansUtil.checkProducerGenericType(producerMethodBeanCreator.getBean(), annotatedMethod.getJavaMember());
                 producerMethodBeanCreator.defineName(WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));

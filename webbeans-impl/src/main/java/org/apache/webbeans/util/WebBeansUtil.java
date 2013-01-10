@@ -2342,7 +2342,7 @@ public final class WebBeansUtil
 
         //Scope type
         managedBeanCreator.defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
-                WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE), false);
+                WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
 
         managedBeanCreator.defineSerializable();
 
@@ -2486,7 +2486,7 @@ public final class WebBeansUtil
 
         //Scope type
         managedBeanCreator.defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName()
-                                           + WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE), false);
+                                           + WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
 
         managedBeanCreator.defineSerializable();
 
