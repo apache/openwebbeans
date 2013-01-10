@@ -686,7 +686,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Check type if bean type is given
         if(beanType != null)
         {
-            if(!webBeansContext.getResolutionUtil().checkBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean))
+            if(!isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean))
             {
                 throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
             }
@@ -741,7 +741,37 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
         return instance;
     }
-    
+
+
+    private boolean isBeanTypeAssignableToGivenType(Set<Type> beanTypes, Type givenType, boolean newBean)
+    {
+        Iterator<Type> itBeanApiTypes = beanTypes.iterator();
+        while (itBeanApiTypes.hasNext())
+        {
+            Type beanApiType = itBeanApiTypes.next();
+
+            if(ClassUtil.isAssignable(beanApiType, givenType))
+            {
+                return true;
+            }
+            else
+            {
+                //Check for @New
+                if(newBean && ClassUtil.isParametrizedType(givenType))
+                {
+                    Class<?> requiredType = ClassUtil.getClass(givenType);
+                    if(ClassUtil.isClassAssignable(requiredType, ClassUtil.getClass(beanApiType)))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+
     private Object getEjbOrJmsProxyReference(Bean<?> bean,Type beanType, CreationalContext<?> creationalContext)
     {
         //Create session bean proxy

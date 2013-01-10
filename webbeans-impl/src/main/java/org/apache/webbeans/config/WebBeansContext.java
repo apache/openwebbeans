@@ -27,7 +27,6 @@ import java.util.Properties;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.container.ResolutionUtil;
 import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
@@ -82,7 +81,6 @@ public class WebBeansContext
     private final SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
     private final StereoTypeManager stereoTypeManager = new StereoTypeManager();
     private final AnnotationManager annotationManager = new AnnotationManager(this);
-    private final ResolutionUtil resolutionUtil = new ResolutionUtil(this);
     private final InjectionPointFactory injectionPointFactory = new InjectionPointFactory(this);
     private final InterceptorUtil interceptorUtil = new InterceptorUtil(this);
     private final SecurityService securityService;
@@ -228,11 +226,6 @@ public class WebBeansContext
     public InjectionPointFactory getInjectionPointFactory()
     {
         return injectionPointFactory;
-    }
-
-    public ResolutionUtil getResolutionUtil()
-    {
-        return resolutionUtil;
     }
 
     public WebBeansUtil getWebBeansUtil()
