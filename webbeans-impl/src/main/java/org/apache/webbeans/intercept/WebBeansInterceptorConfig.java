@@ -58,6 +58,8 @@ import java.util.logging.Logger;
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @version $Rev$ $Date$
  * @see org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove
+ *
+ * @deprecated this class can most probably get removed. All important logic is contained in {@link InterceptorResolution}
  */
 public final class WebBeansInterceptorConfig
 {

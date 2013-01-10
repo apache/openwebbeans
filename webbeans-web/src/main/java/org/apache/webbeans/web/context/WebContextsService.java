@@ -32,7 +32,7 @@ import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.FailOverService;
-import org.apache.webbeans.web.intercept.RequestScopedBeanInterceptorHandlerRemove;
+import org.apache.webbeans.web.intercept.RequestScopedBeanInterceptorHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ContextException;
@@ -127,7 +127,7 @@ public class WebContextsService extends AbstractContextsService
         applicationContexts.remove();
         conversationContexts.remove();
         singletonContexts.remove();
-        RequestScopedBeanInterceptorHandlerRemove.removeThreadLocals();
+        RequestScopedBeanInterceptorHandler.removeThreadLocals();
     }
     
     /**
@@ -395,7 +395,7 @@ public class WebContextsService extends AbstractContextsService
         requestContexts.set(null);
         requestContexts.remove();
 
-        RequestScopedBeanInterceptorHandlerRemove.removeThreadLocals();
+        RequestScopedBeanInterceptorHandler.removeThreadLocals();
     }
 
     private void cleanupConversations()

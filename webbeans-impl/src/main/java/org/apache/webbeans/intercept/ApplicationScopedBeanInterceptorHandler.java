@@ -29,9 +29,11 @@ import org.apache.webbeans.component.OwbBean;
  * 
  * <p>Since there is only one single contextual instance of an &#064;ApplicationScoped bean,
  * we can simply cache this instance inside our bean. We only need to reload this instance
- * if it is null. This happens at the first usage and after the MethodHandler got deserialized</p> 
+ * if it is null. This happens at the first usage and after the MethodHandler got deserialized</p>
+ *
+ * TODO: move caching to new InterceptorHandler logic
  */
-public class ApplicationScopedBeanInterceptorHandlerRemove extends NormalScopedBeanInterceptorHandlerRemove
+public class ApplicationScopedBeanInterceptorHandler extends NormalScopedBeanInterceptorHandlerRemove
 {
     /**default serial id*/
     private static final long serialVersionUID = 1L;
@@ -55,7 +57,7 @@ public class ApplicationScopedBeanInterceptorHandlerRemove extends NormalScopedB
      * @param bean bean
      * @param creationalContext creaitonal context
      */
-    public ApplicationScopedBeanInterceptorHandlerRemove(OwbBean<?> bean, CreationalContext<?> creationalContext)
+    public ApplicationScopedBeanInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         super(bean, creationalContext);
     }

@@ -28,6 +28,9 @@ import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 
+/**
+ * @deprecated we directly use Interceptor<T> now
+ */
 public interface OwbInterceptor<T> extends Interceptor<T>
 {
     public AbstractOwbBean<T> getDelegate();

@@ -20,7 +20,7 @@ package org.apache.webbeans.newtests.proxy;
 
 
 import javassist.util.proxy.ProxyObject;
-import org.apache.webbeans.intercept.ApplicationScopedBeanInterceptorHandlerRemove;
+import org.apache.webbeans.intercept.ApplicationScopedBeanInterceptorHandler;
 import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandlerRemove;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.proxy.beans.ApplicationBean;
@@ -59,7 +59,7 @@ public class ProxyMappingTest extends AbstractUnitTest
         Assert.assertNotNull(applicationBean);
         Assert.assertTrue(applicationBean instanceof ProxyObject);
         Assert.assertNotNull(((ProxyObject) applicationBean).getHandler());
-        Assert.assertEquals(((ProxyObject) applicationBean).getHandler().getClass(), ApplicationScopedBeanInterceptorHandlerRemove.class);
+        Assert.assertEquals(((ProxyObject) applicationBean).getHandler().getClass(), ApplicationScopedBeanInterceptorHandler.class);
 
     }
 
