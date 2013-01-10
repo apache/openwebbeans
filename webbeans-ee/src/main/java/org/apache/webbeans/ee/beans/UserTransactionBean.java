@@ -25,14 +25,15 @@ import javax.transaction.UserTransaction;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.TransactionService;
 
 public class UserTransactionBean extends BuildInOwbBean<UserTransaction>
 {
 
-    public UserTransactionBean()
+    public UserTransactionBean(WebBeansContext webBeansContext)
     {
-        super(WebBeansType.USERTRANSACTION, UserTransaction.class);
+        super(webBeansContext, WebBeansType.USERTRANSACTION, UserTransaction.class);
         addApiType(Object.class);
         addApiType(UserTransaction.class);
         addQualifier(new DefaultLiteral());

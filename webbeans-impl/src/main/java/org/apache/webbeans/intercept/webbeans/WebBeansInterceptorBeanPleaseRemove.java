@@ -88,7 +88,7 @@ public class WebBeansInterceptorBeanPleaseRemove<T> extends AbstractOwbBean<T> i
 
     public WebBeansInterceptorBeanPleaseRemove(AbstractInjectionTargetBean<T> delegateBean)
     {
-        super(WebBeansType.INTERCEPTOR,delegateBean.getReturnType(), delegateBean.getWebBeansContext());
+        super(delegateBean.getWebBeansContext(), WebBeansType.INTERCEPTOR,delegateBean.getReturnType());
         
         this.delegateBean = delegateBean;
         clazz = getDelegate().getReturnType();

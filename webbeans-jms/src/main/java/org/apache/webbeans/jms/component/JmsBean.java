@@ -35,9 +35,9 @@ public class JmsBean<T> extends AbstractOwbBean<T> implements JmsBeanMarker
 {
     private JMSModel jmsModel = null;
     
-    JmsBean(JMSModel jmsModel)
+    JmsBean(WebBeansContext webBeansContext, JMSModel jmsModel)
     {
-        super(WebBeansType.JMS, WebBeansContext.getInstance());
+        super(webBeansContext, WebBeansType.JMS);
         this.jmsModel = jmsModel;
     }
 

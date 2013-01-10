@@ -25,14 +25,15 @@ import javax.validation.Validator;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.ValidatorService;
 
 public class ValidatorBean extends BuildInOwbBean<Validator>
 {
 
-    public ValidatorBean()
+    public ValidatorBean(WebBeansContext webBeansContext)
     {
-        super(WebBeansType.VALIDATION, Validator.class);
+        super(webBeansContext, WebBeansType.VALIDATION, Validator.class);
         addApiType(Object.class);
         addApiType(Validator.class);
         addQualifier(new DefaultLiteral());

@@ -48,7 +48,7 @@ public class EventBean<T> extends AbstractOwbBean<Event<T>>
     @SuppressWarnings("serial")
     public EventBean(WebBeansContext webBeansContext)
     {
-        super(WebBeansType.OBSERVABLE,new TypeLiteral<Event<T>>(){}.getRawType(), webBeansContext);
+        super(webBeansContext, WebBeansType.OBSERVABLE,new TypeLiteral<Event<T>>(){}.getRawType());
     }
     
     /**

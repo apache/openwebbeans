@@ -32,6 +32,7 @@ import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.JMSModel.JMSType;
 import org.apache.webbeans.util.Asserts;
@@ -50,11 +51,11 @@ public final class JmsComponentFactory
         return instance;
     }
     
-    public <T> JmsBean<T> getJmsComponent(JMSModel model)
+    public <T> JmsBean<T> getJmsComponent(WebBeansContext webBeansContext, JMSModel model)
     {
         Asserts.assertNotNull(model,"model parameter can not be null");
         
-        JmsBean<T> component = new JmsBean<T>(model);
+        JmsBean<T> component = new JmsBean<T>(webBeansContext, model);
         
         if(model.getJmsType().equals(JMSType.QUEUE))
         {

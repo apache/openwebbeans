@@ -20,6 +20,7 @@ package org.apache.webbeans.jms.plugin;
 
 import javax.enterprise.inject.spi.Bean;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.component.JmsComponentFactory;
@@ -35,15 +36,18 @@ import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
  */
 public class OpenWebBeansJmsPlugin extends AbstractOwbPlugin implements org.apache.webbeans.plugins.OpenWebBeansJmsPlugin
 {
+    private WebBeansContext webBeansContext;
 
-    public OpenWebBeansJmsPlugin()
+    public OpenWebBeansJmsPlugin(WebBeansContext webBeansContext)
     {
         super();
+        this.webBeansContext = webBeansContext;
     }
 
+    @Override
     public Bean<?> getJmsBean(JMSModel model)
     {
-        JmsBean<?> bean = JmsComponentFactory.getJmsComponentFactory().getJmsComponent(model);
+        JmsBean<?> bean = JmsComponentFactory.getJmsComponentFactory().getJmsComponent(webBeansContext, model);
 
         return bean;
 

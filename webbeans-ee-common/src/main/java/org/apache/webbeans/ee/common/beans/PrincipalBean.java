@@ -26,14 +26,15 @@ import javax.enterprise.context.spi.CreationalContext;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.SecurityService;
 
 public class PrincipalBean extends BuildInOwbBean<Principal>
 {
 
-    public PrincipalBean()
+    public PrincipalBean(WebBeansContext webBeansContext)
     {
-        super(WebBeansType.PRINCIPAL, Principal.class);
+        super(webBeansContext, WebBeansType.PRINCIPAL, Principal.class);
         addApiType(Object.class);
         addApiType(Principal.class);
         addQualifier(new DefaultLiteral());

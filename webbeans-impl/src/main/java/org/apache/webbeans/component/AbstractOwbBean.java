@@ -75,7 +75,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     /** Return type of the bean */
     protected Class<T> returnType;
 
-    /** this is only for public access and will be built from {@link #stereoTypes} on demand */
+    /** the StereoType classes of that bean if it's annotated with a StereoType */
     protected Set<Class<? extends Annotation>> stereoTypeClasses = new HashSet<Class<? extends Annotation>>();
 
     /**This bean is specialized or not*/
@@ -122,7 +122,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      * @param webBeansContext
      * @param webBeansType web beans type
      */
-    protected AbstractOwbBean(WebBeansType webBeansType, Class<T> returnType, WebBeansContext webBeansContext)
+    protected AbstractOwbBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType)
     {
         this.webBeansType = webBeansType;
         this.returnType = returnType;
@@ -135,9 +135,9 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      * @param webBeanType beans type
      * @param webBeansContext
      */
-    protected AbstractOwbBean(WebBeansType webBeanType, WebBeansContext webBeansContext)
+    protected AbstractOwbBean(WebBeansContext webBeansContext, WebBeansType webBeanType)
     {
-        this(webBeanType, null, webBeansContext);
+        this(webBeansContext, webBeanType, null);
     }
 
     /**

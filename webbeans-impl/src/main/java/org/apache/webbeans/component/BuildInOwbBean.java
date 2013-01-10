@@ -35,17 +35,17 @@ import org.apache.webbeans.proxy.MethodHandler;
 import org.apache.webbeans.config.WebBeansContext;
 
 /**
- * Following 3 options are provided for vendor's build-in beans implementation:
+ * Following 3 options are provided for vendor's built-in beans implementation:
  * 
- * 1. "none", means the build-in bean does not need a proxy wrapper.
- * 2. "default", means the build-in bean needs OWB-provided default proxy wrapper.
+ * 1. "none", means the built-in bean does not need a proxy wrapper.
+ * 2. "default", means the built-in bean needs OWB-provided default proxy wrapper.
  * 3. A class name, which implements MethodHandler. This will allow vendor to 
  *    customize the serialization behavior.
  *    
- * The default values for 4 build-in beans are "default". Following property could
+ * The default values for 4 built-in beans are "default". Following property could
  * be used to change the default behavior:
  * 
- * Property Name:   org.apache.webbeans.component.BuildInOwbBean.property 
+ * Property Name:   org.apache.webbeans.component.BuiltInOwbBean.property
  * Sample values:   UserTransation:none;Principal:default;Validation:com.mycompany.ValidationProxyHandler;ValidationFactory:default
  *  
  * @author yingwang
@@ -85,7 +85,58 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
     
     
     protected Constructor handlerContructor;
-    
+
+    @SuppressWarnings("unchecked")
+    protected BuildInOwbBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType)
+    {
+        super(webBeansContext, webBeansType, returnType);
+        initBuildInBeanConfig(getWebBeansContext());
+        handlerClassName = proxyHandlerMap.get(getWebBeansType());
+        if (handlerClassName.equalsIgnoreCase(PROXY_HANDLER_VALUE_NONE) ||
+                handlerClassName.equalsIgnoreCase(PROXY_HANDLER_VALUE_DEFAULT))
+        {
+            return;
+        }
+
+        // initialize the custom proxy handler class and its constructor.
+        AccessController.doPrivileged(new PrivilegedAction<T>()
+        {
+            private BuildInOwbBean<T> buildinBean;
+
+            public T run()
+            {
+                try
+                {
+                    buildinBean.handlerClass = Class.forName(name);
+                    buildinBean.handlerContructor = buildinBean.handlerClass.getConstructor(BuildInOwbBean.class, Object.class);
+                    return null;
+                }
+                catch (ClassNotFoundException e)
+                {
+                    getLogger().log(Level.SEVERE, e.getMessage(), e);
+                }
+                catch (SecurityException e)
+                {
+                    getLogger().log(Level.SEVERE, e.getMessage(), e);
+                }
+                catch (NoSuchMethodException e)
+                {
+                    getLogger().log(Level.SEVERE, e.getMessage(), e);
+                }
+                buildinBean.handlerClass = null;
+                buildinBean.handlerContructor = null;
+                return null;
+            }
+
+            protected PrivilegedAction<T> setBuildInBean(BuildInOwbBean<T> b)
+            {
+                buildinBean = b;
+                return this;
+            }
+
+        }.setBuildInBean(this));
+    }
+
     /**
      * Parse the custom property.
      * 
@@ -139,57 +190,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
         return true;
     }
 
-    @SuppressWarnings("unchecked")
-    protected BuildInOwbBean(WebBeansType webBeansType, Class<T> returnType)
-    {
-        super(webBeansType, returnType, WebBeansContext.currentInstance());
-        initBuildInBeanConfig(getWebBeansContext());
-        handlerClassName = proxyHandlerMap.get(getWebBeansType());
-        if (handlerClassName.equalsIgnoreCase(PROXY_HANDLER_VALUE_NONE) ||
-                handlerClassName.equalsIgnoreCase(PROXY_HANDLER_VALUE_DEFAULT)) 
-        {
-            return;
-        }
 
-        // initialize the custom proxy handler class and its constructor.
-        AccessController.doPrivileged(new PrivilegedAction<T>() 
-        {
-            private BuildInOwbBean<T> buildinBean;
-            
-            public T run()
-            {
-                try 
-                {
-                    buildinBean.handlerClass = Class.forName(name);
-                    buildinBean.handlerContructor = buildinBean.handlerClass.getConstructor(BuildInOwbBean.class, Object.class);
-                    return null;
-                } 
-                catch (ClassNotFoundException e) 
-                {
-                    getLogger().log(Level.SEVERE, e.getMessage(), e);
-                } 
-                catch (SecurityException e) 
-                {
-                    getLogger().log(Level.SEVERE, e.getMessage(), e);
-                } 
-                catch (NoSuchMethodException e) 
-                {
-                    getLogger().log(Level.SEVERE, e.getMessage(), e);
-                }
-                buildinBean.handlerClass = null;
-                buildinBean.handlerContructor = null;
-                return null;
-            }
-            
-            protected PrivilegedAction<T> setBuildInBean(BuildInOwbBean<T> b) 
-            {
-                buildinBean = b;
-                return this;
-            }
-            
-        }.setBuildInBean(this));
-    }
-        
     /**
      * Create a dependent proxy wrapper around the actual build in bean instance.
      * 

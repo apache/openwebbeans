@@ -31,7 +31,7 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
 
     public BeanManagerBean(WebBeansContext webBeansContext)
     {
-        super(WebBeansType.MANAGER, BeanManager.class, webBeansContext);
+        super(webBeansContext, WebBeansType.MANAGER, BeanManager.class);
         setImplScopeType(ApplicationScoped.class);
     }
 

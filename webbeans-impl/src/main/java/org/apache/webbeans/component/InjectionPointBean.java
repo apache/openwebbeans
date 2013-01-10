@@ -65,7 +65,7 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
     
     public InjectionPointBean(WebBeansContext webBeansContext)
     {
-        super(WebBeansType.INJECTIONPOINT,InjectionPoint.class, webBeansContext);
+        super(webBeansContext, WebBeansType.INJECTIONPOINT,InjectionPoint.class);
         
         addQualifier(new DefaultLiteral());
         setImplScopeType(Dependent.class);

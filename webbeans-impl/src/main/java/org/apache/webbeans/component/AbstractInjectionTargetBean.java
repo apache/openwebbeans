@@ -96,7 +96,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     protected AbstractInjectionTargetBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType, AnnotatedType<T> annotatedType)
     {
-        super(webBeansType, returnType, webBeansContext);
+        super(webBeansContext, webBeansType, returnType);
         Asserts.assertNotNull(annotatedType, "AnnotatedType may not be null");
         this.annotatedType = annotatedType;
     }

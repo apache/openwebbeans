@@ -343,7 +343,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
         else
         {
-            ThirdpartyBeanImpl<?> bean = new ThirdpartyBeanImpl(newBean, webBeansContext);
+            ThirdpartyBeanImpl<?> bean = new ThirdpartyBeanImpl(webBeansContext, newBean);
             addPassivationInfo(bean);
             deploymentBeans.add(bean);
         }

@@ -40,7 +40,7 @@ public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
     @SuppressWarnings("serial")
     public InstanceBean(WebBeansContext webBeansContext)
     {
-        super(WebBeansType.INSTANCE, new TypeLiteral<Instance<T>>(){}.getRawType(), webBeansContext);
+        super(webBeansContext, WebBeansType.INSTANCE, new TypeLiteral<Instance<T>>(){}.getRawType());
     }
     
          
