@@ -32,9 +32,9 @@ import org.apache.webbeans.config.WebBeansContext;
  */
 public class NewManagedBean<T> extends ManagedBean<T> implements NewBean<T>
 {
-    public NewManagedBean(Class<T> returnType, WebBeansType definedType, AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
+    public NewManagedBean(WebBeansContext webBeansContext, Class<T> returnType, WebBeansType definedType, AnnotatedType<T> annotatedType)
     {
-        super(returnType, annotatedType, webBeansContext);
+        super(webBeansContext, returnType, annotatedType);
     }
 
     /**

@@ -602,7 +602,7 @@ public final class WebBeansUtil
         }
         else if (EJBWebBeansConfigurator.isSessionBean(clazz, webBeansContext))
         {
-            comp = new NewManagedBean<T>(clazz, WebBeansType.ENTERPRISE, webBeansContext.getAnnotatedElementFactory().getAnnotatedType(clazz), webBeansContext);
+            comp = new NewManagedBean<T>(webBeansContext, clazz, WebBeansType.ENTERPRISE, webBeansContext.getAnnotatedElementFactory().getAnnotatedType(clazz));
             comp.setImplScopeType(Dependent.class);
         }
         else
@@ -2334,7 +2334,7 @@ public final class WebBeansUtil
     {
         Class<T> clazz = type.getJavaClass();
 
-        ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(type, webBeansContext);
+        ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(webBeansContext, type);
 
         managedBeanCreator.defineApiType();
 

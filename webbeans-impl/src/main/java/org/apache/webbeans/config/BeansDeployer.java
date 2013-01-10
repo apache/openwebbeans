@@ -830,7 +830,7 @@ public class BeansDeployer
             //Check conditions
             webBeansContext.getWebBeansUtil().checkManagedBeanCondition(clazz);
 
-            ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(annotatedType, webBeansContext);
+            ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(webBeansContext, annotatedType);
 
             boolean annotationTypeSet = false;
             if(processAnnotatedEvent.isModifiedAnnotatedType())

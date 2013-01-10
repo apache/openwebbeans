@@ -30,7 +30,7 @@ public class NewManagedBeanBuilder<T> extends ManagedBeanBuilder<T>
 
     public NewManagedBeanBuilder(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
-        super(new NewManagedBean<T>(annotatedType.getJavaClass(), WebBeansType.MANAGED, annotatedType, webBeansContext), Dependent.class);
+        super(new NewManagedBean<T>(webBeansContext, annotatedType.getJavaClass(), WebBeansType.MANAGED, annotatedType), Dependent.class);
     }
 
     /**

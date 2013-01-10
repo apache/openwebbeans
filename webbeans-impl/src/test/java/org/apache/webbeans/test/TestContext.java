@@ -522,7 +522,7 @@ public abstract class TestContext implements ITestContext
             throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not _defined as interface");
         }
 
-        ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(anntotatedType, webBeansContext);
+        ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(webBeansContext, anntotatedType);
         ManagedBean<T> component = managedBeanCreator.getBean();
         component.setProducer(new InjectionTargetProducer(component));
 

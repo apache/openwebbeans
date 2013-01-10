@@ -33,7 +33,7 @@ public class AnnotatedTypeBeanBuilder<T> extends ManagedBeanBuilder<T>
 
     public AnnotatedTypeBeanBuilder(AnnotatedType<T> annotatedType, WebBeansContext context)
     {
-        super(annotatedType, context);
+        super(context, annotatedType);
     }
     
     /**

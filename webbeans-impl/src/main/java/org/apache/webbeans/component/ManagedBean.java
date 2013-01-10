@@ -59,9 +59,9 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     private volatile boolean fullInit = true;
 
 
-    public ManagedBean(Class<T> returnType, AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
+    public ManagedBean(WebBeansContext webBeansContext, Class<T> returnType, AnnotatedType<T> annotatedType)
     {
-        this(returnType, WebBeansType.MANAGED, annotatedType, webBeansContext);
+        this(webBeansContext, returnType, WebBeansType.MANAGED, annotatedType);
     }
 
     /**
@@ -71,9 +71,9 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
      * @param type webbeans type
      * @param webBeansContext
      */
-    public ManagedBean(Class<T> returnType, WebBeansType type, AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
+    public ManagedBean(WebBeansContext webBeansContext, Class<T> returnType, WebBeansType type, AnnotatedType<T> annotatedType)
     {
-        super(type, returnType, annotatedType, webBeansContext);
+        super(webBeansContext, type, returnType, annotatedType);
         
         //Setting inherited meta data instance
         setInheritedMetaData();

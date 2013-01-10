@@ -77,9 +77,9 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
     /**
      * Creates a new creator.
      */
-    public ManagedBeanBuilder(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
+    public ManagedBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
-        this(new ManagedBean<T>(annotatedType.getJavaClass(), annotatedType, webBeansContext), null);
+        this(new ManagedBean<T>(webBeansContext, annotatedType.getJavaClass(), annotatedType), null);
     }
 
     protected ManagedBeanBuilder(ManagedBean<T> managedBean, Class<? extends Annotation> scopeType)
