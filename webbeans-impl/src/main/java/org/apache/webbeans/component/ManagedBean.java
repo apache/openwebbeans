@@ -19,16 +19,12 @@
 package org.apache.webbeans.component;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Decorator;
 
-import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.AbstractDecoratorMethodHandler;
@@ -47,16 +43,6 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     private Constructor<T> constructor;
     
     protected boolean isAbstractDecorator;
-
-    /**
-     * Whether the bean is fully initialized or not yet.
-     * Only beans scanned from the classpath can be lazily initialized,
-     * and only if they do _NOT_ contain any javax.inject or javax.enterprise
-     * annotation! In other words: we can skip eager initialisation for
-     * beans which only could picked up as auto-&#0064;Dependent beans which
-     * do not register/ any other beans (e.g. via &#0064;Produces)
-     */
-    private volatile boolean fullInit = true;
 
 
     public ManagedBean(WebBeansContext webBeansContext, Class<T> returnType, AnnotatedType<T> annotatedType)
@@ -85,12 +71,6 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     @Override
     protected T createComponentInstance(CreationalContext<T> creationalContext)
     {
-        if (!fullInit)
-        {
-            lazyInit();
-        }
-
-
         Constructor<T> con = getConstructor();
         InjectableConstructor<T> ic = new InjectableConstructor<T>(con, new InjectionTargetImpl<T>(getInjectionPoints()), (CreationalContextImpl<T>) creationalContext);
 
@@ -103,36 +83,6 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
         }
         
         return instance;
-    }
-
-    private synchronized void lazyInit()
-    {
-        if (!fullInit)
-        {
-            fullInit = true;
-            ManagedBeanBuilder.lazyInitializeManagedBean(this);
-        }
-    }
-
-    public boolean isFullInit()
-    {
-        return fullInit;
-    }
-
-    public void setFullInit(boolean fullInit)
-    {
-        this.fullInit = fullInit;
-    }
-
-    @Override
-    public void addQualifier(Annotation qualifier)
-    {
-        if (!(qualifier instanceof Default || qualifier instanceof Any))
-        {
-            // if a bean defines other qualifiers than Default or Any, we need to fully initialize it
-            fullInit = true;
-        }
-        super.addQualifier(qualifier);
     }
 
     /**

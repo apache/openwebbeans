@@ -256,10 +256,6 @@ public abstract class AbstractBeanBuilder<T>
         return null;
     }
 
-    protected void defineLazyInit()
-    {
-        // hook for subclasses
-    }
 
     /**
      * Returns true if any binding exist
@@ -364,13 +360,6 @@ public abstract class AbstractBeanBuilder<T>
             if (stereos.size() == 0)
             {
                 scope = Dependent.class;
-
-                if (allowLazyInit && isPurePojoBean(webBeansContext, getBeanType()))
-                {
-                    // take the bean as Dependent but we could lazily initialize it
-                    // because the bean doesn't contains any CDI feature
-                    defineLazyInit();
-                }
             }
             else
             {
@@ -415,13 +404,6 @@ public abstract class AbstractBeanBuilder<T>
                 else
                 {
                     scope = Dependent.class;
-
-                    if (allowLazyInit && isPurePojoBean(webBeansContext, getBeanType()))
-                    {
-                        // take the bean as Dependent but we could lazily initialize it
-                        // because the bean doesn't contains any CDI feature
-                        defineLazyInit();
-                    }
                 }
             }
         }
