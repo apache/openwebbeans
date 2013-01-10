@@ -23,7 +23,6 @@ import java.util.Comparator;
 import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 
 public class InterceptorComparator<T> implements Comparator<Interceptor<T>>
 {
@@ -37,8 +36,6 @@ public class InterceptorComparator<T> implements Comparator<Interceptor<T>>
 
     public int compare(Interceptor<T> o1, Interceptor<T> o2)
     {
-        WebBeansInterceptorBeanPleaseRemove<T> src = (WebBeansInterceptorBeanPleaseRemove<T>) o1;
-        WebBeansInterceptorBeanPleaseRemove<T> target = (WebBeansInterceptorBeanPleaseRemove<T>) o2;
 
         if (o1.equals(o2))
         {
@@ -46,8 +43,8 @@ public class InterceptorComparator<T> implements Comparator<Interceptor<T>>
         }
         else
         {
-            Class<?> o1Clazz = src.getClazz();
-            Class<?> o2Clazz = target.getClazz();
+            Class<?> o1Clazz = o1.getBeanClass();
+            Class<?> o2Clazz = o2.getBeanClass();
 
             return interceptorsManager.compare(o1Clazz, o2Clazz);
 

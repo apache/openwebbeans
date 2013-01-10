@@ -35,4 +35,8 @@ public abstract class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilde
     }
 
 
+    public CdiInterceptorBean<T> getBean()
+    {
+        return (CdiInterceptorBean<T>)super.getBean();
+    }
 }
