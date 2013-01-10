@@ -28,7 +28,7 @@ import org.apache.webbeans.config.WebBeansContext;
 public class NewManagedBeanBuilder<T> extends ManagedBeanBuilder<T>
 {
 
-    public NewManagedBeanBuilder(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
+    public NewManagedBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
         super(new NewManagedBean<T>(webBeansContext, annotatedType.getJavaClass(), WebBeansType.MANAGED, annotatedType), Dependent.class);
     }

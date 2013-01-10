@@ -39,7 +39,7 @@ public class ExtensionBean<T> extends AbstractInjectionTargetBean<T>
      * @param returnType return type
      * @param webBeansContext
      */
-    public ExtensionBean(Class<T> returnType, WebBeansContext webBeansContext)
+    public ExtensionBean(WebBeansContext webBeansContext, Class<T> returnType)
     {
         super(webBeansContext, WebBeansType.EXTENSION, returnType, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(returnType));
         setEnabled(true);

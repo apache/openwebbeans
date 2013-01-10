@@ -26,9 +26,9 @@ import org.apache.webbeans.config.WebBeansContext;
 public class ExtensionBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
 {
 
-    public ExtensionBeanBuilder(Class<T> type, WebBeansContext webBeansContext)
+    public ExtensionBeanBuilder(WebBeansContext webBeansContext, Class<T> type)
     {
-        super(new ExtensionBean<T>(type, webBeansContext), ApplicationScoped.class);
+        super(new ExtensionBean<T>(webBeansContext, type), ApplicationScoped.class);
     }
 
     /**

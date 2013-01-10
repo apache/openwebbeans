@@ -30,6 +30,17 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
 {
     private static ThreadLocal<Stack<InjectionPoint>> localThreadlocalStack = new ThreadLocal<Stack<InjectionPoint>>();
 
+    public InjectionPointBean(WebBeansContext webBeansContext)
+    {
+        super(webBeansContext, WebBeansType.INJECTIONPOINT,InjectionPoint.class);
+
+        addQualifier(new DefaultLiteral());
+        setImplScopeType(Dependent.class);
+        addApiType(InjectionPoint.class);
+        addApiType(Object.class);
+    }
+
+
     private static Stack<InjectionPoint> getStackOfInjectionPoints()
     {
         Stack<InjectionPoint> stackIP = localThreadlocalStack.get();
@@ -63,16 +74,6 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
         localThreadlocalStack.remove();
     }
     
-    public InjectionPointBean(WebBeansContext webBeansContext)
-    {
-        super(webBeansContext, WebBeansType.INJECTIONPOINT,InjectionPoint.class);
-        
-        addQualifier(new DefaultLiteral());
-        setImplScopeType(Dependent.class);
-        addApiType(InjectionPoint.class);
-        addApiType(Object.class);
-    }
-
     public static boolean isStackEmpty()
     {
         return getStackOfInjectionPoints().isEmpty();

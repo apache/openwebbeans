@@ -591,7 +591,7 @@ public final class WebBeansUtil
         if (webBeansContext.getWebBeansUtil().isManagedBean(clazz))
         {
             NewManagedBeanBuilder<T> newBeanCreator
-                = new NewManagedBeanBuilder<T>(webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz), webBeansContext);
+                = new NewManagedBeanBuilder<T>(webBeansContext, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
             comp = newBeanCreator.getBean();
             comp.setImplScopeType(Dependent.class);
             comp.setConstructor(defineConstructor(clazz));
@@ -637,7 +637,7 @@ public final class WebBeansUtil
     public <T> ExtensionBean<T> createExtensionComponent(Class<T> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        ExtensionBeanBuilder<T> extensionBeanCreator = new ExtensionBeanBuilder<T>(clazz, webBeansContext);
+        ExtensionBeanBuilder<T> extensionBeanCreator = new ExtensionBeanBuilder<T>(webBeansContext, clazz);
         extensionBeanCreator.defineObserverMethods();
         return extensionBeanCreator.getBean();
     }
