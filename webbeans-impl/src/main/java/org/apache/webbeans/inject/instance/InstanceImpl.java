@@ -40,7 +40,7 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.InjectionExceptionUtils;
+import org.apache.webbeans.util.InjectionExceptionUtil;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -119,7 +119,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
             
             if (bean == null)
             {
-                InjectionExceptionUtils.throwUnsatisfiedResolutionException(ClassUtil.getClazz(injectionClazz), injectionPoint, anns);
+                InjectionExceptionUtil.throwUnsatisfiedResolutionException(ClassUtil.getClazz(injectionClazz), injectionPoint, anns);
             }
 
             // since Instance<T> is Dependent, we we gonna use the parent CreationalContext by default

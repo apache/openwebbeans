@@ -31,9 +31,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-public class InjectionExceptionUtils
+public class InjectionExceptionUtil
 {
-    private InjectionExceptionUtils()
+    private InjectionExceptionUtil()
     {
         // utility class ct
     }

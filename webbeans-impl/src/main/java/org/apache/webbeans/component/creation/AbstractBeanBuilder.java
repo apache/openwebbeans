@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.component.creation;
 
-import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnproxyableResolutionException;
+import static org.apache.webbeans.util.InjectionExceptionUtil.throwUnproxyableResolutionException;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;

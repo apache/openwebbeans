@@ -49,9 +49,9 @@ import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.InjectionExceptionUtils;
+import org.apache.webbeans.util.InjectionExceptionUtil;
 import org.apache.webbeans.util.WebBeansUtil;
-import static org.apache.webbeans.util.InjectionExceptionUtils.throwAmbiguousResolutionException;
+import static org.apache.webbeans.util.InjectionExceptionUtil.throwAmbiguousResolutionException;
 
 /**
  * Injection point resolver class.
@@ -190,7 +190,7 @@ public class InjectionResolver
 
         if (bean == null)
         {
-            InjectionExceptionUtils.throwUnsatisfiedResolutionException(clazz, injectionPoint, qualifiers);
+            InjectionExceptionUtil.throwUnsatisfiedResolutionException(clazz, injectionPoint, qualifiers);
         }
 
 
@@ -260,7 +260,7 @@ public class InjectionResolver
             }
             else
             {
-                InjectionExceptionUtils.throwUnsatisfiedResolutionException(clazz, injectionPoint, qualifiers);
+                InjectionExceptionUtil.throwUnsatisfiedResolutionException(clazz, injectionPoint, qualifiers);
             }
         }
 

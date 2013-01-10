@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.component.creation;
 
-import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnsatisfiedResolutionException;
+import static org.apache.webbeans.util.InjectionExceptionUtil.throwUnsatisfiedResolutionException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
