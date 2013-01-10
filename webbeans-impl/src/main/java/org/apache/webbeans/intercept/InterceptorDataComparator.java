@@ -23,6 +23,9 @@ import java.util.Comparator;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 
+/**
+ * @deprecated this will be handled directly in the Interceptor Beans
+ */
 public class InterceptorDataComparator implements Comparator<InterceptorData>
 {
     private final WebBeansContext instance;

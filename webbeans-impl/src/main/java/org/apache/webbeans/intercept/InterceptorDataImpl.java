@@ -44,6 +44,8 @@ import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
  * Abstract implementation of the {@link InterceptorData} api contract.
  * 
  * @version $Rev$ $Date$
+ *
+ * @deprecated this will be handled directly in the Interceptor Beans
  */
 public class InterceptorDataImpl implements InterceptorData
 {

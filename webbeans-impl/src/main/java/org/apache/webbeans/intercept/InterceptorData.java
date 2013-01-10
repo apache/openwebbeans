@@ -44,6 +44,7 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
  * </p>
  * 
  * @version $Rev$ $Date$
+ * @deprecated this will be handled directly in the Interceptor Beans
  */
 public interface InterceptorData
 {

@@ -31,6 +31,7 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
  * Dependent scoped beans interceptor handler.
  * @version $Rev$ $Date$
  *
+ * @deprecated
  */
 public class DependentScopedBeanInterceptorHandlerRemove extends InterceptorHandlerPleaseRemove
 {
