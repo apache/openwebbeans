@@ -115,15 +115,17 @@ public class AlternativesManager
 
     public boolean isBeanHasAlternative(Bean<?> bean)
     {
-        Class<?> returnType = bean.getBeanClass();
-        
-        if(alternatives.contains(returnType))
+        return isAlternative(bean.getBeanClass(), bean.getStereotypes());
+    }
+
+    public boolean isAlternative(Class<?> beanType, Set<Class<? extends Annotation>> stereotypes)
+    {
+        if(alternatives.contains(beanType))
         {
             return true;
         }
         
-        Set<Class<? extends Annotation>> set = bean.getStereotypes();
-        for(Class<? extends Annotation> ann : set)
+        for(Class<? extends Annotation> ann : stereotypes)
         {
             if(stereoAlternatives.contains(ann))
             {

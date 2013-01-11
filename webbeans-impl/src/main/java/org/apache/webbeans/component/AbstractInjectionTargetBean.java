@@ -19,34 +19,23 @@
 package org.apache.webbeans.component;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
-import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
-import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.inject.InjectableField;
-import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.intercept.InterceptorData;
 import javax.enterprise.inject.spi.InterceptionType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
@@ -65,13 +54,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @param <T> bean class
  */
 public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> implements InjectionTargetBean<T>
-{
-    /** Injected fields of the bean */
-    private Set<Field> injectedFields = new HashSet<Field>();
-
-    /** Injected methods of the bean */
-    private Set<Method> injectedMethods = new HashSet<Method>();
-    
+{    
     /**Annotated type for bean*/
     private AnnotatedType<T> annotatedType;
     
@@ -145,8 +128,8 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 //Therefore we inject dependencies of this instance
                 //Otherwise we loose injection
                 injectResources(instance, creationalContext);
-                injectFieldsAndMethods(instance, creationalContext);
-                
+                new InjectionTargetImpl<T>(getAnnotatedType(), getInjectionPoints(), webBeansContext).inject(instance, creationalContext);                
+
                 //Dependent proxy
                 dependentProxy = result;
                 
@@ -213,7 +196,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         //Inject resources
         injectResources(instance, creationalContext);
         
-        injectFieldsAndMethods(instance, creationalContext);
+        new InjectionTargetImpl<T>(getAnnotatedType(), getInjectionPoints(), webBeansContext).inject(instance, creationalContext); 
         
         //Post construct
         postConstruct(instance, creationalContext);
@@ -295,107 +278,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             }            
         }
     }
-
-    /**
-     * Injects fields and methods of the bean after constructing.
-     * First the fields and methods of the superclasses are injected, then the fields and methdos of this class
-     * 
-     * @param instance bean instance
-     * @param creationalContext creational context
-     */
-    public void injectFieldsAndMethods(T instance, CreationalContext<T> creationalContext)
-    {
-        injectFieldsAndMethods(annotatedType.getJavaClass(), instance, creationalContext);
-    }
     
-    private void injectFieldsAndMethods(Class<?> type, T instance, CreationalContext<T> creationalContext)
-    {
-        if (type == null || type.equals(Object.class))
-        {
-            return;
-        }
-        injectFieldsAndMethods(type.getSuperclass(), instance, creationalContext);
-        injectFields(type, instance, creationalContext);
-        injectMethods(type, instance, creationalContext);
-    }    
-    
-    private void injectFields(Class<?> type, T instance, CreationalContext<T> creationalContext)
-    {
-        Set<Field> fields = getInjectedFields();
-        for (Field field : fields)
-        {
-            if (!field.getDeclaringClass().equals(type))
-            {
-                // will be injected at another run
-                continue;
-            }
-            if (field.getAnnotation(Delegate.class) == null)
-            {
-                if(!field.getType().equals(InjectionPoint.class))
-                {
-                    injectField(field, instance, creationalContext);   
-                }
-                //InjectionPoint.
-                else
-                {
-                    Bean<?> injectionPointBean = getManager().getBeans(InjectionPoint.class, new DefaultLiteral())
-                                                              .iterator().next();
-                    Object reference = getManager().getReference(injectionPointBean, InjectionPoint.class,
-                                             getManager().createCreationalContext(injectionPointBean));
-                    
-                    setField(instance, field, reference);
-                }
-            }
-        }                
-    }
-
-    private void setField(T instance, Field field, Object value)
-    {
-        if(!field.isAccessible())
-        {
-            getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(field, true);
-        }
-
-        try
-        {
-            field.set(instance, value);
-        }
-        catch (IllegalArgumentException e)
-        {
-            throw new WebBeansException(e);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new WebBeansException(e);
-        }
-    }
-
-    private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
-    {
-        InjectableField f = new InjectableField(field, instance, new InjectionTargetImpl<T>(getInjectionPoints()), (CreationalContextImpl) creationalContext);
-        f.doInjection();        
-    }
-
-    private void injectMethods(Class<?> type, T instance, CreationalContext<T> creationalContext)
-    {
-        Set<Method> methods = getInjectedMethods();
-
-        for (Method method : methods)
-        {
-            if (method.getDeclaringClass().equals(type))
-            {
-                injectMethod(method, instance, creationalContext);
-            }
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
-    {
-        InjectableMethod m = new InjectableMethod(method, instance, new InjectionTargetImpl<T>(getInjectionPoints()), (CreationalContextImpl) creationalContext);
-        m.doInjection();        
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -428,46 +311,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                         WebBeansLoggerFacade.getTokenString(OWBLogConst.ERROR_0023), instance), e);
             }
         }
-    }
-
-    /**
-     * Gets injected fields.
-     * 
-     * @return injected fields
-     */
-    public Set<Field> getInjectedFields()
-    {
-        return injectedFields;
-    }
-
-    /**
-     * Add new injected field.
-     * 
-     * @param field new injected field
-     */
-    public void addInjectedField(Field field)
-    {
-        injectedFields.add(field);
-    }
-    
-    /**
-     * Gets injected methods.
-     * 
-     * @return injected methods
-     */
-    public Set<Method> getInjectedMethods()
-    {
-        return injectedMethods;
-    }
-
-    /**
-     * Add new injected method.
-     * 
-     * @param method new injected method
-     */
-    public void addInjectedMethod(Method method)
-    {
-        injectedMethods.add(method);
     }
 
     /**

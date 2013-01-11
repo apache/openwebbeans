@@ -120,7 +120,6 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
     {
         //Annotated type
         AnnotatedType<T> annotatedType = processInjectionTargetEvent.getAnnotatedType();
-        ManagedBean<T> managedBean = getBean();
 
         Class<T> clazz = annotatedType.getJavaClass();
 
@@ -135,23 +134,24 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         defineSerializable();
 
         //Check for Enabled via Alternative
-        webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(managedBean);
+        defineEnabled();
 
         checkCreateConditions();
         defineName();
         defineQualifiers();
 
         defineConstructor();
-        Set<ProducerMethodBean<?>> producerMethods = defineProducerMethods();
-        Set<ProducerFieldBean<?>> producerFields = defineProducerFields();
         defineInjectedFields();
         defineInjectedMethods();
 
         Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
-        if(managedBean.isEnabled())
+        if(isEnabled())
         {
             observerMethods = defineObserverMethods();
         }
+        ManagedBean<T> managedBean = getBean();
+        Set<ProducerMethodBean<?>> producerMethods = defineProducerMethods();
+        Set<ProducerFieldBean<?>> producerFields = defineProducerFields();
 
         //Put final InjectionTarget instance
         managedBean.setProducer(processInjectionTargetEvent.getInjectionTarget());

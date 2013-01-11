@@ -530,14 +530,14 @@ public abstract class TestContext implements ITestContext
         managedBeanCreator.defineSerializable();
         managedBeanCreator.defineStereoTypes();
 
-        defineApiTypes(component, clazz);
+        managedBeanCreator.defineApiType();
         managedBeanCreator.defineScopeType("Simple WebBean Component implementation class : " + clazz.getName()
                                            + " stereotypes must declare same @Scope annotations");
 
-        ManagedBean<T> bean = managedBeanCreator.getBean();
-        WebBeansUtil.checkGenericType(bean.getReturnType(), bean.getScope());
+        managedBeanCreator.checkCreateConditions();
         managedBeanCreator.defineName();
         managedBeanCreator.defineQualifiers();
+        managedBeanCreator.defineEnabled();
 
         Constructor<T> constructor = webBeansContext.getWebBeansUtil().defineConstructor(clazz);
         component.setConstructor(constructor);
@@ -567,7 +567,7 @@ public abstract class TestContext implements ITestContext
         managedBeanCreator.defineInjectedMethods();
         managedBeanCreator.defineObserverMethods();
 
-        return component;
+        return managedBeanCreator.getBean();
     }
     
     /**

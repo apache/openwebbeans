@@ -27,6 +27,7 @@ import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.AbstractInjectable;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.proxy.ProxyFactory;
 
 /**
@@ -90,7 +91,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
                 }
                 
                 bean.injectResources(instance, ctx);
-                bean.injectFieldsAndMethods(instance, ctx);
+                new InjectionTargetImpl<T>(bean.getAnnotatedType(), bean.getInjectionPoints(), bean.getWebBeansContext()).inject(instance, ctx);
             }                    
         }
         finally

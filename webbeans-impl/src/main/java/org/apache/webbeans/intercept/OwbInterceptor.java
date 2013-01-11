@@ -22,7 +22,6 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Interceptor;
 
@@ -44,6 +43,4 @@ public interface OwbInterceptor<T> extends Interceptor<T>
     public Class<?> getClazz();
     
     public Set<Interceptor<?>> getMetaInceptors();
-    
-    public void setInjections(Object proxy, CreationalContext<?> creationalContext);
 }

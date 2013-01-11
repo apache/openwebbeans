@@ -38,12 +38,10 @@ import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -73,8 +71,8 @@ import org.apache.webbeans.util.WebBeansUtil;
 public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBeanBuilder<T>
 {    
     
+    private boolean enabled = true;
     protected WebBeansContext webBeansContext;
-    private Set<AnnotatedMember<? super T>> injectionPoints = new HashSet<AnnotatedMember<? super T>>();
 
     /**
      * Creates a new instance.
@@ -171,7 +169,8 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                 
                 pr.setDisposalMethod(declaredMethod);
 
-                addMethodInjectionPointMetaData(annotatedMethod);
+                addInjectionPoint(annotatedMethod);
+                getBean(); // to force creating the injection point
                 
             }
         }
@@ -260,8 +259,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                 
                 if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod))
                 {
-                    getBean().addInjectedField(field);
-                    addFieldInjectionPointMetaData(annotatedField);                                
+                    addInjectionPoint(annotatedField);
                 }
             }                                    
         }
@@ -297,8 +295,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
             
             if (!Modifier.isStatic(method.getModifiers()))
             {
-                getBean().addInjectedMethod(method);
-                addMethodInjectionPointMetaData(annotatedMethod);
+                addInjectionPoint(annotatedMethod);
             }
         }
     }
@@ -380,7 +377,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                 }
                 
                 //Add injection point data
-                addMethodInjectionPointMetaData(annotatedMethod);
+                addInjectionPoint(annotatedMethod);
                 
                 //Looking for ObserverMethod
                 ObserverMethod<?> definedObserver = webBeansContext.getBeanManagerImpl().getNotificationManager().getObservableMethodForAnnotatedMethod(annotatedMethod, getBean());
@@ -564,7 +561,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
 
                 if (producerMethodBean.getReturnType().isArray())
                 {
-                    // TODO this special handling should not be necessary, seems to be a bug in the tck
+                    // 3.3.1
                     producerMethodBean.getTypes().add(Object.class);
                     producerMethodBean.getTypes().add(producerMethodBean.getReturnType());
                 }
@@ -579,7 +576,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                 producerMethodBeanCreator.defineName(WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
                 producerMethodBeanCreator.defineQualifiers();
                 
-                producerMethodBeanCreator.addMethodInjectionPointMetaData(annotatedMethod);
+                producerMethodBeanCreator.addInjectionPoint(annotatedMethod);
                 producerBeans.add(producerMethodBeanCreator.getBean());
                 
             }
@@ -607,39 +604,29 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
         }
     }
 
-    private <X> void addFieldInjectionPointMetaData(AnnotatedField<X> annotField)
-    {
-        InjectionPoint injectionPoint = webBeansContext.getInjectionPointFactory().getFieldInjectionPointData(getBean(), annotField);
-        if (injectionPoint != null)
-        {
-            addImplicitComponentForInjectionPoint(injectionPoint);
-            getBean().addInjectionPoint(injectionPoint);
-        }
-    }
-
     /**
      * Return type-safe bean instance.
      */
     public AbstractInjectionTargetBean<T> getBean()
     {
         AbstractInjectionTargetBean<T> bean = (AbstractInjectionTargetBean<T>)super.getBean();
-        for (AnnotatedMember<? super T> member : injectionPoints)
-        {
-            if (member instanceof AnnotatedField)
-            {
-                addFieldInjectionPointMetaData((AnnotatedField<?>) member);
-            }
-            else if (member instanceof AnnotatedMethod)
-            {
-                addMethodInjectionPointMetaData((AnnotatedMethod<?>) member);
-            }
-        }
+        bean.setEnabled(enabled);
         return bean;
     }
 
     protected AnnotatedType<T> getAnnotated()
     {
         return (AnnotatedType<T>) super.getAnnotated();
+    }
+
+    protected boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    public void defineEnabled()
+    {
+        enabled = webBeansContext.getWebBeansUtil().isBeanEnabled(getAnnotated(), getBeanType(), getStereotypes());
     }
 
     @Override

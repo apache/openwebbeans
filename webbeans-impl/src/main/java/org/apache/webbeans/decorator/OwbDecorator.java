@@ -22,7 +22,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.component.InterceptedMarker;
@@ -32,6 +31,4 @@ public interface OwbDecorator<T> extends Decorator<T>, InterceptedMarker
     public boolean isDecoratorMatch(Set<Type> apiTypes, Set<Annotation> annotations);
     
     public void setDelegate(Object instance, Object delegate);
-    
-    public void setInjections(Object proxy, CreationalContext<?> cretionalContext);
 }

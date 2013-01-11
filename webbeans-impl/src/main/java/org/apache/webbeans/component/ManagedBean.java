@@ -72,7 +72,8 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     protected T createComponentInstance(CreationalContext<T> creationalContext)
     {
         Constructor<T> con = getConstructor();
-        InjectableConstructor<T> ic = new InjectableConstructor<T>(con, new InjectionTargetImpl<T>(getInjectionPoints()), (CreationalContextImpl<T>) creationalContext);
+        InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(getAnnotatedType(), getInjectionPoints(), getWebBeansContext());
+        InjectableConstructor<T> ic = new InjectableConstructor<T>(con, injectionTarget, (CreationalContextImpl<T>) creationalContext);
 
         T instance = ic.doInjection();
         
@@ -81,7 +82,6 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
         {
             webBeansContext.getProxyFactory().setHandler(instance, new AbstractDecoratorMethodHandler());
         }
-        
         return instance;
     }
 

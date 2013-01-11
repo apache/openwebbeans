@@ -19,7 +19,6 @@
 package org.apache.webbeans.decorator;
 
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
-import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OwbParametrizedTypeImpl;
@@ -46,7 +45,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -401,54 +399,6 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         return proxy;        
     }
 
-    public void setInjections(Object proxy, CreationalContext<?> cretionalContext)
-    {
-        if(customDecorator != null)
-        {
-            Set<InjectionPoint> injections = customDecorator.getInjectionPoints();
-            if(injections != null)
-            {
-                for(InjectionPoint ip : injections)
-                {
-                    if(!ip.isDelegate())
-                    {
-                        Member member = ip.getMember();
-                        if(member instanceof Field)
-                        {
-                            injectField((Field)member  , proxy, cretionalContext);
-                        }
-                        if(member instanceof Method)
-                        {
-                            injectMethod((Method)member  , proxy, cretionalContext);
-                        }                        
-                    }
-                }
-            }
-        }
-        else
-        {
-            // Set injected fields
-            ManagedBean<T> delegate = (ManagedBean<T>) wrappedBean;
-
-            Set<Field> injectedFields = delegate.getInjectedFields();
-            for (Field injectedField : injectedFields)
-            {
-                boolean isDecorates = injectedField.isAnnotationPresent(Delegate.class);
-
-                if (!isDecorates)
-                {
-                    injectField(injectedField, proxy, cretionalContext);
-                }
-            }
-            
-            Set<Method> injectedMethods = delegate.getInjectedMethods();
-            for (Method injectedMethod : injectedMethods)
-            {
-                injectMethod(injectedMethod, proxy, cretionalContext);
-            }                    
-        }        
-    }
-    
     public Type getDecoratorGenericType() 
     {
         return decoratorGenericType;
@@ -460,14 +410,16 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     }
     private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableField f = new InjectableField(field, instance, new InjectionTargetImpl<T>(wrappedBean.getInjectionPoints()), (CreationalContextImpl) creationalContext);
+        InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(wrappedBean.getAnnotatedType(), wrappedBean.getInjectionPoints(), wrappedBean.getWebBeansContext());
+        InjectableField f = new InjectableField(field, instance, injectionTarget, (CreationalContextImpl) creationalContext);
         f.doInjection();        
     }
 
     @SuppressWarnings("unchecked")
     private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableMethod m = new InjectableMethod(method, instance, new InjectionTargetImpl<T>(wrappedBean.getInjectionPoints()), (CreationalContextImpl) creationalContext);
+        InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(wrappedBean.getAnnotatedType(), wrappedBean.getInjectionPoints(), wrappedBean.getWebBeansContext());
+        InjectableMethod m = new InjectableMethod(method, instance, injectionTarget, (CreationalContextImpl) creationalContext);
         m.doInjection();        
     }
         

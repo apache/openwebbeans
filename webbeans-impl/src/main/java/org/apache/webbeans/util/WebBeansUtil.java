@@ -591,13 +591,12 @@ public final class WebBeansUtil
         {
             NewManagedBeanBuilder<T> newBeanCreator
                 = new NewManagedBeanBuilder<T>(webBeansContext, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
+            newBeanCreator.defineConstructor();
+            newBeanCreator.defineInjectedFields();
+            newBeanCreator.defineInjectedMethods();
             comp = newBeanCreator.getBean();
             comp.setImplScopeType(Dependent.class);
             comp.setConstructor(defineConstructor(clazz));
-            newBeanCreator.addConstructorInjectionPointMetaData(comp.getConstructor());
-
-            newBeanCreator.defineInjectedFields();
-            newBeanCreator.defineInjectedMethods();
         }
         else if (EJBWebBeansConfigurator.isSessionBean(clazz, webBeansContext))
         {
@@ -2080,40 +2079,51 @@ public final class WebBeansUtil
      */
     public void setInjectionTargetBeanEnableFlag(InjectionTargetBean<?> bean)
     {
+        bean.setEnabled(isBeanEnabled(bean));
+    }
+
+    public boolean isBeanEnabled(InjectionTargetBean<?> bean)
+    {
         Asserts.assertNotNull(bean, "bean can not be null");
+        return isBeanEnabled(bean.getAnnotatedType(), bean.getReturnType(), bean.getStereotypes());
+    }
+    
+    public boolean isBeanEnabled(AnnotatedType<?> at, Class<?> beanType, Set<Class<? extends Annotation>> stereotypes)
+    {
         
-        boolean isAlternative = hasInjectionTargetBeanAnnotatedWithAlternative(bean); 
+        boolean isAlternative = hasInjectionTargetBeanAnnotatedWithAlternative(beanType, stereotypes); 
 
         if(!isAlternative)
         {
-            AnnotatedType at = bean.getAnnotatedType();
-            if (at != null)
-            {
-                isAlternative =  at.getAnnotation(Alternative.class) != null;
-            }
+            isAlternative =  at.getAnnotation(Alternative.class) != null;
         }
         
-        if(isAlternative && !webBeansContext.getAlternativesManager().isBeanHasAlternative(bean))
+        if(isAlternative && !webBeansContext.getAlternativesManager().isAlternative(beanType, stereotypes))
         {
-            bean.setEnabled(false);
+            return false;
         }
+        return true;
     }
-
 
     public static boolean hasInjectionTargetBeanAnnotatedWithAlternative(InjectionTargetBean<?> bean)
     {
-        Asserts.assertNotNull(bean, "bean can not be null");
+        return hasInjectionTargetBeanAnnotatedWithAlternative(bean.getReturnType(), bean.getStereotypes());
+    }
+    
+    public static boolean hasInjectionTargetBeanAnnotatedWithAlternative(Class<?> beanType, Set<Class<? extends Annotation>> stereotypes)
+    {
+        Asserts.assertNotNull(beanType, "bean type can not be null");
+        Asserts.assertNotNull(stereotypes, "stereotypes can not be null");
 
         boolean alternative = false;
 
-        if(AnnotationUtil.hasClassAnnotation(bean.getBeanClass(), Alternative.class))
+        if(AnnotationUtil.hasClassAnnotation(beanType, Alternative.class))
         {
             alternative = true;
         }
 
         if(!alternative)
         {
-            Set<Class<? extends Annotation>> stereotypes = bean.getStereotypes();
             for(Class<? extends Annotation> stereoType : stereotypes)
             {
                 if(AnnotationUtil.hasClassAnnotation(stereoType, Alternative.class))

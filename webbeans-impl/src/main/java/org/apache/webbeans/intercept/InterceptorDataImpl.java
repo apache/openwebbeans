@@ -432,8 +432,6 @@ public class InterceptorDataImpl implements InterceptorData
                 CreationalContext<?> creationalContext = manager.createCreationalContext(webBeansInterceptor);
                 interceptor = manager.getReference(webBeansInterceptor, actualInterceptor.getBeanClass(), creationalContext);
 
-                actualInterceptor.setInjections(interceptor, creationalContext);
-
                 ownerCreationalContext.addDependent(ownerInstance, (WebBeansInterceptorBeanPleaseRemove<Object>) webBeansInterceptor, interceptor);
             }
             return interceptor;

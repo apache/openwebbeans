@@ -18,10 +18,7 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -46,38 +43,6 @@ public interface InjectionTargetBean<T> extends OwbBean<T>
      * @param creationalContext creational context
      */
     public void injectResources(T instance, CreationalContext<T> creationalContext);
-    
-    /**
-     * Inject fields and methods of the bean instance.
-     * 
-     * @param instance bean instance
-     * @param creationalContext creational context
-     */
-    public void injectFieldsAndMethods(T instance, CreationalContext<T> creationalContext);
-        
-    /**
-     * Gets all injected fields of bean.
-     * @return all injected fields
-     */
-    public Set<Field> getInjectedFields();
-
-    /**
-     * Adds new injected field.
-     * @param field new injected field
-     */
-    public void addInjectedField(Field field);
-    
-    /**
-     * Gets injected methods.
-     * @return injected(initializer) methods
-     */
-    public Set<Method> getInjectedMethods();
-
-    /**
-     * Adds new injected method.
-     * @param method new injected method
-     */
-    public void addInjectedMethod(Method method);
 
     /**
      * Gets inherited meta data.

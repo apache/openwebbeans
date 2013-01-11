@@ -21,7 +21,6 @@ package org.apache.webbeans.intercept.webbeans;
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -295,36 +294,19 @@ public class WebBeansInterceptorBeanPleaseRemove<T> extends AbstractOwbBean<T> i
         
         return proxy;
     }
-
-    public void setInjections(Object proxy, CreationalContext<?> creationalContext)
-    {
-        // Set injected fields
-        ManagedBean<T> delegate = (ManagedBean<T>) delegateBean;
-
-        Set<Field> injectedFields = delegate.getInjectedFields();
-        for (Field injectedField : injectedFields)
-        {
-            injectField(injectedField, proxy, creationalContext);            
-        }
-        
-
-        Set<Method> injectedMethods = delegate.getInjectedMethods();
-        for (Method injectedMethod : injectedMethods)
-        {
-            injectMethod(injectedMethod, proxy, creationalContext);            
-        }        
-    }
     
     private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableField f = new InjectableField(field, instance, new InjectionTargetImpl<T>(getInjectionPoints()), (CreationalContextImpl) creationalContext);
+        InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(getAnnotatedType(), getInjectionPoints(), getWebBeansContext());
+        InjectableField f = new InjectableField(field, instance, injectionTarget, (CreationalContextImpl) creationalContext);
         f.doInjection();        
     }
 
     @SuppressWarnings("unchecked")
     private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableMethod m = new InjectableMethod(method, instance, new InjectionTargetImpl<T>(getInjectionPoints()), (CreationalContextImpl) creationalContext);
+        InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(getAnnotatedType(), getInjectionPoints(), getWebBeansContext());
+        InjectableMethod m = new InjectableMethod(method, instance, injectionTarget, (CreationalContextImpl) creationalContext);
         m.doInjection();        
     }
     

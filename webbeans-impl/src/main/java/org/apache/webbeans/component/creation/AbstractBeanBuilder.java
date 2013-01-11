@@ -36,6 +36,8 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.Nonbinding;
@@ -47,6 +49,7 @@ import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.NamedLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.event.EventUtil;
@@ -77,11 +80,15 @@ public abstract class AbstractBeanBuilder<T>
     
     private Class<? extends Annotation> scope;
 
+    private Set<Type> apiTypes = new HashSet<Type>();
+    
     private Set<Annotation> qualifiers = new HashSet<Annotation>();
     
     private Set<Class<? extends Annotation>> stereotypes = new HashSet<Class<? extends Annotation>>();
     
     private boolean serializable = false;
+
+    private Set<AnnotatedMember<? super T>> injectionPoints = new HashSet<AnnotatedMember<? super T>>();
 
     public AbstractBeanBuilder(AbstractOwbBean<T> bean, Annotated annotated)
     {
@@ -105,6 +112,11 @@ public abstract class AbstractBeanBuilder<T>
     public Class<? extends Annotation> getScope()
     {
         return scope;
+    }
+
+    protected Set<Class<? extends Annotation>> getStereotypes()
+    {
+        return stereotypes;
     }
 
     /**
@@ -138,9 +150,9 @@ public abstract class AbstractBeanBuilder<T>
     public void defineApiType()
     {
         Set<Type> types = annotated.getTypeClosure();
-        bean.getTypes().addAll(types);
-        Set<String> ignored = bean.getWebBeansContext().getOpenWebBeansConfiguration().getIgnoredInterfaces();
-        for (Iterator<Type> i = bean.getTypes().iterator(); i.hasNext();)
+        apiTypes.addAll(types);
+        Set<String> ignored = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
+        for (Iterator<Type> i = apiTypes.iterator(); i.hasNext();)
         {
             Type t = i.next();
             if (t instanceof Class && ignored.contains(((Class<?>)t).getName()))
@@ -256,6 +268,11 @@ public abstract class AbstractBeanBuilder<T>
             qualifiers.add(new AnyLiteral());
         }
         
+    }
+
+    protected void addInjectionPoint(AnnotatedMember<? super T> member)
+    {
+        injectionPoints.add(member);
     }
 
     protected void defineInheritedQualifiers(Set<Annotation> qualifiers)
@@ -513,14 +530,24 @@ public abstract class AbstractBeanBuilder<T>
         }
         defineInheritedStereotypes(stereotypes);
     }
-    
-    protected <X> void addMethodInjectionPointMetaData(AnnotatedMethod<X> method)
+
+    protected <X> void addFieldInjectionPointMetaData(OwbBean<T> bean, AnnotatedField<X> annotField)
     {
-        List<InjectionPoint> injectionPoints = webBeansContext.getInjectionPointFactory().getMethodInjectionPointData(getBean(), method);
+        InjectionPoint injectionPoint = webBeansContext.getInjectionPointFactory().getFieldInjectionPointData(bean, annotField);
+        if (injectionPoint != null)
+        {
+            addImplicitComponentForInjectionPoint(injectionPoint);
+            bean.addInjectionPoint(injectionPoint);
+        }
+    }
+    
+    protected <X> void addMethodInjectionPointMetaData(OwbBean<T> bean, AnnotatedMethod<X> method)
+    {
+        List<InjectionPoint> injectionPoints = webBeansContext.getInjectionPointFactory().getMethodInjectionPointData(bean, method);
         for (InjectionPoint injectionPoint : injectionPoints)
         {
             addImplicitComponentForInjectionPoint(injectionPoint);
-            getBean().addInjectionPoint(injectionPoint);
+            bean.addInjectionPoint(injectionPoint);
         }
     }
     
@@ -539,9 +566,22 @@ public abstract class AbstractBeanBuilder<T>
     {
         bean.setName(beanName);
         bean.setImplScopeType(scope);
+        bean.getTypes().addAll(apiTypes);
         bean.getQualifiers().addAll(qualifiers);
         bean.getStereotypes().addAll(stereotypes);
         bean.setSerializable(serializable);
+        for (Iterator<AnnotatedMember<? super T>> memberIterator = injectionPoints.iterator(); memberIterator.hasNext();)
+        {
+            AnnotatedMember<? super T> member = memberIterator.next();
+            if (member instanceof AnnotatedField)
+            {
+                addFieldInjectionPointMetaData(bean, (AnnotatedField<?>) member);
+            }
+            else if (member instanceof AnnotatedMethod)
+            {
+                addMethodInjectionPointMetaData(bean, (AnnotatedMethod<?>) member);
+            }
+        }
         return bean;
     }
 
