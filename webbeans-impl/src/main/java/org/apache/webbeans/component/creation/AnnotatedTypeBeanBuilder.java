@@ -44,7 +44,7 @@ public class AnnotatedTypeBeanBuilder<T> extends ManagedBeanBuilder<T>
     {
         try
         {
-            addConstructorInjectionPointMetaData();
+            super.defineConstructor();
         }
         catch(Exception e)
         {

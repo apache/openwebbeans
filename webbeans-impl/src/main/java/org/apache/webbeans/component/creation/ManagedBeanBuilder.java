@@ -70,6 +70,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
 {
     private final WebBeansContext webBeansContext;
+    private AnnotatedConstructor<T> constructor;
     
     /**
      * Creates a new creator.
@@ -103,7 +104,7 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
      */
     public void defineConstructor()
     {
-        addConstructorInjectionPointMetaData();
+        constructor = getBeanConstructor();
     }
 
     /**
@@ -112,6 +113,7 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
     public ManagedBean<T> getBean()
     {
         ManagedBean<T> bean = (ManagedBean<T>)super.getBean();
+        addConstructorInjectionPointMetaData(bean);
         return bean;
     }
 
@@ -145,13 +147,13 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         defineInjectedMethods();
 
         Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
+        ManagedBean<T> managedBean = getBean();
         if(isEnabled())
         {
-            observerMethods = defineObserverMethods();
+            observerMethods = defineObserverMethods(managedBean);
         }
-        ManagedBean<T> managedBean = getBean();
-        Set<ProducerMethodBean<?>> producerMethods = defineProducerMethods();
-        Set<ProducerFieldBean<?>> producerFields = defineProducerFields();
+        Set<ProducerMethodBean<?>> producerMethods = defineProducerMethods(managedBean);
+        Set<ProducerFieldBean<?>> producerFields = defineProducerFields(managedBean);
 
         //Put final InjectionTarget instance
         managedBean.setProducer(processInjectionTargetEvent.getInjectionTarget());
@@ -330,17 +332,20 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         return result;
     }
     
-    protected void addConstructorInjectionPointMetaData()
+    protected void addConstructorInjectionPointMetaData(ManagedBean<T> bean)
     {
+        if (constructor == null)
+        {
+            return;
+        }
         InjectionPointFactory injectionPointFactory = webBeansContext.getInjectionPointFactory();
-        AnnotatedConstructor<T> beanConstructor = getBeanConstructor();
-        List<InjectionPoint> injectionPoints = injectionPointFactory.getConstructorInjectionPointData(getBean(), beanConstructor);
+        List<InjectionPoint> injectionPoints = injectionPointFactory.getConstructorInjectionPointData(bean, constructor);
         for (InjectionPoint injectionPoint : injectionPoints)
         {
             addImplicitComponentForInjectionPoint(injectionPoint);
-            getBean().addInjectionPoint(injectionPoint);
+            bean.addInjectionPoint(injectionPoint);
         }
-        getBean().setConstructor(beanConstructor.getJavaMember());
+        bean.setConstructor(constructor.getJavaMember());
     }
 
     public void addConstructorInjectionPointMetaData(Constructor<T> constructor)

@@ -839,6 +839,7 @@ public class BeansDeployer
                 annotationTypeSet = true;
             }
 
+            
             GProcessInjectionTarget processInjectionTarget = null;
             if(processInjectionTargetEvent == null)
             {

@@ -83,12 +83,12 @@ public final class EjbUtility
         ejbBeanCreator.defineScopeType("Session Bean implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations");
         ejbBeanCreator.defineName();            
         ejbBeanCreator.defineQualifiers();
-        Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods();        
+        Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods(ejbBean);        
         checkProducerMethods(producerMethodBeans, ejbBean);
-        Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields();           
+        Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields(ejbBean);           
         ejbBeanCreator.defineInjectedFields();
         ejbBeanCreator.defineInjectedMethods();
-        Set<ObserverMethod<?>> observerMethods = ejbBeanCreator.defineObserverMethods();        
+        Set<ObserverMethod<?>> observerMethods = ejbBeanCreator.defineObserverMethods(ejbBean);        
         
         //Fires ProcessInjectionTarget
         ProcessInjectionTargetImpl<T> processInjectionTargetEvent =
@@ -179,9 +179,9 @@ public final class EjbUtility
 
         final EjbBeanBuilder<T> ejbBeanCreator = new EjbBeanBuilder<T>(ejbBean);
 
-        final Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods();
+        final Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods(ejbBean);
 
-        final Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields();
+        final Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields(ejbBean);
 
         checkProducerMethods(producerMethodBeans, ejbBean);
 

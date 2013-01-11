@@ -26,11 +26,13 @@ import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class NamedProducerTest extends AbstractUnitTest
 {
 
+    @Ignore
     @Test
     public void testNamedProducer()
     {

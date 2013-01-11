@@ -48,6 +48,7 @@ import javax.inject.Named;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
@@ -342,7 +343,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
     /**
      * {@inheritDoc}
      */
-    public Set<ObserverMethod<?>> defineObserverMethods()
+    public Set<ObserverMethod<?>> defineObserverMethods(InjectionTargetBean<T> bean)
     {   
         Set<ObserverMethod<?>> definedObservers = new HashSet<ObserverMethod<?>>();
         Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();    
@@ -380,7 +381,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                 addInjectionPoint(annotatedMethod);
                 
                 //Looking for ObserverMethod
-                ObserverMethod<?> definedObserver = webBeansContext.getBeanManagerImpl().getNotificationManager().getObservableMethodForAnnotatedMethod(annotatedMethod, getBean());
+                ObserverMethod<?> definedObserver = webBeansContext.getBeanManagerImpl().getNotificationManager().getObservableMethodForAnnotatedMethod(annotatedMethod, bean);
                 if(definedObserver != null)
                 {
                     definedObservers.add(definedObserver);
@@ -422,7 +423,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
     /**
      * {@inheritDoc}
      */
-    public Set<ProducerFieldBean<?>> defineProducerFields()
+    public Set<ProducerFieldBean<?>> defineProducerFields(AbstractInjectionTargetBean<T> bean)
     {
         Set<ProducerFieldBean<?>> producerBeans = new HashSet<ProducerFieldBean<?>>();
         Set<AnnotatedField<? super T>> annotatedFields = getAnnotated().getFields();        
@@ -466,11 +467,11 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                         }
                         
                         ResourceBeanBuilder<T, Annotation> resourceBeanCreator
-                            = new ResourceBeanBuilder<T, Annotation>(getBean(), resourceRef, annotatedField);
+                            = new ResourceBeanBuilder<T, Annotation>(bean, resourceRef, annotatedField);
+                        resourceBeanCreator.defineQualifiers();
                         ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
                         
                         resourceBean.getTypes().addAll(annotatedField.getTypeClosure());
-                        resourceBeanCreator.defineQualifiers();
                         resourceBean.setImplScopeType(Dependent.class);
                         resourceBean.setProducerField(field);
                         
@@ -479,7 +480,13 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                 }
                 else
                 {
-                    ProducerFieldBeanBuilder<T> producerFieldBeanCreator = new ProducerFieldBeanBuilder<T>(getBean(), annotatedField);
+                    ProducerFieldBeanBuilder<T> producerFieldBeanCreator = new ProducerFieldBeanBuilder<T>(bean, annotatedField);
+                    producerFieldBeanCreator.defineSerializable();
+                    producerFieldBeanCreator.defineStereoTypes();
+                    producerFieldBeanCreator.defineScopeType("Annotated producer field: " + annotatedField +  "must declare default @Scope annotation");
+                    producerFieldBeanCreator.checkUnproxiableApiType();
+                    producerFieldBeanCreator.defineQualifiers();
+                    producerFieldBeanCreator.defineName(WebBeansUtil.getProducerDefaultName(annotatedField.getJavaMember().getName()));
                     ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
                     producerFieldBean.setProducerField(field);
                     
@@ -488,12 +495,10 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                         producerFieldBean.setNullable(false);
                     }                    
 
-                    producerFieldBeanCreator.defineSerializable();
-                    producerFieldBeanCreator.defineStereoTypes();
-                    webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(getBean(), producerFieldBean, anns);
+                    webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean, producerFieldBean, anns);
                     if (producerFieldBean.getReturnType().isArray())
                     {
-                        // TODO this special handling should not be necessary, seems to be a bug in the tck
+                        // 3.3.1
                         producerFieldBean.getTypes().add(Object.class);
                         producerFieldBean.getTypes().add(producerFieldBean.getReturnType());
                     }
@@ -501,13 +506,9 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                     {
                         producerFieldBean.getTypes().addAll(annotatedField.getTypeClosure());
                     }
-                    producerFieldBeanCreator.defineScopeType("Annotated producer field: " + annotatedField +  "must declare default @Scope annotation");
-                    producerFieldBeanCreator.checkUnproxiableApiType();
                     WebBeansUtil.checkProducerGenericType(producerFieldBean,annotatedField.getJavaMember());
-                    producerFieldBeanCreator.defineQualifiers();
-                    producerFieldBeanCreator.defineName(WebBeansUtil.getProducerDefaultName(annotatedField.getJavaMember().getName()));
                     
-                    producerBeans.add(producerFieldBeanCreator.getBean());
+                    producerBeans.add(producerFieldBean);
                 }
             }
         }
@@ -518,7 +519,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
     /**
      * {@inheritDoc}
      */
-    public Set<ProducerMethodBean<?>> defineProducerMethods()
+    public Set<ProducerMethodBean<?>> defineProducerMethods(AbstractInjectionTargetBean<T> bean)
     {
         Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
         Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();
@@ -539,23 +540,29 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                     specialize = true;
                 }
                 
-                ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<T>(getBean(), annotatedMethod);
-                ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
-                producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
+                ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<T>(bean, annotatedMethod);
                 
                 if(specialize)
                 {
                     producerMethodBeanCreator.configureProducerSpecialization((AnnotatedMethod<T>) annotatedMethod);
                 }
                 
+                producerMethodBeanCreator.defineSerializable();
+                producerMethodBeanCreator.defineStereoTypes();
+                producerMethodBeanCreator.defineScopeType("Annotated producer method : " + annotatedMethod
+                        +  "must declare default @Scope annotation");
+                producerMethodBeanCreator.checkUnproxiableApiType();
+                producerMethodBeanCreator.defineQualifiers();
+                
+                producerMethodBeanCreator.addInjectionPoint(annotatedMethod);
+                ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
+                producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
                 if (ClassUtil.getClass(annotatedMethod.getBaseType()).isPrimitive())
                 {
                     producerMethodBean.setNullable(false);
                 }
                 
-                producerMethodBeanCreator.defineSerializable();
-                producerMethodBeanCreator.defineStereoTypes();
-                webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(getBean(),
+                webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
                                                                                    producerMethodBean,
                                                                                    AnnotationUtil.asArray(annotatedMethod.getAnnotations()));
 
@@ -569,14 +576,8 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                 {
                     producerMethodBean.getTypes().addAll(annotatedMethod.getTypeClosure());
                 }
-                producerMethodBeanCreator.defineScopeType("Annotated producer method : " + annotatedMethod
-                                                          +  "must declare default @Scope annotation");
-                producerMethodBeanCreator.checkUnproxiableApiType();
-                WebBeansUtil.checkProducerGenericType(producerMethodBeanCreator.getBean(), annotatedMethod.getJavaMember());
+                WebBeansUtil.checkProducerGenericType(producerMethodBean, annotatedMethod.getJavaMember());
                 producerMethodBeanCreator.defineName(WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
-                producerMethodBeanCreator.defineQualifiers();
-                
-                producerMethodBeanCreator.addInjectionPoint(annotatedMethod);
                 producerBeans.add(producerMethodBeanCreator.getBean());
                 
             }

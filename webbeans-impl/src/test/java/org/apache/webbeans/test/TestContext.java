@@ -522,31 +522,33 @@ public abstract class TestContext implements ITestContext
         }
 
         ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(webBeansContext, anntotatedType);
+        managedBeanCreator.defineSerializable();
+        managedBeanCreator.defineStereoTypes();
+        
+        managedBeanCreator.defineApiType();
+        managedBeanCreator.defineScopeType("Simple WebBean Component implementation class : " + clazz.getName()
+                + " stereotypes must declare same @Scope annotations");
+        
+        managedBeanCreator.checkCreateConditions();
+        managedBeanCreator.defineName();
+        managedBeanCreator.defineQualifiers();
+        managedBeanCreator.defineEnabled();
+        Constructor<T> constructor = webBeansContext.getWebBeansUtil().defineConstructor(clazz);
+        managedBeanCreator.addConstructorInjectionPointMetaData(constructor);
+        managedBeanCreator.defineInjectedFields();
+        managedBeanCreator.defineInjectedMethods();
         ManagedBean<T> component = managedBeanCreator.getBean();
         component.setProducer(new InjectionTargetProducer(component));
 
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(component);
 
-        managedBeanCreator.defineSerializable();
-        managedBeanCreator.defineStereoTypes();
 
-        managedBeanCreator.defineApiType();
-        managedBeanCreator.defineScopeType("Simple WebBean Component implementation class : " + clazz.getName()
-                                           + " stereotypes must declare same @Scope annotations");
-
-        managedBeanCreator.checkCreateConditions();
-        managedBeanCreator.defineName();
-        managedBeanCreator.defineQualifiers();
-        managedBeanCreator.defineEnabled();
-
-        Constructor<T> constructor = webBeansContext.getWebBeansUtil().defineConstructor(clazz);
         component.setConstructor(constructor);
-        managedBeanCreator.addConstructorInjectionPointMetaData(constructor);
 
         //Dropped from the speicification
         //WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "Simple WebBean Component implementation class : " + clazz.getName());
 
-        Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods();
+        Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods(component);
         for (ProducerMethodBean<?> producerMethod : producerMethods)
         {
             // add them one after the other to enable serialization handling et al
@@ -554,7 +556,7 @@ public abstract class TestContext implements ITestContext
             producerMethod.setProducer(new ProducerBeansProducer(producerMethod));
         }
 
-        Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields();
+        Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields(component);
         for (ProducerFieldBean<?> producerField : producerFields)
         {
             // add them one after the other to enable serialization handling et al
@@ -563,11 +565,9 @@ public abstract class TestContext implements ITestContext
         }
 
         managedBeanCreator.defineDisposalMethods();
-        managedBeanCreator.defineInjectedFields();
-        managedBeanCreator.defineInjectedMethods();
-        managedBeanCreator.defineObserverMethods();
+        managedBeanCreator.defineObserverMethods(component);
 
-        return managedBeanCreator.getBean();
+        return component;
     }
     
     /**

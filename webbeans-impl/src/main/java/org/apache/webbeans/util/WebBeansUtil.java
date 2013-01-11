@@ -636,8 +636,9 @@ public final class WebBeansUtil
     {
         Asserts.nullCheckForClass(clazz);
         ExtensionBeanBuilder<T> extensionBeanCreator = new ExtensionBeanBuilder<T>(webBeansContext, clazz);
-        extensionBeanCreator.defineObserverMethods();
-        return extensionBeanCreator.getBean();
+        ExtensionBean<T> bean = extensionBeanCreator.getBean();
+        extensionBeanCreator.defineObserverMethods(bean);
+        return bean;
     }
 
 
@@ -2362,18 +2363,19 @@ public final class WebBeansUtil
         managedBeanCreator.defineName();
         managedBeanCreator.defineQualifiers();
         managedBeanCreator.defineConstructor();
-        managedBeanCreator.defineProducerMethods();
-        managedBeanCreator.defineProducerFields();
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
-        managedBeanCreator.defineObserverMethods();
+        ManagedBean<T> managedBean = managedBeanCreator.getBean();
+        managedBeanCreator.defineProducerMethods(managedBean);
+        managedBeanCreator.defineProducerFields(managedBean);
+        managedBeanCreator.defineObserverMethods(managedBean);
 
-        WebBeansDecoratorConfig.configureDecorators(managedBeanCreator.getBean());
-        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(managedBeanCreator.getBean());
+        WebBeansDecoratorConfig.configureDecorators(managedBean);
+        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(managedBean);
 
         managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
 
-        return managedBeanCreator.getBean();
+        return managedBean;
     }
 
 
@@ -2502,22 +2504,23 @@ public final class WebBeansUtil
         managedBeanCreator.defineSerializable();
 
         //Check for Enabled via Alternative
-        setInjectionTargetBeanEnableFlag(managedBeanCreator.getBean());
+        managedBeanCreator.defineEnabled();
         managedBeanCreator.checkCreateConditions();
         managedBeanCreator.defineName();
         managedBeanCreator.defineQualifiers();
         managedBeanCreator.defineConstructor();
-        managedBeanCreator.defineProducerMethods();
-        managedBeanCreator.defineProducerFields();
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
-        managedBeanCreator.defineObserverMethods();
-        WebBeansDecoratorConfig.configureDecorators(managedBeanCreator.getBean());
-        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(managedBeanCreator.getBean());
+        ManagedBean<T> managedBean = managedBeanCreator.getBean();
+        managedBeanCreator.defineProducerMethods(managedBean);
+        managedBeanCreator.defineProducerFields(managedBean);
+        managedBeanCreator.defineObserverMethods(managedBean);
+        WebBeansDecoratorConfig.configureDecorators(managedBean);
+        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(managedBean);
 
         managedBeanCreator.defineDisposalMethods(); //Define disposal method after adding producers
 
-        return managedBeanCreator.getBean();
+        return managedBean;
     }
 
     @SuppressWarnings("unchecked")
