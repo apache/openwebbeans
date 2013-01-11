@@ -30,7 +30,6 @@ import java.util.Set;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ExceptionUtil;
 
 /**

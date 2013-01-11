@@ -19,8 +19,15 @@
 package org.apache.webbeans.component.creation;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
+
+import java.util.List;
+import java.util.Set;
 
 import org.apache.webbeans.component.InterceptorBean;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 
 
 /**
@@ -40,6 +47,24 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
      * @return <code>true</code> if the Interceptor is enabled and a Bean should get created
      */
     public abstract boolean isInterceptorEnabled();
+
+    protected void checkInterceptorConditions()
+    {
+        Set<AnnotatedMethod<? super T>> methods = getAnnotated().getMethods();
+        for(AnnotatedMethod method : methods)
+        {
+            List<AnnotatedParameter> parms = method.getParameters();
+            for (AnnotatedParameter parameter : parms)
+            {
+                if (parameter.isAnnotationPresent(Produces.class))
+                {
+                    throw new WebBeansConfigurationException("Interceptor class : " + getBeanType()
+                            + " can not have producer methods but it has one with name : "
+                            + method.getJavaMember().getName());
+                }
+            }
+        }
+    }
 
     protected void defineInterceptorRules()
     {

@@ -21,8 +21,12 @@ package org.apache.webbeans.component.creation;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 
+import java.lang.annotation.Annotation;
+
 import org.apache.webbeans.component.CdiInterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.util.ArrayUtil;
 
 /**
  * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
@@ -36,6 +40,7 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T>
 
     public void defineCdiInterceptorRules()
     {
+        checkInterceptorConditions();
         defineInterceptorBindings();
         defineInterceptorRules();
 
@@ -48,7 +53,14 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T>
 
     protected void defineInterceptorBindings()
     {
+        Annotation[] bindings = webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(getAnnotated().getAnnotations());
+        if (bindings == null || bindings.length == 0)
+        {
+            throw new WebBeansConfigurationException("WebBeans Interceptor class : " + getBeanType()
+                    + " must have at least one @InterceptorBinding annotation");
+        }
 
+        getBean().setInterceptorBindings(ArrayUtil.asSet(bindings));
     }
 
     public CdiInterceptorBean<T> getBean()

@@ -20,7 +20,7 @@ package org.apache.webbeans.newtests.interceptors.resolution;
 
 
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Interceptor;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -52,6 +52,7 @@ public class InterceptorBeanBuilderTest extends AbstractUnitTest
         startContainer(beanClasses, beanXmls);
 
         {
+            // take an Interceptor class which is not listed in beans.xml and verify that is is not enabled
             AnnotatedType<SecureAndTransactionalInterceptor> annotatedType = getBeanManager().createAnnotatedType(SecureAndTransactionalInterceptor.class);
 
             CdiInterceptorBeanBuilder<SecureAndTransactionalInterceptor> ibb
@@ -65,8 +66,11 @@ public class InterceptorBeanBuilderTest extends AbstractUnitTest
             CdiInterceptorBeanBuilder<TransactionalInterceptor> ibb
                     = new CdiInterceptorBeanBuilder<TransactionalInterceptor>(getWebBeansContext(), annotatedType);
             ibb.defineCdiInterceptorRules();
-            Bean<TransactionalInterceptor> bean = ibb.getBean();
+            Interceptor<TransactionalInterceptor> bean = ibb.getBean();
             Assert.assertNotNull(bean);
+            Assert.assertNotNull(bean.getInterceptorBindings());
+            Assert.assertEquals(1, bean.getInterceptorBindings().size());
+
         }
 
         shutDownContainer();

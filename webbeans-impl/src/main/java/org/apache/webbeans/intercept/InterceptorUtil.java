@@ -366,11 +366,14 @@ public final class InterceptorUtil
                                                      + " must have at least one @InterceptorBinding annotation");
         }
 
-        checkLifecycleConditions(annotatedType, anns, "Lifecycle interceptor : " + annotatedType.getJavaClass().getName()
+        checkLifecycleConditions(annotatedType, annSet, "Lifecycle interceptor : " + annotatedType.getJavaClass().getName()
                                                       + " interceptor binding type must be defined as @Target{TYPE}");
     }
 
 
+    /**
+     * @deprecated moved to InteceptorBeanBuilder
+     */
     public void checkInterceptorConditions(AnnotatedType annotatedType)
     {
         Asserts.assertNotNull(annotatedType);
@@ -428,7 +431,7 @@ public final class InterceptorUtil
 
     }
 
-    public <T> void checkLifecycleConditions(AnnotatedType<T> annotatedType, Annotation[] annots, String errorMessage)
+    public <T> void checkLifecycleConditions(AnnotatedType<T> annotatedType, Set<Annotation> annots, String errorMessage)
     {
         if (isLifecycleMethodInterceptor(annotatedType) && !isBusinessMethodInterceptor(annotatedType))
         {
