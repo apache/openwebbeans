@@ -26,8 +26,9 @@ import javax.enterprise.context.spi.CreationalContext;
  * Defines spi for contexts.
  *
  * @version $Rev$ $Date$
+ * @deprecated we don't need the ContextualBag anymore
  */
-public interface WebBeansContext extends javax.enterprise.context.spi.Context
+public interface WebBeansContextRemove extends javax.enterprise.context.spi.Context
 {   
     /**
      * Initializes this contextual bag with

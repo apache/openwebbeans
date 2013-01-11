@@ -33,10 +33,10 @@ import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.container.SerializableBean;
 import org.apache.webbeans.container.SerializableBeanVault;
-import org.apache.webbeans.context.creational.BeanInstanceBag;
+import org.apache.webbeans.context.creational.BeanInstanceBagRemove;
 
 /**
- * Abstract implementation of the {@link WebBeansContext} interfaces.
+ * Abstract implementation of the {@link WebBeansContextRemove} interfaces.
  * 
  * @see javax.enterprise.context.spi.Context
  * @see RequestContext
@@ -45,7 +45,7 @@ import org.apache.webbeans.context.creational.BeanInstanceBag;
  * @see ApplicationContext
  * @see ConversationContext
  */
-public abstract class AbstractContext implements WebBeansContext, Serializable
+public abstract class AbstractContext implements WebBeansContextRemove, Serializable
 {
     private static final long serialVersionUID = 2357678967444477818L;
     /**Context status, active or not*/
@@ -53,7 +53,7 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
 
 
     /**Context contextual instances*/
-    protected Map<Contextual<?>, BeanInstanceBag<?>> componentInstanceMap = null;
+    protected Map<Contextual<?>, BeanInstanceBagRemove<?>> componentInstanceMap = null;
 
     /**Contextual Scope Type*/
     protected Class<? extends Annotation> scopeType;
@@ -75,7 +75,7 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     @SuppressWarnings("unchecked")
     private <T> void createContextualBag(Contextual<T> contextual, CreationalContext<T> creationalContext)
     {
-        BeanInstanceBag<T> bag = new BeanInstanceBag<T>(creationalContext);
+        BeanInstanceBagRemove<T> bag = new BeanInstanceBagRemove<T>(creationalContext);
         
         if(componentInstanceMap instanceof ConcurrentMap)
         {
@@ -112,7 +112,7 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     {
         checkActive();
 
-        BeanInstanceBag bag = componentInstanceMap.get(component);
+        BeanInstanceBagRemove bag = componentInstanceMap.get(component);
         
         if(bag != null)
         {
@@ -141,11 +141,11 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
         T instance;
         
         //Look for bag
-        BeanInstanceBag<T> bag = (BeanInstanceBag<T>)componentInstanceMap.get(contextual);        
+        BeanInstanceBagRemove<T> bag = (BeanInstanceBagRemove<T>)componentInstanceMap.get(contextual);
         if(bag == null)
         {
             createContextualBag(contextual, creationalContext);
-            bag = (BeanInstanceBag<T>)componentInstanceMap.get(contextual);
+            bag = (BeanInstanceBagRemove<T>)componentInstanceMap.get(contextual);
         }
 
         //Look for instance
@@ -177,7 +177,7 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     @SuppressWarnings("unchecked")
     public <T> CreationalContext<T> getCreationalContext(Contextual<T> contextual)
     {
-        BeanInstanceBag<?> bag = componentInstanceMap.get(contextual);
+        BeanInstanceBagRemove<?> bag = componentInstanceMap.get(contextual);
         if (bag != null)
         {
             return (CreationalContext<T>) bag.getBeanCreationalContext();
@@ -205,15 +205,15 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     @SuppressWarnings("unchecked")
     public void destroy()
     {
-        Set<Entry<Contextual<?>, BeanInstanceBag<?>>> entrySet = componentInstanceMap.entrySet();
-        Iterator<Entry<Contextual<?>, BeanInstanceBag<?>>> it = entrySet.iterator();
+        Set<Entry<Contextual<?>, BeanInstanceBagRemove<?>>> entrySet = componentInstanceMap.entrySet();
+        Iterator<Entry<Contextual<?>, BeanInstanceBagRemove<?>>> it = entrySet.iterator();
 
         Contextual<?> contextual;
         while (it.hasNext())
         {
             contextual = it.next().getKey();
             
-            BeanInstanceBag<?> instance = componentInstanceMap.get(contextual);
+            BeanInstanceBagRemove<?> instance = componentInstanceMap.get(contextual);
             //Get creational context
             CreationalContext<Object> cc = (CreationalContext<Object>)instance.getBeanCreationalContext();
 
@@ -284,10 +284,10 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
         {
             SerializableBeanVault sbv = org.apache.webbeans.config.WebBeansContext.getInstance().getSerializableBeanVault();
 
-            Map<Contextual<?>, BeanInstanceBag<?>> serializableInstanceMap =
-                    new HashMap<Contextual<?>, BeanInstanceBag<?>>();
+            Map<Contextual<?>, BeanInstanceBagRemove<?>> serializableInstanceMap =
+                    new HashMap<Contextual<?>, BeanInstanceBagRemove<?>>();
 
-            for (Map.Entry<Contextual<?>, BeanInstanceBag<?>> componentInstanceMapEntry : componentInstanceMap.entrySet())
+            for (Map.Entry<Contextual<?>, BeanInstanceBagRemove<?>> componentInstanceMapEntry : componentInstanceMap.entrySet())
             {
                 serializableInstanceMap.put(sbv.getSerializableBean(componentInstanceMapEntry.getKey()),
                                             componentInstanceMapEntry.getValue());
@@ -310,8 +310,8 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     {
         scopeType = (Class<? extends Annotation>) s.readObject();
 
-        HashMap<Contextual<?>, BeanInstanceBag<?>> serializableInstanceMap =
-                (HashMap<Contextual<?>, BeanInstanceBag<?>>) s.readObject();
+        HashMap<Contextual<?>, BeanInstanceBagRemove<?>> serializableInstanceMap =
+                (HashMap<Contextual<?>, BeanInstanceBagRemove<?>>) s.readObject();
 
         if (serializableInstanceMap != null)
         {
@@ -321,7 +321,7 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
                 throw new NotSerializableException("componentInstanceMap not initialized!");
             }
 
-            for (Map.Entry<Contextual<?>, BeanInstanceBag<?>> serializableInstanceMapEntry : serializableInstanceMap.entrySet())
+            for (Map.Entry<Contextual<?>, BeanInstanceBagRemove<?>> serializableInstanceMapEntry : serializableInstanceMap.entrySet())
             {
                 Contextual<?> bean = serializableInstanceMapEntry.getKey();
                 if (bean instanceof SerializableBean)

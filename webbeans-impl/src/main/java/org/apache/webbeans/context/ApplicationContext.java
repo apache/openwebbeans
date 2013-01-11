@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.Contextual;
 
-import org.apache.webbeans.context.creational.BeanInstanceBag;
+import org.apache.webbeans.context.creational.BeanInstanceBagRemove;
 
 /**
  * Application context implementation.
@@ -41,7 +41,7 @@ public class ApplicationContext extends AbstractContext
     @Override
     public void setComponentInstanceMap()
     {
-        componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
+        componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBagRemove<?>>();
 
     }
 
