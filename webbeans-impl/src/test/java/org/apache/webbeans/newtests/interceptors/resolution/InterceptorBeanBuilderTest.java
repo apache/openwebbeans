@@ -27,6 +27,7 @@ import java.util.Collection;
 import org.apache.webbeans.component.creation.CdiInterceptorBeanBuilder;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
+import org.apache.webbeans.test.component.intercept.webbeans.SecureAndTransactionalInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 import org.junit.Assert;
@@ -50,13 +51,24 @@ public class InterceptorBeanBuilderTest extends AbstractUnitTest
 
         startContainer(beanClasses, beanXmls);
 
-        AnnotatedType<TransactionalInterceptor> annotatedType = getBeanManager().createAnnotatedType(TransactionalInterceptor.class);
+        {
+            AnnotatedType<SecureAndTransactionalInterceptor> annotatedType = getBeanManager().createAnnotatedType(SecureAndTransactionalInterceptor.class);
 
-/*X TODO finish
-        CdiInterceptorBeanBuilder<TransactionalInterceptor> ibb
-                = new CdiInterceptorBeanBuilder<TransactionalInterceptor>(getWebBeansContext(), annotatedType);
-        Bean<TransactionalInterceptor> bean = ibb.getBean();
-        Assert.assertNotNull(bean);
-*/
+            CdiInterceptorBeanBuilder<SecureAndTransactionalInterceptor> ibb
+                    = new CdiInterceptorBeanBuilder<SecureAndTransactionalInterceptor>(getWebBeansContext(), annotatedType);
+            Assert.assertFalse(ibb.isInterceptorEnabled());
+        }
+
+        {
+            AnnotatedType<TransactionalInterceptor> annotatedType = getBeanManager().createAnnotatedType(TransactionalInterceptor.class);
+
+            CdiInterceptorBeanBuilder<TransactionalInterceptor> ibb
+                    = new CdiInterceptorBeanBuilder<TransactionalInterceptor>(getWebBeansContext(), annotatedType);
+            ibb.defineCdiInterceptorRules();
+            Bean<TransactionalInterceptor> bean = ibb.getBean();
+            Assert.assertNotNull(bean);
+        }
+
+        shutDownContainer();
     }
 }

@@ -335,6 +335,7 @@ public class InterceptorResolutionService
         /**
          * All the Interceptor Beans which are active on this class somewhere.
          * This is only used to create the Interceptor instances.
+         * The Interceptors are not sorted yet.
          */
         private Set<Interceptor<?>> interceptors = null;
 

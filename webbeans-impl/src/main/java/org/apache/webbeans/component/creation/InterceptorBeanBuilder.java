@@ -21,24 +21,32 @@ package org.apache.webbeans.component.creation;
 import javax.enterprise.context.Dependent;
 
 import org.apache.webbeans.component.InterceptorBean;
-import org.apache.webbeans.intercept.InterceptorResolutionService;
+
 
 /**
  * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
  */
 public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
 {
-    protected final InterceptorResolutionService interceptorResolutionService;
 
     protected InterceptorBeanBuilder(InterceptorBean<T> bean)
     {
         super(bean, Dependent.class);
-        interceptorResolutionService = bean.getWebBeansContext().getInterceptorResolutionService();
     }
 
-    protected void defineInterceptorBean()
+    /**
+     * If this method returns <code>false</code> the {@link #getBean()} method must not get called.
+     *
+     * @return <code>true</code> if the Interceptor is enabled and a Bean should get created
+     */
+    public abstract boolean isInterceptorEnabled();
+
+    protected void defineInterceptorRules()
     {
-
+        defineInjectedMethods();
+        defineInjectedFields();
     }
+
+
 
 }

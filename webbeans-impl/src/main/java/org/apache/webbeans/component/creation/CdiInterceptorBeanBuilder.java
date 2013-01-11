@@ -34,7 +34,19 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T>
         super(new CdiInterceptorBean<T>(webBeansContext, annotatedType));
     }
 
-    public void defineCdiInterceptorBean()
+    public void defineCdiInterceptorRules()
+    {
+        defineInterceptorBindings();
+        defineInterceptorRules();
+
+    }
+
+    public boolean isInterceptorEnabled()
+    {
+        return webBeansContext.getInterceptorsManager().isInterceptorClassEnabled(getBeanType());
+    }
+
+    protected void defineInterceptorBindings()
     {
 
     }

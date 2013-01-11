@@ -73,7 +73,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBeanBuilder<T>
 {    
     
-    private WebBeansContext webBeansContext;
+    protected WebBeansContext webBeansContext;
     private Set<AnnotatedMember<? super T>> injectionPoints = new HashSet<AnnotatedMember<? super T>>();
 
     /**

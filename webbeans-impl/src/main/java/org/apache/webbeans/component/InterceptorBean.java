@@ -49,8 +49,6 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
     public InterceptorBean(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
         super(webBeansContext, WebBeansType.INTERCEPTOR, annotatedType.getJavaClass(), annotatedType);
-
-        Asserts.assertNotNull(intercepts, "Interceptor does not handle any InterceptionTypes!");
     }
 
     private Set<InterceptionType> intercepts;

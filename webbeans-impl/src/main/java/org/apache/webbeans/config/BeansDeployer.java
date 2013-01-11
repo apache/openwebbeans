@@ -406,7 +406,7 @@ public class BeansDeployer
                     //If intercepted marker
                     if(bean instanceof InterceptedMarker)
                     {
-                        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>)bean);
+                        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>) bean);
                     }                                                            
                 }                
                 
@@ -862,7 +862,7 @@ public class BeansDeployer
                     managedBeanCreator.defineDecorator(processInjectionTargetEvent);
                 }
             }
-            else if(WebBeansUtil.isInterceptor(annotatedType))
+            else if(WebBeansUtil.isCdiInterceptor(annotatedType))
             {
                 if (logger.isLoggable(Level.FINE))
                 {

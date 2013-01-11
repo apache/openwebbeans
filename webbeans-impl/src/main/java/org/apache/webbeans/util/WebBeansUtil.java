@@ -2448,7 +2448,7 @@ public final class WebBeansUtil
     public boolean isAnnotatedTypeDecoratorOrInterceptor(AnnotatedType<?> annotatedType)
     {
         if(isDecorator(annotatedType) ||
-           isInterceptor(annotatedType))
+           isCdiInterceptor(annotatedType))
         {
             return true;
         }
@@ -2466,9 +2466,10 @@ public final class WebBeansUtil
     }
 
     /**
-     * @return <code>true</code> if this AnnotatedType represents an Interceptor
+     * @return <code>true</code> if this AnnotatedType represents a CDI Interceptor
+     *         defined via a {@link javax.interceptor.Interceptor} annotation
      */
-    public static boolean isInterceptor(AnnotatedType<?> annotatedType)
+    public static boolean isCdiInterceptor(AnnotatedType<?> annotatedType)
     {
         return annotatedType.isAnnotationPresent(javax.interceptor.Interceptor.class);
     }

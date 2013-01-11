@@ -238,6 +238,9 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         return managedBean;
     }
 
+    /**
+     * @deprecated replaced via the various {@link InterceptorBeanBuilder}s
+     */
     public void defineInterceptor(ProcessInjectionTarget<T> injectionTargetEvent)
     {
         Class<?> clazz = injectionTargetEvent.getAnnotatedType().getJavaClass();
