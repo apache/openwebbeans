@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.webbeans.intercept.InterceptorResolution;
+import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassMultiInterceptedClass;
@@ -51,7 +51,7 @@ import org.junit.Test;
 /**
  * Test interceptor resolution.
  */
-public class InterceptorResolutionTest  extends AbstractUnitTest
+public class InterceptorResolutionServiceTest extends AbstractUnitTest
 {
 
     @Test
@@ -67,11 +67,11 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         startContainer(beanClasses, beanXmls);
 
-        InterceptorResolution ir = new InterceptorResolution(getWebBeansContext());
+        InterceptorResolutionService ir = new InterceptorResolutionService(getWebBeansContext());
         AnnotatedType<ClassInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(ClassInterceptedClass.class);
         Bean<ClassInterceptedClass> bean = (Bean<ClassInterceptedClass>) getBeanManager().resolve(getBeanManager().getBeans(ClassInterceptedClass.class));
 
-        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
+        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getInterceptors());
@@ -79,11 +79,11 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         Assert.assertNull(interceptorInfo.getDecorators());
 
-        Map<Method, InterceptorResolution.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
+        Map<Method, InterceptorResolutionService.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
         Assert.assertNotNull(methodInterceptorInfos);
         Assert.assertEquals(7, methodInterceptorInfos.size());
 
-        for (InterceptorResolution.MethodInterceptorInfo mi : methodInterceptorInfos.values())
+        for (InterceptorResolutionService.MethodInterceptorInfo mi : methodInterceptorInfos.values())
         {
             Assert.assertEquals(1, mi.getCdiInterceptors().length);
         }
@@ -108,11 +108,11 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         startContainer(beanClasses, beanXmls);
 
-        InterceptorResolution ir = new InterceptorResolution(getWebBeansContext());
+        InterceptorResolutionService ir = new InterceptorResolutionService(getWebBeansContext());
         AnnotatedType<ClassMultiInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(ClassMultiInterceptedClass.class);
         Bean<ClassMultiInterceptedClass> bean = (Bean<ClassMultiInterceptedClass>) getBeanManager().resolve(getBeanManager().getBeans(ClassMultiInterceptedClass.class));
 
-        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
+        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getInterceptors());
@@ -120,11 +120,11 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         Assert.assertNull(interceptorInfo.getDecorators());
 
-        Map<Method, InterceptorResolution.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
+        Map<Method, InterceptorResolutionService.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
         Assert.assertNotNull(methodInterceptorInfos);
         Assert.assertEquals(6, methodInterceptorInfos.size());
 
-        for (InterceptorResolution.MethodInterceptorInfo mi : methodInterceptorInfos.values())
+        for (InterceptorResolutionService.MethodInterceptorInfo mi : methodInterceptorInfos.values())
         {
             Assert.assertEquals(3, mi.getCdiInterceptors().length);
         }
@@ -147,11 +147,11 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         startContainer(beanClasses, beanXmls);
 
-        InterceptorResolution ir = new InterceptorResolution(getWebBeansContext());
+        InterceptorResolutionService ir = new InterceptorResolutionService(getWebBeansContext());
         AnnotatedType<MethodInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(MethodInterceptedClass.class);
         Bean<MethodInterceptedClass> bean = (Bean<MethodInterceptedClass>) getBeanManager().resolve(getBeanManager().getBeans(MethodInterceptedClass.class));
 
-        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
+        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getInterceptors());
@@ -159,11 +159,11 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         Assert.assertNull(interceptorInfo.getDecorators());
 
-        Map<Method, InterceptorResolution.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
+        Map<Method, InterceptorResolutionService.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
         Assert.assertNotNull(methodInterceptorInfos);
         Assert.assertEquals(2, methodInterceptorInfos.size());
 
-        for (Map.Entry<Method, InterceptorResolution.MethodInterceptorInfo> mi : methodInterceptorInfos.entrySet())
+        for (Map.Entry<Method, InterceptorResolutionService.MethodInterceptorInfo> mi : methodInterceptorInfos.entrySet())
         {
             if (mi.getKey().getName().equals("getMeaningOfLife"))
             {
@@ -191,12 +191,12 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         startContainer(beanClasses, beanXmls);
 
-        InterceptorResolution ir = new InterceptorResolution(getWebBeansContext());
+        InterceptorResolutionService ir = new InterceptorResolutionService(getWebBeansContext());
         AnnotatedType<DecoratedClass> annotatedType = getBeanManager().createAnnotatedType(DecoratedClass.class);
         Bean<DecoratedClass> bean = (Bean<DecoratedClass>) getBeanManager().resolve(
                 getBeanManager().getBeans(DecoratedClass.class, new AnnotationLiteral<Binding1>() {}));
 
-        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
+        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getBusinessMethodsInfo());
@@ -220,11 +220,11 @@ public class InterceptorResolutionTest  extends AbstractUnitTest
 
         startContainer(beanClasses, beanXmls);
 
-        InterceptorResolution ir = new InterceptorResolution(getWebBeansContext());
+        InterceptorResolutionService ir = new InterceptorResolutionService(getWebBeansContext());
         AnnotatedType<InterceptedComponent> annotatedType = getBeanManager().createAnnotatedType(InterceptedComponent.class);
         Bean<InterceptedComponent> bean = (Bean<InterceptedComponent>) getBeanManager().resolve(getBeanManager().getBeans(InterceptedComponent.class));
 
-        InterceptorResolution.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
+        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
 /*X
         Assert.assertNotNull(interceptorInfo.getBusinessMethodsInfo());

@@ -27,13 +27,17 @@ import org.apache.webbeans.config.WebBeansContext;
 /**
  * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
  */
-public abstract class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T>
+public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T>
 {
-    protected CdiInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
+    public CdiInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
         super(new CdiInterceptorBean<T>(webBeansContext, annotatedType));
     }
 
+    public void defineCdiInterceptorBean()
+    {
+
+    }
 
     public CdiInterceptorBean<T> getBean()
     {

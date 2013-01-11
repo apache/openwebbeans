@@ -36,6 +36,7 @@ import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
+import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
@@ -55,6 +56,9 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
+ * This is the central point to manage the whole CDI container
+ * for a single application There is one WebBeansContext per BeanManagerImpl.
+ *
  * @version $Rev$ $Date$
  */
 public class WebBeansContext
@@ -85,6 +89,7 @@ public class WebBeansContext
     private final InterceptorUtil interceptorUtil = new InterceptorUtil(this);
     private final SecurityService securityService;
     private final LoaderService loaderService;
+    private final InterceptorResolutionService interceptorResolutionService = new InterceptorResolutionService(this);
     private ScannerService scannerService;
 
     public WebBeansContext()
@@ -152,6 +157,7 @@ public class WebBeansContext
         managerMap.put(PluginLoader.class, pluginLoader);
         managerMap.put(SerializableBeanVault.class, serializableBeanVault);
         managerMap.put(StereoTypeManager.class, stereoTypeManager);
+        managerMap.put(InterceptorResolutionService.class, interceptorResolutionService);
     }
 
     @Deprecated
@@ -302,6 +308,11 @@ public class WebBeansContext
     public InterceptorsManager getInterceptorsManager()
     {
         return interceptorsManager;
+    }
+
+    public InterceptorResolutionService getInterceptorResolutionService()
+    {
+        return interceptorResolutionService;
     }
 
     public PluginLoader getPluginLoader()

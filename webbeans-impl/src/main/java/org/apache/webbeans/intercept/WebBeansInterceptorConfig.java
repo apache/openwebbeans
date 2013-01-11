@@ -62,7 +62,7 @@ import java.util.logging.Logger;
  * @version $Rev$ $Date$
  * @see org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove
  *
- * @deprecated this class can most probably get removed. All important logic is contained in {@link InterceptorResolution}
+ * @deprecated this class can most probably get removed. All important logic is contained in {@link InterceptorResolutionService}
  */
 public final class WebBeansInterceptorConfig
 {
@@ -79,6 +79,7 @@ public final class WebBeansInterceptorConfig
     /**
      * Configure bean instance interceptor stack.
      * @param bean bean instance
+     * @deprecated old InterceptorData based config
      */
     public void defineBeanInterceptorStack(AbstractInjectionTargetBean<?> bean)
     {

@@ -49,12 +49,12 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
- * Class to calculate static interceptor resolution information.
+ * Class to calculate interceptor resolution information.
  *
  */
-public class InterceptorResolution
+public class InterceptorResolutionService
 {
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(InterceptorResolution.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(InterceptorResolutionService.class);
 
     private final WebBeansContext webBeansContext;
 
@@ -64,7 +64,7 @@ public class InterceptorResolution
     private final Class<? extends Annotation> aroundTimeoutClass;
 
 
-    public InterceptorResolution(WebBeansContext webBeansContext)
+    public InterceptorResolutionService(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
         ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();

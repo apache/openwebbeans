@@ -78,10 +78,14 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     /**
      * Holds the all of the interceptor related data, contains around-invoke,
      * post-construct and pre-destroy
+     * @deprecated old InterceptorData based config
      */
     protected List<InterceptorData> interceptorStack = new ArrayList<InterceptorData>();
 
-    /**Decorators*/
+    /**
+     * Decorators
+     * @deprecated will be replaced by InterceptorResolution logic
+     */
     protected List<Decorator<?>> decorators = new ArrayList<Decorator<?>>();
     
     /**Bean inherited meta data*/
