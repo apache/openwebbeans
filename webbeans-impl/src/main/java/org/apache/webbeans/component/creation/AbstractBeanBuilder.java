@@ -287,14 +287,6 @@ public abstract class AbstractBeanBuilder<T>
 
     public void defineScopeType(String errorMessage)
     {
-        defineScopeType(errorMessage, false);
-    }
-
-    /**
-     * @deprecated as we need to get rid of allowLazyInit
-     */
-    public void defineScopeType(String errorMessage, boolean allowLazyInit)
-    {
         Annotation[] annotations = AnnotationUtil.asArray(annotated.getAnnotations());
         boolean found = false;
 
@@ -363,12 +355,12 @@ public abstract class AbstractBeanBuilder<T>
 
         if (!found)
         {
-            defineDefaultScopeType(errorMessage, allowLazyInit);
+            defineDefaultScopeType(errorMessage);
         }
     }
 
 
-    private void defineDefaultScopeType(String exceptionMessage, boolean allowLazyInit)
+    private void defineDefaultScopeType(String exceptionMessage)
     {
         scope = defineInheritedScope();
         
@@ -425,40 +417,6 @@ public abstract class AbstractBeanBuilder<T>
                 }
             }
         }
-    }
-
-    /**
-     * TODO this should get improved.
-     * It might be enough to check for instanceof Produces and Decorates
-     *
-     *
-     * Check if the bean uses CDI features
-     * @param cls the Class to check
-     * @return <code>false</code> if the bean uses CDI annotations which define other beans somewhere
-     */
-    private boolean isPurePojoBean(WebBeansContext webBeansContext, Class<?> cls)
-    {
-        Class<?> superClass = cls.getSuperclass();
-
-        if ( superClass == Object.class || !isPurePojoBean(webBeansContext, superClass))
-        {
-            return false;
-        }
-
-        Set<String> annotations = webBeansContext.getScannerService().getAllAnnotations(cls.getSimpleName());
-        if (annotations != null)
-        {
-            for (String ann : annotations)
-            {
-                if (ann.startsWith("javax.inject") || ann.startsWith("javax.enterprise") || ann.startsWith("javax.interceptors"))
-                {
-                    return false;
-                }
-            }
-
-        }
-
-        return true;
     }
 
     /**

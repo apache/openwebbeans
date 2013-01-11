@@ -49,8 +49,7 @@ public class EjbBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         EjbValidator.validateDecoratorOrInterceptor(getBeanType());
     }
 
-    @Override
-    public void defineScopeType(String errorMessage, boolean allowLazyInit)
+    public void defineScopeType(String errorMessage)
     {
         super.defineScopeType(errorMessage);
 
