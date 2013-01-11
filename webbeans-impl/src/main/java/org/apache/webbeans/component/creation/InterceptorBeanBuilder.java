@@ -22,7 +22,11 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.InterceptionType;
+import javax.interceptor.AroundInvoke;
 
+import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -35,10 +39,12 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
  */
 public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
 {
+    private final InterceptorBean<T> bean;
 
     protected InterceptorBeanBuilder(InterceptorBean<T> bean)
     {
         super(bean, Dependent.class);
+        this.bean = bean;
     }
 
     /**
@@ -68,10 +74,62 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
 
     protected void defineInterceptorRules()
     {
+        defineInterceptorMethods();
         defineInjectedMethods();
         defineInjectedFields();
     }
 
+    /**
+     * grab all methods which act as interceptors for the various
+     * {@link javax.enterprise.inject.spi.InterceptionType}s.
+     * This method will also check some rules, e.g. that there must not be
+     * more than a single {@link javax.interceptor.AroundInvoke} method
+     * on a class.
+     */
+    protected void defineInterceptorMethods()
+    {
+        List<Class> classHierarchy = getClassHierarchy();
+
+        AnnotatedMethod aroundInvokeMethod = null;
+
+        Set<AnnotatedMethod<? super T>> methods = getAnnotated().getMethods();
+
+        for (Class clazz : classHierarchy)
+        {
+
+            for (AnnotatedMethod m : methods)
+            {
+                if (clazz == m.getDeclaringType().getJavaClass())
+                {
+
+                    // we only take methods from this very class and not sub- or superclasses
+                    if (m.getAnnotation(AroundInvoke.class) != null)
+                    {
+                        if (aroundInvokeMethod != null)
+                        {
+                            throw new WebBeansConfigurationException("only one AroundInvoke allowed per Interceptor");
+                        }
+                        aroundInvokeMethod = m;
+                    }
+
+
+                }
+            }
+        }
+
+        // and now for setting the bean info
+
+        Set<InterceptionType> intercepts = new HashSet<InterceptionType>();
+
+        if (aroundInvokeMethod != null)
+        {
+            bean.setAroundInvokeMethods(new Method[]{aroundInvokeMethod.getJavaMember()});
+            intercepts.add(InterceptionType.AROUND_INVOKE);
+        }
+
+
+        bean.setIntercepts(intercepts);
+    }
 
 
 }

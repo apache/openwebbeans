@@ -20,6 +20,7 @@ package org.apache.webbeans.newtests.interceptors.resolution;
 
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,8 +69,13 @@ public class InterceptorBeanBuilderTest extends AbstractUnitTest
             ibb.defineCdiInterceptorRules();
             Interceptor<TransactionalInterceptor> bean = ibb.getBean();
             Assert.assertNotNull(bean);
+
             Assert.assertNotNull(bean.getInterceptorBindings());
             Assert.assertEquals(1, bean.getInterceptorBindings().size());
+
+            Assert.assertTrue(bean.intercepts(InterceptionType.AROUND_INVOKE));
+            Assert.assertFalse(bean.intercepts(InterceptionType.AROUND_TIMEOUT));
+            Assert.assertFalse(bean.intercepts(InterceptionType.POST_CONSTRUCT));
 
         }
 

@@ -25,6 +25,7 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,7 +51,7 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
         super(webBeansContext, WebBeansType.INTERCEPTOR, annotatedType.getJavaClass(), annotatedType);
     }
 
-    private Set<InterceptionType> intercepts;
+    private Set<InterceptionType> intercepts = Collections.EMPTY_SET;
 
     /**
      * The Methods to be called for InterceptionType.AROUND_INVOKE.
@@ -147,7 +148,7 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
      * @param interceptionType
      * @return the underlying interceptor method for the given InterceptionType or <code>null</code>
      */
-    protected Method[] getInterceptorMethods(InterceptionType interceptionType)
+    public Method[] getInterceptorMethods(InterceptionType interceptionType)
     {
         if (InterceptionType.AROUND_INVOKE.equals(interceptionType))
         {

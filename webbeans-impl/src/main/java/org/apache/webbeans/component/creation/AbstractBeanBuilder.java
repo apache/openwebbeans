@@ -26,6 +26,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -113,6 +114,23 @@ public abstract class AbstractBeanBuilder<T>
     {
         //Sub-class can override this
     }
+
+    /**
+     * @return the Type hierarchy in the order subclass first. Object.class is <b>not</b> included!
+     */
+    protected List<Class> getClassHierarchy()
+    {
+        List<Class> hierarchy = new ArrayList<Class>();
+        Class clazz = getBeanType();
+        while (clazz != Object.class)
+        {
+            hierarchy.add(clazz);
+            clazz = clazz.getSuperclass();
+        }
+
+        return hierarchy;
+    }
+
 
     /**
      * {@inheritDoc}
