@@ -100,7 +100,7 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
      */
     private Method[] postActivateMethods;
 
-    public void setAroundInvokeMethods(Method[] aroundInvokeMethod)
+    public void setAroundInvokeMethods(Method[] aroundInvokeMethods)
     {
         this.aroundInvokeMethods = aroundInvokeMethods;
     }

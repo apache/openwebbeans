@@ -25,6 +25,7 @@ import javax.enterprise.inject.spi.Interceptor;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.webbeans.component.InterceptorBean;
 import org.apache.webbeans.component.creation.CdiInterceptorBeanBuilder;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
@@ -106,16 +107,22 @@ public class InterceptorBeanBuilderTest extends AbstractUnitTest
         CdiInterceptorBeanBuilder<TestInterceptor1> ibb
                 = new CdiInterceptorBeanBuilder<TestInterceptor1>(getWebBeansContext(), annotatedType);
         ibb.defineCdiInterceptorRules();
-        Interceptor<TestInterceptor1> bean = ibb.getBean();
+        InterceptorBean<TestInterceptor1> bean = ibb.getBean();
         Assert.assertNotNull(bean);
 
         Assert.assertTrue(bean.intercepts(InterceptionType.AROUND_INVOKE));
         Assert.assertTrue(bean.intercepts(InterceptionType.AROUND_TIMEOUT));
         Assert.assertTrue(bean.intercepts(InterceptionType.PRE_DESTROY));
         Assert.assertTrue(bean.intercepts(InterceptionType.POST_CONSTRUCT));
+
         Assert.assertFalse(bean.intercepts(InterceptionType.PRE_PASSIVATE));
         Assert.assertFalse(bean.intercepts(InterceptionType.POST_ACTIVATE));
         Assert.assertEquals(1, bean.getInterceptorBindings().size());
+
+        Assert.assertEquals(1, bean.getInterceptorMethods(InterceptionType.AROUND_INVOKE).length);
+        Assert.assertEquals(1, bean.getInterceptorMethods(InterceptionType.AROUND_TIMEOUT).length);
+        Assert.assertEquals(2, bean.getInterceptorMethods(InterceptionType.POST_CONSTRUCT).length);
+        Assert.assertEquals(2, bean.getInterceptorMethods(InterceptionType.PRE_DESTROY).length);
 
         shutDownContainer();
     }
