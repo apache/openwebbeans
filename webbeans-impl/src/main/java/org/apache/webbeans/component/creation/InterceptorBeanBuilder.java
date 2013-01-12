@@ -207,7 +207,48 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
             intercepts.add(InterceptionType.AROUND_INVOKE);
         }
 
+        if (postConstructMethods.size() > 0)
+        {
+            bean.setPostConstructMethods(getMethodArray(postConstructMethods));
+            intercepts.add(InterceptionType.POST_CONSTRUCT);
+        }
+        if (preDestroyMethods.size() > 0)
+        {
+            bean.setPreDestroyMethods(getMethodArray(preDestroyMethods));
+            intercepts.add(InterceptionType.PRE_DESTROY);
+        }
+        if (aroundTimeoutMethods.size() > 0)
+        {
+            bean.setAroundTimeoutMethods(getMethodArray(aroundTimeoutMethods));
+            intercepts.add(InterceptionType.AROUND_TIMEOUT);
+        }
+
+        if (prePassivateMethods.size() > 0)
+        {
+            bean.setPrePassivateMethods(getMethodArray(prePassivateMethods));
+            intercepts.add(InterceptionType.PRE_PASSIVATE);
+        }
+        if (postActivateMethods.size() > 0)
+        {
+            bean.setPostActivateMethods(getMethodArray(postActivateMethods));
+            intercepts.add(InterceptionType.POST_ACTIVATE);
+        }
+
         bean.setIntercepts(intercepts);
+    }
+
+    /**
+     * @return the a Method array with the native members of the AnnotatedMethod list
+     */
+    private Method[] getMethodArray(List<AnnotatedMethod> methodList)
+    {
+        Method[] methods = new Method[methodList.size()];
+        int i=0;
+        for (AnnotatedMethod am : methodList)
+        {
+            methods[i++] = am.getJavaMember();
+        }
+        return methods;
     }
 
     /**

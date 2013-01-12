@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.newtests.interceptors.common;
 
+import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
@@ -34,7 +35,8 @@ public class DependentInterceptor
     {
         refCount++;
     }
-    
+
+    @AroundInvoke
     public Object aroundInvoke(InvocationContext ctx) throws Exception
     {
         DEP_OK = true;
