@@ -26,7 +26,9 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,6 +37,7 @@ import java.util.Set;
 
 import org.apache.webbeans.component.InterceptorBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 
 
 /**
@@ -44,10 +47,25 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
 {
     private final InterceptorBean<T> bean;
 
+    private final OpenWebBeansEjbLCAPlugin ejbPlugin;
+    private final Class<? extends Annotation> prePassivateClass;
+    private final Class<? extends Annotation> postActivateClass;
+
     protected InterceptorBeanBuilder(InterceptorBean<T> bean)
     {
         super(bean, Dependent.class);
         this.bean = bean;
+        ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
+        if (ejbPlugin != null)
+        {
+            prePassivateClass = ejbPlugin.getPrePassivateClass();
+            postActivateClass = ejbPlugin.getPostActivateClass();
+        }
+        else
+        {
+            prePassivateClass = null;
+            postActivateClass = null;
+        }
     }
 
     /**
@@ -106,6 +124,11 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
         AnnotatedMethod aroundInvokeMethod = null;
         List<AnnotatedMethod> postConstructMethods = new ArrayList<AnnotatedMethod>();
         List<AnnotatedMethod> preDestroyMethods = new ArrayList<AnnotatedMethod>();
+        List<AnnotatedMethod> aroundTimeoutMethods = new ArrayList<AnnotatedMethod>();
+
+        // EJB related interceptors
+        List<AnnotatedMethod> prePassivateMethods = new ArrayList<AnnotatedMethod>();
+        List<AnnotatedMethod> postActivateMethods = new ArrayList<AnnotatedMethod>();
 
         Set<AnnotatedMethod<? super T>> methods = getAnnotated().getMethods();
 
@@ -143,6 +166,33 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
                     }
                     removeOverriddenMethod(preDestroyMethods, m);
 
+                    // AroundTimeout
+                    if (m.getAnnotation(AroundTimeout.class) != null)
+                    {
+                        checkSameClassInterceptors(aroundTimeoutMethods, m);
+                        aroundTimeoutMethods.add(m); // add at last position
+                    }
+                    removeOverriddenMethod(aroundTimeoutMethods, m);
+
+                    // and now the EJB related interceptors
+                    if (ejbPlugin != null)
+                    {
+                        // AroundTimeout
+                        if (m.getAnnotation(prePassivateClass) != null)
+                        {
+                            checkSameClassInterceptors(prePassivateMethods, m);
+                            prePassivateMethods.add(m); // add at last position
+                        }
+                        removeOverriddenMethod(prePassivateMethods, m);
+
+                        // AroundTimeout
+                        if (m.getAnnotation(AroundTimeout.class) != null)
+                        {
+                            checkSameClassInterceptors(postActivateMethods, m);
+                            postActivateMethods.add(m); // add at last position
+                        }
+                        removeOverriddenMethod(postActivateMethods, m);
+                    }
                 }
             }
         }
@@ -156,7 +206,6 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
             bean.setAroundInvokeMethods(new Method[]{aroundInvokeMethod.getJavaMember()});
             intercepts.add(InterceptionType.AROUND_INVOKE);
         }
-
 
         bean.setIntercepts(intercepts);
     }
