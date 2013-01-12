@@ -128,15 +128,15 @@ public abstract class AbstractBeanBuilder<T>
     }
 
     /**
-     * @return the Type hierarchy in the order subclass first. Object.class is <b>not</b> included!
+     * @return the Type hierarchy in the order superclass first. Object.class is <b>not</b> included!
      */
-    protected List<Class> getClassHierarchy()
+    protected List<Class> getReverseClassHierarchy()
     {
         List<Class> hierarchy = new ArrayList<Class>();
         Class clazz = getBeanType();
         while (clazz != Object.class)
         {
-            hierarchy.add(clazz);
+            hierarchy.add(0, clazz);
             clazz = clazz.getSuperclass();
         }
 

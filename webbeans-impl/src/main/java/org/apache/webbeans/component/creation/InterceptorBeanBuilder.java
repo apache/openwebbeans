@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.component.creation;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -26,7 +28,10 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.interceptor.AroundInvoke;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -80,17 +85,29 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
     }
 
     /**
-     * grab all methods which act as interceptors for the various
-     * {@link javax.enterprise.inject.spi.InterceptionType}s.
-     * This method will also check some rules, e.g. that there must not be
+     * <p>Grab all methods which act as interceptors for the various
+     * {@link javax.enterprise.inject.spi.InterceptionType}s.</p>
+     *
+     * <p>This method will also check some rules, e.g. that there must not be
      * more than a single {@link javax.interceptor.AroundInvoke} method
-     * on a class.
+     * on a class.</p>
+     *
+     * <p>For the interceptors where multiple are allowed, the following rules apply:
+     * <ul>
+     *     <li>Superclass methods first</li>
+     *     <li>Non-private methods override and derogates their superclass counterparts.</li>
+     *     <li>Private methods with the same signature stack (superclass first).</li>
+     *     <li>There must only be a single method for each InterceptorType in the same class.</li>
+     * </ul>
+     * </p>
      */
     protected void defineInterceptorMethods()
     {
-        List<Class> classHierarchy = getClassHierarchy();
+        List<Class> classHierarchy = getReverseClassHierarchy();
 
         AnnotatedMethod aroundInvokeMethod = null;
+        List<AnnotatedMethod> postConstructMethods = new ArrayList<AnnotatedMethod>();
+        List<AnnotatedMethod> preDestroyMethods = new ArrayList<AnnotatedMethod>();
 
         Set<AnnotatedMethod<? super T>> methods = getAnnotated().getMethods();
 
@@ -112,6 +129,19 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
                         aroundInvokeMethod = m;
                     }
 
+                    // PostConstruct
+                    if (m.getAnnotation(PostConstruct.class) != null)
+                    {
+                        postConstructMethods.add(m); // add at last position
+                    }
+                    checkMethodOverrides(postConstructMethods, clazz, m);
+
+                    // PreDestroy
+                    if (m.getAnnotation(PreDestroy.class) != null)
+                    {
+                        preDestroyMethods.add(m); // add at last position
+                    }
+                    checkMethodOverrides(preDestroyMethods, clazz, m);
 
                 }
             }
@@ -129,6 +159,72 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
 
 
         bean.setIntercepts(intercepts);
+    }
+
+    /**
+     * Check if the given annotatedMethod overrides some previously defined interceptorMethods
+     * and remove them if non-private.
+     * This will also detect if there are multiple methods for the same InterceptionType
+     * in the same class
+     */
+    private void checkMethodOverrides(List<AnnotatedMethod> alreadyDefinedMethods, Class clazz, AnnotatedMethod annotatedMethod)
+    {
+        String methodName = null;
+        Class<?>[] methodParameterTypes = null;
+
+        Iterator<AnnotatedMethod> it = alreadyDefinedMethods.iterator();
+        while (it.hasNext())
+        {
+            AnnotatedMethod alreadyDefined = it.next();
+
+            if (methodName == null)
+            {
+                methodName = annotatedMethod.getJavaMember().getName();
+                methodParameterTypes = annotatedMethod.getJavaMember().getParameterTypes();
+            }
+
+            // check for same class -> Exception
+            if (alreadyDefined.getDeclaringType().getJavaClass() ==  clazz)
+            {
+                throw new WebBeansConfigurationException("Only one Interceptor of a certain type is allowed per class, but multiple found in class "
+                                                         + annotatedMethod.getDeclaringType().getJavaClass().getName()
+                                                         + " methods: " + annotatedMethod.getJavaMember().toString()
+                                                         + " and " + alreadyDefined.getJavaMember().toString());
+            }
+
+            // check method overrides
+            if (!Modifier.isPrivate(alreadyDefined.getJavaMember().getModifiers()))
+            {
+                // we only scan non-private methods, as private methods cannot get overridden.
+                if (methodName.equals(alreadyDefined.getJavaMember().getName()) &&
+                    methodParameterTypes.length == alreadyDefined.getJavaMember().getParameterTypes().length)
+                {
+                    boolean overridden = true;
+                    // same name and param length so we need to check if all the paramTypes are equal.
+                    if (methodParameterTypes.length > 0)
+                    {
+                        Class<?>[] otherParamTypes = alreadyDefined.getJavaMember().getParameterTypes();
+
+                        for (int i = 0; i < otherParamTypes.length; i++)
+                        {
+                            if (!otherParamTypes[i].equals(methodParameterTypes[i]))
+                            {
+                                overridden = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (overridden)
+                    {
+                        // then we need to remove this method
+                        it.remove();
+                        continue;
+                    }
+                }
+            }
+        }
+
     }
 
 
