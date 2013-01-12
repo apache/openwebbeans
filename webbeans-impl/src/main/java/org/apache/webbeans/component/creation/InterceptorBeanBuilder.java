@@ -28,10 +28,8 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.interceptor.AroundInvoke;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -132,16 +130,18 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
                     // PostConstruct
                     if (m.getAnnotation(PostConstruct.class) != null)
                     {
+                        checkSameClassInterceptors(postConstructMethods, m);
                         postConstructMethods.add(m); // add at last position
                     }
-                    checkMethodOverrides(postConstructMethods, clazz, m);
+                    removeOverriddenMethod(postConstructMethods, m);
 
                     // PreDestroy
                     if (m.getAnnotation(PreDestroy.class) != null)
                     {
+                        checkSameClassInterceptors(preDestroyMethods, m);
                         preDestroyMethods.add(m); // add at last position
                     }
-                    checkMethodOverrides(preDestroyMethods, clazz, m);
+                    removeOverriddenMethod(preDestroyMethods, m);
 
                 }
             }
@@ -162,69 +162,28 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
     }
 
     /**
-     * Check if the given annotatedMethod overrides some previously defined interceptorMethods
-     * and remove them if non-private.
-     * This will also detect if there are multiple methods for the same InterceptionType
-     * in the same class
+     *
+     * @return
      */
-    private void checkMethodOverrides(List<AnnotatedMethod> alreadyDefinedMethods, Class clazz, AnnotatedMethod annotatedMethod)
+    private void checkSameClassInterceptors(List<AnnotatedMethod> alreadyDefinedMethods, AnnotatedMethod annotatedMethod)
     {
-        String methodName = null;
-        Class<?>[] methodParameterTypes = null;
-
-        Iterator<AnnotatedMethod> it = alreadyDefinedMethods.iterator();
-        while (it.hasNext())
+        Class clazz = null;
+        for (AnnotatedMethod alreadyDefined : alreadyDefinedMethods)
         {
-            AnnotatedMethod alreadyDefined = it.next();
-
-            if (methodName == null)
+            if (clazz == null)
             {
-                methodName = annotatedMethod.getJavaMember().getName();
-                methodParameterTypes = annotatedMethod.getJavaMember().getParameterTypes();
+                clazz = annotatedMethod.getDeclaringType().getJavaClass();
             }
 
             // check for same class -> Exception
             if (alreadyDefined.getDeclaringType().getJavaClass() ==  clazz)
             {
                 throw new WebBeansConfigurationException("Only one Interceptor of a certain type is allowed per class, but multiple found in class "
-                                                         + annotatedMethod.getDeclaringType().getJavaClass().getName()
-                                                         + " methods: " + annotatedMethod.getJavaMember().toString()
-                                                         + " and " + alreadyDefined.getJavaMember().toString());
-            }
-
-            // check method overrides
-            if (!Modifier.isPrivate(alreadyDefined.getJavaMember().getModifiers()))
-            {
-                // we only scan non-private methods, as private methods cannot get overridden.
-                if (methodName.equals(alreadyDefined.getJavaMember().getName()) &&
-                    methodParameterTypes.length == alreadyDefined.getJavaMember().getParameterTypes().length)
-                {
-                    boolean overridden = true;
-                    // same name and param length so we need to check if all the paramTypes are equal.
-                    if (methodParameterTypes.length > 0)
-                    {
-                        Class<?>[] otherParamTypes = alreadyDefined.getJavaMember().getParameterTypes();
-
-                        for (int i = 0; i < otherParamTypes.length; i++)
-                        {
-                            if (!otherParamTypes[i].equals(methodParameterTypes[i]))
-                            {
-                                overridden = false;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (overridden)
-                    {
-                        // then we need to remove this method
-                        it.remove();
-                        continue;
-                    }
-                }
+                        + annotatedMethod.getDeclaringType().getJavaClass().getName()
+                        + " methods: " + annotatedMethod.getJavaMember().toString()
+                        + " and " + alreadyDefined.getJavaMember().toString());
             }
         }
-
     }
 
 

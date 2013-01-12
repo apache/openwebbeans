@@ -143,6 +143,68 @@ public abstract class AbstractBeanBuilder<T>
         return hierarchy;
     }
 
+    /**
+     * Check if the given annotatedMethod overrides some previously defined AnnotatedMethods
+     * from a superclass and remove them if non-private.
+     *
+     *
+     * @param alreadyDefinedMethods the methods already calculated from the superclasses. See {@link #getReverseClassHierarchy()}
+     * @param annotatedMethod the AnnotatedMethod to check for.
+     * @return <code>true</code> if a method was overridden and got removed, <code>false</code> otherwise.
+     */
+    protected boolean removeOverriddenMethod(List<AnnotatedMethod> alreadyDefinedMethods, AnnotatedMethod annotatedMethod)
+    {
+        String methodName = null;
+        Class<?>[] methodParameterTypes = null;
+
+        Iterator<AnnotatedMethod> it = alreadyDefinedMethods.iterator();
+        while (it.hasNext())
+        {
+            AnnotatedMethod alreadyDefined = it.next();
+
+            if (methodName == null)
+            {
+                methodName = annotatedMethod.getJavaMember().getName();
+                methodParameterTypes = annotatedMethod.getJavaMember().getParameterTypes();
+            }
+
+            // check method overrides
+            if (!Modifier.isPrivate(alreadyDefined.getJavaMember().getModifiers()))
+            {
+                // we only scan non-private methods, as private methods cannot get overridden.
+                if (methodName.equals(alreadyDefined.getJavaMember().getName()) &&
+                        methodParameterTypes.length == alreadyDefined.getJavaMember().getParameterTypes().length)
+                {
+                    boolean overridden = true;
+                    // same name and param length so we need to check if all the paramTypes are equal.
+                    if (methodParameterTypes.length > 0)
+                    {
+                        Class<?>[] otherParamTypes = alreadyDefined.getJavaMember().getParameterTypes();
+
+                        for (int i = 0; i < otherParamTypes.length; i++)
+                        {
+                            if (!otherParamTypes[i].equals(methodParameterTypes[i]))
+                            {
+                                overridden = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (overridden)
+                    {
+                        // then we need to remove this method
+                        it.remove();
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+
 
     /**
      * {@inheritDoc}
