@@ -24,7 +24,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Decorator;
 
-import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.intercept.InterceptorData;
 
 /**
@@ -44,12 +43,6 @@ public interface InjectionTargetBean<T> extends OwbBean<T>
      */
     public void injectResources(T instance, CreationalContext<T> creationalContext);
 
-    /**
-     * Gets inherited meta data.
-     * @return inherited meta data
-     */
-    public IBeanInheritedMetaData getInheritedMetaData();
-    
     /**
      * Gets interceptor stack of bean instance.
      * @return interceptor stack

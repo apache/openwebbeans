@@ -31,8 +31,6 @@ import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
-import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -70,9 +68,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      * @deprecated will be replaced by InterceptorResolution logic
      */
     protected List<Decorator<?>> decorators = new ArrayList<Decorator<?>>();
-    
-    /**Bean inherited meta data*/
-    protected IBeanInheritedMetaData inheritedMetaData;    
     
     /**
      * Creates a new observer owner component.
@@ -324,22 +319,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     public List<Decorator<?>> getDecoratorStack()
     {
         return decorators;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public IBeanInheritedMetaData getInheritedMetaData()
-    {
-        return inheritedMetaData;
-    }
-    
-    /**
-     * Sets inherited meta data.
-     */
-    protected void setInheritedMetaData()
-    {
-        inheritedMetaData = new BeanInheritedMetaData<T>(this);
     }
 
     /**

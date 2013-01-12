@@ -23,7 +23,6 @@ import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -46,7 +45,6 @@ import javax.interceptor.AroundInvoke;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -204,49 +202,6 @@ public final class WebBeansInterceptorConfig
 
         Annotation[] anns;
         Set<Interceptor<?>> componentInterceptors = null;
-
-        // Look for inherited binding types, keeping in mind that
-        // IBeanInheritedMetaData knows nothing of the transitive
-        // relationships of Interceptor Bindings or Stereotypes. We must resolve
-        // these here.
-        IBeanInheritedMetaData metadata = component.getInheritedMetaData();
-        if (metadata != null)
-        {
-            Set<Annotation> inheritedBindingTypes = metadata.getInheritedInterceptorBindings();
-            if (!inheritedBindingTypes.isEmpty())
-            {
-                Annotation[] inheritedAnns = new Annotation[inheritedBindingTypes.size()];
-                inheritedAnns = inheritedBindingTypes.toArray(inheritedAnns);
-                anns = annotationManager.getInterceptorBindingMetaAnnotations(inheritedAnns);
-                bindingTypeSet.addAll(Arrays.asList(anns));
-            }
-
-            // Retrieve inherited stereotypes, check for meta-annotations, and
-            // find the ultimate set of bindings
-            Set<Annotation> inheritedStereotypes = metadata.getInheritedStereoTypes();
-
-            if (!inheritedStereotypes.isEmpty())
-            {
-                // We need AnnotationUtil to resolve the transitive relationship
-                // of stereotypes we've found
-                Annotation[] inherited = new Annotation[inheritedStereotypes.size()];
-                inherited = inheritedStereotypes.toArray(inherited);
-                Annotation[] transitiveStereotypes = annotationManager.getStereotypeMetaAnnotations(inherited);
-
-                for (Annotation stereo : transitiveStereotypes)
-                {
-                    if (annotationManager.hasInterceptorBindingMetaAnnotation(stereo.annotationType().getDeclaredAnnotations()))
-                    {
-                        Annotation[] steroInterceptorBindings =
-                            annotationManager.getInterceptorBindingMetaAnnotations(stereo.annotationType().getDeclaredAnnotations());
-                        for (Annotation ann : steroInterceptorBindings)
-                        {
-                            bindingTypeSet.add(ann);
-                        }
-                    }
-                }
-            }
-        }
 
         anns = bindingTypeSet.toArray(new Annotation[bindingTypeSet.size()]);
 

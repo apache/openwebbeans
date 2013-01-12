@@ -79,6 +79,18 @@ public final class AnnotationManager
         beanManagerImpl = context.getBeanManagerImpl();
     }
 
+    public Annotation getDeclaredScopeAnnotation(Class<?> beanClass)
+    {
+        for (Annotation annotation : beanClass.getDeclaredAnnotations())
+        {
+            if (beanManagerImpl.isScope(annotation.annotationType()))
+            {
+                return annotation;
+            }
+        }
+        return null;
+    }
+
     /**
      * Returns true if the annotation is defined in xml or annotated with
      * {@link javax.interceptor.InterceptorBinding} or an InterceptorBinding
@@ -403,9 +415,33 @@ public final class AnnotationManager
      */
     public boolean isStereoTypeAnnotation(Class<? extends Annotation> clazz)
     {
+        return isStereoTypeAnnotation(clazz, new HashSet<Class<? extends Annotation>>());
+    }
+    
+    private boolean isStereoTypeAnnotation(Class<? extends Annotation> clazz, Set<Class<? extends Annotation>> checkedAnnotations)
+    {
         Asserts.nullCheckForClass(clazz);
 
-        return clazz.isAnnotationPresent(Stereotype.class);
+        if (clazz.isAnnotationPresent(Stereotype.class))
+        {
+            return true;
+        }
+        else
+        {
+            for (Annotation annotation: clazz.getAnnotations())
+            {
+                if (checkedAnnotations.contains(annotation.annotationType()))
+                {
+                    continue;
+                }
+                checkedAnnotations.add(annotation.annotationType());
+                if (isStereoTypeAnnotation(annotation.annotationType(), checkedAnnotations))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public boolean hasStereoTypeMetaAnnotation(Set<Class<? extends Annotation>> anns)

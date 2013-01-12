@@ -61,9 +61,6 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
         
         //type of the ejb
         this.ejbType = type;
-        
-        //Setting inherited meta data instance
-        setInheritedMetaData();
     }
 
 

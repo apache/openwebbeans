@@ -314,8 +314,6 @@ public abstract class AbstractBeanBuilder<T>
             }
         }
         
-        defineInheritedQualifiers(qualifiers);
-
         // No-binding annotation
         if (qualifiers.size() == 0 )
         {
@@ -343,23 +341,6 @@ public abstract class AbstractBeanBuilder<T>
         injectionPoints.add(member);
     }
 
-    protected void defineInheritedQualifiers(Set<Annotation> qualifiers)
-    {
-        // hook for subclasses
-    }
-    
-    protected void defineInheritedStereotypes(Set<Class<? extends Annotation>> stereotypes)
-    {
-        // hook for subclasses
-    }
-    
-    protected Class<? extends Annotation> defineInheritedScope()
-    {
-        // hook for subclasses
-        return null;
-    }
-
-
     /**
      * Returns true if any binding exist
      * 
@@ -372,6 +353,11 @@ public abstract class AbstractBeanBuilder<T>
 
     public void defineScopeType(String errorMessage)
     {
+        defineScopeType(null, errorMessage);
+    }
+
+    protected void defineScopeType(Class<?> declaringClass, String errorMessage)
+    {
         Annotation[] annotations = AnnotationUtil.asArray(annotated.getAnnotations());
         boolean found = false;
 
@@ -379,6 +365,10 @@ public abstract class AbstractBeanBuilder<T>
         
         for (Annotation annotation : annotations)
         {   
+            if (declaringClass != null && AnnotationUtil.getDeclaringClass(annotation, declaringClass) != null && !AnnotationUtil.isDeclaringClass(declaringClass, annotation))
+            {
+                continue;
+            }
             Class<? extends Annotation> annotationType = annotation.annotationType();
             
             /*Normal scope*/
@@ -438,17 +428,18 @@ public abstract class AbstractBeanBuilder<T>
             }
         }
 
-        if (!found)
+        if (!found && declaringClass != null && !hasDeclaredNonInheritedScope(declaringClass))
+        {
+            defineScopeType(declaringClass.getSuperclass(), errorMessage);
+        }
+        else if (!found)
         {
             defineDefaultScopeType(errorMessage);
         }
     }
 
-
     private void defineDefaultScopeType(String exceptionMessage)
     {
-        scope = defineInheritedScope();
-        
         if (scope == null)
         {
             Set<Class<? extends Annotation>> stereos = stereotypes;
@@ -502,6 +493,11 @@ public abstract class AbstractBeanBuilder<T>
                 }
             }
         }
+    }
+
+    private boolean hasDeclaredNonInheritedScope(Class<?> type)
+    {
+        return webBeansContext.getAnnotationManager().getDeclaredScopeAnnotation(type) != null;
     }
 
     /**
@@ -596,7 +592,6 @@ public abstract class AbstractBeanBuilder<T>
                 stereotypes.add(stereo.annotationType());
             }
         }
-        defineInheritedStereotypes(stereotypes);
     }
 
     protected <X> void addFieldInjectionPointMetaData(OwbBean<T> bean, AnnotatedField<X> annotField)

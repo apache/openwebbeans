@@ -54,7 +54,6 @@ import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.spi.api.ResourceReference;
@@ -271,6 +270,11 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
             throw new WebBeansConfigurationException("Error in definining disposal method of annotated method : " + annotatedMethod
                     + ". Disposal methods  can not be annotated with" + " @Initializer/@Destructor/@Produces annotation or has a parameter annotated with @Observes.");
         }        
+    }
+
+    public void defineScopeType(String errorMessage)
+    {
+        defineScopeType(getAnnotated().getJavaClass(), errorMessage);
     }
 
     /**
@@ -694,78 +698,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
     public void defineEnabled()
     {
         enabled = webBeansContext.getWebBeansUtil().isBeanEnabled(getAnnotated(), getBeanType(), getStereotypes());
-    }
-
-    @Override
-    protected void defineInheritedQualifiers(Set<Annotation> qualifiers)
-    {
-        // Adding inherited qualifiers
-        IBeanInheritedMetaData inheritedMetaData = getBean().getInheritedMetaData();
-        
-        if (inheritedMetaData != null)
-        {
-            Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedQualifiers();
-            for (Annotation inherited : inheritedTypes)
-            {
-                boolean found = false;
-                for (Annotation existQualifier : qualifiers)
-                {
-                    if (existQualifier.annotationType().equals(inherited.annotationType()))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    qualifiers.add(inherited);
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void defineInheritedStereotypes(Set<Class<? extends Annotation>> stereotypes)
-    {
-        // Adding inherited qualifiers
-        IBeanInheritedMetaData inheritedMetaData = getBean().getInheritedMetaData();
-        
-        if (inheritedMetaData != null)
-        {
-            Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedStereoTypes();        
-            for (Annotation inherited : inheritedTypes)
-            {
-                Set<Class<? extends Annotation>> qualifiers = stereotypes;
-                boolean found = false;
-                for (Class<? extends Annotation> existQualifier : qualifiers)
-                {
-                    if (existQualifier.equals(inherited.annotationType()))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    stereotypes.add(inherited.annotationType());
-                }
-            }
-        }
-    }
-    
-    @Override
-    protected Class<? extends Annotation> defineInheritedScope()
-    {
-        IBeanInheritedMetaData metaData = getBean().getInheritedMetaData();
-        if (metaData != null)
-        {
-            Annotation inheritedScope = metaData.getInheritedScopeType();
-            if (inheritedScope != null)
-            {
-                return inheritedScope.annotationType();
-            }
-        }
-        return null;
     }
 
     @Override

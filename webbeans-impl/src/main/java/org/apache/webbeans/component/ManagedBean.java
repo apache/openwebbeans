@@ -60,9 +60,6 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     public ManagedBean(WebBeansContext webBeansContext, Class<T> returnType, WebBeansType type, AnnotatedType<T> annotatedType)
     {
         super(webBeansContext, type, returnType, annotatedType);
-        
-        //Setting inherited meta data instance
-        setInheritedMetaData();
     }
     
     /**

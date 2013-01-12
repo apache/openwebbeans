@@ -53,6 +53,38 @@ public final class AnnotationUtil
     }
 
     /**
+     * Checks, if the given class declares the specified annotation
+     */
+    public static boolean isDeclaringClass(Class<?> declaringClass, Annotation declaredAnnotation)
+    {
+        for (Annotation annotation: declaringClass.getDeclaredAnnotations())
+        {
+            if (annotation.equals(declaredAnnotation))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns the declaring class for the specified annotation, using the specified type hierarchy.
+     */
+    public static Class<?> getDeclaringClass(Annotation declaredAnnotation, Class<?> typeHierarchy)
+    {
+        if (typeHierarchy == null)
+        {
+            return null;
+        }
+        if (isDeclaringClass(typeHierarchy, declaredAnnotation))
+        {
+            return typeHierarchy;
+        }
+        return getDeclaringClass(declaredAnnotation, typeHierarchy.getSuperclass());
+    }
+
+
+    /**
      * Check given annotation exist on the method.
      * 
      * @param method method

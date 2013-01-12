@@ -179,7 +179,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
 
     private Constructor<T> getDefaultConstructor()
     {
-        return context.getSecurityService().doPrivilegedGetConstructor(type.getJavaClass());
+        return context.getWebBeansUtil().getNoArgConstructor(type.getJavaClass());
     }
     
     private boolean isProducerMethod(InjectionPoint injectionPoint)

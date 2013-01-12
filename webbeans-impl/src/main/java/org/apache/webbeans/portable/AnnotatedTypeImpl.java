@@ -18,20 +18,24 @@
  */
 package org.apache.webbeans.portable;
 
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.util.ClassUtil;
-
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
+
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Implementation of the {@link AnnotatedType} interface.
@@ -68,7 +72,29 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
         this.supertype = supertype;
         this.annotatedClass = annotatedClass;     
         
-        setAnnotations(annotatedClass.getDeclaredAnnotations());
+        if (supertype == null)
+        {
+            setAnnotations(annotatedClass.getDeclaredAnnotations());
+        }
+        else
+        {
+            Set<Class<? extends Annotation>> annotationTypes = new HashSet<Class<? extends Annotation>>();
+            List<Annotation> annotations = new ArrayList<Annotation>();
+            for (Annotation annotation: annotatedClass.getDeclaredAnnotations())
+            {
+                annotations.add(annotation);
+                annotationTypes.add(annotation.annotationType());
+            }
+            for (Annotation annotation: supertype.getAnnotations())
+            {
+                if (annotation.annotationType().isAnnotationPresent(Inherited.class) && !annotationTypes.contains(annotation.annotationType()))
+                {
+                    annotations.add(annotation);
+                    annotationTypes.add(annotation.annotationType());
+                }
+            }
+            setAnnotations(annotations.toArray(new Annotation[annotations.size()]));
+        }
     }
 
     private synchronized void init()
