@@ -20,6 +20,7 @@ package org.apache.webbeans.component;
 
 /**
  * Marker interface for enterprise beans.
+ * All those beans will not get intercepted.
  * 
  * @version $Rev$ $Date$
  *

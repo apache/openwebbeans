@@ -19,13 +19,17 @@
 package org.apache.webbeans.component.creation;
 
 
+import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import java.lang.annotation.Annotation;
+import java.util.List;
 
 import org.apache.webbeans.component.CdiInterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.util.ArrayUtil;
 
 /**
@@ -33,6 +37,8 @@ import org.apache.webbeans.util.ArrayUtil;
  */
 public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T>
 {
+    private AnnotatedConstructor<T> constructor;
+
     public CdiInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
         super(new CdiInterceptorBean<T>(webBeansContext, annotatedType));
@@ -61,6 +67,30 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T>
         }
 
         getBean().setInterceptorBindings(ArrayUtil.asSet(bindings));
+    }
+
+    public void defineConstructor()
+    {
+        constructor = getBeanConstructor();
+        addConstructorInjectionPointMetaData();
+    }
+
+
+    protected void addConstructorInjectionPointMetaData()
+    {
+        if (constructor == null)
+        {
+            return;
+        }
+        CdiInterceptorBean<T> bean = getBean();
+        InjectionPointFactory injectionPointFactory = webBeansContext.getInjectionPointFactory();
+        List<InjectionPoint> injectionPoints = injectionPointFactory.getConstructorInjectionPointData(bean, constructor);
+        for (InjectionPoint injectionPoint : injectionPoints)
+        {
+            addImplicitComponentForInjectionPoint(injectionPoint);
+            bean.addInjectionPoint(injectionPoint);
+        }
+        bean.setConstructor(constructor.getJavaMember());
     }
 
     public CdiInterceptorBean<T> getBean()

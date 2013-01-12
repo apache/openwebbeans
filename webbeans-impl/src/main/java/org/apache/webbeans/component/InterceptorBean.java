@@ -39,8 +39,9 @@ import org.apache.webbeans.util.ExceptionUtil;
  * <p>Any Interceptor is also an InjectionTarget as they can contain
  * &#064;Inject InjectionPoints.</p>
  */
-public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> implements Interceptor<T>
+public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> implements Interceptor<T>, EnterpriseBeanMarker
 {
+
     /**
      *
      * @param annotatedType AnnotatedType will be returned by some methods in the SPI
@@ -143,6 +144,7 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
     {
         return Dependent.class;
     }
+
 
     /**
      * @param interceptionType

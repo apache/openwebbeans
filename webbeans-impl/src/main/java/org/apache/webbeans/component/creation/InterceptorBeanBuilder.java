@@ -75,6 +75,8 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
      */
     public abstract boolean isInterceptorEnabled();
 
+    public abstract void defineConstructor();
+
     protected void checkInterceptorConditions()
     {
         Set<AnnotatedMethod<? super T>> methods = getAnnotated().getMethods();
@@ -95,6 +97,7 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
 
     protected void defineInterceptorRules()
     {
+        defineConstructor();
         defineInterceptorMethods();
         defineInjectedMethods();
         defineInjectedFields();

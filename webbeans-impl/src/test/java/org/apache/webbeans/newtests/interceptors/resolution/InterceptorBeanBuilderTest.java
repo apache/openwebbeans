@@ -19,6 +19,7 @@
 package org.apache.webbeans.newtests.interceptors.resolution;
 
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
@@ -123,6 +124,10 @@ public class InterceptorBeanBuilderTest extends AbstractUnitTest
         Assert.assertEquals(1, bean.getInterceptorMethods(InterceptionType.AROUND_TIMEOUT).length);
         Assert.assertEquals(2, bean.getInterceptorMethods(InterceptionType.POST_CONSTRUCT).length);
         Assert.assertEquals(2, bean.getInterceptorMethods(InterceptionType.PRE_DESTROY).length);
+
+        CreationalContext<TestInterceptor1> cc = getBeanManager().createCreationalContext(bean);
+        TestInterceptor1 interceptorInstance = bean.create(cc);
+        Assert.assertNotNull(interceptorInstance);
 
         shutDownContainer();
     }

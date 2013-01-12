@@ -18,11 +18,16 @@
  */
 package org.apache.webbeans.component;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.util.Set;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.inject.InjectableConstructor;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 
 /**
  * <p>{@link javax.enterprise.inject.spi.Interceptor}
@@ -32,6 +37,11 @@ import org.apache.webbeans.config.WebBeansContext;
  */
 public class CdiInterceptorBean<T> extends InterceptorBean<T>
 {
+    /**
+     * Constructor of the web bean component
+     */
+    private Constructor<T> constructor;
+
     /**
      *
      * @param annotatedType AnnotatedType will be returned by some methods in the SPI
@@ -44,6 +54,41 @@ public class CdiInterceptorBean<T> extends InterceptorBean<T>
 
 
     private Set<Annotation> interceptorBindings;
+
+    /**
+     * Get constructor.
+     *
+     * @return constructor
+     */
+    public Constructor<T> getConstructor()
+    {
+        return constructor;
+    }
+
+    /**
+     * Set constructor.
+     *
+     * @param constructor constructor instance
+     */
+    public void setConstructor(Constructor<T> constructor)
+    {
+        this.constructor = constructor;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected T createComponentInstance(CreationalContext<T> creationalContext)
+    {
+        Constructor<T> con = getConstructor();
+        InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(getAnnotatedType(), getInjectionPoints(), getWebBeansContext());
+        InjectableConstructor<T> ic = new InjectableConstructor<T>(con, injectionTarget, (CreationalContextImpl<T>) creationalContext);
+
+        T instance = ic.doInjection();
+
+        return instance;
+    }
 
 
     public void setInterceptorBindings(Set<Annotation> interceptorBindings)

@@ -37,6 +37,7 @@ import javax.enterprise.event.Reception;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
+import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
@@ -98,6 +99,71 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
     {
         defineName(WebBeansUtil.getManagedBeanDefaultName(getAnnotated().getJavaClass().getSimpleName()));
     }
+
+
+
+    protected AnnotatedConstructor<T> getBeanConstructor()
+    {
+        Asserts.assertNotNull(getAnnotated(),"Type is null");
+        AnnotatedConstructor<T> result = null;
+
+        Set<AnnotatedConstructor<T>> annConsts = getAnnotated().getConstructors();
+        if(annConsts != null)
+        {
+            boolean found = false;
+            boolean noParamConsIsDefined = false;
+            for(AnnotatedConstructor<T> annConst : annConsts)
+            {
+                if(annConst.isAnnotationPresent(Inject.class))
+                {
+                    if (found)
+                    {
+                        throw new WebBeansConfigurationException("There are more than one constructor with @Inject annotation in annotation type : "
+                                + getAnnotated());
+                    }
+
+                    found = true;
+                    result = annConst;
+                }
+                else
+                {
+                    if(!found && !noParamConsIsDefined)
+                    {
+                        List<AnnotatedParameter<T>> parameters = annConst.getParameters();
+                        if(parameters != null && parameters.isEmpty())
+                        {
+                            result = annConst;
+                            noParamConsIsDefined = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (result == null)
+        {
+            throw new WebBeansConfigurationException("No constructor is found for the annotated type : " + getAnnotated());
+        }
+
+        List<AnnotatedParameter<T>> parameters = result.getParameters();
+        for(AnnotatedParameter<T> parameter : parameters)
+        {
+            if (parameter.isAnnotationPresent(Disposes.class))
+            {
+                throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Disposes annotation in annotated constructor : "
+                        + result);
+            }
+
+            if(parameter.isAnnotationPresent(Observes.class))
+            {
+                throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Observes annotation in annotated constructor : " + result);
+            }
+
+        }
+
+        return result;
+    }
+
 
     /**
      * {@inheritDoc}
@@ -506,7 +572,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                     {
                         producerFieldBean.getTypes().addAll(annotatedField.getTypeClosure());
                     }
-                    WebBeansUtil.checkProducerGenericType(producerFieldBean,annotatedField.getJavaMember());
+                    WebBeansUtil.checkProducerGenericType(producerFieldBean, annotatedField.getJavaMember());
                     
                     producerBeans.add(producerFieldBean);
                 }
@@ -563,8 +629,8 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                 }
                 
                 webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
-                                                                                   producerMethodBean,
-                                                                                   AnnotationUtil.asArray(annotatedMethod.getAnnotations()));
+                        producerMethodBean,
+                        AnnotationUtil.asArray(annotatedMethod.getAnnotations()));
 
                 if (producerMethodBean.getReturnType().isArray())
                 {

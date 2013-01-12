@@ -78,6 +78,7 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
         T instance = ic.doInjection();
         
         //If this is an abstract Decorator, we need to set the handler on the Proxy instance
+        //X TODO should be done in DecoratorBean
         if(isAbstractDecorator)
         {
             webBeansContext.getProxyFactory().setHandler(instance, new AbstractDecoratorMethodHandler());
