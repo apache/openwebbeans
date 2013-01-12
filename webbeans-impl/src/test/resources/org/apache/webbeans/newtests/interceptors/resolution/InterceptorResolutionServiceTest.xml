@@ -22,6 +22,7 @@ under the License.
         <class>org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor</class>
         <class>org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor</class>
         <class>org.apache.webbeans.test.component.intercept.webbeans.SecureInterceptor</class>
+        <class>org.apache.webbeans.newtests.interceptors.resolution.interceptors.TestInterceptor1</class>
     </interceptors>
     <decorators>
         <class>org.apache.webbeans.test.component.decorator.clean.ServiceDecorator</class>

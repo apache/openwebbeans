@@ -162,6 +162,12 @@ public abstract class AbstractBeanBuilder<T>
         {
             AnnotatedMethod alreadyDefined = it.next();
 
+            if (alreadyDefined == annotatedMethod)
+            {
+                // we don't remove ourself
+                continue;
+            }
+
             if (methodName == null)
             {
                 methodName = annotatedMethod.getJavaMember().getName();

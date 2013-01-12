@@ -28,6 +28,9 @@ import java.util.Collection;
 import org.apache.webbeans.component.creation.CdiInterceptorBeanBuilder;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
+import org.apache.webbeans.newtests.interceptors.resolution.interceptors.TestIntercepted1;
+import org.apache.webbeans.newtests.interceptors.resolution.interceptors.TestInterceptor1;
+import org.apache.webbeans.newtests.interceptors.resolution.interceptors.TestInterceptorParent;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureAndTransactionalInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
@@ -49,6 +52,9 @@ public class InterceptorBeanBuilderTest extends AbstractUnitTest
         beanClasses.add(ClassInterceptedClass.class);
         beanClasses.add(Transactional.class);
         beanClasses.add(TransactionalInterceptor.class);
+        beanClasses.add(TestIntercepted1.class);
+        beanClasses.add(TestInterceptor1.class);
+        beanClasses.add(TestInterceptorParent.class);
 
         startContainer(beanClasses, beanXmls);
 
@@ -78,6 +84,38 @@ public class InterceptorBeanBuilderTest extends AbstractUnitTest
             Assert.assertFalse(bean.intercepts(InterceptionType.POST_CONSTRUCT));
 
         }
+
+        shutDownContainer();
+    }
+
+    @Test
+    public void testClassLevelParentInterceptor() throws Exception
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), InterceptorResolutionServiceTest.class.getSimpleName()));
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(TestIntercepted1.class);
+        beanClasses.add(TestInterceptor1.class);
+        beanClasses.add(TestInterceptorParent.class);
+
+        startContainer(beanClasses, beanXmls);
+
+        AnnotatedType<TestInterceptor1> annotatedType = getBeanManager().createAnnotatedType(TestInterceptor1.class);
+
+        CdiInterceptorBeanBuilder<TestInterceptor1> ibb
+                = new CdiInterceptorBeanBuilder<TestInterceptor1>(getWebBeansContext(), annotatedType);
+        ibb.defineCdiInterceptorRules();
+        Interceptor<TestInterceptor1> bean = ibb.getBean();
+        Assert.assertNotNull(bean);
+
+        Assert.assertTrue(bean.intercepts(InterceptionType.AROUND_INVOKE));
+        Assert.assertTrue(bean.intercepts(InterceptionType.AROUND_TIMEOUT));
+        Assert.assertTrue(bean.intercepts(InterceptionType.PRE_DESTROY));
+        Assert.assertTrue(bean.intercepts(InterceptionType.POST_CONSTRUCT));
+        Assert.assertFalse(bean.intercepts(InterceptionType.PRE_PASSIVATE));
+        Assert.assertFalse(bean.intercepts(InterceptionType.POST_ACTIVATE));
+        Assert.assertEquals(1, bean.getInterceptorBindings().size());
 
         shutDownContainer();
     }
