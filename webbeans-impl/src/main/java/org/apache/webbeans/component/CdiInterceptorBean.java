@@ -37,10 +37,6 @@ import org.apache.webbeans.portable.InjectionTargetImpl;
  */
 public class CdiInterceptorBean<T> extends InterceptorBean<T>
 {
-    /**
-     * Constructor of the web bean component
-     */
-    private Constructor<T> constructor;
 
     /**
      *
@@ -55,25 +51,6 @@ public class CdiInterceptorBean<T> extends InterceptorBean<T>
 
     private Set<Annotation> interceptorBindings;
 
-    /**
-     * Get constructor.
-     *
-     * @return constructor
-     */
-    public Constructor<T> getConstructor()
-    {
-        return constructor;
-    }
-
-    /**
-     * Set constructor.
-     *
-     * @param constructor constructor instance
-     */
-    public void setConstructor(Constructor<T> constructor)
-    {
-        this.constructor = constructor;
-    }
 
     /**
      * {@inheritDoc}

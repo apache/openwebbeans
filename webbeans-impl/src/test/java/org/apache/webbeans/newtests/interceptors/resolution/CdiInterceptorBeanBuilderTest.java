@@ -43,7 +43,7 @@ import org.junit.Test;
 /**
  * Tests for the various InterceptorBeanBuilder implementations.
  */
-public class InterceptorBeanBuilderTest extends AbstractUnitTest
+public class CdiInterceptorBeanBuilderTest extends AbstractUnitTest
 {
     @Test
     public void testClassLevelSingleInterceptor() throws Exception

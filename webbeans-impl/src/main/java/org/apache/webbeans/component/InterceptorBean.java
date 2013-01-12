@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
@@ -41,16 +42,11 @@ import org.apache.webbeans.util.ExceptionUtil;
  */
 public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> implements Interceptor<T>, EnterpriseBeanMarker
 {
-
     /**
-     *
-     * @param annotatedType AnnotatedType will be returned by some methods in the SPI
-     * @param webBeansContext
+     * Constructor of the web bean component
      */
-    public InterceptorBean(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
-    {
-        super(webBeansContext, WebBeansType.INTERCEPTOR, annotatedType.getJavaClass(), annotatedType);
-    }
+    private Constructor<T> constructor;
+
 
     private Set<InterceptionType> intercepts = Collections.EMPTY_SET;
 
@@ -100,6 +96,36 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
      * <pre>void <METHOD>(InvocationContext) throws Exception</pre>
      */
     private Method[] postActivateMethods;
+
+    /**
+     *
+     * @param annotatedType AnnotatedType will be returned by some methods in the SPI
+     * @param webBeansContext
+     */
+    public InterceptorBean(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
+    {
+        super(webBeansContext, WebBeansType.INTERCEPTOR, annotatedType.getJavaClass(), annotatedType);
+    }
+
+    /**
+     * Get constructor.
+     *
+     * @return constructor
+     */
+    public Constructor<T> getConstructor()
+    {
+        return constructor;
+    }
+
+    /**
+     * Set constructor.
+     *
+     * @param constructor constructor instance
+     */
+    public void setConstructor(Constructor<T> constructor)
+    {
+        this.constructor = constructor;
+    }
 
     public void setAroundInvokeMethods(Method[] aroundInvokeMethods)
     {

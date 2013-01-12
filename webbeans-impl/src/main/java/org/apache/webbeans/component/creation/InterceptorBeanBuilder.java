@@ -22,8 +22,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
@@ -37,6 +39,7 @@ import java.util.Set;
 
 import org.apache.webbeans.component.InterceptorBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 
 
@@ -50,6 +53,8 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
     private final OpenWebBeansEjbLCAPlugin ejbPlugin;
     private final Class<? extends Annotation> prePassivateClass;
     private final Class<? extends Annotation> postActivateClass;
+
+    private AnnotatedConstructor<T> constructor;
 
     protected InterceptorBeanBuilder(InterceptorBean<T> bean)
     {
@@ -68,6 +73,30 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
         }
     }
 
+    public void defineConstructor()
+    {
+        constructor = getBeanConstructor();
+        addConstructorInjectionPointMetaData();
+    }
+
+
+    protected void addConstructorInjectionPointMetaData()
+    {
+        if (constructor == null)
+        {
+            return;
+        }
+        InterceptorBean<T> bean = (InterceptorBean<T>) getBean();
+        InjectionPointFactory injectionPointFactory = webBeansContext.getInjectionPointFactory();
+        List<InjectionPoint> injectionPoints = injectionPointFactory.getConstructorInjectionPointData(bean, constructor);
+        for (InjectionPoint injectionPoint : injectionPoints)
+        {
+            addImplicitComponentForInjectionPoint(injectionPoint);
+            bean.addInjectionPoint(injectionPoint);
+        }
+        bean.setConstructor(constructor.getJavaMember());
+    }
+
     /**
      * If this method returns <code>false</code> the {@link #getBean()} method must not get called.
      *
@@ -75,7 +104,6 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
      */
     public abstract boolean isInterceptorEnabled();
 
-    public abstract void defineConstructor();
 
     protected void checkInterceptorConditions()
     {
