@@ -19,6 +19,7 @@
 package org.apache.webbeans.component;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
@@ -31,7 +32,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.inject.InjectableConstructor;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.ExceptionUtil;
 
 /**
@@ -106,6 +110,19 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
     {
         super(webBeansContext, WebBeansType.INTERCEPTOR, annotatedType.getJavaClass(), annotatedType);
     }
+
+    @Override
+    protected T createComponentInstance(CreationalContext<T> creationalContext)
+    {
+        Constructor<T> con = getConstructor();
+        InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(getAnnotatedType(), getInjectionPoints(), getWebBeansContext());
+        InjectableConstructor<T> ic = new InjectableConstructor<T>(con, injectionTarget, (CreationalContextImpl<T>) creationalContext);
+
+        T instance = ic.doInjection();
+
+        return instance;
+    }
+
 
     /**
      * Get constructor.

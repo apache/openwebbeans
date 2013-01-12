@@ -18,49 +18,39 @@
  */
 package org.apache.webbeans.newtests.interceptors.resolution;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.webbeans.component.InterceptorBean;
-import org.apache.webbeans.component.creation.EjbInterceptorBeanBuilder;
+import org.apache.webbeans.component.creation.SelfInterceptorBeanBuilder;
 import org.apache.webbeans.newtests.AbstractUnitTest;
-
-import org.apache.webbeans.newtests.interceptors.ejb.EjbInterceptor;
-import org.apache.webbeans.newtests.interceptors.ejb.ManagedBeanWithEjbInterceptor;
-import org.apache.webbeans.newtests.interceptors.resolution.beans.UtilitySampleBean;
+import org.apache.webbeans.newtests.interceptors.resolution.interceptors.SelfInterceptedClass;
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * Test for building EJB-style interceptor beans
  */
-public class EjbInterceptorBeanBuilderTest extends AbstractUnitTest
+public class SelfInterceptorBeanBuilderTest extends AbstractUnitTest
 {
 
     @Test
     public void testEjbInterceptorBeanCreation()
     {
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(UtilitySampleBean.class);
-        beanClasses.add(EjbInterceptor.class);
-        beanClasses.add(ManagedBeanWithEjbInterceptor.class);
+        beanClasses.add(SelfInterceptedClass.class);
 
         startContainer(beanClasses, null);
 
-        AnnotatedType<EjbInterceptor> annotatedType = getBeanManager().createAnnotatedType(EjbInterceptor.class);
+        AnnotatedType<SelfInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(SelfInterceptedClass.class);
 
-        EjbInterceptorBeanBuilder<EjbInterceptor> ibb
-                = new EjbInterceptorBeanBuilder<EjbInterceptor>(getWebBeansContext(), annotatedType);
-        ibb.defineEjbInterceptorRules();
-        InterceptorBean<EjbInterceptor> bean = ibb.getBean();
+        SelfInterceptorBeanBuilder<SelfInterceptedClass> ibb
+                = new SelfInterceptorBeanBuilder<SelfInterceptedClass>(getWebBeansContext(), annotatedType);
+        ibb.defineSelfInterceptorRules();
+        InterceptorBean<SelfInterceptedClass> bean = ibb.getBean();
         Assert.assertNotNull(bean);
 
-        CreationalContext<EjbInterceptor> cc = getBeanManager().createCreationalContext(bean);
-
-        EjbInterceptor ebi = bean.create(cc);
-        Assert.assertNotNull(ebi);
 
         shutDownContainer();
     }

@@ -16,49 +16,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.component;
+package org.apache.webbeans.component.creation;
+
 
 import javax.enterprise.inject.spi.AnnotatedType;
-import java.lang.annotation.Annotation;
-import java.util.Set;
 
+import org.apache.webbeans.component.SelfInterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
 
-
 /**
- * <p>{@link javax.enterprise.inject.spi.Interceptor}
- * Bean implementation for CDI-style Beans.
- * This is Interceptors which got defined using
- * &#064;{@link javax.interceptor.InterceptorBinding}.</p>
+ * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
  */
-public class CdiInterceptorBean<T> extends InterceptorBean<T>
+public class SelfInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T>
 {
 
-    /**
-     *
-     * @param annotatedType AnnotatedType will be returned by some methods in the SPI
-     * @param webBeansContext
-     */
-    public CdiInterceptorBean(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
+    public SelfInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
-        super(webBeansContext, annotatedType);
+        super(new SelfInterceptorBean<T>(webBeansContext, annotatedType));
+    }
+
+    public void defineSelfInterceptorRules()
+    {
+        checkInterceptorConditions();
+        defineInterceptorRules();
+    }
+
+    public boolean isInterceptorEnabled()
+    {
+        return true;
     }
 
 
-    private Set<Annotation> interceptorBindings;
-
-
-
-    public void setInterceptorBindings(Set<Annotation> interceptorBindings)
+    public SelfInterceptorBean<T> getBean()
     {
-        this.interceptorBindings = interceptorBindings;
+        return (SelfInterceptorBean<T>)super.getBean();
     }
-
-    @Override
-    public Set<Annotation> getInterceptorBindings()
-    {
-        return interceptorBindings;
-    }
-
-
 }

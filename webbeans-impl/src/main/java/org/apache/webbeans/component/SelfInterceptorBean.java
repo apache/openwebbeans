@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.component;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Interceptor;
 import java.lang.annotation.Annotation;
@@ -25,6 +26,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansException;
 
 /**
  * <p>Implicit self-interceptor Bean implementation.
@@ -52,6 +54,11 @@ public class SelfInterceptorBean<T> extends InterceptorBean<T> implements Interc
     public Set<Annotation> getInterceptorBindings()
     {
         return Collections.emptySet();
+    }
+
+    public T create(CreationalContext<T> context)
+    {
+        throw new WebBeansException("You must not create an Interceptor instance of a self-intercepted bean!");
     }
 
 }
