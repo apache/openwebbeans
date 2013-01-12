@@ -20,9 +20,11 @@ package org.apache.webbeans.newtests.interceptors.resolution.interceptors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
+import org.apache.webbeans.newtests.interceptors.resolution.beans.UtilitySampleBean;
 import org.apache.webbeans.util.ExceptionUtil;
 
 
@@ -31,6 +33,14 @@ public class TestInterceptorParent
     public static int postConstructCount = 0;
     public static int preDestroyCount = 0;
     public static int aroundTimeoutCount = 0;
+
+    @Inject
+    private UtilitySampleBean fieldUtility;
+
+    public UtilitySampleBean getFieldUtility()
+    {
+        return fieldUtility;
+    }
 
     @PostConstruct
     public void postConstruct(InvocationContext context)

@@ -20,11 +20,13 @@ package org.apache.webbeans.newtests.interceptors.resolution.interceptors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
+import org.apache.webbeans.newtests.interceptors.resolution.beans.UtilitySampleBean;
 import org.apache.webbeans.util.ExceptionUtil;
 
 
@@ -35,6 +37,15 @@ public class TestInterceptor1 extends TestInterceptorParent
     public static int invocationCount = 0;
     public static int exceptionCount = 0;
     public static int postConstructCount = 0;
+
+    @Inject
+    public TestInterceptor1(UtilitySampleBean ctUtility)
+    {
+        super();
+        ctUtility.setI(42);
+    }
+
+
 
     @AroundInvoke
     public Object caller(InvocationContext context) throws Exception

@@ -74,7 +74,7 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
      */
     public T doInjection()
     {
-        List<InjectionPoint> injectedPoints = getInjectedPoints(method);
+        List<InjectionPoint> injectedPoints = getInjectionPoints(method);
         List<Object> list = new ArrayList<Object>();
                 
         

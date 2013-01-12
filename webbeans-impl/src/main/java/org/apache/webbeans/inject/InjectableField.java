@@ -48,7 +48,7 @@ public class InjectableField<T> extends AbstractInjectable<T>
     {
         try
         {
-            InjectionPoint injectedField = getInjectedPoints(field).get(0);
+            InjectionPoint injectedField = getInjectionPoints(field).get(0);
             
             if (!field.isAccessible())
             {

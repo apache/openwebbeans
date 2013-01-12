@@ -168,7 +168,7 @@ public abstract class AbstractInjectable<T> implements Injectable<T>
      * @param member java member
      * @return injection points related with given member type
      */
-    protected List<InjectionPoint> getInjectedPoints(Member member)
+    protected List<InjectionPoint> getInjectionPoints(Member member)
     {
         List<InjectionPoint> injectionPoints = new ArrayList<InjectionPoint>();
         for (InjectionPoint injectionPoint : owner.getInjectionPoints())

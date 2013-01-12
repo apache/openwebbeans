@@ -59,9 +59,9 @@ public class InjectableConstructor<T> extends AbstractInjectable<T>
      */
     public T doInjection()
     {
-        T instance = null;
+        T instance;
         
-        List<InjectionPoint> injectedPoints = getInjectedPoints(con);
+        List<InjectionPoint> injectedPoints = getInjectionPoints(con);
         List<Object> list = new ArrayList<Object>();
                 
         

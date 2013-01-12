@@ -30,6 +30,7 @@ import org.apache.webbeans.component.InterceptorBean;
 import org.apache.webbeans.component.creation.CdiInterceptorBeanBuilder;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
+import org.apache.webbeans.newtests.interceptors.resolution.beans.UtilitySampleBean;
 import org.apache.webbeans.newtests.interceptors.resolution.interceptors.TestIntercepted1;
 import org.apache.webbeans.newtests.interceptors.resolution.interceptors.TestInterceptor1;
 import org.apache.webbeans.newtests.interceptors.resolution.interceptors.TestInterceptorParent;
@@ -57,6 +58,7 @@ public class InterceptorBeanBuilderTest extends AbstractUnitTest
         beanClasses.add(TestIntercepted1.class);
         beanClasses.add(TestInterceptor1.class);
         beanClasses.add(TestInterceptorParent.class);
+        beanClasses.add(UtilitySampleBean.class);
 
         startContainer(beanClasses, beanXmls);
 
@@ -100,6 +102,7 @@ public class InterceptorBeanBuilderTest extends AbstractUnitTest
         beanClasses.add(TestIntercepted1.class);
         beanClasses.add(TestInterceptor1.class);
         beanClasses.add(TestInterceptorParent.class);
+        beanClasses.add(UtilitySampleBean.class);
 
         startContainer(beanClasses, beanXmls);
 
