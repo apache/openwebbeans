@@ -167,7 +167,7 @@ public final class WebBeansInterceptorConfig
         }
 
 
-        delegate.getWebBeansContext().getInterceptorsManager().addInterceptor(interceptor);
+        delegate.getWebBeansContext().getInterceptorsManager().addCdiInterceptor(interceptor);
 
     }
 

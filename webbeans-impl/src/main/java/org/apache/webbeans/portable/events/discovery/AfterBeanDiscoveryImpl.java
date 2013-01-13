@@ -107,7 +107,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
             }
 
             InterceptorsManager interceptorsManager = webBeansContext.getInterceptorsManager();
-            interceptorsManager.addInterceptor(interceptor);
+            interceptorsManager.addCdiInterceptor(interceptor);
             interceptorsManager.addCustomInterceptorClass(bean.getBeanClass());
         }
         

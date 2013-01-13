@@ -56,7 +56,7 @@ import java.util.logging.Level;
 /**
  * Defines decorators. It wraps the bean instance related
  * with decorator class. Actually, each decorator is an instance
- * of the {@link ManagedBean}.
+ * of the {@link Bean}.
  * 
  * @version $Rev$ $Date$
  *

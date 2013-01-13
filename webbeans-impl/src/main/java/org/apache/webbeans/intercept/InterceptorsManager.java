@@ -30,6 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Interceptor;
+import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
@@ -51,9 +52,9 @@ public class InterceptorsManager
     private List<Class<?>> configuredInterceptorClasses = new CopyOnWriteArrayList<Class<?>>();
 
     /**
-     * Active interceptors
+     * Active CDI-style interceptors.
      */
-    private List<Interceptor<?>> webBeansInterceptors = new ArrayList<Interceptor<?>>();
+    private List<Interceptor<?>> cdiInterceptors = new ArrayList<Interceptor<?>>();
 
     /**Additional interceptor class*/
     private List<Class<?>> additionalInterceptorClasses = new ArrayList<Class<?>>();
@@ -142,10 +143,15 @@ public class InterceptorsManager
     }
 
 
-    public void addInterceptor(Interceptor interceptor)
+    /**
+     * Add a CDI-style interceptor.
+     * These are interceptors declared using an {@link javax.interceptor.InterceptorBinding}.
+     * @param interceptor
+     */
+    public void addCdiInterceptor(Interceptor interceptor)
     {
-        webBeansInterceptors.add(interceptor);
-        if (interceptor instanceof OwbBean)
+        cdiInterceptors.add(interceptor);
+        if (interceptor instanceof PassivationCapable)
         {
             OwbBean<?> owbBean = (OwbBean<?>)interceptor;
             if(owbBean.isPassivationCapable())
@@ -159,7 +165,7 @@ public class InterceptorsManager
 
     public List<Interceptor<?>> getInterceptors()
     {
-        return webBeansInterceptors;
+        return cdiInterceptors;
     }
 
     public void addCustomInterceptorClass(Class<?> clazz)
