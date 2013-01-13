@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -33,6 +34,7 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.component.creation.EjbInterceptorBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -55,6 +57,11 @@ public class InterceptorsManager
      * Active CDI-style interceptors.
      */
     private List<Interceptor<?>> cdiInterceptors = new ArrayList<Interceptor<?>>();
+
+    /**
+     * EJB-style Interceptor beans.
+     */
+    private ConcurrentHashMap<Class<?>, Interceptor<?>> ejbInterceptors = new ConcurrentHashMap<Class<?>, Interceptor<?>>();
 
     /**Additional interceptor class*/
     private List<Class<?>> additionalInterceptorClasses = new ArrayList<Class<?>>();
@@ -81,6 +88,8 @@ public class InterceptorsManager
         additionalInterceptorBindingTypes.clear();
         additionalInterceptorClasses.clear();
         configuredInterceptorClasses.clear();
+        cdiInterceptors.clear();
+        ejbInterceptors.clear();
     }
 
 
@@ -98,9 +107,34 @@ public class InterceptorsManager
     }
 
     /**
+     * get the EJB-style Interceptor
+     * @param interceptorClass
+     * @param <T>
+     * @return
+     */
+    public <T> Interceptor<T> getEjbInterceptorForClass(Class<T> interceptorClass)
+    {
+        Interceptor<T> interceptor = (Interceptor<T>) ejbInterceptors.get(interceptorClass);
+        if (interceptor == null)
+        {
+            AnnotatedType<T> annotatedType = webBeansContext.getBeanManagerImpl().createAnnotatedType(interceptorClass);
+            EjbInterceptorBeanBuilder<T> buildr = new EjbInterceptorBeanBuilder<T>(webBeansContext, annotatedType);
+            buildr.defineEjbInterceptorRules();
+            Interceptor<T> i = buildr.getBean();
+            interceptor = (Interceptor<T>) ejbInterceptors.putIfAbsent(interceptorClass, i);
+            if (interceptor == null)
+            {
+                interceptor = i;
+            }
+        }
+
+        return interceptor;
+    }
+
+    /**
      * Helper to compare the order of different interceptor classes
      */
-    public int compare(Class<?> src, Class<?> target)
+    public int compareCdiInterceptors(Class<?> src, Class<?> target)
     {
         Asserts.assertNotNull(src, "src parameter can not be  null");
         Asserts.assertNotNull(target, "target parameter can not be null");
@@ -163,7 +197,7 @@ public class InterceptorsManager
     }
 
 
-    public List<Interceptor<?>> getInterceptors()
+    public List<Interceptor<?>> getCdiInterceptors()
     {
         return cdiInterceptors;
     }

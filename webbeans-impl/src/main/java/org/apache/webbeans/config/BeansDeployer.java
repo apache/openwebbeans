@@ -344,7 +344,7 @@ public class BeansDeployer
         beans.clear();
         
         //Adding interceptors to validate
-        List<javax.enterprise.inject.spi.Interceptor<?>> interceptors = webBeansContext.getInterceptorsManager().getInterceptors();
+        List<javax.enterprise.inject.spi.Interceptor<?>> interceptors = webBeansContext.getInterceptorsManager().getCdiInterceptors();
         for(javax.enterprise.inject.spi.Interceptor interceptor : interceptors)
         {
             WebBeansInterceptorBeanPleaseRemove wbInt = (WebBeansInterceptorBeanPleaseRemove)interceptor;

@@ -46,7 +46,7 @@ public class InterceptorComparator<T> implements Comparator<Interceptor<T>>
             Class<?> o1Clazz = o1.getBeanClass();
             Class<?> o2Clazz = o2.getBeanClass();
 
-            return interceptorsManager.compare(o1Clazz, o2Clazz);
+            return interceptorsManager.compareCdiInterceptors(o1Clazz, o2Clazz);
 
         }
     }

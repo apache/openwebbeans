@@ -402,7 +402,7 @@ public final class WebBeansInterceptorConfig
     {
         Set<Interceptor<?>> set = new HashSet<Interceptor<?>>();
 
-        Iterator<Interceptor<?>> it = webBeansContext.getInterceptorsManager().getInterceptors().iterator();
+        Iterator<Interceptor<?>> it = webBeansContext.getInterceptorsManager().getCdiInterceptors().iterator();
 
         List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();
         List<Annotation> listAnnot = new ArrayList<Annotation>();

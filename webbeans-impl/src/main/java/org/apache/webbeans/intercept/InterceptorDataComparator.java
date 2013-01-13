@@ -69,7 +69,7 @@ public class InterceptorDataComparator implements Comparator<InterceptorData>
                 Class<?> o1Clazz = interceptorFirst.getClazz();
                 Class<?> o2Clazz = interceptorSecond.getClazz();
 
-                return instance.getInterceptorsManager().compare(o1Clazz, o2Clazz);
+                return instance.getInterceptorsManager().compareCdiInterceptors(o1Clazz, o2Clazz);
             }
 
         }

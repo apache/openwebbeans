@@ -20,6 +20,8 @@ package org.apache.webbeans.newtests.interceptors.resolution;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InterceptionType;
+import javax.enterprise.inject.spi.Interceptor;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -61,6 +63,29 @@ public class EjbInterceptorBeanBuilderTest extends AbstractUnitTest
 
         EjbInterceptor ebi = bean.create(cc);
         Assert.assertNotNull(ebi);
+
+        shutDownContainer();
+    }
+
+    @Test
+    public void testInterceptorsManagerEjbBeanCreation()
+    {
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(UtilitySampleBean.class);
+        beanClasses.add(EjbInterceptor.class);
+        beanClasses.add(ManagedBeanWithEjbInterceptor.class);
+
+        startContainer(beanClasses, null);
+
+        Interceptor<EjbInterceptor> interceptor = getWebBeansContext().getInterceptorsManager().getEjbInterceptorForClass(EjbInterceptor.class);
+        Assert.assertNotNull(interceptor);
+        Assert.assertTrue(interceptor.intercepts(InterceptionType.AROUND_INVOKE));
+
+        Interceptor<EjbInterceptor> interceptor2 = getWebBeansContext().getInterceptorsManager().getEjbInterceptorForClass(EjbInterceptor.class);
+        Assert.assertNotNull(interceptor2);
+        Assert.assertTrue(interceptor2.intercepts(InterceptionType.AROUND_INVOKE));
+
+        Assert.assertTrue(interceptor == interceptor2); // should return previous instance
 
         shutDownContainer();
     }
