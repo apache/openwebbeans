@@ -100,7 +100,7 @@ public final class WebBeansInterceptorConfig
             bean.getWebBeansContext().getEJBInterceptorConfig().configure(bean.getAnnotatedType(), stack);
 
             final OpenWebBeansEjbPlugin ejbPlugin = bean.getWebBeansContext().getPluginLoader().getEjbPlugin();
-            final boolean isStateful = ejbPlugin.isStatefulBean(bean.getBeanClass());
+            final boolean isStateful = ejbPlugin != null && ejbPlugin.isStatefulBean(bean.getBeanClass());
 
             if (isStateful)
             {

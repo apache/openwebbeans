@@ -46,6 +46,7 @@ public interface InjectionTargetBean<T> extends OwbBean<T>
     /**
      * Gets interceptor stack of bean instance.
      * @return interceptor stack
+     * @deprecated
      */
     public List<InterceptorData> getInterceptorStack();    
     

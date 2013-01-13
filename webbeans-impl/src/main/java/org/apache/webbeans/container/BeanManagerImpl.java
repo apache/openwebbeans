@@ -76,8 +76,6 @@ import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
 import org.apache.webbeans.exception.inject.DefinitionException;
-import org.apache.webbeans.intercept.InterceptorComparator;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
@@ -440,23 +438,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         webBeansContext.getAnnotationManager().checkInterceptorResolverParams(interceptorBindings);
 
-        Set<Interceptor<?>> intsSet = webBeansContext.getWebBeansInterceptorConfig().findDeployedWebBeansInterceptor(interceptorBindings);
-        Iterator<Interceptor<?>> itSet = intsSet.iterator();
-
-        List<Interceptor<?>> interceptorList = new ArrayList<Interceptor<?>>();
-        while (itSet.hasNext())
-        {
-            WebBeansInterceptorBeanPleaseRemove interceptor = (WebBeansInterceptorBeanPleaseRemove) itSet.next();
-
-            if (interceptor.intercepts(type))
-            {
-                interceptorList.add(interceptor);
-            }
-        }
-
-        Collections.sort(interceptorList, new InterceptorComparator(webBeansContext));
-
-        return interceptorList;
+        return webBeansContext.getInterceptorsManager().resolveInterceptors(type, interceptorBindings);
     }
 
     

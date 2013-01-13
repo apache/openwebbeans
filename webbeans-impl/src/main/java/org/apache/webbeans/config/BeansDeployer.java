@@ -63,7 +63,6 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
@@ -348,8 +347,7 @@ public class BeansDeployer
         List<javax.enterprise.inject.spi.Interceptor<?>> interceptors = webBeansContext.getInterceptorsManager().getCdiInterceptors();
         for(javax.enterprise.inject.spi.Interceptor interceptor : interceptors)
         {
-            WebBeansInterceptorBeanPleaseRemove wbInt = (WebBeansInterceptorBeanPleaseRemove)interceptor;
-            beans.add(wbInt);
+            beans.add(interceptor);
         }
         
         logger.fine("Validation of the interceptor's injection points has started.");
@@ -870,6 +868,7 @@ public class BeansDeployer
                 {
                     logger.log(Level.FINE, "Found Managed Bean Interceptor with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
+/*X TODO remove this old code*/
                 if(annotationTypeSet)
                 {
                     bean = webBeansContext.getWebBeansUtil().defineInterceptor(annotatedType);
@@ -878,6 +877,14 @@ public class BeansDeployer
                 {
                     bean = managedBeanCreator.defineInterceptor(processInjectionTargetEvent);
                 }
+/*X TODO enable again:
+                CdiInterceptorBeanBuilder<T> ibb
+                        = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType);
+                if (ibb.isInterceptorEnabled()) {
+                    Interceptor<T> interceptor = ibb.getBean();
+                    webBeansContext.getInterceptorsManager().addCdiInterceptor(interceptor);
+                }
+*/
             }
             else
             {

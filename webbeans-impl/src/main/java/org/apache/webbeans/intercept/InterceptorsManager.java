@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.PassivationCapable;
 
@@ -38,6 +39,7 @@ import org.apache.webbeans.component.creation.EjbInterceptorBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 
 /**
@@ -176,6 +178,50 @@ public class InterceptorsManager
         return configuredInterceptorClasses.contains(interceptorClazz);
     }
 
+    public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
+    {
+        List<Interceptor<?>> interceptorList = new ArrayList<Interceptor<?>>();
+        for (Interceptor<?> interceptor : cdiInterceptors)
+        {
+            if (interceptor.intercepts(type) && intercepts(interceptor, interceptorBindings))
+            {
+                interceptorList.add(interceptor);
+            }
+        }
+
+        Collections.sort(interceptorList, new InterceptorComparator(webBeansContext));
+
+        return interceptorList;
+    }
+
+    private boolean intercepts(Interceptor<?> interceptor, Annotation[] requestedInterceptorBindings)
+    {
+        for (Annotation interceptorBinding : interceptor.getInterceptorBindings())
+        {
+            // if an interceptor has multiple bindings then all of them must be in the
+            // requestedInterceptorBindings for a positive match
+
+            if (!inBindingArray(interceptorBinding, requestedInterceptorBindings))
+            {
+                return false;
+            }
+
+        }
+
+        return true;
+    }
+
+    private boolean inBindingArray(Annotation interceptorBinding, Annotation[] requestedInterceptorBindings)
+    {
+        for (Annotation requestedBinding : requestedInterceptorBindings)
+        {
+            if (AnnotationUtil.isQualifierEqual(requestedBinding, interceptorBinding))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Add a CDI-style interceptor.
