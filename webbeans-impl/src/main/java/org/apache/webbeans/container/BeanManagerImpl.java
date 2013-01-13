@@ -51,6 +51,7 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.Producer;
 import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
@@ -358,9 +359,18 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * @param bean
      * @throws DefinitionException if the id is not unique.
      */
-    public void addPassivationInfo(OwbBean<?> bean) throws DefinitionException
+    public void addPassivationInfo(Bean<?> bean) throws DefinitionException
     {
-        String id = bean.getId();
+        String id = null;
+        if (bean instanceof OwbBean<?>)
+        {
+            id = ((OwbBean) bean).getId();
+        }
+        if (id == null && bean instanceof PassivationCapable)
+        {
+            id = ((PassivationCapable) bean).getId();
+        }
+
         if(id != null)
         {
             Bean<?> oldBean = passivationBeans.putIfAbsent(id, bean);
@@ -368,8 +378,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             {
                 throw new DuplicateDefinitionException("PassivationCapable bean id is not unique: " + id + " bean:" + bean);
             }
-            
-        }        
+
+        }
     }
 
     
