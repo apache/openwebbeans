@@ -57,6 +57,7 @@ import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -104,11 +105,21 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
     {
         if (getAnnotated().isAnnotationPresent(Specializes.class))
         {
-            defineName(getSuperAnnotated(), WebBeansUtil.getManagedBeanDefaultName(getAnnotated().getJavaClass().getSimpleName()));
+            AnnotatedType<? super T> superAnnotated = getSuperAnnotated();
+            defineName(superAnnotated, WebBeansUtil.getManagedBeanDefaultName(superAnnotated.getJavaClass().getSimpleName()));
         }
         if (getName() == null)
         {
             defineName(getAnnotated(), WebBeansUtil.getManagedBeanDefaultName(getAnnotated().getJavaClass().getSimpleName()));
+        }
+        else
+        {
+            // TODO XXX We have to check stereotypes here, too
+            if (getAnnotated().getJavaClass().isAnnotationPresent(Named.class))
+            {
+                throw new DefinitionException("@Specialized Class : " + getAnnotated().getJavaClass().getName()
+                        + " may not explicitly declare a bean name");
+            }
         }
     }
 

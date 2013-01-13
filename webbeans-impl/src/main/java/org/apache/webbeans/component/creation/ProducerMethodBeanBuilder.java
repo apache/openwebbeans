@@ -29,10 +29,12 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.inject.Named;
 
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -95,11 +97,21 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
         if (getAnnotated().isAnnotationPresent(Specializes.class))
         {
             specialized = true;
-            defineName(getSuperAnnotated(), WebBeansUtil.getProducerDefaultName(getSuperAnnotated().getJavaMember().getName()));
+            AnnotatedMethod<?> superAnnotated = getSuperAnnotated();
+            defineName(superAnnotated, WebBeansUtil.getProducerDefaultName(superAnnotated.getJavaMember().getName()));
         }
         if (getName() == null)
         {
             defineName(getAnnotated(), WebBeansUtil.getProducerDefaultName(getAnnotated().getJavaMember().getName()));
+        }
+        else
+        {
+            // TODO XXX We have to check stereotypes here, too
+            if (getAnnotated().isAnnotationPresent(Named.class))
+            {
+                throw new DefinitionException("@Specialized Producer method : " + getAnnotated().getJavaMember().getName()
+                        + " may not explicitly declare a bean name");
+            }
         }
     }
 

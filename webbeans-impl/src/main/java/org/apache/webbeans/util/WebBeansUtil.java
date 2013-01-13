@@ -1389,7 +1389,7 @@ public final class WebBeansUtil
 
                 if(superBean.getName() != null)
                 {
-                    if(comp.getName() != null)
+                    if (!superBean.getName().equals(comp.getName()))
                     {
                         throw new DefinitionException("@Specialized Class : " + specializedClass.getName()
                                 + " may not explicitly declare a bean name");

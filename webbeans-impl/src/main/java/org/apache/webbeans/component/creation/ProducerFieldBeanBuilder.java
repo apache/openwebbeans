@@ -44,7 +44,8 @@ public class ProducerFieldBeanBuilder<T, P extends ProducerFieldBean<T>> extends
     {
         if (getAnnotated().isAnnotationPresent(Specializes.class))
         {
-            defineName(getSuperAnnotated(), WebBeansUtil.getProducerDefaultName(getSuperAnnotated().getJavaMember().getName()));
+            AnnotatedField<?> superAnnotated = getSuperAnnotated();
+            defineName(superAnnotated, WebBeansUtil.getProducerDefaultName(superAnnotated.getJavaMember().getName()));
         }
         if (getName() == null)
         {
