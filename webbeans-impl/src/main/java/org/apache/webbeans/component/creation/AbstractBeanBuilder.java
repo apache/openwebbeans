@@ -20,7 +20,6 @@ package org.apache.webbeans.component.creation;
 
 import static org.apache.webbeans.util.InjectionExceptionUtil.throwUnproxyableResolutionException;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -35,10 +34,12 @@ import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Named;
@@ -48,7 +49,6 @@ import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.NamedLiteral;
-import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.ExternalScope;
@@ -67,12 +67,9 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> bean class info
  */
-public abstract class AbstractBeanBuilder<T>
+public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean<T>>
 {
-    /**Bean instance*/
-    private final AbstractOwbBean<T> bean;    
-    
-    private Annotated annotated;
+    private A annotated;
     
     private WebBeansContext webBeansContext;
     
@@ -86,14 +83,7 @@ public abstract class AbstractBeanBuilder<T>
     
     private Set<Class<? extends Annotation>> stereotypes = new HashSet<Class<? extends Annotation>>();
     
-    private boolean serializable = false;
-
     private Set<AnnotatedMember<? super T>> injectionPoints = new HashSet<AnnotatedMember<? super T>>();
-
-    public AbstractBeanBuilder(AbstractOwbBean<T> bean, Annotated annotated)
-    {
-        this(bean, annotated, null);
-    }
 
     /**
      * Creates a bean instance.
@@ -101,12 +91,10 @@ public abstract class AbstractBeanBuilder<T>
      * @param bean bean instance
      * @param annotated
      */
-    public AbstractBeanBuilder(AbstractOwbBean<T> bean, Annotated annotated, Class<? extends Annotation> scopeType)
+    public AbstractBeanBuilder(WebBeansContext webBeansContext, A annotated)
     {
-        this.bean = bean;
         this.annotated = annotated;
-        this.scope = scopeType;
-        this.webBeansContext = bean.getWebBeansContext();
+        this.webBeansContext = webBeansContext;
     }
 
     public Class<? extends Annotation> getScope()
@@ -217,15 +205,24 @@ public abstract class AbstractBeanBuilder<T>
      */
     public void defineApiType()
     {
-        Set<Type> types = annotated.getTypeClosure();
-        apiTypes.addAll(types);
-        Set<String> ignored = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
-        for (Iterator<Type> i = apiTypes.iterator(); i.hasNext();)
+        if (getBeanType().isArray())
         {
-            Type t = i.next();
-            if (t instanceof Class && ignored.contains(((Class<?>)t).getName()))
+            // 3.3.1
+            apiTypes.add(Object.class);
+            apiTypes.add(getBeanType());
+        }
+        else
+        {
+            Set<Type> types = annotated.getTypeClosure();
+            apiTypes.addAll(types);
+            Set<String> ignored = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
+            for (Iterator<Type> i = apiTypes.iterator(); i.hasNext();)
             {
-                i.remove();
+                Type t = i.next();
+                if (t instanceof Class && ignored.contains(((Class<?>)t).getName()))
+                {
+                    i.remove();
+                }
             }
         }
     }
@@ -278,6 +275,21 @@ public abstract class AbstractBeanBuilder<T>
      */
     public void defineQualifiers()
     {
+        HashSet<Class<? extends Annotation>> qualifiedTypes = new HashSet<Class<? extends Annotation>>();
+        if (annotated.isAnnotationPresent(Specializes.class))
+        {
+            // in this case first define qualifiers of supertype
+            Class<?> superclass = ClassUtil.getClass(annotated.getBaseType()).getSuperclass();
+            if (superclass != null)
+            {
+                defineQualifiers(webBeansContext.getAnnotatedElementFactory().getAnnotatedType(superclass), qualifiedTypes);
+            }
+        }
+        defineQualifiers(annotated, qualifiedTypes);
+    }
+    
+    private void defineQualifiers(Annotated annotated, Set<Class<? extends Annotation>> qualifiedTypes)
+    {
         Annotation[] annotations = AnnotationUtil.asArray(annotated.getAnnotations());
         final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
@@ -303,6 +315,14 @@ public abstract class AbstractBeanBuilder<T>
                     }
                 }
 
+                if (qualifiedTypes.contains(annotation.annotationType()))
+                {
+                    continue;
+                }
+                else
+                {
+                    qualifiedTypes.add(annotation.annotationType());
+                }
                 if (annotation.annotationType().equals(Named.class) && beanName != null)
                 {
                     qualifiers.add(new NamedLiteral(beanName));
@@ -567,17 +587,6 @@ public abstract class AbstractBeanBuilder<T>
     /**
      * {@inheritDoc}
      */
-    public void defineSerializable()
-    {
-        if (ClassUtil.isClassAssignable(Serializable.class, getBeanType()))
-        {
-            serializable = true;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public void defineStereoTypes()
     {
         Annotation[] anns = AnnotationUtil.asArray(annotated.getAnnotations());
@@ -622,36 +631,40 @@ public abstract class AbstractBeanBuilder<T>
         }        
     }
 
+    protected abstract B createBean(Set<Type> types,
+                                    Set<Annotation> qualifiers,
+                                    Class<? extends Annotation> scope,
+                                    String name,
+                                    boolean nullable,
+                                    Class<T> returnType,
+                                    Set<Class<? extends Annotation>> stereotypes,
+                                    boolean alternative);
+
     /**
      * {@inheritDoc}
      */
-    public AbstractOwbBean<T> getBean()
+    public B getBean()
     {
-        bean.setName(beanName);
-        bean.setImplScopeType(scope);
-        bean.getTypes().addAll(apiTypes);
-        bean.getQualifiers().addAll(qualifiers);
-        bean.getStereotypes().addAll(stereotypes);
-        bean.setSerializable(serializable);
+        B bean = createBean(apiTypes, qualifiers, scope, beanName, false, getBeanType(), stereotypes, false);
         for (Iterator<AnnotatedMember<? super T>> memberIterator = injectionPoints.iterator(); memberIterator.hasNext();)
         {
             AnnotatedMember<? super T> member = memberIterator.next();
             if (member instanceof AnnotatedField)
             {
-                addFieldInjectionPointMetaData(bean, (AnnotatedField<?>) member);
+                addFieldInjectionPointMetaData((OwbBean<T>)bean, (AnnotatedField<?>) member);
             }
             else if (member instanceof AnnotatedMethod)
             {
-                addMethodInjectionPointMetaData(bean, (AnnotatedMethod<?>) member);
+                addMethodInjectionPointMetaData((OwbBean<T>)bean, (AnnotatedMethod<?>) member);
             }
         }
         return bean;
     }
 
-    protected Annotated getAnnotated()
+    protected A getAnnotated()
     {
         return annotated;
     }
     
-    protected abstract Class<?> getBeanType();
+    protected abstract Class<T> getBeanType();
 }

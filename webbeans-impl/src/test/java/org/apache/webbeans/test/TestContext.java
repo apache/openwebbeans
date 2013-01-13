@@ -521,8 +521,7 @@ public abstract class TestContext implements ITestContext
             throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not _defined as interface");
         }
 
-        ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(webBeansContext, anntotatedType);
-        managedBeanCreator.defineSerializable();
+        ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, anntotatedType);
         managedBeanCreator.defineStereoTypes();
         
         managedBeanCreator.defineApiType();
@@ -533,17 +532,14 @@ public abstract class TestContext implements ITestContext
         managedBeanCreator.defineName();
         managedBeanCreator.defineQualifiers();
         managedBeanCreator.defineEnabled();
-        Constructor<T> constructor = webBeansContext.getWebBeansUtil().defineConstructor(clazz);
-        managedBeanCreator.addConstructorInjectionPointMetaData(constructor);
+        managedBeanCreator.defineConstructor();
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
+        managedBeanCreator.defineDisposalMethods();
         ManagedBean<T> component = managedBeanCreator.getBean();
         component.setProducer(new InjectionTargetProducer(component));
 
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(component);
-
-
-        component.setConstructor(constructor);
 
         //Dropped from the speicification
         //WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "Simple WebBean Component implementation class : " + clazz.getName());
@@ -564,7 +560,7 @@ public abstract class TestContext implements ITestContext
             producerField.setProducer(new ProducerBeansProducer(producerField));
         }
 
-        managedBeanCreator.defineDisposalMethods();
+        managedBeanCreator.validateDisposalMethods(component);
         managedBeanCreator.defineObserverMethods(component);
 
         return component;

@@ -63,7 +63,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
     private boolean transientt;
     
     private boolean delegate;
-
+    
     InjectionPointImpl(Bean<?> ownerBean, Type type, Member member, Annotated annotated)
     {
         this.ownerBean = ownerBean;

@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +33,8 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.util.Nonbinding;
 
+import org.apache.webbeans.annotation.AnyLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.exception.WebBeansException;
 
 /**
@@ -45,6 +48,8 @@ public final class AnnotationUtil
     public static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
 
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+    
+    public static final Set<Annotation> DEFAULT_AND_ANY_ANNOTATION = Collections.unmodifiableSet(new HashSet<Annotation>(Arrays.asList(new DefaultLiteral(), new AnyLiteral())));
 
     // No instantiate
     private AnnotationUtil()

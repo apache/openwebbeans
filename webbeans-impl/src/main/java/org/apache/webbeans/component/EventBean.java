@@ -21,7 +21,9 @@ package org.apache.webbeans.component;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collections;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -30,6 +32,8 @@ import javax.enterprise.util.TypeLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.CollectionUtil;
 
 /**
  * Implicit observable bean definition.
@@ -38,6 +42,7 @@ import org.apache.webbeans.exception.WebBeansException;
  */
 public class EventBean<T> extends AbstractOwbBean<Event<T>>
 {
+
     //X TODO refactor. public static variables are utterly ugly
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
 
@@ -48,7 +53,13 @@ public class EventBean<T> extends AbstractOwbBean<Event<T>>
     @SuppressWarnings("serial")
     public EventBean(WebBeansContext webBeansContext)
     {
-        super(webBeansContext, WebBeansType.OBSERVABLE,new TypeLiteral<Event<T>>(){}.getRawType());
+        super(webBeansContext,
+              WebBeansType.OBSERVABLE,
+              CollectionUtil.<Type>unmodifiableSet(new TypeLiteral<Event<T>>() {}.getRawType(), Object.class),
+              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+              Dependent.class,
+              new TypeLiteral<Event<T>>(){}.getRawType(),
+              Collections.<Class<? extends Annotation>>emptySet());
     }
     
     /**

@@ -43,6 +43,7 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -69,7 +70,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> bean class type
  */
-public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBeanBuilder<T>
+public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionTargetBean<T>> extends AbstractBeanBuilder<T, AnnotatedType<T>, I>
 {    
     
     private boolean enabled = true;
@@ -80,15 +81,10 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
      * 
      * @param bean bean instance
      */
-    public AbstractInjectionTargetBeanBuilder(AbstractInjectionTargetBean<T> bean, Class<? extends Annotation> scopeType)
+    public AbstractInjectionTargetBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
-        super(bean, bean.getAnnotatedType(), scopeType);
-        webBeansContext = bean.getWebBeansContext();
-    }
-        
-    public AbstractInjectionTargetBeanBuilder(AbstractInjectionTargetBean<T> bean)
-    {
-        this(bean, null);
+        super(webBeansContext, annotatedType);
+        this.webBeansContext = webBeansContext;
     }
 
     /**
@@ -98,8 +94,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
     {
         defineName(WebBeansUtil.getManagedBeanDefaultName(getAnnotated().getJavaClass().getSimpleName()));
     }
-
-
 
     protected AnnotatedConstructor<T> getBeanConstructor()
     {
@@ -163,33 +157,38 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
         return result;
     }
 
+    public void defineDisposalMethods()
+    {
+        Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();
+        
+        for (AnnotatedMethod<? super T> annotatedMethod : annotatedMethods)
+        {            
+            for (AnnotatedParameter<? super T> annotatedParameter : annotatedMethod.getParameters())
+            {
+                if (annotatedParameter.isAnnotationPresent(Disposes.class))
+                {
+                    addInjectionPoint(annotatedMethod);
+                }
+            }
+        }
+    }
 
     /**
      * {@inheritDoc}
      */
-    public void defineDisposalMethods()
+    public void validateDisposalMethods(InjectionTargetBean<T> bean)
     {
         final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();    
         ProducerMethodBean<?> previous = null;
-        for (AnnotatedMethod<? super T> annotatedMethod : annotatedMethods)
+        for (InjectionPoint injectionPoint : bean.getInjectionPoints())
         {
-            Method declaredMethod = annotatedMethod.getJavaMember();
-            AnnotatedMethod<T> annt = (AnnotatedMethod<T>)annotatedMethod;
-            List<AnnotatedParameter<T>> parameters = annt.getParameters();
-            boolean found = false;
-            for(AnnotatedParameter<T> parameter : parameters)
+            if (injectionPoint.getAnnotated().isAnnotationPresent(Disposes.class))
             {
-                if(parameter.isAnnotationPresent(Disposes.class))
-                {
-                    found = true;
-                    break;
-                }
-            }
-            
-            if(found)
-            {
-                checkProducerMethodDisposal((AnnotatedMethod<T>) annotatedMethod);
+                AnnotatedParameter<T> annotatedParameter = (AnnotatedParameter<T>) injectionPoint.getAnnotated();
+                AnnotatedMethod<T> annotatedMethod = (AnnotatedMethod<T>) annotatedParameter.getDeclaringCallable();
+                Method declaredMethod = annotatedMethod.getJavaMember();
+                checkProducerMethodDisposal(annotatedMethod);
                 Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Disposes.class);
                 Annotation[] annot = annotationManager.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
 
@@ -234,10 +233,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                 }
                 
                 pr.setDisposalMethod(declaredMethod);
-
-                addInjectionPoint(annotatedMethod);
-                getBean(); // to force creating the injection point
-                
             }
         }
     }
@@ -434,7 +429,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
             if(found)
             {
                 checkObserverMethodConditions((AnnotatedMethod<T>) annotatedMethod, annotatedMethod.getDeclaringType().getJavaClass());
-                if (getScope().equals(Dependent.class))
+                if (bean.getScope().equals(Dependent.class))
                 {
                     //Check Reception
                      AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Observes.class);
@@ -541,8 +536,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                         resourceBeanCreator.defineQualifiers();
                         ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
                         
-                        resourceBean.getTypes().addAll(annotatedField.getTypeClosure());
-                        resourceBean.setImplScopeType(Dependent.class);
                         resourceBean.setProducerField(field);
                         
                         producerBeans.add(resourceBean);                                            
@@ -550,8 +543,8 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                 }
                 else
                 {
-                    ProducerFieldBeanBuilder<T> producerFieldBeanCreator = new ProducerFieldBeanBuilder<T>(bean, annotatedField);
-                    producerFieldBeanCreator.defineSerializable();
+                    ProducerFieldBeanBuilder<T, ProducerFieldBean<T>> producerFieldBeanCreator = new ProducerFieldBeanBuilder<T, ProducerFieldBean<T>>(bean, annotatedField);
+                    producerFieldBeanCreator.defineApiType();
                     producerFieldBeanCreator.defineStereoTypes();
                     producerFieldBeanCreator.defineScopeType("Annotated producer field: " + annotatedField +  "must declare default @Scope annotation");
                     producerFieldBeanCreator.checkUnproxiableApiType();
@@ -566,16 +559,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                     }                    
 
                     webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean, producerFieldBean, anns);
-                    if (producerFieldBean.getReturnType().isArray())
-                    {
-                        // 3.3.1
-                        producerFieldBean.getTypes().add(Object.class);
-                        producerFieldBean.getTypes().add(producerFieldBean.getReturnType());
-                    }
-                    else
-                    {
-                        producerFieldBean.getTypes().addAll(annotatedField.getTypeClosure());
-                    }
                     WebBeansUtil.checkProducerGenericType(producerFieldBean, annotatedField.getJavaMember());
                     
                     producerBeans.add(producerFieldBean);
@@ -617,7 +600,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                     producerMethodBeanCreator.configureProducerSpecialization((AnnotatedMethod<T>) annotatedMethod);
                 }
                 
-                producerMethodBeanCreator.defineSerializable();
                 producerMethodBeanCreator.defineStereoTypes();
                 producerMethodBeanCreator.defineScopeType("Annotated producer method : " + annotatedMethod
                         +  "must declare default @Scope annotation");
@@ -625,6 +607,8 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                 producerMethodBeanCreator.defineQualifiers();
                 
                 producerMethodBeanCreator.addInjectionPoint(annotatedMethod);
+                producerMethodBeanCreator.defineApiType();
+                producerMethodBeanCreator.defineName(WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
                 ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
                 producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
                 if (ClassUtil.getClass(annotatedMethod.getBaseType()).isPrimitive())
@@ -635,20 +619,8 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
                 webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
                         producerMethodBean,
                         AnnotationUtil.asArray(annotatedMethod.getAnnotations()));
-
-                if (producerMethodBean.getReturnType().isArray())
-                {
-                    // 3.3.1
-                    producerMethodBean.getTypes().add(Object.class);
-                    producerMethodBean.getTypes().add(producerMethodBean.getReturnType());
-                }
-                else
-                {
-                    producerMethodBean.getTypes().addAll(annotatedMethod.getTypeClosure());
-                }
                 WebBeansUtil.checkProducerGenericType(producerMethodBean, annotatedMethod.getJavaMember());
-                producerMethodBeanCreator.defineName(WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
-                producerBeans.add(producerMethodBeanCreator.getBean());
+                producerBeans.add(producerMethodBean);
                 
             }
             
@@ -675,19 +647,27 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
         }
     }
 
-    /**
-     * Return type-safe bean instance.
-     */
-    public AbstractInjectionTargetBean<T> getBean()
-    {
-        AbstractInjectionTargetBean<T> bean = (AbstractInjectionTargetBean<T>)super.getBean();
-        bean.setEnabled(enabled);
-        return bean;
-    }
+    protected abstract I createBean(Set<Type> types,
+                                    Set<Annotation> qualifiers,
+                                    Class<? extends Annotation> scope,
+                                    String name,
+                                    boolean nullable,
+                                    Class<T> beanClass,
+                                    Set<Class<? extends Annotation>> stereotypes,
+                                    boolean alternative,
+                                    boolean enabled);
 
-    protected AnnotatedType<T> getAnnotated()
+    @Override
+    protected I createBean(Set<Type> types,
+                           Set<Annotation> qualifiers,
+                           Class<? extends Annotation> scope,
+                           String name,
+                           boolean nullable,
+                           Class<T> beanClass,
+                           Set<Class<? extends Annotation>> stereotypes,
+                           boolean alternative)
     {
-        return (AnnotatedType<T>) super.getAnnotated();
+        return createBean(types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative, enabled);
     }
 
     protected boolean isEnabled()
@@ -701,7 +681,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T> extends AbstractBean
     }
 
     @Override
-    protected Class<?> getBeanType()
+    protected Class<T> getBeanType()
     {
         return getAnnotated().getJavaClass();
     }

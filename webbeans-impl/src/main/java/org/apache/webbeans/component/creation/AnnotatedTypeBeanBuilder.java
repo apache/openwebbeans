@@ -23,11 +23,12 @@ import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
-public class AnnotatedTypeBeanBuilder<T> extends ManagedBeanBuilder<T>
+public class AnnotatedTypeBeanBuilder<T> extends ManagedBeanBuilder<T, ManagedBean<T>>
 {
     private final static Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedTypeBeanBuilder.class);
 

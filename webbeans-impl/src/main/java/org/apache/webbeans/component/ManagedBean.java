@@ -19,7 +19,10 @@
 package org.apache.webbeans.component;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
+import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -43,25 +46,33 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     private Constructor<T> constructor;
     
     protected boolean isAbstractDecorator;
-
-
-    public ManagedBean(WebBeansContext webBeansContext, Class<T> returnType, AnnotatedType<T> annotatedType)
-    {
-        this(webBeansContext, returnType, WebBeansType.MANAGED, annotatedType);
-    }
-
-    /**
-     * Creates a new instance.
-     * 
-     * @param returnType bean class
-     * @param type webbeans type
-     * @param webBeansContext
-     */
-    public ManagedBean(WebBeansContext webBeansContext, Class<T> returnType, WebBeansType type, AnnotatedType<T> annotatedType)
-    {
-        super(webBeansContext, type, returnType, annotatedType);
-    }
     
+    public ManagedBean(WebBeansContext webBeansContext,
+                       WebBeansType webBeansType,
+                       AnnotatedType<T> annotatedType,
+                       Set<Type> types,
+                       Set<Annotation> qualifiers,
+                       Class<? extends Annotation> scope,
+                       Class<T> beanClass,
+                       Set<Class<? extends Annotation>> stereotypes)
+    {
+        super(webBeansContext, webBeansType, annotatedType, types, qualifiers, scope, beanClass, stereotypes);
+    }
+
+    public ManagedBean(WebBeansContext webBeansContext,
+                       WebBeansType webBeansType,
+                       AnnotatedType<T> annotated,
+                       Set<Type> types,
+                       Set<Annotation> qualifiers,
+                       Class<? extends Annotation> scope,
+                       String name,
+                       Class<T> beanClass,
+                       Set<Class<? extends Annotation>> stereotypes,
+                       boolean alternative)
+    {
+        super(webBeansContext, webBeansType, annotated, types, qualifiers, scope, name, beanClass, stereotypes, alternative);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -69,6 +80,10 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     protected T createComponentInstance(CreationalContext<T> creationalContext)
     {
         Constructor<T> con = getConstructor();
+        if (con == null)
+        {
+            con = webBeansContext.getWebBeansUtil().getNoArgConstructor(getReturnType());
+        }
         InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(getAnnotatedType(), getInjectionPoints(), getWebBeansContext());
         InjectableConstructor<T> ic = new InjectableConstructor<T>(con, injectionTarget, (CreationalContextImpl<T>) creationalContext);
 
@@ -109,7 +124,7 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
         {
             return isPassivationCapable.booleanValue();
         }
-        if(Serializable.class.isAssignableFrom(returnType))
+        if(Serializable.class.isAssignableFrom(getReturnType()))
         {
             for(Decorator<?> dec : decorators)
             {

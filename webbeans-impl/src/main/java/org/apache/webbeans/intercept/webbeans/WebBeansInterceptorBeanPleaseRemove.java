@@ -32,6 +32,7 @@ import org.apache.webbeans.intercept.OwbInterceptor;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -87,8 +88,13 @@ public class WebBeansInterceptorBeanPleaseRemove<T> extends AbstractOwbBean<T> i
 
     public WebBeansInterceptorBeanPleaseRemove(AbstractInjectionTargetBean<T> delegateBean)
     {
-        super(delegateBean.getWebBeansContext(), WebBeansType.INTERCEPTOR,delegateBean.getReturnType());
-        
+        super(delegateBean.getWebBeansContext(),
+              WebBeansType.INTERCEPTOR,
+              delegateBean.getTypes(),
+              delegateBean.getQualifiers(),
+              Dependent.class,
+              delegateBean.getBeanClass(),
+              delegateBean.getStereotypes());
         this.delegateBean = delegateBean;
         clazz = getDelegate().getReturnType();
 
@@ -352,12 +358,6 @@ public class WebBeansInterceptorBeanPleaseRemove<T> extends AbstractOwbBean<T> i
     public boolean isNullable()
     {
         return delegateBean.isNullable();
-    }
-
-    @Override
-    public boolean isSerializable()
-    {
-        return delegateBean.isSerializable();
     }
 
     @Override

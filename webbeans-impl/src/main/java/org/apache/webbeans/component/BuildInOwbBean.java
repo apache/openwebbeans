@@ -22,15 +22,21 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.logging.Level;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import org.apache.webbeans.proxy.MethodHandler;
+import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.CollectionUtil;
 
 import org.apache.webbeans.config.WebBeansContext;
 
@@ -89,7 +95,13 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
     @SuppressWarnings("unchecked")
     protected BuildInOwbBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType)
     {
-        super(webBeansContext, webBeansType, returnType);
+        super(webBeansContext,
+              webBeansType,
+              CollectionUtil.<Type>unmodifiableSet(returnType, Object.class),
+              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+              Dependent.class,
+              returnType,
+              Collections.<Class<? extends Annotation>>emptySet());
         initBuildInBeanConfig(getWebBeansContext());
         handlerClassName = proxyHandlerMap.get(getWebBeansType());
         if (handlerClassName.equalsIgnoreCase(PROXY_HANDLER_VALUE_NONE) ||
@@ -107,7 +119,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
             {
                 try
                 {
-                    buildinBean.handlerClass = Class.forName(name);
+                    buildinBean.handlerClass = Class.forName(getName());
                     buildinBean.handlerContructor = buildinBean.handlerClass.getConstructor(BuildInOwbBean.class, Object.class);
                     return null;
                 }

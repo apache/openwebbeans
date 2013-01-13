@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.util.List;
 
@@ -44,13 +43,6 @@ public interface OwbBean<T> extends Bean<T>
     public void setProducer(Producer<T> producer);
 
     /**
-     * Sets bean scope type annotation.
-     * 
-     * @param scopeType bean scope type annotation
-     */
-    public void setImplScopeType(Class<? extends Annotation> scopeType);    
-
-    /**
      * Returns bean type.
      * 
      * @return webbeans type
@@ -73,47 +65,11 @@ public interface OwbBean<T> extends Bean<T>
     public void destroyCreatedInstance(T instance, CreationalContext<T> creationalContext);
     
     /**
-     * Adds qualifier.
-     * 
-     * @param qualifier bean qualifier
-     */
-    public void addQualifier(Annotation qualifier);
-    
-    /**
-     * Returns true if bean is capable of
-     * serializable, false otherwise.
-     * 
-     * @return true if bean is serializable
-     */
-    public boolean isSerializable();    
-
-    /**
-     * Adds new stereotype annotation.
-     * 
-     * @param stereoType stereotype annotation
-     */
-    public void addStereoType(Annotation stereoType);
-
-    /**
-     * Adds new api type.
-     * 
-     * @param apiType api type
-     */
-    public void addApiType(Class<?> apiType);
-    
-    /**
      * Adds new injection point.
      * 
      * @param injectionPoint injection point
      */
     public void addInjectionPoint(InjectionPoint injectionPoint);
-
-    /**
-     * Sets name of the bean.
-     * 
-     * @param name bean name
-     */
-    public void setName(String name);
     
     /**
      * Gets injection points for given member.
@@ -131,12 +87,6 @@ public interface OwbBean<T> extends Bean<T>
      * @return bean class type
      */
     public Class<T> getReturnType();
-
-    /**
-     * Sets serializable flag.
-     * @param serializable flag
-     */
-    public void setSerializable(boolean serializable);
 
     /**
      * Set nullable flag.

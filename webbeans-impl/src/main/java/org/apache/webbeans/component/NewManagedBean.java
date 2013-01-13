@@ -18,6 +18,11 @@
  */
 package org.apache.webbeans.component;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Set;
+
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -32,9 +37,16 @@ import org.apache.webbeans.config.WebBeansContext;
  */
 public class NewManagedBean<T> extends ManagedBean<T> implements NewBean<T>
 {
-    public NewManagedBean(WebBeansContext webBeansContext, Class<T> returnType, WebBeansType definedType, AnnotatedType<T> annotatedType)
+
+    public NewManagedBean(WebBeansContext webBeansContext,
+                          WebBeansType webBeansType,
+                          AnnotatedType<T> annotatedType,
+                          Set<Type> types,
+                          Set<Annotation> qualifiers,
+                          Class<T> beanClass,
+                          Set<Class<? extends Annotation>> stereotypes)
     {
-        super(webBeansContext, returnType, annotatedType);
+        super(webBeansContext, webBeansType, annotatedType, types, qualifiers, Dependent.class, beanClass, stereotypes);
     }
 
     /**

@@ -18,24 +18,32 @@
  */
 package org.apache.webbeans.component.creation;
 
-import javax.enterprise.context.ApplicationScoped;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Set;
 
 import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.config.WebBeansContext;
 
-public class ExtensionBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
+public class ExtensionBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T, ExtensionBean<T>>
 {
 
     public ExtensionBeanBuilder(WebBeansContext webBeansContext, Class<T> type)
     {
-        super(new ExtensionBean<T>(webBeansContext, type), ApplicationScoped.class);
+        super(webBeansContext, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type));
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public ExtensionBean<T> getBean()
+    @Override
+    protected ExtensionBean<T> createBean(Set<Type> types,
+                                          Set<Annotation> qualifiers,
+                                          Class<? extends Annotation> scope,
+                                          String name,
+                                          boolean nullable,
+                                          Class<T> beanClass,
+                                          Set<Class<? extends Annotation>> stereotypes,
+                                          boolean alternative,
+                                          boolean enabled)
     {
-        return (ExtensionBean<T>)super.getBean();
+        return new ExtensionBean<T>(webBeansContext, beanClass);
     }
 }

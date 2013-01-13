@@ -16,27 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.newtests.decorators.multiple;
+package org.apache.webbeans.util;
 
-import javax.inject.Inject;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-@MyIntercept @Interceptor
-public class OutputInterceptor {
+public class CollectionUtil
+{
 
-    @Inject RequestStringBuilder rb;
-
-    public OutputInterceptor()
+    public static <T> Set<T> unmodifiableSet(T... entries)
     {
-        
+        Set<T> set = new HashSet<T>(Arrays.asList(entries));
+        return Collections.unmodifiableSet(set);
     }
-
-    @AroundInvoke
-    public Object myHook(InvocationContext ctx) throws Exception{
-        rb.addOutput("OutputInterceptor\n");
-        return ctx.proceed();
-    }
-
 }

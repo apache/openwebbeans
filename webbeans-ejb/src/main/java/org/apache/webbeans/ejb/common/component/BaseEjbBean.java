@@ -18,15 +18,19 @@
  */
 package org.apache.webbeans.ejb.common.component;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
@@ -55,14 +59,19 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
      * @param webBeansContext
      * @param ejbClassType ebj class type
      */
-    public BaseEjbBean(Class<T> ejbClassType, SessionBeanType type, WebBeansContext webBeansContext)
+    protected BaseEjbBean(WebBeansContext webBeansContext,
+                          SessionBeanType type,
+                          AnnotatedType<T> annotatedType,
+                          Set<Type> types,
+                          Set<Annotation> qualifiers,
+                          Class<? extends Annotation> scope,
+                          Class<T> beanClass,
+                          Set<Class<? extends Annotation>> stereotypes)
     {
-        super(webBeansContext, WebBeansType.ENTERPRISE, ejbClassType, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(ejbClassType));
-        
+        super(webBeansContext, WebBeansType.ENTERPRISE, annotatedType, types, qualifiers, scope, beanClass, stereotypes);
         //type of the ejb
         this.ejbType = type;
     }
-
 
     /* (non-Javadoc)
      * @see org.apache.webbeans.component.AbstractBean#isPassivationCapable()

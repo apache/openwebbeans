@@ -20,6 +20,8 @@ package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import org.apache.webbeans.exception.WebBeansException;
@@ -29,12 +31,21 @@ import org.apache.webbeans.spi.api.ResourceReference;
 
 public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
 {
-    private ResourceReference<X,T> resourceReference = null;
     
-    public ResourceBean(Class<X> returnType, InjectionTargetBean<?> ownerBean,
-                        ResourceReference<X, T> resourceReference)
+    private ResourceReference<X,T> resourceReference = null;
+
+    public ResourceBean(InjectionTargetBean<?> ownerComponent,
+                        ResourceReference<X, T> resourceReference,
+                        Set<Type> types,
+                        Set<Annotation> qualifiers,
+                        Class<? extends Annotation> scope,
+                        String name,
+                        boolean nullable,
+                        Class<X> beanClass,
+                        Set<Class<? extends Annotation>> stereotypes,
+                        boolean alternative)
     {
-        super(ownerBean, returnType);
+        super(ownerComponent, types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative);
         this.resourceReference = resourceReference;
     }
     

@@ -48,6 +48,7 @@ import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.InterceptedMarker;
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
@@ -831,7 +832,7 @@ public class BeansDeployer
             //Check conditions
             webBeansContext.getWebBeansUtil().checkManagedBeanCondition(clazz);
 
-            ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(webBeansContext, annotatedType);
+            ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType);
 
             boolean annotationTypeSet = false;
             if(processAnnotatedEvent.isModifiedAnnotatedType())
@@ -847,7 +848,7 @@ public class BeansDeployer
                 processInjectionTargetEvent = processInjectionTarget;
             }
 
-
+            InjectionTargetBean<T> bean;
             if(WebBeansUtil.isDecorator(annotatedType))
             {
                 if (logger.isLoggable(Level.FINE))
@@ -856,11 +857,11 @@ public class BeansDeployer
                 }
                 if(annotationTypeSet)
                 {
-                    webBeansContext.getWebBeansUtil().defineDecorator(annotatedType);
+                    bean = webBeansContext.getWebBeansUtil().defineDecorator(annotatedType);
                 }
                 else
                 {
-                    managedBeanCreator.defineDecorator(processInjectionTargetEvent);
+                    bean = managedBeanCreator.defineDecorator(processInjectionTargetEvent);
                 }
             }
             else if(WebBeansUtil.isCdiInterceptor(annotatedType))
@@ -871,11 +872,11 @@ public class BeansDeployer
                 }
                 if(annotationTypeSet)
                 {
-                    webBeansContext.getWebBeansUtil().defineInterceptor(annotatedType);
+                    bean = webBeansContext.getWebBeansUtil().defineInterceptor(annotatedType);
                 }
                 else
                 {
-                    managedBeanCreator.defineInterceptor(processInjectionTargetEvent);
+                    bean = managedBeanCreator.defineInterceptor(processInjectionTargetEvent);
                 }
             }
             else
@@ -890,7 +891,7 @@ public class BeansDeployer
                 {
                     logger.log(Level.FINE, "Found Managed Bean with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
-                managedBeanCreator.defineManagedBean(processInjectionTargetEvent);
+                bean = managedBeanCreator.defineManagedBean(processInjectionTargetEvent);
             }
 
             if(processInjectionTarget != null)
@@ -900,9 +901,9 @@ public class BeansDeployer
                     final InjectionTarget originalInjectionTarget = processInjectionTargetEvent.getInjectionTarget();
                     final InjectionTarget updatedInjectionTarget = webBeansContext.getWebBeansUtil()
                             .fireProcessInjectionTargetEvent(processInjectionTarget).getInjectionTarget();
-                    if (updatedInjectionTarget != originalInjectionTarget)
+                    if (updatedInjectionTarget != originalInjectionTarget && bean != null)
                     {
-                        managedBeanCreator.getBean().setProducer(updatedInjectionTarget);
+                        bean.setProducer(updatedInjectionTarget);
                     }
                 }
             }

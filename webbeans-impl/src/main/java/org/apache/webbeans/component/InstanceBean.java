@@ -21,16 +21,21 @@ package org.apache.webbeans.component;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.Set;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
+import javax.inject.Provider;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.inject.AbstractInjectable;
 import org.apache.webbeans.inject.instance.InstanceFactory;
+import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.CollectionUtil;
 
 public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
 {
@@ -40,7 +45,13 @@ public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
     @SuppressWarnings("serial")
     public InstanceBean(WebBeansContext webBeansContext)
     {
-        super(webBeansContext, WebBeansType.INSTANCE, new TypeLiteral<Instance<T>>(){}.getRawType());
+        super(webBeansContext,
+              WebBeansType.INSTANCE,
+              CollectionUtil.<Type>unmodifiableSet(new TypeLiteral<Instance<T>>(){}.getRawType(), new TypeLiteral<Provider<T>>() {}.getRawType(), Object.class),
+              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+              Dependent.class,
+              new TypeLiteral<Instance<T>>(){}.getRawType(),
+              Collections.<Class<? extends Annotation>>emptySet());
     }
     
          

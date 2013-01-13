@@ -19,8 +19,8 @@
 package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +39,7 @@ import javax.enterprise.inject.spi.Producer;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -48,6 +49,7 @@ import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.inject.DeploymentException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.portable.creation.InjectionTargetProducer;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
@@ -61,9 +63,8 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> bean type info
  */
-public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
+public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInjectionTargetBeanBuilder<T, M>
 {
-    private final WebBeansContext webBeansContext;
     private AnnotatedConstructor<T> constructor;
     
     /**
@@ -71,13 +72,7 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
      */
     public ManagedBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
-        this(new ManagedBean<T>(webBeansContext, annotatedType.getJavaClass(), annotatedType), null);
-    }
-
-    protected ManagedBeanBuilder(ManagedBean<T> managedBean, Class<? extends Annotation> scopeType)
-    {
-        super(managedBean, scopeType);
-        webBeansContext = managedBean.getWebBeansContext();
+        super(webBeansContext, annotatedType);
     }
 
     /**
@@ -104,9 +99,9 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
     /**
      * {@inheritDoc}
      */
-    public ManagedBean<T> getBean()
+    public M getBean()
     {
-        ManagedBean<T> bean = (ManagedBean<T>)super.getBean();
+        M bean = super.getBean();
         addConstructorInjectionPointMetaData(bean);
         return bean;
     }
@@ -127,8 +122,6 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
                 WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
 
-        defineSerializable();
-
         //Check for Enabled via Alternative
         defineEnabled();
 
@@ -139,9 +132,11 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         defineConstructor();
         defineInjectedFields();
         defineInjectedMethods();
+        defineDisposalMethods();
 
         Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
         ManagedBean<T> managedBean = getBean();
+        ((InjectionTargetProducer)processInjectionTargetEvent.getInjectionTarget()).setBean(managedBean);
         if(isEnabled())
         {
             observerMethods = defineObserverMethods(managedBean);
@@ -223,7 +218,7 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
                 // add them one after the other to enable serialization handling et al
                 beanManager.addBean(producerMethod);
             }
-            defineDisposalMethods();//Define disposal method after adding producers
+            validateDisposalMethods(managedBean);//Define disposal method after adding producers
             for (ProducerFieldBean<?> producerField : producerFields)
             {
                 // add them one after the other to enable serialization handling et al
@@ -237,7 +232,7 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
     /**
      * @deprecated replaced via the various {@link InterceptorBeanBuilder}s
      */
-    public void defineInterceptor(ProcessInjectionTarget<T> injectionTargetEvent)
+    public ManagedBean<T> defineInterceptor(ProcessInjectionTarget<T> injectionTargetEvent)
     {
         Class<?> clazz = injectionTargetEvent.getAnnotatedType().getJavaClass();
         AnnotatedType annotatedType = injectionTargetEvent.getAnnotatedType();
@@ -260,8 +255,12 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
                 // TODO could probably be a bit more descriptive
                 throw new DeploymentException("Cannot create Interceptor for class" + injectionTargetEvent.getAnnotatedType());
             }
+            return component;
         }
-
+        else
+        {
+            return null;
+        }
     }
 
     protected void addConstructorInjectionPointMetaData(ManagedBean<T> bean)
@@ -280,21 +279,11 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         bean.setConstructor(constructor.getJavaMember());
     }
 
-    public void addConstructorInjectionPointMetaData(Constructor<T> constructor)
-    {
-        List<InjectionPoint> injectionPoints = webBeansContext.getInjectionPointFactory().getConstructorInjectionPointData(getBean(), constructor);
-        for (InjectionPoint injectionPoint : injectionPoints)
-        {
-            addImplicitComponentForInjectionPoint(injectionPoint);
-            getBean().addInjectionPoint(injectionPoint);
-        }
-    }
-
     /**
      * Define decorator bean.
      * @param processInjectionTargetEvent
      */
-    public void defineDecorator(ProcessInjectionTarget<T> processInjectionTargetEvent)
+    public ManagedBean<T> defineDecorator(ProcessInjectionTarget<T> processInjectionTargetEvent)
     {
         Class<T> clazz = processInjectionTargetEvent.getAnnotatedType().getJavaClass();
         if (webBeansContext.getDecoratorsManager().isDecoratorEnabled(clazz))
@@ -321,6 +310,11 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
                 // TODO could probably be a bit more descriptive
                 throw new DeploymentException("Cannot create Decorator for class" + processInjectionTargetEvent.getAnnotatedType());
             }
+            return delegate;
+        }
+        else
+        {
+            return null;
         }
     }
 
@@ -340,5 +334,21 @@ public class ManagedBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         bean.setConstructor(webBeansContext.getWebBeansUtil().defineConstructor(clazz));
         bean.setIsAbstractDecorator(true);
         return bean;
+    }
+
+    @Override
+    protected M createBean(Set<Type> types,
+                           Set<Annotation> qualifiers,
+                           Class<? extends Annotation> scope,
+                           String name,
+                           boolean nullable,
+                           Class<T> beanClass,
+                           Set<Class<? extends Annotation>> stereotypes,
+                           boolean alternative,
+                           boolean enabled)
+    {
+        M managedBean = (M)new ManagedBean<T>(webBeansContext, WebBeansType.MANAGED, getAnnotated(), types, qualifiers, scope, name, beanClass, stereotypes, alternative);
+        managedBean.setEnabled(enabled);
+        return managedBean;
     }
 }

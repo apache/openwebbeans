@@ -21,6 +21,7 @@ package org.apache.webbeans.ejb.common.util;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ public final class EjbUtility
         
     }
         
-    public static <T> void fireEvents(Class<T> clazz, BaseEjbBean<T> ejbBean,ProcessAnnotatedType<T> event)
+    public static <T> void fireEvents(Class<T> clazz, final BaseEjbBean<T> ejbBean,ProcessAnnotatedType<T> event)
     {
         WebBeansContext webBeansContext = ejbBean.getWebBeansContext();
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
@@ -68,7 +69,22 @@ public final class EjbUtility
         
         //Fires ProcessAnnotatedType
         ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = (ProcessAnnotatedTypeImpl<T>)event;             
-        EjbBeanBuilder<T> ejbBeanCreator = new EjbBeanBuilder<T>(ejbBean);
+        EjbBeanBuilder<T, BaseEjbBean<T>> ejbBeanCreator = new EjbBeanBuilder<T, BaseEjbBean<T>>(ejbBean.getWebBeansContext(), annotatedType) {
+            @Override
+            protected BaseEjbBean<T> createBean(Set<Type> types,
+                                                Set<Annotation> qualifiers,
+                                                Class<? extends Annotation> scope,
+                                                String name,
+                                                boolean nullable,
+                                                Class<T> beanClass,
+                                                Set<Class<? extends Annotation>> stereotypes,
+                                                boolean alternative,
+                                                boolean enabled)
+            {
+                return ejbBean;
+            }
+            
+        };
         ejbBeanCreator.checkCreateConditions();
         
         if(processAnnotatedEvent.isVeto())
@@ -77,7 +93,6 @@ public final class EjbUtility
         }
         
         //Define meta-data
-        ejbBeanCreator.defineSerializable();
         ejbBeanCreator.defineStereoTypes();
         ejbBeanCreator.defineApiType();
         ejbBeanCreator.defineScopeType("Session Bean implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations");
@@ -88,6 +103,7 @@ public final class EjbUtility
         Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields(ejbBean);           
         ejbBeanCreator.defineInjectedFields();
         ejbBeanCreator.defineInjectedMethods();
+        ejbBeanCreator.defineDisposalMethods();
         Set<ObserverMethod<?>> observerMethods = ejbBeanCreator.defineObserverMethods(ejbBean);        
         
         //Fires ProcessInjectionTarget
@@ -161,11 +177,11 @@ public final class EjbUtility
         // Let the plugin handle adding the new bean instance as it knows more about its EJB Bean
         
         manager.getBeans().addAll(producerMethodBeans);
-        ejbBeanCreator.defineDisposalMethods();
+        ejbBeanCreator.validateDisposalMethods(ejbBean);
         manager.getBeans().addAll(producerFieldBeans);
     }
     
-    public static <T> void defineSpecializedData(Class<T> clazz, BaseEjbBean<T> ejbBean)
+    public static <T> void defineSpecializedData(Class<T> clazz, final BaseEjbBean<T> ejbBean)
     {
 
         final String message = "There are errors that are added by %s event observers for %s. Look at logs for further details";
@@ -177,7 +193,21 @@ public final class EjbUtility
 
         final AnnotatedType<T> annotatedType = ejbBean.getAnnotatedType();
 
-        final EjbBeanBuilder<T> ejbBeanCreator = new EjbBeanBuilder<T>(ejbBean);
+        final EjbBeanBuilder<T, BaseEjbBean<T>> ejbBeanCreator = new EjbBeanBuilder<T, BaseEjbBean<T>>(ejbBean.getWebBeansContext(), annotatedType) {
+
+            @Override
+            protected BaseEjbBean<T> createBean(Set<Type> types,
+                                                Set<Annotation> qualifiers,
+                                                Class<? extends Annotation> scope, String name,
+                                                boolean nullable,
+                                                Class<T> beanClass,
+                                                Set<Class<? extends Annotation>> stereotypes,
+                                                boolean alternative,
+                                                boolean enabled)
+            {
+                return ejbBean;
+            }
+        };
 
         final Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods(ejbBean);
 
@@ -226,7 +256,7 @@ public final class EjbUtility
         manager.getBeans().addAll(producerMethodBeans);
         manager.getBeans().addAll(producerFieldBeans);
 
-        ejbBeanCreator.defineDisposalMethods();
+        ejbBeanCreator.validateDisposalMethods(ejbBean);
     }
 
     private static void checkProducerMethods(Set<ProducerMethodBean<?>> producerMethodBeans, BaseEjbBean<?> bean)

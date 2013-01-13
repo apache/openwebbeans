@@ -103,4 +103,9 @@ public abstract class AbstractProducer<T> implements Producer<T>
     {
         return clazz.cast(bean);
     }
+    
+    public void setBean(OwbBean<T> bean)
+    {
+        this.bean = bean;
+    }
 }

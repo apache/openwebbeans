@@ -42,10 +42,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.decorator.Decorator;
-import javax.enterprise.context.Conversation;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -91,9 +89,6 @@ import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.annotation.AnyLiteral;
-import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.annotation.NewLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractProducerBean;
@@ -112,10 +107,10 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
-import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.AnnotatedTypeBeanBuilder;
 import org.apache.webbeans.component.creation.ExtensionBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
+import org.apache.webbeans.component.creation.NewEjbBeanBuilder;
 import org.apache.webbeans.component.creation.NewManagedBeanBuilder;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.OWBLogConst;
@@ -124,7 +119,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.DefinitionException;
@@ -591,37 +585,28 @@ public final class WebBeansUtil
         {
             NewManagedBeanBuilder<T> newBeanCreator
                 = new NewManagedBeanBuilder<T>(webBeansContext, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
+            newBeanCreator.defineApiType();
+            newBeanCreator.defineScopeType("");
             newBeanCreator.defineConstructor();
             newBeanCreator.defineInjectedFields();
             newBeanCreator.defineInjectedMethods();
+            newBeanCreator.defineDisposalMethods();
             comp = newBeanCreator.getBean();
-            comp.setImplScopeType(Dependent.class);
-            comp.setConstructor(defineConstructor(clazz));
         }
         else if (EJBWebBeansConfigurator.isSessionBean(clazz, webBeansContext))
         {
-            comp = new NewManagedBean<T>(webBeansContext, clazz, WebBeansType.ENTERPRISE, webBeansContext.getAnnotatedElementFactory().getAnnotatedType(clazz));
-            comp.setImplScopeType(Dependent.class);
+            NewEjbBeanBuilder<T> newBeanCreator
+                = new NewEjbBeanBuilder<T>(webBeansContext, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
+            newBeanCreator.defineApiType();
+            newBeanCreator.defineInjectedFields();
+            newBeanCreator.defineInjectedMethods();
+            comp = newBeanCreator.getBean();
         }
         else
         {
             throw new WebBeansConfigurationException("@New annotation on type : " + clazz.getName()
                                                      + " must defined as a simple or an enterprise web bean");
         }
-
-        comp.addQualifier(new NewLiteral(clazz));
-        comp.setName(null);
-        if(apiType == null)
-        {
-            comp.addApiType(clazz);
-        }
-        else
-        {
-            comp.getTypes().add(apiType);
-        }
-
-        comp.addApiType(Object.class);
-
         return comp;
     }
 
@@ -648,15 +633,7 @@ public final class WebBeansUtil
      */
     public BeanManagerBean getManagerBean()
     {
-        BeanManagerBean managerComponent = new BeanManagerBean(webBeansContext);
-
-        managerComponent.setImplScopeType(Dependent.class);
-        managerComponent.addQualifier(new DefaultLiteral());
-        managerComponent.addQualifier(new AnyLiteral());
-        managerComponent.addApiType(BeanManager.class);
-        managerComponent.addApiType(Object.class);
-
-        return managerComponent;
+        return new BeanManagerBean(webBeansContext);
     }
 
     /**
@@ -666,17 +643,7 @@ public final class WebBeansUtil
     @SuppressWarnings("serial")
     public <T> InstanceBean<T> getInstanceBean()
     {
-        InstanceBean<T> instanceBean = new InstanceBean<T>(webBeansContext);
-
-        instanceBean.getTypes().add(INSTANCE_TYPE);
-        instanceBean.getTypes().add(PROVIDER_TYPE);
-        instanceBean.addApiType(Object.class);
-
-        instanceBean.addQualifier(new AnyLiteral());
-        instanceBean.setImplScopeType(Dependent.class);
-        instanceBean.setName(null);
-
-        return instanceBean;
+        return new InstanceBean<T>(webBeansContext);
     }
 
     /**
@@ -686,16 +653,7 @@ public final class WebBeansUtil
     @SuppressWarnings("serial")
     public <T> EventBean<T> getEventBean()
     {
-        EventBean<T> eventBean = new EventBean<T>(webBeansContext);
-
-        eventBean.getTypes().add(EVENT_TYPE);
-        eventBean.addApiType(Object.class);
-
-        eventBean.addQualifier(new AnyLiteral());
-        eventBean.setImplScopeType(Dependent.class);
-        eventBean.setName(null);
-
-        return eventBean;
+        return new EventBean<T>(webBeansContext);
     }
 
 
@@ -707,14 +665,6 @@ public final class WebBeansUtil
     public ConversationBean getConversationBean()
     {
         ConversationBean conversationComp = new ConversationBean(webBeansContext);
-
-        conversationComp.addApiType(Conversation.class);
-        conversationComp.addApiType(ConversationImpl.class);
-        conversationComp.addApiType(Object.class);
-        conversationComp.setImplScopeType(RequestScoped.class);
-        conversationComp.addQualifier(new DefaultLiteral());
-        conversationComp.addQualifier(new AnyLiteral());
-        conversationComp.setName("javax.enterprise.context.conversation");
 
         WebBeansDecoratorConfig.configureDecorators(conversationComp);
 
@@ -1445,11 +1395,9 @@ public final class WebBeansUtil
                                 + " may not explicitly declare a bean name");
                     }
 
-                    comp.setName(superBean.getName());
+//                    comp.setName(superBean.getName());
                     comp.setSpecializedBean(true);
                 }
-
-                specialized.getQualifiers().addAll(superBean.getQualifiers());
             }
 
             else
@@ -1482,12 +1430,6 @@ public final class WebBeansUtil
             ProducerMethodBean bean = sortedProducerBeans.get(i);
             ProducerMethodBean superBean = sortedProducerBeans.get(i - 1);
 
-            // inherit superbean qualifiers
-            Set<Annotation> qualifiers = superBean.getQualifiers();
-            for(Annotation an : qualifiers)
-            {
-                bean.addQualifier(an);
-            }
             // inherit name is super class has name
             boolean isSuperHasName = configuredProducerSpecializedName(bean, bean.getCreatorMethod(), superMethod);
 
@@ -1941,9 +1883,8 @@ public final class WebBeansUtil
 
     public <T> GProcessInjectionTarget createProcessInjectionTargetEvent(AbstractInjectionTargetBean<T> bean)
     {
-        AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(bean.getReturnType());
         InjectionTargetProducer<T> injectionTarget = new InjectionTargetProducer<T>(bean);
-        return new GProcessInjectionTarget(injectionTarget, annotatedType);
+        return new GProcessInjectionTarget(injectionTarget, bean.getAnnotatedType());
     }
 
 
@@ -2144,20 +2085,24 @@ public final class WebBeansUtil
     {
         Asserts.assertNotNull(parent, "parent can not be null");
         Asserts.assertNotNull(producer, "producer can not be null");
+        producer.setEnabled(isProducerBeanEnabled(parent, producer.getStereotypes(), annotations));
+    }
+    
+    public boolean isProducerBeanEnabled(InjectionTargetBean<?> parent, Set<Class<? extends Annotation>> stereotypes, Annotation[] annotations)
+    {
 
         boolean alternative = false;
 
-        if(AnnotationUtil.hasAnnotation(annotations, Alternative.class))
+        if (AnnotationUtil.hasAnnotation(annotations, Alternative.class))
         {
             alternative = true;
         }
 
-        if(!alternative)
+        if (!alternative)
         {
-            Set<Class<? extends Annotation>> stereotypes = producer.getStereotypes();
-            for(Class<? extends Annotation> stereoType : stereotypes)
+            for (Class<? extends Annotation> stereoType : stereotypes)
             {
-                if(AnnotationUtil.hasClassAnnotation(stereoType, Alternative.class))
+                if (AnnotationUtil.hasClassAnnotation(stereoType, Alternative.class))
                 {
                     alternative = true;
                     break;
@@ -2165,21 +2110,14 @@ public final class WebBeansUtil
             }
         }
 
-        if(alternative)
+        if (alternative)
         {
-            if(hasInjectionTargetBeanAnnotatedWithAlternative(parent) &&
-                    webBeansContext.getAlternativesManager().isBeanHasAlternative(parent))
-            {
-                producer.setEnabled(true);
-            }
-            else
-            {
-                producer.setEnabled(false);
-            }
+            return hasInjectionTargetBeanAnnotatedWithAlternative(parent) &&
+                    webBeansContext.getAlternativesManager().isBeanHasAlternative(parent);
         }
         else
         {
-            producer.setEnabled(parent.isEnabled());
+            return parent.isEnabled();
         }
     }
 
@@ -2344,7 +2282,7 @@ public final class WebBeansUtil
     {
         Class<T> clazz = type.getJavaClass();
 
-        ManagedBeanBuilder<T> managedBeanCreator = new ManagedBeanBuilder<T>(webBeansContext, type);
+        ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, type);
 
         managedBeanCreator.defineApiType();
 
@@ -2355,8 +2293,6 @@ public final class WebBeansUtil
         managedBeanCreator.defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
                 WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
 
-        managedBeanCreator.defineSerializable();
-
         //Check for Enabled via Alternative
         setInjectionTargetBeanEnableFlag(managedBeanCreator.getBean());
         managedBeanCreator.checkCreateConditions();
@@ -2365,6 +2301,7 @@ public final class WebBeansUtil
         managedBeanCreator.defineConstructor();
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
+        managedBeanCreator.defineDisposalMethods();
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
         managedBeanCreator.defineProducerMethods(managedBean);
         managedBeanCreator.defineProducerFields(managedBean);
@@ -2373,7 +2310,7 @@ public final class WebBeansUtil
         WebBeansDecoratorConfig.configureDecorators(managedBean);
         webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(managedBean);
 
-        managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
+        managedBeanCreator.validateDisposalMethods(managedBean);//Define disposal method after adding producers
 
         return managedBean;
     }
@@ -2501,8 +2438,6 @@ public final class WebBeansUtil
         managedBeanCreator.defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName()
                                            + WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
 
-        managedBeanCreator.defineSerializable();
-
         //Check for Enabled via Alternative
         managedBeanCreator.defineEnabled();
         managedBeanCreator.checkCreateConditions();
@@ -2511,6 +2446,7 @@ public final class WebBeansUtil
         managedBeanCreator.defineConstructor();
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
+        managedBeanCreator.defineDisposalMethods();
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
         managedBeanCreator.defineProducerMethods(managedBean);
         managedBeanCreator.defineProducerFields(managedBean);
@@ -2518,7 +2454,7 @@ public final class WebBeansUtil
         WebBeansDecoratorConfig.configureDecorators(managedBean);
         webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(managedBean);
 
-        managedBeanCreator.defineDisposalMethods(); //Define disposal method after adding producers
+        managedBeanCreator.validateDisposalMethods(managedBean); //Define disposal method after adding producers
 
         return managedBean;
     }
@@ -2542,7 +2478,7 @@ public final class WebBeansUtil
      * @param <T> type info
      * @param annotatedType decorator class
      */
-    public <T> void defineDecorator(AnnotatedType<T> annotatedType)
+    public <T> ManagedBean<T> defineDecorator(AnnotatedType<T> annotatedType)
     {
         if (webBeansContext.getDecoratorsManager().isDecoratorEnabled(annotatedType.getJavaClass()))
         {
@@ -2579,10 +2515,15 @@ public final class WebBeansUtil
             {
                 WebBeansDecoratorConfig.configureDecoratorClass(delegate);
             }
+            return delegate;
+        }
+        else
+        {
+            return null;
         }
     }
 
-    public <T> void defineInterceptor(AnnotatedType<T> annotatedType)
+    public <T> ManagedBean<T> defineInterceptor(AnnotatedType<T> annotatedType)
     {
         Class<?> clazz = annotatedType.getJavaClass();
         if (webBeansContext.getInterceptorsManager().isInterceptorClassEnabled(clazz))
@@ -2600,8 +2541,12 @@ public final class WebBeansUtil
                 webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass(delegate,
                                                                annotationManager.getInterceptorBindingMetaAnnotations(anns));
             }
+            return delegate;
         }
-
+        else
+        {
+            return null;
+        }
     }
 
     /**

@@ -20,11 +20,11 @@ package org.apache.webbeans.component.creation;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.interceptor.AroundInvoke;
@@ -32,12 +32,15 @@ import javax.interceptor.AroundTimeout;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.webbeans.component.InterceptorBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
@@ -46,9 +49,8 @@ import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 /**
  * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
  */
-public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
+public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> extends AbstractInjectionTargetBeanBuilder<T, B>
 {
-    private final InterceptorBean<T> bean;
 
     private final OpenWebBeansEjbLCAPlugin ejbPlugin;
     private final Class<? extends Annotation> prePassivateClass;
@@ -56,10 +58,11 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
 
     private AnnotatedConstructor<T> constructor;
 
-    protected InterceptorBeanBuilder(InterceptorBean<T> bean)
+    private Map<InterceptionType, Method[]> interceptionMethods;
+    
+    protected InterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
-        super(bean, Dependent.class);
-        this.bean = bean;
+        super(webBeansContext, annotatedType);
         ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
         if (ejbPlugin != null)
         {
@@ -76,17 +79,15 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
     public void defineConstructor()
     {
         constructor = getBeanConstructor();
-        addConstructorInjectionPointMetaData();
     }
 
 
-    protected void addConstructorInjectionPointMetaData()
+    protected void addConstructorInjectionPointMetaData(B bean)
     {
         if (constructor == null)
         {
             return;
         }
-        InterceptorBean<T> bean = (InterceptorBean<T>) getBean();
         InjectionPointFactory injectionPointFactory = webBeansContext.getInjectionPointFactory();
         List<InjectionPoint> injectionPoints = injectionPointFactory.getConstructorInjectionPointData(bean, constructor);
         for (InjectionPoint injectionPoint : injectionPoints)
@@ -208,7 +209,6 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
                     // and now the EJB related interceptors
                     if (ejbPlugin != null)
                     {
-                        // AroundTimeout
                         if (m.getAnnotation(prePassivateClass) != null)
                         {
                             checkSameClassInterceptors(prePassivateMethods, m);
@@ -218,6 +218,14 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
 
                         // AroundTimeout
                         if (m.getAnnotation(AroundTimeout.class) != null)
+                        {
+                            checkSameClassInterceptors(aroundTimeoutMethods, m);
+                            postActivateMethods.add(m); // add at last position
+                        }
+                        removeOverriddenMethod(postActivateMethods, m);
+
+                        // AroundTimeout
+                        if (m.getAnnotation(postActivateClass) != null)
                         {
                             checkSameClassInterceptors(postActivateMethods, m);
                             postActivateMethods.add(m); // add at last position
@@ -230,42 +238,34 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
 
         // and now for setting the bean info
 
-        Set<InterceptionType> intercepts = new HashSet<InterceptionType>();
+        interceptionMethods = new HashMap<InterceptionType, Method[]>();
 
         if (aroundInvokeMethod != null)
         {
-            bean.setAroundInvokeMethods(new Method[]{aroundInvokeMethod.getJavaMember()});
-            intercepts.add(InterceptionType.AROUND_INVOKE);
+            interceptionMethods.put(InterceptionType.AROUND_INVOKE, new Method[]{aroundInvokeMethod.getJavaMember()});
         }
 
         if (postConstructMethods.size() > 0)
         {
-            bean.setPostConstructMethods(getMethodArray(postConstructMethods));
-            intercepts.add(InterceptionType.POST_CONSTRUCT);
+            interceptionMethods.put(InterceptionType.POST_CONSTRUCT, getMethodArray(postConstructMethods));
         }
         if (preDestroyMethods.size() > 0)
         {
-            bean.setPreDestroyMethods(getMethodArray(preDestroyMethods));
-            intercepts.add(InterceptionType.PRE_DESTROY);
+            interceptionMethods.put(InterceptionType.PRE_DESTROY, getMethodArray(preDestroyMethods));
         }
         if (aroundTimeoutMethods.size() > 0)
         {
-            bean.setAroundTimeoutMethods(getMethodArray(aroundTimeoutMethods));
-            intercepts.add(InterceptionType.AROUND_TIMEOUT);
+            interceptionMethods.put(InterceptionType.AROUND_TIMEOUT, getMethodArray(aroundTimeoutMethods));
         }
 
         if (prePassivateMethods.size() > 0)
         {
-            bean.setPrePassivateMethods(getMethodArray(prePassivateMethods));
-            intercepts.add(InterceptionType.PRE_PASSIVATE);
+            interceptionMethods.put(InterceptionType.PRE_PASSIVATE, getMethodArray(prePassivateMethods));
         }
         if (postActivateMethods.size() > 0)
         {
-            bean.setPostActivateMethods(getMethodArray(postActivateMethods));
-            intercepts.add(InterceptionType.POST_ACTIVATE);
+            interceptionMethods.put(InterceptionType.POST_ACTIVATE, getMethodArray(postActivateMethods));
         }
-
-        bean.setIntercepts(intercepts);
     }
 
     /**
@@ -307,5 +307,24 @@ public abstract class InterceptorBeanBuilder<T> extends AbstractInjectionTargetB
         }
     }
 
+    protected abstract B createBean(Set<Type> types,
+                                    Class<T> beanClass,
+                                    boolean enabled,
+                                    Map<InterceptionType, Method[]> interceptionMethods);
 
+    @Override
+    protected B createBean(Set<Type> types,
+                           Set<Annotation> qualifiers,
+                           Class<? extends Annotation> scope,
+                           String name,
+                           boolean nullable,
+                           Class<T> beanClass,
+                           Set<Class<? extends Annotation>> stereotypes,
+                           boolean alternative,
+                           boolean enabled)
+    {
+        B bean = createBean(types, beanClass, enabled, interceptionMethods);
+        addConstructorInjectionPointMetaData(bean);
+        return bean;
+    }
 }

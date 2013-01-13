@@ -34,6 +34,7 @@ import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
 import javax.decorator.Delegate;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -96,7 +97,14 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
      */
     public WebBeansDecorator(AbstractInjectionTargetBean<T> wrappedBean, Decorator<T> customDecorator)
     {
-        super(wrappedBean.getWebBeansContext(), WebBeansType.DECORATOR, wrappedBean.getReturnType(), wrappedBean.getAnnotatedType());
+        super(wrappedBean.getWebBeansContext(),
+              WebBeansType.DECORATOR,
+              wrappedBean.getAnnotatedType(),
+              wrappedBean.getTypes(),
+              wrappedBean.getQualifiers(),
+              Dependent.class,
+              wrappedBean.getReturnType(),
+              wrappedBean.getStereotypes());
         this.wrappedBean = wrappedBean;
         this.customDecorator = customDecorator;
         ignoredDecoratorInterfaces = getIgnoredDecoratorInterfaces(wrappedBean);
@@ -109,7 +117,14 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
      */
     public WebBeansDecorator(AbstractInjectionTargetBean<T> wrappedBean)
     {
-        super(wrappedBean.getWebBeansContext(), WebBeansType.DECORATOR,wrappedBean.getReturnType(), wrappedBean.getAnnotatedType());
+        super(wrappedBean.getWebBeansContext(),
+              WebBeansType.DECORATOR,
+              wrappedBean.getAnnotatedType(),
+              wrappedBean.getTypes(),
+              wrappedBean.getQualifiers(),
+              Dependent.class,
+              wrappedBean.getReturnType(),
+              wrappedBean.getStereotypes());
         
         this.wrappedBean = wrappedBean;
         clazz = wrappedBean.getReturnType();
@@ -241,7 +256,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         }
         else
         {
-            Field[] fields = ClassUtil.getFieldsWithType(wrappedBean.getWebBeansContext(), returnType, delegateType);
+            Field[] fields = ClassUtil.getFieldsWithType(wrappedBean.getWebBeansContext(), getReturnType(), delegateType);
             if(fields.length == 0)
             {
                 throw new WebBeansConfigurationException("Delegate injection field is not found for decorator : " + toString());
@@ -476,12 +491,6 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         }
         
         return wrappedBean.isNullable();
-    }
-
-    @Override
-    public boolean isSerializable()
-    {        
-        return wrappedBean.isSerializable();
     }
 
     public Set<InjectionPoint> getInjectionPoints()

@@ -18,16 +18,45 @@
  */
 package org.apache.webbeans.component.creation;
 
-import javax.enterprise.inject.spi.Annotated;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Set;
+
+import javax.enterprise.inject.spi.AnnotatedMember;
 
 import org.apache.webbeans.component.AbstractProducerBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 
-public abstract class AbstractProducerBeanBuilder<T> extends AbstractBeanBuilder<T>
+public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?>, P extends AbstractProducerBean<T>> extends AbstractBeanBuilder<T, A, P>
 {
 
-    public AbstractProducerBeanBuilder(AbstractProducerBean<T> bean, Annotated annotated)
+    private InjectionTargetBean<?> parent;
+
+    public AbstractProducerBeanBuilder(InjectionTargetBean<?> parent, A annotated)
     {
-        super(bean, annotated);
+        super(parent.getWebBeansContext(), annotated);
+        this.parent = parent;
     }
 
+    protected abstract P createBean(InjectionTargetBean<?> parent,
+                                    Set<Type> types,
+                                    Set<Annotation> qualifiers,
+                                    Class<? extends Annotation> scope,
+                                    String name,
+                                    boolean nullable,
+                                    Class<T> beanClass,
+                                    Set<Class<? extends Annotation>> stereotypes,
+                                    boolean alternative);
+    @Override
+    protected P createBean(Set<Type> types,
+                           Set<Annotation> qualifiers,
+                           Class<? extends Annotation> scope,
+                           String name,
+                           boolean nullable,
+                           Class<T> beanClass,
+                           Set<Class<? extends Annotation>> stereotypes,
+                           boolean alternative)
+    {
+        return createBean(parent, types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative);
+    }
 }

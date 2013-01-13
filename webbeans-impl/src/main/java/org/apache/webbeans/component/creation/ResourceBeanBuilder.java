@@ -19,6 +19,8 @@
 package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedField;
 
@@ -26,16 +28,28 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.spi.api.ResourceReference;
 
-public class ResourceBeanBuilder<T, R extends Annotation> extends ProducerFieldBeanBuilder<T>
+public class ResourceBeanBuilder<T, R extends Annotation> extends ProducerFieldBeanBuilder<T, ResourceBean<T, R>>
 {
 
-    public ResourceBeanBuilder(InjectionTargetBean<T> parent, ResourceReference<T, R> resourceRef, AnnotatedField<? super T> annotatedField)
+    private ResourceReference<T, R> resourceRef;
+
+    public ResourceBeanBuilder(InjectionTargetBean<?> parent, ResourceReference<T, R> resourceRef, AnnotatedField<?> annotatedField)
     {
-        super(new ResourceBean<T, R>((Class<T>)annotatedField.getJavaMember().getType(), parent, resourceRef), annotatedField);
+        super(parent, annotatedField);
+        this.resourceRef = resourceRef;
     }
 
-    public ResourceBean<T, R> getBean()
+    @Override
+    protected ResourceBean<T, R> createBean(InjectionTargetBean<?> owner,
+                           Set<Type> types,
+                           Set<Annotation> qualifiers,
+                           Class<? extends Annotation> scope,
+                           String name,
+                           boolean nullable,
+                           Class<T> beanClass,
+                           Set<Class<? extends Annotation>> stereotypes,
+                           boolean alternative)
     {
-        return (ResourceBean<T, R>) super.getBean();
+        return new ResourceBean<T, R>(owner, resourceRef, types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative);
     }
 }

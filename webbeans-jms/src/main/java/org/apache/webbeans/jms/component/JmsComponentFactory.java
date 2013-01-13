@@ -19,8 +19,10 @@
 package org.apache.webbeans.jms.component;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.enterprise.context.Dependent;
 import javax.jms.Queue;
 import javax.jms.QueueConnection;
 import javax.jms.QueueReceiver;
@@ -55,34 +57,33 @@ public final class JmsComponentFactory
     {
         Asserts.assertNotNull(model,"model parameter can not be null");
         
-        JmsBean<T> component = new JmsBean<T>(webBeansContext, model);
+        Set<Type> apiTypes = new HashSet<Type>();
+        Set<Annotation> qualifiers = new HashSet<Annotation>();
         
         if(model.getJmsType().equals(JMSType.QUEUE))
         {
-            component.addApiType(Queue.class);
-            component.addApiType(QueueConnection.class);
-            component.addApiType(QueueSession.class);
-            component.addApiType(QueueSender.class);
-            component.addApiType(QueueReceiver.class);
+            apiTypes.add(Queue.class);
+            apiTypes.add(QueueConnection.class);
+            apiTypes.add(QueueSession.class);
+            apiTypes.add(QueueSender.class);
+            apiTypes.add(QueueReceiver.class);
         }
         else
         {
-            component.addApiType(Topic.class);
-            component.addApiType(TopicConnection.class);
-            component.addApiType(TopicSession.class);
-            component.addApiType(TopicPublisher.class);
-            component.addApiType(TopicSubscriber.class);
+            apiTypes.add(Topic.class);
+            apiTypes.add(TopicConnection.class);
+            apiTypes.add(TopicSession.class);
+            apiTypes.add(TopicPublisher.class);
+            apiTypes.add(TopicSubscriber.class);
         }
-        
-        component.setImplScopeType(Dependent.class);
         
         Annotation[] anns = model.getBindings();
         
         for(Annotation a : anns)
         {
-            component.addQualifier(a);
+            qualifiers.add(a);
         }
         
-        return component;
+        return new JmsBean<T>(webBeansContext, model, apiTypes, qualifiers);
     }
 }

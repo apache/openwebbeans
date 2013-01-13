@@ -19,9 +19,12 @@
 package org.apache.webbeans.component;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import javax.enterprise.context.Dependent;
@@ -36,6 +39,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorData;
 import javax.enterprise.inject.spi.InterceptionType;
+
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -69,6 +73,19 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     protected List<Decorator<?>> decorators = new ArrayList<Decorator<?>>();
     
+    protected AbstractInjectionTargetBean(WebBeansContext webBeansContext,
+                                          WebBeansType webBeansType,
+                                          AnnotatedType<T> annotatedType,
+                                          Set<Type> types,
+                                          Set<Annotation> qualifiers,
+                                          Class<? extends Annotation> scope,
+                                          Class<T> beanClass,
+                                          Set<Class<? extends Annotation>> stereotypes)
+    {
+        this(webBeansContext, webBeansType, annotatedType, types, qualifiers, scope, null, beanClass, stereotypes, false);
+        setEnabled(true);
+    }
+
     /**
      * Creates a new observer owner component.
      * 
@@ -76,9 +93,18 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      * @param returnType bean class type
      * @param webBeansContext
      */
-    protected AbstractInjectionTargetBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType, AnnotatedType<T> annotatedType)
+    protected AbstractInjectionTargetBean(WebBeansContext webBeansContext,
+                                          WebBeansType webBeansType,
+                                          AnnotatedType<T> annotatedType,
+                                          Set<Type> types,
+                                          Set<Annotation> qualifiers,
+                                          Class<? extends Annotation> scope,
+                                          String name,
+                                          Class<T> beanClass,
+                                          Set<Class<? extends Annotation>> stereotypes,
+                                          boolean alternative)
     {
-        super(webBeansContext, webBeansType, returnType);
+        super(webBeansContext, webBeansType, types, qualifiers, scope, name, false, beanClass, stereotypes, alternative);
         Asserts.assertNotNull(annotatedType, "AnnotatedType may not be null");
         this.annotatedType = annotatedType;
     }

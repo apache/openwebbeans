@@ -18,13 +18,14 @@
  */
 package org.apache.webbeans.ejb.common.component;
 
-import java.lang.reflect.Type;
 import java.util.Set;
 
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.creation.AbstractInjectionTargetBeanBuilder;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.ejb.common.util.EjbValidator;
 
 /**
@@ -34,11 +35,11 @@ import org.apache.webbeans.ejb.common.util.EjbValidator;
  *
  * @param <T> ejb class type
  */
-public class EjbBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
+public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>> extends AbstractInjectionTargetBeanBuilder<T, E>
 {
-    public EjbBeanBuilder(BaseEjbBean<T> ejbBean)
+    public EjbBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
-        super(ejbBean);
+        super(webBeansContext, annotatedType);
     }
 
     /**
@@ -58,20 +59,6 @@ public class EjbBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
         EjbValidator.validateGenericBeanType(getBeanType(), getScope());
     }
     
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void defineApiType()
-    {
-        Set<Type> types = getAnnotated().getTypeClosure();
-        getBean().getTypes().addAll(types);
-    }
-    
-    
-    
-    
     /* (non-Javadoc)
      * @see org.apache.webbeans.component.creation.AbstractInjectedTargetBeanCreator#defineObserverMethods()
      */
@@ -79,17 +66,8 @@ public class EjbBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T>
     public Set<ObserverMethod<?>> defineObserverMethods(InjectionTargetBean<T> bean)
     {
         Set<ObserverMethod<?>> observerMethods = super.defineObserverMethods(bean);
-        EjbValidator.validateObserverMethods(getBean(), observerMethods);
+        EjbValidator.validateObserverMethods((BaseEjbBean<?>) bean, observerMethods);
         
         return observerMethods;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    public BaseEjbBean<T> getBean()
-    {
-        return BaseEjbBean.class.cast(super.getBean());
-    }    
 }

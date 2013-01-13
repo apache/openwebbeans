@@ -30,10 +30,10 @@ import org.apache.webbeans.component.NewManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 
-public class NewManagedBeanBuilder<T> extends ManagedBeanBuilder<T, NewManagedBean<T>>
+public class NewEjbBeanBuilder<T> extends ManagedBeanBuilder<T, NewManagedBean<T>>
 {
 
-    public NewManagedBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
+    public NewEjbBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
         super(webBeansContext, annotatedType);
     }
@@ -51,6 +51,6 @@ public class NewManagedBeanBuilder<T> extends ManagedBeanBuilder<T, NewManagedBe
     {
         Set<Annotation> newQualifiers = new HashSet<Annotation>(qualifiers);
         newQualifiers.add(new NewLiteral(getAnnotated().getJavaClass()));
-        return new NewManagedBean<T>(webBeansContext, WebBeansType.MANAGED, getAnnotated(), types, newQualifiers, beanClass, stereotypes);
+        return new NewManagedBean<T>(webBeansContext, WebBeansType.ENTERPRISE, getAnnotated(), types, newQualifiers, beanClass, stereotypes);
     }
 }

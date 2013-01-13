@@ -19,7 +19,10 @@
 package org.apache.webbeans.component;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -36,6 +39,7 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
 {
     /** Owner of the producer field component */
     protected InjectionTargetBean<?> ownerComponent;
+    private Class<T> returnType;
 
     /**
      * Create a new instance.
@@ -44,10 +48,20 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
      * @param returnType bean type info
      * @param ownerComponent owner bean
      */
-    protected AbstractProducerBean(WebBeansType type, Class<T> returnType, InjectionTargetBean<?> ownerComponent)
+    protected AbstractProducerBean(InjectionTargetBean<?> ownerComponent,
+                                   WebBeansType webBeansType,
+                                   Set<Type> types,
+                                   Set<Annotation> qualifiers,
+                                   Class<? extends Annotation> scope,
+                                   String name,
+                                   boolean nullable,
+                                   Class<T> returnType,
+                                   Set<Class<? extends Annotation>> stereotypes,
+                                   boolean alternative)
     {
-        super(ownerComponent.getWebBeansContext(), type, returnType);
+        super(ownerComponent.getWebBeansContext(), webBeansType, types, qualifiers, scope, name, nullable, ownerComponent.getBeanClass(), stereotypes, alternative);
         this.ownerComponent = ownerComponent;
+        this.returnType = returnType;
     }
 
     /**
@@ -56,6 +70,12 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
     public InjectionTargetBean<?> getParent()
     {
         return ownerComponent;
+    }
+
+    @Override
+    public Class<T> getReturnType()
+    {
+        return returnType;
     }
 
     /**

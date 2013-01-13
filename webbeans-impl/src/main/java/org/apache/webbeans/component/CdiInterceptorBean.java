@@ -19,7 +19,12 @@
 package org.apache.webbeans.component;
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InterceptionType;
+
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -33,24 +38,18 @@ import org.apache.webbeans.config.WebBeansContext;
  */
 public class CdiInterceptorBean<T> extends InterceptorBean<T>
 {
-
-    /**
-     *
-     * @param annotatedType AnnotatedType will be returned by some methods in the SPI
-     * @param webBeansContext
-     */
-    public CdiInterceptorBean(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
-    {
-        super(webBeansContext, annotatedType);
-    }
-
-
+    
     private Set<Annotation> interceptorBindings;
 
-
-
-    public void setInterceptorBindings(Set<Annotation> interceptorBindings)
+    public CdiInterceptorBean(WebBeansContext webBeansContext,
+                              AnnotatedType<T> annotatedType,
+                              Set<Type> types,
+                              Class<T> beanClass,
+                              Set<Annotation> interceptorBindings,
+                              boolean enabled,
+                              Map<InterceptionType, Method[]> interceptionMethods)
     {
+        super(webBeansContext, annotatedType, types, beanClass, interceptionMethods);
         this.interceptorBindings = interceptorBindings;
     }
 
@@ -59,6 +58,4 @@ public class CdiInterceptorBean<T> extends InterceptorBean<T>
     {
         return interceptorBindings;
     }
-
-
 }

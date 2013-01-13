@@ -18,13 +18,18 @@
  */
 package org.apache.webbeans.component;
 
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.Set;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -34,6 +39,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBeanHasParent<T>
 {
+
     /** Producer field that defines the component */
     private Field producerField = null;
 
@@ -42,9 +48,17 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
      * 
      * @param returnType type of the field decleration
      */
-    public ProducerFieldBean(InjectionTargetBean<?> ownerComponent, Class<T> returnType)
+    public ProducerFieldBean(InjectionTargetBean<?> ownerComponent,
+                             Set<Type> types,
+                             Set<Annotation> qualifiers,
+                             Class<? extends Annotation> scope,
+                             String name,
+                             boolean nullable,
+                             Class<T> returnType,
+                             Set<Class<? extends Annotation>> stereotypes,
+                             boolean alternative)
     {
-        super(WebBeansType.PRODUCERFIELD, returnType, ownerComponent);
+        super(ownerComponent, WebBeansType.PRODUCERFIELD, types, qualifiers, scope, name, nullable, returnType, stereotypes, alternative);
     }
 
     /**
@@ -155,7 +169,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
                               " with passivating scope @%s" +
                               " must be Serializable";
         getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(getScope(),
-                isSerializable(), errorMessage, producerField.getName(), 
+                ClassUtil.isClassAssignable(Serializable.class, getReturnType()), errorMessage, producerField.getName(), 
                 ownerComponent.getReturnType().getName(), getScope().getName());
     }
     

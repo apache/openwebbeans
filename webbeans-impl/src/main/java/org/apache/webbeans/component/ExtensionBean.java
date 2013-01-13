@@ -18,11 +18,15 @@
  */
 package org.apache.webbeans.component;
 
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.events.ExtensionLoader;
+import org.apache.webbeans.util.AnnotationUtil;
 
 /**
  * Extension service bean definition.
@@ -41,10 +45,15 @@ public class ExtensionBean<T> extends AbstractInjectionTargetBean<T>
      */
     public ExtensionBean(WebBeansContext webBeansContext, Class<T> returnType)
     {
-        super(webBeansContext, WebBeansType.EXTENSION, returnType, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(returnType));
+        super(webBeansContext,
+              WebBeansType.EXTENSION,
+              webBeansContext.getAnnotatedElementFactory().newAnnotatedType(returnType),
+              webBeansContext.getAnnotatedElementFactory().newAnnotatedType(returnType).getTypeClosure(),
+              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+              ApplicationScoped.class,
+              returnType,
+              Collections.<Class<? extends Annotation>>emptySet());
         setEnabled(true);
-        getTypes().addAll(getAnnotatedType().getTypeClosure());
-        addQualifier(new DefaultLiteral());
     }
     
     /**

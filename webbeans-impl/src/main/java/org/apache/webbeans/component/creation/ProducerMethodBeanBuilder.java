@@ -18,9 +18,12 @@
  */
 package org.apache.webbeans.component.creation;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -32,20 +35,12 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
-public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T>
+public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T, AnnotatedMethod<?>, ProducerMethodBean<T>>
 {
 
-    public ProducerMethodBeanBuilder(InjectionTargetBean<T> parent, AnnotatedMethod<? super T> annotatedMethod)
+    public ProducerMethodBeanBuilder(InjectionTargetBean<T> parent, AnnotatedMethod<?> annotatedMethod)
     {
-        super(new ProducerMethodBean<T>(parent, (Class<T>)ClassUtil.getClass(annotatedMethod.getBaseType())), annotatedMethod);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ProducerMethodBean<T> getBean()
-    {
-        return (ProducerMethodBean<T>)super.getBean();
+        super(parent, annotatedMethod);
     }
 
     public void configureProducerSpecialization(AnnotatedMethod<T> annotatedMethod)
@@ -89,8 +84,22 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T>
     }
 
     @Override
-    protected Class<?> getBeanType()
+    protected Class<T> getBeanType()
     {
-        return ((AnnotatedMethod<T>)getAnnotated()).getJavaMember().getReturnType();
+        return (Class<T>) getAnnotated().getJavaMember().getReturnType();
+    }
+
+    @Override
+    protected ProducerMethodBean<T> createBean(InjectionTargetBean<?> parent,
+                                               Set<Type> types,
+                                               Set<Annotation> qualifiers,
+                                               Class<? extends Annotation> scope,
+                                               String name,
+                                               boolean nullable,
+                                               Class<T> beanClass,
+                                               Set<Class<? extends Annotation>> stereotypes,
+                                               boolean alternative)
+    {
+        return new ProducerMethodBean<T>(parent, types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative);
     }
 }

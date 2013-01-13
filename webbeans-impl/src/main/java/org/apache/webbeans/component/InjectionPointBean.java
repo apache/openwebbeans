@@ -18,13 +18,18 @@
  */
 package org.apache.webbeans.component;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.Stack;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
-import org.apache.webbeans.annotation.DefaultLiteral;
+
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.CollectionUtil;
 
 public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
 {
@@ -32,12 +37,13 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
 
     public InjectionPointBean(WebBeansContext webBeansContext)
     {
-        super(webBeansContext, WebBeansType.INJECTIONPOINT,InjectionPoint.class);
-
-        addQualifier(new DefaultLiteral());
-        setImplScopeType(Dependent.class);
-        addApiType(InjectionPoint.class);
-        addApiType(Object.class);
+        super(webBeansContext,
+              WebBeansType.INJECTIONPOINT,
+              CollectionUtil.<Type>unmodifiableSet(InjectionPoint.class, Object.class),
+              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+              Dependent.class,
+              InjectionPoint.class,
+              Collections.<Class<? extends Annotation>>emptySet());
     }
 
 

@@ -18,8 +18,11 @@
  */
 package org.apache.webbeans.component;
 
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +40,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.AbstractInjectable;
 import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -49,6 +53,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class ProducerMethodBean<T> extends AbstractProducerBean<T>
 {
+
     /** Creator method of the parent component */
     protected Method creatorMethod;
 
@@ -63,9 +68,17 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      * @param parent parent bean
      * @param returnType producer method return type
      */
-    public ProducerMethodBean(InjectionTargetBean<?> parent, Class<T> returnType)
+    public ProducerMethodBean(InjectionTargetBean<?> ownerComponent,
+                              Set<Type> types,
+                              Set<Annotation> qualifiers,
+                              Class<? extends Annotation> scope,
+                              String name,
+                              boolean nullable,
+                              Class<T> returnType,
+                              Set<Class<? extends Annotation>> stereotypes,
+                              boolean alternative)
     {
-        super(WebBeansType.PRODUCERMETHOD, returnType, parent);
+        super(ownerComponent, WebBeansType.PRODUCERMETHOD, types, qualifiers, scope, name, nullable, returnType, stereotypes, alternative);
     }
 
     /**
@@ -358,7 +371,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                               " with passivating scope @%s" +
                               " must be Serializable";
         getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(getScope(),
-                isSerializable(), errorMessage, creatorMethod.getName(), ownerComponent.getReturnType().getName(),
+                ClassUtil.isClassAssignable(Serializable.class, getReturnType()), errorMessage, creatorMethod.getName(), ownerComponent.getReturnType().getName(),
                 getScope().getName());
 
     }

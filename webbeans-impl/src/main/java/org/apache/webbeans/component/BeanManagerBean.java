@@ -18,12 +18,18 @@
  */
 package org.apache.webbeans.component;
 
-import javax.enterprise.context.ApplicationScoped;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Collections;
+
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectableBeanManager;
+import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.CollectionUtil;
 
 public class BeanManagerBean extends AbstractOwbBean<BeanManager>
 {
@@ -31,8 +37,13 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
 
     public BeanManagerBean(WebBeansContext webBeansContext)
     {
-        super(webBeansContext, WebBeansType.MANAGER, BeanManager.class);
-        setImplScopeType(ApplicationScoped.class);
+        super(webBeansContext,
+              WebBeansType.MANAGER,
+              CollectionUtil.<Type>unmodifiableSet(BeanManager.class, Object.class),
+              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+              Dependent.class,
+              BeanManager.class,
+              Collections.<Class<? extends Annotation>>emptySet());
     }
 
     @Override

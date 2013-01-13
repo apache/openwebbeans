@@ -19,7 +19,13 @@
 package org.apache.webbeans.component.creation;
 
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.Set;
+
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InterceptionType;
 
 import org.apache.webbeans.component.EjbInterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
@@ -27,12 +33,12 @@ import org.apache.webbeans.config.WebBeansContext;
 /**
  * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
  */
-public class EjbInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T>
+public class EjbInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, EjbInterceptorBean<T>>
 {
 
     public EjbInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
-        super(new EjbInterceptorBean<T>(webBeansContext, annotatedType));
+        super(webBeansContext, annotatedType);
     }
 
     public void defineEjbInterceptorRules()
@@ -47,9 +53,9 @@ public class EjbInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T>
         return true;
     }
 
-
-    public EjbInterceptorBean<T> getBean()
+    @Override
+    protected EjbInterceptorBean<T> createBean(Set<Type> types, Class<T> beanClass, boolean enabled, Map<InterceptionType, Method[]> interceptionMethods)
     {
-        return (EjbInterceptorBean<T>)super.getBean();
+        return new EjbInterceptorBean<T>(webBeansContext, getAnnotated(), types, beanClass, interceptionMethods);
     }
 }

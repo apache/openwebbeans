@@ -18,36 +18,40 @@
  */
 package org.apache.webbeans.component.creation;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Set;
+
 import javax.enterprise.inject.spi.AnnotatedField;
 
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
-import org.apache.webbeans.util.ClassUtil;
 
-public class ProducerFieldBeanBuilder<T> extends AbstractProducerBeanBuilder<T>
+public class ProducerFieldBeanBuilder<T, P extends ProducerFieldBean<T>> extends AbstractProducerBeanBuilder<T, AnnotatedField<?>, P>
 {
 
-    public ProducerFieldBeanBuilder(InjectionTargetBean<T> parent, AnnotatedField<? super T> annotatedField)
+    public ProducerFieldBeanBuilder(InjectionTargetBean<?> owner, AnnotatedField<?> annotated)
     {
-        super(new ProducerFieldBean<T>(parent, (Class<T>)ClassUtil.getClass(annotatedField.getBaseType())), annotatedField);
-    }
-
-    protected ProducerFieldBeanBuilder(ProducerFieldBean<T> bean, AnnotatedField<? super T> annotatedField)
-    {
-        super(bean, annotatedField);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ProducerFieldBean<T> getBean()
-    {
-        return (ProducerFieldBean<T>) super.getBean();
+        super(owner, annotated);
     }
 
     @Override
-    protected Class<?> getBeanType()
+    protected Class<T> getBeanType()
     {
-        return ((AnnotatedField<T>)getAnnotated()).getJavaMember().getType();
+        return (Class<T>) getAnnotated().getJavaMember().getType();
+    }
+
+    @Override
+    protected P createBean(InjectionTargetBean<?> owner,
+                           Set<Type> types,
+                           Set<Annotation> qualifiers,
+                           Class<? extends Annotation> scope,
+                           String name,
+                           boolean nullable,
+                           Class<T> beanClass,
+                           Set<Class<? extends Annotation>> stereotypes,
+                           boolean alternative)
+    {
+        return (P) new ProducerFieldBean<T>(owner, types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative);
     }
 }

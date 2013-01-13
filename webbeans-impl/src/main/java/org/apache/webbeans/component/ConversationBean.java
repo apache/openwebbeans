@@ -18,12 +18,19 @@
  */
 package org.apache.webbeans.component;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Collections;
+
 import javax.enterprise.context.Conversation;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.spi.ConversationService;
+import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.CollectionUtil;
 
 /**
  * Conversation bean implementation.
@@ -38,7 +45,17 @@ public class ConversationBean extends AbstractInjectionTargetBean<Conversation>
      */
     public ConversationBean(WebBeansContext webBeansContext)
     {
-        super(webBeansContext, WebBeansType.CONVERSATION, Conversation.class, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(Conversation.class));
+        super(webBeansContext,
+              WebBeansType.CONVERSATION,
+              webBeansContext.getAnnotatedElementFactory().newAnnotatedType(Conversation.class),
+              CollectionUtil.<Type>unmodifiableSet(Conversation.class, ConversationImpl.class, Object.class),
+              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+              RequestScoped.class,
+              "javax.enterprise.context.conversation",
+              Conversation.class,
+              Collections.<Class<? extends Annotation>>emptySet(),
+              false);
+        setEnabled(true);
     }
 
     /**

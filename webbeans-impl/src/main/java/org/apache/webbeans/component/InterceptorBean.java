@@ -27,6 +27,7 @@ import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -46,69 +47,33 @@ import org.apache.webbeans.util.ExceptionUtil;
  */
 public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> implements Interceptor<T>, EnterpriseBeanMarker
 {
-    /**
+   /**
      * Constructor of the web bean component
      */
     private Constructor<T> constructor;
 
-
-    private Set<InterceptionType> intercepts = Collections.EMPTY_SET;
-
     /**
-     * The Methods to be called for InterceptionType.AROUND_INVOKE.
+     * The Methods to be called per interception type.
      * The method signature must be
      * <pre>Object <METHOD>(InvocationContext) throws Exception</pre>
      */
-    private Method[] aroundInvokeMethods;
+    private Map<InterceptionType, Method[]> interceptionMethods;
 
-    /**
-     * The Methods to be called for InterceptionType.AROUND_TIMEOUT.
-     * They must be ordered by methods from superclass-first!
-     * The method signature must be
-     * <pre>Object <METHOD>(InvocationContext) throws Exception</pre>
-     */
-    private Method[] aroundTimeoutMethods;
-
-    /**
-     * All &#064;PostConstruct interceptor methods.
-     * They must be ordered by methods from superclass-first!
-     * The method signature must be
-     * <pre>void <METHOD>(InvocationContext) throws Exception</pre>
-     */
-    private Method[] postConstructMethods;
-
-    /**
-     * All &#064;PreDestroy interceptor methods.
-     * They must be ordered by methods from superclass-first!
-     * The method signature must be
-     * <pre>void <METHOD>(InvocationContext) throws Exception</pre>
-     */
-    private Method[] preDestroyMethods;
-
-    /**
-     * All &#064;PrePassivate interceptor methods.
-     * They must be ordered by methods from superclass-first!
-     * The method signature must be
-     * <pre>void <METHOD>(InvocationContext) throws Exception</pre>
-     */
-    private Method[] prePassivateMethods;
-
-    /**
-     * All &#064;PostActivate interceptor methods.
-     * They must be ordered by methods from superclass-first!
-     * The method signature must be
-     * <pre>void <METHOD>(InvocationContext) throws Exception</pre>
-     */
-    private Method[] postActivateMethods;
-
-    /**
-     *
-     * @param annotatedType AnnotatedType will be returned by some methods in the SPI
-     * @param webBeansContext
-     */
-    public InterceptorBean(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
+    public InterceptorBean(WebBeansContext webBeansContext, 
+                           AnnotatedType<T> annotatedType,
+                           Set<Type> types,
+                           Class<T> beanClass,
+                           Map<InterceptionType, Method[]> interceptionMethods)
     {
-        super(webBeansContext, WebBeansType.INTERCEPTOR, annotatedType.getJavaClass(), annotatedType);
+        super(webBeansContext,
+              WebBeansType.INTERCEPTOR,
+              annotatedType,
+              types,
+              Collections.<Annotation>emptySet(),
+              Dependent.class,
+              beanClass,
+              Collections.<Class<? extends Annotation>>emptySet());
+        this.interceptionMethods = Collections.unmodifiableMap(interceptionMethods);
     }
 
     @Override
@@ -144,41 +109,6 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
         this.constructor = constructor;
     }
 
-    public void setAroundInvokeMethods(Method[] aroundInvokeMethods)
-    {
-        this.aroundInvokeMethods = aroundInvokeMethods;
-    }
-
-    public void setAroundTimeoutMethods(Method[] aroundTimeoutMethods)
-    {
-        this.aroundTimeoutMethods = aroundTimeoutMethods;
-    }
-
-    public void setIntercepts(Set<InterceptionType> intercepts)
-    {
-        this.intercepts = intercepts;
-    }
-
-    public void setPostActivateMethods(Method[] postActivateMethods)
-    {
-        this.postActivateMethods = postActivateMethods;
-    }
-
-    public void setPostConstructMethods(Method[] postConstructMethods)
-    {
-        this.postConstructMethods = postConstructMethods;
-    }
-
-    public void setPreDestroyMethods(Method[] preDestroyMethods)
-    {
-        this.preDestroyMethods = preDestroyMethods;
-    }
-
-    public void setPrePassivateMethods(Method[] prePassivateMethods)
-    {
-        this.prePassivateMethods = prePassivateMethods;
-    }
-
     /**
      * Interceptors are by default &#064;Dependent scoped.
      */
@@ -195,39 +125,19 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
      */
     public Method[] getInterceptorMethods(InterceptionType interceptionType)
     {
-        if (InterceptionType.AROUND_INVOKE.equals(interceptionType))
+        Method[] methods = interceptionMethods.get(interceptionType);
+        if (methods == null || methods.length == 0)
         {
-            return aroundInvokeMethods;
+            throw new WebBeansException("InterceptionType not yet supported: " + interceptionType);
         }
-        if (InterceptionType.POST_CONSTRUCT.equals(interceptionType))
-        {
-            return postConstructMethods;
-        }
-        if (InterceptionType.PRE_DESTROY.equals(interceptionType))
-        {
-            return preDestroyMethods;
-        }
-        if (InterceptionType.AROUND_TIMEOUT.equals(interceptionType))
-        {
-            return aroundTimeoutMethods;
-        }
-        if (InterceptionType.POST_ACTIVATE.equals(interceptionType))
-        {
-            return postActivateMethods;
-        }
-        if (InterceptionType.PRE_PASSIVATE.equals(interceptionType))
-        {
-            return prePassivateMethods;
-        }
-
-        throw new WebBeansException("InterceptionType not yet supported: " + interceptionType);
+        return methods;
     }
 
 
     @Override
     public boolean intercepts(InterceptionType interceptionType)
     {
-        return intercepts.contains(interceptionType);
+        return interceptionMethods.containsKey(interceptionType);
     }
 
     @Override
@@ -236,11 +146,6 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
         try
         {
             Method[] interceptorMethods = getInterceptorMethods(interceptionType);
-
-            if (interceptorMethods == null || interceptorMethods.length == 0)
-            {
-                throw new WebBeansException("No Interceptor method found for handling " + invocationContext);
-            }
             if (interceptorMethods.length == 1)
             {
                 // directly invoke the interceptor method with the given InvocationContext

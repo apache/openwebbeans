@@ -52,40 +52,19 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
  * @see javax.enterprise.inject.spi.Bean
  * 
  */
-public abstract class AbstractOwbBean<T> implements OwbBean<T>
+public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbBean<T>
 {
     /**Logger instance*/
     protected Logger logger = null;
     
-    /** Name of the bean */
-    protected String name;
-
-    /** Cached scope type of the bean */
-    protected Class<? extends Annotation> scopeClass;
-
-    /** Qualifiers of the bean */
-    protected Set<Annotation> implQualifiers = new HashSet<Annotation>();
-
-    /** Api types of the bean */
-    protected Set<Type> apiTypes = new HashSet<Type>();
-
     /** Web Beans type */
     protected WebBeansType webBeansType;
-
-    /** Return type of the bean */
-    protected Class<T> returnType;
-
-    /** the StereoType classes of that bean if it's annotated with a StereoType */
-    protected Set<Class<? extends Annotation>> stereoTypeClasses = new HashSet<Class<? extends Annotation>>();
 
     /**This bean is specialized or not*/
     protected boolean specializedBean;
 
     /**This bean is enabled or disabled*/
     protected boolean enabled = true;
-    
-    /** The bean is serializable or not */
-    protected boolean serializable;
 
     /** The bean allows nullable object */
     protected boolean nullable = true;
@@ -97,15 +76,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     private Producer<T> producer;
 
     /**
-     * We gonna cache the hashCode since it is used millions of times per second.
-     * Beans are pretty much static once they got constructed. So it's easy to
-     * cache it and reset the cache to the default of 0 on a change
-     * which means it should get recalculated.
-     */
-    private int cachedHashCode = 0;
-
-
-    /**
      * This string will be used for passivating the Bean.
      * It will be created on the first use.
      * @see #getId()
@@ -114,6 +84,17 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     
     protected final WebBeansContext webBeansContext;
 
+    protected AbstractOwbBean(WebBeansContext webBeansContext,
+                              WebBeansType webBeansType,
+                              Set<Type> types,
+                              Set<Annotation> qualifiers,
+                              Class<? extends Annotation> scope,
+                              Class<?> beanClass,
+                              Set<Class<? extends Annotation>> stereotypes)
+    {
+        this(webBeansContext, webBeansType, types, qualifiers, scope, null, false, beanClass, stereotypes, false);
+    }
+    
     /**
      * Constructor definiton. Each subclass redefines its own constructor with
      * calling this.
@@ -122,22 +103,20 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      * @param webBeansContext
      * @param webBeansType web beans type
      */
-    protected AbstractOwbBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType)
+    protected AbstractOwbBean(WebBeansContext webBeansContext,
+                              WebBeansType webBeansType,
+                              Set<Type> types,
+                              Set<Annotation> qualifiers,
+                              Class<? extends Annotation> scope,
+                              String name,
+                              boolean nullable,
+                              Class<?> beanClass,
+                              Set<Class<? extends Annotation>> stereotypes,
+                              boolean alternative)
     {
+        super(types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative);
         this.webBeansType = webBeansType;
-        this.returnType = returnType;
         this.webBeansContext = webBeansContext;
-    }
-
-    /**
-     * Creates a new instance.
-     * 
-     * @param webBeanType beans type
-     * @param webBeansContext
-     */
-    protected AbstractOwbBean(WebBeansContext webBeansContext, WebBeansType webBeanType)
-    {
-        this(webBeansContext, webBeanType, null);
     }
 
     /**
@@ -300,7 +279,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     public String getId()
     {
-        if (!isEnabled() || returnType.equals(Object.class))
+        if (!isEnabled() || getReturnType().equals(Object.class))
         {
             // if the Bean is disabled, either by rule, or by
             // annotating it @Typed() as Object, then it is not serializable
@@ -309,8 +288,8 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         if (passivatingId == null)
         {
             StringBuilder sb = new StringBuilder(webBeansType.toString()).append('#');
-            sb.append(returnType).append('#');
-            for (Annotation qualifier : implQualifiers)
+            sb.append(getReturnType()).append('#');
+            for (Annotation qualifier : getQualifiers())
             {
                 sb.append(qualifier.toString()).append(',');
             }
@@ -326,54 +305,9 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         return false;
     }
 
-    /**
-     * Get return types of the bean.
-     * As per section 11.1 it is defined as
-     * &quot;returns the bean class of the managed bean or session bean or of the bean
-     * that declares the producer method or field.&quot;
-     * Which means in case of a producer field or method, we need to return the class
-     * where the producer field/method is defined in.
-     */
-    public Class<?> getBeanClass()
-    {
-        if(IBeanHasParent.class.isAssignableFrom(getClass()))
-        {
-            @SuppressWarnings("unchecked")
-            IBeanHasParent<T> comp = (IBeanHasParent<T>)this;
-            
-            return comp.getParent().getBeanClass();
-        }
-        
-        return getReturnType();
-    }
-    
     public void setProducer(Producer<T> producer)
     {
         this.producer = producer;
-    }
-
-    /**
-     * Set scope type.
-     * 
-     * @param scopeType scope type
-     */
-    public void setImplScopeType(Class<? extends Annotation> scopeType)
-    {
-        if (scopeType != null)
-        {
-            scopeClass = scopeType;
-            cachedHashCode = 0;
-        }
-    }
-
-    /**
-     * Name of the bean.
-     * 
-     * @return name of the bean
-     */
-    public String getName()
-    {
-        return name;
     }
 
     /**
@@ -387,81 +321,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     }
 
     /**
-     * Add new stereotype.
-     *
-     * @param stereoType new stereotype annotation
-     */
-    public void addStereoType(Annotation stereoType)
-    {
-        stereoTypeClasses.add(stereoType.annotationType());
-        cachedHashCode = 0;
-    }
-
-    /**
-     * Add new api type.
-     *
-     * @param apiType new api type
-     */
-    public void addApiType(Class<?> apiType)
-    {
-        apiTypes.add(apiType);
-        cachedHashCode = 0;
-    }
-
-    /**
-     * Add new qualifier.
-     *
-     * @param qualifier new qualifier
-     */
-    public void addQualifier(Annotation qualifier)
-    {
-        implQualifiers.add(qualifier);
-        cachedHashCode = 0;
-    }
-
-    /**
-     * Set name.
-     * 
-     * @param name new name
-     */
-    public void setName(String name)
-    {
-        if (this.name == null)
-        {
-            this.name = name;
-            cachedHashCode = 0;
-        }
-        else if (!this.name.equals(name))
-        {
-            throw new UnsupportedOperationException("Component name is already set to: " + this.name);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see javax.webbeans.manager.Bean#getQualifiers()
-     */
-    public Set<Annotation> getQualifiers()
-    {
-        return implQualifiers;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see javax.webbeans.manager.Bean#getScope()
-     */
-    public Class<? extends Annotation> getScope()
-    {
-        return scopeClass;
-    }
-
-    
-    public Set<Type> getTypes()
-    {        
-        return apiTypes;
-    }
-
-    /**
      * Gets type of the producer method/field or the bean class if it's not a producer.
      * This basically determines the class which will get created.
      * 
@@ -470,7 +329,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     public Class<T> getReturnType()
     {
-        return returnType;
+        return (Class<T>) getBeanClass();
     }
     
     /**
@@ -479,16 +338,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public void setNullable(boolean nullable)
     {
         this.nullable = nullable;
-        cachedHashCode = 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void setSerializable(boolean serializable)
-    {
-        this.serializable = serializable;
-        cachedHashCode = 0;
     }
 
     /**
@@ -497,14 +346,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public boolean isNullable()
     {
         return nullable;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public boolean isSerializable()
-    {
-        return serializable;
     }
 
     /**
@@ -529,7 +370,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public void setSpecializedBean(boolean specialized)
     {
         specializedBean = specialized;
-        cachedHashCode = 0;
     }
     
     /**
@@ -538,7 +378,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
-        cachedHashCode = 0;
     }
     
     /**
@@ -567,14 +406,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         return points;
     }
     
-    /**
-     * {@inheritDoc}
-     */    
-    public Set<Class<? extends Annotation>> getStereotypes()
-    {
-        return stereoTypeClasses;
-    }
-    
      /**
      * {@inheritDoc}
      */    
@@ -598,11 +429,8 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        if (returnType != null)
-        {
-            final String simpleName = returnType.getSimpleName();
-            builder.append(simpleName).append(", ");
-        }
+        final String simpleName = getReturnType().getSimpleName();
+        builder.append(simpleName).append(", ");
         builder.append("Name:").append(getName()).append(", WebBeans Type:").append(getWebBeansType());
         builder.append(", API Types:[");
         
@@ -691,170 +519,4 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
             }            
         }
     }
-
-    @Override
-    public int hashCode()
-    {
-        if (cachedHashCode != 0)
-        {
-            return cachedHashCode;
-        }
-
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((apiTypes == null) ? 0 : apiTypes.hashCode());
-        result = prime * result + (enabled ? 1231 : 1237);
-        result = prime * result + (isAlternative() ? 1289 : 1273);
-        result = prime * result + ((implQualifiers == null) ? 0 : implQualifiers.hashCode());
-        result = prime * result + ((injectionPoints == null) ? 0 : injectionPoints.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + (nullable ? 1231 : 1237);
-        result = prime * result + ((returnType == null) ? 0 : returnType.hashCode());
-        result = prime * result + ((scopeClass == null) ? 0 : scopeClass.hashCode());
-        result = prime * result + (serializable ? 1231 : 1237);
-        result = prime * result + (specializedBean ? 1231 : 1237);
-        result = prime * result + ((stereoTypeClasses == null) ? 0 : stereoTypeClasses.hashCode());
-        result = prime * result + ((webBeansType == null) ? 0 : webBeansType.hashCode());
-        cachedHashCode = result;
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-        {
-            return true;
-        }
-        if (obj == null)
-        {
-            return false;
-        }
-        if (getClass() != obj.getClass())
-        {
-            return false;
-        }
-        AbstractOwbBean other = (AbstractOwbBean) obj;
-        if (apiTypes == null)
-        {
-            if (other.apiTypes != null)
-            {
-                return false;
-            }
-        }
-        else if (!apiTypes.equals(other.apiTypes))
-        {
-            return false;
-        }
-        if (enabled != other.enabled)
-        {
-            return false;
-        }
-        if (isAlternative() != other.isAlternative())
-        {
-            return false;
-        }
-        if (implQualifiers == null)
-        {
-            if (other.implQualifiers != null)
-            {
-                return false;
-            }
-        }
-        else if (!implQualifiers.equals(other.implQualifiers))
-        {
-            return false;
-        }
-        if (injectionPoints == null)
-        {
-            if (other.injectionPoints != null)
-            {
-                return false;
-            }
-        }
-        else if (!injectionPoints.equals(other.injectionPoints))
-        {
-            return false;
-        }
-        if (name == null)
-        {
-            if (other.name != null)
-            {
-                return false;
-            }
-        }
-        else if (!name.equals(other.name))
-        {
-            return false;
-        }
-        if (nullable != other.nullable)
-        {
-            return false;
-        }
-        if (returnType == null)
-        {
-            if (other.returnType != null)
-            {
-                return false;
-            }
-        }
-        else if (!returnType.equals(other.returnType))
-        {
-            return false;
-        }
-        if (scopeClass == null)
-        {
-            if (other.scopeClass != null)
-            {
-                return false;
-            }
-        }
-        else if (!scopeClass.equals(other.scopeClass))
-        {
-            return false;
-        }
-        if (serializable != other.serializable)
-        {
-            return false;
-        }
-        if (specializedBean != other.specializedBean)
-        {
-            return false;
-        }
-        if (stereoTypeClasses == null)
-        {
-            if (other.stereoTypeClasses != null)
-            {
-                return false;
-            }
-        }
-        else if (!stereoTypeClasses.equals(other.stereoTypeClasses))
-        {
-            return false;
-        }
-        if (stereoTypeClasses == null)
-        {
-            if (other.stereoTypeClasses != null)
-            {
-                return false;
-            }
-        }
-        else if (!stereoTypeClasses.equals(other.stereoTypeClasses))
-        {
-            return false;
-        }
-        if (webBeansType == null)
-        {
-            if (other.webBeansType != null)
-            {
-                return false;
-            }
-        }
-        else if (!webBeansType.equals(other.webBeansType))
-        {
-            return false;
-        }
-        return true;
-    }
-
 }

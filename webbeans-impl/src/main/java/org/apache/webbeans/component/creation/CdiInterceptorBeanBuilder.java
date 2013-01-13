@@ -20,8 +20,13 @@ package org.apache.webbeans.component.creation;
 
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InterceptionType;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.webbeans.component.CdiInterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
@@ -31,12 +36,14 @@ import org.apache.webbeans.util.ArrayUtil;
 /**
  * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
  */
-public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T>
+public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiInterceptorBean<T>>
 {
+
+    private Set<Annotation> interceptorBindings;
 
     public CdiInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
-        super(new CdiInterceptorBean<T>(webBeansContext, annotatedType));
+        super(webBeansContext, annotatedType);
     }
 
     public void defineCdiInterceptorRules()
@@ -61,11 +68,12 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T>
                     + " must have at least one @InterceptorBinding annotation");
         }
 
-        getBean().setInterceptorBindings(ArrayUtil.asSet(bindings));
+        interceptorBindings = ArrayUtil.asSet(bindings);
     }
 
-    public CdiInterceptorBean<T> getBean()
+    @Override
+    protected CdiInterceptorBean<T> createBean(Set<Type> types, Class<T> beanClass, boolean enabled, Map<InterceptionType, Method[]> interceptionMethods)
     {
-        return (CdiInterceptorBean<T>)super.getBean();
+        return new CdiInterceptorBean<T>(webBeansContext, getAnnotated(), types, beanClass, interceptorBindings, enabled, interceptionMethods);
     }
 }

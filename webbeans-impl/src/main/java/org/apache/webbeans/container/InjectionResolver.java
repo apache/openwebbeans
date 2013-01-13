@@ -241,7 +241,7 @@ public class InjectionResolver
         {
             injectionPointClass = injectionPoint.getBean().getBeanClass();
         }
-        Set<Bean<?>> beanSet = implResolveByType(type, injectionPointClass, qualifiers);
+        Set<Bean<?>> beanSet = implResolveByType(type, clazz, qualifiers);
 
         if (beanSet.isEmpty())
         {

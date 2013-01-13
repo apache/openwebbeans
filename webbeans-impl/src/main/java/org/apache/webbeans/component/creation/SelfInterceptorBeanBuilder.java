@@ -19,7 +19,13 @@
 package org.apache.webbeans.component.creation;
 
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.Set;
+
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InterceptionType;
 
 import org.apache.webbeans.component.SelfInterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
@@ -27,12 +33,12 @@ import org.apache.webbeans.config.WebBeansContext;
 /**
  * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
  */
-public class SelfInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T>
+public class SelfInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, SelfInterceptorBean<T>>
 {
 
     public SelfInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
-        super(new SelfInterceptorBean<T>(webBeansContext, annotatedType));
+        super(webBeansContext, annotatedType);
     }
 
     public void defineSelfInterceptorRules()
@@ -46,9 +52,9 @@ public class SelfInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T>
         return true;
     }
 
-
-    public SelfInterceptorBean<T> getBean()
+    @Override
+    protected SelfInterceptorBean<T> createBean(Set<Type> types, Class<T> beanClass, boolean enabled, Map<InterceptionType, Method[]> interceptionMethods)
     {
-        return (SelfInterceptorBean<T>)super.getBean();
+        return new SelfInterceptorBean<T>(webBeansContext, getAnnotated(), types, beanClass, interceptionMethods);
     }
 }

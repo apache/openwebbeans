@@ -759,7 +759,7 @@ public final class AnnotationManager
                         + component.getReturnType().getName() + " may not define @Named annotation");
             }
 
-            component.setName(name);
+//            component.setName(name);
         }
 
         return hasName;
