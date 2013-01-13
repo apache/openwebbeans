@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 
@@ -34,9 +35,12 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T, AnnotatedMethod<?>, ProducerMethodBean<T>>
 {
+
+    private boolean specialized;
 
     public ProducerMethodBeanBuilder(InjectionTargetBean<T> parent, AnnotatedMethod<?> annotatedMethod)
     {
@@ -82,6 +86,51 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
         
         getBean().setSpecializedBean(true);        
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void defineName()
+    {
+        if (getAnnotated().isAnnotationPresent(Specializes.class))
+        {
+            specialized = true;
+            defineName(getSuperAnnotated(), WebBeansUtil.getProducerDefaultName(getSuperAnnotated().getJavaMember().getName()));
+        }
+        if (getName() == null)
+        {
+            defineName(getAnnotated(), WebBeansUtil.getProducerDefaultName(getAnnotated().getJavaMember().getName()));
+        }
+    }
+
+    protected AnnotatedMethod<?> getSuperAnnotated()
+    {
+        AnnotatedMethod<?> thisMethod = getAnnotated();
+        for (AnnotatedMethod<?> superMethod: getSuperType().getMethods())
+        {
+            List<AnnotatedParameter<?>> thisParameters = (List<AnnotatedParameter<?>>)(List<?>)thisMethod.getParameters();
+            if (thisMethod.getJavaMember().getName().equals(superMethod.getJavaMember().getName())
+                && thisMethod.getBaseType().equals(superMethod.getBaseType())
+                && thisParameters.size() == superMethod.getParameters().size())
+            {
+                List<AnnotatedParameter<?>> superParameters = (List<AnnotatedParameter<?>>)(List<?>)superMethod.getParameters();
+                boolean match = true;
+                for (int i = 0; i < thisParameters.size(); i++)
+                {
+                    if (!thisParameters.get(i).getBaseType().equals(superParameters.get(i).getBaseType()))
+                    {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match)
+                {
+                    return superMethod;
+                }
+            }
+        }
+        return null;
+    }
 
     @Override
     protected Class<T> getBeanType()
@@ -100,6 +149,8 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
                                                Set<Class<? extends Annotation>> stereotypes,
                                                boolean alternative)
     {
-        return new ProducerMethodBean<T>(parent, types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative);
+        ProducerMethodBean<T> producerMethodBean = new ProducerMethodBean<T>(parent, types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative);
+        producerMethodBean.setSpecializedBean(specialized);
+        return producerMethodBean;
     }
 }

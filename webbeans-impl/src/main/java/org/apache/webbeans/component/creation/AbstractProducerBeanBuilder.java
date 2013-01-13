@@ -23,6 +23,7 @@ import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedMember;
+import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -36,6 +37,16 @@ public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?
     {
         super(parent.getWebBeansContext(), annotated);
         this.parent = parent;
+    }
+
+    protected AnnotatedType<?> getSuperType()
+    {
+        Class<?> superclass = getAnnotated().getDeclaringType().getJavaClass().getSuperclass();
+        if (superclass == null)
+        {
+            return null;
+        }
+        return parent.getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(superclass);
     }
 
     protected abstract P createBean(InjectionTargetBean<?> parent,

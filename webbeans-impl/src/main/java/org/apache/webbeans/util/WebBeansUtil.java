@@ -1395,7 +1395,6 @@ public final class WebBeansUtil
                                 + " may not explicitly declare a bean name");
                     }
 
-//                    comp.setName(superBean.getName());
                     comp.setSpecializedBean(true);
                 }
             }

@@ -39,7 +39,6 @@ import org.junit.Test;
 public class SpecializesProducer1Test extends AbstractUnitTest
 {
 
-    @Ignore
     @Test
     public void testSpecializedProducer1()
     {

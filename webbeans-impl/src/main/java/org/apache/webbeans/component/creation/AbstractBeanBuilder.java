@@ -56,7 +56,6 @@ import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -100,6 +99,11 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
     public Class<? extends Annotation> getScope()
     {
         return scope;
+    }
+
+    public String getName()
+    {
+        return beanName;
     }
 
     protected Set<Class<? extends Annotation>> getStereotypes()
@@ -227,9 +231,9 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
         }
     }
 
-    public void defineName(String name)
+    protected void defineName(Annotated annotated, String name)
     {
-        Annotation[] anns = AnnotationUtil.asArray(getAnnotated().getAnnotations());
+        Annotation[] anns = AnnotationUtil.asArray(annotated.getAnnotations());
         Named nameAnnot = null;
         boolean isDefault = false;
         for (Annotation ann : anns)
@@ -278,16 +282,13 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
         HashSet<Class<? extends Annotation>> qualifiedTypes = new HashSet<Class<? extends Annotation>>();
         if (annotated.isAnnotationPresent(Specializes.class))
         {
-            // in this case first define qualifiers of supertype
-            Class<?> superclass = ClassUtil.getClass(annotated.getBaseType()).getSuperclass();
-            if (superclass != null)
-            {
-                defineQualifiers(webBeansContext.getAnnotatedElementFactory().getAnnotatedType(superclass), qualifiedTypes);
-            }
+            defineQualifiers(getSuperAnnotated(), qualifiedTypes);
         }
         defineQualifiers(annotated, qualifiedTypes);
     }
     
+    protected abstract Annotated getSuperAnnotated();
+
     private void defineQualifiers(Annotated annotated, Set<Class<? extends Annotation>> qualifiedTypes)
     {
         Annotation[] annotations = AnnotationUtil.asArray(annotated.getAnnotations());

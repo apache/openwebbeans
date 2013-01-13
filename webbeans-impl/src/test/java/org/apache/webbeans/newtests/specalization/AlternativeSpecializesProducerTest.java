@@ -38,7 +38,6 @@ public class AlternativeSpecializesProducerTest extends AbstractUnitTest
 
     private static final String PACKAGE_NAME = AlternativeSpecializesProducerTest.class.getPackage().getName();
 
-    @Ignore
     @Test
     @SuppressWarnings("unchecked")
     public void testAlternativeSpecializeBean()

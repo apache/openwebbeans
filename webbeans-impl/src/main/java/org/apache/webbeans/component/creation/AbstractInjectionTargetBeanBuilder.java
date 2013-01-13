@@ -87,12 +87,29 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
         this.webBeansContext = webBeansContext;
     }
 
+    protected AnnotatedType<? super T> getSuperAnnotated()
+    {
+        Class<? super T> superclass = getAnnotated().getJavaClass().getSuperclass();
+        if (superclass == null)
+        {
+            return null;
+        }
+        return webBeansContext.getAnnotatedElementFactory().getAnnotatedType(superclass);
+    }
+    
     /**
      * {@inheritDoc}
      */
     public void defineName()
     {
-        defineName(WebBeansUtil.getManagedBeanDefaultName(getAnnotated().getJavaClass().getSimpleName()));
+        if (getAnnotated().isAnnotationPresent(Specializes.class))
+        {
+            defineName(getSuperAnnotated(), WebBeansUtil.getManagedBeanDefaultName(getAnnotated().getJavaClass().getSimpleName()));
+        }
+        if (getName() == null)
+        {
+            defineName(getAnnotated(), WebBeansUtil.getManagedBeanDefaultName(getAnnotated().getJavaClass().getSimpleName()));
+        }
     }
 
     protected AnnotatedConstructor<T> getBeanConstructor()
@@ -549,7 +566,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                     producerFieldBeanCreator.defineScopeType("Annotated producer field: " + annotatedField +  "must declare default @Scope annotation");
                     producerFieldBeanCreator.checkUnproxiableApiType();
                     producerFieldBeanCreator.defineQualifiers();
-                    producerFieldBeanCreator.defineName(WebBeansUtil.getProducerDefaultName(annotatedField.getJavaMember().getName()));
+                    producerFieldBeanCreator.defineName();
                     ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
                     producerFieldBean.setProducerField(field);
                     
@@ -608,7 +625,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                 
                 producerMethodBeanCreator.addInjectionPoint(annotatedMethod);
                 producerMethodBeanCreator.defineApiType();
-                producerMethodBeanCreator.defineName(WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
+                producerMethodBeanCreator.defineName();
                 ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
                 producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
                 if (ClassUtil.getClass(annotatedMethod.getBaseType()).isPrimitive())
