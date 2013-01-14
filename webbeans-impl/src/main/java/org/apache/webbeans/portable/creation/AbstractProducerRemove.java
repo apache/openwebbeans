@@ -33,8 +33,9 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
  * @version $Rev$ $Date$
  *
  * @param <T> bean type info
+ * @deprecated the indirection to the bean is just wrong
  */
-public abstract class AbstractProducer<T> implements Producer<T> 
+public abstract class AbstractProducerRemove<T> implements Producer<T>
 {
     /**Bean instance*/
     protected OwbBean<T> bean;
@@ -50,7 +51,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
      * 
      * @param bean bean instance
      */
-    protected AbstractProducer(OwbBean<T> bean)
+    protected AbstractProducerRemove(OwbBean<T> bean)
     {
         this.bean = bean;
     }

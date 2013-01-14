@@ -59,7 +59,7 @@ import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorDataImpl;
 import javax.enterprise.inject.spi.InterceptionType;
-import org.apache.webbeans.intercept.InvocationContextImpl;
+import org.apache.webbeans.intercept.InvocationContextImplRemove;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -211,7 +211,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         {
             if ((this.contextual != null) && WebBeansUtil.isContainsInterceptorMethod(this.contextual.getInterceptorStack(), interceptionType))
             {
-                InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, this.contextual, context.getTarget(), null, null,
+                InvocationContextImplRemove impl = new InvocationContextImplRemove(webBeansContext, this.contextual, context.getTarget(), null, null,
                         webBeansContext.getInterceptorUtil().getInterceptorMethods(this.contextual.getInterceptorStack(), interceptionType), interceptionType);
                 impl.setCreationalContext(this.cc);
                 impl.setEJBInvocationContext(context); // If the final 299 interceptor calls ic.proceed, the InvocationContext calls the ejbContext.proceed()
@@ -567,7 +567,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         {           
             try
             {
-                    InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, null, context.getTarget(), null, null,
+                    InvocationContextImplRemove impl = new InvocationContextImplRemove(webBeansContext, null, context.getTarget(), null, null,
                             webBeansContext.getInterceptorUtil().getInterceptorMethods(this.contextual.getInterceptorStack(),
                                     InterceptionType.AROUND_TIMEOUT),
                                     InterceptionType.AROUND_TIMEOUT);

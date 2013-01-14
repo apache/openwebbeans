@@ -38,8 +38,9 @@ import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Implementation of the {@link InvocationContext} interface.
+ * @deprecated replaced bv {@link InterceptorInvocationContext}
  */
-public class InvocationContextImpl implements InvocationContext
+public class InvocationContextImplRemove implements InvocationContext
 {
     /** Context data for passing between interceptors */
     private Map<String, Object> contextData = new HashMap<String, Object>();
@@ -83,8 +84,8 @@ public class InvocationContextImpl implements InvocationContext
      * @param datas interceptor stack
      * @param type interceptor type
      */
-    public InvocationContextImpl(WebBeansContext webBeansContext, OwbBean<?> bean, Object instance, Method method,
-                                 Object[] parameters, List<InterceptorData> datas, InterceptionType type)
+    public InvocationContextImplRemove(WebBeansContext webBeansContext, OwbBean<?> bean, Object instance, Method method,
+                                       Object[] parameters, List<InterceptorData> datas, InterceptionType type)
     {
         this.webBeansContext = webBeansContext;
         owbBean = bean;

@@ -53,8 +53,8 @@ import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.portable.creation.InjectionTargetProducer;
-import org.apache.webbeans.portable.creation.ProducerBeansProducer;
+import org.apache.webbeans.portable.creation.InjectionTargetProducerRemove;
+import org.apache.webbeans.portable.creation.ProducerBeansProducerRemove;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeIsnotInterface;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeMustImplementAllDecoratedTypes;
@@ -535,7 +535,7 @@ public abstract class TestContext implements ITestContext
         managedBeanCreator.defineInjectedMethods();
         managedBeanCreator.defineDisposalMethods();
         ManagedBean<T> component = managedBeanCreator.getBean();
-        component.setProducer(new InjectionTargetProducer(component));
+        component.setProducer(new InjectionTargetProducerRemove(component));
 
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(component);
 
@@ -547,7 +547,7 @@ public abstract class TestContext implements ITestContext
         {
             // add them one after the other to enable serialization handling et al
             manager.addBean(producerMethod);
-            producerMethod.setProducer(new ProducerBeansProducer(producerMethod));
+            producerMethod.setProducer(new ProducerBeansProducerRemove(producerMethod));
         }
 
         Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields(component);
@@ -555,7 +555,7 @@ public abstract class TestContext implements ITestContext
         {
             // add them one after the other to enable serialization handling et al
             manager.addBean(producerField);
-            producerField.setProducer(new ProducerBeansProducer(producerField));
+            producerField.setProducer(new ProducerBeansProducerRemove(producerField));
         }
 
         managedBeanCreator.validateDisposalMethods(component);

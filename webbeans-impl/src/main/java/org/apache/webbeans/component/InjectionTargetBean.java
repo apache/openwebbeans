@@ -42,7 +42,7 @@ import org.apache.webbeans.intercept.InterceptorData;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
 
-import org.apache.webbeans.intercept.InvocationContextImpl;
+import org.apache.webbeans.intercept.InvocationContextImplRemove;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.ProxyFactory;
@@ -211,7 +211,7 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
         {
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptionType.PRE_DESTROY))
             {                
-                InvocationContextImpl impl = new InvocationContextImpl(getWebBeansContext(), null, instance, null, null,
+                InvocationContextImplRemove impl = new InvocationContextImplRemove(getWebBeansContext(), null, instance, null, null,
                         getWebBeansContext().getInterceptorUtil().getInterceptorMethods(getInterceptorStack(),
                                                                                         InterceptionType.PRE_DESTROY),
                                                                                         InterceptionType.PRE_DESTROY);

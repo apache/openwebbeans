@@ -34,7 +34,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.AbstractInjectable;
-import org.apache.webbeans.intercept.InvocationContextImpl;
+import org.apache.webbeans.intercept.InvocationContextImplRemove;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.ProxyFactory;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -45,9 +45,11 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @version $Rev$ $Date$
  *
  * @param <T> bean type info
+ *
+ * @deprecated replaced by {@link org.apache.webbeans.portable.InjectionTargetImpl}
  */
 @SuppressWarnings("unchecked")
-public class InjectionTargetProducer<T> extends AbstractProducer<T> implements InjectionTarget<T>
+public class InjectionTargetProducerRemove<T> extends AbstractProducerRemove<T> implements InjectionTarget<T>
 {
     private Logger logger;
 
@@ -55,7 +57,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
      * Creates a new injection target producer.
      * @param bean injection target bean
      */
-    public InjectionTargetProducer(InjectionTargetBean<T> bean)
+    public InjectionTargetProducerRemove(InjectionTargetBean<T> bean)
     {
         super(bean);
     }
@@ -133,7 +135,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
                 // Call Post Construct
                 if (WebBeansUtil.isContainsInterceptorMethod(bean.getInterceptorStack(), InterceptionType.POST_CONSTRUCT))
                 {
-                    InvocationContextImpl impl = new InvocationContextImpl(bean.getWebBeansContext(), null, instance, null, null,
+                    InvocationContextImplRemove impl = new InvocationContextImplRemove(bean.getWebBeansContext(), null, instance, null, null,
                             bean.getWebBeansContext().getInterceptorUtil().getInterceptorMethods(bean.getInterceptorStack(),
                                                                                             InterceptionType.POST_CONSTRUCT),
                                                                                             InterceptionType.POST_CONSTRUCT);

@@ -86,7 +86,7 @@ public class DependentScopedBeanInterceptorHandlerRemove extends InterceptorHand
      */
     protected Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
     {
-        InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, bean, actualInstance,proceed, arguments, stack, InterceptionType.AROUND_INVOKE);
+        InvocationContextImplRemove impl = new InvocationContextImplRemove(webBeansContext, bean, actualInstance,proceed, arguments, stack, InterceptionType.AROUND_INVOKE);
         impl.setCreationalContext(creationalContext);
         
         return impl.proceed();

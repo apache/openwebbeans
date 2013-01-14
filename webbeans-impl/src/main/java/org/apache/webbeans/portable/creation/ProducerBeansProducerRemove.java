@@ -26,15 +26,17 @@ import org.apache.webbeans.component.AbstractProducerBean;
  * @version $Rev$ $Date$
  *
  * @param <T> producer return type info
+ *
+ * @deprectated
  */
-public class ProducerBeansProducer<T> extends AbstractProducer<T>
+public class ProducerBeansProducerRemove<T> extends AbstractProducerRemove<T>
 {
     /**
      * Creats a new producer bean producer.
      * 
      * @param bean producer bean
      */
-    public ProducerBeansProducer(AbstractProducerBean<T> bean)
+    public ProducerBeansProducerRemove(AbstractProducerBean<T> bean)
     {
         super(bean);
     }    

@@ -28,11 +28,22 @@ import javax.enterprise.inject.spi.BeanManager;
 import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.junit.Before;
 import org.junit.Test;
 
 public class LifecycleInheritanceTest extends AbstractUnitTest
 {
-    
+    @Before
+    public void before()
+    {
+        SubClassBean.POST_CONSTRUCT = false;
+        SubClassBean.PRE_DESTOY = false;
+
+        SuperClassBean.POST_CONSTRUCT = false;
+        SuperClassBean.PRE_DESTOY = false;
+    }
+
+
     @Test
     public void testLifecycle()
     {

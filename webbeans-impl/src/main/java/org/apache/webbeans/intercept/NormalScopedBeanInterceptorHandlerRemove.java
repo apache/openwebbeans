@@ -122,7 +122,7 @@ public class NormalScopedBeanInterceptorHandlerRemove extends InterceptorHandler
      */
     protected Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
     {
-        InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, bean, getContextualInstance(),
+        InvocationContextImplRemove impl = new InvocationContextImplRemove(webBeansContext, bean, getContextualInstance(),
                                                                proceed, arguments, stack, InterceptionType.AROUND_INVOKE);
         impl.setCreationalContext(getContextualCreationalContext());
 

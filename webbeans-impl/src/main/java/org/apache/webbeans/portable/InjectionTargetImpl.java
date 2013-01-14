@@ -57,28 +57,30 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
 
     /**
      * If the InjectionTarget has a &#064;PostConstruct method, <code>null</code> if not.
-     * This method only gets used if the produced instance is not intercepted.
-     * This method must have the signature <code>void METHOD();</code>
+     * This methods only gets used if the produced instance is not intercepted.
+     * This methods must have the signature <code>void METHOD();</code>
+     * They are ordered as <b>superclass first</b>.
      */
-    private Method postConstructMethod;
+    private Method[] postConstructMethods;
 
     /**
      * If the InjectionTarget has a &#064;PreDestroy method, <code>null</code> if not.
-     * This method only gets used if the produced instance is not intercepted.
-     * This method must have the signature <code>void METHOD();</code>
+     * This methods only gets used if the produced instance is not intercepted.
+     * This methods must have the signature <code>void METHOD();</code>
+     * They are ordered as <b>subclass first</b>.
      */
-    private Method preDestroyMethod;
+    private Method[] preDestroyMethods;
 
     public InjectionTargetImpl(AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext,
-                               Method postConstructMethod, Method preDestroyMethod)
+                               Method[] postConstructMethods, Method[] preDestroyMethods)
     {
         super(points);
         Asserts.assertNotNull(annotatedType);
         Asserts.assertNotNull(webBeansContext);
         type = annotatedType;
         context = webBeansContext;
-        this.postConstructMethod = postConstructMethod;
-        this.preDestroyMethod = preDestroyMethod;
+        this.postConstructMethods = postConstructMethods;
+        this.preDestroyMethods = preDestroyMethods;
     }
 
     @Override
@@ -162,15 +164,18 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void postConstruct(T instance)
     {
-        if (postConstructMethod != null)
+        if (postConstructMethods != null)
         {
             try
             {
-                if (!postConstructMethod.isAccessible())
+                for (Method m : postConstructMethods)
                 {
-                    postConstructMethod.setAccessible(true);
+                    if (!m.isAccessible())
+                    {
+                        m.setAccessible(true);
+                    }
+                    m.invoke(instance);
                 }
-                postConstructMethod.invoke(instance);
             }
             catch (Exception e)
             {
@@ -186,15 +191,18 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void preDestroy(T instance)
     {
-        if (preDestroyMethod != null)
+        if (preDestroyMethods != null)
         {
             try
             {
-                if (!preDestroyMethod.isAccessible())
+                for (Method m : preDestroyMethods)
                 {
-                    preDestroyMethod.setAccessible(true);
+                    if (!m.isAccessible())
+                    {
+                        m.setAccessible(true);
+                    }
+                    m.invoke(instance);
                 }
-                preDestroyMethod.invoke(instance);
             }
             catch (Exception e)
             {

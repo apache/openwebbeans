@@ -75,7 +75,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.portable.creation.InjectionTargetProducer;
+import org.apache.webbeans.portable.creation.InjectionTargetProducerRemove;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
@@ -928,7 +928,7 @@ public class BeansDeployer
                 }
 
                 Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
-                ((InjectionTargetProducer)processInjectionTargetEvent.getInjectionTarget()).setBean(bean);
+                ((InjectionTargetProducerRemove)processInjectionTargetEvent.getInjectionTarget()).setBean(bean);
                 if(managedBeanCreator.isEnabled())
                 {
                     observerMethods = managedBeanCreator.defineObserverMethods(bean);

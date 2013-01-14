@@ -621,7 +621,7 @@ public final class InterceptorUtil
     public Object callAroundInvokes(WebBeansContext webBeansContext, InjectionTargetBean<?> bean,Object instance, CreationalContextImpl<?> creationalContext,
             Method proceed, Object[] arguments, List<InterceptorData> stack, InvocationContext ejbInvocationContext, Object altKey) throws Exception
     {
-        InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, bean, instance,
+        InvocationContextImplRemove impl = new InvocationContextImplRemove(webBeansContext, bean, instance,
                                                                proceed, arguments, stack, InterceptionType.AROUND_INVOKE);
         if (ejbInvocationContext != null)
         {

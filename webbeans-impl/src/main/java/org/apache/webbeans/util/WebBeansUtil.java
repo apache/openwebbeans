@@ -128,8 +128,8 @@ import org.apache.webbeans.intercept.InterceptorDataImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
-import org.apache.webbeans.portable.creation.InjectionTargetProducer;
-import org.apache.webbeans.portable.creation.ProducerBeansProducer;
+import org.apache.webbeans.portable.creation.InjectionTargetProducerRemove;
+import org.apache.webbeans.portable.creation.ProducerBeansProducerRemove;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
@@ -1881,7 +1881,7 @@ public final class WebBeansUtil
 
     public <T> GProcessInjectionTarget createProcessInjectionTargetEvent(InjectionTargetBean<T> bean)
     {
-        InjectionTargetProducer<T> injectionTarget = new InjectionTargetProducer<T>(bean);
+        InjectionTargetProducerRemove<T> injectionTarget = new InjectionTargetProducerRemove<T>(bean);
         return new GProcessInjectionTarget(injectionTarget, bean.getAnnotatedType());
     }
 
@@ -1905,7 +1905,7 @@ public final class WebBeansUtil
 
     public GProcessProducer fireProcessProducerEventForMethod(ProducerMethodBean<?> producerMethod, AnnotatedMethod<?> method)
     {
-        GProcessProducer producerEvent = new GProcessProducer(new ProducerBeansProducer(producerMethod),method);
+        GProcessProducer producerEvent = new GProcessProducer(new ProducerBeansProducerRemove(producerMethod),method);
 
         //Fires ProcessProducer for methods
         webBeansContext.getBeanManagerImpl().fireEvent(producerEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
@@ -1915,7 +1915,7 @@ public final class WebBeansUtil
 
     public GProcessProducer fireProcessProducerEventForField(ProducerFieldBean<?> producerField, AnnotatedField<?> field)
     {
-        GProcessProducer producerEvent = new GProcessProducer(new ProducerBeansProducer(producerField),field);
+        GProcessProducer producerEvent = new GProcessProducer(new ProducerBeansProducerRemove(producerField),field);
 
         //Fires ProcessProducer for fields
         webBeansContext.getBeanManagerImpl().fireEvent(producerEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);

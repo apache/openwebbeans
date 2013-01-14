@@ -78,7 +78,7 @@ import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.portable.creation.InjectionTargetProducer;
+import org.apache.webbeans.portable.creation.InjectionTargetProducerRemove;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
@@ -936,7 +936,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             throw new DefinitionException("Could not create InjectionTargetBean for type " + type.getJavaClass());
         }
 
-        return new InjectionTargetProducer<T>(bean);
+        return new InjectionTargetProducerRemove<T>(bean);
     }
 
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods( T event, Annotation... qualifiers ) 
