@@ -34,6 +34,7 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
@@ -176,11 +177,11 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         AnnotatedConstructor<T> constructor = null;
         for (InjectionPoint injectionPoint : getInjectionPoints())
         {
-            if (injectionPoint.getAnnotated() instanceof AnnotatedConstructor)
+            if (injectionPoint.getMember() instanceof Constructor)
             {
                 if (constructor == null)
                 {
-                    constructor = (AnnotatedConstructor<T>) injectionPoint.getAnnotated();
+                    constructor = (AnnotatedConstructor<T>)((AnnotatedParameter<T>)injectionPoint.getAnnotated()).getDeclaringCallable();
                 }
                 else if (!constructor.equals(injectionPoint.getAnnotated()))
                 {
@@ -189,7 +190,14 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                 }
             }
         }
-        this.constructor = new AnnotatedConstructorImpl<T>(context, getDefaultConstructor(), type);
+        if (constructor != null)
+        {
+            this.constructor = constructor;
+        }
+        else
+        {
+            this.constructor = new AnnotatedConstructorImpl<T>(context, getDefaultConstructor(), type);
+        }
         return this.constructor;
     }
 

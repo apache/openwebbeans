@@ -33,9 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.util.ExceptionUtil;
 
 /**
@@ -78,12 +76,7 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
     @Override
     protected T createComponentInstance(CreationalContext<T> creationalContext)
     {
-        Constructor<T> con = getConstructor();
-        InjectableConstructor<T> ic = new InjectableConstructor<T>(con, getInjectionTarget(), (CreationalContextImpl<T>) creationalContext);
-
-        T instance = ic.doInjection();
-
-        return instance;
+        return getInjectionTarget().produce(creationalContext);
     }
 
 
