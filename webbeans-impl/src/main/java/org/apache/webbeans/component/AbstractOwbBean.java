@@ -35,6 +35,7 @@ import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.config.OWBLogConst;
@@ -42,8 +43,11 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Abstract implementation of the {@link OwbBean} contract. 
@@ -169,9 +173,9 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
             }
             else
             {
-                instance = createInstance(creationalContext); 
                 if(this instanceof AbstractInjectionTargetBean)
                 {
+                    instance = createInstance(creationalContext); 
                     AbstractInjectionTargetBean<T> injectionTargetBean = (AbstractInjectionTargetBean<T>)this;
                     //Inject resources
                     injectionTargetBean.injectResources(instance, creationalContext);
@@ -179,7 +183,32 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
                     new InjectionTargetImpl<T>(injectionTargetBean.getAnnotatedType(), getInjectionPoints(), webBeansContext).inject(instance, creationalContext); 
                     
                     //Post construct
-                    injectionTargetBean.postConstruct(instance, creationalContext);
+                    if(getWebBeansType().equals(WebBeansType.MANAGED))
+                    {
+                        // Call Post Construct
+                        if (WebBeansUtil.isContainsInterceptorMethod(injectionTargetBean.getInterceptorStack(), InterceptionType.POST_CONSTRUCT))
+                        {
+                            InvocationContextImpl impl = new InvocationContextImpl(getWebBeansContext(), null, instance, null, null,
+                                    getWebBeansContext().getInterceptorUtil().getInterceptorMethods(injectionTargetBean.getInterceptorStack(),
+                                                                                                    InterceptionType.POST_CONSTRUCT),
+                                                                                                    InterceptionType.POST_CONSTRUCT);
+                            impl.setCreationalContext(creationalContext);
+                            try
+                            {
+                                impl.proceed();
+                            }
+
+                            catch (Exception e)
+                            {
+                                getLogger().log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0008, "@PostConstruct."), e);
+                                throw new WebBeansException(e);
+                            }
+                        }            
+                    }        
+                }
+                else
+                {
+                    instance = createInstance(creationalContext);     
                 }
             }                                    
         }

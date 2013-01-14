@@ -57,13 +57,6 @@ public interface InjectionTargetBean<T> extends OwbBean<T>
     public List<Decorator<?>> getDecoratorStack();
 
     /**
-     * Calls post constrcut method.
-     * 
-     * @param instance bean instance
-     */
-    public void postConstruct(T instance, CreationalContext<T> creationalContext);
-    
-    /**
      * Calls predestroy method.
      * 
      * @param instance bean instance

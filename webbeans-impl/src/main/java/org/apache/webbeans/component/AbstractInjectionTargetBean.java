@@ -114,25 +114,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     protected T createInstance(CreationalContext<T> creationalContext)
     {
-        T instance;
-
-        //Default creation phases
-        instance = createDefaultInstance(creationalContext);
-
-        return instance;
-    }
-
-    /**
-     * Returns bean instance.
-     * 
-     * @param creationalContext creational context
-     * @return bean instance
-     */
-    @SuppressWarnings("unchecked")
-    protected T createDefaultInstance(CreationalContext<T> creationalContext)
-    {
-        beforeConstructor();
-        
         //Create actual bean instance
         T instance = createComponentInstance(creationalContext);
         //For dependent instance checks
@@ -196,53 +177,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     protected void destroyComponentInstance(T instance, CreationalContext<T> creationalContext)
     {
         preDestroy(instance, creationalContext);
-    }
-
-    /**
-     * Called before constructor.
-     */
-    protected void beforeConstructor()
-    {
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void postConstruct(T instance, CreationalContext<T> cretionalContext)
-    {
-        postConstructDefault(instance, cretionalContext);
-    }
-
-    /**
-     * Default post construct.
-     * 
-     * @param instance bean instance
-     */
-    protected void postConstructDefault(T instance, CreationalContext<T> ownerCreationalContext)
-    {
-        if(getWebBeansType().equals(WebBeansType.MANAGED))
-        {
-            // Call Post Construct
-            if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptionType.POST_CONSTRUCT))
-            {
-                InvocationContextImpl impl = new InvocationContextImpl(getWebBeansContext(), null, instance, null, null,
-                        getWebBeansContext().getInterceptorUtil().getInterceptorMethods(getInterceptorStack(),
-                                                                                        InterceptionType.POST_CONSTRUCT),
-                                                                                        InterceptionType.POST_CONSTRUCT);
-                impl.setCreationalContext(ownerCreationalContext);
-                try
-                {
-                    impl.proceed();
-                }
-
-                catch (Exception e)
-                {
-                    getLogger().log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0008, "@PostConstruct."), e);
-                    throw new WebBeansException(e);
-                }
-            }            
-        }        
     }
 
     /**
@@ -400,7 +334,4 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             }
         }
     }    
-    
-    
-    
 }

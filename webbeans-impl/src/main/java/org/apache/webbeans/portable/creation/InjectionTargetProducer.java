@@ -18,17 +18,27 @@
  */
 package org.apache.webbeans.portable.creation;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.InterceptionType;
 
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.AbstractInjectable;
+import org.apache.webbeans.intercept.InvocationContextImpl;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.proxy.ProxyFactory;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * InjectionTargetProducer implementation.
@@ -40,6 +50,8 @@ import org.apache.webbeans.proxy.ProxyFactory;
 @SuppressWarnings("unchecked")
 public class InjectionTargetProducer<T> extends AbstractProducer<T> implements InjectionTarget<T>
 {
+    private Logger logger;
+
     /**
      * Creates a new injection target producer.
      * @param bean injection target bean
@@ -117,7 +129,28 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
         InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);    
         if(!(bean instanceof EnterpriseBeanMarker))
         {
-            bean.postConstruct(instance, creationalContext);
+            if(bean.getWebBeansType().equals(WebBeansType.MANAGED))
+            {
+                // Call Post Construct
+                if (WebBeansUtil.isContainsInterceptorMethod(bean.getInterceptorStack(), InterceptionType.POST_CONSTRUCT))
+                {
+                    InvocationContextImpl impl = new InvocationContextImpl(bean.getWebBeansContext(), null, instance, null, null,
+                            bean.getWebBeansContext().getInterceptorUtil().getInterceptorMethods(bean.getInterceptorStack(),
+                                                                                            InterceptionType.POST_CONSTRUCT),
+                                                                                            InterceptionType.POST_CONSTRUCT);
+                    impl.setCreationalContext(creationalContext);
+                    try
+                    {
+                        impl.proceed();
+                    }
+
+                    catch (Exception e)
+                    {
+                        getLogger().log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0008, "@PostConstruct."), e);
+                        throw new WebBeansException(e);
+                    }
+                }            
+            }        
         }
     }
 
@@ -130,4 +163,15 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
         bean.destroyCreatedInstance(instance, creationalContext);
     }
 
+    /**
+     * The Logger should really only be used to log errors!
+     */
+    protected synchronized Logger getLogger()
+    {
+        if (logger == null)
+        {
+            logger = WebBeansLoggerFacade.getLogger(getClass());
+        }
+        return logger;
+    }
 }
