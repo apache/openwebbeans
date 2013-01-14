@@ -30,7 +30,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.Producer;
 import javax.inject.Provider;
 

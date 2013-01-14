@@ -81,7 +81,10 @@ public final class WebBeansInterceptorConfig
      */
     public void defineBeanInterceptorStack(InjectionTargetBean<?> bean)
     {
-        if (WebBeansContext.TODO_USING_NEW_INTERCEPTORS) return; //X TODO
+        if (WebBeansContext.TODO_USING_NEW_INTERCEPTORS)
+        {
+            return; //X TODO
+        }
 
         Asserts.assertNotNull(bean, "bean parameter can no be null");
         if (!bean.getInterceptorStack().isEmpty())

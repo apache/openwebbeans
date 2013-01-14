@@ -175,19 +175,23 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
 
             //X TODO get the InjectionTargetImpl from the parent bean
             InjectionTarget ownerBeanInjectionTarget = getParent().getInjectionTarget();
-            m = new InjectableMethod<T>(creatorMethod, parentInstance, new Producer<T>() {
+            m = new InjectableMethod<T>(creatorMethod, parentInstance, new Producer<T>()
+            {
 
                 @Override
-                public T produce(CreationalContext<T> creationalContext) {
+                public T produce(CreationalContext<T> creationalContext)
+                {
                     return null;
                 }
 
                 @Override
-                public void dispose(T instance) {
+                public void dispose(T instance)
+                {
                 }
 
                 @Override
-                public Set<InjectionPoint> getInjectionPoints() {
+                public Set<InjectionPoint> getInjectionPoints()
+                {
                     return ProducerMethodBean.this.getInjectionPoints();
                 }
             }, (CreationalContextImpl<T>) creationalContext);
