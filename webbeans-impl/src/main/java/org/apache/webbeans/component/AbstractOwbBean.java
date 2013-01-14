@@ -43,6 +43,7 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 
 /**
  * Abstract implementation of the {@link OwbBean} contract. 
@@ -171,7 +172,14 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
                 instance = createInstance(creationalContext); 
                 if(this instanceof AbstractInjectionTargetBean)
                 {
-                    ((AbstractInjectionTargetBean<T>)this).afterConstructor(instance, creationalContext);
+                    AbstractInjectionTargetBean<T> injectionTargetBean = (AbstractInjectionTargetBean<T>)this;
+                    //Inject resources
+                    injectionTargetBean.injectResources(instance, creationalContext);
+                    
+                    new InjectionTargetImpl<T>(injectionTargetBean.getAnnotatedType(), getInjectionPoints(), webBeansContext).inject(instance, creationalContext); 
+                    
+                    //Post construct
+                    injectionTargetBean.postConstruct(instance, creationalContext);
                 }
             }                                    
         }

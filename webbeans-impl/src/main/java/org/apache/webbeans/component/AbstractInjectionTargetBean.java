@@ -207,23 +207,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     }
 
     /**
-     * Called after bean instance is created.
-     * 
-     * @param instance bean instance
-     * @param creationalContext cretional context object
-     */
-    protected void afterConstructor(T instance, CreationalContext<T> creationalContext)
-    {
-        //Inject resources
-        injectResources(instance, creationalContext);
-        
-        new InjectionTargetImpl<T>(getAnnotatedType(), getInjectionPoints(), webBeansContext).inject(instance, creationalContext); 
-        
-        //Post construct
-        postConstruct(instance, creationalContext);
-    }
-
-    /**
      * {@inheritDoc}
      */
     public void postConstruct(T instance, CreationalContext<T> cretionalContext)
