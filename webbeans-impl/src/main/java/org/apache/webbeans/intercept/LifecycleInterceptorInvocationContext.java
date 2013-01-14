@@ -16,25 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.portable;
+package org.apache.webbeans.intercept;
 
-import java.util.Set;
+import java.lang.reflect.Method;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.InjectionPoint;
-
-import org.apache.webbeans.config.WebBeansContext;
-
-public abstract class AbstractEjbInjectionTarget<T> extends InjectionTargetImpl<T> 
+/**
+ * InvocationContext for lifecycle methods like &#064;PostConstruct, etc.
+ */
+public class LifecycleInterceptorInvocationContext<T> extends AbstractInvocationContext<T>
 {
-
-    public AbstractEjbInjectionTarget(AnnotatedType<T> annotatedType,
-                                      Set<InjectionPoint> points,
-                                      WebBeansContext webBeansContext)
+    public LifecycleInterceptorInvocationContext(T target, Method method, Object[] parameters)
     {
-        super(annotatedType, points, webBeansContext);
+        super(target, method, parameters);
     }
 
-    public abstract T produce(CreationalContext<T> creationalContext);
 }

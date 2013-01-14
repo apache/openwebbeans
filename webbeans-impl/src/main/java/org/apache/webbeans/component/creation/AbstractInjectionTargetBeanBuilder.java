@@ -677,11 +677,10 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
 
     protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType,
                                                       Set<InjectionPoint> points,
-                                                      WebBeansContext webBeansContext,
-                                                      Method[] postConstructMethod,
-                                                      Method[] preDestroyMethod)
+                                                      WebBeansContext webBeansContext)
     {
-        return new InjectionTargetImpl<T>(annotatedType, points, webBeansContext, postConstructMethod, preDestroyMethod);
+        //X TODO set interceptor information
+        return new InjectionTargetImpl<T>(annotatedType, points, webBeansContext);
     }
 
     protected abstract I createBean(Set<Type> types,
@@ -707,7 +706,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
         I bean =  createBean(types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative, enabled);
 
         //X TODO hack to set the InjectionTarget
-        InjectionTarget<T> injectionTarget = buildInjectionTarget(bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext, null, null);
+        InjectionTarget<T> injectionTarget = buildInjectionTarget(bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext);
         bean.setInjectionTarget(injectionTarget);
 
         return bean;

@@ -70,12 +70,12 @@ public class NewProxyTest extends AbstractUnitTest
         RuntimeExceptionsInterceptor interceptor = (RuntimeExceptionsInterceptor) beanManager.getReference(interceptorBean, RuntimeExceptionsInterceptor.class, creationalContext);
 
         Method[] interceptedMethods = {RuntimeExceptionBindingTypeBean.class.getMethod("business")};
-        Map<Method, List<Interceptor<RuntimeExceptionBindingTypeBean>>> interceptors = new HashMap<Method, List<Interceptor<RuntimeExceptionBindingTypeBean>>>();
-        interceptors.put(interceptedMethods[0], Arrays.<Interceptor<RuntimeExceptionBindingTypeBean>> asList(interceptorBean));
+        Map<Method, List<Interceptor<?>>> interceptors = new HashMap<Method, List<Interceptor<?>>>();
+        interceptors.put(interceptedMethods[0], Arrays.<Interceptor<?>> asList(interceptorBean));
         Map instances = new HashMap();
         instances.put(interceptorBean, interceptor);
         InterceptorHandler interceptorHandler
-                = new DefaultInterceptorHandler<RuntimeExceptionBindingTypeBean>(target, interceptors, (Map<Interceptor<RuntimeExceptionBindingTypeBean>, RuntimeExceptionBindingTypeBean>) instances);
+                = new DefaultInterceptorHandler<RuntimeExceptionBindingTypeBean>(target, interceptors, instances);
         
         InterceptorDecoratorProxyFactory factory = new InterceptorDecoratorProxyFactory();
         Class<RuntimeExceptionBindingTypeBean> proxyClass

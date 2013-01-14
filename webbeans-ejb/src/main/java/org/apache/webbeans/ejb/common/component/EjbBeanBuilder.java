@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.ejb.common.component;
 
-import java.lang.reflect.Method;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -79,11 +78,9 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>> extends Abstra
     @Override
     protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType,
                                                       Set<InjectionPoint> points,
-                                                      WebBeansContext webBeansContext,
-                                                      Method[] postConstructMethod,
-                                                      Method[] preDestroyMethod)
+                                                      WebBeansContext webBeansContext)
     {
-        return new AbstractEjbInjectionTarget<T>(annotatedType, points, webBeansContext, postConstructMethod, preDestroyMethod)
+        return new AbstractEjbInjectionTarget<T>(annotatedType, points, webBeansContext)
         {
             public T produce(CreationalContext<T> creationalContext)
             {

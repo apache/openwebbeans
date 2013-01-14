@@ -45,7 +45,6 @@ import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.ExceptionUtil;
 
 
 public class InjectionTargetImpl<T> extends AbstractProducer<T> implements InjectionTarget<T>
@@ -61,7 +60,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
      * This methods must have the signature <code>void METHOD();</code>
      * They are ordered as <b>superclass first</b>.
      */
-    private Method[] postConstructMethods;
+    private AnnotatedMethod[] postConstructMethods;
 
     /**
      * If the InjectionTarget has a &#064;PreDestroy method, <code>null</code> if not.
@@ -69,18 +68,15 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
      * This methods must have the signature <code>void METHOD();</code>
      * They are ordered as <b>subclass first</b>.
      */
-    private Method[] preDestroyMethods;
+    private AnnotatedMethod[] preDestroyMethods;
 
-    public InjectionTargetImpl(AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext,
-                               Method[] postConstructMethods, Method[] preDestroyMethods)
+    public InjectionTargetImpl(AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext)
     {
         super(points);
         Asserts.assertNotNull(annotatedType);
         Asserts.assertNotNull(webBeansContext);
         type = annotatedType;
         context = webBeansContext;
-        this.postConstructMethods = postConstructMethods;
-        this.preDestroyMethods = preDestroyMethods;
     }
 
     @Override
@@ -164,55 +160,11 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void postConstruct(T instance)
     {
-        if (postConstructMethods != null)
-        {
-            try
-            {
-                for (Method m : postConstructMethods)
-                {
-                    if (!m.isAccessible())
-                    {
-                        m.setAccessible(true);
-                    }
-                    m.invoke(instance);
-                }
-            }
-            catch (Exception e)
-            {
-                ExceptionUtil.throwAsRuntimeException(e);
-            }
-        }
-        else
-        {
-            //X TODO check if there is an interceptor
-        }
     }
 
     @Override
     public void preDestroy(T instance)
     {
-        if (preDestroyMethods != null)
-        {
-            try
-            {
-                for (Method m : preDestroyMethods)
-                {
-                    if (!m.isAccessible())
-                    {
-                        m.setAccessible(true);
-                    }
-                    m.invoke(instance);
-                }
-            }
-            catch (Exception e)
-            {
-                ExceptionUtil.throwAsRuntimeException(e);
-            }
-        }
-        else
-        {
-            //X TODO check if there is an interceptor
-        }
     }
 
     private AnnotatedConstructor<T> getConstructor()

@@ -32,12 +32,12 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler
 {
 
     private T target;
-    private Map<Method, List<Interceptor<T>>> interceptors;
-    private Map<Interceptor<T>, T> instances;
+    private Map<Method, List<Interceptor<?>>> interceptors;
+    private Map<Interceptor<?>, ?> instances;
 
     public DefaultInterceptorHandler(T target,
-                                     Map<Method, List<Interceptor<T>>> interceptors,
-                                     Map<Interceptor<T>, T> instances)
+                                     Map<Method, List<Interceptor<?>>> interceptors,
+                                     Map<Interceptor<?>, ?> instances)
     {
         this.target = target;
         this.instances = instances;
@@ -48,7 +48,7 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler
     {
         try
         {
-            List<Interceptor<T>> methodInterceptors = interceptors.get(method);
+            List<Interceptor<?>> methodInterceptors = interceptors.get(method);
 
             InterceptorInvocationContext<T> ctx
                 = new InterceptorInvocationContext<T>(target, InterceptionType.AROUND_INVOKE, methodInterceptors, instances, method, parameters);

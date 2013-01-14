@@ -25,15 +25,18 @@ import java.util.Map;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 
+/**
+ * InvocationContext for business method interceptors
+ */
 public class InterceptorInvocationContext<T> extends AbstractInvocationContext<T>
 {
 
     private InterceptionType type;
-    private List<Interceptor<T>> interceptors;
-    private Map<Interceptor<T>, T> instances;
+    private List<Interceptor<?>> interceptors;
+    private Map<Interceptor<?>, ?> instances;
     private int index = 0;
     
-    public InterceptorInvocationContext(T target, InterceptionType type, List<Interceptor<T>> interceptors, Map<Interceptor<T>, T> instances, Method method, Object[] parameters)
+    public InterceptorInvocationContext(T target, InterceptionType type, List<Interceptor<?>> interceptors, Map<Interceptor<?>, ?> instances, Method method, Object[] parameters)
     {
         super(target, method, parameters);
         this.type = type;
@@ -46,7 +49,7 @@ public class InterceptorInvocationContext<T> extends AbstractInvocationContext<T
     {
         if (index < interceptors.size())
         {
-            Interceptor<T> interceptor = interceptors.get(index++);
+            Interceptor interceptor = interceptors.get(index++);
             return interceptor.intercept(type, instances.get(interceptor), this);
         }
         else
