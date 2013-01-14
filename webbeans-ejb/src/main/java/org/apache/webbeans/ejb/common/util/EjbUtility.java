@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -83,7 +84,12 @@ public final class EjbUtility
             {
                 return ejbBean;
             }
-            
+
+            @Override
+            protected T getInstance(CreationalContext<T> creationalContext)
+            {
+                throw new UnsupportedOperationException("Please implement ejb lookup");
+            }
         };
         ejbBeanCreator.checkCreateConditions();
         
@@ -206,6 +212,12 @@ public final class EjbUtility
                                                 boolean enabled)
             {
                 return ejbBean;
+            }
+
+            @Override
+            protected T getInstance(CreationalContext<T> creationalContext)
+            {
+                throw new UnsupportedOperationException("Please implement ejb lookup");
             }
         };
 

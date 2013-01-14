@@ -18,15 +18,20 @@
  */
 package org.apache.webbeans.ejb.common.component;
 
+import java.lang.reflect.Method;
 import java.util.Set;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.creation.AbstractInjectionTargetBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.ejb.common.util.EjbValidator;
+import org.apache.webbeans.portable.AbstractEjbInjectionTarget;
 
 /**
  * EjbBeanCreatorImpl.
@@ -70,4 +75,22 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>> extends Abstra
         
         return observerMethods;
     }
+
+    @Override
+    protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType,
+                                                      Set<InjectionPoint> points,
+                                                      WebBeansContext webBeansContext,
+                                                      Method[] postConstructMethod,
+                                                      Method[] preDestroyMethod)
+    {
+        return new AbstractEjbInjectionTarget<T>(annotatedType, points, webBeansContext, postConstructMethod, preDestroyMethod)
+        {
+            public T produce(CreationalContext<T> creationalContext)
+            {
+                return getInstance(creationalContext);
+            }
+        };
+    }
+    
+    protected abstract T getInstance(CreationalContext<T> creationalContext);
 }
