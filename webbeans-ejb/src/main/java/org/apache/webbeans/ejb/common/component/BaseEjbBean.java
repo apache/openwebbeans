@@ -93,16 +93,9 @@ public abstract class BaseEjbBean<T> extends InjectionTargetBean<T> implements E
     @Override
     protected T createComponentInstance(CreationalContext<T> creationalContext)
     {
-        return getInstance(creationalContext);
+        return getInjectionTarget().produce(creationalContext);
     }
     
-    /**
-     * Sublclasses must return instance.
-     * @param creationalContext creational context
-     * @return instance
-     */
-    protected abstract T getInstance(CreationalContext<T> creationalContext);
-
     /**
      * {@inheritDoc}
      */
