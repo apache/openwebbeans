@@ -52,7 +52,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
 
     private AnnotatedType<T> type;
     private AnnotatedConstructor<T> constructor;
-    private WebBeansContext context;
+    protected final WebBeansContext context;
 
     /**
      * If the InjectionTarget has a &#064;PostConstruct method, <code>null</code> if not.
@@ -60,7 +60,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
      * This methods must have the signature <code>void METHOD();</code>
      * They are ordered as <b>superclass first</b>.
      */
-    private AnnotatedMethod[] postConstructMethods;
+    private AnnotatedMethod<T>[] postConstructMethods;
 
     /**
      * If the InjectionTarget has a &#064;PreDestroy method, <code>null</code> if not.
@@ -68,7 +68,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
      * This methods must have the signature <code>void METHOD();</code>
      * They are ordered as <b>subclass first</b>.
      */
-    private AnnotatedMethod[] preDestroyMethods;
+    private AnnotatedMethod<T>[] preDestroyMethods;
 
     public InjectionTargetImpl(AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext)
     {

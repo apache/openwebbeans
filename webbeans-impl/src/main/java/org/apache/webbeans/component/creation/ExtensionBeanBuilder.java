@@ -22,8 +22,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
+
 import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.ExtensionProducer;
 
 public class ExtensionBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T, ExtensionBean<T>>
 {
@@ -31,6 +36,13 @@ public class ExtensionBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
     public ExtensionBeanBuilder(WebBeansContext webBeansContext, Class<T> type)
     {
         super(webBeansContext, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type));
+    }
+
+    protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType,
+                                                      Set<InjectionPoint> points,
+                                                      WebBeansContext webBeansContext)
+    {
+        return new ExtensionProducer<T>(annotatedType, points, webBeansContext);
     }
 
     @Override

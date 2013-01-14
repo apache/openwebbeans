@@ -25,7 +25,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.util.AnnotationUtil;
 
 /**
@@ -35,6 +34,7 @@ import org.apache.webbeans.util.AnnotationUtil;
  *
  * @param <T> type info
  */
+// TODO : Should not extend InjectionTargetBean, but AbstractOwbBean
 public class ExtensionBean<T> extends InjectionTargetBean<T>
 {
     /**
@@ -62,9 +62,7 @@ public class ExtensionBean<T> extends InjectionTargetBean<T>
     @Override
     protected T createComponentInstance(CreationalContext<T> creationalContext)
     {
-        ExtensionLoader loader = getWebBeansContext().getExtensionLoader();
-        
-        return loader.getBeanInstance(this);
+        return getInjectionTarget().produce(creationalContext);
     }
     
     /**
