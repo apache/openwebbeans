@@ -29,10 +29,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 public abstract class AbstractBean<T> implements Bean<T>
 {
-
-    final Set<InjectionPoint> internalInjectionPoints = new HashSet<InjectionPoint>();
-    private final Set<InjectionPoint> injectionPoints = Collections.unmodifiableSet(internalInjectionPoints);
-    
     private final Set<Type> types;
     private final Set<Annotation> qualifiers;
     private final Class<? extends Annotation> scope;
@@ -105,7 +101,7 @@ public abstract class AbstractBean<T> implements Bean<T>
     @Override
     public Set<InjectionPoint> getInjectionPoints()
     {
-        return injectionPoints;
+        return Collections.EMPTY_SET;
     }
 
     @Override

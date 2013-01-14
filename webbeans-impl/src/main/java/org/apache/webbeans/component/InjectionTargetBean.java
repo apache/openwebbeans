@@ -125,9 +125,9 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
     {
         //Create actual bean instance
         T instance = createComponentInstance(creationalContext);
+
+        //X TODO this should not be needed finally!
         //For dependent instance checks
-        T dependentProxy = null;
-        boolean isDependentProxy = false;
         if(getScope() == Dependent.class && !(this instanceof EnterpriseBeanMarker))
         {
             final ProxyFactory proxyFactory = getWebBeansContext().getProxyFactory();
@@ -142,20 +142,23 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
                 getInjectionTarget().inject(instance, creationalContext);
 
                 //Dependent proxy
-                dependentProxy = result;
-                
-                //This is a dependent
-                isDependentProxy = true;
+                return result;
             }
         }
-                        
-        
-        //If dependent proxy
-        if(isDependentProxy)
+
+        //Inject resources
+        injectResources(instance, creationalContext);
+
+        getInjectionTarget().inject(instance, creationalContext);
+
+        //Post construct
+        if(getWebBeansType().equals(WebBeansType.MANAGED))
         {
-            return dependentProxy;
+            // Call Post Construct
+            //X TODO
         }
-        
+
+
         return instance;
     }
 

@@ -35,7 +35,6 @@ import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.config.OWBLogConst;
@@ -43,11 +42,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.portable.InjectionTargetImpl;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Abstract implementation of the {@link OwbBean} contract. 
@@ -73,7 +68,7 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
 
     /** The bean allows nullable object */
     protected boolean nullable = true;
-    
+
     /**Beans injection points*/
     protected Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
 
@@ -159,59 +154,21 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
                         creationalContext, this); 
             }
            
-            Producer<T> wrapper = producer;
             //If wrapper not null
-            if(wrapper != null)
+            if(producer != null)
             {
-                instance = wrapper.produce(creationalContext);
-                if (wrapper instanceof InjectionTarget)
+                instance = producer.produce(creationalContext);
+                if (producer instanceof InjectionTarget)
                 {
-                    ((InjectionTarget)wrapper).inject(instance, creationalContext);
-                    ((InjectionTarget)wrapper).postConstruct(instance);
+                    ((InjectionTarget)producer).inject(instance, creationalContext);
+                    ((InjectionTarget)producer).postConstruct(instance);
                 }
             }
             else
             {
-                if(this instanceof InjectionTargetBean)
-                {
-                    //X TODO holy shit. this is completely against the whole bean hierarchy!
-
-                    instance = createInstance(creationalContext); 
-                    InjectionTargetBean<T> injectionTargetBean = (InjectionTargetBean<T>)this;
-                    //Inject resources
-                    injectionTargetBean.injectResources(instance, creationalContext);
-                    
-                    new InjectionTargetImpl<T>(injectionTargetBean.getAnnotatedType(), getInjectionPoints(), webBeansContext, null, null).inject(instance, creationalContext);
-                    
-                    //Post construct
-                    if(getWebBeansType().equals(WebBeansType.MANAGED))
-                    {
-                        // Call Post Construct
-                        if (WebBeansUtil.isContainsInterceptorMethod(injectionTargetBean.getInterceptorStack(), InterceptionType.POST_CONSTRUCT))
-                        {
-                            InvocationContextImpl impl = new InvocationContextImpl(getWebBeansContext(), null, instance, null, null,
-                                    getWebBeansContext().getInterceptorUtil().getInterceptorMethods(injectionTargetBean.getInterceptorStack(),
-                                                                                                    InterceptionType.POST_CONSTRUCT),
-                                                                                                    InterceptionType.POST_CONSTRUCT);
-                            impl.setCreationalContext(creationalContext);
-                            try
-                            {
-                                impl.proceed();
-                            }
-
-                            catch (Exception e)
-                            {
-                                getLogger().log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0008, "@PostConstruct."), e);
-                                throw new WebBeansException(e);
-                            }
-                        }            
-                    }        
-                }
-                else
-                {
-                    instance = createInstance(creationalContext);     
-                }
-            }                                    
+                //X TODO review if this is still needed!
+                instance = createInstance(creationalContext);
+            }
         }
         catch (Exception re)
         {

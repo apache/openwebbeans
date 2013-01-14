@@ -18,68 +18,44 @@
  */
 package org.apache.webbeans.test.unittests.inject;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.ContainUserComponent;
 import org.apache.webbeans.test.component.UserComponent;
-import org.junit.Before;
 import org.junit.Test;
 
-public class UserComponentTest extends TestContext
+public class UserComponentTest extends AbstractUnitTest
 {
     BeanManager container = null;
 
-    public UserComponentTest()
-    {
-        super(UserComponentTest.class.getSimpleName());
-    }
-
-    @Before
-    public void init()
-    {
-        this.container = WebBeansContext.getInstance().getBeanManagerImpl();
-        super.init();
-    }
 
     @Test
     public void testTypedComponent() throws Throwable
     {
-        clear();
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(UserComponent.class);
+        beanClasses.add(ContainUserComponent.class);
 
-        defineManagedBean(UserComponent.class);
-        defineManagedBean(ContainUserComponent.class);
-        List<AbstractOwbBean<?>> comps = getComponents();
+        startContainer(beanClasses, null);
 
-        Object session = getSession();
-        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
-        WebBeansContext.getInstance().getContextFactory().initSessionContext(session);
-
-        Assert.assertEquals(2, comps.size());
-
-        UserComponent userComponent = (UserComponent) getManager().getInstance(comps.get(0));
+        UserComponent userComponent = getInstance(UserComponent.class);
         userComponent.setName("Gurkan");
         userComponent.setSurname("Erdogdu");
 
         Assert.assertNotNull(userComponent);
 
-        Object object = getManager().getInstance(comps.get(1));
-        Assert.assertNotNull(object);
-        Assert.assertTrue(object instanceof ContainUserComponent);
-
-        ContainUserComponent uc = (ContainUserComponent) object;
+        ContainUserComponent uc = getInstance(ContainUserComponent.class);
 
         Assert.assertNotNull(uc.echo());
         Assert.assertEquals(uc.echo(), userComponent.getName() + " " + userComponent.getSurname());
 
-        WebBeansContext.getInstance().getContextFactory().destroyRequestContext(null);
-        WebBeansContext.getInstance().getContextFactory().destroySessionContext(session);
+        shutDownContainer();
     }
 
 }

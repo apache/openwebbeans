@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.portable;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -32,7 +30,8 @@ public abstract class AbstractProducer<T> implements Producer<T>
 
     public AbstractProducer(Set<InjectionPoint> points)
     {
-        injectionPoints = Collections.unmodifiableSet(new HashSet<InjectionPoint>(points));
+        // this shares the InjectionPoints with the owning component for now
+        injectionPoints = points;
     }
     
     @Override

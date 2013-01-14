@@ -307,7 +307,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
     {
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
-        Set<AnnotatedField<? super T>> annotatedFields = getAnnotated().getFields();   
+        Set<AnnotatedField<? super T>> annotatedFields = getAnnotated().getFields();
         for(AnnotatedField<? super T> annotatedField: annotatedFields)
         {
             if(Modifier.isPublic(annotatedField.getJavaMember().getModifiers()) && !annotatedField.isStatic())
