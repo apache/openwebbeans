@@ -122,10 +122,9 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
     /**
      * @deprecated replaced via the various {@link InterceptorBeanBuilder}s
      */
-    public ManagedBean<T> defineInterceptor(ProcessInjectionTarget<T> injectionTargetEvent)
+    public ManagedBean<T> defineInterceptor(AnnotatedType<T> annotatedType)
     {
-        Class<?> clazz = injectionTargetEvent.getAnnotatedType().getJavaClass();
-        AnnotatedType annotatedType = injectionTargetEvent.getAnnotatedType();
+        Class<?> clazz = annotatedType.getJavaClass();
 
         if (webBeansContext.getInterceptorsManager().isInterceptorClassEnabled(clazz))
         {
@@ -143,7 +142,7 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
             else
             {
                 // TODO could probably be a bit more descriptive
-                throw new DeploymentException("Cannot create Interceptor for class" + injectionTargetEvent.getAnnotatedType());
+                throw new DeploymentException("Cannot create Interceptor for class" + annotatedType);
             }
             return component;
         }
@@ -173,9 +172,9 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
      * Define decorator bean.
      * @param processInjectionTargetEvent
      */
-    public ManagedBean<T> defineDecorator(ProcessInjectionTarget<T> processInjectionTargetEvent)
+    public ManagedBean<T> defineDecorator(AnnotatedType<T> annotatedType)
     {
-        Class<T> clazz = processInjectionTargetEvent.getAnnotatedType().getJavaClass();
+        Class<T> clazz = annotatedType.getJavaClass();
         if (webBeansContext.getDecoratorsManager().isDecoratorEnabled(clazz))
         {
             ManagedBean<T> delegate = null;
@@ -184,11 +183,11 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
 
             if(Modifier.isAbstract(clazz.getModifiers()))
             {
-                delegate = defineAbstractDecorator(processInjectionTargetEvent);
+                delegate = defineAbstractDecorator(annotatedType);
             }
             else
             {
-                delegate = defineManagedBean(processInjectionTargetEvent.getAnnotatedType());
+                delegate = defineManagedBean(annotatedType);
             }
 
             if (delegate != null)
@@ -198,7 +197,7 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
             else
             {
                 // TODO could probably be a bit more descriptive
-                throw new DeploymentException("Cannot create Decorator for class" + processInjectionTargetEvent.getAnnotatedType());
+                throw new DeploymentException("Cannot create Decorator for class" + annotatedType);
             }
             return delegate;
         }
@@ -208,14 +207,14 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
         }
     }
 
-    private ManagedBean<T> defineAbstractDecorator(ProcessInjectionTarget<T> processInjectionTargetEvent)
+    private ManagedBean<T> defineAbstractDecorator(AnnotatedType<T> annotatedType)
     {
 
-        ManagedBean<T> bean = defineManagedBean(processInjectionTargetEvent.getAnnotatedType());
+        ManagedBean<T> bean = defineManagedBean(annotatedType);
         if (bean == null)
         {
             // TODO could probably be a bit more descriptive
-            throw new DeploymentException("Cannot create ManagedBean for class" + processInjectionTargetEvent.getAnnotatedType());
+            throw new DeploymentException("Cannot create ManagedBean for class" + annotatedType);
         }
 
         //X TODO move proxy instance creation into JavassistProxyFactory!
