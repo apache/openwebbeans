@@ -38,6 +38,7 @@ import org.apache.webbeans.newtests.disposes.common.RequestModel;
 import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class DependentMethodBeanTest extends AbstractUnitTest
 {
     @Test
