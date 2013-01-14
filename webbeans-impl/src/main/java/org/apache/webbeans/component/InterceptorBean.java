@@ -36,7 +36,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
-import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.ExceptionUtil;
 
 /**
@@ -45,7 +44,7 @@ import org.apache.webbeans.util.ExceptionUtil;
  * <p>Any Interceptor is also an InjectionTarget as they can contain
  * &#064;Inject InjectionPoints.</p>
  */
-public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> implements Interceptor<T>, EnterpriseBeanMarker
+public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implements Interceptor<T>, EnterpriseBeanMarker
 {
    /**
      * Constructor of the web bean component
@@ -80,8 +79,7 @@ public abstract class InterceptorBean<T> extends AbstractInjectionTargetBean<T> 
     protected T createComponentInstance(CreationalContext<T> creationalContext)
     {
         Constructor<T> con = getConstructor();
-        InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(getAnnotatedType(), getInjectionPoints(), getWebBeansContext());
-        InjectableConstructor<T> ic = new InjectableConstructor<T>(con, injectionTarget, (CreationalContextImpl<T>) creationalContext);
+        InjectableConstructor<T> ic = new InjectableConstructor<T>(con, getInjectionTarget(), (CreationalContextImpl<T>) creationalContext);
 
         T instance = ic.doInjection();
 

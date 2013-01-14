@@ -19,7 +19,6 @@
 package org.apache.webbeans.test;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.HashSet;
@@ -38,7 +37,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
@@ -75,7 +74,6 @@ import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope2;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 /**
@@ -273,7 +271,7 @@ public abstract class TestContext implements ITestContext
      * @param clazz simple webbeans class
      * @return simple webbean
      */
-    protected <T> AbstractInjectionTargetBean<T> defineManagedBean(Class<T> clazz)
+    protected <T> InjectionTargetBean<T> defineManagedBean(Class<T> clazz)
     {
         ManagedBean<T> bean;
 

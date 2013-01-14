@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -46,7 +45,7 @@ public final class WebBeansDecoratorConfig
 
     }
 
-    public static <T> void configureDecoratorClass(AbstractInjectionTargetBean<T> delegate)
+    public static <T> void configureDecoratorClass(InjectionTargetBean<T> delegate)
     {
         if(delegate.getScope() != Dependent.class)
         {
@@ -81,7 +80,7 @@ public final class WebBeansDecoratorConfig
         delegate.getWebBeansContext().getDecoratorsManager().addDecorator(decorator);
     }
 
-    public static void configureDecorators(AbstractInjectionTargetBean<?> component)
+    public static void configureDecorators(InjectionTargetBean<?> component)
     {
         if (!component.getDecoratorStack().isEmpty())
         {
@@ -109,7 +108,7 @@ public final class WebBeansDecoratorConfig
         }
     }
     
-    private static void filterDecoratorsPerBDA(AbstractInjectionTargetBean<?> component, List<Decorator<?>> stack)
+    private static void filterDecoratorsPerBDA(InjectionTargetBean<?> component, List<Decorator<?>> stack)
     {
 
         ScannerService scannerService = component.getWebBeansContext().getScannerService();

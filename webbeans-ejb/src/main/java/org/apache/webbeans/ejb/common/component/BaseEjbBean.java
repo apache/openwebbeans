@@ -33,7 +33,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.SessionBeanType;
 
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
@@ -44,7 +44,7 @@ import org.apache.webbeans.util.ClassUtil;
  * 
  * @version $Rev$ $Date$
  */
-public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> implements EnterpriseBeanMarker
+public abstract class BaseEjbBean<T> extends InjectionTargetBean<T> implements EnterpriseBeanMarker
 {
     public static final Object[] OBJECT_EMPTY = new Object[0];
 

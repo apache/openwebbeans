@@ -35,7 +35,7 @@ import org.apache.webbeans.util.AnnotationUtil;
  *
  * @param <T> type info
  */
-public class ExtensionBean<T> extends AbstractInjectionTargetBean<T>
+public class ExtensionBean<T> extends InjectionTargetBean<T>
 {
     /**
      * Creates a new extesion bean.
@@ -46,13 +46,13 @@ public class ExtensionBean<T> extends AbstractInjectionTargetBean<T>
     public ExtensionBean(WebBeansContext webBeansContext, Class<T> returnType)
     {
         super(webBeansContext,
-              WebBeansType.EXTENSION,
-              webBeansContext.getAnnotatedElementFactory().newAnnotatedType(returnType),
-              webBeansContext.getAnnotatedElementFactory().newAnnotatedType(returnType).getTypeClosure(),
-              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
-              ApplicationScoped.class,
-              returnType,
-              Collections.<Class<? extends Annotation>>emptySet());
+                WebBeansType.EXTENSION,
+                webBeansContext.getAnnotatedElementFactory().newAnnotatedType(returnType),
+                webBeansContext.getAnnotatedElementFactory().newAnnotatedType(returnType).getTypeClosure(),
+                AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+                ApplicationScoped.class,
+                returnType,
+                Collections.<Class<? extends Annotation>>emptySet());
         setEnabled(true);
     }
     

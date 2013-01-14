@@ -36,7 +36,6 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.AbstractInjectable;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.proxy.ProxyFactory;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -79,7 +78,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
             if(ctx instanceof CreationalContextImpl)
             {
                 contextual = ((CreationalContextImpl)ctx).getBean();
-                isInjectionToAnotherBean = contextual == getBean(InjectionTargetBean.class) ? false : true;
+                isInjectionToAnotherBean = contextual != getBean(InjectionTargetBean.class);
             }
             
             if(!isInjectionToAnotherBean)
@@ -103,8 +102,8 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
                 }
                 
                 bean.injectResources(instance, ctx);
-                new InjectionTargetImpl<T>(bean.getAnnotatedType(), bean.getInjectionPoints(), bean.getWebBeansContext()).inject(instance, ctx);
-            }                    
+                bean.getInjectionTarget().inject(instance, ctx);
+            }
         }
         finally
         {

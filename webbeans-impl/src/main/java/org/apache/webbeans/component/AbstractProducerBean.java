@@ -44,7 +44,6 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
     /**
      * Create a new instance.
      * 
-     * @param type webbeans typr
      * @param returnType bean type info
      * @param ownerComponent owner bean
      */

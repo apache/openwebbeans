@@ -43,14 +43,15 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 
 import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
-import org.apache.webbeans.component.AbstractProducerBean;
-import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.AbstractProducerBean;
+import org.apache.webbeans.component.CdiInterceptorBean;
+import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InterceptedMarker;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.component.creation.CdiInterceptorBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
@@ -399,13 +400,13 @@ public class BeansDeployer
                        !(bean instanceof javax.enterprise.inject.spi.Interceptor) &&
                        !(bean instanceof NewBean))
                     {
-                        WebBeansDecoratorConfig.configureDecorators((AbstractInjectionTargetBean<Object>)bean);
+                        WebBeansDecoratorConfig.configureDecorators((InjectionTargetBean<Object>)bean);
                     }
                     
                     //If intercepted marker
                     if(bean instanceof InterceptedMarker)
                     {
-                        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>) bean);
+                        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack((InjectionTargetBean<Object>) bean);
                     }                                                            
                 }                
                 
@@ -868,23 +869,35 @@ public class BeansDeployer
                 {
                     logger.log(Level.FINE, "Found Managed Bean Interceptor with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
-/*X TODO remove this old code*/
-                if(annotationTypeSet)
+
+                if (WebBeansContext.TODO_USING_NEW_INTERCEPTORS)
                 {
-                    bean = webBeansContext.getWebBeansUtil().defineInterceptor(annotatedType);
+                    CdiInterceptorBeanBuilder<T> ibb
+                            = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType);
+                    if (ibb.isInterceptorEnabled())
+                    {
+                        ibb.defineCdiInterceptorRules();
+                        CdiInterceptorBean<T> interceptor = ibb.getBean();
+                        webBeansContext.getInterceptorsManager().addCdiInterceptor(interceptor);
+                        bean = interceptor;
+                    }
+                    else
+                    {
+                        bean = null;
+                    }
+
                 }
                 else
                 {
-                    bean = managedBeanCreator.defineInterceptor(processInjectionTargetEvent);
+                    if(annotationTypeSet)
+                    {
+                        bean = webBeansContext.getWebBeansUtil().defineInterceptor(annotatedType);
+                    }
+                    else
+                    {
+                        bean = managedBeanCreator.defineInterceptor(processInjectionTargetEvent);
+                    }
                 }
-/*X TODO enable again:
-                CdiInterceptorBeanBuilder<T> ibb
-                        = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType);
-                if (ibb.isInterceptorEnabled()) {
-                    Interceptor<T> interceptor = ibb.getBean();
-                    webBeansContext.getInterceptorsManager().addCdiInterceptor(interceptor);
-                }
-*/
             }
             else
             {

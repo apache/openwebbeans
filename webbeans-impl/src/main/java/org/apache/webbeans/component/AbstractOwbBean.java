@@ -104,7 +104,6 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
      * Constructor definiton. Each subclass redefines its own constructor with
      * calling this.
      * 
-     * @param returnType of the bean
      * @param webBeansContext
      * @param webBeansType web beans type
      */
@@ -173,14 +172,16 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
             }
             else
             {
-                if(this instanceof AbstractInjectionTargetBean)
+                if(this instanceof InjectionTargetBean)
                 {
+                    //X TODO holy shit. this is completely against the whole bean hierarchy!
+
                     instance = createInstance(creationalContext); 
-                    AbstractInjectionTargetBean<T> injectionTargetBean = (AbstractInjectionTargetBean<T>)this;
+                    InjectionTargetBean<T> injectionTargetBean = (InjectionTargetBean<T>)this;
                     //Inject resources
                     injectionTargetBean.injectResources(instance, creationalContext);
                     
-                    new InjectionTargetImpl<T>(injectionTargetBean.getAnnotatedType(), getInjectionPoints(), webBeansContext).inject(instance, creationalContext); 
+                    new InjectionTargetImpl<T>(injectionTargetBean.getAnnotatedType(), getInjectionPoints(), webBeansContext, null, null).inject(instance, creationalContext);
                     
                     //Post construct
                     if(getWebBeansType().equals(WebBeansType.MANAGED))

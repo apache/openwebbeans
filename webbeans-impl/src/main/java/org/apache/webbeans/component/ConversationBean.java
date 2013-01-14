@@ -37,7 +37,7 @@ import org.apache.webbeans.util.CollectionUtil;
  * @version $Rev$ $Date$
  *
  */
-public class ConversationBean extends AbstractInjectionTargetBean<Conversation>
+public class ConversationBean extends InjectionTargetBean<Conversation>
 {
     /**
      * Default constructor.

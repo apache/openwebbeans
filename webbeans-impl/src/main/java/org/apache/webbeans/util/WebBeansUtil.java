@@ -89,7 +89,7 @@ import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.BeanManagerBean;
@@ -98,7 +98,6 @@ import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.component.InjectionPointBean;
-import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
@@ -1864,7 +1863,7 @@ public final class WebBeansUtil
      * @param bean bean instance
      * @return event
      */
-    public <T> GProcessInjectionTarget fireProcessInjectionTargetEvent(AbstractInjectionTargetBean<T> bean)
+    public <T> GProcessInjectionTarget fireProcessInjectionTargetEvent(InjectionTargetBean<T> bean)
     {
         GProcessInjectionTarget processInjectionTargetEvent = createProcessInjectionTargetEvent(bean);
         return fireProcessInjectionTargetEvent(processInjectionTargetEvent);
@@ -1880,7 +1879,7 @@ public final class WebBeansUtil
         return processInjectionTargetEvent;
     }
 
-    public <T> GProcessInjectionTarget createProcessInjectionTargetEvent(AbstractInjectionTargetBean<T> bean)
+    public <T> GProcessInjectionTarget createProcessInjectionTargetEvent(InjectionTargetBean<T> bean)
     {
         InjectionTargetProducer<T> injectionTarget = new InjectionTargetProducer<T>(bean);
         return new GProcessInjectionTarget(injectionTarget, bean.getAnnotatedType());

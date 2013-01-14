@@ -22,7 +22,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.intercept.MultpleInterceptor;
@@ -48,7 +48,7 @@ public class EJBInterceptorExceptionComponentTest extends TestContext
     {
         try
         {
-            AbstractInjectionTargetBean<MultpleInterceptor> component = defineManagedBean(MultpleInterceptor.class);
+            InjectionTargetBean<MultpleInterceptor> component = defineManagedBean(MultpleInterceptor.class);
 
             AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(component.getReturnType());
             getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());

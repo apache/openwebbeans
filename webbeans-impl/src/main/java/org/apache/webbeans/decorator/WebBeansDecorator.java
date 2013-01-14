@@ -18,18 +18,14 @@
  */
 package org.apache.webbeans.decorator;
 
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.inject.InjectableField;
-import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -46,7 +42,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.HashSet;
@@ -63,7 +58,7 @@ import java.util.logging.Level;
  *
  * @param <T> decorator type info
  */
-public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> implements OwbDecorator<T>
+public class WebBeansDecorator<T> extends InjectionTargetBean<T> implements OwbDecorator<T>
 {
     /** Decorator class */
     private Class<?> clazz;
@@ -83,7 +78,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     protected Field delegateField;
 
     /** Wrapped bean*/
-    private AbstractInjectionTargetBean<T> wrappedBean;
+    private InjectionTargetBean<T> wrappedBean;
     
     /**Custom Decorator*/
     private Decorator<T> customDecorator = null;
@@ -95,7 +90,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
      * @param wrappedBean wrapped bean instance
      * @param customDecorator custom decorator
      */
-    public WebBeansDecorator(AbstractInjectionTargetBean<T> wrappedBean, Decorator<T> customDecorator)
+    public WebBeansDecorator(InjectionTargetBean<T> wrappedBean, Decorator<T> customDecorator)
     {
         super(wrappedBean.getWebBeansContext(),
               WebBeansType.DECORATOR,
@@ -115,7 +110,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
      * Creates a new decorator bean instance with the given wrapped bean.
      * @param wrappedBean wrapped bean instance
      */
-    public WebBeansDecorator(AbstractInjectionTargetBean<T> wrappedBean)
+    public WebBeansDecorator(InjectionTargetBean<T> wrappedBean)
     {
         super(wrappedBean.getWebBeansContext(),
               WebBeansType.DECORATOR,
@@ -133,7 +128,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         init();
     }
 
-    private static <T> Set<String> getIgnoredDecoratorInterfaces(AbstractInjectionTargetBean<T> wrappedBean)
+    private static <T> Set<String> getIgnoredDecoratorInterfaces(InjectionTargetBean<T> wrappedBean)
     {
         Set<String> result = new HashSet<String>(wrappedBean.getWebBeansContext().getOpenWebBeansConfiguration().getIgnoredInterfaces());
         result.add(Serializable.class.getName());
@@ -423,21 +418,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     {
         this.decoratorGenericType = decoratorGenericType;
     }
-    private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
-    {
-        InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(wrappedBean.getAnnotatedType(), wrappedBean.getInjectionPoints(), wrappedBean.getWebBeansContext());
-        InjectableField f = new InjectableField(field, instance, injectionTarget, (CreationalContextImpl) creationalContext);
-        f.doInjection();        
-    }
 
-    @SuppressWarnings("unchecked")
-    private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
-    {
-        InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(wrappedBean.getAnnotatedType(), wrappedBean.getInjectionPoints(), wrappedBean.getWebBeansContext());
-        InjectableMethod m = new InjectableMethod(method, instance, injectionTarget, (CreationalContextImpl) creationalContext);
-        m.doInjection();        
-    }
-        
     @Override
     public Set<Annotation> getQualifiers()
     {

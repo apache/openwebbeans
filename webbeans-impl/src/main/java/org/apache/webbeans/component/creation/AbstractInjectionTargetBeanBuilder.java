@@ -44,12 +44,12 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
@@ -58,6 +58,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.DefinitionException;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -80,7 +81,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
     /**
      * Creates a new instance.
      * 
-     * @param bean bean instance
      */
     public AbstractInjectionTargetBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
@@ -516,7 +516,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
     /**
      * {@inheritDoc}
      */
-    public Set<ProducerFieldBean<?>> defineProducerFields(AbstractInjectionTargetBean<T> bean)
+    public Set<ProducerFieldBean<?>> defineProducerFields(InjectionTargetBean<T> bean)
     {
         Set<ProducerFieldBean<?>> producerBeans = new HashSet<ProducerFieldBean<?>>();
         Set<AnnotatedField<? super T>> annotatedFields = getAnnotated().getFields();        
@@ -600,7 +600,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
     /**
      * {@inheritDoc}
      */
-    public Set<ProducerMethodBean<?>> defineProducerMethods(AbstractInjectionTargetBean<T> bean)
+    public Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<T> bean)
     {
         Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
         Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();
@@ -695,7 +695,13 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                            Set<Class<? extends Annotation>> stereotypes,
                            boolean alternative)
     {
-        return createBean(types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative, enabled);
+        I bean =  createBean(types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative, enabled);
+
+        //X TODO hack to set the InjectionTarget
+        InjectionTarget<T> injectionTarget = new InjectionTargetImpl<T>(bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext, null, null);
+        bean.setInjectionTarget(injectionTarget);
+
+        return bean;
     }
 
     protected boolean isEnabled()

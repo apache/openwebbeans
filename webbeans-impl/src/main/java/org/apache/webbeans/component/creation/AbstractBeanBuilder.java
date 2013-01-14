@@ -87,7 +87,6 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
     /**
      * Creates a bean instance.
      * 
-     * @param bean bean instance
      * @param annotated
      */
     public AbstractBeanBuilder(WebBeansContext webBeansContext, A annotated)
@@ -616,8 +615,8 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
     
     protected <X> void addMethodInjectionPointMetaData(OwbBean<T> bean, AnnotatedMethod<X> method)
     {
-        List<InjectionPoint> injectionPoints = webBeansContext.getInjectionPointFactory().getMethodInjectionPointData(bean, method);
-        for (InjectionPoint injectionPoint : injectionPoints)
+        List<InjectionPoint> methodInjectionPoints = webBeansContext.getInjectionPointFactory().getMethodInjectionPointData(bean, method);
+        for (InjectionPoint injectionPoint : methodInjectionPoints)
         {
             addImplicitComponentForInjectionPoint(injectionPoint);
             bean.addInjectionPoint(injectionPoint);
@@ -659,6 +658,7 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
                 addMethodInjectionPointMetaData((OwbBean<T>)bean, (AnnotatedMethod<?>) member);
             }
         }
+
         return bean;
     }
 

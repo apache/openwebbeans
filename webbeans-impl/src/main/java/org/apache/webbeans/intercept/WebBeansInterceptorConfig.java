@@ -19,7 +19,7 @@
 package org.apache.webbeans.intercept;
 
 import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
@@ -79,8 +79,10 @@ public final class WebBeansInterceptorConfig
      * @param bean bean instance
      * @deprecated old InterceptorData based config
      */
-    public void defineBeanInterceptorStack(AbstractInjectionTargetBean<?> bean)
+    public void defineBeanInterceptorStack(InjectionTargetBean<?> bean)
     {
+        if (WebBeansContext.TODO_USING_NEW_INTERCEPTORS) return; //X TODO
+
         Asserts.assertNotNull(bean, "bean parameter can no be null");
         if (!bean.getInterceptorStack().isEmpty())
         {
@@ -128,7 +130,7 @@ public final class WebBeansInterceptorConfig
      *
      * @param interceptorBindingTypes interceptor class
      */
-    public <T> void configureInterceptorClass(AbstractInjectionTargetBean<T> delegate, Annotation[] interceptorBindingTypes)
+    public <T> void configureInterceptorClass(InjectionTargetBean<T> delegate, Annotation[] interceptorBindingTypes)
     {
         if(delegate.getScope() != Dependent.class)
         {
@@ -189,7 +191,7 @@ public final class WebBeansInterceptorConfig
      * Configures the given class for applicable interceptors.
      *
      */
-    public void configure(AbstractInjectionTargetBean<?> component, List<InterceptorData> stack)
+    public void configure(InjectionTargetBean<?> component, List<InterceptorData> stack)
     {
         AnnotatedType<?> annotatedType = component.getAnnotatedType();
         Set<Annotation> annotations = annotatedType.getAnnotations();
@@ -227,7 +229,7 @@ public final class WebBeansInterceptorConfig
 
     }
 
-    private void filterInterceptorsPerBDA(AbstractInjectionTargetBean<?> component, List<InterceptorData> stack)
+    private void filterInterceptorsPerBDA(InjectionTargetBean<?> component, List<InterceptorData> stack)
     {
 
         ScannerService scannerService = component.getWebBeansContext().getScannerService();

@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
@@ -50,10 +49,10 @@ public class SessionContextTest extends AbstractUnitTest
         
         startContainer(classes);
         
-        Bean<?> bean = getBeanManager().getBeans("org.apache.webbeans.newtests.contexts.session.common.PersonalDataBean").iterator().next();
-        Object instance = getBeanManager().getReference(bean, PersonalDataBean.class, getBeanManager().createCreationalContext(bean));
-        
-        PersonalDataBean dataBean = (PersonalDataBean)instance;
+        PersonalDataBean.POST_CONSTRUCT = false;
+        PersonalDataBean.PRE_DESTROY = false;
+
+        PersonalDataBean dataBean = getInstance(PersonalDataBean.class);
         Assert.assertNotNull(dataBean);
         
         dataBean.business();

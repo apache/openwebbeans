@@ -48,10 +48,9 @@ import javax.enterprise.inject.spi.ObserverMethod;
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.InjectionPointBean;
-import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
@@ -524,7 +523,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     @SuppressWarnings("unchecked")
     public Class<?> getBeanClass()
     {
-        AbstractInjectionTargetBean<T> abs = (AbstractInjectionTargetBean<T>) bean;
+        InjectionTargetBean<T> abs = (InjectionTargetBean<T>) bean;
         return abs.getBeanClass();
     }
 

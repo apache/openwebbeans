@@ -19,17 +19,13 @@
 package org.apache.webbeans.intercept.webbeans;
 
 import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.inject.InjectableField;
-import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.intercept.OwbInterceptor;
-import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 
 import javax.enterprise.context.Dependent;
@@ -45,7 +41,6 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -82,11 +77,11 @@ public class WebBeansInterceptorBeanPleaseRemove<T> extends AbstractOwbBean<T> i
      * OWB currently scans any &#064;Interceptor class as standard bean and then 'wraps'
      * it with this Bean. Imo this is wrong as an InterceptorBean has different rules alltogether.
      */
-    private AbstractInjectionTargetBean<T> delegateBean;
+    private InjectionTargetBean<T> delegateBean;
 
     private final WebBeansContext webBeansContext;
 
-    public WebBeansInterceptorBeanPleaseRemove(AbstractInjectionTargetBean<T> delegateBean)
+    public WebBeansInterceptorBeanPleaseRemove(InjectionTargetBean<T> delegateBean)
     {
         super(delegateBean.getWebBeansContext(),
               WebBeansType.INTERCEPTOR,
@@ -301,21 +296,7 @@ public class WebBeansInterceptorBeanPleaseRemove<T> extends AbstractOwbBean<T> i
         return proxy;
     }
     
-    private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
-    {
-        InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(getAnnotatedType(), getInjectionPoints(), getWebBeansContext());
-        InjectableField f = new InjectableField(field, instance, injectionTarget, (CreationalContextImpl) creationalContext);
-        f.doInjection();        
-    }
 
-    @SuppressWarnings("unchecked")
-    private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
-    {
-        InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(getAnnotatedType(), getInjectionPoints(), getWebBeansContext());
-        InjectableMethod m = new InjectableMethod(method, instance, injectionTarget, (CreationalContextImpl) creationalContext);
-        m.doInjection();        
-    }
-    
     @Override
     public Set<Annotation> getQualifiers()
     {

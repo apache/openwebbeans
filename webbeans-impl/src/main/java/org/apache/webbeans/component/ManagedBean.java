@@ -33,14 +33,13 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.AbstractDecoratorMethodHandler;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.intercept.InterceptorData;
-import org.apache.webbeans.portable.InjectionTargetImpl;
 
 /**
  * Managed bean implementation of the {@link javax.enterprise.inject.spi.Bean}.
  * 
  * @version $Rev$ $Date$
  */
-public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements InterceptedMarker
+public class ManagedBean<T> extends InjectionTargetBean<T> implements InterceptedMarker
 {
     /** Constructor of the web bean component */
     private Constructor<T> constructor;
@@ -84,8 +83,7 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
         {
             con = webBeansContext.getWebBeansUtil().getNoArgConstructor(getReturnType());
         }
-        InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(getAnnotatedType(), getInjectionPoints(), getWebBeansContext());
-        InjectableConstructor<T> ic = new InjectableConstructor<T>(con, injectionTarget, (CreationalContextImpl<T>) creationalContext);
+        InjectableConstructor<T> ic = new InjectableConstructor<T>(con, getInjectionTarget(), (CreationalContextImpl<T>) creationalContext);
 
         T instance = ic.doInjection();
         

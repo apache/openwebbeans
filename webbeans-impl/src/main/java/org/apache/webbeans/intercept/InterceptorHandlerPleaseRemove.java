@@ -97,7 +97,7 @@ import org.apache.webbeans.util.ClassUtil;
  * configuration is done by the
  * {@link WebBeansInterceptorConfig#defineBeanInterceptorStack
  *        (org.apache.webbeans.component.AbstractInjectionTargetBean)} and
- * {@link WebBeansDecoratorConfig#configureDecorators(org.apache.webbeans.component.AbstractInjectionTargetBean)}}. In
+ * {@link WebBeansDecoratorConfig#configureDecorators(org.apache.webbeans.component.InjectionTargetBean)}}. In
  * "webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack", firstly it configures
  * "EJB spec. interceptors" after that configures "JSR-299 spec. interceptors."
  * In "DefinitionUtil.defineDecoratorStack", it configures

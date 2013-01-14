@@ -31,7 +31,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Decorator;
 
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -79,7 +79,7 @@ public final class DecoratorUtil
         }
     }
    
-    public static void checkManagedBeanDecoratorConditions(AbstractInjectionTargetBean<?> bean, List<Decorator<?>> decoratorList)
+    public static void checkManagedBeanDecoratorConditions(InjectionTargetBean<?> bean, List<Decorator<?>> decoratorList)
     {
         Asserts.assertNotNull("bean", "bean parameter can not be null");
 

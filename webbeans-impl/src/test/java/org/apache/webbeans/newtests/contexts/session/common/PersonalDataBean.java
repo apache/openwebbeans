@@ -24,12 +24,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.apache.webbeans.newtests.injection.circular.beans.CircularDependentScopedBean;
 import org.apache.webbeans.test.component.event.normal.Transactional;
 
-@Named("org.apache.webbeans.newtests.contexts.session.common.PersonalDataBean")
 @SessionScoped
 public class PersonalDataBean implements Serializable
 {
