@@ -31,6 +31,7 @@ import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.Producer;
 import javax.inject.Provider;
 
 import org.apache.webbeans.component.AbstractProducerBean;
@@ -59,13 +60,13 @@ import org.apache.webbeans.util.WebBeansUtil;
 public abstract class AbstractInjectable<T> implements Injectable<T>
 {
 
-    private InjectionTarget<?> owner;
+    private Producer<?> owner;
     
     private CreationalContextImpl<?> context;
     
     public static ThreadLocal<Object> instanceUnderInjection = new ThreadLocal<Object>();
 
-    protected AbstractInjectable(InjectionTarget<?> owner, CreationalContextImpl<?> creationalContext)
+    protected AbstractInjectable(Producer<?> owner, CreationalContextImpl<?> creationalContext)
     {
         this.owner = owner;
         this.context = creationalContext;

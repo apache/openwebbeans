@@ -32,7 +32,9 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.context.creational.DependentCreationalContext;
@@ -173,7 +175,22 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
 
             //X TODO get the InjectionTargetImpl from the parent bean
             InjectionTarget ownerBeanInjectionTarget = getParent().getInjectionTarget();
-            m = new InjectableMethod<T>(creatorMethod, parentInstance, ownerBeanInjectionTarget, (CreationalContextImpl<T>) creationalContext);
+            m = new InjectableMethod<T>(creatorMethod, parentInstance, new Producer<T>() {
+
+                @Override
+                public T produce(CreationalContext<T> creationalContext) {
+                    return null;
+                }
+
+                @Override
+                public void dispose(T instance) {
+                }
+
+                @Override
+                public Set<InjectionPoint> getInjectionPoints() {
+                    return ProducerMethodBean.this.getInjectionPoints();
+                }
+            }, (CreationalContextImpl<T>) creationalContext);
             //Injection of parameters
             instance = m.doInjection();
             

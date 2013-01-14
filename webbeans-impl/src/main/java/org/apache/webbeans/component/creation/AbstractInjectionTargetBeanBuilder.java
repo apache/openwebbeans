@@ -704,7 +704,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
         return bean;
     }
 
-    protected boolean isEnabled()
+    public boolean isEnabled()
     {
         return enabled;
     }

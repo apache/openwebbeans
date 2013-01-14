@@ -31,6 +31,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.ProducerMethodBean;
@@ -61,7 +62,7 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
      * @param m injectable method
      * @param instance component instance
      */
-    public InjectableMethod(Method m, Object instance, InjectionTarget<T> owner, CreationalContextImpl<T> creationalContext)
+    public InjectableMethod(Method m, Object instance, Producer<T> owner, CreationalContextImpl<T> creationalContext)
     {
         super(owner,creationalContext);
         method = m;
