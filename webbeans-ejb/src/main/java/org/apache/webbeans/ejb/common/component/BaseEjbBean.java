@@ -91,7 +91,7 @@ public abstract class BaseEjbBean<T> extends InjectionTargetBean<T> implements E
      * {@inheritDoc}
      */
     @Override
-    protected void destroyComponentInstance(T instance, CreationalContext<T> creational)
+    public void destroyInstance(T instance, CreationalContext<T> creational)
     {
         if (getEjbType().equals(SessionBeanType.STATEFUL))
         {

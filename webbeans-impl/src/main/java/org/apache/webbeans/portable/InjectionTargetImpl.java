@@ -31,7 +31,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
@@ -335,7 +334,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             preDestroyInterceptors = new ArrayList<Interceptor<?>>(interceptorInfo.getInterceptors());
         }
 
-        InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(instance, InterceptionType.PRE_DESTROY, preDestroyInterceptors,
+        InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(internalInstance, InterceptionType.PRE_DESTROY, preDestroyInterceptors,
                                                                             interceptorInstances, preDestroyMethods);
         try
         {

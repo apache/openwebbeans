@@ -25,7 +25,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
@@ -36,19 +35,15 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorData;
 
 import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.InterceptionType;
 
-import org.apache.webbeans.intercept.InvocationContextImplRemove;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.ProxyFactory;
-import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.WebBeansUtil;
+
 
 /**
  * Abstract class for injection target beans.
@@ -163,7 +158,7 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
      */
     protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
     {
-        destroyComponentInstance(instance, creationalContext);
+        injectionTarget.preDestroy(instance);
     }
 
     /**
@@ -173,46 +168,10 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
      */
     protected void destroyComponentInstance(T instance, CreationalContext<T> creationalContext)
     {
-        preDestroy(instance, creationalContext);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void preDestroy(T instance, CreationalContext<T> creationalContext)
-    {
-        preDestroyDefault(instance, creationalContext);
-    }
 
-    /**
-     * Default predestroy.
-     * 
-     * @param instance bean instance
-     */
-    protected void preDestroyDefault(T instance, CreationalContext<T> creationalContext)
-    {
-        if(getWebBeansType().equals(WebBeansType.MANAGED) ||
-                getWebBeansType().equals(WebBeansType.DECORATOR))                
-        {
-            if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptionType.PRE_DESTROY))
-            {                
-                InvocationContextImplRemove impl = new InvocationContextImplRemove(getWebBeansContext(), null, instance, null, null,
-                        getWebBeansContext().getInterceptorUtil().getInterceptorMethods(getInterceptorStack(),
-                                                                                        InterceptionType.PRE_DESTROY),
-                                                                                        InterceptionType.PRE_DESTROY);
-                impl.setCreationalContext(creationalContext);
-                try
-                {
-                    impl.proceed();
-                }
-                catch (Exception e)
-                {
-                    getLogger().log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0008, "@PreDestroy."), e);
-                    throw new WebBeansException(e);
-                }
-            }            
-        }
-    }
+
 
     /**
      * {@inheritDoc}

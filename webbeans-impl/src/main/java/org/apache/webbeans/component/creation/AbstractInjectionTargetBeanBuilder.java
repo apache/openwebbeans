@@ -65,7 +65,6 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
-import static org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
 
 /**
  * Abstract implementation of {@link AbstractBeanBuilder}.
