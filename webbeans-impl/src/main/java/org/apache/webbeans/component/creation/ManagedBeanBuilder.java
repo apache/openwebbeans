@@ -40,6 +40,7 @@ import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.exception.inject.DeploymentException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.portable.AbstractDecoratorInjectionTarget;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -232,10 +233,7 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
         }
 
         //X TODO move proxy instance creation into JavassistProxyFactory!
-        Class clazz = webBeansContext.getProxyFactory().createAbstractDecoratorProxyClass(bean);
-
-        bean.setConstructor(webBeansContext.getWebBeansUtil().defineConstructor(clazz));
-        bean.setIsAbstractDecorator(true);
+        bean.setInjectionTarget(new AbstractDecoratorInjectionTarget<T>(bean));
         return bean;
     }
 

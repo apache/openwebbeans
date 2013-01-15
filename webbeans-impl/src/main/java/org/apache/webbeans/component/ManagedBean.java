@@ -29,9 +29,6 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.decorator.AbstractDecoratorMethodHandler;
-import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.intercept.InterceptorData;
 
 /**
@@ -78,22 +75,7 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
     @Override
     protected T createComponentInstance(CreationalContext<T> creationalContext)
     {
-        Constructor<T> con = getConstructor();
-        if (con == null)
-        {
-            con = webBeansContext.getWebBeansUtil().getNoArgConstructor(getReturnType());
-        }
-        InjectableConstructor<T> ic = new InjectableConstructor<T>(con, getInjectionTarget(), (CreationalContextImpl<T>) creationalContext);
-
-        T instance = ic.doInjection();
-        
-        //If this is an abstract Decorator, we need to set the handler on the Proxy instance
-        //X TODO should be done in DecoratorBean
-        if(isAbstractDecorator)
-        {
-            webBeansContext.getProxyFactory().setHandler(instance, new AbstractDecoratorMethodHandler());
-        }
-        return instance;
+        return getInjectionTarget().produce(creationalContext);
     }
 
     /**

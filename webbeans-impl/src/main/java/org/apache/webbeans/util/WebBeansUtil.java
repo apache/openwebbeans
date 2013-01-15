@@ -128,7 +128,6 @@ import org.apache.webbeans.intercept.InterceptorDataImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
-import org.apache.webbeans.portable.creation.InjectionTargetProducerRemove;
 import org.apache.webbeans.portable.creation.ProducerBeansProducerRemove;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;

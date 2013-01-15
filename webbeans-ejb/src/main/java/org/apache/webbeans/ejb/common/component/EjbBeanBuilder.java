@@ -18,9 +18,11 @@
  */
 package org.apache.webbeans.ejb.common.component;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
@@ -78,7 +80,9 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>> extends Abstra
     @Override
     protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType,
                                                       Set<InjectionPoint> points,
-                                                      WebBeansContext webBeansContext)
+                                                      WebBeansContext webBeansContext,
+                                                      List<AnnotatedMethod<?>> postConstructMethods,
+                                                      List<AnnotatedMethod<?>> preDestroyMethods)
     {
         return new AbstractEjbInjectionTarget<T>(annotatedType, points, webBeansContext)
         {
