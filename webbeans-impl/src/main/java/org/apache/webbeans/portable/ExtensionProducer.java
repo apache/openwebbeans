@@ -36,7 +36,7 @@ public class ExtensionProducer<T> extends InjectionTargetImpl<T>
                              Set<InjectionPoint> points,
                              WebBeansContext webBeansContext)
     {
-        super(annotatedType, points, webBeansContext);
+        super(annotatedType, points, webBeansContext, null, null);
     }
 
     @Override

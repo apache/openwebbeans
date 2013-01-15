@@ -153,7 +153,18 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
                 creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(
                         creationalContext, this); 
             }
-           
+
+            if (this instanceof InjectionTargetBean)
+            {
+                //X TODO this is a workaround until the producer solution is finally fixed
+                InjectionTargetBean<T> it = ((InjectionTargetBean<T>) this);
+                instance = it.getInjectionTarget().produce(creationalContext);
+                it.getInjectionTarget().inject(instance, creationalContext);
+                it.getInjectionTarget().postConstruct(instance);
+
+                return instance;
+            }
+
             //If wrapper not null
             if(producer != null)
             {

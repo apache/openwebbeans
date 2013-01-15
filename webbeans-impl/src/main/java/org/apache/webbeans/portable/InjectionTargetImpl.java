@@ -25,6 +25,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -38,14 +39,18 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.InterceptionType;
 import javax.inject.Inject;
+import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethod;
+import org.apache.webbeans.intercept.LifecycleInterceptorInvocationContext;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ExceptionUtil;
 
 
 public class InjectionTargetImpl<T> extends AbstractProducer<T> implements InjectionTarget<T>
@@ -61,7 +66,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
      * This methods must have the signature <code>void METHOD();</code>
      * They are ordered as <b>superclass first</b>.
      */
-    private AnnotatedMethod<T>[] postConstructMethods;
+    private List<AnnotatedMethod<?>> postConstructMethods;
 
     /**
      * If the InjectionTarget has a &#064;PreDestroy method, <code>null</code> if not.
@@ -69,15 +74,18 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
      * This methods must have the signature <code>void METHOD();</code>
      * They are ordered as <b>subclass first</b>.
      */
-    private AnnotatedMethod<T>[] preDestroyMethods;
+    private List<AnnotatedMethod<?>> preDestroyMethods;
 
-    public InjectionTargetImpl(AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext)
+    public InjectionTargetImpl(AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext,
+                               List<AnnotatedMethod<?>> postConstructMethods, List<AnnotatedMethod<?>> preDestroyMethods)
     {
         super(points);
         Asserts.assertNotNull(annotatedType);
         Asserts.assertNotNull(webBeansContext);
         type = annotatedType;
         context = webBeansContext;
+        this.postConstructMethods = postConstructMethods;
+        this.preDestroyMethods = preDestroyMethods;
     }
 
     @Override
@@ -161,11 +169,39 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void postConstruct(T instance)
     {
+        if (postConstructMethods == null)
+        {
+            return;
+        }
+
+        InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(instance, InterceptionType.POST_CONSTRUCT, null, null, postConstructMethods);
+        try
+        {
+            ic.proceed();
+        }
+        catch (Exception e)
+        {
+            ExceptionUtil.throwAsRuntimeException(e);
+        }
     }
 
     @Override
     public void preDestroy(T instance)
     {
+        if (preDestroyMethods == null)
+        {
+            return;
+        }
+
+        InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(instance, InterceptionType.PRE_DESTROY, null, null, preDestroyMethods);
+        try
+        {
+            ic.proceed();
+        }
+        catch (Exception e)
+        {
+            ExceptionUtil.throwAsRuntimeException(e);
+        }
     }
 
     private AnnotatedConstructor<T> getConstructor()

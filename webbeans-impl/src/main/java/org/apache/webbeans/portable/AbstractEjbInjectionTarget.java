@@ -33,7 +33,7 @@ public abstract class AbstractEjbInjectionTarget<T> extends InjectionTargetImpl<
                                       Set<InjectionPoint> points,
                                       WebBeansContext webBeansContext)
     {
-        super(annotatedType, points, webBeansContext);
+        super(annotatedType, points, webBeansContext, null, null);
     }
 
     public abstract T produce(CreationalContext<T> creationalContext);

@@ -677,10 +677,12 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
 
     protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType,
                                                       Set<InjectionPoint> points,
-                                                      WebBeansContext webBeansContext)
+                                                      WebBeansContext webBeansContext,
+                                                      List<AnnotatedMethod<?>> postConstructMethods,
+                                                      List<AnnotatedMethod<?>> preDestroyMethods)
     {
         //X TODO set interceptor information
-        return new InjectionTargetImpl<T>(annotatedType, points, webBeansContext);
+        return new InjectionTargetImpl<T>(annotatedType, points, webBeansContext, postConstructMethods, preDestroyMethods);
     }
 
     protected abstract I createBean(Set<Type> types,
@@ -706,10 +708,21 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
         I bean =  createBean(types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative, enabled);
 
         //X TODO hack to set the InjectionTarget
-        InjectionTarget<T> injectionTarget = buildInjectionTarget(bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext);
+        InjectionTarget<T> injectionTarget
+                = buildInjectionTarget(bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
         bean.setInjectionTarget(injectionTarget);
 
         return bean;
+    }
+
+    protected List<AnnotatedMethod<?>> getPostConstructMethods()
+    {
+        return null;
+    }
+
+    protected List<AnnotatedMethod<?>> getPreDestroyMethods()
+    {
+        return null;
     }
 
     public boolean isEnabled()

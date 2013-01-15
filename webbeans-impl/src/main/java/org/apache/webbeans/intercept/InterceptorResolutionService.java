@@ -134,6 +134,10 @@ public class InterceptorResolutionService
             {
                 businessMethodInterceptorInfos.put(annotatedMethod.getJavaMember(), methodInterceptorInfo);
             }
+            else
+            {
+                //X TODO pick up non-business interceptors
+            }
         }
 
         return new BeanInterceptorInfo(decorators, allUsedCdiInterceptors, businessMethodInterceptorInfos);
