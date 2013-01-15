@@ -137,12 +137,14 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
      * @param nonInterceptedMethods all methods which are <b>not</b> intercepted nor decorated and shall get delegated directly
      * @param <T>
      * @return the proxy class
+     * //X TODO for serialisation reasons this probably needs the Bean it serves.
      */
     public synchronized <T> Class<T> createProxyClass(ClassLoader classLoader, Class<T> classToProxy,
                                                       Method[] interceptedMethods, Method[] nonInterceptedMethods)
             throws ProxyGenerationException
     {
-        String proxyClassName = classToProxy.getName() + "$OwbInterceptProxy";
+        String proxyClassName = getUnusedProxyClassName(classLoader, classToProxy.getName() + "$OwbInterceptProxy");
+
 
         Class<T> clazz = createProxyClass(classLoader, proxyClassName, classToProxy, interceptedMethods, nonInterceptedMethods);
 

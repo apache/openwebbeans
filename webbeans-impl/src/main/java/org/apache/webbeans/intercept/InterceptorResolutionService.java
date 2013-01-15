@@ -113,15 +113,16 @@ public class InterceptorResolutionService
         }
 
         Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
-        Map<Method, MethodInterceptorInfo> businessMethodInterceptorInfos = new HashMap<Method, MethodInterceptorInfo>();
+        Map<Method, BusinessMethodInterceptorInfo> businessMethodInterceptorInfos = new HashMap<Method, BusinessMethodInterceptorInfo>();
 
         List<Method> nonInterceptedMethods = new ArrayList<Method>();
 
         // iterate over all methods and build up the interceptor/decorator stack
         for (AnnotatedMethod annotatedMethod : interceptableAnnotatedMethods)
         {
-            InterceptionType interceptionType = calculateInterceptionType(annotatedMethod);
-            MethodInterceptorInfo methodInterceptorInfo = new MethodInterceptorInfo(interceptionType);
+            // this probably needs some more fine tuning if a method is both lifecycle and used as business invocation.
+            Set<InterceptionType> interceptionTypes = collectInterceptionTypes(annotatedMethod);
+            BusinessMethodInterceptorInfo methodInterceptorInfo = new BusinessMethodInterceptorInfo(interceptionTypes);
 
             calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, annotatedMethod);
 
@@ -154,7 +155,7 @@ public class InterceptorResolutionService
         }
     }
 
-    private void calculateEjbMethodInterceptors(MethodInterceptorInfo methodInterceptorInfo, Set<Interceptor<?>> allUsedEjbInterceptors,
+    private void calculateEjbMethodInterceptors(BusinessMethodInterceptorInfo methodInterceptorInfo, Set<Interceptor<?>> allUsedEjbInterceptors,
                                                 List<Interceptor<?>> classLevelEjbInterceptors, AnnotatedMethod annotatedMethod)
     {
         List<Interceptor<?>> methodInterceptors = new ArrayList<Interceptor<?>>();
@@ -181,7 +182,7 @@ public class InterceptorResolutionService
     }
 
 
-    private void calculateCdiMethodDecorators(MethodInterceptorInfo methodInterceptorInfo, List<Decorator<?>> decorators, AnnotatedMethod annotatedMethod)
+    private void calculateCdiMethodDecorators(BusinessMethodInterceptorInfo methodInterceptorInfo, List<Decorator<?>> decorators, AnnotatedMethod annotatedMethod)
     {
         if (decorators == null || decorators.isEmpty())
         {
@@ -256,7 +257,7 @@ public class InterceptorResolutionService
 
     }
 
-    private void calculateCdiMethodInterceptors(MethodInterceptorInfo methodInterceptorInfo,
+    private void calculateCdiMethodInterceptors(BusinessMethodInterceptorInfo methodInterceptorInfo,
                                                 Set<Interceptor<?>> allUsedCdiInterceptors,
                                                 AnnotatedMethod annotatedMethod,
                                                 Set<Annotation> classInterceptorBindings)
@@ -274,9 +275,12 @@ public class InterceptorResolutionService
             return;
         }
 
+        InterceptionType interceptionType = methodInterceptorInfo.getInterceptionTypes().isEmpty()
+                                                ? InterceptionType.AROUND_INVOKE
+                                                : methodInterceptorInfo.getInterceptionTypes().iterator().next(); //X TODO dirty hack for now...
+
         List<Interceptor<?>> methodInterceptors
-                = webBeansContext.getBeanManagerImpl().resolveInterceptors(methodInterceptorInfo.getInterceptionType(),
-                                                                           AnnotationUtil.asArray(cummulatedInterceptorBindings));
+                = webBeansContext.getBeanManagerImpl().resolveInterceptors(interceptionType, AnnotationUtil.asArray(cummulatedInterceptorBindings));
 
         methodInterceptorInfo.setCdiInterceptors(methodInterceptors);
 
@@ -287,34 +291,36 @@ public class InterceptorResolutionService
     /**
      * Determine the {@link InterceptionType} of the given AnnotatedMethod
      * of an intercepted method.
+     * An empty list means that this is an AroundInvoke method
      */
-    private InterceptionType calculateInterceptionType(AnnotatedMethod interceptableAnnotatedMethod)
+    private Set<InterceptionType> collectInterceptionTypes(AnnotatedMethod interceptableAnnotatedMethod)
     {
+        Set<InterceptionType> interceptionTypes = new HashSet<InterceptionType>();
         for (Annotation annotation : interceptableAnnotatedMethod.getAnnotations())
         {
             if (annotation.equals(PostConstruct.class))
             {
-                return InterceptionType.POST_CONSTRUCT;
+                interceptionTypes.add(InterceptionType.POST_CONSTRUCT);
             }
             if (annotation.equals(PreDestroy.class))
             {
-                return InterceptionType.PRE_DESTROY;
+                interceptionTypes.add(InterceptionType.PRE_DESTROY);
             }
             if (null != ejbPlugin && annotation.equals(prePassivateClass))
             {
-                return InterceptionType.PRE_PASSIVATE;
+                interceptionTypes.add(InterceptionType.PRE_PASSIVATE);
             }
             if (null != ejbPlugin && annotation.equals(postActivateClass))
             {
-                return InterceptionType.POST_ACTIVATE;
+                interceptionTypes.add(InterceptionType.POST_ACTIVATE);
             }
             if (null != ejbPlugin && annotation.equals(aroundTimeoutClass))
             {
-                return InterceptionType.AROUND_TIMEOUT;
+                interceptionTypes.add(InterceptionType.AROUND_TIMEOUT);
             }
         }
 
-        return InterceptionType.AROUND_INVOKE;
+        return interceptionTypes;
     }
 
     /**
@@ -356,7 +362,7 @@ public class InterceptorResolutionService
     {
         public BeanInterceptorInfo(List<Decorator<?>> decorators,
                                    Set<Interceptor<?>> interceptors,
-                                   Map<Method, MethodInterceptorInfo> businessMethodsInfo,
+                                   Map<Method, BusinessMethodInterceptorInfo> businessMethodsInfo,
                                    List<Method> nonInterceptedMethods)
         {
             this.decorators = decorators;
@@ -381,7 +387,7 @@ public class InterceptorResolutionService
          * For each business method which is either decorated or intercepted we keep an entry.
          * If there is no entry then the method has neither a decorator nor an interceptor.
          */
-        private Map<Method, MethodInterceptorInfo> businessMethodsInfo = new HashMap<Method, MethodInterceptorInfo>();
+        private Map<Method, BusinessMethodInterceptorInfo> businessMethodsInfo = new HashMap<Method, BusinessMethodInterceptorInfo>();
 
         /**
          * all non-intercepted methods
@@ -398,7 +404,7 @@ public class InterceptorResolutionService
             return interceptors;
         }
 
-        public Map<Method, MethodInterceptorInfo> getBusinessMethodsInfo()
+        public Map<Method, BusinessMethodInterceptorInfo> getBusinessMethodsInfo()
         {
             return businessMethodsInfo;
         }
@@ -412,26 +418,25 @@ public class InterceptorResolutionService
     /**
      * We track per method which Interceptors to invoke
      */
-    public static class MethodInterceptorInfo
+    public static class BusinessMethodInterceptorInfo
     {
-        private InterceptionType interceptionType;
         private Interceptor<?>[] ejbInterceptors = null;
         private Interceptor<?>[] cdiInterceptors = null;
         private Decorator<?>[]   methodDecorators = null;
 
-        public MethodInterceptorInfo(InterceptionType interceptionType)
+        /**
+         * lifecycle methods can serve multiple intercepton types :/
+         */
+        private Set<InterceptionType> interceptionTypes;
+
+        public BusinessMethodInterceptorInfo(Set<InterceptionType> interceptionTypes)
         {
-            this.interceptionType = interceptionType;
+            this.interceptionTypes = interceptionTypes;
         }
 
-        /**
-         * This is needed for later invoking the correct
-         * interceptor method on the Interceptors.
-         * (e.g. &#064;AroundInvoke vs &#064;PostConstruct interceptors)
-         */
-        public InterceptionType getInterceptionType()
+        public Set<InterceptionType> getInterceptionTypes()
         {
-            return interceptionType;
+            return interceptionTypes;
         }
 
         /**
@@ -508,4 +513,5 @@ public class InterceptorResolutionService
             return cdiInterceptors == null && ejbInterceptors == null && methodDecorators == null;
         }
     }
+
 }

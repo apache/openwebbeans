@@ -68,7 +68,7 @@ public final class InterceptorUtil
     /**
      * all the bit flags of private static and final modifiers
      */
-    private final int MODIFIER_STATIC_FINAL_PRIVATE = Modifier.STATIC | Modifier.FINAL | Modifier.PRIVATE;
+    public final int MODIFIER_STATIC_FINAL_PRIVATE = Modifier.STATIC | Modifier.FINAL | Modifier.PRIVATE;
 
     private final WebBeansContext webBeansContext;
 
@@ -89,6 +89,53 @@ public final class InterceptorUtil
     }
 
     /**
+     * @return the Type hierarchy in the order superclass first. Object.class is <b>not</b> included!
+     */
+    public List<Class> getReverseClassHierarchy(Class clazz)
+    {
+        List<Class> hierarchy = new ArrayList<Class>();
+        while (clazz != Object.class)
+        {
+            hierarchy.add(0, clazz);
+            clazz = clazz.getSuperclass();
+        }
+
+        return hierarchy;
+    }
+
+
+    public List<AnnotatedMethod<?>> getLifecycleMethods(AnnotatedType<?> annotatedType, Class<? extends Annotation> annotation, boolean parentFirst)
+    {
+        List<AnnotatedMethod<?>> lifecycleMethods = new ArrayList<AnnotatedMethod<?>>();
+
+        List<Class> classes = getReverseClassHierarchy(annotatedType.getJavaClass());
+        for (Class clazz : classes)
+        {
+            for (AnnotatedMethod annotatedMethod : annotatedType.getMethods())
+            {
+                if (annotatedMethod.getDeclaringType().getJavaClass() != clazz)
+                {
+                    continue;
+                }
+
+                if (annotatedMethod.isAnnotationPresent(annotation))
+                {
+                    if (parentFirst)
+                    {
+                        lifecycleMethods.add(annotatedMethod);
+                    }
+                    else
+                    {
+                        lifecycleMethods.add(0, annotatedMethod);
+                    }
+                }
+            }
+        }
+
+        return lifecycleMethods;
+    }
+
+    /**
      * Check if the given method is a 'business method'
      * in the sense of the Interceptor specification
      * @param annotatedMethod
@@ -103,25 +150,6 @@ public final class InterceptorUtil
         {
             // static, final and private methods are NO business methods!
             return false;
-        }
-
-        Set<Annotation> anns = annotatedMethod.getAnnotations();
-
-        // filter out all container 'special' methods
-        for (Annotation ann : anns)
-        {
-            Class <? extends Annotation> annCls = ann.annotationType();
-            if (annCls.equals(Inject.class)        ||
-                    annCls.equals(PreDestroy.class)    ||
-                    annCls.equals(PostConstruct.class) ||
-                    annCls.equals(AroundInvoke.class)  ||
-                    annCls.equals(AroundTimeout.class) ||    // JSR-299 7.2
-                    ((ejbPlugin != null)              &&
-                            (annCls.equals(prePassivateClass)   ||  // JSR-299 7.2
-                                    annCls.equals(postActivateClass))))    // JSR-299 7.2
-            {
-                return false;
-            }
         }
 
         return true;

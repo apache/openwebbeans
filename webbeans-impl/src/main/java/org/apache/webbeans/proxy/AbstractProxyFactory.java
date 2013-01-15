@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.apache.webbeans.exception.WebBeansException;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -32,6 +33,8 @@ import org.objectweb.asm.Type;
  */
 public abstract class AbstractProxyFactory
 {
+    public final static int MAX_CLASSLOAD_TRIES = 10000;
+
     /**
      * The name of the field which stores the passivationID of the Bean this proxy serves.
      * This is needed in case the proxy gets de-serialized back into a JVM
@@ -72,6 +75,32 @@ public abstract class AbstractProxyFactory
      */
     protected abstract void delegateNonInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] noninterceptedMethods)
             throws ProxyGenerationException;
+
+
+    /**
+     * Detect a free classname based on the given one
+     * @param proxyClassName
+     * @return
+     */
+    protected String getUnusedProxyClassName(ClassLoader classLoader, String proxyClassName)
+    {
+        for (int i = 0; i < MAX_CLASSLOAD_TRIES; i++)
+        {
+            try
+            {
+                String finalName = proxyClassName + i;
+                classLoader.loadClass(finalName);
+            }
+            catch (ClassNotFoundException cnfe)
+            {
+                // this is exactly what we need!
+                return proxyClassName;
+            }
+            // otherwise we continue ;)
+        }
+
+        throw new WebBeansException("Unable to detect a free proxy class name based on: " + proxyClassName);
+    }
 
 
     /**

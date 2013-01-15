@@ -50,7 +50,7 @@ public class NormalScopeProxyFactoryTest extends AbstractUnitTest
         Method[] nonInterceptedMethods = methods.toArray(new Method[methods.size()]);;
         //X Method[] nonInterceptedMethods = new Method[]{methods.get(0)};
 
-        Class<ClassInterceptedClass> proxyClass = pf.createProxyClass(classLoader, ClassInterceptedClass.class, nonInterceptedMethods);
+        Class<ClassInterceptedClass> proxyClass = pf.createProxyClass(classLoader, ClassInterceptedClass.class);
         Assert.assertNotNull(proxyClass);
 
         ClassInterceptedClass internalInstance = new ClassInterceptedClass();

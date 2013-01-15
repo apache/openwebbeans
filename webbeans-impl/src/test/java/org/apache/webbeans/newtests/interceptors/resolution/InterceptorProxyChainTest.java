@@ -3,7 +3,6 @@ package org.apache.webbeans.newtests.interceptors.resolution;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.inject.Provider;
 import java.lang.reflect.Method;
@@ -27,7 +26,6 @@ import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterc
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Action;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
-import org.apache.webbeans.util.ClassUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -75,33 +73,32 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
 
         Map<Method, List<Interceptor<?>>> methodInterceptors = new HashMap<Method, List<Interceptor<?>>>();
         List<Method> nonBusinessMethods = new ArrayList<Method>();
-        for (Map.Entry<Method, InterceptorResolutionService.MethodInterceptorInfo> miEntry : interceptorInfo.getBusinessMethodsInfo().entrySet())
+        for (Map.Entry<Method, InterceptorResolutionService.BusinessMethodInterceptorInfo> miEntry : interceptorInfo.getBusinessMethodsInfo().entrySet())
         {
             Method interceptedMethod = miEntry.getKey();
-            InterceptorResolutionService.MethodInterceptorInfo mii = miEntry.getValue();
-            if (InterceptionType.AROUND_INVOKE.equals(mii.getInterceptionType()))
+            InterceptorResolutionService.BusinessMethodInterceptorInfo mii = miEntry.getValue();
+            List<Interceptor<?>> activeInterceptors = new ArrayList<Interceptor<?>>();
+
+            if (mii.getEjbInterceptors() != null)
             {
-                List<Interceptor<?>> activeInterceptors = new ArrayList<Interceptor<?>>();
-                if (mii.getEjbInterceptors() != null)
+                for (Interceptor<?> i : mii.getEjbInterceptors())
                 {
-                    for (Interceptor<?> i : mii.getEjbInterceptors())
-                    {
-                        activeInterceptors.add(i);
-                    }
-                }
-                if (mii.getCdiInterceptors() != null)
-                {
-                    for (Interceptor<?> i : mii.getCdiInterceptors())
-                    {
-                        activeInterceptors.add(i);
-                    }
-                }
-                if (activeInterceptors.size() > 0)
-                {
-                    methodInterceptors.put(interceptedMethod, activeInterceptors);
+                    activeInterceptors.add(i);
                 }
             }
-            else
+            if (mii.getCdiInterceptors() != null)
+            {
+                for (Interceptor<?> i : mii.getCdiInterceptors())
+                {
+                    activeInterceptors.add(i);
+                }
+            }
+            if (activeInterceptors.size() > 0)
+            {
+                methodInterceptors.put(interceptedMethod, activeInterceptors);
+            }
+
+            if (!mii.getInterceptionTypes().isEmpty())
             {
                 nonBusinessMethods.add(interceptedMethod);
             }
@@ -135,7 +132,7 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
         //X this is for creating the NormalScoping Proxy which is now separate
         proxyInstance = createNormalScopingProxy(classLoader, ClassMultiInterceptedClass.class, proxyInstance);
 
-        performBenchmarkOn(proxyInstance);
+        //X performBenchmarkOn(proxyInstance);
 
         shutDownContainer();
     }
@@ -144,11 +141,7 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
     {
         NormalScopeProxyFactory pf = new NormalScopeProxyFactory();
 
-        List<Method> methods = ClassUtil.getNonPrivateMethods(clazz);
-
-        Method[] nonInterceptedMethods = methods.toArray(new Method[methods.size()]);
-
-        Class<T> proxyClass = pf.createProxyClass(classLoader, clazz, nonInterceptedMethods);
+        Class<T> proxyClass = pf.createProxyClass(classLoader, clazz);
         Assert.assertNotNull(proxyClass);
 
         return pf.createProxyInstance(proxyClass, new TestRequestScopedInstanceProvider(instance));

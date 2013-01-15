@@ -81,11 +81,11 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
 
         Assert.assertNull(interceptorInfo.getDecorators());
 
-        Map<Method, InterceptorResolutionService.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
+        Map<Method, InterceptorResolutionService.BusinessMethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
         Assert.assertNotNull(methodInterceptorInfos);
-        Assert.assertEquals(7, methodInterceptorInfos.size());
+        Assert.assertEquals(8, methodInterceptorInfos.size());
 
-        for (InterceptorResolutionService.MethodInterceptorInfo mi : methodInterceptorInfos.values())
+        for (InterceptorResolutionService.BusinessMethodInterceptorInfo mi : methodInterceptorInfos.values())
         {
             Assert.assertEquals(1, mi.getCdiInterceptors().length);
         }
@@ -122,11 +122,11 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
 
         Assert.assertNull(interceptorInfo.getDecorators());
 
-        Map<Method, InterceptorResolutionService.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
+        Map<Method, InterceptorResolutionService.BusinessMethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
         Assert.assertNotNull(methodInterceptorInfos);
-        Assert.assertEquals(6, methodInterceptorInfos.size());
+        Assert.assertEquals(7, methodInterceptorInfos.size());
 
-        for (InterceptorResolutionService.MethodInterceptorInfo mi : methodInterceptorInfos.values())
+        for (InterceptorResolutionService.BusinessMethodInterceptorInfo mi : methodInterceptorInfos.values())
         {
             Assert.assertEquals(3, mi.getCdiInterceptors().length);
         }
@@ -161,11 +161,11 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
 
         Assert.assertNull(interceptorInfo.getDecorators());
 
-        Map<Method, InterceptorResolutionService.MethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
+        Map<Method, InterceptorResolutionService.BusinessMethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
         Assert.assertNotNull(methodInterceptorInfos);
         Assert.assertEquals(2, methodInterceptorInfos.size());
 
-        for (Map.Entry<Method, InterceptorResolutionService.MethodInterceptorInfo> mi : methodInterceptorInfos.entrySet())
+        for (Map.Entry<Method, InterceptorResolutionService.BusinessMethodInterceptorInfo> mi : methodInterceptorInfos.entrySet())
         {
             if (mi.getKey().getName().equals("getMeaningOfLife"))
             {
@@ -231,9 +231,9 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
         Assert.assertNotNull(interceptorInfo.getBusinessMethodsInfo());
-        Assert.assertEquals(1, interceptorInfo.getBusinessMethodsInfo().size());
+        Assert.assertEquals(2, interceptorInfo.getBusinessMethodsInfo().size());
 
-        for (Map.Entry<Method, InterceptorResolutionService.MethodInterceptorInfo> mi : interceptorInfo.getBusinessMethodsInfo().entrySet())
+        for (Map.Entry<Method, InterceptorResolutionService.BusinessMethodInterceptorInfo> mi : interceptorInfo.getBusinessMethodsInfo().entrySet())
         {
             Assert.assertNotNull(mi.getValue().getEjbInterceptors());
             Assert.assertEquals(1, mi.getValue().getEjbInterceptors().length);

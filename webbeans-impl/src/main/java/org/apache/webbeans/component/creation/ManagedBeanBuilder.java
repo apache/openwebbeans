@@ -21,7 +21,6 @@ package org.apache.webbeans.component.creation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -125,58 +124,13 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
     @Override
     protected List<AnnotatedMethod<?>> getPostConstructMethods()
     {
-        List<AnnotatedMethod<?>> postConstructMethods = new ArrayList<AnnotatedMethod<?>>();
-
-        AnnotatedType<T> annotatedType = getAnnotated();
-        List<Class> classes = getReverseClassHierarchy();
-        for (Class clazz : classes)
-        {
-            for (AnnotatedMethod annotatedMethod : annotatedType.getMethods())
-            {
-                if (annotatedMethod.getDeclaringType().getJavaClass() != clazz)
-                {
-                    continue;
-                }
-
-                if (annotatedMethod.isAnnotationPresent(PostConstruct.class))
-                {
-                    //X TODO check criterias!
-
-                    postConstructMethods.add(annotatedMethod);
-                }
-            }
-        }
-
-        return postConstructMethods;
+        return webBeansContext.getInterceptorUtil().getLifecycleMethods(getAnnotated(), PostConstruct.class, true);
     }
 
     @Override
     protected List<AnnotatedMethod<?>> getPreDestroyMethods()
     {
-        List<AnnotatedMethod<?>> preDestroyMethods = new ArrayList<AnnotatedMethod<?>>();
-
-        AnnotatedType<T> annotatedType = getAnnotated();
-        List<Class> classes = getReverseClassHierarchy();
-        for (Class clazz : classes)
-        {
-            for (AnnotatedMethod annotatedMethod : annotatedType.getMethods())
-            {
-                if (annotatedMethod.getDeclaringType().getJavaClass() != clazz)
-                {
-                    continue;
-                }
-
-                if (annotatedMethod.isAnnotationPresent(PreDestroy.class))
-                {
-                    //X TODO check criterias!
-
-                    // reverse invocation order for PreDestroy methods!
-                    preDestroyMethods.add(0, annotatedMethod);
-                }
-            }
-        }
-
-        return preDestroyMethods;
+        return webBeansContext.getInterceptorUtil().getLifecycleMethods(getAnnotated(), PreDestroy.class, false);
     }
 
     /**
@@ -230,7 +184,7 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
 
     /**
      * Define decorator bean.
-     * @param processInjectionTargetEvent
+     * @param annotatedType
      */
     public ManagedBean<T> defineDecorator(AnnotatedType<T> annotatedType)
     {

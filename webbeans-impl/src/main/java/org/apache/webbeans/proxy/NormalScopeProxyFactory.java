@@ -23,7 +23,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.List;
 
+import org.apache.webbeans.util.ClassUtil;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -49,16 +51,17 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
     /**
      * @param classLoader to use for creating the class in
      * @param classToProxy the class for which a subclass will get generated
-     * @param nonInterceptedMethods all methods which are <b>not</b> intercepted nor decorated and shall get delegated directly
      * @param <T>
      * @return the proxy class
+     * //X TODO for serialisation reasons this probably needs the Bean it serves.
      */
-    public synchronized <T> Class<T> createProxyClass(ClassLoader classLoader, Class<T> classToProxy,
-                                                      Method[] nonInterceptedMethods)
+    public synchronized <T> Class<T> createProxyClass(ClassLoader classLoader, Class<T> classToProxy)
             throws ProxyGenerationException
     {
-        String proxyClassName = classToProxy.getName() + "$OwbNormalScopeProxy";
+        String proxyClassName = getUnusedProxyClassName(classLoader, classToProxy.getName() + "$OwbNormalScopeProxy");
 
+        List<Method> methods = ClassUtil.getNonPrivateMethods(classToProxy);
+        Method[] nonInterceptedMethods = methods.toArray(new Method[methods.size()]);
         Class<T> clazz = createProxyClass(classLoader, proxyClassName, classToProxy, null, nonInterceptedMethods);
 
         return clazz;

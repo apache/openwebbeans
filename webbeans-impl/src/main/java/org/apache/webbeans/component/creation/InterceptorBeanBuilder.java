@@ -151,7 +151,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
      */
     protected void defineInterceptorMethods()
     {
-        List<Class> classHierarchy = getReverseClassHierarchy();
+        List<Class> classHierarchy = webBeansContext.getInterceptorUtil().getReverseClassHierarchy(getAnnotated().getJavaClass());
 
         AnnotatedMethod aroundInvokeMethod = null;
         List<AnnotatedMethod> postConstructMethods = new ArrayList<AnnotatedMethod>();

@@ -25,7 +25,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -119,27 +118,12 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
     }
 
     /**
-     * @return the Type hierarchy in the order superclass first. Object.class is <b>not</b> included!
-     */
-    protected List<Class> getReverseClassHierarchy()
-    {
-        List<Class> hierarchy = new ArrayList<Class>();
-        Class clazz = getBeanType();
-        while (clazz != Object.class)
-        {
-            hierarchy.add(0, clazz);
-            clazz = clazz.getSuperclass();
-        }
-
-        return hierarchy;
-    }
-
-    /**
      * Check if the given annotatedMethod overrides some previously defined AnnotatedMethods
      * from a superclass and remove them if non-private.
      *
      *
-     * @param alreadyDefinedMethods the methods already calculated from the superclasses. See {@link #getReverseClassHierarchy()}
+     * @param alreadyDefinedMethods the methods already calculated from the superclasses. See
+     * {@link org.apache.webbeans.intercept.InterceptorUtil#getReverseClassHierarchy(Class)}
      * @param annotatedMethod the AnnotatedMethod to check for.
      * @return <code>true</code> if a method was overridden and got removed, <code>false</code> otherwise.
      */
