@@ -32,6 +32,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
 import javax.enterprise.context.ContextNotActiveException;
@@ -42,6 +44,7 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Stereotype;
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -78,7 +81,7 @@ import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.portable.creation.InjectionTargetProducerRemove;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
@@ -935,8 +938,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {
             throw new DefinitionException("Could not create InjectionTargetBean for type " + type.getJavaClass());
         }
+        List<AnnotatedMethod<?>> postConstructMethods
+            = webBeansContext.getInterceptorUtil().getLifecycleMethods(bean.getAnnotatedType(), PostConstruct.class, true);
+        List<AnnotatedMethod<?>> preDestroyMethods
+            = webBeansContext.getInterceptorUtil().getLifecycleMethods(bean.getAnnotatedType(), PreDestroy.class, false);
 
-        return new InjectionTargetProducerRemove<T>(bean);
+        return new InjectionTargetImpl<T>(bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext, postConstructMethods, preDestroyMethods);
     }
 
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods( T event, Annotation... qualifiers ) 

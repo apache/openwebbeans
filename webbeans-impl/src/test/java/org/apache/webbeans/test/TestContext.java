@@ -27,10 +27,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.decorator.Decorator;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.Typed;
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -53,7 +56,7 @@ import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.portable.creation.InjectionTargetProducerRemove;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.creation.ProducerBeansProducerRemove;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeIsnotInterface;
@@ -535,7 +538,11 @@ public abstract class TestContext implements ITestContext
         managedBeanCreator.defineInjectedMethods();
         managedBeanCreator.defineDisposalMethods();
         ManagedBean<T> component = managedBeanCreator.getBean();
-        component.setProducer(new InjectionTargetProducerRemove(component));
+        List<AnnotatedMethod<?>> postConstructMethods
+            = webBeansContext.getInterceptorUtil().getLifecycleMethods(component.getAnnotatedType(), PostConstruct.class, true);
+        List<AnnotatedMethod<?>> preDestroyMethods
+            = webBeansContext.getInterceptorUtil().getLifecycleMethods(component.getAnnotatedType(), PreDestroy.class, false);
+        component.setProducer(new InjectionTargetImpl<T>(component.getAnnotatedType(), component.getInjectionPoints(), webBeansContext, postConstructMethods, preDestroyMethods));
 
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(component);
 
