@@ -19,7 +19,6 @@
 package org.apache.webbeans.component;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
@@ -33,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.ExceptionUtil;
 
 /**
@@ -125,12 +123,7 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
      */
     public Method[] getInterceptorMethods(InterceptionType interceptionType)
     {
-        Method[] methods = interceptionMethods.get(interceptionType);
-        if (methods == null || methods.length == 0)
-        {
-            throw new WebBeansException("InterceptionType not yet supported: " + interceptionType);
-        }
-        return methods;
+        return  interceptionMethods.get(interceptionType);
     }
 
 
@@ -151,7 +144,14 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
             }
 
             Method[] interceptorMethods = getInterceptorMethods(interceptionType);
-            if (interceptorMethods.length == 1)
+            if (interceptorMethods == null || interceptorMethods.length == 0)
+            {
+                // this very interceptor doesn't support this interception type.
+                // this might happen for lifecycle callback methods
+                // let's continue with the next interceptor
+                return invocationContext.proceed();
+            }
+            else if (interceptorMethods.length == 1)
             {
                 // directly invoke the interceptor method with the given InvocationContext
                 return interceptorMethods[0].invoke(instance, invocationContext);

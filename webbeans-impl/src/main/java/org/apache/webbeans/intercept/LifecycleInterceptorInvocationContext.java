@@ -70,7 +70,15 @@ public class LifecycleInterceptorInvocationContext<T> implements InvocationConte
         if (interceptors != null && interceptorIndex < interceptors.size())
         {
             Interceptor interceptor = interceptors.get(interceptorIndex++);
-            return interceptor.intercept(type, instances.get(interceptor), this);
+
+            if (interceptor.intercepts(type))
+            {
+                return interceptor.intercept(type, instances.get(interceptor), this);
+            }
+            else
+            {
+                return proceed();
+            }
         }
         else
         {
