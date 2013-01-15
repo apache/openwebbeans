@@ -40,6 +40,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
+import javax.enterprise.inject.spi.Interceptor;
 import javax.inject.Inject;
 import javax.interceptor.InvocationContext;
 
@@ -81,7 +82,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     /**
      * static information about Interceptors and Decorators of that bean
      */
-    private BeanInterceptorInfo interceptorInfo;
+    private BeanInterceptorInfo interceptorInfo = null;
 
     public InjectionTargetImpl(AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext,
                                List<AnnotatedMethod<?>> postConstructMethods, List<AnnotatedMethod<?>> preDestroyMethods)
@@ -108,7 +109,8 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         if (interceptorInfo != null)
         {
             // apply interceptorInfo
-            interceptorInfo.getInterceptors();
+            Set<Interceptor<?>> interceptors = interceptorInfo.getInterceptors();
+
         }
 
         return instance;

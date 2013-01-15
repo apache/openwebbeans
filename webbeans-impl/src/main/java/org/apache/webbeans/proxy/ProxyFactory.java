@@ -53,7 +53,7 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
- * @deprecated TODO remove! replaced via {@link org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory}
+ *  TODO remove old proxy handling. Only InterceptorDecoratorProxyFactory and NormalScopeProxyFactory shall remain.
  */
 public final class ProxyFactory
 {
@@ -62,9 +62,11 @@ public final class ProxyFactory
     private ConcurrentMap<OwbBean<?>, Class<?>> dependentScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
     private ConcurrentMap<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
     private ConcurrentMap<ResourceBean<?, ?>, Class<?>> resourceBeanProxyClasses = new ConcurrentHashMap<ResourceBean<?,?>, Class<?>>();
+
     // second level map is indexed on local interface
     private ConcurrentMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>>();
     private Factory factory;
+
 
     public ProxyFactory()
     {
@@ -89,7 +91,7 @@ public final class ProxyFactory
     }
 
 
-    public   Map<OwbBean<?>, Class<?>> getInterceptorProxyClasses()
+    private Map<OwbBean<?>, Class<?>> getInterceptorProxyClasses()
     {
         return interceptorProxyClasses;
     }
@@ -165,7 +167,11 @@ public final class ProxyFactory
 
         return proxyClass;
     }
-    
+
+
+    /**
+     * TODO rework! Still uses old proxy
+     */
     public Object createDecoratorDelegate(OwbBean<?> bean, DelegateHandler newDelegateHandler)
         throws Exception
     {
@@ -173,11 +179,11 @@ public final class ProxyFactory
         Class<?> proxyClass = this.getInterceptorProxyClasses().get(bean);
         if (proxyClass == null)
         {
-            proxyClass = createProxyClass(bean);
+            proxyClass = createProxyClassRemove(bean);
             this.getInterceptorProxyClasses().put(bean, proxyClass);
         }
 
-        final Object delegate = createProxy(proxyClass);
+        final Object delegate = createProxyRemove(proxyClass);
         setHandler(delegate, newDelegateHandler);
         return delegate;
     }
@@ -189,7 +195,7 @@ public final class ProxyFactory
             Class<?> proxyClass = resourceBeanProxyClasses.get(resourceBean);
             if (proxyClass == null)
             {
-                proxyClass = createProxyClass(resourceBean);
+                proxyClass = createProxyClassRemove(resourceBean);
 
                 Class<?> oldClazz = resourceBeanProxyClasses.putIfAbsent(resourceBean, proxyClass);
                 if (oldClazz != null)
@@ -208,7 +214,10 @@ public final class ProxyFactory
     }
 
 
-    public  Object createNormalScopedBeanProxy(OwbBean<?> bean, CreationalContext<?> creationalContext)
+    /**
+     * @deprecated uses old proxy
+     */
+    public  Object createNormalScopedBeanProxyRemove(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         Object result = null;
         try
@@ -216,16 +225,16 @@ public final class ProxyFactory
             Class<?> proxyClass = normalScopedBeanProxyClasses.get(bean);
             if (proxyClass == null)
             {
-                proxyClass = createProxyClass(bean);
+                proxyClass = createProxyClassRemove(bean);
                 normalScopedBeanProxyClasses.putIfAbsent(bean, proxyClass);
             }
 
 
-            result = createProxy(proxyClass);
+            result = createProxyRemove(proxyClass);
             
             if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptorBeanPleaseRemove<?>))
             {
-                InterceptorHandlerPleaseRemove interceptorHandler = createInterceptorHandler(bean, creationalContext);
+                InterceptorHandlerPleaseRemove interceptorHandler = createInterceptorHandlerRemove(bean, creationalContext);
 
                 setHandler(result, interceptorHandler);
             }
@@ -238,13 +247,20 @@ public final class ProxyFactory
         return result;
     }
 
-    private Object createProxy(Class<?> proxyClass)
+
+    /**
+     * @deprecated uses old proxy
+     */
+    private Object createProxyRemove(Class<?> proxyClass)
         throws InstantiationException, IllegalAccessException
     {
         return factory.createProxy(proxyClass);
     }
 
-    private InterceptorHandlerPleaseRemove createInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
+    /**
+     * @deprecated uses old proxy
+     */
+    private InterceptorHandlerPleaseRemove createInterceptorHandlerRemove(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         String scopeClassName = bean.getScope().getName();
         Class<? extends InterceptorHandlerPleaseRemove> interceptorHandlerClass = null;
@@ -322,7 +338,10 @@ public final class ProxyFactory
         }
     }
 
-    public Object createBuildInBeanProxy(OwbBean<?> bean) 
+    /**
+     * @deprecated uses old proxy
+     */
+    public Object createBuildInBeanProxyRemove(OwbBean<?> bean)
     {
         Object result = null;
         try
@@ -330,10 +349,10 @@ public final class ProxyFactory
             Class<?> proxyClass = buildInBeanProxyClasses.get(bean);
             if (proxyClass == null)
             {
-                proxyClass = createProxyClass(bean);
+                proxyClass = createProxyClassRemove(bean);
                 buildInBeanProxyClasses.putIfAbsent(bean, proxyClass);
             }
-            result = createProxy(proxyClass);
+            result = createProxyRemove(proxyClass);
         }
         catch (Exception e)
         {
@@ -342,8 +361,11 @@ public final class ProxyFactory
         return result;
     }
 
-    
-    public  Object createDependentScopedBeanProxy(OwbBean<?> bean, Object actualInstance, CreationalContext<?> creastionalContext)
+
+    /**
+     * @deprecated uses old proxy. And will be obsolete anyway...
+     */
+    public  Object createDependentScopedBeanProxyRemove(OwbBean<?> bean, Object actualInstance, CreationalContext<?> creastionalContext)
     {
 
         List<InterceptorData> interceptors =  null;
@@ -408,11 +430,11 @@ public final class ProxyFactory
             Class<?> proxyClass = dependentScopedBeanProxyClasses.get(bean);
             if (proxyClass == null)
             {
-                proxyClass = createProxyClass(bean);
+                proxyClass = createProxyClassRemove(bean);
                 dependentScopedBeanProxyClasses.putIfAbsent(bean, proxyClass);
             }
 
-            Object result = createProxy(proxyClass);
+            Object result = createProxyRemove(proxyClass);
             if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptorBeanPleaseRemove<?>))
             {
                 setHandler(result, new DependentScopedBeanInterceptorHandlerRemove(bean, actualInstance, creastionalContext));
@@ -428,18 +450,24 @@ public final class ProxyFactory
         return null;
     }
 
-    public Class<?> createProxyClass(OwbBean<?> bean)
+    /**
+     * @deprecated uses old proxy
+     */
+    private Class<?> createProxyClassRemove(OwbBean<?> bean)
     {
-        final ProxyInfo info = getProxyInfo(bean);
+        final ProxyInfoRemove info = getProxyInfo(bean);
         return factory.getProxyClass(info.getSuperClass(), info.getInterfaces());
     }
 
     public Class<?> createAbstractDecoratorProxyClass(OwbBean<?> bean)
     {
-        return createProxyClass(bean);
+        return createProxyClassRemove(bean);
     }
 
-    public boolean isProxyInstance(Object o)
+    /**
+     * @deprecated uses old proxy
+     */
+    public boolean isProxyInstanceRemove(Object o)
     {
         return factory.isProxyInstance(o);
     }
@@ -450,12 +478,15 @@ public final class ProxyFactory
         return factory.createProxy(handler, interfaces);
     }
 
-    private static class ProxyInfo
+    /**
+     * @deprecated uses old proxy
+     */
+    private static class ProxyInfoRemove
     {
         private final Class<?> superClass;
         private final Class<?>[] interfaces;
 
-        private ProxyInfo(Class<?> superClass, Class<?>[] interfaces)
+        private ProxyInfoRemove(Class<?> superClass, Class<?>[] interfaces)
         {
             this.superClass = superClass;
             this.interfaces = interfaces;
@@ -472,7 +503,10 @@ public final class ProxyFactory
         }
     }
 
-    private static ProxyInfo getProxyInfo(Bean<?> bean)
+    /**
+     * @deprecated uses old proxy
+     */
+    private static ProxyInfoRemove getProxyInfo(Bean<?> bean)
     {
         final Set<Class<?>> interfaceList = new HashSet<Class<?>>();
         Class<?> superClass = null;
@@ -499,6 +533,6 @@ public final class ProxyFactory
         Class<?>[] interfaceArray = new Class<?>[interfaceList.size()];
         interfaceArray = interfaceList.toArray(interfaceArray);
 
-        return new ProxyInfo(superClass, interfaceArray);
+        return new ProxyInfoRemove(superClass, interfaceArray);
     }
 }

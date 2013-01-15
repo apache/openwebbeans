@@ -98,7 +98,7 @@ public class InjectionTargetProducerRemove<T> extends AbstractProducerRemove<T> 
                 //not correct. Injection must be on actual dependent
                 //instance,so not necessary to inject on proxy
                 final ProxyFactory proxyFactory = this.bean.getWebBeansContext().getProxyFactory();
-                if(bean.getScope() == Dependent.class && proxyFactory.isProxyInstance(instance))
+                if(bean.getScope() == Dependent.class && proxyFactory.isProxyInstanceRemove(instance))
                 {
                     return;
                 }

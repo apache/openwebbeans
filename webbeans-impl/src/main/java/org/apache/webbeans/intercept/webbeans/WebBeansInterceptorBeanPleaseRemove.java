@@ -291,7 +291,7 @@ public class WebBeansInterceptorBeanPleaseRemove<T> extends AbstractOwbBean<T> i
     {
         Context context = webBeansContext.getBeanManagerImpl().getContext(getScope());
         Object actualInstance = context.get((Bean<Object>) delegateBean, (CreationalContext<Object>)creationalContext);
-        T proxy = (T) webBeansContext.getProxyFactory().createDependentScopedBeanProxy(delegateBean, actualInstance, creationalContext);
+        T proxy = (T) webBeansContext.getProxyFactory().createDependentScopedBeanProxyRemove(delegateBean, actualInstance, creationalContext);
         
         return proxy;
     }

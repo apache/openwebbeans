@@ -50,6 +50,13 @@ public class InterceptorInvocationContext<T> extends AbstractInvocationContext<T
         if (index < interceptors.size())
         {
             Interceptor interceptor = interceptors.get(index++);
+            if (!interceptor.intercepts(type))
+            {
+                // continue with next interceptor
+                // this e.g. happens for lifecycle interceptors
+                return proceed();
+            }
+
             return interceptor.intercept(type, instances.get(interceptor), this);
         }
         else

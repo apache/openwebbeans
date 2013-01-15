@@ -18,17 +18,32 @@
  */
 package org.apache.webbeans.test.component.intercept.webbeans;
 
+import javax.annotation.PostConstruct;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
+import org.apache.webbeans.util.ExceptionUtil;
 
 @Secure
 @Interceptor
 public class SecureInterceptor
 {
     public static boolean CALL = false;
+
+    @PostConstruct
+    public void atCreationTime(InvocationContext ic)
+    {
+        try
+        {
+            ic.proceed();
+        }
+        catch (Exception e)
+        {
+            ExceptionUtil.throwAsRuntimeException(e);
+        }
+    }
 
     @AroundInvoke
     public Object manageTransaction(InvocationContext ctx) throws Exception

@@ -53,7 +53,7 @@ import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Class to calculate interceptor resolution information.
- *
+ * It also handles the proxy caching and applying.
  */
 public class InterceptorResolutionService
 {
@@ -139,7 +139,66 @@ public class InterceptorResolutionService
             businessMethodInterceptorInfos.put(annotatedMethod.getJavaMember(), methodInterceptorInfo);
         }
 
-        return new BeanInterceptorInfo(decorators, allUsedCdiInterceptors, businessMethodInterceptorInfos, nonInterceptedMethods);
+        Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos
+                = new HashMap<InterceptionType, LifecycleMethodInfo>();
+
+        addLifecycleMethods(
+                lifecycleMethodInterceptorInfos,
+                annotatedType,
+                InterceptionType.POST_CONSTRUCT,
+                PostConstruct.class,
+                allUsedEjbInterceptors,
+                classLevelEjbInterceptors,
+                allUsedCdiInterceptors,
+                classInterceptorBindings,
+                true);
+
+        addLifecycleMethods(
+                lifecycleMethodInterceptorInfos,
+                annotatedType,
+                InterceptionType.PRE_DESTROY,
+                PreDestroy.class,
+                allUsedEjbInterceptors,
+                classLevelEjbInterceptors,
+                allUsedCdiInterceptors,
+                classInterceptorBindings,
+                true);
+
+        return new BeanInterceptorInfo(decorators, allUsedCdiInterceptors, businessMethodInterceptorInfos, nonInterceptedMethods, lifecycleMethodInterceptorInfos);
+    }
+
+    private void addLifecycleMethods(Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos,
+                                     AnnotatedType<?> annotatedType,
+                                     InterceptionType interceptionType,
+                                     Class<? extends Annotation> annotation,
+                                     Set<Interceptor<?>> allUsedEjbInterceptors,
+                                     List<Interceptor<?>> classLevelEjbInterceptors,
+                                     Set<Interceptor<?>> allUsedCdiInterceptors,
+                                     Set<Annotation> classInterceptorBindings,
+                                     boolean parentFirst)
+    {
+        Set<InterceptionType> it = new HashSet<InterceptionType>();
+        it.add(interceptionType);
+        List<AnnotatedMethod<?>> foundMethods = new ArrayList<AnnotatedMethod<?>>();
+        BusinessMethodInterceptorInfo methodInterceptorInfo = new BusinessMethodInterceptorInfo(it);
+
+        List<AnnotatedMethod<?>> lifecycleMethodCandidates = webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, annotation, parentFirst);
+
+        for (AnnotatedMethod<?> lifecycleMethod : lifecycleMethodCandidates)
+        {
+            if (lifecycleMethod.getParameters().size() == 0)
+            {
+                foundMethods.add(lifecycleMethod);
+                calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, lifecycleMethod);
+
+                calculateCdiMethodInterceptors(methodInterceptorInfo, allUsedCdiInterceptors, lifecycleMethod, classInterceptorBindings);
+            }
+        }
+
+        if (foundMethods.size() > 0 )
+        {
+            lifecycleMethodInterceptorInfos.put(interceptionType, new LifecycleMethodInfo(foundMethods, methodInterceptorInfo));
+        }
     }
 
     private <T> void collectEjbInterceptors(List<Interceptor<?>> ejbInterceptors, Annotated annotatedType)
@@ -363,12 +422,14 @@ public class InterceptorResolutionService
         public BeanInterceptorInfo(List<Decorator<?>> decorators,
                                    Set<Interceptor<?>> interceptors,
                                    Map<Method, BusinessMethodInterceptorInfo> businessMethodsInfo,
-                                   List<Method> nonInterceptedMethods)
+                                   List<Method> nonInterceptedMethods,
+                                   Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos)
         {
             this.decorators = decorators;
             this.interceptors = interceptors;
             this.businessMethodsInfo = businessMethodsInfo;
             this.nonInterceptedMethods = nonInterceptedMethods;
+            this.lifecycleMethodInterceptorInfos = lifecycleMethodInterceptorInfos;
         }
 
         /**
@@ -394,6 +455,14 @@ public class InterceptorResolutionService
          */
         private List<Method> nonInterceptedMethods = Collections.EMPTY_LIST;
 
+        /**
+         * Contains info about lifecycle methods.
+         * A method can be a 'business method' when invoked via the user but a
+         * 'lifecycle method' while invoked by the container!
+         */
+        private Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos = Collections.EMPTY_MAP;
+
+
         public List<Decorator<?>> getDecorators()
         {
             return decorators;
@@ -412,6 +481,11 @@ public class InterceptorResolutionService
         public List<Method> getNonInterceptedMethods()
         {
             return nonInterceptedMethods;
+        }
+
+        public Map<InterceptionType, LifecycleMethodInfo> getLifecycleMethodInterceptorInfos()
+        {
+            return lifecycleMethodInterceptorInfos;
         }
     }
 
@@ -511,6 +585,29 @@ public class InterceptorResolutionService
         public boolean isEmpty()
         {
             return cdiInterceptors == null && ejbInterceptors == null && methodDecorators == null;
+        }
+    }
+
+
+    public static class LifecycleMethodInfo
+    {
+        private List<AnnotatedMethod<?>> methods = new ArrayList<AnnotatedMethod<?>>();
+        private BusinessMethodInterceptorInfo methodInterceptorInfo;
+
+        public LifecycleMethodInfo(List<AnnotatedMethod<?>> methods, BusinessMethodInterceptorInfo methodInterceptorInfo)
+        {
+            this.methods = methods;
+            this.methodInterceptorInfo = methodInterceptorInfo;
+        }
+
+        public List<AnnotatedMethod<?>> getMethods()
+        {
+            return methods;
+        }
+
+        public BusinessMethodInterceptorInfo getMethodInterceptorInfo()
+        {
+            return methodInterceptorInfo;
         }
     }
 

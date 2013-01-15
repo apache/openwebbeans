@@ -412,7 +412,7 @@ public class WebBeansDecorator<T> extends InjectionTargetBean<T> implements OwbD
         WebBeansContext webBeansContext = wrappedBean.getWebBeansContext();
         Context context = webBeansContext.getBeanManagerImpl().getContext(getScope());
         Object actualInstance = context.get((Bean<Object>) wrappedBean, (CreationalContext<Object>)creationalContext);
-        T proxy = (T) webBeansContext.getProxyFactory().createDependentScopedBeanProxy(wrappedBean, actualInstance, creationalContext);
+        T proxy = (T) webBeansContext.getProxyFactory().createDependentScopedBeanProxyRemove(wrappedBean, actualInstance, creationalContext);
         
         return proxy;        
     }
