@@ -74,14 +74,22 @@ public class LifecycleInterceptorInvocationContext<T> implements InvocationConte
         }
         else
         {
-            for (AnnotatedMethod<?> lifecycleMethod : lifecycleMethods)
-            {   Method m = lifecycleMethod.getJavaMember();
-                if (!m.isAccessible())
-                {
-                    m.setAccessible(true);
+            if (lifecycleMethods != null)
+            {
+                // only if there is a lifecycle method, otherwise re immediately return
+                for (AnnotatedMethod<?> lifecycleMethod : lifecycleMethods)
+                {   Method m = lifecycleMethod.getJavaMember();
+                    if (!m.isAccessible())
+                    {
+                        m.setAccessible(true);
+                    }
+                    m.invoke(getTarget());
                 }
-                m.invoke(getTarget());
             }
+            // else, see interceptors spec
+            // "For lifecycle callback interceptor methods, if there is no callback method
+            // defined on the target class, the invocation of proceed in the last
+            // interceptor method in the chain is a no-op, and null is returned."
 
             return null;
         }

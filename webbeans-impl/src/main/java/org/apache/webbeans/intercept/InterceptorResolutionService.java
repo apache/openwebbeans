@@ -20,6 +20,7 @@ package org.apache.webbeans.intercept;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
@@ -27,6 +28,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
+import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -93,13 +95,14 @@ public class InterceptorResolutionService
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         BeanManager beanManager = webBeansContext.getBeanManagerImpl();
 
-        List<Interceptor> classLevelEjbInterceptors = new ArrayList<Interceptor>();
-
         // pick up CDI interceptors from a class level
         Set<Annotation> classInterceptorBindings = annotationManager.getInterceptorAnnotations(annotatedType.getAnnotations());
 
-        //X pick up EJB-style interceptors from a class level
-        Interceptors interceptorsAnnot = annotatedType.getAnnotation(Interceptors.class);
+        // pick up EJB-style interceptors from a class level
+        Set<Interceptor<?>> allUsedEjbInterceptors = new HashSet<Interceptor<?>>();
+        List<Interceptor<?>> classLevelEjbInterceptors = new ArrayList<Interceptor<?>>();
+
+        collectEjbInterceptors(classLevelEjbInterceptors, annotatedType);
 
         // pick up the decorators
         List<Decorator<?>> decorators = beanManager.resolveDecorators(bean.getTypes(), AnnotationUtil.asArray(bean.getQualifiers()));
@@ -109,7 +112,6 @@ public class InterceptorResolutionService
         }
 
         Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
-        Set<Interceptor<?>> allUsedEjbInterceptors = new HashSet<Interceptor<?>>();
         Map<Method, MethodInterceptorInfo> businessMethodInterceptorInfos = new HashMap<Method, MethodInterceptorInfo>();
 
 
@@ -119,7 +121,7 @@ public class InterceptorResolutionService
             InterceptionType interceptionType = calculateInterceptionType(annotatedMethod);
             MethodInterceptorInfo methodInterceptorInfo = new MethodInterceptorInfo(interceptionType);
 
-            calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, interceptorsAnnot);
+            calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, annotatedMethod);
 
             calculateCdiMethodInterceptors(methodInterceptorInfo, allUsedCdiInterceptors, annotatedMethod, classInterceptorBindings);
 
@@ -143,15 +145,43 @@ public class InterceptorResolutionService
         return new BeanInterceptorInfo(decorators, allUsedCdiInterceptors, businessMethodInterceptorInfos);
     }
 
-    private void calculateEjbMethodInterceptors(MethodInterceptorInfo methodInterceptorInfo, Set<Interceptor<?>> allUsedEjbInterceptors, Interceptors interceptorsAnnot)
+    private <T> void collectEjbInterceptors(List<Interceptor<?>> ejbInterceptors, Annotated annotatedType)
     {
-        if (interceptorsAnnot == null)
+        Interceptors interceptorsAnnot = annotatedType.getAnnotation(Interceptors.class);
+        if (interceptorsAnnot != null)
         {
-            return;
+            for (Class interceptorClass : interceptorsAnnot.value())
+            {
+                Interceptor ejbInterceptor = webBeansContext.getInterceptorsManager().getEjbInterceptorForClass(interceptorClass);
+                ejbInterceptors.add(ejbInterceptor);
+            }
+        }
+    }
+
+    private void calculateEjbMethodInterceptors(MethodInterceptorInfo methodInterceptorInfo, Set<Interceptor<?>> allUsedEjbInterceptors,
+                                                List<Interceptor<?>> classLevelEjbInterceptors, AnnotatedMethod annotatedMethod)
+    {
+        List<Interceptor<?>> methodInterceptors = new ArrayList<Interceptor<?>>();
+
+        if (classLevelEjbInterceptors != null && classLevelEjbInterceptors.size() > 0)
+        {
+            // add the class level defined Interceptors first
+
+            ExcludeClassInterceptors excludeClassInterceptors = annotatedMethod.getAnnotation(ExcludeClassInterceptors.class);
+            if (excludeClassInterceptors == null)
+            {
+                // but only if there is no exclusion of all class-level interceptors
+                methodInterceptors.addAll(classLevelEjbInterceptors);
+            }
         }
 
-        Class<?>[] ejbInterceptorClasses = interceptorsAnnot.value();
+        collectEjbInterceptors(methodInterceptors, annotatedMethod);
+        allUsedEjbInterceptors.addAll(methodInterceptors);
 
+        if (methodInterceptors.size() > 0)
+        {
+            methodInterceptorInfo.setEjbInterceptors(methodInterceptors);
+        }
     }
 
 

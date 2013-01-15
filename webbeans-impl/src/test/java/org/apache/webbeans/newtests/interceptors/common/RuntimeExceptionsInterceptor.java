@@ -32,11 +32,14 @@ import javax.interceptor.InvocationContext;
 @RuntimeExceptions
 public class RuntimeExceptionsInterceptor
 {
+    public int invoked = 0;
+
     @AroundInvoke
     public Object invoke(InvocationContext context)
     {
         try
         {
+            invoked++;
             return context.proceed();
         }
         catch (Exception e)

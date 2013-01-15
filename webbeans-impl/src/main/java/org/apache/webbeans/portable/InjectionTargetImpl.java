@@ -53,6 +53,8 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ExceptionUtil;
 
 
+import static org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
+
 public class InjectionTargetImpl<T> extends AbstractProducer<T> implements InjectionTarget<T>
 {
 
@@ -76,6 +78,11 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
      */
     private List<AnnotatedMethod<?>> preDestroyMethods;
 
+    /**
+     * static information about Interceptors and Decorators of that bean
+     */
+    private BeanInterceptorInfo interceptorInfo;
+
     public InjectionTargetImpl(AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext,
                                List<AnnotatedMethod<?>> postConstructMethods, List<AnnotatedMethod<?>> preDestroyMethods)
     {
@@ -88,10 +95,23 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         this.preDestroyMethods = preDestroyMethods;
     }
 
+    public void setInterceptorInfo(BeanInterceptorInfo interceptorInfo)
+    {
+        this.interceptorInfo = interceptorInfo;
+    }
+
     @Override
     public T produce(CreationalContext<T> creationalContext)
     {
-        return new InjectableConstructor<T>(getConstructor().getJavaMember(), this, (CreationalContextImpl<T>) creationalContext).doInjection();
+        T instance = new InjectableConstructor<T>(getConstructor().getJavaMember(), this, (CreationalContextImpl<T>) creationalContext).doInjection();
+
+        if (interceptorInfo != null)
+        {
+            // apply interceptorInfo
+            interceptorInfo.getInterceptors();
+        }
+
+        return instance;
     }
 
     @Override
@@ -169,7 +189,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void postConstruct(T instance)
     {
-        if (postConstructMethods == null)
+        if (postConstructMethods == null /*X TODO && postConstructInterceptors == null */)
         {
             return;
         }

@@ -84,6 +84,8 @@ public class NewProxyTest extends AbstractUnitTest
         RuntimeExceptionBindingTypeBean instance = factory.createProxyInstance(proxyClass, target, interceptorHandler);
         int result = instance.business();
         Assert.assertEquals(42, result);
+
+        Assert.assertEquals(1, interceptor.invoked);
         
         shutDownContainer();
         
