@@ -84,17 +84,18 @@ public abstract class AbstractProxyFactory
      */
     protected String getUnusedProxyClassName(ClassLoader classLoader, String proxyClassName)
     {
+        String finalName = proxyClassName;
         for (int i = 0; i < MAX_CLASSLOAD_TRIES; i++)
         {
             try
             {
-                String finalName = proxyClassName + i;
-                classLoader.loadClass(finalName);
+                finalName = proxyClassName + i;
+                Class.forName(finalName, true, classLoader);
             }
             catch (ClassNotFoundException cnfe)
             {
                 // this is exactly what we need!
-                return proxyClassName;
+                return finalName;
             }
             // otherwise we continue ;)
         }
@@ -198,7 +199,7 @@ public abstract class AbstractProxyFactory
 
             try
             {
-                Class<T> loadedClass = (Class<T>) classLoader.loadClass(definedClass.getName());
+                Class<T> loadedClass = (Class<T>) Class.forName(definedClass.getName(), true, classLoader);
                 return loadedClass;
             }
             catch (ClassNotFoundException e)

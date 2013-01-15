@@ -23,6 +23,7 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class LifecycleInterceptorInvocationContext<T> implements InvocationConte
     private InterceptionType type;
     private List<Interceptor<?>> interceptors;
     private Map<Interceptor<?>, ?> instances;
-    private Map<String, Object> contextData;
+    private Map<String, Object> contextData = new HashMap<String, Object>();
     private int interceptorIndex = 0;
     private List<AnnotatedMethod<?>> lifecycleMethods;
 

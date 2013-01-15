@@ -18,79 +18,56 @@
  */
 package org.apache.webbeans.test.unittests.intercept;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.intercept.InterceptedComponent;
 import org.apache.webbeans.test.component.intercept.InterceptorWithSuperClassInterceptedComponent;
 import org.apache.webbeans.test.component.intercept.MultipleInterceptedComponent;
 import org.apache.webbeans.test.component.intercept.MultipleListOfInterceptedComponent;
 import org.apache.webbeans.test.component.intercept.MultipleListOfInterceptedWithExcludeClassComponent;
-import org.junit.Before;
 import org.junit.Test;
 
-public class EJBInterceptComponentTest extends TestContext
+public class EJBInterceptComponentTest extends AbstractUnitTest
 {
-
-    public EJBInterceptComponentTest()
-    {
-        super(EJBInterceptComponentTest.class.getName());
-    }
-
-    @Before
-    public void init()
-    {
-        super.init();
-    }
 
     @Test
     public void testInterceptedComponent()
     {
-        defineManagedBean(InterceptedComponent.class);
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(InterceptedComponent.class);
+        startContainer(beanClasses, null);
+
+
+        shutDownContainer();
     }
 
     @Test
     public void testInterceptorCalls()
     {
-        clear();
-        defineManagedBean(InterceptedComponent.class);
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(InterceptedComponent.class);
+        startContainer(beanClasses, null);
 
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-        List<AbstractOwbBean<?>> comps = getComponents();
-
-        Object object = getManager().getInstance(comps.get(0));
-
-        Assert.assertTrue(object instanceof InterceptedComponent);
-
-        InterceptedComponent comp = (InterceptedComponent) object;
+        InterceptedComponent comp = getInstance(InterceptedComponent.class);
         Object s = comp.hello(null);
 
         Assert.assertEquals(new Integer(5), s);
 
-        contextFactory.destroyRequestContext(null);
+        shutDownContainer();
     }
 
     @Test
     public void testMultipleInterceptedComponent()
     {
-        clear();
-        defineManagedBean(MultipleInterceptedComponent.class);
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(MultipleInterceptedComponent.class);
+        startContainer(beanClasses, null);
 
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-        List<AbstractOwbBean<?>> comps = getComponents();
-
-        Object object = getManager().getInstance(comps.get(0));
-
-        Assert.assertTrue(object instanceof MultipleInterceptedComponent);
-
-        MultipleInterceptedComponent comp = (MultipleInterceptedComponent) object;
+        MultipleInterceptedComponent comp = getInstance(MultipleInterceptedComponent.class);
         Object obj = comp.intercepted();
 
         Assert.assertTrue(obj instanceof String[]);
@@ -99,24 +76,18 @@ public class EJBInterceptComponentTest extends TestContext
 
         Assert.assertEquals(2, arr.length);
         Assert.assertTrue("key".equals(arr[0]) && "key2".equals(arr[1]) || "key".equals(arr[1]) && "key2".equals(arr[0]));
-        contextFactory.destroyRequestContext(null);
+
+        shutDownContainer();;
     }
 
     @Test
     public void testInterceptorWithSuperClassComponent()
     {
-        clear();
-        defineManagedBean(InterceptorWithSuperClassInterceptedComponent.class);
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(InterceptorWithSuperClassInterceptedComponent.class);
+        startContainer(beanClasses, null);
 
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-        List<AbstractOwbBean<?>> comps = getComponents();
-
-        Object object = getManager().getInstance(comps.get(0));
-
-        Assert.assertTrue(object instanceof InterceptorWithSuperClassInterceptedComponent);
-
-        InterceptorWithSuperClassInterceptedComponent comp = (InterceptorWithSuperClassInterceptedComponent) object;
+        InterceptorWithSuperClassInterceptedComponent comp = getInstance(InterceptorWithSuperClassInterceptedComponent.class);
         Object obj = comp.intercepted();
 
         Assert.assertTrue(obj instanceof String[]);
@@ -125,55 +96,42 @@ public class EJBInterceptComponentTest extends TestContext
 
         Assert.assertEquals(1, arr.length);
         Assert.assertTrue("key0".equals(arr[0]));
-        contextFactory.destroyRequestContext(null);
+
+        shutDownContainer();
     }
 
     @Test
     public void testMultipleListOfInterceptedComponent()
     {
-        clear();
-        defineManagedBean(MultipleListOfInterceptedComponent.class);
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(MultipleListOfInterceptedComponent.class);
+        startContainer(beanClasses, null);
 
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-        List<AbstractOwbBean<?>> comps = getComponents();
-
-        Object object = getManager().getInstance(comps.get(0));
-
-        Assert.assertTrue(object instanceof MultipleListOfInterceptedComponent);
-
-        MultipleListOfInterceptedComponent comp = (MultipleListOfInterceptedComponent) object;
+        MultipleListOfInterceptedComponent comp = getInstance(MultipleListOfInterceptedComponent.class);
         Object obj = comp.intercepted();
 
         Assert.assertTrue(obj instanceof String);
 
         Assert.assertEquals("ok", (String) obj);
 
-        contextFactory.destroyRequestContext(null);
+        shutDownContainer();
     }
 
     @Test
     public void testMultipleListOfInterceptedWithExcludeClassComponent()
     {
-        clear();
-        defineManagedBean(MultipleListOfInterceptedWithExcludeClassComponent.class);
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(MultipleListOfInterceptedWithExcludeClassComponent.class);
+        startContainer(beanClasses, null);
 
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-        List<AbstractOwbBean<?>> comps = getComponents();
-
-        Object object = getManager().getInstance(comps.get(0));
-
-        Assert.assertTrue(object instanceof MultipleListOfInterceptedWithExcludeClassComponent);
-
-        MultipleListOfInterceptedWithExcludeClassComponent comp = (MultipleListOfInterceptedWithExcludeClassComponent) object;
+        MultipleListOfInterceptedWithExcludeClassComponent comp = getInstance(MultipleListOfInterceptedWithExcludeClassComponent.class);
         Object obj = comp.intercepted();
 
         Assert.assertTrue(obj instanceof String);
 
         Assert.assertEquals("value2", (String) obj);
 
-        contextFactory.destroyRequestContext(null);
+        shutDownContainer();
     }
 
 }
