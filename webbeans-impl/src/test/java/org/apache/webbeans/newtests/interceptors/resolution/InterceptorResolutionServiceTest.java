@@ -44,9 +44,11 @@ import org.apache.webbeans.test.component.intercept.webbeans.bindings.Action;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import static org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
+
 
 /**
  * Test interceptor resolution.
@@ -71,7 +73,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         AnnotatedType<ClassInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(ClassInterceptedClass.class);
         Bean<ClassInterceptedClass> bean = (Bean<ClassInterceptedClass>) getBeanManager().resolve(getBeanManager().getBeans(ClassInterceptedClass.class));
 
-        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
+        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getInterceptors());
@@ -112,7 +114,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         AnnotatedType<ClassMultiInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(ClassMultiInterceptedClass.class);
         Bean<ClassMultiInterceptedClass> bean = (Bean<ClassMultiInterceptedClass>) getBeanManager().resolve(getBeanManager().getBeans(ClassMultiInterceptedClass.class));
 
-        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
+        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getInterceptors());
@@ -151,7 +153,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         AnnotatedType<MethodInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(MethodInterceptedClass.class);
         Bean<MethodInterceptedClass> bean = (Bean<MethodInterceptedClass>) getBeanManager().resolve(getBeanManager().getBeans(MethodInterceptedClass.class));
 
-        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
+        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getInterceptors());
@@ -175,6 +177,8 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
             }
         }
 
+        Assert.assertEquals(1, interceptorInfo.getNonInterceptedMethods().size());
+
         shutDownContainer();
     }
 
@@ -196,7 +200,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         Bean<DecoratedClass> bean = (Bean<DecoratedClass>) getBeanManager().resolve(
                 getBeanManager().getBeans(DecoratedClass.class, new AnnotationLiteral<Binding1>() {}));
 
-        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
+        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getBusinessMethodsInfo());
@@ -224,7 +228,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         AnnotatedType<InterceptedComponent> annotatedType = getBeanManager().createAnnotatedType(InterceptedComponent.class);
         Bean<InterceptedComponent> bean = (Bean<InterceptedComponent>) getBeanManager().resolve(getBeanManager().getBeans(InterceptedComponent.class));
 
-        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
+        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
         Assert.assertNotNull(interceptorInfo);
         Assert.assertNotNull(interceptorInfo.getBusinessMethodsInfo());
         Assert.assertEquals(1, interceptorInfo.getBusinessMethodsInfo().size());

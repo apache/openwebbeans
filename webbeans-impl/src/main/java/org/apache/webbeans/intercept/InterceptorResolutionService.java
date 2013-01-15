@@ -35,6 +35,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -114,6 +115,7 @@ public class InterceptorResolutionService
         Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
         Map<Method, MethodInterceptorInfo> businessMethodInterceptorInfos = new HashMap<Method, MethodInterceptorInfo>();
 
+        List<AnnotatedMethod> nonInterceptedMethods = new ArrayList<AnnotatedMethod>();
 
         // iterate over all methods and build up the interceptor/decorator stack
         for (AnnotatedMethod annotatedMethod : interceptableAnnotatedMethods)
@@ -129,20 +131,14 @@ public class InterceptorResolutionService
 
             if (methodInterceptorInfo.isEmpty())
             {
+                nonInterceptedMethods.add(annotatedMethod);
                 continue;
             }
 
-            if (InterceptionType.AROUND_INVOKE.equals(interceptionType))
-            {
-                businessMethodInterceptorInfos.put(annotatedMethod.getJavaMember(), methodInterceptorInfo);
-            }
-            else
-            {
-                //X TODO pick up non-business interceptors
-            }
+            businessMethodInterceptorInfos.put(annotatedMethod.getJavaMember(), methodInterceptorInfo);
         }
 
-        return new BeanInterceptorInfo(decorators, allUsedCdiInterceptors, businessMethodInterceptorInfos);
+        return new BeanInterceptorInfo(decorators, allUsedCdiInterceptors, businessMethodInterceptorInfos, nonInterceptedMethods);
     }
 
     private <T> void collectEjbInterceptors(List<Interceptor<?>> ejbInterceptors, Annotated annotatedType)
@@ -358,12 +354,15 @@ public class InterceptorResolutionService
      */
     public static class BeanInterceptorInfo
     {
-        public BeanInterceptorInfo(List<Decorator<?>> decorators, Set<Interceptor<?>> interceptors,
-                                   Map<Method, MethodInterceptorInfo> businessMethodsInfo)
+        public BeanInterceptorInfo(List<Decorator<?>> decorators,
+                                   Set<Interceptor<?>> interceptors,
+                                   Map<Method, MethodInterceptorInfo> businessMethodsInfo,
+                                   List<AnnotatedMethod> nonInterceptedMethods)
         {
             this.decorators = decorators;
             this.interceptors = interceptors;
             this.businessMethodsInfo = businessMethodsInfo;
+            this.nonInterceptedMethods = nonInterceptedMethods;
         }
 
         /**
@@ -384,6 +383,10 @@ public class InterceptorResolutionService
          */
         private Map<Method, MethodInterceptorInfo> businessMethodsInfo = new HashMap<Method, MethodInterceptorInfo>();
 
+        /**
+         * all non-intercepted methods
+         */
+        private List<AnnotatedMethod> nonInterceptedMethods = Collections.EMPTY_LIST;
 
         public List<Decorator<?>> getDecorators()
         {
@@ -398,6 +401,11 @@ public class InterceptorResolutionService
         public Map<Method, MethodInterceptorInfo> getBusinessMethodsInfo()
         {
             return businessMethodsInfo;
+        }
+
+        public List<AnnotatedMethod> getNonInterceptedMethods()
+        {
+            return nonInterceptedMethods;
         }
     }
 

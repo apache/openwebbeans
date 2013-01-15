@@ -64,7 +64,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         ClassInterceptedClass internalInstance = new ClassInterceptedClass();
         internalInstance.init();
 
-        TestInvocationHandler testInvocationHandler = new TestInvocationHandler(internalInstance);
+        TestInterceptorHandler testInvocationHandler = new TestInterceptorHandler(internalInstance);
 
         ClassInterceptedClass proxy = pf.createProxyInstance(proxyClass, internalInstance, testInvocationHandler);
         Assert.assertNotNull(proxy);
@@ -89,13 +89,13 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         Assert.assertEquals(5, testInvocationHandler.invokedMethodNames.size());
     }
 
-    public static class TestInvocationHandler implements InterceptorHandler
+    public static class TestInterceptorHandler implements InterceptorHandler
     {
         public List<String> invokedMethodNames = new ArrayList<String>();
 
         private Object instance;
 
-        public TestInvocationHandler(Object instance)
+        public TestInterceptorHandler(Object instance)
         {
             this.instance = instance;
         }

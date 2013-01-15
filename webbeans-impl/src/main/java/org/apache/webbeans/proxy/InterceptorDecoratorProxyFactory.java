@@ -59,7 +59,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
     //X a generated proxy cannot easily get redefined later!
 
 
-    public <T> T createProxyInstance(Class<T> proxyClass, T instance, InterceptorHandler interceptorDecoratorStack)
+    public <T> T createProxyInstance(Class<? extends T> proxyClass, T instance, InterceptorHandler interceptorDecoratorStack)
             throws ProxyGenerationException
     {
         try
