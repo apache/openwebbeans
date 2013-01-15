@@ -36,6 +36,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -133,6 +134,13 @@ public class WebBeansDecorator<T> extends InjectionTargetBean<T> implements OwbD
         Set<String> result = new HashSet<String>(wrappedBean.getWebBeansContext().getOpenWebBeansConfiguration().getIgnoredInterfaces());
         result.add(Serializable.class.getName());
         return result;
+    }
+
+    @Override
+    public InjectionTarget<T> getInjectionTarget()
+    {
+        //X TODO review
+        return wrappedBean.getInjectionTarget();
     }
 
     protected void init()
@@ -483,6 +491,8 @@ public class WebBeansDecorator<T> extends InjectionTargetBean<T> implements OwbD
         
         return wrappedBean.getInjectionPoints();
     }
+
+
 
     /**
      * @return the clazz
