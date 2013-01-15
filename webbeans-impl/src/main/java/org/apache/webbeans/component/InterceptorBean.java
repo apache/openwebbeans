@@ -56,6 +56,11 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
      */
     private Map<InterceptionType, Method[]> interceptionMethods;
 
+    /**
+     * This is for performance reasons
+     */
+    private Method aroundInvokeMethod = null;
+
     public InterceptorBean(WebBeansContext webBeansContext, 
                            AnnotatedType<T> annotatedType,
                            Set<Type> types,
@@ -71,6 +76,17 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
               beanClass,
               Collections.<Class<? extends Annotation>>emptySet());
         this.interceptionMethods = Collections.unmodifiableMap(interceptionMethods);
+
+        // extract the aroundInvokeMethod if any
+        Method[] aroundInvokeMethods = interceptionMethods.get(InterceptionType.AROUND_INVOKE);
+        if (aroundInvokeMethods != null && aroundInvokeMethods.length == 1)
+        {
+            aroundInvokeMethod = aroundInvokeMethods[0];
+            if (!aroundInvokeMethod.isAccessible())
+            {
+                aroundInvokeMethod.setAccessible(true);
+            }
+        }
     }
 
     @Override
@@ -136,6 +152,11 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
     {
         try
         {
+            if (InterceptionType.AROUND_INVOKE == interceptionType && aroundInvokeMethod != null)
+            {
+                return aroundInvokeMethod.invoke(instance, invocationContext);
+            }
+
             Method[] interceptorMethods = getInterceptorMethods(interceptionType);
             if (interceptorMethods.length == 1)
             {

@@ -20,6 +20,7 @@ package org.apache.webbeans.newtests.interceptors.factory.beans;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.enterprise.context.RequestScoped;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Action;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
@@ -31,6 +32,7 @@ import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactio
 @Transactional
 @Action
 @Secure
+@RequestScoped
 public class ClassMultiInterceptedClass
 {
     private boolean defaultCtInvoked = false;
@@ -64,8 +66,8 @@ public class ClassMultiInterceptedClass
 
     public int getMeaningOfLife()
     {
-        System.out.println("answering the question about life, the universe and everything!");
-        System.out.println("and being in " + this.getClass());
+        //X System.out.println("answering the question about life, the universe and everything!");
+        //X System.out.println("and being in " + this.getClass());
         return meaningOfLife;
     }
 

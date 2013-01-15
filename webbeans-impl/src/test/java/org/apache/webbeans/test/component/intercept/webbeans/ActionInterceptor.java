@@ -36,7 +36,6 @@ public class ActionInterceptor
     @AroundInvoke
     public Object call(InvocationContext context) throws Exception
     {
-        System.out.println("Call Action ArondInvoke");
         WInterceptorComponent.sWithMeta = 10;
         WMetaInterceptorComponent.sWithMeta = 10;
         return context.proceed();

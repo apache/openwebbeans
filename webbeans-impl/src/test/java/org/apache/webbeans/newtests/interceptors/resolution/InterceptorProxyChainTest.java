@@ -127,7 +127,36 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
         proxyInstance.setMeaningOfLife(42);
         Assert.assertEquals(42, proxyInstance.getMeaningOfLife());
 
+        // for testing with the old proxies
+        //X proxyInstance = getInstance(ClassMultiInterceptedClass.class);
+
+        //X performBenchmarkOn(proxyInstance);
+
         shutDownContainer();
+    }
+
+    private void performBenchmarkOn(ClassMultiInterceptedClass proxyInstance)
+    {
+
+        // warmup
+        action(proxyInstance, 1000);
+
+        System.out.println("Starting the real bench");
+        long start = System.nanoTime();
+        action(proxyInstance, 10000000);
+        long end = System.nanoTime();
+        System.out.println("took: " + (end - start)/1000);
+    }
+
+    private void action(ClassMultiInterceptedClass proxyInstance, int counter)
+    {
+        for (int i=0; i < counter; i++) {
+            proxyInstance.getChar();
+            proxyInstance.getFloat();
+            proxyInstance.setMeaningOfLife(42);
+            proxyInstance.getMeaningOfLife();
+            proxyInstance.getSelf();
+        }
     }
 
 

@@ -37,7 +37,8 @@ public class TransactionalInterceptor
             ShoppingCard.CALLED = true;
             return context.proceed();
             
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             ShoppingCard.CALLED = false;
         }
