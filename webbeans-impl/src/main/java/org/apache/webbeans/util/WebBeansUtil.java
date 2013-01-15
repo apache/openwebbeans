@@ -1881,8 +1881,7 @@ public final class WebBeansUtil
 
     public <T> GProcessInjectionTarget createProcessInjectionTargetEvent(InjectionTargetBean<T> bean)
     {
-        InjectionTargetProducerRemove<T> injectionTarget = new InjectionTargetProducerRemove<T>(bean);
-        return new GProcessInjectionTarget(injectionTarget, bean.getAnnotatedType());
+        return new GProcessInjectionTarget(bean.getInjectionTarget(), bean.getAnnotatedType());
     }
 
 

@@ -75,7 +75,6 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.portable.creation.InjectionTargetProducerRemove;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
@@ -928,7 +927,7 @@ public class BeansDeployer
                 }
 
                 Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
-                ((InjectionTargetProducerRemove)processInjectionTargetEvent.getInjectionTarget()).setBean(bean);
+                //X TODO WTF??? ((InjectionTargetProducerRemove)processInjectionTargetEvent.getInjectionTarget()).setBean(bean);
                 if(managedBeanCreator.isEnabled())
                 {
                     observerMethods = managedBeanCreator.defineObserverMethods(bean);
@@ -1024,12 +1023,12 @@ public class BeansDeployer
             {
                 if(processInjectionTargetEvent != null)
                 {
-                    final InjectionTarget originalInjectionTarget = processInjectionTargetEvent.getInjectionTarget();
+                    final InjectionTarget originalInjectionTarget = bean.getInjectionTarget();
                     final InjectionTarget updatedInjectionTarget = webBeansContext.getWebBeansUtil()
-                            .fireProcessInjectionTargetEvent(processInjectionTarget).getInjectionTarget();
+                            .fireProcessInjectionTargetEvent(bean).getInjectionTarget();
                     if (updatedInjectionTarget != originalInjectionTarget && bean != null)
                     {
-                        bean.setProducer(updatedInjectionTarget);
+                        bean.setInjectionTarget(updatedInjectionTarget);
                     }
                 }
             }
