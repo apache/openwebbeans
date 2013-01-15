@@ -936,7 +936,7 @@ public class BeansDeployer
                 Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields(bean);
 
                 //Put final InjectionTarget instance
-                bean.setProducer(processInjectionTargetEvent.getInjectionTarget());
+                bean.setInjectionTarget(processInjectionTargetEvent.getInjectionTarget());
 
                 ManagedBean<T> managedBean = (ManagedBean<T>)bean;
                 Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods =
