@@ -24,12 +24,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
@@ -48,16 +50,20 @@ import javax.inject.Inject;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.SelfInterceptorBean;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.intercept.DefaultInterceptorHandler;
 import org.apache.webbeans.intercept.LifecycleInterceptorInvocationContext;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.proxy.OwbInterceptorProxy;
+import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ExceptionUtil;
 
@@ -183,6 +189,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         injectFields(type, instance, context);
         injectMethods(type, instance, context);
         injectInitializerMethods(type, instance, context);
+        injectResources(instance);
     }
 
     private void injectFields(Class<?> type, T instance, CreationalContextImpl<T> context)
@@ -231,6 +238,33 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             {
                 new InjectableMethod<T>(method.getJavaMember(), instance, this, context).doInjection();
             }
+        }
+    }
+    
+    private void injectResources(T instance)
+    {
+        try
+        {
+            ResourceInjectionService service = null;
+            try
+            {
+                service = webBeansContext.getService(ResourceInjectionService.class);
+            
+            }
+            catch (Exception e)
+            {
+                // When running in tests
+            }
+        
+            if (service != null)
+            {
+                service.injectJavaEEResources(instance);   
+            }
+        }
+        catch (Exception e)
+        {
+            throw new WebBeansException(MessageFormat.format(
+                WebBeansLoggerFacade.getTokenString(OWBLogConst.ERROR_0023), instance), e);
         }
     }
 

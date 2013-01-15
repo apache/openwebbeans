@@ -60,15 +60,6 @@ public class ExtensionBean<T> extends InjectionTargetBean<T>
      * {@inheritDoc}
      */
     @Override
-    protected T createComponentInstance(CreationalContext<T> creationalContext)
-    {
-        return getInjectionTarget().produce(creationalContext);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     protected void destroyComponentInstance(T instance, CreationalContext<T> creationalContext)
     {
         

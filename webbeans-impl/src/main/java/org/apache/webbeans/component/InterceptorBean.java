@@ -89,13 +89,6 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
         }
     }
 
-    @Override
-    protected T createComponentInstance(CreationalContext<T> creationalContext)
-    {
-        return getInjectionTarget().produce(creationalContext);
-    }
-
-
     /**
      * Get constructor.
      *

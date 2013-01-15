@@ -70,15 +70,6 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected T createComponentInstance(CreationalContext<T> creationalContext)
-    {
-        return getInjectionTarget().produce(creationalContext);
-    }
-
-    /**
      * Get constructor.
      * 
      * @return constructor

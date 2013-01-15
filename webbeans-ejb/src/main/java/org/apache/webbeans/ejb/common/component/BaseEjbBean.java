@@ -86,15 +86,6 @@ public abstract class BaseEjbBean<T> extends InjectionTargetBean<T> implements E
         
         return false;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected T createComponentInstance(CreationalContext<T> creationalContext)
-    {
-        return getInjectionTarget().produce(creationalContext);
-    }
     
     /**
      * {@inheritDoc}

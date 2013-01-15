@@ -103,7 +103,6 @@ public class InjectionTargetProducerRemove<T> extends AbstractProducerRemove<T> 
                     return;
                 }
                 
-                bean.injectResources(instance, ctx);
                 bean.getInjectionTarget().inject(instance, ctx);
             }
         }

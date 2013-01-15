@@ -124,7 +124,7 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
     protected T createInstance(CreationalContext<T> creationalContext)
     {
         //Create actual bean instance
-        T instance = createComponentInstance(creationalContext);
+        T instance = getInjectionTarget().produce(creationalContext);
 
         //X TODO this should not be needed finally!
         //For dependent instance checks
@@ -138,16 +138,12 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
                 //This is a dependent scoped bean instance,
                 //Therefore we inject dependencies of this instance
                 //Otherwise we loose injection
-                injectResources(instance, creationalContext);
                 getInjectionTarget().inject(instance, creationalContext);
 
                 //Dependent proxy
                 return result;
             }
         }
-
-        //Inject resources
-        injectResources(instance, creationalContext);
 
         getInjectionTarget().inject(instance, creationalContext);
 
@@ -168,17 +164,6 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
     protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
     {
         destroyComponentInstance(instance, creationalContext);
-    }
-
-    /**
-     * Sub-classes must override this method to create bean instance.
-     * 
-     * @param creationalContext creational context
-     * @return bean instance
-     */
-    protected T createComponentInstance(CreationalContext<T> creationalContext)
-    {
-        return null;
     }
 
     /**
@@ -226,40 +211,6 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
                     throw new WebBeansException(e);
                 }
             }            
-        }
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void injectResources(T instance, CreationalContext<T> creationalContext)
-    {
-        if(getWebBeansType().equals(WebBeansType.MANAGED))
-        {
-            try
-            {
-                ResourceInjectionService service = null;
-                try
-                {
-                    service = getWebBeansContext().getService(ResourceInjectionService.class);
-                    
-                }
-                catch(Exception e)
-                {
-                    // When running in tests
-                }
-                
-                if(service != null)
-                {
-                    service.injectJavaEEResources(instance);   
-                }
-            }
-            catch (Exception e)
-            {
-                getLogger().log(Level.SEVERE, OWBLogConst.ERROR_0023, instance);
-                throw new WebBeansException(MessageFormat.format(
-                        WebBeansLoggerFacade.getTokenString(OWBLogConst.ERROR_0023), instance), e);
-            }
         }
     }
 
