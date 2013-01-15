@@ -235,7 +235,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     }
 
     @Override
-    public void postConstruct(T instance)
+    public void postConstruct(final T instance)
     {
         if (postConstructMethods == null)
         {
@@ -245,6 +245,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
 
         Map<Interceptor<?>, ?> interceptorInstances = null;
         List<Interceptor<?>> postConstructInterceptors = null;
+        T internalInstance = instance;
 
         if (interceptorInfo != null && instance instanceof OwbInterceptorProxy)
         {
@@ -254,13 +255,14 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             {
                 DefaultInterceptorHandler dih = (DefaultInterceptorHandler) ih;
                 interceptorInstances = dih.getInstances();
+                internalInstance = (T) dih.getTarget();
             }
 
             // we are cheating a bit right now. We could also calculate the real ones upfront
             postConstructInterceptors = new ArrayList<Interceptor<?>>(interceptorInfo.getInterceptors());
         }
 
-        InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(instance, InterceptionType.POST_CONSTRUCT, postConstructInterceptors,
+        InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(internalInstance, InterceptionType.POST_CONSTRUCT, postConstructInterceptors,
                                                                             interceptorInstances, postConstructMethods);
         try
         {
@@ -280,7 +282,27 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             return;
         }
 
-        InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(instance, InterceptionType.PRE_DESTROY, null, null, preDestroyMethods);
+        Map<Interceptor<?>, ?> interceptorInstances = null;
+        List<Interceptor<?>> preDestroyInterceptors = null;
+        T internalInstance = instance;
+
+        if (interceptorInfo != null && instance instanceof OwbInterceptorProxy)
+        {
+            InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
+            InterceptorHandler ih = pf.getInterceptorHandler((OwbInterceptorProxy) instance);
+            if (ih instanceof DefaultInterceptorHandler)
+            {
+                DefaultInterceptorHandler dih = (DefaultInterceptorHandler) ih;
+                interceptorInstances = dih.getInstances();
+                internalInstance = (T) dih.getTarget();
+            }
+
+            // we are cheating a bit right now. We could also calculate the real ones upfront
+            preDestroyInterceptors = new ArrayList<Interceptor<?>>(interceptorInfo.getInterceptors());
+        }
+
+        InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(instance, InterceptionType.PRE_DESTROY, preDestroyInterceptors,
+                                                                            interceptorInstances, preDestroyMethods);
         try
         {
             ic.proceed();
