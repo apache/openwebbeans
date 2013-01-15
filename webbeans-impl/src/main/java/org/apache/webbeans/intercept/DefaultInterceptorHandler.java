@@ -44,6 +44,16 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler
         this.interceptors = interceptors;
     }
 
+    public Map<Interceptor<?>, ?> getInstances()
+    {
+        return instances;
+    }
+
+    public Map<Method, List<Interceptor<?>>> getInterceptors()
+    {
+        return interceptors;
+    }
+
     public Object invoke(Method method, Object[] parameters)
     {
         try

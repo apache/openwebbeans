@@ -23,7 +23,6 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InterceptionType;
@@ -86,9 +85,10 @@ public class InterceptorResolutionService
     }
 
 
-    public <T> BeanInterceptorInfo  calculateInterceptorInfo(Bean<T> bean, AnnotatedType<T> annotatedType)
+    public <T> BeanInterceptorInfo  calculateInterceptorInfo(Set<Type> beanTypes, Set<Annotation> qualifiers, AnnotatedType<T> annotatedType)
     {
-        Asserts.assertNotNull(bean, "Bean must not be null!");
+        Asserts.assertNotNull(beanTypes, "beanTypes must not be null!");
+        Asserts.assertNotNull(qualifiers, "qualifiers must not be null!");
         Asserts.assertNotNull(annotatedType, "AnnotatedType must not be null!");
 
         List<AnnotatedMethod> interceptableAnnotatedMethods = getInterceptableBusinessMethods(annotatedType);
@@ -106,7 +106,7 @@ public class InterceptorResolutionService
         collectEjbInterceptors(classLevelEjbInterceptors, annotatedType);
 
         // pick up the decorators
-        List<Decorator<?>> decorators = beanManager.resolveDecorators(bean.getTypes(), AnnotationUtil.asArray(bean.getQualifiers()));
+        List<Decorator<?>> decorators = beanManager.resolveDecorators(beanTypes, AnnotationUtil.asArray(qualifiers));
         if (decorators.size() == 0)
         {
             decorators = null; // less to store

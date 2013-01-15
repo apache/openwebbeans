@@ -130,7 +130,7 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
         //For dependent instance checks
         if(getScope() == Dependent.class && !(this instanceof EnterpriseBeanMarker))
         {
-            final ProxyFactory proxyFactory = getWebBeansContext().getProxyFactory();
+            final ProxyFactory proxyFactory = getWebBeansContext().getProxyFactoryRemove();
             T result = (T) proxyFactory.createDependentScopedBeanProxyRemove(this, instance, creationalContext);
             //Means that Dependent Bean has interceptor/decorator
             if(proxyFactory.isProxyInstanceRemove(result))

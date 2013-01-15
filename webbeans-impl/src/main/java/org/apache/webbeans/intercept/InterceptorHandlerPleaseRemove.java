@@ -348,7 +348,7 @@ public abstract class InterceptorHandlerPleaseRemove implements InvocationHandle
         if (decoratorDelegateHandler == null)
         {
             final DelegateHandler newDelegateHandler = new DelegateHandler(bean);
-            final ProxyFactory proxyFactory = webBeansContext.getProxyFactory();
+            final ProxyFactory proxyFactory = webBeansContext.getProxyFactoryRemove();
 
             final Object delegate = proxyFactory.createDecoratorDelegate(bean, newDelegateHandler);
 

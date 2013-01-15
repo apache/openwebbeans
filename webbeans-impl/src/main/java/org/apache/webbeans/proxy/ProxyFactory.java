@@ -39,6 +39,7 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecorator;
@@ -52,30 +53,32 @@ import org.apache.webbeans.proxy.javassist.JavassistFactory;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
+
+
 /**
  *  TODO remove old proxy handling. Only InterceptorDecoratorProxyFactory and NormalScopeProxyFactory shall remain.
  */
 public final class ProxyFactory
 {
-    private ConcurrentMap<OwbBean<?>, Class<?>> buildInBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
-    private ConcurrentMap<OwbBean<?>, Class<?>> normalScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
-    private ConcurrentMap<OwbBean<?>, Class<?>> dependentScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
-    private ConcurrentMap<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
-    private ConcurrentMap<ResourceBean<?, ?>, Class<?>> resourceBeanProxyClasses = new ConcurrentHashMap<ResourceBean<?,?>, Class<?>>();
+    private final WebBeansContext webBeansContext;
+
+    private ConcurrentMap<OwbBean<?>, Class<?>> buildInBeanProxyClassesRemove = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
+    private ConcurrentMap<OwbBean<?>, Class<?>> normalScopedBeanProxyClassesRemove = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
+    private ConcurrentMap<OwbBean<?>, Class<?>> dependentScopedBeanProxyClassesRemove = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
+    private ConcurrentMap<OwbBean<?>, Class<?>> interceptorProxyClassesRemove = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
+    private ConcurrentMap<ResourceBean<?, ?>, Class<?>> resourceBeanProxyClassesRemove = new ConcurrentHashMap<ResourceBean<?,?>, Class<?>>();
 
     // second level map is indexed on local interface
     private ConcurrentMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>>();
-    private Factory factory;
+    private Factory factoryRemove = new JavassistFactory();
+
+    private final InterceptorDecoratorProxyFactory interceptorDecoratorProxyFactory;
 
 
-    public ProxyFactory()
+    public ProxyFactory(WebBeansContext webBeansContext)
     {
-        this(new JavassistFactory());
-    }
-
-    public ProxyFactory(Factory factory)
-    {
-        this.factory = factory;
+        this.webBeansContext = webBeansContext;
+        this.interceptorDecoratorProxyFactory = new InterceptorDecoratorProxyFactory();
     }
 
     /**
@@ -87,20 +90,20 @@ public final class ProxyFactory
 
     public void setHandler(Object proxy, MethodHandler handler)
     {
-        factory.setHandler(proxy, handler);
+        factoryRemove.setHandler(proxy, handler);
     }
 
 
     private Map<OwbBean<?>, Class<?>> getInterceptorProxyClasses()
     {
-        return interceptorProxyClasses;
+        return interceptorProxyClassesRemove;
     }
 
     public void clear()
     {
-        normalScopedBeanProxyClasses.clear();
-        dependentScopedBeanProxyClasses.clear();
-        interceptorProxyClasses.clear();
+        normalScopedBeanProxyClassesRemove.clear();
+        dependentScopedBeanProxyClassesRemove.clear();
+        interceptorProxyClassesRemove.clear();
         ejbProxyClasses.clear();
     }
     /**
@@ -159,7 +162,7 @@ public final class ProxyFactory
             
             interfaces = new Class<?>[list.size()];
             interfaces = list.toArray(interfaces);
-            proxyClass = factory.getProxyClass(superClazz, interfaces);
+            proxyClass = factoryRemove.getProxyClass(superClazz, interfaces);
             
             typeToProxyClassMap.putIfAbsent(iface, proxyClass);
             // don't care if we were beaten in updating the iface->proxyclass map
@@ -192,12 +195,12 @@ public final class ProxyFactory
     {
         try
         {
-            Class<?> proxyClass = resourceBeanProxyClasses.get(resourceBean);
+            Class<?> proxyClass = resourceBeanProxyClassesRemove.get(resourceBean);
             if (proxyClass == null)
             {
                 proxyClass = createProxyClassRemove(resourceBean);
 
-                Class<?> oldClazz = resourceBeanProxyClasses.putIfAbsent(resourceBean, proxyClass);
+                Class<?> oldClazz = resourceBeanProxyClassesRemove.putIfAbsent(resourceBean, proxyClass);
                 if (oldClazz != null)
                 {
                     return oldClazz;
@@ -222,11 +225,11 @@ public final class ProxyFactory
         Object result = null;
         try
         {
-            Class<?> proxyClass = normalScopedBeanProxyClasses.get(bean);
+            Class<?> proxyClass = normalScopedBeanProxyClassesRemove.get(bean);
             if (proxyClass == null)
             {
                 proxyClass = createProxyClassRemove(bean);
-                normalScopedBeanProxyClasses.putIfAbsent(bean, proxyClass);
+                normalScopedBeanProxyClassesRemove.putIfAbsent(bean, proxyClass);
             }
 
 
@@ -254,7 +257,7 @@ public final class ProxyFactory
     private Object createProxyRemove(Class<?> proxyClass)
         throws InstantiationException, IllegalAccessException
     {
-        return factory.createProxy(proxyClass);
+        return factoryRemove.createProxy(proxyClass);
     }
 
     /**
@@ -346,11 +349,11 @@ public final class ProxyFactory
         Object result = null;
         try
         {
-            Class<?> proxyClass = buildInBeanProxyClasses.get(bean);
+            Class<?> proxyClass = buildInBeanProxyClassesRemove.get(bean);
             if (proxyClass == null)
             {
                 proxyClass = createProxyClassRemove(bean);
-                buildInBeanProxyClasses.putIfAbsent(bean, proxyClass);
+                buildInBeanProxyClassesRemove.putIfAbsent(bean, proxyClass);
             }
             result = createProxyRemove(proxyClass);
         }
@@ -427,11 +430,11 @@ public final class ProxyFactory
         
         try
         {
-            Class<?> proxyClass = dependentScopedBeanProxyClasses.get(bean);
+            Class<?> proxyClass = dependentScopedBeanProxyClassesRemove.get(bean);
             if (proxyClass == null)
             {
                 proxyClass = createProxyClassRemove(bean);
-                dependentScopedBeanProxyClasses.putIfAbsent(bean, proxyClass);
+                dependentScopedBeanProxyClassesRemove.putIfAbsent(bean, proxyClass);
             }
 
             Object result = createProxyRemove(proxyClass);
@@ -456,7 +459,7 @@ public final class ProxyFactory
     private Class<?> createProxyClassRemove(OwbBean<?> bean)
     {
         final ProxyInfoRemove info = getProxyInfo(bean);
-        return factory.getProxyClass(info.getSuperClass(), info.getInterfaces());
+        return factoryRemove.getProxyClass(info.getSuperClass(), info.getInterfaces());
     }
 
     public Class<?> createAbstractDecoratorProxyClass(OwbBean<?> bean)
@@ -469,13 +472,13 @@ public final class ProxyFactory
      */
     public boolean isProxyInstanceRemove(Object o)
     {
-        return factory.isProxyInstance(o);
+        return factoryRemove.isProxyInstance(o);
     }
 
     public Object createProxy(MethodHandler handler, Class<?>[] interfaces)
         throws IllegalAccessException, InstantiationException
     {
-        return factory.createProxy(handler, interfaces);
+        return factoryRemove.createProxy(handler, interfaces);
     }
 
     /**

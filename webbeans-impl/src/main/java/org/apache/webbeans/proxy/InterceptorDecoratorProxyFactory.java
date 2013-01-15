@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.apache.webbeans.util.ExceptionUtil;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -103,8 +104,27 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         }
         catch (Exception e)
         {
-            throw new RuntimeException(e);
+            ExceptionUtil.throwAsRuntimeException(e);
         }
+        return null;
+    }
+
+    /**
+     * @return the internal instance which gets proxied.
+     */
+    public InterceptorHandler getInterceptorHandler(OwbInterceptorProxy proxyInstance)
+    {
+        try
+        {
+            Field internalInstanceField = proxyInstance.getClass().getDeclaredField(FIELD_INTERCEPTOR_HANDLER);
+            internalInstanceField.setAccessible(true);
+            return (InterceptorHandler) internalInstanceField.get(proxyInstance);
+        }
+        catch (Exception e)
+        {
+            ExceptionUtil.throwAsRuntimeException(e);
+        }
+        return null;
     }
 
 

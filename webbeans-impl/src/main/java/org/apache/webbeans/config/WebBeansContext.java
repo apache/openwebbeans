@@ -44,6 +44,7 @@ import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
+import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.ProxyFactory;
 import org.apache.webbeans.proxy.javassist.OpenWebBeansClassLoaderProvider;
 import org.apache.webbeans.service.DefaultLoaderService;
@@ -64,7 +65,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class WebBeansContext
 {
     //X TODO REMOVE, only used while implementing the new Interceptor handling
-    public static final boolean TODO_USING_NEW_INTERCEPTORS = false;
+    public static final boolean TODO_USING_NEW_INTERCEPTORS = true;
 
     private final Map<Class<?>, Object> managerMap = new HashMap<Class<?>, Object>();
 
@@ -82,7 +83,8 @@ public class WebBeansContext
     private final ExtensionLoader extensionLoader = new ExtensionLoader(this);
     private final InterceptorsManager interceptorsManager = new InterceptorsManager(this);
     private final WebBeansInterceptorConfig webBeansInterceptorConfig = new WebBeansInterceptorConfig(this);
-    private final ProxyFactory proxyFactory;
+    private final ProxyFactory proxyFactoryRemove;
+    private final InterceptorDecoratorProxyFactory interceptorDecoratorProxyFactory = new InterceptorDecoratorProxyFactory();
     private final OpenWebBeansConfiguration openWebBeansConfiguration;
     private final PluginLoader pluginLoader = new PluginLoader();
     private final SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
@@ -138,9 +140,9 @@ public class WebBeansContext
         loaderService = getService(LoaderService.class);
         securityService = getService(SecurityService.class);
 
-        proxyFactory = serviceMap.containsKey(ProxyFactory.class)
+        proxyFactoryRemove = serviceMap.containsKey(ProxyFactory.class)
             ? (ProxyFactory) serviceMap.get(ProxyFactory.class)
-            : new ProxyFactory();
+            : new ProxyFactory(this);
         OpenWebBeansClassLoaderProvider.initProxyFactoryClassLoaderProvider();
 
         // Allow the WebBeansContext itself to be looked up
@@ -155,7 +157,8 @@ public class WebBeansContext
         managerMap.put(DecoratorsManager.class, decoratorsManager);
         managerMap.put(ExtensionLoader.class, extensionLoader);
         managerMap.put(InterceptorsManager.class, interceptorsManager);
-        managerMap.put(ProxyFactory.class, proxyFactory);
+        managerMap.put(ProxyFactory.class, proxyFactoryRemove);
+        managerMap.put(InterceptorDecoratorProxyFactory.class, interceptorDecoratorProxyFactory);
         managerMap.put(OpenWebBeansConfiguration.class, openWebBeansConfiguration);
         managerMap.put(PluginLoader.class, pluginLoader);
         managerMap.put(SerializableBeanVault.class, serializableBeanVault);
@@ -328,9 +331,14 @@ public class WebBeansContext
         return extensionLoader;
     }
 
-    public ProxyFactory getProxyFactory()
+    public ProxyFactory getProxyFactoryRemove()
     {
-        return proxyFactory;
+        return proxyFactoryRemove;
+    }
+
+    public InterceptorDecoratorProxyFactory getInterceptorDecoratorProxyFactory()
+    {
+        return interceptorDecoratorProxyFactory;
     }
 
 

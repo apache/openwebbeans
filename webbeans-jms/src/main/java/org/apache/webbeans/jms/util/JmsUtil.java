@@ -171,7 +171,7 @@ public final class JmsUtil
 
             final Class<?>[] interfaces = {Closable.class, Serializable.class, intf};
 
-            return WebBeansContext.getInstance().getProxyFactory().createProxy(handler, interfaces);
+            return WebBeansContext.getInstance().getProxyFactoryRemove().createProxy(handler, interfaces);
 
         }
         catch (Exception e)

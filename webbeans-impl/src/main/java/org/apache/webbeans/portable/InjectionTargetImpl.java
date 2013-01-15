@@ -24,8 +24,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -44,12 +47,17 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.inject.Inject;
 import javax.interceptor.InvocationContext;
 
+import org.apache.webbeans.component.SelfInterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethod;
+import org.apache.webbeans.intercept.DefaultInterceptorHandler;
 import org.apache.webbeans.intercept.LifecycleInterceptorInvocationContext;
+import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
+import org.apache.webbeans.proxy.InterceptorHandler;
+import org.apache.webbeans.proxy.OwbInterceptorProxy;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ExceptionUtil;
 
@@ -61,7 +69,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
 
     private AnnotatedType<T> type;
     private AnnotatedConstructor<T> constructor;
-    protected final WebBeansContext context;
+    protected final WebBeansContext webBeansContext;
 
     /**
      * If the InjectionTarget has a &#064;PostConstruct method, <code>null</code> if not.
@@ -84,6 +92,23 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
      */
     private BeanInterceptorInfo interceptorInfo = null;
 
+    /**
+     * Defines the interceptor/decorator stack for the InjectionTargetBean.
+     * In case this is already defined, we get the ProxyClass for the Bean
+     * or <code>null</code> if this Bean doesn't need any proxy.
+     * This logic is handled inside the Bean and not in the BeanBuilder as
+     * this can also be created lazily
+     *
+     * the Proxy Class or <code>null</code> if this Bean is not intercepted nor decorated.
+     */
+    private Class<? extends T>  proxyClass;
+
+    /**
+     * List of all Interceptors per Method.
+     */
+    private Map<Method, List<Interceptor<?>>> methodInterceptors = null;
+
+
     public InjectionTargetImpl(AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext,
                                List<AnnotatedMethod<?>> postConstructMethods, List<AnnotatedMethod<?>> preDestroyMethods)
     {
@@ -91,14 +116,16 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         Asserts.assertNotNull(annotatedType);
         Asserts.assertNotNull(webBeansContext);
         type = annotatedType;
-        context = webBeansContext;
+        this.webBeansContext = webBeansContext;
         this.postConstructMethods = postConstructMethods;
         this.preDestroyMethods = preDestroyMethods;
     }
 
-    public void setInterceptorInfo(BeanInterceptorInfo interceptorInfo)
+    public void setInterceptorInfo(BeanInterceptorInfo interceptorInfo, Class<? extends T> proxyClass, Map<Method, List<Interceptor<?>>> methodInterceptors)
     {
         this.interceptorInfo = interceptorInfo;
+        this.proxyClass = proxyClass;
+        this.methodInterceptors = methodInterceptors;
     }
 
     @Override
@@ -109,8 +136,27 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         if (interceptorInfo != null)
         {
             // apply interceptorInfo
-            Set<Interceptor<?>> interceptors = interceptorInfo.getInterceptors();
+            InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
 
+            Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<Interceptor<?>, Object>();
+            for (Interceptor interceptorBean : interceptorInfo.getInterceptors())
+            {
+                Object interceptorInstance;
+                if (interceptorBean instanceof SelfInterceptorBean)
+                {
+                    interceptorInstance = instance;
+                }
+                else
+                {
+                    interceptorInstance = interceptorBean.create(creationalContext);
+                }
+                interceptorInstances.put(interceptorBean, interceptorInstance);
+            }
+
+            InterceptorHandler interceptorHandler = new DefaultInterceptorHandler<T>(instance, methodInterceptors, interceptorInstances);
+
+            T proxyInstance = pf.createProxyInstance(proxyClass, instance, interceptorHandler);
+            instance = proxyInstance;
         }
 
         return instance;
@@ -191,12 +237,31 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void postConstruct(T instance)
     {
-        if (postConstructMethods == null /*X TODO && postConstructInterceptors == null */)
+        if (postConstructMethods == null)
         {
             return;
         }
 
-        InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(instance, InterceptionType.POST_CONSTRUCT, null, null, postConstructMethods);
+
+        Map<Interceptor<?>, ?> interceptorInstances = null;
+        List<Interceptor<?>> postConstructInterceptors = null;
+
+        if (interceptorInfo != null && instance instanceof OwbInterceptorProxy)
+        {
+            InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
+            InterceptorHandler ih = pf.getInterceptorHandler((OwbInterceptorProxy) instance);
+            if (ih instanceof DefaultInterceptorHandler)
+            {
+                DefaultInterceptorHandler dih = (DefaultInterceptorHandler) ih;
+                interceptorInstances = dih.getInstances();
+            }
+
+            // we are cheating a bit right now. We could also calculate the real ones upfront
+            postConstructInterceptors = new ArrayList<Interceptor<?>>(interceptorInfo.getInterceptors());
+        }
+
+        InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(instance, InterceptionType.POST_CONSTRUCT, postConstructInterceptors,
+                                                                            interceptorInstances, postConstructMethods);
         try
         {
             ic.proceed();
@@ -254,14 +319,14 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         }
         else
         {
-            this.constructor = new AnnotatedConstructorImpl<T>(context, getDefaultConstructor(), type);
+            this.constructor = new AnnotatedConstructorImpl<T>(webBeansContext, getDefaultConstructor(), type);
         }
         return this.constructor;
     }
 
     private Constructor<T> getDefaultConstructor()
     {
-        return context.getWebBeansUtil().getNoArgConstructor(type.getJavaClass());
+        return webBeansContext.getWebBeansUtil().getNoArgConstructor(type.getJavaClass());
     }
     
     private boolean isProducerMethod(InjectionPoint injectionPoint)

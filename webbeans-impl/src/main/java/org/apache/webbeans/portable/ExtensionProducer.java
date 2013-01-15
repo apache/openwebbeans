@@ -42,7 +42,7 @@ public class ExtensionProducer<T> extends InjectionTargetImpl<T>
     @Override
     public T produce(CreationalContext<T> creationalContext)
     {
-        ExtensionLoader loader = context.getExtensionLoader();
+        ExtensionLoader loader = webBeansContext.getExtensionLoader();
         
         return loader.getBeanInstance((Bean<T>)((CreationalContextImpl<T>) creationalContext).getBean());
     }

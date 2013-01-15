@@ -56,7 +56,7 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
         AnnotatedType<ClassMultiInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(ClassMultiInterceptedClass.class);
         Bean<ClassMultiInterceptedClass> bean = (Bean<ClassMultiInterceptedClass>) getBeanManager().resolve(getBeanManager().getBeans(ClassMultiInterceptedClass.class));
 
-        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean, annotatedType);
+        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
 
@@ -64,13 +64,8 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
         ClassMultiInterceptedClass internalInstance = new ClassMultiInterceptedClass();
         CreationalContext<ClassMultiInterceptedClass> cc = getBeanManager().createCreationalContext(bean);
 
-        Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<Interceptor<?>, Object>();
-        for (Interceptor interceptorBean : interceptorInfo.getInterceptors())
-        {
-            Object interceptorInstance = interceptorBean.create(cc);
-            interceptorInstances.put(interceptorBean, interceptorInstance);
-        }
-
+        // step 1.
+        // calculate the interceptor-method info
         Map<Method, List<Interceptor<?>>> methodInterceptors = new HashMap<Method, List<Interceptor<?>>>();
         List<Method> nonBusinessMethods = new ArrayList<Method>();
         for (Map.Entry<Method, InterceptorResolutionService.BusinessMethodInterceptorInfo> miEntry : interceptorInfo.getBusinessMethodsInfo().entrySet())
@@ -104,9 +99,8 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
             }
         }
 
-        InterceptorHandler interceptorHandler
-                = new DefaultInterceptorHandler<ClassMultiInterceptedClass>(internalInstance, methodInterceptors, interceptorInstances);
-
+        // step 2.
+        // creating the Proxy Class itself
         InterceptorDecoratorProxyFactory pf = new InterceptorDecoratorProxyFactory();
 
         // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
@@ -117,6 +111,18 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
 
         Class<? extends ClassMultiInterceptedClass> proxyClass = pf.createProxyClass(classLoader, ClassMultiInterceptedClass.class, businessMethods, nonInterceptedMethods);
         Assert.assertNotNull(proxyClass);
+
+
+        // step 3.
+        // creating the InterceptorHandler for each intercepted instance later at runtime
+        Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<Interceptor<?>, Object>();
+        for (Interceptor interceptorBean : interceptorInfo.getInterceptors())
+        {
+            Object interceptorInstance = interceptorBean.create(cc);
+            interceptorInstances.put(interceptorBean, interceptorInstance);
+        }
+        InterceptorHandler interceptorHandler
+                = new DefaultInterceptorHandler<ClassMultiInterceptedClass>(internalInstance, methodInterceptors, interceptorInstances);
 
         ClassMultiInterceptedClass proxyInstance = pf.createProxyInstance(proxyClass, internalInstance, interceptorHandler);
         Assert.assertNotNull(proxyInstance);

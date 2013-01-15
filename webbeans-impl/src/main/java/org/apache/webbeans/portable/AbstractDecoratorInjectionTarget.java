@@ -41,7 +41,7 @@ public class AbstractDecoratorInjectionTarget<T> extends InjectionTargetImpl<T>
     {
         super(bean.getAnnotatedType(), bean.getInjectionPoints(), bean.getWebBeansContext(),
               Collections.<AnnotatedMethod<?>>emptyList(), Collections.<AnnotatedMethod<?>>emptyList());
-        proxyFactory = bean.getWebBeansContext().getProxyFactory();
+        proxyFactory = bean.getWebBeansContext().getProxyFactoryRemove();
         Class<T> clazz = (Class<T>) proxyFactory.createAbstractDecoratorProxyClass(bean);
         constructor = bean.getWebBeansContext().getWebBeansUtil().defineConstructor(clazz);
     }

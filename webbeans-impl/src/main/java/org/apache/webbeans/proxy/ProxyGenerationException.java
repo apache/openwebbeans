@@ -19,7 +19,7 @@
 package org.apache.webbeans.proxy;
 
 public class ProxyGenerationException
-    extends Exception
+    extends RuntimeException
 {
 
     public ProxyGenerationException()

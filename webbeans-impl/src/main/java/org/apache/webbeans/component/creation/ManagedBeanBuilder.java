@@ -19,9 +19,13 @@
 package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -30,6 +34,8 @@ import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
@@ -39,7 +45,10 @@ import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.exception.inject.DeploymentException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
+import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.portable.AbstractDecoratorInjectionTarget;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -132,6 +141,65 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
     protected List<AnnotatedMethod<?>> getPreDestroyMethods()
     {
         return webBeansContext.getInterceptorUtil().getLifecycleMethods(getAnnotated(), PreDestroy.class, false);
+    }
+
+    @Override
+    protected InjectionTarget<T> buildInjectionTarget(Set<Type> types, Set<Annotation> qualifiers, AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext, List<AnnotatedMethod<?>> postConstructMethods, List<AnnotatedMethod<?>> preDestroyMethods)
+    {
+        InjectionTargetImpl<T> injectionTarget =  (InjectionTargetImpl<T>) super.buildInjectionTarget(types, qualifiers, annotatedType, points, webBeansContext, postConstructMethods, preDestroyMethods);    //To change body of overridden methods use File | Settings | File Templates.
+        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = webBeansContext.getInterceptorResolutionService().calculateInterceptorInfo(types, qualifiers, annotatedType);
+
+        Map<Method, List<Interceptor<?>>> methodInterceptors = new HashMap<Method, List<Interceptor<?>>>();
+        List<Method> nonBusinessMethods = new ArrayList<Method>();
+        for (Map.Entry<Method, InterceptorResolutionService.BusinessMethodInterceptorInfo> miEntry : interceptorInfo.getBusinessMethodsInfo().entrySet())
+        {
+            Method interceptedMethod = miEntry.getKey();
+            InterceptorResolutionService.BusinessMethodInterceptorInfo mii = miEntry.getValue();
+            List<Interceptor<?>> activeInterceptors = new ArrayList<Interceptor<?>>();
+
+            if (mii.getEjbInterceptors() != null)
+            {
+                for (Interceptor<?> i : mii.getEjbInterceptors())
+                {
+                    activeInterceptors.add(i);
+                }
+            }
+            if (mii.getCdiInterceptors() != null)
+            {
+                for (Interceptor<?> i : mii.getCdiInterceptors())
+                {
+                    activeInterceptors.add(i);
+                }
+            }
+            if (activeInterceptors.size() > 0)
+            {
+                methodInterceptors.put(interceptedMethod, activeInterceptors);
+            }
+
+            // empty InterceptionType -> AROUND_INVOKE
+            if (!mii.getInterceptionTypes().isEmpty())
+            {
+                nonBusinessMethods.add(interceptedMethod);
+            }
+        }
+
+        if (methodInterceptors.size() > 0)
+        {
+            // we only need to create a proxy class for intercepted or decorated Beans
+            InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
+
+            // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
+            ClassLoader classLoader = this.getClass().getClassLoader();
+
+            Method[] businessMethods = methodInterceptors.keySet().toArray(new Method[methodInterceptors.size()]);
+            Method[] nonInterceptedMethods = interceptorInfo.getNonInterceptedMethods().toArray(new Method[interceptorInfo.getNonInterceptedMethods().size()]);
+
+            Class<? extends T> proxyClass = pf.createProxyClass(classLoader, getBeanType(), businessMethods, nonInterceptedMethods);
+
+            injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors);
+        }
+
+        return injectionTarget;
     }
 
     /**
@@ -233,6 +301,7 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
         }
 
         //X TODO move proxy instance creation into JavassistProxyFactory!
+
         bean.setInjectionTarget(new AbstractDecoratorInjectionTarget<T>(bean));
         return bean;
     }

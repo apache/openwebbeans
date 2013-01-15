@@ -65,6 +65,8 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
+import static org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
+
 /**
  * Abstract implementation of {@link AbstractBeanBuilder}.
  * 
@@ -675,14 +677,17 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
         }
     }
 
-    protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType,
+    protected InjectionTarget<T> buildInjectionTarget(Set<Type> types,
+                                                      Set<Annotation> qualifiers,
+                                                      AnnotatedType<T> annotatedType,
                                                       Set<InjectionPoint> points,
                                                       WebBeansContext webBeansContext,
                                                       List<AnnotatedMethod<?>> postConstructMethods,
                                                       List<AnnotatedMethod<?>> preDestroyMethods)
     {
-        //X TODO set interceptor information
-        return new InjectionTargetImpl<T>(annotatedType, points, webBeansContext, postConstructMethods, preDestroyMethods);
+        InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(annotatedType, points, webBeansContext, postConstructMethods, preDestroyMethods);
+
+        return injectionTarget;
     }
 
     protected abstract I createBean(Set<Type> types,
@@ -709,7 +714,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
 
         //X TODO hack to set the InjectionTarget
         InjectionTarget<T> injectionTarget
-                = buildInjectionTarget(bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
+                = buildInjectionTarget(types, qualifiers, bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
         bean.setInjectionTarget(injectionTarget);
 
         return bean;
