@@ -5,6 +5,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
+import javax.inject.Provider;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -20,12 +21,15 @@ import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassMultiInterceptedClass;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.InterceptorHandler;
+import org.apache.webbeans.proxy.NormalScopeProxyFactory;
+import org.apache.webbeans.proxy.ProxyGenerationException;
 import org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Action;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
+import org.apache.webbeans.util.ClassUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -111,7 +115,7 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
         InterceptorDecoratorProxyFactory pf = new InterceptorDecoratorProxyFactory();
 
         // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
-        ClassLoader classLoader = new URLClassLoader(new URL[0]);
+        ClassLoader classLoader = this.getClass().getClassLoader(); // new URLClassLoader(new URL[0]);
 
         Method[] businessMethods = methodInterceptors.keySet().toArray(new Method[methodInterceptors.size()]);
         Method[] nonInterceptedMethods = interceptorInfo.getNonInterceptedMethods().toArray(new Method[interceptorInfo.getNonInterceptedMethods().size()]);
@@ -130,9 +134,26 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
         // for testing with the old proxies
         //X proxyInstance = getInstance(ClassMultiInterceptedClass.class);
 
-        //X performBenchmarkOn(proxyInstance);
+        //X this is for creating the NormalScoping Proxy which is now separate
+        proxyInstance = createNormalScopingProxy(classLoader, ClassMultiInterceptedClass.class, proxyInstance);
+
+        performBenchmarkOn(proxyInstance);
 
         shutDownContainer();
+    }
+
+    private <T> T createNormalScopingProxy(ClassLoader classLoader, Class<T> clazz, T instance) throws ProxyGenerationException
+    {
+        NormalScopeProxyFactory pf = new NormalScopeProxyFactory();
+
+        List<Method> methods = ClassUtil.getNonPrivateMethods(clazz);
+
+        Method[] nonInterceptedMethods = methods.toArray(new Method[methods.size()]);
+
+        Class<T> proxyClass = pf.createProxyClass(classLoader, clazz, nonInterceptedMethods);
+        Assert.assertNotNull(proxyClass);
+
+        return pf.createProxyInstance(proxyClass, new TestRequestScopedInstanceProvider(instance));
     }
 
     private void performBenchmarkOn(ClassMultiInterceptedClass proxyInstance)
@@ -159,5 +180,23 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
         }
     }
 
+    /**
+     * Test Provider for emulating a RequestScopedProxy
+     * @param <T>
+     */
+    public static class TestRequestScopedInstanceProvider<T> implements Provider<T>
+    {
+        private ThreadLocal<T> instance = new ThreadLocal<T>();
 
+        public TestRequestScopedInstanceProvider(T instance)
+        {
+            this.instance.set(instance);
+        }
+
+        @Override
+        public T get()
+        {
+            return instance.get();
+        }
+    }
 }

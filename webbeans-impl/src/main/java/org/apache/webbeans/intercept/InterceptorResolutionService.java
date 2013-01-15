@@ -115,7 +115,7 @@ public class InterceptorResolutionService
         Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
         Map<Method, MethodInterceptorInfo> businessMethodInterceptorInfos = new HashMap<Method, MethodInterceptorInfo>();
 
-        List<AnnotatedMethod> nonInterceptedMethods = new ArrayList<AnnotatedMethod>();
+        List<Method> nonInterceptedMethods = new ArrayList<Method>();
 
         // iterate over all methods and build up the interceptor/decorator stack
         for (AnnotatedMethod annotatedMethod : interceptableAnnotatedMethods)
@@ -131,7 +131,7 @@ public class InterceptorResolutionService
 
             if (methodInterceptorInfo.isEmpty())
             {
-                nonInterceptedMethods.add(annotatedMethod);
+                nonInterceptedMethods.add(annotatedMethod.getJavaMember());
                 continue;
             }
 
@@ -357,7 +357,7 @@ public class InterceptorResolutionService
         public BeanInterceptorInfo(List<Decorator<?>> decorators,
                                    Set<Interceptor<?>> interceptors,
                                    Map<Method, MethodInterceptorInfo> businessMethodsInfo,
-                                   List<AnnotatedMethod> nonInterceptedMethods)
+                                   List<Method> nonInterceptedMethods)
         {
             this.decorators = decorators;
             this.interceptors = interceptors;
@@ -386,7 +386,7 @@ public class InterceptorResolutionService
         /**
          * all non-intercepted methods
          */
-        private List<AnnotatedMethod> nonInterceptedMethods = Collections.EMPTY_LIST;
+        private List<Method> nonInterceptedMethods = Collections.EMPTY_LIST;
 
         public List<Decorator<?>> getDecorators()
         {
@@ -403,7 +403,7 @@ public class InterceptorResolutionService
             return businessMethodsInfo;
         }
 
-        public List<AnnotatedMethod> getNonInterceptedMethods()
+        public List<Method> getNonInterceptedMethods()
         {
             return nonInterceptedMethods;
         }
