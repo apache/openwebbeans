@@ -57,9 +57,9 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
     };
 
     private transient Object actualInstance = null;
-    
+
     private transient OwbBean<?> bean = null;
-    
+
     private transient InvocationContext ejbContext;
 
     //Do not remove this constructor, used by passivation.
@@ -72,13 +72,13 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
     {
         this.bean = bean;
     }
-    
+
     public DelegateHandler(OwbBean<?> bean, InvocationContext ejbContext)
     {
         this.bean = bean;
         this.ejbContext = ejbContext;
-    }    
-    
+    }
+
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         return invoke(instance, method, arguments);
@@ -94,6 +94,7 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
 
         int hit = 0;
         int decoratorsSize = decorators.size();
+        Exception ex = null;
         while (position.get().intValue() < decoratorsSize)
         {
             hit++;
@@ -111,18 +112,7 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
                     {
                         bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(decMethod, true);
                     }
-
-                    try
-                    {
-                        return decMethod.invoke(decorator, arguments);
-                    }
-                    finally
-                    {
-                        if (currentPosition == 0) // if we go back on the first decorator no more need of this thread local
-                        {
-                            position.remove();
-                        }
-                    }
+                    return decMethod.invoke(decorator, arguments);
                 }
 
             }
@@ -134,6 +124,7 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
             }
             catch (NoSuchMethodException e)
             {
+                ex = e;
                 continue;
             }
             catch (InvocationTargetException e)
@@ -142,6 +133,7 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
                 //If the wrapped exception tells us the method didn't exist, continue
                 if(cause instanceof NoSuchMethodException)
                 {
+                    ex = e;
                     continue;
                 }
 
@@ -165,6 +157,13 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
                 logger.log(Level.SEVERE, OWBLogConst.ERROR_0014, WebBeansLoggerFacade.args(method.getName(), decorator.getClass().getName()));
                 throw new WebBeansException(e);
             }
+            finally
+            {
+                if (ex == null && currentPosition == 0) // if we go back on the first decorator no more need of this thread local
+                {
+                    position.remove();
+                }
+            }
 
         }
 
@@ -179,7 +178,7 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
         }
 
         Object result = null;
-        
+
         if(!(bean instanceof EnterpriseBeanMarker))
         {
             result = method.invoke(actualInstance, arguments);
@@ -189,16 +188,16 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
             if(ejbContext != null)
             {
                 Method ejbMethod = ejbContext.getMethod();
-                
+
                 // don't use method.equals(), it may only differ by being abstract in the EJB proxy.
-                 
-                if (method.getName().equals(ejbMethod.getName()) && 
-                        method.getReturnType().equals(ejbMethod.getReturnType())) 
+
+                if (method.getName().equals(ejbMethod.getName()) &&
+                        method.getReturnType().equals(ejbMethod.getReturnType()))
                 {
                     result = ejbContext.proceed();
                 }
 
-                else 
+                else
                 {
                     Object ejbInstance = ejbContext.getTarget();
                     result = method.invoke(ejbInstance, arguments);
@@ -212,7 +211,7 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
 
     /**
      * Helper method to locate method in any of the interfaces of the Decorator.
-     * 
+     *
      * @param class1 whose interfaces we want to check
      * @param m to check for in Interfaces
      * @return True if the method exists in any of the interfaces of the
@@ -244,15 +243,15 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
         decorators = dec;
     }
 
-    public void writeExternal(ObjectOutput out) throws IOException 
+    public void writeExternal(ObjectOutput out) throws IOException
     {
         String id = WebBeansUtil.isPassivationCapable(bean);
-        if (id != null) 
+        if (id != null)
         {
             out.writeObject(id);
             out.writeObject(decorators);
         }
-        else 
+        else
         {
             out.writeObject("");
         }
@@ -261,10 +260,10 @@ public class DelegateHandler implements InvocationHandler, MethodHandler, Serial
     }
 
     public void readExternal(ObjectInput in) throws IOException,
-            ClassNotFoundException 
+            ClassNotFoundException
     {
         String id = (String)in.readObject();
-        if (id.equals("")) 
+        if (id.equals(""))
         {
             return;
         }
