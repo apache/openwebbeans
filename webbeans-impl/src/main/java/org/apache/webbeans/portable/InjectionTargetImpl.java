@@ -85,12 +85,24 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     private List<AnnotatedMethod<?>> postConstructMethods;
 
     /**
+     * Interceptors which should get triggered for &#064;PostConstruct.
+     * Ordered in parent-class first
+     */
+    private List<Interceptor<?>> postConstructInterceptors;
+
+    /**
      * If the InjectionTarget has a &#064;PreDestroy method, <code>null</code> if not.
      * This methods only gets used if the produced instance is not intercepted.
      * This methods must have the signature <code>void METHOD();</code>
      * They are ordered as <b>subclass first</b>.
      */
     private List<AnnotatedMethod<?>> preDestroyMethods;
+
+    /**
+     * Interceptors which should get triggered for &#064;PreDestroy.
+     * Ordered in sub-class first
+     */
+    private List<Interceptor<?>> preDestroyInterceptors;
 
     /**
      * static information about Interceptors and Decorators of that bean
@@ -126,11 +138,14 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         this.preDestroyMethods = preDestroyMethods;
     }
 
-    public void setInterceptorInfo(BeanInterceptorInfo interceptorInfo, Class<? extends T> proxyClass, Map<Method, List<Interceptor<?>>> methodInterceptors)
+    public void setInterceptorInfo(BeanInterceptorInfo interceptorInfo, Class<? extends T> proxyClass, Map<Method, List<Interceptor<?>>> methodInterceptors,
+                                   List<Interceptor<?>> postConstructInterceptors, List<Interceptor<?>> preDestroyInterceptors)
     {
         this.interceptorInfo = interceptorInfo;
         this.proxyClass = proxyClass;
         this.methodInterceptors = methodInterceptors;
+        this.postConstructInterceptors = postConstructInterceptors;
+        this.preDestroyInterceptors = preDestroyInterceptors;
     }
 
     @Override
@@ -277,7 +292,6 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
 
 
         Map<Interceptor<?>, ?> interceptorInstances = null;
-        List<Interceptor<?>> postConstructInterceptors = null;
         T internalInstance = instance;
 
         if (interceptorInfo != null && instance instanceof OwbInterceptorProxy)
@@ -316,7 +330,6 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         }
 
         Map<Interceptor<?>, ?> interceptorInstances = null;
-        List<Interceptor<?>> preDestroyInterceptors = null;
         T internalInstance = instance;
 
         if (interceptorInfo != null && instance instanceof OwbInterceptorProxy)

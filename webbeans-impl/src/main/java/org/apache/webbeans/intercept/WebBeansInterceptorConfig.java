@@ -43,6 +43,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
 import java.lang.annotation.Annotation;
@@ -147,7 +148,27 @@ public final class WebBeansInterceptorConfig
 
                 Class proxyClass = pf.createProxyClass(classLoader, bean.getReturnType(), businessMethods, nonInterceptedMethods);
 
-                injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors);
+                // now we collect the post-construct and pre-destroy interceptors
+                List<Interceptor<?>> postConstructInterceptors = new ArrayList<Interceptor<?>>();
+                List<Interceptor<?>> preDestroyInterceptors = new ArrayList<Interceptor<?>>();
+                for (Interceptor<?> interceptor : interceptorInfo.getInterceptors())
+                {
+                    if (interceptor.intercepts(InterceptionType.POST_CONSTRUCT))
+                    {
+                        postConstructInterceptors.add(interceptor);
+                    }
+                    if (interceptor.intercepts(InterceptionType.PRE_DESTROY))
+                    {
+                        preDestroyInterceptors.add(interceptor);
+                    }
+                }
+
+                // and sort them
+                InterceptorComparator interceptorComparator = new InterceptorComparator(webBeansContext);
+                Collections.sort(postConstructInterceptors, interceptorComparator);
+                Collections.sort(preDestroyInterceptors, interceptorComparator);
+
+                injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors, postConstructInterceptors, preDestroyInterceptors);
             }
 
         }
