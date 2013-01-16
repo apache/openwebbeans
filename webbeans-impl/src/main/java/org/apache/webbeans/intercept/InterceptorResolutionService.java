@@ -155,6 +155,7 @@ public class InterceptorResolutionService
                 InterceptionType.POST_CONSTRUCT,
                 PostConstruct.class,
                 allUsedCdiInterceptors,
+                allUsedEjbInterceptors,
                 classLevelEjbInterceptors,
                 classInterceptorBindings,
                 true);
@@ -165,6 +166,7 @@ public class InterceptorResolutionService
                 InterceptionType.PRE_DESTROY,
                 PreDestroy.class,
                 allUsedCdiInterceptors,
+                allUsedEjbInterceptors,
                 classLevelEjbInterceptors,
                 classInterceptorBindings,
                 true);
@@ -211,7 +213,8 @@ public class InterceptorResolutionService
                                      AnnotatedType<?> annotatedType,
                                      InterceptionType interceptionType,
                                      Class<? extends Annotation> annotation,
-                                     Set<Interceptor<?>> allUsedInterceptors,
+                                     Set<Interceptor<?>> allUsedCdiInterceptors,
+                                     Set<Interceptor<?>> allUsedEjbInterceptors,
                                      List<Interceptor<?>> classLevelEjbInterceptors,
                                      Set<Annotation> classInterceptorBindings,
                                      boolean parentFirst)
@@ -228,9 +231,9 @@ public class InterceptorResolutionService
             if (lifecycleMethod.getParameters().size() == 0)
             {
                 foundMethods.add(lifecycleMethod);
-                calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedInterceptors, classLevelEjbInterceptors, lifecycleMethod);
+                calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, lifecycleMethod);
 
-                calculateCdiMethodInterceptors(methodInterceptorInfo, allUsedInterceptors, lifecycleMethod, classInterceptorBindings);
+                calculateCdiMethodInterceptors(methodInterceptorInfo, allUsedCdiInterceptors, lifecycleMethod, classInterceptorBindings);
             }
         }
 

@@ -75,11 +75,6 @@ public class PostConstructComponentTest extends TestContext
 
         CheckWithCheckPayment chk = (CheckWithCheckPayment) pcc.getP();
 
-        ManagedBean<PostConstructComponent> s = (ManagedBean<PostConstructComponent>) comps.get(1);
-        List<InterceptorData> stack = s.getInterceptorStack();
-
-        Assert.assertEquals(1, stack.size());
-
         Assert.assertNotNull(pcc.getP());
         Assert.assertSame(object.getValue(), chk.getValue());
 

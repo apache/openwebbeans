@@ -94,7 +94,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
     /**
      * @return the internal instance which gets proxied.
      */
-    public <T> T getInternalInstance(OwbInterceptorProxy proxyInstance)
+    public <T> T getInternalInstance(T proxyInstance)
     {
         try
         {

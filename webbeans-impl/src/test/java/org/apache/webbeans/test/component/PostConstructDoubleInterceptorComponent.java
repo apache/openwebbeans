@@ -33,7 +33,6 @@ public class PostConstructDoubleInterceptorComponent
 {
     private @Inject @Check(type = "CHECK") IPayment payment;
 
-    @SuppressWarnings("unused")
     private IPayment p = null;
 
     static String setininterceptor2 = null;
@@ -42,12 +41,11 @@ public class PostConstructDoubleInterceptorComponent
     public void init()
     {
         this.p = payment;
-
     }
 
     public IPayment getP()
     {
-        return payment;
+        return p;
     }
 
     public static String getValue()

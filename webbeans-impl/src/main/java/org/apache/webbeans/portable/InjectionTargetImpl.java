@@ -146,6 +146,20 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         this.preDestroyInterceptors = preDestroyInterceptors;
     }
 
+    /**
+     * Helper method to unwrap the internal proxy instance.
+     * Returns the instance directly if this is not a proxied instance.
+     */
+    protected T unwrapProxyInstance(T probableProxyInstance)
+    {
+        if (probableProxyInstance instanceof OwbInterceptorProxy)
+        {
+            return webBeansContext.getInterceptorDecoratorProxyFactory().getInternalInstance(probableProxyInstance);
+        }
+
+        return probableProxyInstance;
+    }
+
     @Override
     public T produce(CreationalContext<T> creationalContext)
     {
@@ -193,10 +207,12 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void inject(T instance, CreationalContext<T> context)
     {
-        inject(instance.getClass(), instance, (CreationalContextImpl<T>) context);
+
+        inject(instance.getClass(), unwrapProxyInstance(instance), (CreationalContextImpl<T>) context);
     }
 
-    private void inject(Class<?> type, T instance, CreationalContextImpl<T> context)
+
+    private void inject(Class<?> type, final T instance, CreationalContextImpl<T> context)
     {
         if (type == null || type.equals(Object.class))
         {
