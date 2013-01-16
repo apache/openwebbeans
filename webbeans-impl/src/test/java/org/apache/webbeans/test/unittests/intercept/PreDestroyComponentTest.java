@@ -18,56 +18,32 @@
  */
 package org.apache.webbeans.test.unittests.intercept;
 
-import java.util.List;
-
-import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.context.RequestScoped;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import junit.framework.Assert;
-
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.intercept.InterceptorData;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.annotation.AnyLiteral;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.PreDestroyComponent;
-import org.junit.Before;
 import org.junit.Test;
 
-public class PreDestroyComponentTest extends TestContext
+public class PreDestroyComponentTest extends AbstractUnitTest
 {
-    BeanManager container = null;
-
-    public PreDestroyComponentTest()
-    {
-        super(PreDestroyComponentTest.class.getSimpleName());
-    }
-
-    @Before
-    public void init()
-    {
-        this.container = WebBeansContext.getInstance().getBeanManagerImpl();
-        super.init();
-    }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testTypedComponent() throws Throwable
     {
-        clear();
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(CheckWithCheckPayment.class);
+        beanClasses.add(PreDestroyComponent.class);
 
-        defineManagedBean(CheckWithCheckPayment.class);
-        defineManagedBean(PreDestroyComponent.class);
-        List<AbstractOwbBean<?>> comps = getComponents();
+        startContainer(beanClasses, null);
 
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-
-        Assert.assertEquals(2, comps.size());
-
-        CheckWithCheckPayment object = (CheckWithCheckPayment)getManager().getInstance(comps.get(0));
-        PreDestroyComponent object2 = (PreDestroyComponent)getManager().getInstance(comps.get(1));
+        CheckWithCheckPayment object = getInstance(CheckWithCheckPayment.class, new AnyLiteral());
+        PreDestroyComponent object2 = getInstance(PreDestroyComponent.class);
         
         object2.getP();
 
@@ -78,17 +54,13 @@ public class PreDestroyComponentTest extends TestContext
         CheckWithCheckPayment payment = (CheckWithCheckPayment) pcc.getP();
         payment.setValue(true);
 
-        ManagedBean<PreDestroyComponent> s = (ManagedBean<PreDestroyComponent>) comps.get(1);
-        List<InterceptorData> stack = s.getInterceptorStack();
-
-        Assert.assertEquals(2, stack.size());
 
         Assert.assertNotNull(pcc.getP());
         Assert.assertSame(object.getValue(), payment.getValue());
 
         Assert.assertFalse(PreDestroyComponent.isDestroyed());
 
-        contextFactory.destroyRequestContext(null);
+        getLifecycle().getContextService().endContext(RequestScoped.class, null);
 
         Assert.assertTrue(PreDestroyComponent.isDestroyed());
     }
