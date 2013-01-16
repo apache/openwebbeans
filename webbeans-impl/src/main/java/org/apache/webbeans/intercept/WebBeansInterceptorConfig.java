@@ -21,12 +21,15 @@ package org.apache.webbeans.intercept;
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
+import org.apache.webbeans.component.InterceptedMarker;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
+import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
@@ -46,12 +49,17 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
+
 
 /**
  * Configures the Web Beans related interceptors.
@@ -60,7 +68,7 @@ import java.util.logging.Logger;
  * @version $Rev$ $Date$
  * @see org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove
  *
- * @deprecated this class can most probably get removed. All important logic is contained in {@link InterceptorResolutionService}
+ * TODO most of the stuff in this class can most probably get removed. All important logic is contained in {@link InterceptorResolutionService}
  */
 public final class WebBeansInterceptorConfig
 {
@@ -77,14 +85,82 @@ public final class WebBeansInterceptorConfig
     /**
      * Configure bean instance interceptor stack.
      * @param bean bean instance
-     * @deprecated old InterceptorData based config
      */
     public void defineBeanInterceptorStack(InjectionTargetBean<?> bean)
     {
-        if (WebBeansContext.TODO_USING_NEW_INTERCEPTORS)
+        if (!WebBeansContext.TODO_USING_NEW_INTERCEPTORS)
         {
-            return; //X TODO
+            defineBeanInterceptorStackRemove(bean);
+            return;
         }
+
+        if (bean instanceof InterceptedMarker)
+        {
+            InjectionTargetImpl<?> injectionTarget = (InjectionTargetImpl<?>) bean.getInjectionTarget();
+            BeanInterceptorInfo interceptorInfo = webBeansContext.getInterceptorResolutionService().
+                    calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), bean.getAnnotatedType());
+
+            Map<Method, List<Interceptor<?>>> methodInterceptors = new HashMap<Method, List<Interceptor<?>>>();
+            List<Method> nonBusinessMethods = new ArrayList<Method>();
+            for (Map.Entry<Method, InterceptorResolutionService.BusinessMethodInterceptorInfo> miEntry : interceptorInfo.getBusinessMethodsInfo().entrySet())
+            {
+                Method interceptedMethod = miEntry.getKey();
+                InterceptorResolutionService.BusinessMethodInterceptorInfo mii = miEntry.getValue();
+                List<Interceptor<?>> activeInterceptors = new ArrayList<Interceptor<?>>();
+
+                if (mii.getEjbInterceptors() != null)
+                {
+                    for (Interceptor<?> i : mii.getEjbInterceptors())
+                    {
+                        activeInterceptors.add(i);
+                    }
+                }
+                if (mii.getCdiInterceptors() != null)
+                {
+                    for (Interceptor<?> i : mii.getCdiInterceptors())
+                    {
+                        activeInterceptors.add(i);
+                    }
+                }
+                if (activeInterceptors.size() > 0)
+                {
+                    methodInterceptors.put(interceptedMethod, activeInterceptors);
+                }
+
+                // empty InterceptionType -> AROUND_INVOKE
+                if (!mii.getInterceptionTypes().isEmpty())
+                {
+                    nonBusinessMethods.add(interceptedMethod);
+                }
+            }
+
+            if (methodInterceptors.size() > 0)
+            {
+                // we only need to create a proxy class for intercepted or decorated Beans
+                InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
+
+                // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
+                ClassLoader classLoader = this.getClass().getClassLoader();
+
+                Method[] businessMethods = methodInterceptors.keySet().toArray(new Method[methodInterceptors.size()]);
+                Method[] nonInterceptedMethods = interceptorInfo.getNonInterceptedMethods().toArray(new Method[interceptorInfo.getNonInterceptedMethods().size()]);
+
+                Class proxyClass = pf.createProxyClass(classLoader, bean.getReturnType(), businessMethods, nonInterceptedMethods);
+
+                injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors);
+            }
+
+        }
+
+    }
+
+    /**
+     * Configure bean instance interceptor stack.
+     * @param bean bean instance
+     * @deprecated old InterceptorData based config
+     */
+    public void defineBeanInterceptorStackRemove(InjectionTargetBean<?> bean)
+    {
 
         Asserts.assertNotNull(bean, "bean parameter can no be null");
         if (!bean.getInterceptorStack().isEmpty())
@@ -192,7 +268,7 @@ public final class WebBeansInterceptorConfig
 
     /**
      * Configures the given class for applicable interceptors.
-     *
+     * @deprecated old interceptor stuff
      */
     public void configure(InjectionTargetBean<?> component, List<InterceptorData> stack)
     {

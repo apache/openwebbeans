@@ -33,6 +33,7 @@ import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedC
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassMultiInterceptedClass;
 import org.apache.webbeans.newtests.interceptors.factory.beans.DecoratedClass;
 import org.apache.webbeans.newtests.interceptors.factory.beans.MethodInterceptedClass;
+import org.apache.webbeans.newtests.interceptors.factory.beans.StereotypeInterceptedClass;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.component.decorator.clean.ServiceDecorator;
 import org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor;
@@ -97,6 +98,32 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         LifecycleMethodInfo lmiPostConstruct = interceptorInfo.getLifecycleMethodInterceptorInfos().get(InterceptionType.POST_CONSTRUCT);
         Assert.assertNotNull(lmiPostConstruct);
         Assert.assertNull(lmiPostConstruct.getMethodInterceptorInfo().getCdiInterceptors());
+
+        shutDownContainer();
+    }
+
+    @Test
+    public void testStereotypeInterceptorBinding() throws Exception
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(StereotypeInterceptedClass.class);
+        beanClasses.add(Transactional.class);
+        beanClasses.add(TransactionalInterceptor.class);
+
+        startContainer(beanClasses, beanXmls);
+
+        InterceptorResolutionService ir = new InterceptorResolutionService(getWebBeansContext());
+        AnnotatedType<StereotypeInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(StereotypeInterceptedClass.class);
+        Bean<StereotypeInterceptedClass> bean = (Bean<StereotypeInterceptedClass>) getBeanManager().resolve(getBeanManager().getBeans(StereotypeInterceptedClass.class));
+
+        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
+        Assert.assertNotNull(interceptorInfo);
+
+        Assert.assertNotNull(interceptorInfo.getInterceptors());
+        Assert.assertEquals(1, interceptorInfo.getInterceptors().size());
 
         shutDownContainer();
     }
