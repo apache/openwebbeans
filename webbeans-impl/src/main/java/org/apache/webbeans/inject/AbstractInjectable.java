@@ -62,7 +62,10 @@ public abstract class AbstractInjectable<T> implements Injectable<T>
     private Producer<?> owner;
     
     private CreationalContextImpl<?> context;
-    
+
+    /**
+     * @deprecated TODO remove this public ThreadLocal!
+     */
     public static ThreadLocal<Object> instanceUnderInjection = new ThreadLocal<Object>();
 
     protected AbstractInjectable(Producer<?> owner, CreationalContextImpl<?> creationalContext)

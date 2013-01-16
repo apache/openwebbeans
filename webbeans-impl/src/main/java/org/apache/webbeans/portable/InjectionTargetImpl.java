@@ -304,7 +304,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void postConstruct(final T instance)
     {
-        if (postConstructMethods == null)
+        if (postConstructMethods == null || postConstructMethods.size() == 0)
         {
             return;
         }
@@ -340,7 +340,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void preDestroy(T instance)
     {
-        if (preDestroyMethods == null)
+        if (preDestroyMethods == null || preDestroyMethods.size() == 0)
         {
             return;
         }
