@@ -18,66 +18,34 @@
  */
 package org.apache.webbeans.test.unittests.intercept;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.intercept.InterceptorData;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.PostConstructInterceptorComponent;
-import org.junit.Before;
 import org.junit.Test;
 
-public class PostConstructInterceptorComponentTest extends TestContext
+public class PostConstructInterceptorComponentTest extends AbstractUnitTest
 {
-    public PostConstructInterceptorComponentTest()
-    {
-        super(PostConstructInterceptorComponentTest.class.getSimpleName());
-    }
 
-    @Before
-    public void init()
-    {
-        super.init();
-    }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testTypedComponent() throws Throwable
     {
-        clear();
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(CheckWithCheckPayment.class);
+        beanClasses.add(PostConstructInterceptorComponent.class);
 
-        defineManagedBean(CheckWithCheckPayment.class);
-        defineManagedBean(PostConstructInterceptorComponent.class);
-        List<AbstractOwbBean<?>> comps = getComponents();
+        startContainer(beanClasses, null);
 
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-
-        Assert.assertEquals(2, comps.size());
-
-        Object object = getManager().getInstance(comps.get(0));
-        Object object2 = getManager().getInstance(comps.get(1));
-
-        Assert.assertTrue(object instanceof CheckWithCheckPayment);
-        Assert.assertTrue(object2 instanceof PostConstructInterceptorComponent);
-
-        PostConstructInterceptorComponent pcc = (PostConstructInterceptorComponent) object2;
-
-        ManagedBean<PostConstructInterceptorComponent> s = (ManagedBean<PostConstructInterceptorComponent>) comps.get(1);
+        PostConstructInterceptorComponent pcc = getInstance(PostConstructInterceptorComponent.class);
 
         Assert.assertNotNull(pcc.getP());
 
-        List<InterceptorData> stack = s.getInterceptorStack();
-
-        Assert.assertEquals(2, stack.size());
-
-        contextFactory.destroyRequestContext(null);
+        shutDownContainer();
     }
 
 }
