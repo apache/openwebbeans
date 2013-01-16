@@ -174,7 +174,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
 
             for (Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
             {
-                interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContext););
+                interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContext));
             }
 
             InterceptorHandler interceptorHandler = new DefaultInterceptorHandler<T>(instance, methodInterceptors, interceptorInstances);
