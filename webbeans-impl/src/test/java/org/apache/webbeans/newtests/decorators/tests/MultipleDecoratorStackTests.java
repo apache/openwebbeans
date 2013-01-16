@@ -28,6 +28,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.newtests.decorators.multiple.AbstractDecorator;
 import org.apache.webbeans.newtests.decorators.multiple.Decorator1;
 import org.apache.webbeans.newtests.decorators.multiple.Decorator2;
 import org.apache.webbeans.newtests.decorators.multiple.IOutputProvider;
@@ -74,5 +75,40 @@ public class MultipleDecoratorStackTests extends AbstractUnitTest
         Assert.assertEquals("Decorator1/trace,Decorator2/trace,delegate/otherMethod", hijackedStack);
         
         
+    }
+
+    @Test
+    public void testAbstractDecoratorStack()
+    {
+        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.add(Decorator1.class);
+        classes.add(AbstractDecorator.class);
+        classes.add(IOutputProvider.class);
+        classes.add(OutputProvider.class);
+        classes.add(RequestStringBuilder.class);
+
+        Collection<String> xmls = new ArrayList<String>();
+        xmls.add(getXmlPath(PACKAGE_NAME, "MultipleAbstractDecoratorStack"));
+
+        startContainer(classes, xmls);
+
+        Bean<?> bean = getBeanManager().getBeans(OutputProvider.class, new AnnotationLiteral<Default>()
+        {
+        }).iterator().next();
+        Object instance = getBeanManager().getReference(bean, OutputProvider.class, getBeanManager().createCreationalContext(bean));
+
+        OutputProvider outputProvider = (OutputProvider) instance;
+
+        Assert.assertTrue(outputProvider != null);
+
+        String result = outputProvider.getOutput();
+        System.out.println(result);
+        // Verify that the Decorators were called in order, and in a stack.
+        Assert.assertTrue(result.equalsIgnoreCase("Decorator1\nAbstractDecorator\nOutputProvider\n"));
+
+        String hijackedStack = outputProvider.trace();
+        Assert.assertEquals("Decorator1/trace,delegate/trace", hijackedStack);
+
+
     }
 }
