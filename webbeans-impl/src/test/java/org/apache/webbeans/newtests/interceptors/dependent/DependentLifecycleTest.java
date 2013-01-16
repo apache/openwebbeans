@@ -50,16 +50,14 @@ public class DependentLifecycleTest extends AbstractUnitTest
         
         CreationalContext<DependentLifecycleBean> ctx = getBeanManager().createCreationalContext(bean);
 
-        Object reference = getBeanManager().getReference(bean, DependentLifecycleBean.class, ctx);
+        DependentLifecycleBean reference = (DependentLifecycleBean) getBeanManager().getReference(bean, DependentLifecycleBean.class, ctx);
         Assert.assertNotNull(reference);
         
-        Assert.assertTrue(reference instanceof DependentLifecycleBean);
-
         Assert.assertEquals(1, DependentLifecycleBean.value);
         Assert.assertTrue(DependentSuperBean.SC);
         Assert.assertTrue(MyExtraSuper.SC);
                         
-        ctx.release();
+        bean.destroy(reference, ctx);
         
         shutDownContainer();
         
