@@ -49,8 +49,8 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
     public void defineCdiInterceptorRules()
     {
         checkInterceptorConditions();
-        defineInterceptorBindings();
         defineInterceptorRules();
+        defineInterceptorBindings();
     }
 
     public boolean isInterceptorEnabled()

@@ -20,6 +20,7 @@ package org.apache.webbeans.component.creation;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -76,6 +77,13 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
         }
     }
 
+    @Override
+    public Class<? extends Annotation> getScope()
+    {
+        // Interceptors are always Dependent scoped
+        return Dependent.class;
+    }
+
     public void defineConstructor()
     {
         constructor = getBeanConstructor();
@@ -126,6 +134,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 
     protected void defineInterceptorRules()
     {
+        defineApiType();
         defineConstructor();
         defineInterceptorMethods();
         defineInjectedMethods();

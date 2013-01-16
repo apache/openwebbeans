@@ -53,6 +53,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -149,24 +150,11 @@ public final class WebBeansInterceptorConfig
                 Class proxyClass = pf.createProxyClass(classLoader, bean.getReturnType(), businessMethods, nonInterceptedMethods);
 
                 // now we collect the post-construct and pre-destroy interceptors
-                List<Interceptor<?>> postConstructInterceptors = new ArrayList<Interceptor<?>>();
-                List<Interceptor<?>> preDestroyInterceptors = new ArrayList<Interceptor<?>>();
-                for (Interceptor<?> interceptor : interceptorInfo.getInterceptors())
-                {
-                    if (interceptor.intercepts(InterceptionType.POST_CONSTRUCT))
-                    {
-                        postConstructInterceptors.add(interceptor);
-                    }
-                    if (interceptor.intercepts(InterceptionType.PRE_DESTROY))
-                    {
-                        preDestroyInterceptors.add(interceptor);
-                    }
-                }
+                List<Interceptor<?>> postConstructInterceptors
+                        = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.POST_CONSTRUCT);
 
-                // and sort them
-                InterceptorComparator interceptorComparator = new InterceptorComparator(webBeansContext);
-                Collections.sort(postConstructInterceptors, interceptorComparator);
-                Collections.sort(preDestroyInterceptors, interceptorComparator);
+                List<Interceptor<?>> preDestroyInterceptors
+                        = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.PRE_DESTROY);
 
                 injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors, postConstructInterceptors, preDestroyInterceptors);
             }
@@ -174,6 +162,41 @@ public final class WebBeansInterceptorConfig
         }
 
     }
+
+
+    private List<Interceptor<?>> getLifecycleInterceptors(LinkedHashSet<Interceptor<?>> ejbInterceptors, List<Interceptor<?>> cdiInterceptors, InterceptionType interceptionType)
+    {
+        List<Interceptor<?>> lifecycleInterceptors = new ArrayList<Interceptor<?>>();
+
+        for (Interceptor<?> ejbInterceptor : ejbInterceptors)
+        {
+            if (ejbInterceptor.intercepts(interceptionType))
+            {
+                lifecycleInterceptors.add(ejbInterceptor);
+            }
+        }
+        for (Interceptor<?> cdiInterceptor : cdiInterceptors)
+        {
+            if (cdiInterceptor.intercepts(interceptionType))
+            {
+                lifecycleInterceptors.add(cdiInterceptor);
+            }
+        }
+
+        return lifecycleInterceptors;
+    }
+
+    private void addAllInterceptors(List<Interceptor<?>> collect, Interceptor<?>[] interceptors)
+    {
+        if (interceptors != null)
+        {
+            for (Interceptor<?> interceptor : interceptors)
+            {
+                collect.add(interceptor);
+            }
+        }
+    }
+
 
     /**
      * Configure bean instance interceptor stack.

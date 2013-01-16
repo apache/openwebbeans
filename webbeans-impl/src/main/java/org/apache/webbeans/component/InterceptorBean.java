@@ -40,7 +40,7 @@ import org.apache.webbeans.util.ExceptionUtil;
  * <p>Any Interceptor is also an InjectionTarget as they can contain
  * &#064;Inject InjectionPoints.</p>
  */
-public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implements Interceptor<T>, EnterpriseBeanMarker
+public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implements Interceptor<T>
 {
    /**
      * Constructor of the web bean component

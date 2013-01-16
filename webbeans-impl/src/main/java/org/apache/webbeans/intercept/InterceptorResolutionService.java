@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -111,7 +112,11 @@ public class InterceptorResolutionService
             decorators = null; // less to store
         }
 
-        Set<Interceptor<?>> allUsedInterceptors = new HashSet<Interceptor<?>>();
+        Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
+
+        LinkedHashSet<Interceptor<?>> allUsedEjbInterceptors = new LinkedHashSet<Interceptor<?>>(); // we need to preserve the order!
+        allUsedEjbInterceptors.addAll(classLevelEjbInterceptors);
+
         Map<Method, BusinessMethodInterceptorInfo> businessMethodInterceptorInfos = new HashMap<Method, BusinessMethodInterceptorInfo>();
 
         List<Method> nonInterceptedMethods = new ArrayList<Method>();
@@ -123,9 +128,9 @@ public class InterceptorResolutionService
             Set<InterceptionType> interceptionTypes = collectInterceptionTypes(annotatedMethod);
             BusinessMethodInterceptorInfo methodInterceptorInfo = new BusinessMethodInterceptorInfo(interceptionTypes);
 
-            calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedInterceptors, classLevelEjbInterceptors, annotatedMethod);
+            calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, annotatedMethod);
 
-            calculateCdiMethodInterceptors(methodInterceptorInfo, allUsedInterceptors, annotatedMethod, classInterceptorBindings);
+            calculateCdiMethodInterceptors(methodInterceptorInfo, allUsedCdiInterceptors, annotatedMethod, classInterceptorBindings);
 
             calculateCdiMethodDecorators(methodInterceptorInfo, decorators, annotatedMethod);
 
@@ -146,7 +151,7 @@ public class InterceptorResolutionService
                 annotatedType,
                 InterceptionType.POST_CONSTRUCT,
                 PostConstruct.class,
-                allUsedInterceptors,
+                allUsedCdiInterceptors,
                 classLevelEjbInterceptors,
                 classInterceptorBindings,
                 true);
@@ -156,12 +161,17 @@ public class InterceptorResolutionService
                 annotatedType,
                 InterceptionType.PRE_DESTROY,
                 PreDestroy.class,
-                allUsedInterceptors,
+                allUsedCdiInterceptors,
                 classLevelEjbInterceptors,
                 classInterceptorBindings,
                 true);
 
-        return new BeanInterceptorInfo(decorators, allUsedInterceptors, businessMethodInterceptorInfos, nonInterceptedMethods, lifecycleMethodInterceptorInfos);
+        List<Interceptor<?>> cdiInterceptors = new ArrayList<Interceptor<?>>(allUsedCdiInterceptors);
+        Collections.sort(cdiInterceptors, new InterceptorComparator(webBeansContext));
+
+
+        return new BeanInterceptorInfo(decorators, allUsedEjbInterceptors, cdiInterceptors, businessMethodInterceptorInfos,
+                                       nonInterceptedMethods, lifecycleMethodInterceptorInfos);
     }
 
     private void addLifecycleMethods(Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos,
@@ -416,24 +426,32 @@ public class InterceptorResolutionService
     public static class BeanInterceptorInfo
     {
         public BeanInterceptorInfo(List<Decorator<?>> decorators,
-                                   Set<Interceptor<?>> interceptors,
+                                   LinkedHashSet<Interceptor<?>> ejbInterceptors,
+                                   List<Interceptor<?>> cdiInterceptors,
                                    Map<Method, BusinessMethodInterceptorInfo> businessMethodsInfo,
                                    List<Method> nonInterceptedMethods,
                                    Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos)
         {
             this.decorators = decorators;
-            this.interceptors = interceptors;
+            this.ejbInterceptors = ejbInterceptors;
+            this.cdiInterceptors = cdiInterceptors;
             this.businessMethodsInfo = businessMethodsInfo;
             this.nonInterceptedMethods = nonInterceptedMethods;
             this.lifecycleMethodInterceptorInfos = lifecycleMethodInterceptorInfos;
         }
 
         /**
-         * All the Interceptor Beans which are active on this class somewhere.
-         * This is only used to create the Interceptor instances.
-         * The Interceptors are not sorted yet.
+         * All the EJB-style Interceptor Beans which are active on this class somewhere.
+         * The Interceptors are sorted according to their definition.
          */
-        private Set<Interceptor<?>> interceptors = null;
+        private LinkedHashSet<Interceptor<?>> ejbInterceptors = null;
+
+        /**
+         * All the CDI-style Interceptor Beans which are active on this class somewhere.
+         * This is only used to create the Interceptor instances.
+         * The Interceptors are not sorted according to beans.xml .
+         */
+        private List<Interceptor<?>> cdiInterceptors = null;
 
         /**
          * All the Decorator Beans active on this class.
@@ -464,9 +482,14 @@ public class InterceptorResolutionService
             return decorators;
         }
 
-        public Set<Interceptor<?>> getInterceptors()
+        public LinkedHashSet<Interceptor<?>> getEjbInterceptors()
         {
-            return interceptors;
+            return ejbInterceptors;
+        }
+
+        public List<Interceptor<?>> getCdiInterceptors()
+        {
+            return cdiInterceptors;
         }
 
         public Map<Method, BusinessMethodInterceptorInfo> getBusinessMethodsInfo()

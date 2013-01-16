@@ -25,7 +25,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -159,7 +158,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
 
             Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<Interceptor<?>, Object>();
-            for (Interceptor interceptorBean : interceptorInfo.getInterceptors())
+            for (Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
             {
                 Object interceptorInstance;
                 if (interceptorBean instanceof SelfInterceptorBean)
@@ -304,9 +303,6 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                 interceptorInstances = dih.getInstances();
                 internalInstance = (T) dih.getTarget();
             }
-
-            // we are cheating a bit right now. We could also calculate the real ones upfront
-            postConstructInterceptors = new ArrayList<Interceptor<?>>(interceptorInfo.getInterceptors());
         }
 
         InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(internalInstance, InterceptionType.POST_CONSTRUCT, postConstructInterceptors,
@@ -342,9 +338,6 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                 interceptorInstances = dih.getInstances();
                 internalInstance = (T) dih.getTarget();
             }
-
-            // we are cheating a bit right now. We could also calculate the real ones upfront
-            preDestroyInterceptors = new ArrayList<Interceptor<?>>(interceptorInfo.getInterceptors());
         }
 
         InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(internalInstance, InterceptionType.PRE_DESTROY, preDestroyInterceptors,

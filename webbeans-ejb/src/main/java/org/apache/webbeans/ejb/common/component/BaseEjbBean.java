@@ -57,7 +57,6 @@ public abstract class BaseEjbBean<T> extends InjectionTargetBean<T> implements E
     /**
      * Creates a new instance of the session bean.
      * @param webBeansContext
-     * @param ejbClassType ebj class type
      */
     protected BaseEjbBean(WebBeansContext webBeansContext,
                           SessionBeanType type,

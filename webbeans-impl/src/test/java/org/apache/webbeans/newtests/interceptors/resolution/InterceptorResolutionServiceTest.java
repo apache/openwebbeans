@@ -80,8 +80,8 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
-        Assert.assertNotNull(interceptorInfo.getInterceptors());
-        Assert.assertEquals(1, interceptorInfo.getInterceptors().size());
+        Assert.assertNotNull(interceptorInfo.getCdiInterceptors());
+        Assert.assertEquals(1, interceptorInfo.getCdiInterceptors().size());
 
         Assert.assertNull(interceptorInfo.getDecorators());
 
@@ -122,8 +122,8 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
-        Assert.assertNotNull(interceptorInfo.getInterceptors());
-        Assert.assertEquals(1, interceptorInfo.getInterceptors().size());
+        Assert.assertNotNull(interceptorInfo.getCdiInterceptors());
+        Assert.assertEquals(1, interceptorInfo.getCdiInterceptors().size());
 
         shutDownContainer();
     }
@@ -152,8 +152,8 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
-        Assert.assertNotNull(interceptorInfo.getInterceptors());
-        Assert.assertEquals(3, interceptorInfo.getInterceptors().size());
+        Assert.assertNotNull(interceptorInfo.getCdiInterceptors());
+        Assert.assertEquals(3, interceptorInfo.getCdiInterceptors().size());
 
         Assert.assertNull(interceptorInfo.getDecorators());
 
@@ -196,8 +196,8 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
         Assert.assertNotNull(interceptorInfo);
 
-        Assert.assertNotNull(interceptorInfo.getInterceptors());
-        Assert.assertEquals(2, interceptorInfo.getInterceptors().size());
+        Assert.assertNotNull(interceptorInfo.getCdiInterceptors());
+        Assert.assertEquals(2, interceptorInfo.getCdiInterceptors().size());
 
         Assert.assertNull(interceptorInfo.getDecorators());
 

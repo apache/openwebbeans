@@ -116,7 +116,7 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
         // step 3.
         // creating the InterceptorHandler for each intercepted instance later at runtime
         Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<Interceptor<?>, Object>();
-        for (Interceptor interceptorBean : interceptorInfo.getInterceptors())
+        for (Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
         {
             Object interceptorInstance = interceptorBean.create(cc);
             interceptorInstances.put(interceptorBean, interceptorInstance);
