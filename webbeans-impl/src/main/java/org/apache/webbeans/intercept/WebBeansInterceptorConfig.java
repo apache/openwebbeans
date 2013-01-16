@@ -145,7 +145,13 @@ public final class WebBeansInterceptorConfig
                 }
             }
 
-            if (methodInterceptors.size() > 0)
+            List<Interceptor<?>> postConstructInterceptors
+                    = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.POST_CONSTRUCT);
+
+            List<Interceptor<?>> preDestroyInterceptors
+                    = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.PRE_DESTROY);
+
+            if (methodInterceptors.size() > 0 || postConstructInterceptors.size() > 0 || preDestroyInterceptors.size() > 0)
             {
                 // we only need to create a proxy class for intercepted or decorated Beans
                 InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
@@ -159,11 +165,6 @@ public final class WebBeansInterceptorConfig
                 Class proxyClass = pf.createProxyClass(classLoader, bean.getReturnType(), businessMethods, nonInterceptedMethods);
 
                 // now we collect the post-construct and pre-destroy interceptors
-                List<Interceptor<?>> postConstructInterceptors
-                        = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.POST_CONSTRUCT);
-
-                List<Interceptor<?>> preDestroyInterceptors
-                        = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.PRE_DESTROY);
 
                 injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors, postConstructInterceptors, preDestroyInterceptors);
             }
@@ -194,18 +195,6 @@ public final class WebBeansInterceptorConfig
 
         return lifecycleInterceptors;
     }
-
-    private void addAllInterceptors(List<Interceptor<?>> collect, Interceptor<?>[] interceptors)
-    {
-        if (interceptors != null)
-        {
-            for (Interceptor<?> interceptor : interceptors)
-            {
-                collect.add(interceptor);
-            }
-        }
-    }
-
 
     /**
      * Configure bean instance interceptor stack.

@@ -99,8 +99,6 @@ public class InterceptorResolutionService
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         BeanManager beanManager = webBeansContext.getBeanManagerImpl();
 
-        // pick up CDI interceptors from a class level
-        Set<Annotation> classInterceptorBindings = annotationManager.getInterceptorAnnotations(annotatedType.getAnnotations());
 
         // pick up EJB-style interceptors from a class level
         List<Interceptor<?>> classLevelEjbInterceptors = new ArrayList<Interceptor<?>>();
@@ -114,7 +112,10 @@ public class InterceptorResolutionService
             decorators = null; // less to store
         }
 
+        // pick up CDI interceptors from a class level
+        Set<Annotation> classInterceptorBindings = annotationManager.getInterceptorAnnotations(annotatedType.getAnnotations());
         Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
+        addCdiClassLifecycleInterceptors(classInterceptorBindings, allUsedCdiInterceptors);
 
         LinkedHashSet<Interceptor<?>> allUsedEjbInterceptors = new LinkedHashSet<Interceptor<?>>(); // we need to preserve the order!
         allUsedEjbInterceptors.addAll(classLevelEjbInterceptors);
@@ -176,6 +177,18 @@ public class InterceptorResolutionService
         return new BeanInterceptorInfo(decorators, allUsedEjbInterceptors, cdiInterceptors, selfInterceptorBean,
                                        businessMethodInterceptorInfos,
                                        nonInterceptedMethods, lifecycleMethodInterceptorInfos);
+    }
+
+    private void addCdiClassLifecycleInterceptors(Set<Annotation> classInterceptorBindings, Set<Interceptor<?>> allUsedCdiInterceptors)
+    {
+        if (classInterceptorBindings.size() > 0)
+        {
+            allUsedCdiInterceptors.addAll(
+                    webBeansContext.getBeanManagerImpl().resolveInterceptors(InterceptionType.POST_CONSTRUCT, AnnotationUtil.asArray(classInterceptorBindings)));
+
+            allUsedCdiInterceptors.addAll(
+                    webBeansContext.getBeanManagerImpl().resolveInterceptors(InterceptionType.PRE_DESTROY, AnnotationUtil.asArray(classInterceptorBindings)));
+        }
     }
 
     /**

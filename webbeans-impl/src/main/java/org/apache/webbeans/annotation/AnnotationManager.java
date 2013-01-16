@@ -534,7 +534,6 @@ public final class AnnotationManager
 
     /**
      * Returns bean stereotypes.
-     * @param bean bean instance
      * @return bean stereotypes
      */
     public Set<Class<? extends Annotation>> getStereotypes(Set<Class<? extends Annotation>> anns)
@@ -550,7 +549,6 @@ public final class AnnotationManager
 
     /**
      * Returns true if name exists,false otherwise.
-     * @param bean bean instance
      * @return true if name exists
      */
     public boolean hasNamedOnStereoTypes(Set<Class<? extends Annotation>> stereotypes)
