@@ -304,12 +304,6 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void postConstruct(final T instance)
     {
-        if (postConstructMethods == null || postConstructMethods.size() == 0)
-        {
-            return;
-        }
-
-
         Map<Interceptor<?>, ?> interceptorInstances = null;
         T internalInstance = instance;
 
@@ -323,6 +317,10 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                 interceptorInstances = dih.getInstances();
                 internalInstance = (T) dih.getTarget();
             }
+        }
+        else if (postConstructMethods == null || postConstructMethods.size() == 0)
+        {
+            return;
         }
 
         InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(internalInstance, InterceptionType.POST_CONSTRUCT, postConstructInterceptors,
@@ -340,11 +338,6 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void preDestroy(T instance)
     {
-        if (preDestroyMethods == null || preDestroyMethods.size() == 0)
-        {
-            return;
-        }
-
         Map<Interceptor<?>, ?> interceptorInstances = null;
         T internalInstance = instance;
 
@@ -358,6 +351,10 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                 interceptorInstances = dih.getInstances();
                 internalInstance = (T) dih.getTarget();
             }
+        }
+        else if (preDestroyMethods == null || preDestroyMethods.size() == 0)
+        {
+            return;
         }
 
         InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(internalInstance, InterceptionType.PRE_DESTROY, preDestroyInterceptors,
