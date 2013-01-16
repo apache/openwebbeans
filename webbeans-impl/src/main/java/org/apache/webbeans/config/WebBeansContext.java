@@ -64,9 +64,6 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class WebBeansContext
 {
-    //X TODO REMOVE, only used while implementing the new Interceptor handling
-    public static final boolean TODO_USING_NEW_INTERCEPTORS = true;
-
     private final Map<Class<?>, Object> managerMap = new HashMap<Class<?>, Object>();
 
     private final Map<Class<?>, Object> serviceMap = new HashMap<Class<?>, Object>();

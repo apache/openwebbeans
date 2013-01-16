@@ -875,33 +875,17 @@ public class BeansDeployer
                     logger.log(Level.FINE, "Found Managed Bean Interceptor with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
                 
-                if (WebBeansContext.TODO_USING_NEW_INTERCEPTORS)
+                CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType);
+                if (ibb.isInterceptorEnabled())
                 {
-                    CdiInterceptorBeanBuilder<T> ibb
-                    = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType);
-                    if (ibb.isInterceptorEnabled())
-                    {
-                        ibb.defineCdiInterceptorRules();
-                        CdiInterceptorBean<T> interceptor = ibb.getBean();
-                        webBeansContext.getInterceptorsManager().addCdiInterceptor(interceptor);
-                        bean = interceptor;
-                    }
-                    else
-                    {
-                        bean = null;
-                    }
-                    
+                    ibb.defineCdiInterceptorRules();
+                    CdiInterceptorBean<T> interceptor = ibb.getBean();
+                    webBeansContext.getInterceptorsManager().addCdiInterceptor(interceptor);
+                    bean = interceptor;
                 }
                 else
                 {
-                    if(annotationTypeSet)
-                    {
-                        bean = webBeansContext.getWebBeansUtil().defineInterceptor(annotatedType);
-                    }
-                    else
-                    {
-                        bean = managedBeanCreator.defineInterceptor(annotatedType);
-                    }
+                    bean = null;
                 }
             }
             else
