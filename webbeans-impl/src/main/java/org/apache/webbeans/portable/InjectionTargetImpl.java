@@ -158,7 +158,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
 
             Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<Interceptor<?>, Object>();
-            for (Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
+            for (Interceptor interceptorBean : interceptorInfo.getEjbInterceptors())
             {
                 Object interceptorInstance;
                 if (interceptorBean instanceof SelfInterceptorBean)
@@ -170,6 +170,11 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                     interceptorInstance = interceptorBean.create(creationalContext);
                 }
                 interceptorInstances.put(interceptorBean, interceptorInstance);
+            }
+
+            for (Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
+            {
+                interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContext););
             }
 
             InterceptorHandler interceptorHandler = new DefaultInterceptorHandler<T>(instance, methodInterceptors, interceptorInstances);
