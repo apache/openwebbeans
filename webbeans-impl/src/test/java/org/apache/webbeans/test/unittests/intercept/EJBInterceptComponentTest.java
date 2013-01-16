@@ -41,7 +41,6 @@ public class EJBInterceptComponentTest extends AbstractUnitTest
         beanClasses.add(InterceptedComponent.class);
         startContainer(beanClasses, null);
 
-
         shutDownContainer();
     }
 
@@ -55,7 +54,7 @@ public class EJBInterceptComponentTest extends AbstractUnitTest
         InterceptedComponent comp = getInstance(InterceptedComponent.class);
         Object s = comp.hello(null);
 
-        Assert.assertEquals(new Integer(5), s);
+        Assert.assertEquals(5, s);
 
         shutDownContainer();
     }

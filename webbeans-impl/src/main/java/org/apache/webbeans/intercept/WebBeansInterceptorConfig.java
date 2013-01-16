@@ -124,6 +124,15 @@ public final class WebBeansInterceptorConfig
                         activeInterceptors.add(i);
                     }
                 }
+                if (interceptorInfo.getSelfInterceptorBean() != null)
+                {
+                    if (interceptedMethod.getAnnotation(AroundInvoke.class) == null) // this check is a dirty hack for now to prevent infinite loops
+                    {
+                        // add self-interception as last interceptor in the chain.
+                        activeInterceptors.add(interceptorInfo.getSelfInterceptorBean());
+                    }
+                }
+
                 if (activeInterceptors.size() > 0)
                 {
                     methodInterceptors.put(interceptedMethod, activeInterceptors);

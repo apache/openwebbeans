@@ -44,6 +44,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.webbeans.annotation.AnnotationManager;
+import org.apache.webbeans.component.SelfInterceptorBean;
+import org.apache.webbeans.component.creation.SelfInterceptorBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
@@ -169,9 +171,27 @@ public class InterceptorResolutionService
         List<Interceptor<?>> cdiInterceptors = new ArrayList<Interceptor<?>>(allUsedCdiInterceptors);
         Collections.sort(cdiInterceptors, new InterceptorComparator(webBeansContext));
 
+        SelfInterceptorBean<T> selfInterceptorBean = resolveSelfInterceptorBean(annotatedType);
 
-        return new BeanInterceptorInfo(decorators, allUsedEjbInterceptors, cdiInterceptors, businessMethodInterceptorInfos,
+        return new BeanInterceptorInfo(decorators, allUsedEjbInterceptors, cdiInterceptors, selfInterceptorBean,
+                                       businessMethodInterceptorInfos,
                                        nonInterceptedMethods, lifecycleMethodInterceptorInfos);
+    }
+
+    /**
+     * Check whether this class has any method which intercepts the whole bean itself.
+     * @return SelfInterceptorBean or <code>null</code> if this bean doesn't intercept itself
+     */
+    private <T> SelfInterceptorBean<T> resolveSelfInterceptorBean(AnnotatedType<T> annotatedType)
+    {
+        SelfInterceptorBeanBuilder sibb = new SelfInterceptorBeanBuilder(webBeansContext, annotatedType);
+        sibb.defineSelfInterceptorRules();
+        if (!sibb.isInterceptorEnabled())
+        {
+            return null;
+        }
+
+        return (SelfInterceptorBean<T>) sibb.getBean();
     }
 
     private void addLifecycleMethods(Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos,
@@ -356,7 +376,7 @@ public class InterceptorResolutionService
     /**
      * Determine the {@link InterceptionType} of the given AnnotatedMethod
      * of an intercepted method.
-     * An empty list means that this is an AroundInvoke method
+     * An empty list means that this is an AroundInvoke method.
      */
     private Set<InterceptionType> collectInterceptionTypes(AnnotatedMethod interceptableAnnotatedMethod)
     {
@@ -428,6 +448,7 @@ public class InterceptorResolutionService
         public BeanInterceptorInfo(List<Decorator<?>> decorators,
                                    LinkedHashSet<Interceptor<?>> ejbInterceptors,
                                    List<Interceptor<?>> cdiInterceptors,
+                                   SelfInterceptorBean<?> selfInterceptorBean,
                                    Map<Method, BusinessMethodInterceptorInfo> businessMethodsInfo,
                                    List<Method> nonInterceptedMethods,
                                    Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos)
@@ -435,6 +456,7 @@ public class InterceptorResolutionService
             this.decorators = decorators;
             this.ejbInterceptors = ejbInterceptors;
             this.cdiInterceptors = cdiInterceptors;
+            this.selfInterceptorBean = selfInterceptorBean;
             this.businessMethodsInfo = businessMethodsInfo;
             this.nonInterceptedMethods = nonInterceptedMethods;
             this.lifecycleMethodInterceptorInfos = lifecycleMethodInterceptorInfos;
@@ -444,14 +466,19 @@ public class InterceptorResolutionService
          * All the EJB-style Interceptor Beans which are active on this class somewhere.
          * The Interceptors are sorted according to their definition.
          */
-        private LinkedHashSet<Interceptor<?>> ejbInterceptors = null;
+        private LinkedHashSet<Interceptor<?>> ejbInterceptors;
 
         /**
          * All the CDI-style Interceptor Beans which are active on this class somewhere.
          * This is only used to create the Interceptor instances.
          * The Interceptors are not sorted according to beans.xml .
          */
-        private List<Interceptor<?>> cdiInterceptors = null;
+        private List<Interceptor<?>> cdiInterceptors;
+
+        /**
+         * Set if this class intercepts itself.
+         */
+        private SelfInterceptorBean<?> selfInterceptorBean;
 
         /**
          * All the Decorator Beans active on this class.
@@ -490,6 +517,11 @@ public class InterceptorResolutionService
         public List<Interceptor<?>> getCdiInterceptors()
         {
             return cdiInterceptors;
+        }
+
+        public SelfInterceptorBean<?> getSelfInterceptorBean()
+        {
+            return selfInterceptorBean;
         }
 
         public Map<Method, BusinessMethodInterceptorInfo> getBusinessMethodsInfo()

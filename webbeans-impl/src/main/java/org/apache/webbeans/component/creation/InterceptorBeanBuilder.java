@@ -157,8 +157,9 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
      *     <li>There must only be a single method for each InterceptorType in the same class.</li>
      * </ul>
      * </p>
+     * @return <code>true</code> if we found some interceptor methods
      */
-    protected void defineInterceptorMethods()
+    public boolean defineInterceptorMethods()
     {
         List<Class> classHierarchy = webBeansContext.getInterceptorUtil().getReverseClassHierarchy(getAnnotated().getJavaClass());
 
@@ -170,6 +171,8 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
         // EJB related interceptors
         List<AnnotatedMethod> prePassivateMethods = new ArrayList<AnnotatedMethod>();
         List<AnnotatedMethod> postActivateMethods = new ArrayList<AnnotatedMethod>();
+
+        boolean interceptorFound = false;
 
         Set<AnnotatedMethod<? super T>> methods = getAnnotated().getMethods();
 
@@ -251,30 +254,38 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 
         if (aroundInvokeMethod != null)
         {
+            interceptorFound = true;
             interceptionMethods.put(InterceptionType.AROUND_INVOKE, new Method[]{aroundInvokeMethod.getJavaMember()});
         }
 
         if (postConstructMethods.size() > 0)
         {
+            interceptorFound = true;
             interceptionMethods.put(InterceptionType.POST_CONSTRUCT, getMethodArray(postConstructMethods));
         }
         if (preDestroyMethods.size() > 0)
         {
+            interceptorFound = true;
             interceptionMethods.put(InterceptionType.PRE_DESTROY, getMethodArray(preDestroyMethods));
         }
         if (aroundTimeoutMethods.size() > 0)
         {
+            interceptorFound = true;
             interceptionMethods.put(InterceptionType.AROUND_TIMEOUT, getMethodArray(aroundTimeoutMethods));
         }
 
         if (prePassivateMethods.size() > 0)
         {
+            interceptorFound = true;
             interceptionMethods.put(InterceptionType.PRE_PASSIVATE, getMethodArray(prePassivateMethods));
         }
         if (postActivateMethods.size() > 0)
         {
+            interceptorFound = true;
             interceptionMethods.put(InterceptionType.POST_ACTIVATE, getMethodArray(postActivateMethods));
         }
+
+        return interceptorFound;
     }
 
     /**

@@ -47,7 +47,6 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.inject.Inject;
 import javax.interceptor.InvocationContext;
 
-import org.apache.webbeans.component.SelfInterceptorBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -158,23 +157,23 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
 
             Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<Interceptor<?>, Object>();
+
+            // create EJB-style interceptors
             for (Interceptor interceptorBean : interceptorInfo.getEjbInterceptors())
             {
-                Object interceptorInstance;
-                if (interceptorBean instanceof SelfInterceptorBean)
-                {
-                    interceptorInstance = instance;
-                }
-                else
-                {
-                    interceptorInstance = interceptorBean.create(creationalContext);
-                }
-                interceptorInstances.put(interceptorBean, interceptorInstance);
+                interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContext));
             }
 
+            // create CDI-style interceptors
             for (Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
             {
                 interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContext));
+            }
+
+            // register the bean itself for self-interception
+            if (interceptorInfo.getSelfInterceptorBean() != null)
+            {
+                interceptorInstances.put(interceptorInfo.getSelfInterceptorBean(), instance);
             }
 
             InterceptorHandler interceptorHandler = new DefaultInterceptorHandler<T>(instance, methodInterceptors, interceptorInstances);

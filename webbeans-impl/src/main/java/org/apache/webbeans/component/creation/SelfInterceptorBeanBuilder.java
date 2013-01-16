@@ -35,6 +35,7 @@ import org.apache.webbeans.config.WebBeansContext;
  */
 public class SelfInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, SelfInterceptorBean<T>>
 {
+    private boolean enabled = false;
 
     public SelfInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
@@ -43,13 +44,19 @@ public class SelfInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, Sel
 
     public void defineSelfInterceptorRules()
     {
-        checkInterceptorConditions();
-        defineInterceptorRules();
+
+        // we do NOT invoke checkInterceptorConditions();
+        // self-interceptors have different rules!
+
+        // we do NOT invoke defineInterceptorRules() !
+
+        defineApiType();
+        enabled = defineInterceptorMethods();
     }
 
     public boolean isInterceptorEnabled()
     {
-        return true;
+        return enabled;
     }
 
     @Override

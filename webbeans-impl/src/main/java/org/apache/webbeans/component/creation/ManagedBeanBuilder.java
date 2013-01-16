@@ -76,9 +76,6 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     public void defineConstructor()
     {
         constructor = getBeanConstructor();
