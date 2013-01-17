@@ -28,6 +28,7 @@ import org.apache.webbeans.newtests.proxy.beans.ConversationBean;
 import org.apache.webbeans.newtests.proxy.beans.DummyScopedExtension;
 import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Ignore;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +40,8 @@ public class ProxyMappingTest extends AbstractUnitTest
 {
 
     @Test
+    //X TODO: migrate this test to the new proxies.
+    @Ignore("The proxy handling is not using Javassist anymore")
     public void testProxyMappingConfig()
     {
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
