@@ -38,7 +38,7 @@ import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DelegateHandler;
-import org.apache.webbeans.decorator.WebBeansDecorator;
+import org.apache.webbeans.decorator.WebBeansDecoratorRemove;
 import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandlerRemove;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
@@ -239,7 +239,7 @@ public final class ProxyFactory
             }
 
             Object result = createProxyRemove(proxyClass);
-            if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptorBeanPleaseRemove<?>))
+            if (!(bean instanceof WebBeansDecoratorRemove<?>) && !(bean instanceof WebBeansInterceptorBeanPleaseRemove<?>))
             {
                 setHandler(result, new DependentScopedBeanInterceptorHandlerRemove(bean, actualInstance, creastionalContext));
             }

@@ -77,7 +77,7 @@ public final class WebBeansDecoratorConfig
             logger.log(Level.FINE, "Configuring decorator class : [{0}]", delegate.getReturnType());
         }
         //X TODO no more delegation!
-        WebBeansDecorator<T> decorator = new WebBeansDecorator<T>(delegate);
+        WebBeansDecoratorRemove<T> decorator = new WebBeansDecoratorRemove<T>(delegate);
 
         delegate.getWebBeansContext().getDecoratorsManager().addDecorator(decorator);
     }
@@ -146,7 +146,7 @@ public final class WebBeansDecoratorConfig
             while (itList.hasNext())
             {
                 Object decoratorInstance ;
-                WebBeansDecorator<Object> decorator = (WebBeansDecorator<Object>) itList.next();
+                WebBeansDecoratorRemove<Object> decorator = (WebBeansDecoratorRemove<Object>) itList.next();
                 decoratorInstance = ownerCreationalContext.getDependentDecorator(instance, decorator);
                 if(decoratorInstance == null)
                 {

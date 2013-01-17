@@ -33,7 +33,7 @@ import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.decorator.WebBeansDecorator;
+import org.apache.webbeans.decorator.WebBeansDecoratorRemove;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorData;
 
@@ -194,7 +194,7 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
         for(int i = 0, size = decorators.size(); i < size; i++)
         {
             Decorator<?> dec = decorators.get(i);
-            WebBeansDecorator<?> decorator = (WebBeansDecorator<?>)dec;
+            WebBeansDecoratorRemove<?> decorator = (WebBeansDecoratorRemove<?>)dec;
             if(!decorator.isPassivationCapable())
             {
                 throw new WebBeansConfigurationException(MessageFormat.format(

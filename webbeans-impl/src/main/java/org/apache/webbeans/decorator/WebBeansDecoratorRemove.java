@@ -60,7 +60,7 @@ import java.util.logging.Level;
  *
  * @deprecated replaced by DecoratorBean
  */
-public class WebBeansDecorator<T> extends InjectionTargetBean<T> implements Decorator<T>
+public class WebBeansDecoratorRemove<T> extends InjectionTargetBean<T> implements Decorator<T>
 {
     /** Decorator class */
     private Class<?> clazz;
@@ -92,7 +92,7 @@ public class WebBeansDecorator<T> extends InjectionTargetBean<T> implements Deco
      * @param wrappedBean wrapped bean instance
      * @param customDecorator custom decorator
      */
-    public WebBeansDecorator(InjectionTargetBean<T> wrappedBean, Decorator<T> customDecorator)
+    public WebBeansDecoratorRemove(InjectionTargetBean<T> wrappedBean, Decorator<T> customDecorator)
     {
         super(wrappedBean.getWebBeansContext(),
               WebBeansType.DECORATOR,
@@ -112,7 +112,7 @@ public class WebBeansDecorator<T> extends InjectionTargetBean<T> implements Deco
      * Creates a new decorator bean instance with the given wrapped bean.
      * @param wrappedBean wrapped bean instance
      */
-    public WebBeansDecorator(InjectionTargetBean<T> wrappedBean)
+    public WebBeansDecoratorRemove(InjectionTargetBean<T> wrappedBean)
     {
         super(wrappedBean.getWebBeansContext(),
               WebBeansType.DECORATOR,
