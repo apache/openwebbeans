@@ -45,7 +45,6 @@ import javax.decorator.Decorator;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Disposes;
@@ -79,10 +78,8 @@ import javax.enterprise.inject.spi.ProcessProducer;
 import javax.enterprise.inject.spi.ProcessProducerField;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.ProcessSessionBean;
-import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Scope;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
@@ -155,24 +152,6 @@ public final class WebBeansUtil
      * able to throw checked exceptions is configurable
      */
     private static volatile Boolean enforceCheckedException;
-
-    private final static Class<Instance<?>> INSTANCE_TYPE
-            = new TypeLiteral<Instance<?>>()
-    {
-        private static final long serialVersionUID = 3555319035805031154L;
-    }.getRawType();
-
-    private final static Class<Provider<?>> PROVIDER_TYPE
-            = new TypeLiteral<Provider<?>>()
-    {
-        private static final long serialVersionUID = -2611190564495920054L;
-    }.getRawType();
-
-    private final static Class<Event<?>>    EVENT_TYPE
-            = new TypeLiteral<Event<?>>()
-    {
-        private static final long serialVersionUID = -1395145871249763477L;
-    }.getRawType();
 
     private final WebBeansContext webBeansContext;
 
@@ -2518,31 +2497,6 @@ public final class WebBeansUtil
         }
     }
 
-    public <T> ManagedBean<T> defineInterceptor(AnnotatedType<T> annotatedType)
-    {
-        Class<?> clazz = annotatedType.getJavaClass();
-        if (webBeansContext.getInterceptorsManager().isInterceptorClassEnabled(clazz))
-        {
-            ManagedBean<T> delegate = null;
-
-            webBeansContext.getInterceptorUtil().checkAnnotatedTypeInterceptorConditions(annotatedType);
-            delegate = defineManagedBean(annotatedType);
-
-            if (delegate != null)
-            {
-                Set<Annotation> annTypeSet = annotatedType.getAnnotations();
-                Annotation[] anns = annTypeSet.toArray(new Annotation[annTypeSet.size()]);
-                AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-                webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass(delegate,
-                                                               annotationManager.getInterceptorBindingMetaAnnotations(anns));
-            }
-            return delegate;
-        }
-        else
-        {
-            return null;
-        }
-    }
 
     /**
      * Checks the implementation class for checking conditions.
