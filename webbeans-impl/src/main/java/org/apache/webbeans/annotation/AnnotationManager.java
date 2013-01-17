@@ -68,7 +68,7 @@ public final class AnnotationManager
     private final static Annotation[] ONLY_DEFAULT_ANNOTATION = new Annotation[1];
     static
     {
-        ONLY_DEFAULT_ANNOTATION[0] = new DefaultLiteral();
+        ONLY_DEFAULT_ANNOTATION[0] = DefaultLiteral.INSTANCE;
     }
 
     // No instantiate

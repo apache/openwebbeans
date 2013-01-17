@@ -27,6 +27,8 @@ import javax.enterprise.inject.Default;
  */
 public class DefaultLiteral extends EmptyAnnotationLiteral<Default> implements Default
 {
+    public static final DefaultLiteral INSTANCE = new DefaultLiteral();
+
     private static final String TOSTRING = "@javax.enterprise.inject.Default()";
     private static final long serialVersionUID = 6788272256977634238L;
 

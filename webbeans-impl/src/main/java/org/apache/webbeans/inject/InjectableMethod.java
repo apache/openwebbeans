@@ -91,7 +91,7 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
                         if(parameter.getBaseType().equals(InjectionPoint.class))
                         {
                             BeanManager manager = getWebBeansContext().getBeanManagerImpl();
-                            Bean<?> injectionPointBean = manager.getBeans(InjectionPoint.class, new DefaultLiteral()).iterator().next();
+                            Bean<?> injectionPointBean = manager.getBeans(InjectionPoint.class, DefaultLiteral.INSTANCE).iterator().next();
                             Object reference = manager.getReference(injectionPointBean, InjectionPoint.class, manager.createCreationalContext(injectionPointBean));
 
                             dependentParameters.put(injectionPointBean, reference);

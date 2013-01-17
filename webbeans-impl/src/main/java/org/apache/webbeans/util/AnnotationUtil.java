@@ -49,7 +49,7 @@ public final class AnnotationUtil
 
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
     
-    public static final Set<Annotation> DEFAULT_AND_ANY_ANNOTATION = Collections.unmodifiableSet(new HashSet<Annotation>(Arrays.asList(new DefaultLiteral(), new AnyLiteral())));
+    public static final Set<Annotation> DEFAULT_AND_ANY_ANNOTATION = Collections.unmodifiableSet(new HashSet<Annotation>(Arrays.asList(DefaultLiteral.INSTANCE, new AnyLiteral())));
 
     // No instantiate
     private AnnotationUtil()
