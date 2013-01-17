@@ -76,7 +76,9 @@ public final class WebBeansDecoratorConfig
         {
             logger.log(Level.FINE, "Configuring decorator class : [{0}]", delegate.getReturnType());
         }
+        //X TODO no more delegation!
         WebBeansDecorator<T> decorator = new WebBeansDecorator<T>(delegate);
+
         delegate.getWebBeansContext().getDecoratorsManager().addDecorator(decorator);
     }
 
@@ -97,13 +99,9 @@ public final class WebBeansDecoratorConfig
         if(decoratorList != null && !decoratorList.isEmpty())
         {
             DecoratorUtil.checkManagedBeanDecoratorConditions(component, decoratorList);
-            Iterator<Decorator<?>> itList = decoratorList.iterator();
 
-            while (itList.hasNext())
-            {
-                WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itList.next();            
-                component.getDecoratorStack().add(decorator);            
-            }            
+            component.getDecoratorStack().addAll(decoratorList);
+
             filterDecoratorsPerBDA(component,component.getDecoratorStack());
         }
     }
@@ -120,15 +118,13 @@ public final class WebBeansDecoratorConfig
         String beanBDABeansXML = beansXMLScanner.getBeansXml(component.getBeanClass());
         Set<Class<?>> definedDecorators = beansXMLScanner.getDecorators(beanBDABeansXML);
 
-        WebBeansDecorator<?> dec;
-
         if (stack != null && stack.size() > 0)
         {
             Iterator<Decorator<?>> it = stack.iterator();
             while (it.hasNext())
             {
-                dec = (WebBeansDecorator<?>) it.next();
-                if (!definedDecorators.contains(dec.getClazz()))
+                Decorator<?> dec = it.next();
+                if (!definedDecorators.contains(dec.getBeanClass()))
                 {
                     it.remove();
                 }

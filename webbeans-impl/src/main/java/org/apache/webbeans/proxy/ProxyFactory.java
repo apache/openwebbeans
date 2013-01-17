@@ -163,7 +163,7 @@ public final class ProxyFactory
 
 
             result = createProxyRemove(proxyClass);
-            
+
             if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptorBeanPleaseRemove<?>))
             {
                 InterceptorHandlerPleaseRemove interceptorHandler = createInterceptorHandlerRemove(bean, creationalContext);

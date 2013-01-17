@@ -136,9 +136,6 @@ import org.apache.webbeans.util.ClassUtil;
  * 
  * @see WebBeansInterceptorConfig
  * @see WebBeansDecoratorConfig
- * @see org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove
- * @see org.apache.webbeans.decorator.WebBeansDecorator
- * @see org.apache.webbeans.intercept.ejb.EJBInterceptorConfig
  *
  * @deprecated the whole interceptor stack will be changed to the new ASM based proxying.
  */

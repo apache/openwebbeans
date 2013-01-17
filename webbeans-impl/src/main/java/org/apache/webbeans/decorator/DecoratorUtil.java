@@ -21,7 +21,6 @@ package org.apache.webbeans.decorator;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -106,11 +105,9 @@ public final class DecoratorUtil
                 if (!method.isSynthetic() && !method.isBridge() && !Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers) && Modifier.isFinal(modifiers))
                 {
                     // Check decorator implements this
-                    Iterator<Decorator<?>> itDecorator = decoratorList.iterator();
-                    while (itDecorator.hasNext())
+                    for (Decorator<?> decorator : decoratorList)
                     {
-                        WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itDecorator.next();
-                        Class<?> decClazz = decorator.getClazz();
+                        Class<?> decClazz = decorator.getBeanClass();
 
                         try
                         {
