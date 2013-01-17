@@ -56,20 +56,8 @@ public class JavassistFactory
         }
         catch(RuntimeException e)
         {
-            if(classLoaderProvider instanceof OpenWebBeansClassLoaderProvider)
-            {
-                ((OpenWebBeansClassLoaderProvider)classLoaderProvider).useCurrentClassLoader();
-            }
-
             //try again with updated class loader
             return doPrivilegedCreateClass(factory);
-        }
-        finally
-        {
-            if(classLoaderProvider instanceof OpenWebBeansClassLoaderProvider)
-            {
-                ((OpenWebBeansClassLoaderProvider)classLoaderProvider).reset();
-            }
         }
     }
 

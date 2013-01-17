@@ -19,8 +19,6 @@
 package org.apache.webbeans.proxy;
 
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,16 +35,13 @@ import javax.enterprise.inject.spi.Decorator;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ResourceBean;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecorator;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandlerRemove;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorHandlerPleaseRemove;
-import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandlerRemove;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.proxy.javassist.JavassistFactory;
 import org.apache.webbeans.util.ClassUtil;
@@ -145,41 +140,6 @@ public final class ProxyFactory
         return null;
     }
 
-
-    /**
-     * @deprecated uses old proxy
-     */
-    public  Object createNormalScopedBeanProxyRemove(OwbBean<?> bean, CreationalContext<?> creationalContext)
-    {
-        Object result = null;
-        try
-        {
-            Class<?> proxyClass = normalScopedBeanProxyClassesRemove.get(bean);
-            if (proxyClass == null)
-            {
-                proxyClass = createProxyClassRemove(bean);
-                normalScopedBeanProxyClassesRemove.putIfAbsent(bean, proxyClass);
-            }
-
-
-            result = createProxyRemove(proxyClass);
-
-            if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptorBeanPleaseRemove<?>))
-            {
-                InterceptorHandlerPleaseRemove interceptorHandler = createInterceptorHandlerRemove(bean, creationalContext);
-
-                setHandler(result, interceptorHandler);
-            }
-        }
-        catch (Exception e)
-        {
-            WebBeansUtil.throwRuntimeExceptions(e);
-        }
-
-        return result;
-    }
-
-
     /**
      * @deprecated uses old proxy
      */
@@ -187,87 +147,6 @@ public final class ProxyFactory
         throws InstantiationException, IllegalAccessException
     {
         return factoryRemove.createProxy(proxyClass);
-    }
-
-    /**
-     * @deprecated uses old proxy
-     */
-    private InterceptorHandlerPleaseRemove createInterceptorHandlerRemove(OwbBean<?> bean, CreationalContext<?> creationalContext)
-    {
-        String scopeClassName = bean.getScope().getName();
-        Class<? extends InterceptorHandlerPleaseRemove> interceptorHandlerClass = null;
-        if (!interceptorHandlerClasses.containsKey(scopeClassName))
-        {
-            String proxyMappingConfigKey = OpenWebBeansConfiguration.PROXY_MAPPING_PREFIX + scopeClassName;
-            String className = bean.getWebBeansContext().getOpenWebBeansConfiguration().getProperty(proxyMappingConfigKey);
-            if (className != null)
-            {
-                try
-                {
-                    interceptorHandlerClass = (Class<? extends InterceptorHandlerPleaseRemove>) Class.forName(className, true, WebBeansUtil.getCurrentClassLoader());
-                }
-                catch (ClassNotFoundException e)
-                {
-                    throw new WebBeansConfigurationException("Configured InterceptorHandler "
-                                                             + className
-                                                             +" cannot be found",
-                                                             e);
-                }
-            }
-            else
-            {
-                // we need to explicitely store a class because ConcurrentHashMap will throw a NPE if value == null
-                interceptorHandlerClass = NormalScopedBeanInterceptorHandlerRemove.class;
-            }
-
-            interceptorHandlerClasses.put(scopeClassName, interceptorHandlerClass);
-        }
-        else
-        {
-            interceptorHandlerClass = interceptorHandlerClasses.get(scopeClassName);
-        }
-
-        if (interceptorHandlerClass.equals(NormalScopedBeanInterceptorHandlerRemove.class))
-        {
-            // this is faster that way...
-            return new NormalScopedBeanInterceptorHandlerRemove(bean, creationalContext);
-        }
-        else
-        {
-            try
-            {
-                Constructor ct = interceptorHandlerClass.getConstructor(OwbBean.class, CreationalContext.class);
-                return (InterceptorHandlerPleaseRemove) ct.newInstance(bean, creationalContext);
-            }
-            catch (NoSuchMethodException e)
-            {
-                throw new WebBeansConfigurationException("Configured InterceptorHandler "
-                                                         + interceptorHandlerClass.getName()
-                                                         +" has the wrong contructor",
-                                                         e);
-            }
-            catch (InvocationTargetException e)
-            {
-                throw new WebBeansConfigurationException("Configured InterceptorHandler "
-                                                         + interceptorHandlerClass.getName()
-                                                         +" has the wrong contructor",
-                                                         e);
-            }
-            catch (InstantiationException e)
-            {
-                throw new WebBeansConfigurationException("Configured InterceptorHandler "
-                                                         + interceptorHandlerClass.getName()
-                                                         +" has the wrong contructor",
-                                                         e);
-            }
-            catch (IllegalAccessException e)
-            {
-                throw new WebBeansConfigurationException("Configured InterceptorHandler "
-                                                         + interceptorHandlerClass.getName()
-                                                         +" has the wrong contructor",
-                                                         e);
-            }
-        }
     }
 
     /**

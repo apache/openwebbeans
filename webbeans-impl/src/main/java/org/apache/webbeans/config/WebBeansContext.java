@@ -47,7 +47,6 @@ import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
 import org.apache.webbeans.proxy.ProxyFactory;
-import org.apache.webbeans.proxy.javassist.OpenWebBeansClassLoaderProvider;
 import org.apache.webbeans.service.DefaultLoaderService;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.LoaderService;
@@ -142,7 +141,6 @@ public class WebBeansContext
         proxyFactoryRemove = serviceMap.containsKey(ProxyFactory.class)
             ? (ProxyFactory) serviceMap.get(ProxyFactory.class)
             : new ProxyFactory(this);
-        OpenWebBeansClassLoaderProvider.initProxyFactoryClassLoaderProvider();
 
         // Allow the WebBeansContext itself to be looked up
         managerMap.put(getClass(), this);
