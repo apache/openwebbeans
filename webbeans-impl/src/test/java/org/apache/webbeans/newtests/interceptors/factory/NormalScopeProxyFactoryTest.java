@@ -19,15 +19,13 @@
 package org.apache.webbeans.newtests.interceptors.factory;
 
 import javax.inject.Provider;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.List;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
-import org.apache.webbeans.util.ClassUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,15 +38,10 @@ public class NormalScopeProxyFactoryTest extends AbstractUnitTest
     @Test
     public void textSimpleProxyCreation() throws Exception
     {
-        NormalScopeProxyFactory pf = new NormalScopeProxyFactory();
+        NormalScopeProxyFactory pf = new NormalScopeProxyFactory(new WebBeansContext());
 
         // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
         ClassLoader classLoader = new URLClassLoader(new URL[0]);
-
-        List<Method> methods = ClassUtil.getNonPrivateMethods(ClassInterceptedClass.class);
-
-        Method[] nonInterceptedMethods = methods.toArray(new Method[methods.size()]);;
-        //X Method[] nonInterceptedMethods = new Method[]{methods.get(0)};
 
         Class<ClassInterceptedClass> proxyClass = pf.createProxyClass(classLoader, ClassInterceptedClass.class);
         Assert.assertNotNull(proxyClass);

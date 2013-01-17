@@ -45,6 +45,7 @@ import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
+import org.apache.webbeans.proxy.NormalScopeProxyFactory;
 import org.apache.webbeans.proxy.ProxyFactory;
 import org.apache.webbeans.proxy.javassist.OpenWebBeansClassLoaderProvider;
 import org.apache.webbeans.service.DefaultLoaderService;
@@ -81,7 +82,8 @@ public class WebBeansContext
     private final InterceptorsManager interceptorsManager = new InterceptorsManager(this);
     private final WebBeansInterceptorConfig webBeansInterceptorConfig = new WebBeansInterceptorConfig(this);
     private final ProxyFactory proxyFactoryRemove;
-    private final InterceptorDecoratorProxyFactory interceptorDecoratorProxyFactory = new InterceptorDecoratorProxyFactory();
+    private final InterceptorDecoratorProxyFactory interceptorDecoratorProxyFactory = new InterceptorDecoratorProxyFactory(this);
+    private final NormalScopeProxyFactory normalScopeProxyFactory = new NormalScopeProxyFactory(this);
     private final OpenWebBeansConfiguration openWebBeansConfiguration;
     private final PluginLoader pluginLoader = new PluginLoader();
     private final SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
@@ -156,6 +158,7 @@ public class WebBeansContext
         managerMap.put(InterceptorsManager.class, interceptorsManager);
         managerMap.put(ProxyFactory.class, proxyFactoryRemove);
         managerMap.put(InterceptorDecoratorProxyFactory.class, interceptorDecoratorProxyFactory);
+        managerMap.put(NormalScopeProxyFactory.class, normalScopeProxyFactory);
         managerMap.put(OpenWebBeansConfiguration.class, openWebBeansConfiguration);
         managerMap.put(PluginLoader.class, pluginLoader);
         managerMap.put(SerializableBeanVault.class, serializableBeanVault);
@@ -338,6 +341,10 @@ public class WebBeansContext
         return interceptorDecoratorProxyFactory;
     }
 
+    public NormalScopeProxyFactory getNormalScopeProxyFactory()
+    {
+        return normalScopeProxyFactory;
+    }
 
     public ScannerService getScannerService()
     {
@@ -438,4 +445,6 @@ public class WebBeansContext
     {
         return loaderService;
     }
+
+
 }

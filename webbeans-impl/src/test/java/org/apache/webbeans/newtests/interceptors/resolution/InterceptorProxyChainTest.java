@@ -101,7 +101,7 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
 
         // step 2.
         // creating the Proxy Class itself
-        InterceptorDecoratorProxyFactory pf = new InterceptorDecoratorProxyFactory();
+        InterceptorDecoratorProxyFactory pf = new InterceptorDecoratorProxyFactory(getWebBeansContext());
 
         // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
         ClassLoader classLoader = this.getClass().getClassLoader(); // new URLClassLoader(new URL[0]);
@@ -145,7 +145,7 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
 
     private <T> T createNormalScopingProxy(ClassLoader classLoader, Class<T> clazz, T instance) throws ProxyGenerationException
     {
-        NormalScopeProxyFactory pf = new NormalScopeProxyFactory();
+        NormalScopeProxyFactory pf = new NormalScopeProxyFactory(getWebBeansContext());
 
         Class<T> proxyClass = pf.createProxyClass(classLoader, clazz);
         Assert.assertNotNull(proxyClass);

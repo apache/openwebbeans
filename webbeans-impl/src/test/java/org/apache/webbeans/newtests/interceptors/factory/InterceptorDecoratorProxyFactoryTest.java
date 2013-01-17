@@ -26,6 +26,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
@@ -47,7 +48,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
     @Test
     public void textSimpleProxyCreation() throws Exception
     {
-        InterceptorDecoratorProxyFactory pf = new InterceptorDecoratorProxyFactory();
+        InterceptorDecoratorProxyFactory pf = new InterceptorDecoratorProxyFactory(new WebBeansContext());
 
         // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
         ClassLoader classLoader = new URLClassLoader(new URL[0]);

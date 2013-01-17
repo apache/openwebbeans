@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -59,6 +60,11 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
     //X TODO add caching of created proxy classes. This is needed to prevent class loading clashes.
     //X a generated proxy cannot easily get redefined later!
 
+
+    public InterceptorDecoratorProxyFactory(WebBeansContext webBeansContext)
+    {
+        super(webBeansContext);
+    }
 
     public <T> T createProxyInstance(Class<? extends T> proxyClass, T instance, InterceptorHandler interceptorDecoratorStack)
             throws ProxyGenerationException
@@ -136,7 +142,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
      * <ol>
      *     <li>
      *         private methods - they do not get proxied at all! If you like to invoke a private method,
-     *         then you can use {@link #getInternalInstance(OwbInterceptorProxy)} and use reflection on it.
+     *         then you can use {@link #getInternalInstance(Object)} and use reflection on it.
      *     </li>
      *     <li>
      *         non-proxied methods - all methods which do not have a business interceptor nor decorator

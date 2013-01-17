@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.proxy;
 
+import javax.enterprise.inject.spi.Bean;
 import javax.inject.Provider;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -25,6 +26,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 import org.apache.webbeans.util.ClassUtil;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
@@ -42,11 +45,63 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
     public static final String FIELD_INSTANCE_PROVIDER = "owbContextualInstanceProvider";
 
 
+    public NormalScopeProxyFactory(WebBeansContext webBeansContext)
+    {
+        super(webBeansContext);
+    }
+
     @Override
     protected Class getMarkerInterface()
     {
         return OwbNormalScopeProxy.class;
     }
+
+    public <T> T createNormalScopeProxy(Bean<T> bean)
+    {
+        ClassLoader classLoader = bean.getClass().getClassLoader();
+
+        Class<T> classToProxy = (Class<T>) bean.getBeanClass();
+
+        Class<? extends T> proxyClass = createProxyClass(classLoader, classToProxy);
+
+        return createProxyInstance(proxyClass, getInstanceProvider(classLoader, bean));
+    }
+
+    public Provider getInstanceProvider(ClassLoader classLoader, Bean<?> bean)
+    {
+        //X TODO for now we always return the default NormalScopedBeanInterceptorHandler
+        return new NormalScopedBeanInterceptorHandler(webBeansContext.getBeanManagerImpl(), bean);
+
+/*X TODO add support for the other scopes
+        String scopeClassName = bean.getScope().getName();
+        Class<? extends Provider> instanceProviderClass = null;
+        String proxyMappingConfigKey = OpenWebBeansConfiguration.PROXY_MAPPING_PREFIX + scopeClassName;
+        String className = webBeansContext.getOpenWebBeansConfiguration().getProperty(proxyMappingConfigKey);
+        if (className != null && !className.equals(NormalScopedBeanInterceptorHandler.class.getName()))
+        {
+            try
+            {
+                instanceProviderClass = (Class<? extends Provider>) Class.forName(className, true, classLoader);
+            }
+            catch (ClassNotFoundException e)
+            {
+                throw new WebBeansConfigurationException("Configured InterceptorHandler "
+                                                         + className
+                                                         +" cannot be found",
+                                                         e);
+            }
+
+            //X TODO continue...
+        }
+        else
+        {
+            return new NormalScopedBeanInterceptorHandler(webBeansContext.getBeanManagerImpl(), bean);
+        }
+
+        return null;
+*/
+    }
+
 
     /**
      * @param classLoader to use for creating the class in
@@ -194,4 +249,5 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             mv.visitEnd();
         }
     }
+
 }

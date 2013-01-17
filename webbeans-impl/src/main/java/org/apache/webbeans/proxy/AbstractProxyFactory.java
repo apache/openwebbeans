@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
@@ -35,12 +36,20 @@ public abstract class AbstractProxyFactory
 {
     public final static int MAX_CLASSLOAD_TRIES = 10000;
 
+    protected WebBeansContext webBeansContext;
+
     /**
      * The name of the field which stores the passivationID of the Bean this proxy serves.
      * This is needed in case the proxy gets de-serialized back into a JVM
      * which didn't have this bean loaded yet.
      */
     public static final String FIELD_BEAN_PASSIVATION_ID = "owbBeanPassivationId";
+
+
+    protected AbstractProxyFactory(WebBeansContext webBeansContext)
+    {
+        this.webBeansContext = webBeansContext;
+    }
 
     /**
      * @return the marker interface which should be used for this proxy.

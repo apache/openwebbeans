@@ -77,7 +77,7 @@ public class NewProxyTest extends AbstractUnitTest
         InterceptorHandler interceptorHandler
                 = new DefaultInterceptorHandler<RuntimeExceptionBindingTypeBean>(target, interceptors, instances);
         
-        InterceptorDecoratorProxyFactory factory = new InterceptorDecoratorProxyFactory();
+        InterceptorDecoratorProxyFactory factory = new InterceptorDecoratorProxyFactory(getWebBeansContext());
         Class<RuntimeExceptionBindingTypeBean> proxyClass
                 = factory.createProxyClass(Thread.currentThread().getContextClassLoader(), RuntimeExceptionBindingTypeBean.class, interceptedMethods, null);
 
