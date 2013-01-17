@@ -31,25 +31,7 @@ import org.junit.Test;
 
 public class SupportInjectionTest extends AbstractUnitTest
 {
-    class SupportCreational implements CreationalContext<SupportInjectionBean>
-    {
 
-        @Override
-        public void push(SupportInjectionBean incompleteInstance)
-        {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void release()
-        {
-            // TODO Auto-generated method stub
-            
-        }
-        
-    }
-    
     @Test
     public void testInjectionTarget()
     {
@@ -59,7 +41,7 @@ public class SupportInjectionTest extends AbstractUnitTest
         startContainer(classes);
         
         InjectionTarget<SupportInjectionBean> model = getBeanManager().createInjectionTarget(getBeanManager().createAnnotatedType(SupportInjectionBean.class));
-        SupportCreational cc = new SupportCreational();
+        CreationalContext cc = getBeanManager().createCreationalContext(null);
         SupportInjectionBean instance = model.produce(cc);
         
         model.inject(instance, cc);
