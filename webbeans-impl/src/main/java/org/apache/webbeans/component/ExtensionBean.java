@@ -22,7 +22,6 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.AnnotationUtil;
