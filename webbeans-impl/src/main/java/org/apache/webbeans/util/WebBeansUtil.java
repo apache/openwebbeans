@@ -2465,7 +2465,6 @@ public final class WebBeansUtil
         Class clazz = webBeansContext.getProxyFactoryRemove().createAbstractDecoratorProxyClass(bean);
 
         bean.setConstructor(defineConstructor(clazz));
-        bean.setIsAbstractDecorator(true);
         return bean;
     }
 

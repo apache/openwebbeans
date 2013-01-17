@@ -41,7 +41,6 @@ import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandlerRemove;
 import org.apache.webbeans.intercept.InterceptorData;
-import org.apache.webbeans.intercept.InterceptorHandlerPleaseRemove;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.proxy.javassist.JavassistFactory;
 import org.apache.webbeans.util.ClassUtil;
@@ -70,12 +69,6 @@ public final class ProxyFactory
     {
     }
 
-    /**
-     * This map contains all configured special Scope->InterceptorHandler mappings.
-     * If no mapping is configured, a {@link org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandlerRemove} will get created.
-     */
-    private Map<String, Class<? extends InterceptorHandlerPleaseRemove>> interceptorHandlerClasses =
-            new ConcurrentHashMap<String, Class<? extends InterceptorHandlerPleaseRemove>>();
 
     public void setHandler(Object proxy, MethodHandler handler)
     {

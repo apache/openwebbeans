@@ -40,8 +40,6 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
     /** Constructor of the web bean component */
     private Constructor<T> constructor;
     
-    protected boolean isAbstractDecorator;
-    
     public ManagedBean(WebBeansContext webBeansContext,
                        WebBeansType webBeansType,
                        AnnotatedType<T> annotatedType,
@@ -128,9 +126,5 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
 
     /** cache previously calculated result */
     private Boolean isPassivationCapable = null;
-    
-    public void setIsAbstractDecorator(boolean flag)
-    {
-        isAbstractDecorator = flag;
-    }
+
 }

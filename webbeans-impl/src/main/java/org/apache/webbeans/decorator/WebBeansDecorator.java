@@ -434,20 +434,6 @@ public class WebBeansDecorator<T> extends InjectionTargetBean<T> implements Deco
     }
 
 
-
-    /**
-     * @return the clazz
-     */
-    public Class<?> getClazz()
-    {
-        if(customDecorator != null)
-        {
-            return customDecorator.getBeanClass();
-        }
-        
-        return clazz;
-    }
-
     @Override
     public Class<?> getBeanClass()
     {
