@@ -142,8 +142,15 @@ public abstract class AbstractProxyFactory
         String classFileName = classToProxy.getName().replace('.', '/');
 
         String[] interfaceNames = new String[]{Type.getInternalName(getMarkerInterface())};
+        String superClassName = classFileName;
 
-        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER + Opcodes.ACC_SYNTHETIC, proxyClassFileName, null, classFileName, interfaceNames);
+        if (classToProxy.isInterface())
+        {
+            interfaceNames = new String[]{Type.getInternalName(classToProxy), interfaceNames[0]};
+            superClassName = Type.getInternalName(Object.class);
+        }
+
+        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER + Opcodes.ACC_SYNTHETIC, proxyClassFileName, null, superClassName, interfaceNames);
         cw.visitSource(classFileName + ".java", null);
 
         createInstanceVariables(cw, classToProxy, classFileName);

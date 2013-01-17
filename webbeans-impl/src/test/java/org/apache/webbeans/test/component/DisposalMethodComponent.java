@@ -33,7 +33,7 @@ import org.apache.webbeans.test.component.service.IService;
 @Named
 public class DisposalMethodComponent
 {
-    private @Inject @Default IService service = null;
+    private IService service = null;
 
     @Produces
     @ApplicationScoped

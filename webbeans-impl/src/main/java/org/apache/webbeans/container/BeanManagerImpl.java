@@ -710,7 +710,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             {
                 //Create Managed Bean Proxy
                 //X old approach: instance = webBeansContext.getProxyFactoryRemove().createNormalScopedBeanProxyRemove((AbstractOwbBean<?>) bean, creationalContext);
-
                 instance = webBeansContext.getNormalScopeProxyFactory().createNormalScopeProxy(bean);
 
                 //Cached instance

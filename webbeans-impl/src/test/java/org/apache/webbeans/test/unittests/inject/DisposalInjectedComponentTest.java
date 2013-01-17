@@ -18,75 +18,46 @@
  */
 package org.apache.webbeans.test.unittests.inject;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import javax.enterprise.inject.spi.BeanManager;
+import org.junit.Assert;
 
-import junit.framework.Assert;
-
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.DisposalMethodComponent;
 import org.apache.webbeans.test.component.service.IService;
 import org.apache.webbeans.test.component.service.ServiceImpl1;
-import org.junit.Before;
 import org.junit.Test;
 
-public class DisposalInjectedComponentTest extends TestContext
+public class DisposalInjectedComponentTest extends AbstractUnitTest
 {
-    BeanManager container = null;
-
-    public DisposalInjectedComponentTest()
-    {
-        super(DisposalInjectedComponentTest.class.getSimpleName());
-    }
-
-    @Before
-    public void init()
-    {
-        this.container = WebBeansContext.getInstance().getBeanManagerImpl();
-        super.init();
-    }
 
     @Test
     public void testTypedComponent() throws Throwable
     {
-        clear();
+        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.add(DisposalMethodComponent.class);
+        classes.add(ServiceImpl1.class);
 
-        defineManagedBean(ServiceImpl1.class);
-        defineManagedBean(DisposalMethodComponent.class);
+        startContainer(classes, null);
 
-        List<AbstractOwbBean<?>> comps = getComponents();
 
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-        contextFactory.initApplicationContext(null);
-
-        Assert.assertEquals(2, comps.size());
-
-        Object producerResult = getInstanceByName("service");
+        IService producedService = getInstance("service");
         
-        IService producverService = (IService)producerResult;
+        Assert.assertNotNull(producedService);
         
-        Assert.assertNotNull(producverService);
-        
-        Object disposalComp = getManager().getInstance(comps.get(1));
-        Object object = getManager().getInstance(comps.get(0));
+        Object object = getInstance(ServiceImpl1.class);
 
         Assert.assertTrue(object instanceof ServiceImpl1);
-        Assert.assertTrue(disposalComp instanceof DisposalMethodComponent);
 
-        DisposalMethodComponent mc = (DisposalMethodComponent) disposalComp;
+        DisposalMethodComponent mc = getInstance(DisposalMethodComponent.class);
 
         IService s = mc.service();
 
         Assert.assertNotNull(s);
 
-        contextFactory.destroyApplicationContext(null);
-        contextFactory.destroyRequestContext(null);
 
+        shutDownContainer();
     }
 
 }

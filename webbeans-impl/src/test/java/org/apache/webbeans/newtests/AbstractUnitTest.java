@@ -117,10 +117,25 @@ public abstract class AbstractUnitTest
         Assert.assertNotNull(beans);
 
         Bean<?> bean = getBeanManager().resolve(beans);
-        
+        Assert.assertNotNull("Bean with type " + type + " could not be found!", bean);
+
         return (T) getBeanManager().getReference(bean, type, getBeanManager().createCreationalContext(bean));
     }
-    
+
+    @SuppressWarnings("unchecked")
+    protected <T> T getInstance(String elName)
+    {
+        Set<Bean<?>> beans = getBeanManager().getBeans(elName);
+        Assert.assertNotNull(beans);
+
+        Bean<?> bean = getBeanManager().resolve(beans);
+        Assert.assertNotNull("Bean with name " + elName + " could not be found!", bean);
+
+        return (T) getBeanManager().getReference(bean, Object.class, getBeanManager().createCreationalContext(bean));
+    }
+
+
+
     protected String getXmlPath(String packageName, String fileName)
     {
         StringBuilder prefix = new StringBuilder(packageName.replace('.', '/'));

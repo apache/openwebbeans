@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 import org.apache.webbeans.util.ClassUtil;
@@ -60,7 +61,16 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
     {
         ClassLoader classLoader = bean.getClass().getClassLoader();
 
-        Class<T> classToProxy = (Class<T>) bean.getBeanClass();
+        Class<T> classToProxy;
+        if (bean instanceof OwbBean)
+        {
+            classToProxy = ((OwbBean<T>) bean).getReturnType();
+        }
+        else
+        {
+            // TODO: that might be wrong sometimes
+            classToProxy = (Class<T>) bean.getBeanClass();
+        }
 
         Class<? extends T> proxyClass = createProxyClass(classLoader, classToProxy);
 
@@ -155,13 +165,24 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
     {
         try
         {
-            Constructor superDefaultCt = classToProxy.getConstructor(null);
+            Constructor superDefaultCt;
+            String parentClassFileName;
+            if (classToProxy.isInterface())
+            {
+                parentClassFileName = Type.getInternalName(Object.class);
+                superDefaultCt = Object.class.getConstructor(null);
+            }
+            else
+            {
+                parentClassFileName = classFileName;
+                superDefaultCt = classToProxy.getConstructor(null);
+            }
 
             final String descriptor = Type.getConstructorDescriptor(superDefaultCt);
             final MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
             mv.visitCode();
             mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, classFileName, "<init>", descriptor);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, parentClassFileName, "<init>", descriptor);
 
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitInsn(Opcodes.ACONST_NULL);
