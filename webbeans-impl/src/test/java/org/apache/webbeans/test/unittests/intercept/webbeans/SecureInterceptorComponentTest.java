@@ -18,39 +18,32 @@
  */
 package org.apache.webbeans.test.unittests.intercept.webbeans;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureComponent;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureInterceptor;
-import org.junit.Before;
 import org.junit.Test;
 
-public class SecureInterceptorComponentTest extends TestContext
+public class SecureInterceptorComponentTest extends AbstractUnitTest
 {
-    public SecureInterceptorComponentTest()
-    {
-        super(SecureInterceptorComponentTest.class.getName());
-    }
-
-    @Before
-    public void init()
-    {
-        initDefaultStereoTypes();
-        initializeInterceptorType(SecureInterceptor.class);
-    }
 
     @Test
     public void testSecureInterceptor()
     {
-        defineInterceptor(SecureInterceptor.class);
-        AbstractOwbBean<SecureComponent> component = defineManagedBean(SecureComponent.class);
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
 
-        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(SecureComponent.class);
+        beanClasses.add(SecureInterceptor.class);
+        startContainer(beanClasses, beanXmls);
 
-        SecureComponent secureComponent = getManager().getInstance(component);
+
+        SecureComponent secureComponent = getInstance(SecureComponent.class);
 
         Assert.assertNotNull(secureComponent);
 
@@ -59,6 +52,7 @@ public class SecureInterceptorComponentTest extends TestContext
         Assert.assertTrue(SecureInterceptor.CALL);
         Assert.assertTrue(value);
 
+        shutDownContainer();
     }
 
 }
