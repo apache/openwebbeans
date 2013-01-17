@@ -26,7 +26,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
 import javax.decorator.Delegate;
@@ -58,8 +57,10 @@ import java.util.logging.Level;
  * @version $Rev$ $Date$
  *
  * @param <T> decorator type info
+ *
+ * @deprecated replaced by DecoratorBean
  */
-public class WebBeansDecorator<T> extends InjectionTargetBean<T> implements OwbDecorator<T>
+public class WebBeansDecorator<T> extends InjectionTargetBean<T> implements Decorator<T>
 {
     /** Decorator class */
     private Class<?> clazz;
@@ -295,66 +296,6 @@ public class WebBeansDecorator<T> extends InjectionTargetBean<T> implements OwbD
         }
     }
     
-    private boolean bindingMatchesAnnotations(Annotation bindingType, Set<Annotation> annotations)
-    {
-
-        for (Annotation annot : annotations)
-        {
-            if (AnnotationUtil.isQualifierEqual(annot, bindingType))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Helper method to check if any of a list of Types are assignable to the
-     * delegate type.
-     * 
-     * @param apiTypes Set of apiTypes to check against the delegate type
-     * @return true if one of the types is assignable to the delegate type
-     */
-    private boolean apiTypesMatchDelegateType(Set<Type> apiTypes)
-    {
-        boolean ok = false;
-        for (Type apiType : apiTypes)
-        {
-            if (DecoratorResolverRules.compareType(getDelegateType(), apiType))
-            {
-                ok = true;
-                break;
-            }
-        }
-        
-        if(ok) 
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean isDecoratorMatch(Set<Type> apiTypes, Set<Annotation> annotations)
-    {
-
-        if (!apiTypesMatchDelegateType(apiTypes))
-        {
-            return false;
-        }
-
-        for (Annotation bindingType : getDelegateQualifiers())
-        {
-            if (!bindingMatchesAnnotations(bindingType, annotations))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     public Set<Annotation> getDelegateQualifiers()
     {
         if(customDecorator != null)

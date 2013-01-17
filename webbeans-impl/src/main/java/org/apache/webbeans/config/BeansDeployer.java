@@ -65,7 +65,6 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.corespi.se.DefaultJndiService;
-import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.event.ObserverMethodImpl;
@@ -342,12 +341,9 @@ public class BeansDeployer
         
         //Adding decorators to validate
         Set<Decorator<?>> decorators = webBeansContext.getDecoratorsManager().getDecorators();
-        for(Decorator decorator : decorators)
-        {
-            WebBeansDecorator wbDec = (WebBeansDecorator)decorator;
-            beans.add(wbDec);
-        }
-        
+
+        beans.addAll(decorators);
+
         
         logger.fine("Validation of the decorator's injection points has started.");
         

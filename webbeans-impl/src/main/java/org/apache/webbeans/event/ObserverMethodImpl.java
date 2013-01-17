@@ -353,7 +353,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 if (annot.length == 0)
                 {
                     annot = new Annotation[1];
-                    annot[0] = new DefaultLiteral();
+                    annot[0] = DefaultLiteral.INSTANCE;
                 }
                 else
                 {

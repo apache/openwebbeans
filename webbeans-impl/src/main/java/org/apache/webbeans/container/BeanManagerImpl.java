@@ -74,7 +74,6 @@ import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DecoratorComparator;
-import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
@@ -418,20 +417,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         webBeansContext.getAnnotationManager().checkDecoratorResolverParams(types, bindingTypes);
         Set<Decorator<?>> intsSet = webBeansContext.getDecoratorsManager().findDeployedWebBeansDecorator(types, bindingTypes);
-        Iterator<Decorator<?>> itSet = intsSet.iterator();
 
-        List<Decorator<?>> decoratorList = new ArrayList<Decorator<?>>();
-        while (itSet.hasNext())
-        {
-            WebBeansDecorator decorator = (WebBeansDecorator) itSet.next();
-            decoratorList.add(decorator);
-
-        }
-
+        List<Decorator<?>> decoratorList = new ArrayList<Decorator<?>>(intsSet);
         Collections.sort(decoratorList, new DecoratorComparator(webBeansContext));
 
         return decoratorList;
-
     }
 
     /**

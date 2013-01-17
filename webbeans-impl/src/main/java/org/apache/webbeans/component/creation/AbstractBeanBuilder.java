@@ -321,14 +321,14 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
         // No-binding annotation
         if (qualifiers.size() == 0 )
         {
-            qualifiers.add(new DefaultLiteral());
+            qualifiers.add(DefaultLiteral.INSTANCE);
         }
         else if(qualifiers.size() == 1)
         {
             Annotation annot = qualifiers.iterator().next();
             if(annot.annotationType().equals(Named.class))
             {
-                qualifiers.add(new DefaultLiteral());
+                qualifiers.add(DefaultLiteral.INSTANCE);
             }
         }
         

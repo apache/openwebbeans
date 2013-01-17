@@ -74,7 +74,7 @@ public class InjectionResolver
      */
     private WebBeansContext webBeansContext;
     
-    private final static Annotation[] DEFAULT_LITERAL_ARRAY = new Annotation[]{new DefaultLiteral()};
+    private final static Annotation[] DEFAULT_LITERAL_ARRAY = new Annotation[]{DefaultLiteral.INSTANCE};
     private final static Annotation[] ANY_LITERAL_ARRAY = new Annotation[]{new AnyLiteral()};
 
     /**

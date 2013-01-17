@@ -204,7 +204,7 @@ public class ConversationManager
     public Conversation getConversationBeanReference()
     {
         BeanManager beanManager = webBeansContext.getBeanManagerImpl();
-        Bean<Conversation> bean = (Bean<Conversation>)beanManager.getBeans(Conversation.class, new DefaultLiteral()).iterator().next();
+        Bean<Conversation> bean = (Bean<Conversation>)beanManager.getBeans(Conversation.class, DefaultLiteral.INSTANCE).iterator().next();
         Conversation conversation =(Conversation) beanManager.getReference(bean, Conversation.class, beanManager.createCreationalContext(bean));
 
         return conversation;

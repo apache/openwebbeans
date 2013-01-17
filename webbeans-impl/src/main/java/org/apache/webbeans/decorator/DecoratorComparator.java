@@ -39,20 +39,16 @@ public class DecoratorComparator<T> implements Comparator<Decorator<T>>
 
     public int compare(Decorator<T> o1, Decorator<T> o2)
     {
-        WebBeansDecorator<T> src = (WebBeansDecorator<T>) o1;
-        WebBeansDecorator<T> target = (WebBeansDecorator<T>) o2;
-
         if (o1.equals(o2))
         {
             return 0;
         }
         else
         {
-            Class<?> o1Clazz = src.getClazz();
-            Class<?> o2Clazz = target.getClazz();
+            Class<?> o1Clazz = o1.getBeanClass();
+            Class<?> o2Clazz = o2.getBeanClass();
 
             return webBeansContext.getDecoratorsManager().compare(o1Clazz, o2Clazz);
-
         }
     }
 

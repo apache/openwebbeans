@@ -21,20 +21,19 @@ package org.apache.webbeans.decorator;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import javax.decorator.Decorator;
+import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 
 public class DecoratorsManager
@@ -50,7 +49,7 @@ public class DecoratorsManager
     /**
      * Active and enabled decorators
      */
-    private Set<javax.enterprise.inject.spi.Decorator<?>> webBeansDecorators = new CopyOnWriteArraySet<javax.enterprise.inject.spi.Decorator<?>>();
+    private Set<Decorator<?>> webBeansDecorators = new CopyOnWriteArraySet<Decorator<?>>();
 
 
 
@@ -108,7 +107,7 @@ public class DecoratorsManager
         for(Class<?> decoratorClazz : enabledDecorators)
         {
             //Validate decorator classes
-            if(!decoratorClazz.isAnnotationPresent(Decorator.class) && !containsCustomDecoratorClass(decoratorClazz))
+            if(!decoratorClazz.isAnnotationPresent(javax.decorator.Decorator.class) && !containsCustomDecoratorClass(decoratorClazz))
             {
                 throw new WebBeansConfigurationException("Given class : " + decoratorClazz + " is not a decorator class");
             }   
@@ -127,12 +126,12 @@ public class DecoratorsManager
         return additionalDecoratorClasses.contains(clazz);
     }
 
-    public Set<javax.enterprise.inject.spi.Decorator<?>> getDecorators()
+    public Set<Decorator<?>> getDecorators()
     {
         return webBeansDecorators;
     }
 
-    public void addDecorator(javax.enterprise.inject.spi.Decorator decorator)
+    public void addDecorator(Decorator decorator)
     {
         webBeansDecorators.add(decorator);
         if (decorator instanceof OwbBean)
@@ -141,17 +140,14 @@ public class DecoratorsManager
 
             if(owbBean.isPassivationCapable())
             {
-                webBeansContext.getBeanManagerImpl().addPassivationInfo((OwbBean)decorator);
+                webBeansContext.getBeanManagerImpl().addPassivationInfo(decorator);
             }
         }
     }
 
-    public  Set<javax.enterprise.inject.spi.Decorator<?>> findDeployedWebBeansDecorator(Set<Type> apiTypes, Annotation... anns)
+    public  Set<Decorator<?>> findDeployedWebBeansDecorator(Set<Type> apiTypes, Annotation... anns)
     {
-        Set<javax.enterprise.inject.spi.Decorator<?>> set = new HashSet<javax.enterprise.inject.spi.Decorator<?>>();
-
-        Iterator<javax.enterprise.inject.spi.Decorator<?>> it = Collections.unmodifiableSet(getDecorators()).iterator();
-        WebBeansDecorator<?> decorator = null;
+        Set<Decorator<?>> set = new HashSet<Decorator<?>>();
 
         List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();
         Set<Annotation> listAnnot = new HashSet<Annotation>();
@@ -163,14 +159,12 @@ public class DecoratorsManager
 
         if (listAnnot.isEmpty())
         {
-            listAnnot.add(new DefaultLiteral());
+            listAnnot.add(DefaultLiteral.INSTANCE);
         }
 
-        while (it.hasNext())
+        for (Decorator<?> decorator : getDecorators())
         {
-            decorator = (WebBeansDecorator<?>) it.next();
-
-            if (decorator.isDecoratorMatch(apiTypes, listAnnot))
+            if (isDecoratorMatch(decorator, apiTypes, listAnnot))
             {
                 set.add(decorator);
             }
@@ -179,6 +173,67 @@ public class DecoratorsManager
         return set;
 
     }
+
+    private boolean isDecoratorMatch(Decorator<?> decorator, Set<Type> apiTypes, Set<Annotation> annotations)
+    {
+        if (!apiTypesMatchDelegateType(decorator, apiTypes))
+        {
+            return false;
+        }
+
+        for (Annotation bindingType : decorator.getDelegateQualifiers())
+        {
+            if (!bindingMatchesAnnotations(bindingType, annotations))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean bindingMatchesAnnotations(Annotation bindingType, Set<Annotation> annotations)
+    {
+
+        for (Annotation annot : annotations)
+        {
+            if (AnnotationUtil.isQualifierEqual(annot, bindingType))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Helper method to check if any of a list of Types are assignable to the
+     * delegate type.
+     *
+     * @param apiTypes Set of apiTypes to check against the delegate type
+     * @return true if one of the types is assignable to the delegate type
+     */
+    private boolean apiTypesMatchDelegateType(Decorator<?> decorator, Set<Type> apiTypes)
+    {
+        boolean ok = false;
+        for (Type apiType : apiTypes)
+        {
+            if (DecoratorResolverRules.compareType(decorator.getDelegateType(), apiType))
+            {
+                ok = true;
+                break;
+            }
+        }
+
+        if(ok)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+
 
 
     public void clear()
