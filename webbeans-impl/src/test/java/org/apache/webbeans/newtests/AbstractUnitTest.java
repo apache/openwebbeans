@@ -20,6 +20,7 @@ package org.apache.webbeans.newtests;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +49,12 @@ public abstract class AbstractUnitTest
     {
 
     }
-    
+
+    protected void startContainer(Class<?>... beanClasses)
+    {
+        startContainer(Arrays.asList(beanClasses), null);
+    }
+
     protected void startContainer(Collection<Class<?>> beanClasses)
     {
         startContainer(beanClasses, null);

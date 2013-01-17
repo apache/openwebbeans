@@ -94,6 +94,12 @@ public abstract class AbstractProxyFactory
     protected String getUnusedProxyClassName(ClassLoader classLoader, String proxyClassName)
     {
         String finalName = proxyClassName;
+
+        proxyClassName = fixPreservedPackage(proxyClassName, "java.");
+        proxyClassName = fixPreservedPackage(proxyClassName, "javax.");
+        proxyClassName = fixPreservedPackage(proxyClassName, "com.sun.");
+        proxyClassName = fixPreservedPackage(proxyClassName, "sun.misc.");
+
         for (int i = 0; i < MAX_CLASSLOAD_TRIES; i++)
         {
             try
@@ -110,6 +116,23 @@ public abstract class AbstractProxyFactory
         }
 
         throw new WebBeansException("Unable to detect a free proxy class name based on: " + proxyClassName);
+    }
+
+    /**
+     * Detect if the provided className is in the forbidden package.
+     * If so, move it to org.apache.webbeans.custom.
+     * @param forbiddenPackagePrefix including the '.', e.g. 'javax.'
+     */
+    private String fixPreservedPackage(final String className, final String forbiddenPackagePrefix)
+    {
+        String fixedClassName = className;
+
+        if (className.startsWith(forbiddenPackagePrefix))
+        {
+            fixedClassName = "org.apache.webbeans.custom." + className.substring(forbiddenPackagePrefix.length());
+        }
+
+        return fixedClassName;
     }
 
 

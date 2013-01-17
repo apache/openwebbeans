@@ -18,46 +18,27 @@
  */
 package org.apache.webbeans.test.unittests.disposal;
 
+import javax.enterprise.context.RequestScoped;
 import java.util.List;
 
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.disposal.Disposal1;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-public class DisposalTest extends TestContext
+public class DisposalTest extends AbstractUnitTest
 {
-
-    public DisposalTest()
-    {
-        super(DisposalTest.class.getName());
-    }
-
-    @Before
-    public void init()
-    {
-        super.init();
-    }
 
     @Test
     public void testDisposal1()
     {
-        clear();
-
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-        contextFactory.initSessionContext(null);
-
-        defineManagedBean(Disposal1.class);
+        startContainer(Disposal1.class);
 
         @SuppressWarnings("unchecked")
-        List<Integer> list = (List<Integer>) getInstanceByName("createBinding1");
+        List<Integer> list = (List<Integer>) getInstance("createBinding1");
         Assert.assertNotNull(list);
         Assert.assertTrue(list.size() == 1);
-        contextFactory.destroyRequestContext(null);
+        getLifecycle().getContextService().endContext(RequestScoped.class, null);
 
         Assert.assertTrue(Disposal1.getDISPOSCALL());
 
