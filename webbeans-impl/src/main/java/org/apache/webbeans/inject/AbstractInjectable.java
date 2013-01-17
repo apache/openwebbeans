@@ -46,7 +46,7 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
- * Abstract implementation of the {@link Injectable} contract.
+ * Abstract implementation of all components which are injectable.
  * 
  * <p>
  * Do actual injection via {@link AbstractInjectable#inject(InjectionPoint)}
@@ -56,7 +56,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @see InjectableConstructor
  * @see InjectableMethod
  */
-public abstract class AbstractInjectable<T> implements Injectable<T>
+public abstract class AbstractInjectable<T>
 {
 
     private Producer<?> owner;

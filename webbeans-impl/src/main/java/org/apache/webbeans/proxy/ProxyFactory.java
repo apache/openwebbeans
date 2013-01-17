@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -60,7 +59,6 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public final class ProxyFactory
 {
-    private final WebBeansContext webBeansContext;
 
     private ConcurrentMap<OwbBean<?>, Class<?>> buildInBeanProxyClassesRemove = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
     private ConcurrentMap<OwbBean<?>, Class<?>> normalScopedBeanProxyClassesRemove = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
@@ -72,13 +70,9 @@ public final class ProxyFactory
     private ConcurrentMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>>();
     private Factory factoryRemove = new JavassistFactory();
 
-    private final InterceptorDecoratorProxyFactory interceptorDecoratorProxyFactory;
-
 
     public ProxyFactory(WebBeansContext webBeansContext)
     {
-        this.webBeansContext = webBeansContext;
-        this.interceptorDecoratorProxyFactory = new InterceptorDecoratorProxyFactory();
     }
 
     /**
@@ -106,71 +100,6 @@ public final class ProxyFactory
         interceptorProxyClassesRemove.clear();
         ejbProxyClasses.clear();
     }
-    /**
-     * Provides the proxy for the given bean and interface, if defined
-     * 
-     * @param bean the contextual representing the EJB
-     * @param iface the injected business local interface
-     * @return the proxy Class if one has been defined, else null
-     */
-    public Class<?> getEjbBeanProxyClass(OwbBean<?> bean, Class<?> iface)
-    {
-        Class<?> proxyClass = null;
-
-        ConcurrentMap<Class<?>, Class<?>> typeToProxyClassMap = ejbProxyClasses.get(bean);
-        if (typeToProxyClassMap == null)
-        {
-            typeToProxyClassMap = new ConcurrentHashMap<Class<?>, Class<?>>();
-            ConcurrentMap<Class<?>, Class<?>> existingMap = ejbProxyClasses.putIfAbsent(bean, typeToProxyClassMap);
-            
-            // use the map that beat us, because our new one definitely had no classes in it.
-            typeToProxyClassMap = (existingMap != null) ? existingMap : typeToProxyClassMap; 
-        }
-
-        proxyClass = typeToProxyClassMap.get(iface);
-
-        if (proxyClass == null)
-        {
-            Class<?> superClazz = null;
-            List<Class<?>> list = new ArrayList<Class<?>>();
-            Class<?>[] interfaces = null;
-            
-            if (iface.isInterface())
-            {
-                list.add(iface);
-            }
-            else 
-            {
-                // @LocalBean no-interface local view requested
-                superClazz = iface;
-                //Stateless beans with no interface
-                //To failover bean instance
-                Class<?>[] ifaces = iface.getInterfaces();
-                if(ifaces != null && ifaces.length > 0)
-                {
-                    //check for serializable
-                    for(Class<?> temp : ifaces)
-                    {
-                        if(temp == Serializable.class)
-                        {
-                            list.add(Serializable.class);
-                            break;
-                        }
-                    }
-                }
-            }            
-            
-            interfaces = new Class<?>[list.size()];
-            interfaces = list.toArray(interfaces);
-            proxyClass = factoryRemove.getProxyClass(superClazz, interfaces);
-            
-            typeToProxyClassMap.putIfAbsent(iface, proxyClass);
-            // don't care if we were beaten in updating the iface->proxyclass map
-        }
-
-        return proxyClass;
-    }
-
 
     /**
      * TODO rework! Still uses old proxy

@@ -131,39 +131,6 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
         return webBeansContext.getInterceptorUtil().getLifecycleMethods(getAnnotated(), PreDestroy.class, false);
     }
 
-    /**
-     * @deprecated replaced via the various {@link InterceptorBeanBuilder}s
-     */
-    public ManagedBean<T> defineInterceptor(AnnotatedType<T> annotatedType)
-    {
-        Class<?> clazz = annotatedType.getJavaClass();
-
-        if (webBeansContext.getInterceptorsManager().isInterceptorClassEnabled(clazz))
-        {
-            ManagedBean<T> component;
-
-            webBeansContext.getInterceptorUtil().checkInterceptorConditions(annotatedType);
-            component = defineManagedBean(annotatedType);
-
-            if (component != null)
-            {
-                Annotation[] anns = annotatedType.getAnnotations().toArray(new Annotation[annotatedType.getAnnotations().size()]);
-                webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass(component,
-                        webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(anns));
-            }
-            else
-            {
-                // TODO could probably be a bit more descriptive
-                throw new DeploymentException("Cannot create Interceptor for class" + annotatedType);
-            }
-            return component;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
     protected void addConstructorInjectionPointMetaData(ManagedBean<T> bean)
     {
         if (constructor == null)

@@ -162,18 +162,6 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
     }
 
     /**
-     * Sub-classes must override this method to destroy bean instance.
-     * 
-     * @param instance object instance.
-     */
-    protected void destroyComponentInstance(T instance, CreationalContext<T> creationalContext)
-    {
-    }
-
-
-
-
-    /**
      * {@inheritDoc}
      */
     public List<InterceptorData> getInterceptorStack()

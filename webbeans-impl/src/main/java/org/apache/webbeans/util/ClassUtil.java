@@ -1116,29 +1116,6 @@ public final class ClassUtil
     }
 
     /**
-     *  @deprecated no longer used by core, not safe for generic types
-     */
-    public static Set<Type> setInterfaceTypeHierarchy(Set<Type> set, Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-
-        do
-        {
-            Class<?>[] interfaces = clazz.getInterfaces();
-
-            for (Class<?> cl : interfaces)
-            {
-                set.add(cl);
-
-                setTypeHierarchy(set, cl);
-            }
-            clazz = clazz.getSuperclass();
-        } while (clazz != null && clazz != Object.class);
-
-        return set;
-    }
-
-    /**
      * Return true if it does not contain type variable for wildcard type
      * false otherwise.
      * 

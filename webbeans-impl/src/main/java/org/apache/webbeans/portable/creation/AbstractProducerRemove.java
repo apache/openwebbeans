@@ -93,20 +93,6 @@ public abstract class AbstractProducerRemove<T> implements Producer<T>
         bean.destroyCreatedInstance(instance, creationalContext);
     }
 
-    /**
-     * Returns actual bean instance.
-     * 
-     * @param <X> bean type info
-     * @param clazz bean type class
-     * @return actual bean
-     */
-    protected <X> X getBean(Class<X> clazz)
-    {
-        return clazz.cast(bean);
-    }
-    
-    public void setBean(OwbBean<T> bean)
-    {
-        this.bean = bean;
-    }
+
+
 }

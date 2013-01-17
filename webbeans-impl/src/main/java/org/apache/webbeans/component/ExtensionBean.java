@@ -55,14 +55,6 @@ public class ExtensionBean<T> extends InjectionTargetBean<T>
                 Collections.<Class<? extends Annotation>>emptySet());
         setEnabled(true);
     }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void destroyComponentInstance(T instance, CreationalContext<T> creationalContext)
-    {
-        
-    }
+
     
 }
