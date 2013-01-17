@@ -46,9 +46,9 @@ public class DisposalInjectedComponentTest extends AbstractUnitTest
         
         Assert.assertNotNull(producedService);
         
-        Object object = getInstance(ServiceImpl1.class);
+        IService service = getInstance(IService.class);
 
-        Assert.assertTrue(object instanceof ServiceImpl1);
+        Assert.assertEquals("ServiceImpl1", service.service());
 
         DisposalMethodComponent mc = getInstance(DisposalMethodComponent.class);
 

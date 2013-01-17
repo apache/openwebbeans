@@ -125,8 +125,17 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
     {
         String proxyClassName = getUnusedProxyClassName(classLoader, classToProxy.getName() + "$OwbNormalScopeProxy");
 
-        List<Method> methods = ClassUtil.getNonPrivateMethods(classToProxy);
-        Method[] nonInterceptedMethods = methods.toArray(new Method[methods.size()]);
+        Method[] nonInterceptedMethods;
+        if (classToProxy.isInterface())
+        {
+            nonInterceptedMethods = classToProxy.getMethods();
+        }
+        else
+        {
+            List<Method> methods = ClassUtil.getNonPrivateMethods(classToProxy);
+            nonInterceptedMethods = methods.toArray(new Method[methods.size()]);
+        }
+
         Class<T> clazz = createProxyClass(classLoader, proxyClassName, classToProxy, null, nonInterceptedMethods);
 
         return clazz;
@@ -261,7 +270,9 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
 
             // and finally invoke the target method on the provided Contextual Instance
             final Type declaringClass = Type.getType(delegatedMethod.getDeclaringClass());
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, declaringClass.getInternalName(), delegatedMethod.getName(), methodDescriptor);
+            boolean interfaceMethod = Modifier.isAbstract(delegatedMethod.getModifiers());
+            mv.visitMethodInsn(interfaceMethod ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKEVIRTUAL,
+                               declaringClass.getInternalName(), delegatedMethod.getName(), methodDescriptor);
 
             generateReturn(mv, delegatedMethod);
 
