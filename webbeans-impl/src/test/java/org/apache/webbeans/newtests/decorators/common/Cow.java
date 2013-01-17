@@ -18,7 +18,23 @@
 */
 package org.apache.webbeans.newtests.decorators.common;
 
-public class Cow extends Animal
+public class Cow extends Animal implements Breeded
 {
+    private String color;
 
+    @Override
+    public int getAge()
+    {
+        return 7;
+    }
+
+    public String getColor()
+    {
+        return color;
+    }
+
+    public void setColor(String color)
+    {
+        this.color = color;
+    }
 }

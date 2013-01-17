@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -290,23 +291,28 @@ public class InterceptorResolutionService
             return;
         }
 
-        List<Decorator<?>> appliedDecorators = new ArrayList<Decorator<?>>();
+        LinkedHashMap<Decorator<?>, Method> appliedDecorators = new LinkedHashMap<Decorator<?>, Method>();
 
         for (Decorator decorator : decorators)
         {
-            if (isDecoratorInterceptsMethod(decorator, annotatedMethod))
+            Method decoratingMethod = getDecoratingMethod(decorator, annotatedMethod);
+            if (decoratingMethod != null)
             {
-                appliedDecorators.add(decorator);
+                appliedDecorators.put(decorator, decoratingMethod);
             }
         }
 
         if (appliedDecorators.size() > 0)
         {
-            methodInterceptorInfo.setMethodDecorators(new ArrayList<Decorator<?>>(appliedDecorators));
+            methodInterceptorInfo.setMethodDecorators(appliedDecorators);
         }
     }
 
-    private boolean isDecoratorInterceptsMethod(Decorator decorator, AnnotatedMethod annotatedMethod)
+    /**
+     * @return the Method from the decorator which decorates the annotatedMethod, <code>null</code>
+     *         if the given Decorator does <i>not</i> decorate the annotatedMethod
+     */
+    private Method getDecoratingMethod(Decorator decorator, AnnotatedMethod annotatedMethod)
     {
         String annotatedMethodName = annotatedMethod.getJavaMember().getName();
 
@@ -346,7 +352,7 @@ public class InterceptorResolutionService
                             if (paramsMatch)
                             {
                                 // yikes our method is decorated by this very decorator type.
-                                return true;
+                                return decoratorMethod;
                             }
                         }
                     }
@@ -354,8 +360,7 @@ public class InterceptorResolutionService
             }
         }
 
-        return false;
-
+        return null;
     }
 
     private void calculateCdiMethodInterceptors(BusinessMethodInterceptorInfo methodInterceptorInfo,
@@ -563,7 +568,7 @@ public class InterceptorResolutionService
     {
         private Interceptor<?>[] ejbInterceptors = null;
         private Interceptor<?>[] cdiInterceptors = null;
-        private Decorator<?>[]   methodDecorators = null;
+        private LinkedHashMap<Decorator<?>, Method> methodDecorators = null;
 
         /**
          * lifecycle methods can serve multiple intercepton types :/
@@ -603,8 +608,11 @@ public class InterceptorResolutionService
         /**
          * The (sorted) Decorator Beans for a specific method or <code>null</code>
          * if no Decorator exists for this method.
+         * This Map is sorted!
+         * Key: the Decorator Bean
+         * Value: the decorating method from the decorator instance
          */
-        public Decorator<?>[] getMethodDecorators()
+        public LinkedHashMap<Decorator<?>, Method> getMethodDecorators()
         {
             return methodDecorators;
         }
@@ -621,7 +629,7 @@ public class InterceptorResolutionService
             }
         }
 
-        public void setMethodDecorators(List<Decorator<?>> methodDecorators)
+        public void setMethodDecorators(LinkedHashMap<Decorator<?>, Method> methodDecorators)
         {
             if (methodDecorators == null || methodDecorators.isEmpty())
             {
@@ -629,7 +637,7 @@ public class InterceptorResolutionService
             }
             else
             {
-                this.methodDecorators = methodDecorators.toArray(new Decorator[methodDecorators.size()]);
+                this.methodDecorators = methodDecorators;
             }
         }
 

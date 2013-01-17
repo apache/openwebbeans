@@ -58,10 +58,10 @@ import org.apache.webbeans.util.ClassUtil;
  * class via methods <code>defineManagedBean(class)</code> and Those methods further call
  * <code>defineInterceptor(interceptor class)</code> and <code>defineDecorator(decorator class)</code>
  * methods. Those methods finally call
- * {@link org.apache.webbeans.util.WebBeansUtil#defineInterceptor(org.apache.webbeans.component.creation.ManagedBeanCreatorImpl,
- *        javax.enterprise.inject.spi.ProcessInjectionTarget)} and
- * {@link org.apache.webbeans.util.WebBeansUtil#defineDecorator(org.apache.webbeans.component.creation.ManagedBeanCreatorImpl,
- *        javax.enterprise.inject.spi.ProcessInjectionTarget)}
+ * OLD: org.apache.webbeans.util.WebBeansUtil#defineInterceptor(org.apache.webbeans.component.creation.ManagedBeanBuilder,
+ *        javax.enterprise.inject.spi.ProcessInjectionTarget) and
+ * OLD: org.apache.webbeans.util.WebBeansUtil#defineDecorator(org.apache.webbeans.component.creation.ManagedBeanBuilder,
+ *        javax.enterprise.inject.spi.ProcessInjectionTarget)
  * methods for actual configuration.
  * <p>
  * Let's look at the "WebBeansUtil's" methods; 
@@ -164,7 +164,6 @@ public abstract class InterceptorHandlerPleaseRemove implements InvocationHandle
     {
         this.bean = bean;
         webBeansContext = bean.getWebBeansContext();
-//        new Exception().fillInStackTrace().printStackTrace();
     }
 
     /**

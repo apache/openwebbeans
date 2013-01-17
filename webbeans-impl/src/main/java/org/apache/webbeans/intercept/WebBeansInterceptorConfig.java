@@ -30,6 +30,7 @@ import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,14 +49,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
+import static org.apache.webbeans.intercept.InterceptorResolutionService.BusinessMethodInterceptorInfo;
 
 
 /**
  * Configures the Web Beans related interceptors.
- *
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @version $Rev$ $Date$
- * @see org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove
  *
  * TODO most of the stuff in this class can most probably get removed. All important logic is contained in {@link InterceptorResolutionService}
  */
@@ -82,12 +81,14 @@ public final class WebBeansInterceptorConfig
             BeanInterceptorInfo interceptorInfo = webBeansContext.getInterceptorResolutionService().
                     calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), bean.getAnnotatedType());
 
+            //X TODO decorator stack
+
             Map<Method, List<Interceptor<?>>> methodInterceptors = new HashMap<Method, List<Interceptor<?>>>();
             List<Method> nonBusinessMethods = new ArrayList<Method>();
-            for (Map.Entry<Method, InterceptorResolutionService.BusinessMethodInterceptorInfo> miEntry : interceptorInfo.getBusinessMethodsInfo().entrySet())
+            for (Map.Entry<Method, BusinessMethodInterceptorInfo> miEntry : interceptorInfo.getBusinessMethodsInfo().entrySet())
             {
                 Method interceptedMethod = miEntry.getKey();
-                InterceptorResolutionService.BusinessMethodInterceptorInfo mii = miEntry.getValue();
+                BusinessMethodInterceptorInfo mii = miEntry.getValue();
                 List<Interceptor<?>> activeInterceptors = new ArrayList<Interceptor<?>>();
 
                 if (mii.getEjbInterceptors() != null)
@@ -111,6 +112,13 @@ public final class WebBeansInterceptorConfig
                         // add self-interception as last interceptor in the chain.
                         activeInterceptors.add(interceptorInfo.getSelfInterceptorBean());
                     }
+                }
+                
+                if (mii.getMethodDecorators() != null)
+                {
+                    LinkedHashMap<Decorator<?>, Method> methodDecorators= mii.getMethodDecorators();
+                    //X TODO fill an own DecoratorDelegateInterceptor and add it to the activeInterceptors.
+                    //X TODO or find some alternative handling
                 }
 
                 if (activeInterceptors.size() > 0)

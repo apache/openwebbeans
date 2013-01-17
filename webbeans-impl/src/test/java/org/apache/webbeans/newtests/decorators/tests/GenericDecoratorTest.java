@@ -83,7 +83,7 @@ public class GenericDecoratorTest extends AbstractUnitTest
 
         startContainer(classes, xmls);
 
-        DecoratedBean decoratedBean = (DecoratedBean) getInstance(DecoratedBean.class);
+        DecoratedBean decoratedBean = getInstance(DecoratedBean.class);
         Assert.assertTrue(decoratedBean.isDecoratorCalled());
     }
 

@@ -63,7 +63,7 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
 
     /**
      * Decorators
-     * @deprecated will be replaced by InterceptorResolution logic
+     * @deprecated will be replaced by InterceptorResolution logic and moved to InjectionTargetImpl
      */
     protected List<Decorator<?>> decorators = new ArrayList<Decorator<?>>();
     

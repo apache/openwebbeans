@@ -85,7 +85,10 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
     {
         this.constructor = constructor;
     }
-    
+
+    /**
+     * TODO this must be performed at bean-build time!
+     */
     public boolean isPassivationCapable()
     {
         if (isPassivationCapable != null)
