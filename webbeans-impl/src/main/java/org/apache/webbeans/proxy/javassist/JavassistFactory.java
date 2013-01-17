@@ -49,7 +49,6 @@ public class JavassistFactory
 
     private static Class<?> getProxyClass(ProxyFactory factory)
     {
-        ProxyFactory.ClassLoaderProvider classLoaderProvider = ProxyFactory.classLoaderProvider;
         try
         {
            return doPrivilegedCreateClass(factory);
