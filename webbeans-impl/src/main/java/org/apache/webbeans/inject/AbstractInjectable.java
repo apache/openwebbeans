@@ -42,6 +42,9 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.portable.EventProducer;
+import org.apache.webbeans.portable.InjectionPointProducer;
+import org.apache.webbeans.portable.InstanceProducer;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -90,12 +93,12 @@ public abstract class AbstractInjectable<T>
         Bean<?> injectedBean = instance.getInjectionPointBean(injectionPoint);
         if(isInstanceProviderInjection(injectionPoint))
         {
-            InstanceBean.local.set(injectionPoint);
+            InstanceProducer.local.set(injectionPoint);
         }
         
         else if(isEventProviderInjection(injectionPoint))
         {
-            EventBean.local.set(injectionPoint);
+            EventProducer.local.set(injectionPoint);
         }        
         
         boolean injectionPointBeanLocalSetOnStack = false;
@@ -107,7 +110,7 @@ public abstract class AbstractInjectable<T>
             {
                 if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(injectionPoint.getType())))
                 {
-                    injectionPointBeanLocalSetOnStack = InjectionPointBean.setThreadLocal(injectionPoint);
+                    injectionPointBeanLocalSetOnStack = InjectionPointProducer.setThreadLocal(injectionPoint);
                 }
 
                 if(!injectionPoint.isTransient())
@@ -148,7 +151,7 @@ public abstract class AbstractInjectable<T>
         {
             if (injectionPointBeanLocalSetOnStack)
             {
-                InjectionPointBean.unsetThreadLocal();
+                InjectionPointProducer.unsetThreadLocal();
             }
         }
         

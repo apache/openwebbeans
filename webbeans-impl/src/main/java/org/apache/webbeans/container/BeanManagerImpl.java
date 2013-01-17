@@ -80,6 +80,7 @@ import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
+import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.spi.ScannerService;
@@ -590,10 +591,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
 
         boolean ijbSet = false;
-        if (InjectionPointBean.isStackEmpty())
+        if (InjectionPointProducer.isStackEmpty())
         {
             ijbSet = true;
-            InjectionPointBean.setThreadLocal(injectionPoint);
+            InjectionPointProducer.setThreadLocal(injectionPoint);
         }
 
         try
@@ -615,7 +616,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {
             if (ijbSet)
             {
-                InjectionPointBean.unsetThreadLocal();
+                InjectionPointProducer.unsetThreadLocal();
             }
         }
 

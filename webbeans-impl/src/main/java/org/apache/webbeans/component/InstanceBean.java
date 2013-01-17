@@ -25,22 +25,17 @@ import java.util.Collections;
 import java.util.Set;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Provider;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.inject.AbstractInjectable;
-import org.apache.webbeans.inject.instance.InstanceFactory;
+import org.apache.webbeans.portable.InstanceProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
 
 public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
 {
-    // TODO refactor. public static variables are uterly ugly
-    public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
     
     @SuppressWarnings("serial")
     public InstanceBean(WebBeansContext webBeansContext)
@@ -52,43 +47,7 @@ public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
               Dependent.class,
               new TypeLiteral<Instance<T>>(){}.getRawType(),
               Collections.<Class<? extends Annotation>>emptySet());
-    }
-    
-         
-    @Override
-    protected Instance<T> createInstance(CreationalContext<Instance<T>> creationalContext)
-    {
-        try
-        {
-            InjectionPoint injectionPoint = local.get();
-            Set<Annotation> qualifiers;
-            Type type;
-
-            if (injectionPoint != null)
-            {
-                ParameterizedType injectedType = (ParameterizedType)injectionPoint.getType();
-                qualifiers = injectionPoint.getQualifiers();
-                type = injectedType.getActualTypeArguments()[0];
-            }
-            else
-            {
-                qualifiers = getQualifiers();
-                type = getReturnType();
-            }
-
-            Object ownerInstance = AbstractInjectable.instanceUnderInjection.get();
-
-            Instance<T> instance = InstanceFactory.getInstance(type, injectionPoint, getWebBeansContext(),
-                                                               creationalContext, ownerInstance,
-                                                               qualifiers.toArray(new Annotation[qualifiers.size()]));
-            
-            return instance;
-        }
-        finally
-        {
-            local.set(null);
-            local.remove();
-        }
+        setProducer(new InstanceProducer<T>(getReturnType(), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION, webBeansContext));
     }
 
     /* (non-Javadoc)

@@ -198,7 +198,7 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
 
         //X TODO move proxy instance creation into JavassistProxyFactory!
 
-        bean.setInjectionTarget(new AbstractDecoratorInjectionTarget<T>(bean));
+        bean.setProducer(new AbstractDecoratorInjectionTarget<T>(bean));
         return bean;
     }
 

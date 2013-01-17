@@ -49,13 +49,6 @@ public interface OwbBean<T> extends Bean<T>
      * @see WebBeansType
      */
     public WebBeansType getWebBeansType();
-    
-    /**
-     * Create an instance.
-     * @param creationalContext creaitonal context
-     * @return instance
-     */
-    public T createNewInstance(CreationalContext<T> creationalContext);
 
     /**
      * Destroys instance.

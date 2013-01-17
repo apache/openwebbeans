@@ -46,6 +46,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.Producer;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -54,11 +55,15 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
+import org.apache.webbeans.component.ResourceProvider;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.portable.ProducerFieldProducer;
+import org.apache.webbeans.portable.ProducerMethodProducer;
+import org.apache.webbeans.portable.ProviderBasedProxyProducer;
 import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -262,6 +267,11 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                 }
                 
                 pr.setDisposalMethod(declaredMethod);
+                Producer<?> producer = pr.getProducer();
+                if (producer instanceof ProducerMethodProducer)
+                {
+                    ((ProducerMethodProducer)producer).setDisposalMethod(annotatedMethod);
+                }
             }
         }
     }
@@ -564,7 +574,9 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                             = new ResourceBeanBuilder<T, Annotation>(bean, resourceRef, annotatedField);
                         resourceBeanCreator.defineQualifiers();
                         ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
-                        
+                        resourceBean.setProducer(new ProviderBasedProxyProducer(webBeansContext, resourceBean.getReturnType(), new ResourceProvider(resourceBean.getReference(), webBeansContext)));
+
+
                         resourceBean.setProducerField(field);
                         
                         producerBeans.add(resourceBean);                                            
@@ -580,6 +592,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                     producerFieldBeanCreator.defineQualifiers();
                     producerFieldBeanCreator.defineName();
                     ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
+                    producerFieldBean.setProducer(new ProducerFieldProducer(bean, annotatedField, producerFieldBean.getInjectionPoints()));
                     producerFieldBean.setProducerField(field);
                     
                     if (producerFieldBean.getReturnType().isPrimitive())
@@ -639,6 +652,8 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                 producerMethodBeanCreator.defineApiType();
                 producerMethodBeanCreator.defineName();
                 ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
+                ProducerMethodProducerBuilder producerBuilder = new ProducerMethodProducerBuilder(producerMethodBean);
+                producerMethodBean.setProducer(producerBuilder.build(annotatedMethod));
                 producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
                 if (ClassUtil.getClass(annotatedMethod.getBaseType()).isPrimitive())
                 {
@@ -700,7 +715,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                                     boolean enabled);
 
     @Override
-    protected I createBean(Set<Type> types,
+    protected final I createBean(Set<Type> types,
                            Set<Annotation> qualifiers,
                            Class<? extends Annotation> scope,
                            String name,
@@ -714,7 +729,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
         //X TODO hack to set the InjectionTarget
         InjectionTarget<T> injectionTarget
                 = buildInjectionTarget(types, qualifiers, bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
-        bean.setInjectionTarget(injectionTarget);
+        bean.setProducer(injectionTarget);
 
         return bean;
     }

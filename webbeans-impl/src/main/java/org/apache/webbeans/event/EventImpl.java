@@ -33,6 +33,7 @@ import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -78,14 +79,14 @@ public class EventImpl<T> implements Event<T>, Serializable
      */
     public void fire(T event)
     {
-        InjectionPointBean.setThreadLocal(injectionPoint);
+        InjectionPointProducer.setThreadLocal(injectionPoint);
         try
         {
             webBeansContext.getBeanManagerImpl().fireEvent(event, injectedBindings);
         }
         finally
         {
-            InjectionPointBean.setThreadLocal(injectionPoint);
+            InjectionPointProducer.setThreadLocal(injectionPoint);
         }
     }
 

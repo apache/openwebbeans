@@ -25,6 +25,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.ProviderBasedProxyProducer;
 import org.apache.webbeans.spi.SecurityService;
 
 public class PrincipalBean extends BuildInOwbBean<Principal>
@@ -33,31 +34,7 @@ public class PrincipalBean extends BuildInOwbBean<Principal>
     public PrincipalBean(WebBeansContext webBeansContext)
     {
         super(webBeansContext, WebBeansType.PRINCIPAL, Principal.class);
-    }
-
-    @Override
-    protected Principal createInstance(CreationalContext<Principal> creationalContext)
-    {
-        SecurityService securityService = getWebBeansContext().getService(SecurityService.class);
-        if(securityService != null)
-        {
-            Principal t = securityService.getCurrentPrincipal();
-            return createProxyWrapper(t, creationalContext);
-        }
-        
-        return null;
-    }
-
-    @Override
-    protected Principal createActualInstance(CreationalContext<Principal> creationalContext)
-    {
-        SecurityService securityService = getWebBeansContext().getService(SecurityService.class);
-        if(securityService != null)
-        {
-            return securityService.getCurrentPrincipal();
-        }
-        
-        return null;
+        setProducer(new ProviderBasedProxyProducer<Principal>(webBeansContext, Principal.class, new PrincipalProvider(webBeansContext)));
     }
 
     @Override

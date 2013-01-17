@@ -18,13 +18,12 @@
  */
 package org.apache.webbeans.ee.beans;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.validation.Validator;
 
 import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.spi.ValidatorService;
+import org.apache.webbeans.portable.ProviderBasedProxyProducer;
 
 public class ValidatorBean extends BuildInOwbBean<Validator>
 {
@@ -32,30 +31,7 @@ public class ValidatorBean extends BuildInOwbBean<Validator>
     public ValidatorBean(WebBeansContext webBeansContext)
     {
         super(webBeansContext, WebBeansType.VALIDATION, Validator.class);
-    }
-
-    @Override
-    protected Validator createInstance(CreationalContext<Validator> creationalContext)
-    {
-        ValidatorService validatorService = getWebBeansContext().getService(ValidatorService.class);
-        if(validatorService != null)
-        {
-            Validator t = validatorService.getDefaultValidator();
-            return createProxyWrapper(t, creationalContext);
-        }
-        
-        return null;
-    }
-
-    @Override
-    protected Validator createActualInstance(CreationalContext<Validator> creationalContext)
-    {
-        ValidatorService validatorService = getWebBeansContext().getService(ValidatorService.class);
-        if(validatorService != null)
-        {
-            return validatorService.getDefaultValidator();
-        }       
-        return null;
+        setProducer(new ProviderBasedProxyProducer<Validator>(webBeansContext, Validator.class, new ValidatorProvider(webBeansContext)));
     }
 
     @Override

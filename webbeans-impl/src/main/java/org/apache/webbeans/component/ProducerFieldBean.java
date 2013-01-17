@@ -65,11 +65,11 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
      * {@inheritDoc}
      */
     @Override
-    protected T createInstance(CreationalContext<T> creationalContext)
+    public T create(CreationalContext<T> creationalContext)
     {
         T instance = null;
         
-        instance = createDefaultInstance(creationalContext);
+        instance = super.create(creationalContext);
         checkNullInstance(instance);
         checkScopeType();
 

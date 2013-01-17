@@ -28,13 +28,12 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
 
 public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
 {
-    private static ThreadLocal<Stack<InjectionPoint>> localThreadlocalStack = new ThreadLocal<Stack<InjectionPoint>>();
-
     public InjectionPointBean(WebBeansContext webBeansContext)
     {
         super(webBeansContext,
@@ -44,60 +43,9 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
               Dependent.class,
               InjectionPoint.class,
               Collections.<Class<? extends Annotation>>emptySet());
+        setProducer(new InjectionPointProducer());
     }
 
-
-    private static Stack<InjectionPoint> getStackOfInjectionPoints()
-    {
-        Stack<InjectionPoint> stackIP = localThreadlocalStack.get();
-        if (null == stackIP)
-        {
-            stackIP = new Stack<InjectionPoint>();
-        }
-        return stackIP;
-    }
-
-    public static boolean setThreadLocal(InjectionPoint ip)
-    {
-        Stack<InjectionPoint> stackIP = getStackOfInjectionPoints();
-        stackIP.push(ip);
-        localThreadlocalStack.set(stackIP);
-        return true;
-    }
-    
-    public static void unsetThreadLocal()
-    {
-        Stack<InjectionPoint> stackIP = getStackOfInjectionPoints();
-        stackIP.pop();
-    }
-    
-    /**
-     * Removes the ThreadLocal from the ThreadMap to prevent memory leaks.
-     */
-    public static void removeThreadLocal()
-    {
-        getStackOfInjectionPoints().clear();
-        localThreadlocalStack.remove();
-    }
-    
-    public static boolean isStackEmpty()
-    {
-        return getStackOfInjectionPoints().isEmpty();
-    }
-
-    @Override
-    protected InjectionPoint createInstance(CreationalContext<InjectionPoint> creationalContext)
-    {
-        InjectionPoint ip = getStackOfInjectionPoints().peek();
-        return ip;
-    }
-
-    @Override
-    protected void destroyInstance(InjectionPoint instance, CreationalContext<InjectionPoint> creationalContext)
-    {
-        removeThreadLocal();
-    }
-    
     /* (non-Javadoc)
      * @see org.apache.webbeans.component.AbstractOwbBean#isPassivationCapable()
      */

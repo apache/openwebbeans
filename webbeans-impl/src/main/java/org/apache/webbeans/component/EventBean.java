@@ -32,6 +32,7 @@ import javax.enterprise.util.TypeLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.portable.EventProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
 
@@ -42,9 +43,6 @@ import org.apache.webbeans.util.CollectionUtil;
  */
 public class EventBean<T> extends AbstractOwbBean<Event<T>>
 {
-
-    //X TODO refactor. public static variables are utterly ugly
-    public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
 
     /**
      * Creates a new instance of event bean.
@@ -60,52 +58,7 @@ public class EventBean<T> extends AbstractOwbBean<Event<T>>
               Dependent.class,
               new TypeLiteral<Event<T>>(){}.getRawType(),
               Collections.<Class<? extends Annotation>>emptySet());
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected Event<T> createInstance(CreationalContext<Event<T>> creationalContext)
-    {
-        Event<T> instance = null;
-
-        InjectionPoint injectionPoint = local.get();
-        Type eventType;
-        
-        if(injectionPoint != null)
-        {
-            Type[] eventActualTypeArgs;
-            Type type = injectionPoint.getType();                        
-            ParameterizedType pt = (ParameterizedType) type;
-            eventActualTypeArgs = pt.getActualTypeArguments();
-
-            //First argument and sole argument is actual Event type
-            //Example : Event<MyEvent>
-            eventType = eventActualTypeArgs[0];
-            
-            //Event qualifiers
-            Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
-            qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
-            
-            try
-            {
-                instance = new EventImpl<T>(qualifiers, eventType, injectionPoint, getWebBeansContext());
-            }
-            catch (Exception e)
-            {
-                throw new WebBeansException("Exception in creating Event implicit component for event type : "
-                                            + eventType);
-            }           
-            finally
-            {
-                local.set(null);
-                local.remove();
-            }
-            
-        }
-                        
-        return instance;
+        setProducer(new EventProducer<T>(webBeansContext));
     }
     
     /* (non-Javadoc)

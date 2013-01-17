@@ -118,7 +118,7 @@ public final class EjbUtility
         webBeansContext.getWebBeansUtil().inspectErrorStack(
             "There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
         //Put final InjectionTarget instance
-        ejbBean.setInjectionTarget(processInjectionTargetEvent.getInjectionTarget());
+        ejbBean.setProducer(processInjectionTargetEvent.getInjectionTarget());
         
         Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods = new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>(); 
         for(ProducerMethodBean<?> producerMethod : producerMethodBeans)

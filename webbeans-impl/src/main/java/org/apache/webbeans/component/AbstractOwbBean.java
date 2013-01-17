@@ -138,6 +138,10 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
         return webBeansContext.getBeanManagerImpl();
     }
     
+    public Producer<T> getProducer()
+    {
+        return producer;
+    }
     
     /**
      * {@inheritDoc}
@@ -145,7 +149,6 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
     @SuppressWarnings("unchecked")
     public T create(CreationalContext<T> creationalContext)
     {
-        T instance;
         try
         {  
             if(!(creationalContext instanceof CreationalContextImpl))
@@ -154,32 +157,14 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
                         creationalContext, this); 
             }
 
-            if (this instanceof InjectionTargetBean)
+            T instance = producer.produce(creationalContext);
+            if (producer instanceof InjectionTarget)
             {
-                //X TODO this is a workaround until the producer solution is finally fixed
-                InjectionTargetBean<T> it = ((InjectionTargetBean<T>) this);
-                instance = it.getInjectionTarget().produce(creationalContext);
-                it.getInjectionTarget().inject(instance, creationalContext);
-                it.getInjectionTarget().postConstruct(instance);
-
-                return instance;
+                InjectionTarget<T> injectionTarget = (InjectionTarget<T>)producer;
+                injectionTarget.inject(instance, creationalContext);
+                injectionTarget.postConstruct(instance);
             }
-
-            //If wrapper not null
-            if(producer != null)
-            {
-                instance = producer.produce(creationalContext);
-                if (producer instanceof InjectionTarget)
-                {
-                    ((InjectionTarget)producer).inject(instance, creationalContext);
-                    ((InjectionTarget)producer).postConstruct(instance);
-                }
-            }
-            else
-            {
-                //X TODO review if this is still needed!
-                instance = createInstance(creationalContext);
-            }
+            return instance;
         }
         catch (Exception re)
         {
@@ -192,7 +177,6 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
             throw (RuntimeException) throwable;
         }
 
-        return instance;
     }
 
     private Throwable getRootException(Throwable throwable)
@@ -207,23 +191,6 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
         }
     }
 
-    /**
-     * Creates the instance of the bean that has a specific implementation
-     * type. Each subclass must define its own create mechanism.
-     *
-     * @param creationalContext the contextual instance shall be created in
-     * @return instance of the bean
-     */
-    protected abstract T createInstance(CreationalContext<T> creationalContext);
-    
-    /**
-     * {@inheritDoc}
-     */
-    public T createNewInstance(CreationalContext<T> creationalContext)
-    {
-        return createInstance(creationalContext);
-    }
-
     /*
      * (non-Javadoc)
      * @param creationalContext the contextual instance has been created in
@@ -232,22 +199,12 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
     {
         try
         {
-            Producer<T> wrapper = producer;
-            if(wrapper != null)
+            if (producer instanceof InjectionTarget)
             {
-                // instance might be null if we only created a proxy
-                // but no actual contextual instance for this bean!
-                if (instance != null)
-                {
-                    wrapper.dispose(instance);
-                }
+                InjectionTarget<T> injectionTarget = (InjectionTarget<T>)producer;
+                injectionTarget.preDestroy(instance);
             }
-            else
-            {
-                //Destroy instance, call @PreDestroy
-                destroyInstance(instance,creationalContext);
-            }
-            
+            producer.dispose(instance);
             //Destory dependent instances
             creationalContext.release();
         }

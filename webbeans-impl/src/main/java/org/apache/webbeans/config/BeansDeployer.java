@@ -907,7 +907,6 @@ public class BeansDeployer
                 }
 
                 Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
-                //X TODO WTF??? ((InjectionTargetProducerRemove)processInjectionTargetEvent.getInjectionTarget()).setBean(bean);
                 if(managedBeanCreator.isEnabled())
                 {
                     observerMethods = managedBeanCreator.defineObserverMethods(bean);
@@ -916,7 +915,7 @@ public class BeansDeployer
                 Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields(bean);
 
                 //Put final InjectionTarget instance
-                bean.setInjectionTarget(processInjectionTargetEvent.getInjectionTarget());
+                bean.setProducer(processInjectionTargetEvent.getInjectionTarget());
 
                 ManagedBean<T> managedBean = (ManagedBean<T>)bean;
                 Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods =
@@ -1008,7 +1007,7 @@ public class BeansDeployer
                             .fireProcessInjectionTargetEvent(bean).getInjectionTarget();
                     if (updatedInjectionTarget != originalInjectionTarget && bean != null)
                     {
-                        bean.setInjectionTarget(updatedInjectionTarget);
+                        bean.setProducer(updatedInjectionTarget);
                     }
                 }
             }

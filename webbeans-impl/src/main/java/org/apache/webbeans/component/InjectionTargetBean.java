@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Decorator;
@@ -41,7 +40,6 @@ import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.proxy.ProxyFactory;
 import org.apache.webbeans.util.Asserts;
 
 
@@ -62,8 +60,6 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
      * @deprecated old InterceptorData based config
      */
     protected List<InterceptorData> interceptorStack = new ArrayList<InterceptorData>();
-
-    private InjectionTarget<T> injectionTarget = null;
 
     /**
      * Decorators
@@ -105,52 +101,7 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
 
     public InjectionTarget<T> getInjectionTarget()
     {
-        return injectionTarget;
-    }
-
-    public void setInjectionTarget(InjectionTarget<T> injectionTarget)
-    {
-        this.injectionTarget = injectionTarget;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected T createInstance(CreationalContext<T> creationalContext)
-    {
-        //Create actual bean instance
-        T instance = getInjectionTarget().produce(creationalContext);
-
-        //X TODO this should not be needed finally!
-        //For dependent instance checks
-        if(getScope() == Dependent.class && !(this instanceof EnterpriseBeanMarker))
-        {
-            final ProxyFactory proxyFactory = getWebBeansContext().getProxyFactoryRemove();
-            T result = (T) proxyFactory.createDependentScopedBeanProxyRemove(this, instance, creationalContext);
-            //Means that Dependent Bean has interceptor/decorator
-            if(proxyFactory.isProxyInstanceRemove(result))
-            {
-                //This is a dependent scoped bean instance,
-                //Therefore we inject dependencies of this instance
-                //Otherwise we loose injection
-                getInjectionTarget().inject(instance, creationalContext);
-
-                //Dependent proxy
-                return result;
-            }
-        }
-
-        getInjectionTarget().inject(instance, creationalContext);
-
-        //Post construct
-        if(getWebBeansType().equals(WebBeansType.MANAGED))
-        {
-            // Call Post Construct
-            //X TODO
-        }
-
-
-        return instance;
+        return (InjectionTarget<T>) getProducer();
     }
 
     /**
@@ -158,7 +109,7 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
      */
     protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
     {
-        injectionTarget.preDestroy(instance);
+        getInjectionTarget().preDestroy(instance);
     }
 
     /**

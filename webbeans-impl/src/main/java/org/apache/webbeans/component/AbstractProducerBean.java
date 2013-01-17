@@ -86,15 +86,6 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected T createInstance(CreationalContext<T> creationalContext)
-    {
-        return null;
-    }
-
-    /**
      * Destroys bean.
      * 
      * @param <K> bean type info

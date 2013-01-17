@@ -21,9 +21,11 @@ package org.apache.webbeans.ee.beans;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.validation.ValidatorFactory;
 
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.ProviderBasedProxyProducer;
 import org.apache.webbeans.spi.ValidatorService;
 
 public class ValidatorFactoryBean extends BuildInOwbBean<ValidatorFactory>
@@ -32,36 +34,12 @@ public class ValidatorFactoryBean extends BuildInOwbBean<ValidatorFactory>
     public ValidatorFactoryBean(WebBeansContext webBeansContext)
     {
         super(webBeansContext, WebBeansType.VALIDATIONFACT, ValidatorFactory.class);
-    }
-
-    @Override
-    protected ValidatorFactory createInstance(CreationalContext<ValidatorFactory> creationalContext)
-    {
-        ValidatorService validatorService = getWebBeansContext().getService(ValidatorService.class);
-        if(validatorService != null)
-        {
-            ValidatorFactory t = validatorService.getDefaultValidatorFactory();
-            return createProxyWrapper(t, creationalContext);
-        }
-        
-        return null;
-    }
-
-    @Override
-    protected ValidatorFactory createActualInstance(CreationalContext<ValidatorFactory> creationalContext)
-    {
-        ValidatorService validatorService = getWebBeansContext().getService(ValidatorService.class);
-        if(validatorService != null)
-        {
-            return validatorService.getDefaultValidatorFactory();
-        }        
-        return null;
+        setProducer(new ProviderBasedProxyProducer<ValidatorFactory>(webBeansContext, ValidatorFactory.class, new ValidatorFactoryProvider(webBeansContext)));
     }
     
     @Override
     public boolean isPassivationCapable()
     {
         return true;
-    }
-    
+    }    
 }

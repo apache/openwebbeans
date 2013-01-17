@@ -76,7 +76,7 @@ public final class WebBeansInterceptorConfig
      */
     public void defineBeanInterceptorStack(InjectionTargetBean<?> bean)
     {
-        if (bean instanceof InterceptedMarker)
+        if (bean instanceof InterceptedMarker && bean.getInjectionTarget() instanceof InjectionTargetImpl)
         {
             InjectionTargetImpl<?> injectionTarget = (InjectionTargetImpl<?>) bean.getInjectionTarget();
             BeanInterceptorInfo interceptorInfo = webBeansContext.getInterceptorResolutionService().

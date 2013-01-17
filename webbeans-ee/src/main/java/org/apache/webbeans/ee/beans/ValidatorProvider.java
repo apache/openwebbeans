@@ -16,29 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.component;
+package org.apache.webbeans.ee.beans;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Collections;
-
-import javax.enterprise.context.Dependent;
-import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.CollectionUtil;
+import javax.inject.Provider;
+import javax.validation.Validator;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.spi.ValidatorService;
 
-public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
+public class ValidatorProvider implements Provider<Validator>
 {
 
-    protected BuildInOwbBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType)
+    private WebBeansContext webBeansContext;
+    
+    public ValidatorProvider(WebBeansContext webBeansContext)
     {
-        super(webBeansContext,
-              webBeansType,
-              CollectionUtil.<Type>unmodifiableSet(returnType, Object.class),
-              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
-              Dependent.class,
-              returnType,
-              Collections.<Class<? extends Annotation>>emptySet());
+        this.webBeansContext = webBeansContext;
+    }
+
+    @Override
+    public Validator get()
+    {
+        ValidatorService validatorService = webBeansContext.getService(ValidatorService.class);
+        if(validatorService != null)
+        {
+            return validatorService.getDefaultValidator();
+        }        
+        return null;
     }
 }

@@ -42,6 +42,7 @@ import org.apache.webbeans.context.creational.DependentCreationalContext.Depende
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.AbstractInjectable;
 import org.apache.webbeans.inject.InjectableMethod;
+import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -70,7 +71,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      * @param ownerComponent parent bean
      * @param returnType producer method return type
      */
-    public ProducerMethodBean(InjectionTargetBean<?> ownerComponent,
+    public <P> ProducerMethodBean(InjectionTargetBean<P> ownerComponent,
                               Set<Type> types,
                               Set<Annotation> qualifiers,
                               Class<? extends Annotation> scope,
@@ -130,168 +131,16 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         }
         return passivatingId;
     }
-
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
-    protected T createInstance(CreationalContext<T> creationalContext)
-    {
-        T instance = createDefaultInstance(creationalContext);
+    public T create(CreationalContext<T> creationalContext) {
+        T instance = super.create(creationalContext);
         // Check null instance
         checkNullInstance(instance);
 
         // Check scope type
         checkScopeType();
-
         return instance;
-    }
-
-    /**
-     * Default producer method creation.
-     * 
-     * @param creationalContext creational context
-     * @return producer method instance
-     */
-    protected T createDefaultInstance(CreationalContext<T> creationalContext)
-    {
-        T instance = null;
-        Object parentInstance = null;
-        CreationalContext<?> parentCreational = null;
-        InjectableMethod<T> m;
-        List<DependentCreationalContext<Object>> oldDependents =
-                dependentInstanceOfProducerMethods.get();
-
-        try
-        {
-            //X TODO dependentInstanceOfProducerMethods MUST NOT be public! 
-            dependentInstanceOfProducerMethods.set(new ArrayList<DependentCreationalContext<Object>>());
-            parentCreational = getManager().createCreationalContext(ownerComponent);
-            
-            if (!Modifier.isStatic(creatorMethod.getModifiers()))
-            {
-                parentInstance = getParentInstance(parentCreational);
-            }
-
-            //X TODO get the InjectionTargetImpl from the parent bean
-            InjectionTarget ownerBeanInjectionTarget = getParent().getInjectionTarget();
-            m = new InjectableMethod<T>(creatorMethod, parentInstance, new Producer<T>()
-            {
-
-                @Override
-                public T produce(CreationalContext<T> creationalContext)
-                {
-                    return null;
-                }
-
-                @Override
-                public void dispose(T instance)
-                {
-                }
-
-                @Override
-                public Set<InjectionPoint> getInjectionPoints()
-                {
-                    return ProducerMethodBean.this.getInjectionPoints();
-                }
-            }, (CreationalContextImpl<T>) creationalContext);
-            //Injection of parameters
-            instance = m.doInjection();
-            
-            boolean isInjectionToAnotherBean = false;
-            Contextual<?> contextual = null; 
-            if(creationalContext instanceof CreationalContextImpl)
-            {
-                contextual =  ((CreationalContextImpl)creationalContext).getBean();
-                isInjectionToAnotherBean = contextual == this ? false : true;
-            }
-            
-            ThreadLocal<Object> injectionTargetInstance = AbstractInjectable.instanceUnderInjection;
-            if(isInjectionToAnotherBean)
-            {
-                if(oldDependents != null)
-                {
-                    DependentCreationalContext<Object> dependentCreational =
-                            new DependentCreationalContext<Object>((Contextual<Object>)this);
-                    dependentCreational.setInstance(instance);
-                    dependentCreational.setDependentType(DependentType.BEAN);
-
-                    oldDependents.add(dependentCreational);
-                }
-            }
-            else
-            {
-                List<DependentCreationalContext<Object>> dependents =
-                        dependentInstanceOfProducerMethods.get();
-                if(dependents != null)
-                {
-                    for(int i = 0, size = dependents.size(); i < size; i++)
-                    {
-                        DependentCreationalContext<Object> dependent = dependents.get(i);
-                        ((CreationalContextImpl)creationalContext).
-                                addDependent(instance, dependent.getContextual(), dependent.getInstance());
-                    }
-                }
-            }
-            
-            //Adding dependents of producers
-            Map<Bean<?>, Object> dependents = m.getDependentBeanParameters();
-            if(dependents != null)
-            {
-                Set<Bean<?>> beans = dependents.keySet();
-                for(Bean<?> bean : beans)
-                {
-                    if(creationalContext instanceof CreationalContextImpl)
-                    {
-                        if(isInjectionToAnotherBean)
-                        {
-                            if(oldDependents == null)
-                            {
-                                if (injectionTargetInstance != null && injectionTargetInstance.get() != null)
-                                {
-                                    ((CreationalContextImpl)creationalContext)
-                                            .addDependent(injectionTargetInstance.get(), this , instance);
-                                }
-                            }
-                            else
-                            {
-                                DependentCreationalContext<Object> dependentCreational =
-                                        new DependentCreationalContext<Object>((Contextual<Object>)bean);
-                                dependentCreational.setInstance(dependents.get(bean));
-                                dependentCreational.setDependentType(DependentType.BEAN);
-                                oldDependents.add(dependentCreational);                                                            
-                            }
-                        }
-                        else
-                        {
-                            ((CreationalContextImpl)creationalContext).addDependent(instance, bean ,
-                                                                                    dependents.get(bean));   
-                        }
-                    }
-                }
-            }
-        }
-        finally
-        {
-            if (getParent().getScope().equals(Dependent.class))
-            {
-                // this handles dependent scoped producer methods and fields
-                destroyBean(getParent(), parentInstance, parentCreational);
-            }
-            
-            if(oldDependents != null)
-            {
-                dependentInstanceOfProducerMethods.set(oldDependents);
-            }
-            else
-            {
-                dependentInstanceOfProducerMethods.set(null);
-                dependentInstanceOfProducerMethods.remove();
-            }
-        }
-
-        return instance;
-
     }
 
     /**

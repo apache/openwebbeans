@@ -49,12 +49,6 @@ public class JmsBean<T> extends AbstractOwbBean<T> implements JmsBeanMarker
     }
 
     @Override
-    protected T createInstance(CreationalContext<T> creationalContext)
-    {
-        return null;
-    }
-
-    @Override
     protected void destroyInstance(T instance,CreationalContext<T> creationalContext)
     {        
         try

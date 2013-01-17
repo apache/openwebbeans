@@ -16,28 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.portable.creation;
+package org.apache.webbeans.ee.beans;
 
-import org.apache.webbeans.component.AbstractProducerBean;
+import javax.inject.Provider;
+import javax.validation.ValidatorFactory;
 
-/**
- * Implementation for producer beans.
- * 
- * @version $Rev$ $Date$
- *
- * @param <T> producer return type info
- *
- * @deprectated
- */
-public class ProducerBeansProducerRemove<T> extends AbstractProducerRemove<T>
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.spi.ValidatorService;
+
+public class ValidatorFactoryProvider implements Provider<ValidatorFactory>
 {
-    /**
-     * Creats a new producer bean producer.
-     * 
-     * @param bean producer bean
-     */
-    public ProducerBeansProducerRemove(AbstractProducerBean<T> bean)
+
+    private WebBeansContext webBeansContext;
+    
+    public ValidatorFactoryProvider(WebBeansContext webBeansContext)
     {
-        super(bean);
-    }    
+        this.webBeansContext = webBeansContext;
+    }
+
+    @Override
+    public ValidatorFactory get()
+    {
+        ValidatorService validatorService = webBeansContext.getService(ValidatorService.class);
+        if(validatorService != null)
+        {
+            return validatorService.getDefaultValidatorFactory();
+        }        
+        return null;
+    }
 }

@@ -59,6 +59,8 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
+import org.apache.webbeans.portable.EventProducer;
+import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -395,20 +397,20 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     {
                         if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(point.getType())))
                         {
-                            injectionPointBeanLocalSetOnStack = InjectionPointBean.setThreadLocal(point);
+                            injectionPointBeanLocalSetOnStack = InjectionPointProducer.setThreadLocal(point);
                         }
                     }
                     
                     if (isEventProviderInjection(point))
                     {
-                        EventBean.local.set(point);
+                        EventProducer.local.set(point);
                     }
                     
                     CreationalContext<Object> creational = manager.createCreationalContext(injectedBean);
                     Object instance = manager.getReference(injectedBean, null, creational);
                     if (injectionPointBeanLocalSetOnStack)
                     {
-                        InjectionPointBean.unsetThreadLocal();
+                        InjectionPointProducer.unsetThreadLocal();
                     }
 
                     param = new ObserverParams();
@@ -468,13 +470,13 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 {
                     if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(point.getType())))
                     {
-                        injectionPointBeanLocalSetOnStack = InjectionPointBean.setThreadLocal(point);
+                        injectionPointBeanLocalSetOnStack = InjectionPointProducer.setThreadLocal(point);
                     }
                 }                    
 
                 if (isEventProviderInjection(point))
                 {
-                    EventBean.local.set(point);
+                    EventProducer.local.set(point);
                 }
                 
                 CreationalContext<Object> creational = manager.createCreationalContext(injectedBean);
@@ -482,7 +484,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 
                 if (injectionPointBeanLocalSetOnStack)
                 {
-                    InjectionPointBean.unsetThreadLocal();
+                    InjectionPointProducer.unsetThreadLocal();
                 }
                                     
                 param = new ObserverParams();

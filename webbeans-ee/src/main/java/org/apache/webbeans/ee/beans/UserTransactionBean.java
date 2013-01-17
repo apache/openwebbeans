@@ -18,13 +18,12 @@
  */
 package org.apache.webbeans.ee.beans;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.transaction.UserTransaction;
 
 import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.spi.TransactionService;
+import org.apache.webbeans.portable.ProviderBasedProxyProducer;
 
 public class UserTransactionBean extends BuildInOwbBean<UserTransaction>
 {
@@ -32,37 +31,12 @@ public class UserTransactionBean extends BuildInOwbBean<UserTransaction>
     public UserTransactionBean(WebBeansContext webBeansContext)
     {
         super(webBeansContext, WebBeansType.USERTRANSACTION, UserTransaction.class);
-    }
-
-    @Override
-    protected UserTransaction createActualInstance(CreationalContext<UserTransaction> creationalContext)
-    {
-        TransactionService transactionService = getWebBeansContext().getService(TransactionService.class);
-        if(transactionService != null)
-        {
-            return transactionService.getUserTransaction();
-        }
-        
-        return null;
-    }
-
-    @Override
-    protected UserTransaction createInstance(CreationalContext<UserTransaction> creationalContext)
-    {
-        TransactionService transactionService = getWebBeansContext().getService(TransactionService.class);
-        if(transactionService != null)
-        {
-            UserTransaction t = transactionService.getUserTransaction();
-            return createProxyWrapper(t, creationalContext);
-        }
-        
-        return null;
+        setProducer(new ProviderBasedProxyProducer<UserTransaction>(webBeansContext, UserTransaction.class, new UserTransactionProvider(webBeansContext)));
     }
 
     @Override
     public boolean isPassivationCapable()
     {
         return true;
-    }
-    
+    }    
 }

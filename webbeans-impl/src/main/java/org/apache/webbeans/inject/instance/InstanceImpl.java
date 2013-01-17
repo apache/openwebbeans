@@ -39,6 +39,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.InjectionExceptionUtil;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
@@ -49,7 +50,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * 
  * @param <T> specific instance type
  */
-class InstanceImpl<T> implements Instance<T>, Serializable
+public class InstanceImpl<T> implements Instance<T>, Serializable
 {
     private static final long serialVersionUID = -8401944412490389024L;
 
@@ -80,7 +81,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
      * @param ownerInstance the object the current Instance got injected into
      * @param annotations qualifier annotations
      */
-    InstanceImpl(Type injectionClazz, InjectionPoint injectionPoint, WebBeansContext webBeansContext,
+    public InstanceImpl(Type injectionClazz, InjectionPoint injectionPoint, WebBeansContext webBeansContext,
                  CreationalContext<?> creationalContext, Object ownerInstance, Annotation... annotations)
     {
         this.injectionClazz = injectionClazz;
@@ -105,7 +106,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     {
         T instance;
 
-        InjectionPointBean.setThreadLocal(injectionPoint);
+        InjectionPointProducer.setThreadLocal(injectionPoint);
         try
         {
             Annotation[] anns = new Annotation[qualifierAnnotations.size()];
@@ -142,7 +143,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         }
         finally
         {
-            InjectionPointBean.removeThreadLocal();
+            InjectionPointProducer.removeThreadLocal();
         }
 
         return instance;
@@ -273,7 +274,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     {
         Set<Bean<?>> beans = resolveBeans();
         Set<T> instances = new HashSet<T>();
-        InjectionPointBean.setThreadLocal(injectionPoint);
+        InjectionPointProducer.setThreadLocal(injectionPoint);
         try
         {
             for(Bean<?> bean : beans)
@@ -284,7 +285,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         }
         finally
         {
-            InjectionPointBean.removeThreadLocal();
+            InjectionPointProducer.removeThreadLocal();
         }
         
         return instances.iterator();

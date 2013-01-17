@@ -16,29 +16,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.component;
+package org.apache.webbeans.portable;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Collections;
-
-import javax.enterprise.context.Dependent;
-import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.CollectionUtil;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.InjectableBeanManager;
 
-public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
-{
+public class BeanManagerProducer extends AbstractProducer<BeanManager> {
 
-    protected BuildInOwbBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType)
+    private WebBeansContext context;
+    private BeanManager manager;
+    
+    public BeanManagerProducer(WebBeansContext webBeansContext)
     {
-        super(webBeansContext,
-              webBeansType,
-              CollectionUtil.<Type>unmodifiableSet(returnType, Object.class),
-              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
-              Dependent.class,
-              returnType,
-              Collections.<Class<? extends Annotation>>emptySet());
+        context = webBeansContext;
+    }
+
+    @Override
+    public BeanManager produce(CreationalContext<BeanManager> creationalContext) {
+        if (manager == null)
+        {
+            manager = new InjectableBeanManager(context.getBeanManagerImpl());
+        }
+
+        return manager;
+    }
+
+    @Override
+    public void dispose(BeanManager instance) {
+        manager = null;
     }
 }

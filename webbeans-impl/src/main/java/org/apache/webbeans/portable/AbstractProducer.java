@@ -18,8 +18,10 @@
  */
 package org.apache.webbeans.portable;
 
+import java.util.Collections;
 import java.util.Set;
 
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
@@ -27,6 +29,11 @@ public abstract class AbstractProducer<T> implements Producer<T>
 {
 
     private Set<InjectionPoint> injectionPoints;
+
+    public AbstractProducer()
+    {
+        this(Collections.<InjectionPoint>emptySet());
+    }
 
     public AbstractProducer(Set<InjectionPoint> points)
     {
@@ -38,5 +45,9 @@ public abstract class AbstractProducer<T> implements Producer<T>
     public Set<InjectionPoint> getInjectionPoints()
     {
         return injectionPoints;
+    }
+
+    @Override
+    public void dispose(T instance) {
     }
 }

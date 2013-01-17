@@ -24,6 +24,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -135,7 +136,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
      */
     private void cleanupRequestThreadLocals()
     {
-        InjectionPointBean.removeThreadLocal();
+        InjectionPointProducer.removeThreadLocal();
         WebContextsService.removeThreadLocals();
     }
 

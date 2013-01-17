@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.portable.ProviderBasedProxyProducer;
 import org.apache.webbeans.proxy.ResourceProxyHandler;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
@@ -49,31 +50,11 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
         this.resourceReference = resourceReference;
     }
     
-    @Override
-    @SuppressWarnings("unchecked")
-    protected X createInstance(CreationalContext<X> creationalContext)
+    public ResourceReference<X, T> getReference()
     {
-        try
-        {
-            ResourceInjectionService resourceService = getWebBeansContext().getService(ResourceInjectionService.class);
-            X instance = resourceService.getResourceReference(resourceReference);
-
-            if (instance == null || Modifier.isFinal(instance.getClass().getModifiers()))
-            {
-                return instance;
-            }
-
-            X proxyInstance = (X) getWebBeansContext().getProxyFactoryRemove().getResourceBeanProxyClass(this).newInstance();
-            webBeansContext.getProxyFactoryRemove().setHandler(proxyInstance, new ResourceProxyHandler(this,instance));
-            return proxyInstance;
-        }
-        catch (Exception e)
-        {
-            throw new WebBeansException(e);
-        }
-
+        return resourceReference;
     }
-
+ 
     /**
      * Called after deserialization to get a new instance for some type of resource bean instance that are
      * not serializable.

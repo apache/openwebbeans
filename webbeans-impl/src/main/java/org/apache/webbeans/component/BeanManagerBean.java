@@ -28,6 +28,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectableBeanManager;
+import org.apache.webbeans.portable.BeanManagerProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
 
@@ -44,17 +45,7 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
               Dependent.class,
               BeanManager.class,
               Collections.<Class<? extends Annotation>>emptySet());
-    }
-
-    @Override
-    protected BeanManager createInstance(CreationalContext<BeanManager> creationalContext)
-    {
-        if (manager == null)
-        {
-            manager = new InjectableBeanManager(getWebBeansContext().getBeanManagerImpl());
-        }
-
-        return manager;
+        setProducer(new BeanManagerProducer(webBeansContext));
     }
 
     @Override

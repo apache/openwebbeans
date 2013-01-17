@@ -25,6 +25,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.lifecycle.AbstractLifeCycle;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 import org.apache.webbeans.web.context.WebContextsService;
@@ -202,7 +203,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
      */
     private void cleanupShutdownThreadLocals()
     {
-        InjectionPointBean.removeThreadLocal();
+        InjectionPointProducer.removeThreadLocal();
         WebContextsService.removeThreadLocals();
     }
     
