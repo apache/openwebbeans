@@ -31,7 +31,7 @@ import javax.inject.Provider;
 public class NormalScopedBeanInterceptorHandler implements Provider
 {
     private transient BeanManager beanManager;
-    private transient Bean<?> bean;
+    protected transient Bean<?> bean;
 
     public NormalScopedBeanInterceptorHandler(BeanManager beanManager, Bean<?> bean)
     {

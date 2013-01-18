@@ -18,9 +18,8 @@
  */
 package org.apache.webbeans.intercept;
 
-import javax.enterprise.context.spi.CreationalContext;
-
-import org.apache.webbeans.component.OwbBean;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 
 
 /**
@@ -33,7 +32,7 @@ import org.apache.webbeans.component.OwbBean;
  *
  * TODO: move caching to new InterceptorHandler logic
  */
-public class ApplicationScopedBeanInterceptorHandler extends NormalScopedBeanInterceptorHandlerRemove
+public class ApplicationScopedBeanInterceptorHandler extends NormalScopedBeanInterceptorHandler
 {
     /**default serial id*/
     private static final long serialVersionUID = 1L;
@@ -47,21 +46,12 @@ public class ApplicationScopedBeanInterceptorHandler extends NormalScopedBeanInt
      */
     private transient Object cachedInstance = null;
 
-    /**
-     * We also cache the CreationalContext of the very bean.
-     */
-    private transient CreationalContext<Object> creationalContext = null;
-    
-    /**
-     * Creates a new handler.
-     * @param bean bean
-     * @param creationalContext creaitonal context
-     */
-    public ApplicationScopedBeanInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
+
+    public ApplicationScopedBeanInterceptorHandler(BeanManager beanManager, Bean<?> bean)
     {
-        super(bean, creationalContext);
+        super(beanManager, bean);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -75,14 +65,4 @@ public class ApplicationScopedBeanInterceptorHandler extends NormalScopedBeanInt
         return cachedInstance;
     }
 
-    @Override
-    protected CreationalContext<Object> getContextualCreationalContext()
-    {
-        if (creationalContext == null)
-        {
-            creationalContext = super.getContextualCreationalContext();
-        }
-
-        return creationalContext;
-    }
 }

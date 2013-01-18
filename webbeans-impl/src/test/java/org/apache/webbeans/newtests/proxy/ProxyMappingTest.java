@@ -19,16 +19,17 @@
 package org.apache.webbeans.newtests.proxy;
 
 
-import javassist.util.proxy.ProxyObject;
+import javax.inject.Provider;
+
 import org.apache.webbeans.intercept.ApplicationScopedBeanInterceptorHandler;
-import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandlerRemove;
+import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.proxy.beans.ApplicationBean;
 import org.apache.webbeans.newtests.proxy.beans.ConversationBean;
 import org.apache.webbeans.newtests.proxy.beans.DummyScopedExtension;
+import org.apache.webbeans.proxy.OwbNormalScopeProxy;
 import org.junit.Test;
 import org.junit.Assert;
-import org.junit.Ignore;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,8 +41,6 @@ public class ProxyMappingTest extends AbstractUnitTest
 {
 
     @Test
-    //X TODO: migrate this test to the new proxies.
-    @Ignore("The proxy handling is not using Javassist anymore")
     public void testProxyMappingConfig()
     {
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
@@ -53,16 +52,19 @@ public class ProxyMappingTest extends AbstractUnitTest
 
         ConversationBean conversationBean = getInstance(ConversationBean.class);
         Assert.assertNotNull(conversationBean);
-        Assert.assertTrue(conversationBean instanceof ProxyObject);
-        Assert.assertNotNull(((ProxyObject) conversationBean).getHandler());
-        Assert.assertEquals(((ProxyObject) conversationBean).getHandler().getClass(), NormalScopedBeanInterceptorHandlerRemove.class);
+        Assert.assertTrue(conversationBean instanceof OwbNormalScopeProxy);
+
+        Provider instanceProvider = getWebBeansContext().getNormalScopeProxyFactory().getInstanceProvider((OwbNormalScopeProxy) conversationBean);
+        Assert.assertNotNull(instanceProvider);
+        Assert.assertEquals(instanceProvider.getClass(), NormalScopedBeanInterceptorHandler.class);
 
 
         ApplicationBean applicationBean = getInstance(ApplicationBean.class);
         Assert.assertNotNull(applicationBean);
-        Assert.assertTrue(applicationBean instanceof ProxyObject);
-        Assert.assertNotNull(((ProxyObject) applicationBean).getHandler());
-        Assert.assertEquals(((ProxyObject) applicationBean).getHandler().getClass(), ApplicationScopedBeanInterceptorHandler.class);
+        Assert.assertTrue(applicationBean instanceof OwbNormalScopeProxy);
+        instanceProvider = getWebBeansContext().getNormalScopeProxyFactory().getInstanceProvider((OwbNormalScopeProxy) applicationBean);
+        Assert.assertNotNull(instanceProvider);
+        Assert.assertEquals(instanceProvider.getClass(), ApplicationScopedBeanInterceptorHandler.class);
 
     }
 

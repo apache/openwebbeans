@@ -19,17 +19,22 @@
 package org.apache.webbeans.proxy;
 
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Provider;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.ExceptionUtil;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -57,6 +62,24 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         return OwbNormalScopeProxy.class;
     }
 
+    /**
+     * @return the internal instance which gets proxied.
+     */
+    public Provider getInstanceProvider(OwbNormalScopeProxy proxyInstance)
+    {
+        try
+        {
+            Field internalInstanceField = proxyInstance.getClass().getDeclaredField(FIELD_INSTANCE_PROVIDER);
+            internalInstanceField.setAccessible(true);
+            return (Provider) internalInstanceField.get(proxyInstance);
+        }
+        catch (Exception e)
+        {
+            ExceptionUtil.throwAsRuntimeException(e);
+        }
+        return null;
+    }
+
     public <T> T createNormalScopeProxy(Bean<T> bean)
     {
         ClassLoader classLoader = bean.getClass().getClassLoader();
@@ -79,37 +102,43 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
 
     public Provider getInstanceProvider(ClassLoader classLoader, Bean<?> bean)
     {
-        //X TODO for now we always return the default NormalScopedBeanInterceptorHandler
-        return new NormalScopedBeanInterceptorHandler(webBeansContext.getBeanManagerImpl(), bean);
-
-/*X TODO add support for the other scopes
         String scopeClassName = bean.getScope().getName();
         Class<? extends Provider> instanceProviderClass = null;
         String proxyMappingConfigKey = OpenWebBeansConfiguration.PROXY_MAPPING_PREFIX + scopeClassName;
         String className = webBeansContext.getOpenWebBeansConfiguration().getProperty(proxyMappingConfigKey);
-        if (className != null && !className.equals(NormalScopedBeanInterceptorHandler.class.getName()))
-        {
-            try
-            {
-                instanceProviderClass = (Class<? extends Provider>) Class.forName(className, true, classLoader);
-            }
-            catch (ClassNotFoundException e)
-            {
-                throw new WebBeansConfigurationException("Configured InterceptorHandler "
-                                                         + className
-                                                         +" cannot be found",
-                                                         e);
-            }
-
-            //X TODO continue...
-        }
-        else
+        if (className == null || NormalScopedBeanInterceptorHandler.class.getName().equals(className))
         {
             return new NormalScopedBeanInterceptorHandler(webBeansContext.getBeanManagerImpl(), bean);
         }
 
+        try
+        {
+            instanceProviderClass = (Class<? extends Provider>) Class.forName(className, true, classLoader);
+            Constructor<?> ct = instanceProviderClass.getConstructor(BeanManager.class, Bean.class);
+            return (Provider) ct.newInstance(webBeansContext.getBeanManagerImpl(), bean);
+        }
+        catch (NoSuchMethodException nsme)
+        {
+            throw new WebBeansConfigurationException("Configured InterceptorHandler " + className +" has wrong constructor" , nsme);
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw new WebBeansConfigurationException("Configured InterceptorHandler " + className +" cannot be found", e);
+        }
+        catch (InvocationTargetException e)
+        {
+            throw new WebBeansConfigurationException("Configured InterceptorHandler " + className +" creation exception", e);
+        }
+        catch (InstantiationException e)
+        {
+            throw new WebBeansConfigurationException("Configured InterceptorHandler " + className +" creation exception", e);
+        }
+        catch (IllegalAccessException e)
+        {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
         return null;
-*/
     }
 
 

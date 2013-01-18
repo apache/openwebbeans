@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.web.intercept;
 
-import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandlerRemove;
+import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 
-import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import java.util.HashMap;
 
 
@@ -35,7 +35,7 @@ import java.util.HashMap;
  *
  * TODO: move caching to new InterceptorHandler logic
  */
-public class RequestScopedBeanInterceptorHandler extends NormalScopedBeanInterceptorHandlerRemove
+public class RequestScopedBeanInterceptorHandler extends NormalScopedBeanInterceptorHandler
 {
     /**default serial id*/
     private static final long serialVersionUID = 1L;
@@ -43,7 +43,7 @@ public class RequestScopedBeanInterceptorHandler extends NormalScopedBeanInterce
     /**
      * Cached bean instance for each thread
      */
-    private static ThreadLocal<HashMap<OwbBean<?>, CacheEntry>> cachedInstances = new ThreadLocal<HashMap<OwbBean<?>, CacheEntry>>();
+    private static ThreadLocal<HashMap<Bean<?>, Object>> cachedInstances = new ThreadLocal<HashMap<Bean<?>, Object>>();
 
 
     public static void removeThreadLocals()
@@ -54,12 +54,10 @@ public class RequestScopedBeanInterceptorHandler extends NormalScopedBeanInterce
 
     /**
      * Creates a new handler.
-     * @param bean bean
-     * @param creationalContext creaitonal context
      */
-    public RequestScopedBeanInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
+    public RequestScopedBeanInterceptorHandler(BeanManager beanManager, Bean<?> bean)
     {
-        super(bean, creationalContext);
+        super(beanManager, bean);
     }
     
     /**
@@ -67,46 +65,22 @@ public class RequestScopedBeanInterceptorHandler extends NormalScopedBeanInterce
      */
     protected Object getContextualInstance()
     {
-        HashMap<OwbBean<?>, CacheEntry> beanMap = cachedInstances.get();
+        HashMap<Bean<?>, Object> beanMap = cachedInstances.get();
         if (beanMap == null)
         {
-            beanMap = new HashMap<OwbBean<?>, CacheEntry>();
+            beanMap = new HashMap<Bean<?>, Object>();
             cachedInstances.set(beanMap);
         }
 
-        CacheEntry cachedEntry = beanMap.get(bean);
-        if (cachedEntry == null)
+        Object cachedInstance = beanMap.get(bean);
+        if (cachedInstance == null)
         {
-            cachedEntry = new CacheEntry();
-            cachedEntry.creationalContext = super.getContextualCreationalContext();
-            cachedEntry.instance = super.getContextualInstance();
-            beanMap.put(bean, cachedEntry);
+
+            cachedInstance = super.getContextualInstance();
+            beanMap.put(bean, cachedInstance);
         }
 
-        return cachedEntry.instance;
+        return cachedInstance;
     }
 
-    protected CreationalContext<Object> getContextualCreationalContext()
-    {
-        HashMap<OwbBean<?>, CacheEntry> beanMap = cachedInstances.get();
-        if (beanMap != null)
-        {
-            CacheEntry cachedEntry = beanMap.get(bean);
-            if (cachedEntry != null)
-            {
-                return cachedEntry.creationalContext;
-            }
-        }
-
-        return super.getContextualCreationalContext();
-    }
-
-    /**
-     * This will store the cached contextual instance and it's CreationalContext
-     */
-    private static final class CacheEntry
-    {
-        CreationalContext<Object> creationalContext;
-        Object instance;
-    }
 }
