@@ -18,24 +18,18 @@
  */
 package org.apache.webbeans.intercept.webbeans;
 
-import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.intercept.OwbInterceptor;
 import org.apache.webbeans.util.AnnotationUtil;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.Context;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
-import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
@@ -64,7 +58,7 @@ import java.util.logging.Level;
  * @version $Rev$ $Date$
  * @deprecated this should get replaced via a new version which does <b>not</b> delegate to a ManagedBean!
  */
-public class WebBeansInterceptorBeanPleaseRemove<T> extends AbstractOwbBean<T> implements OwbInterceptor<T>
+public class WebBeansInterceptorBeanPleaseRemove<T> extends AbstractOwbBean<T>
 {
     /** InterceptorBindingTypes exist on the interceptor class */
     private Map<Class<? extends Annotation>, Annotation> interceptorBindingSet = new HashMap<Class<? extends Annotation>, Annotation>();
@@ -187,60 +181,6 @@ public class WebBeansInterceptorBeanPleaseRemove<T> extends AbstractOwbBean<T> i
         return clazz;
     }
 
-    public Set<Interceptor<?>> getMetaInceptors()
-    {
-        Set<Interceptor<?>> set = new HashSet<Interceptor<?>>();
-
-        Set<Annotation> keys = getInterceptorBindings();
-
-        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-
-        for (Annotation key : keys)
-        {
-            Class<? extends Annotation> clazzAnnot = key.annotationType();
-            Set<Annotation> declared = null;
-            Annotation[] anns = null;
-
-            if (webBeansContext.getInterceptorsManager().hasInterceptorBindingType(clazzAnnot))
-            {
-                declared = webBeansContext.getInterceptorsManager().getInterceptorBindingTypeMetaAnnotations(clazzAnnot);
-                anns = new Annotation[declared.size()];
-                anns = declared.toArray(anns);
-            }
-
-            else if (annotationManager.hasInterceptorBindingMetaAnnotation(clazzAnnot.getDeclaredAnnotations()))
-            {
-                anns = annotationManager.getInterceptorBindingMetaAnnotations(clazzAnnot.getDeclaredAnnotations());
-            }
-
-            /*
-             * For example: @InterceptorBinding @Transactional @Action
-             * public @interface ActionTransactional @ActionTransactional
-             * @Production { }
-             */
-
-            if (anns != null && anns.length > 0)
-            {
-                // For example : @Transactional @Action Interceptor
-                Set<Interceptor<?>> metas = webBeansContext.getWebBeansInterceptorConfig().findDeployedWebBeansInterceptor(anns);
-                set.addAll(metas);
-
-                // For each @Transactional and @Action Interceptor
-                for (Annotation ann : anns)
-                {
-                    Annotation[] simple = new Annotation[1];
-                    simple[0] = ann;
-                    metas = webBeansContext.getWebBeansInterceptorConfig().findDeployedWebBeansInterceptor(simple);
-                    set.addAll(metas);
-                }
-
-            }
-
-        }
-
-        return set;
-    }
-
     public Set<Annotation> getInterceptorBindings()
     {
         Set<Annotation> set = new HashSet<Annotation>();
@@ -285,17 +225,7 @@ public class WebBeansInterceptorBeanPleaseRemove<T> extends AbstractOwbBean<T> i
         return method;
     }
 
-    
-    @SuppressWarnings("unchecked")
-    protected T createInstance(CreationalContext<T> creationalContext)
-    {
-        Context context = webBeansContext.getBeanManagerImpl().getContext(getScope());
-        Object actualInstance = context.get((Bean<Object>) delegateBean, (CreationalContext<Object>)creationalContext);
-        T proxy = (T) webBeansContext.getProxyFactoryRemove().createDependentScopedBeanProxyRemove(delegateBean, actualInstance, creationalContext);
-        
-        return proxy;
-    }
-    
+
 
     @Override
     public Set<Annotation> getQualifiers()

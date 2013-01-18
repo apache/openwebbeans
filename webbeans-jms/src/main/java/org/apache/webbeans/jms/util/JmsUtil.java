@@ -43,7 +43,6 @@ import org.apache.webbeans.exception.WebBeansCreationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.component.JmsBean;
-import org.apache.webbeans.proxy.MethodHandler;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.util.Asserts;
 
@@ -167,11 +166,10 @@ public final class JmsUtil
     {
         try
         {
-            final MethodHandler handler = new JmsProxyHandler(jmsComponent, intf);
-
             final Class<?>[] interfaces = {Closable.class, Serializable.class, intf};
 
-            return WebBeansContext.getInstance().getProxyFactoryRemove().createProxy(handler, interfaces);
+            //X TODO do we still need this?
+            throw new WebBeansException("Support got temporarily removed while moving from Javassist to ASM");
 
         }
         catch (Exception e)

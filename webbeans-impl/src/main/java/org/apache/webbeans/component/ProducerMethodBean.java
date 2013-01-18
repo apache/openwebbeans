@@ -56,8 +56,6 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     /** Disposal method */
     protected Method disposalMethod;
 
-    private static ThreadLocal<List<DependentCreationalContext<Object>>> dependentInstanceOfProducerMethods =
-            new ThreadLocal<List<DependentCreationalContext<Object>>>();
     /**
      * Creates a new instance.
      * 

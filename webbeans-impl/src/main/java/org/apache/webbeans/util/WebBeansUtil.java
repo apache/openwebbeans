@@ -45,9 +45,7 @@ import javax.decorator.Decorator;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Specializes;
@@ -346,7 +344,7 @@ public final class WebBeansUtil
                                                      + " have to be concrete if not defines as @Decorator");
         }
 
-        if (!isConstructureOk(clazz))
+        if (!isConstructorOk(clazz))
         {
             throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName()
                                                      + " must define at least one Constructor");
@@ -443,78 +441,6 @@ public final class WebBeansUtil
         return false;
     }
 
-    /**
-     * Defines applicable constructor.
-     * @param <T> type info
-     * @param clazz class type
-     * @return constructor
-     * @throws WebBeansConfigurationException any configuration exception
-     */
-    public <T> Constructor<T> defineConstructor(Class<T> clazz) throws WebBeansConfigurationException
-    {
-        Asserts.nullCheckForClass(clazz);
-        Constructor<?>[] constructors = webBeansContext.getSecurityService().doPrivilegedGetDeclaredConstructors(clazz);
-
-        return defineConstructor(constructors, clazz);
-
-    }
-
-
-    public <T> Constructor<T> defineConstructor(Constructor<?>[] constructors, Class<T> clazz)
-    {
-        Constructor<T> result = null;
-
-        boolean inAnnotation = false;
-
-        /* Check for @Initializer */
-        for (Constructor<?> constructor : constructors)
-        {
-            if (constructor.getAnnotation(Inject.class) != null)
-            {
-                if (inAnnotation)// duplicate @In
-                {
-                    throw new WebBeansConfigurationException("There are more than one Constructor with "
-                                                             + "Initializer annotation in class " + clazz.getName());
-                }
-                inAnnotation = true;
-                result = (Constructor<T>) constructor;
-            }
-        }
-
-        if (result == null)
-        {
-            result = getNoArgConstructor(clazz);
-
-            if(result == null)
-            {
-                throw new WebBeansConfigurationException("No constructor is found for the class : " + clazz.getName());
-            }
-        }
-
-
-        Annotation[][] parameterAnns = result.getParameterAnnotations();
-        for (Annotation[] parameters : parameterAnns)
-        {
-            for (Annotation param : parameters)
-            {
-                if (param.annotationType().equals(Disposes.class))
-                {
-                    throw new WebBeansConfigurationException("Constructor parameter annotations can not contain " +
-                            "@Disposes annotation in class : " + clazz.getName());
-                }
-
-                if(param.annotationType().equals(Observes.class))
-                {
-                    throw new WebBeansConfigurationException("Constructor parameter annotations can not contain " +
-                            "@Observes annotation in class : " + clazz.getName());
-                }
-            }
-
-        }
-
-        return result;
-
-    }
 
     /**
      * Check that simple web beans class has compatible constructor.
@@ -522,7 +448,7 @@ public final class WebBeansUtil
      * @throws WebBeansConfigurationException if the web beans has incompatible
      *             constructor
      */
-    public boolean isConstructureOk(Class<?> clazz) throws WebBeansConfigurationException
+    public boolean isConstructorOk(Class<?> clazz) throws WebBeansConfigurationException
     {
         Asserts.nullCheckForClass(clazz);
 
@@ -1043,53 +969,6 @@ public final class WebBeansUtil
                 intData.setInterceptorMethod(method, annotation);
                 stack.add(intData);
             }
-        }
-    }
-
-
-    /**
-     * Create a new instance of the given class using it's default constructor
-     * regardless if the constructor is visible or not.
-     * This is needed to construct some package scope classes in the TCK.
-     *
-     * @param <T>
-     * @param clazz
-     * @return
-     * @throws WebBeansConfigurationException
-     */
-    public <T> T newInstanceForced(Class<T> clazz) throws WebBeansConfigurationException
-    {
-        // FIXME: This new instance should have JCDI injection performed
-        Constructor<T> ct = getNoArgConstructor(clazz);
-        if (ct == null)
-        {
-            throw new WebBeansConfigurationException("class : " + clazz.getName() + " must have no-arg constructor");
-        }
-
-        if (!ct.isAccessible())
-        {
-            webBeansContext.getSecurityService().doPrivilegedSetAccessible(ct, true);
-        }
-
-        try
-        {
-            return ct.newInstance();
-        }
-        catch( IllegalArgumentException e )
-        {
-            throw new WebBeansConfigurationException("class : " + clazz.getName() + " is not constructable", e);
-        }
-        catch( IllegalAccessException e )
-        {
-            throw new WebBeansConfigurationException("class : " + clazz.getName() + " is not constructable", e);
-        }
-        catch( InvocationTargetException e )
-        {
-            throw new WebBeansConfigurationException("class : " + clazz.getName() + " is not constructable", e);
-        }
-        catch( InstantiationException e )
-        {
-            throw new WebBeansConfigurationException("class : " + clazz.getName() + " is not constructable", e);
         }
     }
 

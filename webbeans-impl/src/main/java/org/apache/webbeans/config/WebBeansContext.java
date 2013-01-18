@@ -46,7 +46,6 @@ import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
-import org.apache.webbeans.proxy.ProxyFactory;
 import org.apache.webbeans.service.DefaultLoaderService;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.LoaderService;
@@ -80,7 +79,6 @@ public class WebBeansContext
     private final ExtensionLoader extensionLoader = new ExtensionLoader(this);
     private final InterceptorsManager interceptorsManager = new InterceptorsManager(this);
     private final WebBeansInterceptorConfig webBeansInterceptorConfig = new WebBeansInterceptorConfig(this);
-    private final ProxyFactory proxyFactoryRemove;
     private final InterceptorDecoratorProxyFactory interceptorDecoratorProxyFactory = new InterceptorDecoratorProxyFactory(this);
     private final NormalScopeProxyFactory normalScopeProxyFactory = new NormalScopeProxyFactory(this);
     private final OpenWebBeansConfiguration openWebBeansConfiguration;
@@ -138,9 +136,6 @@ public class WebBeansContext
         loaderService = getService(LoaderService.class);
         securityService = getService(SecurityService.class);
 
-        proxyFactoryRemove = serviceMap.containsKey(ProxyFactory.class)
-            ? (ProxyFactory) serviceMap.get(ProxyFactory.class)
-            : new ProxyFactory(this);
 
         // Allow the WebBeansContext itself to be looked up
         managerMap.put(getClass(), this);
@@ -154,7 +149,6 @@ public class WebBeansContext
         managerMap.put(DecoratorsManager.class, decoratorsManager);
         managerMap.put(ExtensionLoader.class, extensionLoader);
         managerMap.put(InterceptorsManager.class, interceptorsManager);
-        managerMap.put(ProxyFactory.class, proxyFactoryRemove);
         managerMap.put(InterceptorDecoratorProxyFactory.class, interceptorDecoratorProxyFactory);
         managerMap.put(NormalScopeProxyFactory.class, normalScopeProxyFactory);
         managerMap.put(OpenWebBeansConfiguration.class, openWebBeansConfiguration);
@@ -329,10 +323,6 @@ public class WebBeansContext
         return extensionLoader;
     }
 
-    public ProxyFactory getProxyFactoryRemove()
-    {
-        return proxyFactoryRemove;
-    }
 
     public InterceptorDecoratorProxyFactory getInterceptorDecoratorProxyFactory()
     {

@@ -46,6 +46,7 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.component.creation.CdiInterceptorBeanBuilder;
 import org.apache.webbeans.component.creation.DecoratorBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
@@ -308,14 +309,9 @@ public abstract class TestContext implements ITestContext
 
         webBeansContext.getInterceptorsManager().addNewInterceptorClass(clazz);
         AnnotatedType annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
-        webBeansContext.getInterceptorUtil().checkInterceptorConditions(annotatedType);
-        component = define(clazz, WebBeansType.INTERCEPTOR, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
-        webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass((ManagedBean<Object>) component,
-                                                            webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(
-                                                                clazz.getDeclaredAnnotations()));
-
-
-        return component;
+        CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType);
+        ibb.defineCdiInterceptorRules();
+        return ibb.getBean();
     }
 
     /**

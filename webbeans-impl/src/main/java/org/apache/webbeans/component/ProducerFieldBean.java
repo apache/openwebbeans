@@ -21,14 +21,11 @@ package org.apache.webbeans.component;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -72,54 +69,6 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
         instance = super.create(creationalContext);
         checkNullInstance(instance);
         checkScopeType();
-
-        return instance;
-
-    }
-
-    /**
-     * Default producer method creation.
-     * 
-     * @param creationalContext creational context
-     * @return producer method instance
-     */
-    @SuppressWarnings("unchecked")
-    protected T createDefaultInstance(CreationalContext<T> creationalContext)
-    {
-        T instance = null;
-        Object parentInstance = null;
-        CreationalContext<?> parentCreational = null;
-        try
-        {
-            parentCreational = getManager().createCreationalContext(ownerComponent);
-            
-            if (!producerField.isAccessible())
-            {
-                getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(producerField, true);
-            }
-
-            if (Modifier.isStatic(producerField.getModifiers()))
-            {
-                instance = (T) producerField.get(null);
-            }
-            else
-            { 
-                parentInstance = getParentInstanceFromContext(parentCreational);
-                
-                instance = (T) producerField.get(parentInstance);
-            }
-        }
-        catch(Exception e)
-        {
-            throw new WebBeansException(e);
-        }
-        finally
-        {
-            if (ownerComponent.getScope().equals(Dependent.class))
-            {
-                destroyBean(ownerComponent, parentInstance, parentCreational);
-            }
-        }
 
         return instance;
 

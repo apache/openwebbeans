@@ -20,31 +20,20 @@ package org.apache.webbeans.intercept;
 
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.InterceptedMarker;
-import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
-import org.apache.webbeans.util.AnnotationUtil;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
@@ -69,6 +58,10 @@ public final class WebBeansInterceptorConfig
     }
 
     /**
+     * This method gets invoked in the ValidateBean phase and will fill all the
+     * interceptor information into the given InjectionTargetBean
+     *
+     * TODO: move this method to some other, better place!
      * Configure bean instance interceptor stack.
      * @param bean bean instance
      */
@@ -112,16 +105,6 @@ public final class WebBeansInterceptorConfig
                         activeInterceptors.add(interceptorInfo.getSelfInterceptorBean());
                     }
                 }
-
-/*X TODO remove
-                if (mii.getMethodDecorators() != null)
-                {
-                    LinkedHashMap<Decorator<?>, Method> methodDecorators= mii.getMethodDecorators();
-
-                    //X TODO fill an own DecoratorDelegateInterceptor and add it to the activeInterceptors.
-                    //X TODO or find some alternative handling
-                }
-*/
 
                 if (activeInterceptors.size() > 0)
                 {
@@ -191,98 +174,5 @@ public final class WebBeansInterceptorConfig
     }
 
 
-    /**
-     * Configures WebBeans specific interceptor class.
-     *
-     * @param interceptorBindingTypes interceptor class
-     */
-    public <T> void configureInterceptorClass(InjectionTargetBean<T> delegate, Annotation[] interceptorBindingTypes)
-    {
-        if(delegate.getScope() != Dependent.class)
-        {
-            if(logger.isLoggable(Level.WARNING))
-            {
-                logger.log(Level.WARNING, OWBLogConst.WARN_0005_1, delegate.getBeanClass().getName());
-            }
-        }
 
-        if(delegate.getName() != null)
-        {
-            if(logger.isLoggable(Level.WARNING))
-            {
-                logger.log(Level.WARNING, OWBLogConst.WARN_0005_2, delegate.getBeanClass().getName());
-            }
-        }
-
-        if(delegate.isAlternative())
-        {
-            if(logger.isLoggable(Level.WARNING))
-            {
-                logger.log(Level.WARNING, OWBLogConst.WARN_0005_3, delegate.getBeanClass().getName());
-            }
-        }
-
-        if (logger.isLoggable(Level.FINE))
-        {
-            logger.log(Level.FINE, "Configuring interceptor class : [{0}]", delegate.getReturnType());
-        }
-        WebBeansInterceptorBeanPleaseRemove<T> interceptor = new WebBeansInterceptorBeanPleaseRemove<T>(delegate);
-
-        for (Annotation ann : interceptorBindingTypes)
-        {
-            checkInterceptorAnnotations(interceptorBindingTypes, ann, delegate);
-            interceptor.addInterceptorBinding(ann.annotationType(), ann);
-        }
-
-
-        delegate.getWebBeansContext().getInterceptorsManager().addCdiInterceptor(interceptor);
-
-    }
-
-    private void checkInterceptorAnnotations(Annotation[] interceptorBindingTypes, Annotation ann, Bean<?> bean)
-    {
-        for(Annotation old : interceptorBindingTypes)
-        {
-            if(old.annotationType().equals(ann.annotationType()))
-            {
-                if(!AnnotationUtil.isQualifierEqual(ann, old))
-                {
-                    throw new WebBeansConfigurationException("Interceptor Binding types must be equal for interceptor : " + bean);
-                }
-            }
-        }
-    }
-
-    /*
-     * Find the deployed interceptors with all the given interceptor binding types.
-     * The reason why we can face multiple InterceptorBindings is because of the transitive
-     * behaviour of &#064;InterceptorBinding. See section 9.1.1 of the CDI spec.
-     */
-    public Set<Interceptor<?>> findDeployedWebBeansInterceptor(Annotation[] interceptorBindingTypes)
-    {
-        Set<Interceptor<?>> set = new HashSet<Interceptor<?>>();
-
-        Iterator<Interceptor<?>> it = webBeansContext.getInterceptorsManager().getCdiInterceptors().iterator();
-
-        List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();
-        List<Annotation> listAnnot = new ArrayList<Annotation>();
-        for (Annotation ann : interceptorBindingTypes)
-        {
-            bindingTypes.add(ann.annotationType());
-            listAnnot.add(ann);
-        }
-
-        while (it.hasNext())
-        {
-            WebBeansInterceptorBeanPleaseRemove<?> interceptor = (WebBeansInterceptorBeanPleaseRemove<?>) it.next();
-
-            if (interceptor.hasBinding(bindingTypes, listAnnot))
-            {
-                set.add(interceptor);
-                set.addAll(interceptor.getMetaInceptors());
-            }
-        }
-
-        return set;
-    }
 }
