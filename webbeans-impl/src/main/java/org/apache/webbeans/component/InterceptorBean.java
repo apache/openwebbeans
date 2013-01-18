@@ -43,7 +43,7 @@ import org.apache.webbeans.util.ExceptionUtil;
 public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implements Interceptor<T>
 {
    /**
-     * Constructor of the web bean component
+     * Constructor of the Interceptor component
      */
     private Constructor<T> constructor;
 

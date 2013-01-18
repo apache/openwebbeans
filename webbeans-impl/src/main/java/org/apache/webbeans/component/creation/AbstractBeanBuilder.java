@@ -109,6 +109,11 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
         return stereotypes;
     }
 
+    protected Set<Type> getApiTypes()
+    {
+        return apiTypes;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -343,6 +348,14 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
     protected void addInjectionPoint(AnnotatedMember<? super T> member)
     {
         injectionPoints.add(member);
+    }
+
+    /**
+     * @return the AnnotatedMember of all found injection points <i>before</i> InjectionPoint will be constructed from it.
+     */
+    protected Set<AnnotatedMember<? super T>> getInjectionPointsAnnotated()
+    {
+        return injectionPoints;
     }
 
     /**
@@ -629,7 +642,7 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
      */
     public B getBean()
     {
-        B bean = createBean(apiTypes, qualifiers, scope, beanName, false, getBeanType(), stereotypes, false);
+        B bean = createBean(apiTypes, qualifiers, getScope(), beanName, false, getBeanType(), stereotypes, false);
         for (Iterator<AnnotatedMember<? super T>> memberIterator = injectionPoints.iterator(); memberIterator.hasNext();)
         {
             AnnotatedMember<? super T> member = memberIterator.next();

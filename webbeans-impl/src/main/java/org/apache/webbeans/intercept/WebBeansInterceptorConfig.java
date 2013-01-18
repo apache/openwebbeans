@@ -30,17 +30,16 @@ import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -113,17 +112,24 @@ public final class WebBeansInterceptorConfig
                         activeInterceptors.add(interceptorInfo.getSelfInterceptorBean());
                     }
                 }
-                
+
+/*X TODO remove
                 if (mii.getMethodDecorators() != null)
                 {
                     LinkedHashMap<Decorator<?>, Method> methodDecorators= mii.getMethodDecorators();
+
                     //X TODO fill an own DecoratorDelegateInterceptor and add it to the activeInterceptors.
                     //X TODO or find some alternative handling
                 }
+*/
 
                 if (activeInterceptors.size() > 0)
                 {
                     methodInterceptors.put(interceptedMethod, activeInterceptors);
+                }
+                else if (mii.getMethodDecorators() != null)
+                {
+                    methodInterceptors.put(interceptedMethod, Collections.EMPTY_LIST);
                 }
 
                 // empty InterceptionType -> AROUND_INVOKE

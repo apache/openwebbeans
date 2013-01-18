@@ -21,6 +21,7 @@ package org.apache.webbeans.component;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Decorator;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.Set;
 
@@ -31,27 +32,65 @@ import org.apache.webbeans.config.WebBeansContext;
  */
 public class DecoratorBean<T> extends InjectionTargetBean<T> implements Decorator<T>
 {
+    /*
+     * Constructor of the Decorator component
+     */
+    private Constructor<T> constructor;
+
+    /**
+     * The Types the decorator itself implements
+     */
+    private Set<Type> decoratedTypes;
+
+    /**
+     * The Type of the &#064;Delegate injection point.
+     */
+    private Type delegateType;
+
+    /**
+     * The Qualifiers of the &#064;Delegate injection point.
+     */
+    private Set<Annotation> delegateQualifiers;
+
+
     public DecoratorBean(WebBeansContext webBeansContext, WebBeansType webBeansType, AnnotatedType<T> annotatedType, Set<Type> types,
                          Set<Annotation> qualifiers, Class<? extends Annotation> scope, Class<T> beanClass, Set<Class<? extends Annotation>> stereotypes)
     {
         super(webBeansContext, webBeansType, annotatedType, types, qualifiers, scope, beanClass, stereotypes);
     }
 
+    public void setDecoratorInfo(Set<Type> decoratedTypes, Type delegateType, Set<Annotation> delegateQualifiers)
+    {
+        this.decoratedTypes = decoratedTypes;
+        this.delegateType = delegateType;
+        this.delegateQualifiers = delegateQualifiers;
+    }
+
     @Override
     public Set<Type> getDecoratedTypes()
     {
-        return null;  //X TODO
+        return decoratedTypes;
     }
 
     @Override
     public Type getDelegateType()
     {
-        return null;  //X TODO
+        return delegateType;
     }
 
     @Override
     public Set<Annotation> getDelegateQualifiers()
     {
-        return null;  //X TODO
+        return delegateQualifiers;
+    }
+
+    public void setConstructor(Constructor<T> constructor)
+    {
+        this.constructor = constructor;
+    }
+
+    public Constructor<T> getConstructor()
+    {
+        return constructor;
     }
 }

@@ -49,6 +49,7 @@ import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.annotation.AnnotationManager;
+import org.apache.webbeans.component.DecoratorBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.CdiInterceptorBean;
@@ -60,6 +61,7 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.creation.CdiInterceptorBeanBuilder;
+import org.apache.webbeans.component.creation.DecoratorBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
@@ -740,10 +742,6 @@ public class BeansDeployer
                     throw new WebBeansConfigurationException("Passivation scoped defined bean must be passivation capable, " +
                             "but bean : " + beanObj.toString() + " is not passivation capable");
                 }
-                else
-                {
-                    validate = true;
-                }
             }
 
             validate = true;
@@ -841,12 +839,6 @@ public class BeansDeployer
 
             ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType);
 
-            boolean annotationTypeSet = false;
-            if(processAnnotatedEvent.isModifiedAnnotatedType())
-            {
-                annotationTypeSet = true;
-            }
-            
             InjectionTargetBean<T> bean;
             GProcessInjectionTarget processInjectionTarget = null;
             if(WebBeansUtil.isDecorator(annotatedType))
@@ -855,13 +847,17 @@ public class BeansDeployer
                 {
                     logger.log(Level.FINE, "Found Managed Bean Decorator with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
-                if(annotationTypeSet)
+                DecoratorBeanBuilder<T> dbb = new DecoratorBeanBuilder<T>(webBeansContext, annotatedType);
+                if (dbb.isDecoratorEnabled())
                 {
-                    bean = webBeansContext.getWebBeansUtil().defineDecorator(annotatedType);
+                    dbb.defineDecoratorRules();
+                    DecoratorBean<T> decorator = dbb.getBean();
+                    webBeansContext.getDecoratorsManager().addDecorator(decorator);
+                    bean = decorator;
                 }
                 else
                 {
-                    bean = managedBeanCreator.defineDecorator(annotatedType);
+                    bean = null;
                 }
             }
             else if(WebBeansUtil.isCdiInterceptor(annotatedType))
