@@ -50,11 +50,10 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 
     /**
      * Contextual bean dependent instances
-     * key: contextual instance --> value: dependents
      *
      * <p><b>ATTENTION</b> This variable gets initiated lazily!</p>
      */
-    private Map<Object, List<DependentCreationalContext<?>>> dependentObjects = null;
+    private List<DependentCreationalContext<?>> dependentObjects = null;
 
     /**Contextual bean*/
     private Contextual<T> contextual = null;
@@ -126,17 +125,9 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
             {
                 if (dependentObjects == null)
                 {
-                    dependentObjects = new HashMap<Object, List<DependentCreationalContext<?>>>();
+                    dependentObjects = new ArrayList<DependentCreationalContext<?>>();
                 }
-
-                List<DependentCreationalContext<?>> dependentList = dependentObjects.get(ownerInstance);
-                if(dependentList == null)
-                {
-                    dependentList = new ArrayList<DependentCreationalContext<?>>();
-                    dependentObjects.put(ownerInstance, dependentList);
-                }
-
-                dependentList.add(dependentCreational);
+                dependentObjects.add(dependentCreational);
             }
         }
     }
@@ -157,35 +148,27 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         {
             if (dependentObjects != null)
             {
-                Collection<List<DependentCreationalContext<?>>> values = dependentObjects.values();
-                if (values != null)
+                // this is kind of an emergency valve...
+                int maxRemoval = dependentObjects.size() * 3;
+                while (!dependentObjects.isEmpty() && maxRemoval > 0)
                 {
-                    for (List<DependentCreationalContext<?>> value : values)
-                    {
-                        // this is kind of an emergency valve...
-                        int maxRemoval = value.size() * 3;
-                        while (!value.isEmpty() && maxRemoval > 0)
-                        {
-                            // we don't use an iterator because the destroyal might register a 
-                            // fresh PreDestroy interceptor as dependent object...
-                            DependentCreationalContext<T> dependent = (DependentCreationalContext<T>) value.get(0);
-                            dependent.getContextual().destroy((T) dependent.getInstance(), this);
-                        
-                            value.remove(0);
-                            maxRemoval--;
-                        }
+                    // we don't use an iterator because the destroyal might register a 
+                    // fresh PreDestroy interceptor as dependent object...
+                    DependentCreationalContext<T> dependent = (DependentCreationalContext<T>) dependentObjects.get(0);
+                    dependent.getContextual().destroy((T) dependent.getInstance(), this);
                     
-                        if (maxRemoval == 0)
-                        {
-                            throw new WebBeansException("infinite loop detected while destroying bean " + contextual);
-                        }
-                    }
+                    dependentObjects.remove(0);
+                    maxRemoval--;
                 }
-
-                dependentObjects = null;
+                    
+                if (maxRemoval == 0)
+                {
+                    throw new WebBeansException("infinite loop detected while destroying bean " + contextual);
+                }
             }
         }
 
+        dependentObjects = null;
     }
     
     /**
@@ -234,7 +217,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     throws IOException, ClassNotFoundException
     {
         webBeansContext = WebBeansContext.currentInstance();
-        dependentObjects = (HashMap<Object, List<DependentCreationalContext<?>>>)s.readObject();
+        dependentObjects = (List<DependentCreationalContext<?>>)s.readObject();
 
         String id = (String) s.readObject();
         if (id != null)

@@ -164,6 +164,10 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
                 injectionTarget.inject(instance, creationalContext);
                 injectionTarget.postConstruct(instance);
             }
+            if (getScope().equals(Dependent.class))
+            {
+                ((CreationalContextImpl<T>)creationalContext).addDependent(null, this, instance);
+            }
             return instance;
         }
         catch (Exception re)
