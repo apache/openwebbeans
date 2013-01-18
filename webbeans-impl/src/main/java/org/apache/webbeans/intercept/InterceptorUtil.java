@@ -32,7 +32,6 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -45,9 +44,7 @@ import javax.interceptor.Interceptors;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -372,67 +369,6 @@ public final class InterceptorUtil
     }
 
 
-    public <T> void checkAnnotatedTypeInterceptorConditions(AnnotatedType<T> annotatedType)
-    {
-        Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
-        for(AnnotatedMethod<? super T> methodA : methods)
-        {
-            if(methodA.isAnnotationPresent(Produces.class))
-            {
-                throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass().getName()
-                                                         + " can not have producer methods but it has one with name : "
-                                                         + methodA.getJavaMember().getName());
-            }
-
-        }
-
-        Set<Annotation> annSet = annotatedType.getAnnotations();
-        Annotation[] anns = annSet.toArray(new Annotation[annSet.size()]);
-        if (!webBeansContext.getAnnotationManager().hasInterceptorBindingMetaAnnotation(anns))
-        {
-            throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass().getName()
-                                                     + " must have at least one @InterceptorBinding annotation");
-        }
-
-        checkLifecycleConditions(annotatedType, annSet, "Lifecycle interceptor : " + annotatedType.getJavaClass().getName()
-                                                      + " interceptor binding type must be defined as @Target{TYPE}");
-    }
-
-
-    /**
-     * @deprecated moved to InteceptorBeanBuilder
-     */
-    public void checkInterceptorConditions(AnnotatedType annotatedType)
-    {
-        Asserts.assertNotNull(annotatedType);
-
-        Set<AnnotatedMethod> methods = annotatedType.getMethods();
-        for(AnnotatedMethod method : methods)
-        {
-            List<AnnotatedParameter> parms = method.getParameters();
-            for (AnnotatedParameter parameter : parms)
-            {
-                if (parameter.isAnnotationPresent(Produces.class))
-                {
-                    throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass()
-                            + " can not have producer methods but it has one with name : "
-                            + method.getJavaMember().getName());
-                }
-            }
-        }
-
-
-        Annotation[] anns = annotatedType.getAnnotations().toArray(new Annotation[annotatedType.getAnnotations().size()]);
-        if (!webBeansContext.getAnnotationManager().hasInterceptorBindingMetaAnnotation(anns))
-        {
-            throw new WebBeansConfigurationException("WebBeans Interceptor class : " + annotatedType.getJavaClass()
-                                                     + " must have at least one @InterceptorBinding annotation");
-        }
-
-        checkLifecycleConditions(annotatedType.getJavaClass(), anns, "Lifecycle interceptor : " + annotatedType.getJavaClass()
-                                              + " interceptor binding type must be defined as @Target{TYPE}");
-    }
-
     /**
      * @param clazz AUTSCH! we should use the AnnotatedType for all that stuff!
      * @deprecated TODO remove and only use the AnnotatedType version for all
@@ -540,57 +476,6 @@ public final class InterceptorUtil
     }
 
     /**
-     * Gets list of interceptors with the given type.
-     *
-     * @param stack interceptor stack
-     * @param type interceptor type
-     * @return list of interceptor
-     */
-    @SuppressWarnings("unchecked")
-    public List<InterceptorData> getInterceptorMethods(List<InterceptorData> stack, InterceptionType type)
-    {
-        List<InterceptorData> interceptors = new ArrayList<InterceptorData>();
-
-        Iterator<InterceptorData> it = stack.iterator();
-        while (it.hasNext())
-        {
-            Method m = null;
-            InterceptorData data = it.next();
-
-            if (type.equals(InterceptionType.AROUND_INVOKE))
-            {
-                m = data.getAroundInvoke();
-            }
-            else if (type.equals(InterceptionType.AROUND_TIMEOUT))
-            {
-                m = data.getAroundTimeout();
-            }
-            else if (type.equals(InterceptionType.POST_ACTIVATE))
-            {
-                m = data.getPostActivate();
-            }
-            else if (type.equals(InterceptionType.POST_CONSTRUCT))
-            {
-                m = data.getPostConstruct();
-            }
-            else if (type.equals(InterceptionType.PRE_DESTROY))
-            {
-                m = data.getPreDestroy();
-            }
-            else if (type.equals(InterceptionType.PRE_PASSIVATE))
-            {
-                m = data.getPrePassivate();
-            }
-            if (m != null)
-            {
-                interceptors.add(data);
-            }
-        }
-
-        return interceptors;
-    }
-
-    /**
      * Returns true if this interceptor data is not related
      * false otherwise.
      * @param id interceptor data
@@ -644,26 +529,6 @@ public final class InterceptorUtil
                 }
             }
         }
-    }
-
-    public Object callAroundInvokes(WebBeansContext webBeansContext, InjectionTargetBean<?> bean,Object instance, CreationalContextImpl<?> creationalContext,
-            Method proceed, Object[] arguments, List<InterceptorData> stack, InvocationContext ejbInvocationContext, Object altKey) throws Exception
-    {
-        InvocationContextImplRemove impl = new InvocationContextImplRemove(webBeansContext, bean, instance,
-                                                               proceed, arguments, stack, InterceptionType.AROUND_INVOKE);
-        if (ejbInvocationContext != null)
-        {
-            impl.setEJBInvocationContext(ejbInvocationContext);
-        }
-
-        if (altKey != null)
-        {
-            impl.setCcKey(altKey);
-        }
-
-        impl.setCreationalContext(creationalContext);
-
-        return impl.proceed();
     }
 
 
