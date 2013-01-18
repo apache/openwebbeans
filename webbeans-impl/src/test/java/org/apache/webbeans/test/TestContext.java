@@ -487,7 +487,6 @@ public abstract class TestContext implements ITestContext
      * @return the newly created Simple WebBean Component
      * @throws WebBeansConfigurationException if any configuration exception occurs
      */
-    @SuppressWarnings("unchecked")
     private <T> ManagedBean<T> define(Class<T> clazz, WebBeansType type, AnnotatedType<T> anntotatedType) throws WebBeansConfigurationException
     {
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();

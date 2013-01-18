@@ -350,7 +350,7 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
      */
     private static class AbstractDecoratorInjectionTarget<T> extends InjectionTargetImpl<T>
     {
-        private Class<? extends T> proxySubClass = null;
+        private Class<T> proxySubClass = null;
 
         private AbstractDecoratorInjectionTarget(AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext,
                                                  List<AnnotatedMethod<?>> postConstructMethods, List<AnnotatedMethod<?>> preDestroyMethods)
@@ -359,24 +359,13 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
         }
 
         @Override
-        protected AnnotatedConstructor<T> getConstructor()
+        protected AnnotatedConstructor<T> createConstructor()
         {
-            if (constructor != null)
-            {
-                return constructor;
-            }
-            else
-            {
-                //X TODO create proxy subclass
-
-                Constructor<T> ct = webBeansContext.getWebBeansUtil().getNoArgConstructor(proxySubClass);
-                this.constructor = new AnnotatedConstructorImpl<T>(webBeansContext, ct, annotatedType);
-
-                //X TODO what about @Inject constructors?
-
-            }
-
-            return constructor;
+            //X TODO create proxy subclass
+            
+            //X TODO what about @Inject constructors?
+            Constructor<T> ct = webBeansContext.getWebBeansUtil().getNoArgConstructor(proxySubClass);
+            return new AnnotatedConstructorImpl<T>(webBeansContext, ct, annotatedType);
         }
 
     }

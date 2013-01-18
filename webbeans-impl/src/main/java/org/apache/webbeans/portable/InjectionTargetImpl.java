@@ -387,10 +387,15 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
 
     protected AnnotatedConstructor<T> getConstructor()
     {
-        if (constructor != null)
+        if (constructor == null)
         {
-            return constructor;
+            constructor = createConstructor();
         }
+        return constructor;
+    }
+    
+    protected AnnotatedConstructor<T> createConstructor()
+    {
         AnnotatedConstructor<T> constructor = null;
         for (InjectionPoint injectionPoint : getInjectionPoints())
         {
@@ -409,13 +414,12 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         }
         if (constructor != null)
         {
-            this.constructor = constructor;
+            return constructor;
         }
         else
         {
-            this.constructor = new AnnotatedConstructorImpl<T>(webBeansContext, getDefaultConstructor(), annotatedType);
+            return new AnnotatedConstructorImpl<T>(webBeansContext, getDefaultConstructor(), annotatedType);
         }
-        return this.constructor;
     }
 
     private Constructor<T> getDefaultConstructor()
