@@ -21,8 +21,6 @@ package org.apache.webbeans.proxy;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,21 +28,11 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Decorator;
-
-import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DelegateHandler;
-import org.apache.webbeans.decorator.WebBeansDecoratorRemove;
-import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandlerRemove;
-import org.apache.webbeans.intercept.InterceptorData;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.proxy.javassist.JavassistFactory;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 
 
@@ -54,11 +42,9 @@ import org.apache.webbeans.util.WebBeansUtil;
 public final class ProxyFactory
 {
 
-    private ConcurrentMap<OwbBean<?>, Class<?>> buildInBeanProxyClassesRemove = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
     private ConcurrentMap<OwbBean<?>, Class<?>> normalScopedBeanProxyClassesRemove = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
     private ConcurrentMap<OwbBean<?>, Class<?>> dependentScopedBeanProxyClassesRemove = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
     private ConcurrentMap<OwbBean<?>, Class<?>> interceptorProxyClassesRemove = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
-    private ConcurrentMap<ResourceBean<?, ?>, Class<?>> resourceBeanProxyClassesRemove = new ConcurrentHashMap<ResourceBean<?,?>, Class<?>>();
 
     // second level map is indexed on local interface
     private ConcurrentMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>>();
@@ -108,30 +94,6 @@ public final class ProxyFactory
         return delegate;
     }
 
-    public Class<?> getResourceBeanProxyClass(ResourceBean<?, ?> resourceBean)
-    {
-        try
-        {
-            Class<?> proxyClass = resourceBeanProxyClassesRemove.get(resourceBean);
-            if (proxyClass == null)
-            {
-                proxyClass = createProxyClassRemove(resourceBean);
-
-                Class<?> oldClazz = resourceBeanProxyClassesRemove.putIfAbsent(resourceBean, proxyClass);
-                if (oldClazz != null)
-                {
-                    return oldClazz;
-                }                
-            }
-            return proxyClass;
-        }
-        catch (Exception e)
-        {
-            WebBeansUtil.throwRuntimeExceptions(e);
-        }
-
-        return null;
-    }
 
     /**
      * @deprecated uses old proxy
@@ -143,115 +105,13 @@ public final class ProxyFactory
     }
 
     /**
-     * @deprecated uses old proxy
-     */
-    public Object createBuildInBeanProxyRemove(OwbBean<?> bean)
-    {
-        Object result = null;
-        try
-        {
-            Class<?> proxyClass = buildInBeanProxyClassesRemove.get(bean);
-            if (proxyClass == null)
-            {
-                proxyClass = createProxyClassRemove(bean);
-                buildInBeanProxyClassesRemove.putIfAbsent(bean, proxyClass);
-            }
-            result = createProxyRemove(proxyClass);
-        }
-        catch (Exception e)
-        {
-            WebBeansUtil.throwRuntimeExceptions(e);
-        }
-        return result;
-    }
-
-
-    /**
      * @deprecated uses old proxy. And will be obsolete anyway...
      */
     public  Object createDependentScopedBeanProxyRemove(OwbBean<?> bean, Object actualInstance, CreationalContext<?> creastionalContext)
     {
 
-        List<InterceptorData> interceptors =  null;
-        List<Decorator<?>> decorators = null;
-        InjectionTargetBean<?> injectionTargetBean = null;
-        if(bean instanceof InjectionTargetBean<?>)
-        {
-            injectionTargetBean = (InjectionTargetBean<?>)bean;
-            interceptors = injectionTargetBean.getInterceptorStack();
-            decorators = injectionTargetBean.getDecoratorStack();
-        }
-        
-        if(interceptors == null && decorators == null)
-        {
-            return actualInstance;
-        }
-        
-        boolean notInInterceptorClassAndLifecycle = false;
-        if(interceptors != null && interceptors.size() > 0)
-        {
-            Iterator<InterceptorData> its = interceptors.iterator();
-            while(its.hasNext())
-            {
-                InterceptorData id = its.next();
-                if(!id.isDefinedInInterceptorClass() && id.isLifecycleInterceptor())
-                {
-                    continue;
-                }
-                notInInterceptorClassAndLifecycle = true;
-                break;
-            }
-        }
-        
-        //No need to return proxy
-        if(!notInInterceptorClassAndLifecycle && decorators.isEmpty())
-        {
-            //Adding this dependent instance into creational context
-            //This occurs when no owner of this dependent instance
-            if(creastionalContext instanceof CreationalContextImpl)
-            {
-                //If this creational context is owned by itself, add it
-                //For example, getting it directly BeanManager#getReference(bean,creational context)
-                CreationalContextImpl<?> ccImpl = (CreationalContextImpl<?>)creastionalContext;
-                
-                //Non contextual instance --> Bean --> Null
-                //See OWBInjector
-                if(ccImpl.getBean() != null)
-                {
-                    if(ccImpl.getBean().equals(bean))
-                    {
-                        //Owner of the dependent is itself
-                        ccImpl.addDependent(actualInstance, bean, actualInstance);
-                    }                                
-                }
-            }
-            
-            return actualInstance;
-        }
-        
-        try
-        {
-            Class<?> proxyClass = dependentScopedBeanProxyClassesRemove.get(bean);
-            if (proxyClass == null)
-            {
-                proxyClass = createProxyClassRemove(bean);
-                dependentScopedBeanProxyClassesRemove.putIfAbsent(bean, proxyClass);
-            }
+        throw new RuntimeException("Bloody Mary! this must not get used anymore!");
 
-            Object result = createProxyRemove(proxyClass);
-            if (!(bean instanceof WebBeansDecoratorRemove<?>) && !(bean instanceof WebBeansInterceptorBeanPleaseRemove<?>))
-            {
-                setHandler(result, new DependentScopedBeanInterceptorHandlerRemove(bean, actualInstance, creastionalContext));
-            }
-
-            return result;
-        }
-        catch (Exception e)
-        {
-            WebBeansUtil.throwRuntimeExceptions(e);
-        }
-
-        return null;
     }
 
     /**
@@ -268,19 +128,6 @@ public final class ProxyFactory
         return createProxyClassRemove(bean);
     }
 
-    /**
-     * @deprecated uses old proxy
-     */
-    public boolean isProxyInstanceRemove(Object o)
-    {
-        return factoryRemove.isProxyInstance(o);
-    }
-
-    public Object createProxy(MethodHandler handler, Class<?>[] interfaces)
-        throws IllegalAccessException, InstantiationException
-    {
-        return factoryRemove.createProxy(handler, interfaces);
-    }
 
     /**
      * @deprecated uses old proxy

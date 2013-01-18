@@ -25,7 +25,6 @@ import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -97,14 +96,6 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
         }
         if(Serializable.class.isAssignableFrom(getReturnType()))
         {
-            for(Decorator<?> dec : decorators)
-            {
-                if(dec.getBeanClass() != null && !Serializable.class.isAssignableFrom(dec.getBeanClass()))
-                {
-                    isPassivationCapable = Boolean.FALSE;
-                    return false;
-                }
-            }
 
             for(InterceptorData interceptorData : interceptorStack)
             {

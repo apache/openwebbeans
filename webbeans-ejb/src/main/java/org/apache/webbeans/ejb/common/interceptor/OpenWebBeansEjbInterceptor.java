@@ -42,7 +42,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Decorator;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
@@ -52,7 +51,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DelegateHandler;
-import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 import org.apache.webbeans.inject.OWBInjector;
@@ -469,47 +467,19 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         InterceptorDataImpl decoratorInterceptorDataImpl = null;
         List<Object> decorators = null;
         DelegateHandler delegateHandler = null;
-        List<Decorator<?>> decoratorStack = injectionTarget.getDecoratorStack();
         List<InterceptorData> interceptorStack = injectionTarget.getInterceptorStack();
 
 
         if (logger.isLoggable(Level.FINE))
         {
-            logger.log(Level.FINE, "Decorator stack for target {0}", decoratorStack);
             logger.log(Level.FINE, "Interceptor stack {0}", interceptorStack);
         }
                     
-        if (decoratorStack.size() > 0 )
-        {    
-            if (logger.isLoggable(Level.FINE))
-            {
-                logger.fine("Obtaining a delegate");
-            }
 
-            delegateHandler = new DelegateHandler(this.contextual, ejbContext);
-
-            final Object delegate =
-                webBeansContext.getProxyFactoryRemove().createDecoratorDelegate(injectionTarget, delegateHandler);
-            // Gets component decorator stack
-            decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate,
-                                                                   (CreationalContextImpl<?>)this.cc);          
-            
-            //Sets decorator stack of delegate
-            delegateHandler.setDecorators(decorators);
-        }
-        
         if (interceptorStack.size() == 0)
         {   
-            if (decoratorStack.size() == 0)
-            {
-                rv = ejbContext.proceed();
-            }
-            else 
-            {
-                // We only have decorators, so run the decorator stack directly without interceptors. 
-                // The delegate handler knows about the ejbContext.proceed()
-                rv = delegateHandler.invoke(instance, method, null, arguments);    
-            }
+            // The delegate handler knows about the ejbContext.proceed()
+            rv = delegateHandler.invoke(instance, method, null, arguments);
         }
         else 
         {

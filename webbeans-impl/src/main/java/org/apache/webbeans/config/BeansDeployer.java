@@ -56,7 +56,6 @@ import org.apache.webbeans.component.CdiInterceptorBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InterceptedMarker;
 import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
@@ -67,7 +66,6 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.corespi.se.DefaultJndiService;
-import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -403,22 +401,10 @@ public class BeansDeployer
                 }
                 
                 
-                if(bean instanceof InjectionTargetBean)
+                if(bean instanceof InjectionTargetBean && bean instanceof InterceptedMarker)
                 {
-                    //Decorators not applied to interceptors/decorators/@NewBean
-                    if(!(bean instanceof Decorator) && 
-                       !(bean instanceof javax.enterprise.inject.spi.Interceptor) &&
-                       !(bean instanceof NewBean))
-                    {
-                        WebBeansDecoratorConfig.configureDecorators((InjectionTargetBean<Object>)bean);
-                    }
-                    
-                    //If intercepted marker
-                    if(bean instanceof InterceptedMarker)
-                    {
-                        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack((InjectionTargetBean<Object>) bean);
-                    }                                                            
-                }                
+                    webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack((InjectionTargetBean<Object>) bean);
+                }
                 
                 //Check passivation scope
                 checkPassivationScope(bean);

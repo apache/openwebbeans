@@ -33,7 +33,6 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.decorator.WebBeansDecoratorRemove;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
@@ -142,7 +141,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
             }
 
 
-            webBeansContext.getDecoratorsManager().addDecorator(new WebBeansDecoratorRemove(managedBean, (Decorator) bean));
+            webBeansContext.getDecoratorsManager().addDecorator((Decorator) bean);
             webBeansContext.getDecoratorsManager().addCustomDecoratorClass(bean.getBeanClass());
         }
         else

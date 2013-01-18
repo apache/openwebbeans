@@ -36,13 +36,17 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.webbeans.component.DecoratorBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.ClassUtil;
 
 
@@ -51,6 +55,7 @@ import org.apache.webbeans.util.ClassUtil;
  */
 public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T, DecoratorBean<T>>
 {
+    private static Logger logger = WebBeansLoggerFacade.getLogger(DecoratorBeanBuilder.class);
 
     private AnnotatedConstructor<T> constructor;
 
@@ -84,12 +89,6 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
         return result;
     }
 
-    @Override
-    public Class<? extends Annotation> getScope()
-    {
-        // Interceptors are always Dependent scoped
-        return Dependent.class;
-    }
 
     public void defineConstructor()
     {
@@ -128,6 +127,38 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
 
     protected void checkDecoratorConditions()
     {
+        if(getScope() != Dependent.class)
+        {
+            if(logger.isLoggable(Level.WARNING))
+            {
+                logger.log(Level.WARNING, OWBLogConst.WARN_0005_1, getBeanType().getName());
+            }
+        }
+
+        if(getName() != null)
+        {
+            if(logger.isLoggable(Level.WARNING))
+            {
+                logger.log(Level.WARNING, OWBLogConst.WARN_0005_2, getBeanType().getName());
+            }
+        }
+
+/*X TODO enable again
+        if(isAlternative())
+        {
+            if(logger.isLoggable(Level.WARNING))
+            {
+                logger.log(Level.WARNING, OWBLogConst.WARN_0005_3, getBeanType().getName());
+            }
+        }
+*/
+
+
+        if (logger.isLoggable(Level.FINE))
+        {
+            logger.log(Level.FINE, "Configuring decorator class : [{0}]", getBeanType());
+        }
+
         Set<AnnotatedMethod<? super T>> methods = getAnnotated().getMethods();
         for(AnnotatedMethod method : methods)
         {
@@ -146,6 +177,9 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
 
     public void defineDecoratorRules()
     {
+        defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + getBeanType() +
+                WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
+
         checkDecoratorConditions();
 
         defineApiType();

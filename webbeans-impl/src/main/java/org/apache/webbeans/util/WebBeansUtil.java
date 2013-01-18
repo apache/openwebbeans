@@ -50,7 +50,6 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
@@ -116,7 +115,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
@@ -127,7 +125,6 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.ProducerFieldProducer;
-import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
@@ -644,8 +641,6 @@ public final class WebBeansUtil
     public ConversationBean getConversationBean()
     {
         ConversationBean conversationComp = new ConversationBean(webBeansContext);
-
-        WebBeansDecoratorConfig.configureDecorators(conversationComp);
 
         return conversationComp;
     }
@@ -2285,7 +2280,6 @@ public final class WebBeansUtil
         managedBeanCreator.defineProducerFields(managedBean);
         managedBeanCreator.defineObserverMethods(managedBean);
 
-        WebBeansDecoratorConfig.configureDecorators(managedBean);
         webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(managedBean);
 
         managedBeanCreator.validateDisposalMethods(managedBean);//Define disposal method after adding producers
@@ -2429,77 +2423,12 @@ public final class WebBeansUtil
         managedBeanCreator.defineProducerMethods(managedBean);
         managedBeanCreator.defineProducerFields(managedBean);
         managedBeanCreator.defineObserverMethods(managedBean);
-        WebBeansDecoratorConfig.configureDecorators(managedBean);
         webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(managedBean);
 
         managedBeanCreator.validateDisposalMethods(managedBean); //Define disposal method after adding producers
 
         return managedBean;
     }
-
-    @SuppressWarnings("unchecked")
-    public <T> ManagedBean<T> defineAbstractDecorator(AnnotatedType<T> type)
-    {
-
-        ManagedBean<T> bean = defineManagedBean(type);
-
-        //X TODO move proxy instance creation into JavassistProxyFactory!
-        Class clazz = webBeansContext.getProxyFactoryRemove().createAbstractDecoratorProxyClass(bean);
-
-        bean.setConstructor(defineConstructor(clazz));
-        return bean;
-    }
-
-    /**
-     * Define decorator bean.
-     * @param <T> type info
-     * @param annotatedType decorator class
-     */
-    public <T> ManagedBean<T> defineDecorator(AnnotatedType<T> annotatedType)
-    {
-        if (webBeansContext.getDecoratorsManager().isDecoratorEnabled(annotatedType.getJavaClass()))
-        {
-            ManagedBean<T> delegate = null;
-
-            Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
-            for(AnnotatedMethod<? super T> methodA : methods)
-            {
-                Method method = methodA.getJavaMember();
-                if(AnnotationUtil.hasMethodAnnotation(method, Produces.class))
-                {
-                    throw new WebBeansConfigurationException("Decorator class : " + annotatedType.getJavaClass() + " can not have producer methods but it has one with name : "
-                                                             + method.getName());
-                }
-
-                if(AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
-                {
-                    throw new WebBeansConfigurationException("Decorator class : " + annotatedType.getJavaClass() + " can not have observer methods but it has one with name : "
-                                                             + method.getName());
-                }
-
-            }
-
-            if(Modifier.isAbstract(annotatedType.getJavaClass().getModifiers()))
-            {
-                delegate = defineAbstractDecorator(annotatedType);
-            }
-            else
-            {
-                delegate = defineManagedBean(annotatedType);
-            }
-
-            if (delegate != null)
-            {
-                WebBeansDecoratorConfig.configureDecoratorClass(delegate);
-            }
-            return delegate;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
 
     /**
      * Checks the implementation class for checking conditions.

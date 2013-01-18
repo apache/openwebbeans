@@ -42,10 +42,8 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DelegateHandler;
-import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.proxy.ProxyFactory;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
@@ -135,7 +133,6 @@ import org.apache.webbeans.util.ClassUtil;
  * @version $Rev$ $Date$
  * 
  * @see WebBeansInterceptorConfig
- * @see WebBeansDecoratorConfig
  *
  * @deprecated the whole interceptor stack will be changed to the new ASM based proxying.
  */
@@ -235,10 +232,6 @@ public abstract class InterceptorHandlerPleaseRemove implements InvocationHandle
                 //Check method is business method
                 if (webBeansContext.getInterceptorUtil().isWebBeansBusinessMethod(method))
                 {
-                    if (!injectionTarget.getDecoratorStack().isEmpty())
-                    {
-                        resolveDecoratorDelegateHandler(instance, ownerCreationalContext, injectionTarget);
-                    }
 
                     // Run around invoke chain
                     List<InterceptorData> interceptorStack = injectionTarget.getInterceptorStack();
@@ -337,24 +330,6 @@ public abstract class InterceptorHandlerPleaseRemove implements InvocationHandle
         return result;
     }
 
-    private synchronized void resolveDecoratorDelegateHandler(Object instance, CreationalContextImpl<?> ownerCreationalContext,
-                                                              InjectionTargetBean<?> injectionTarget)
-            throws Exception
-    {
-        if (decoratorDelegateHandler == null)
-        {
-            final DelegateHandler newDelegateHandler = new DelegateHandler(bean);
-            final ProxyFactory proxyFactory = webBeansContext.getProxyFactoryRemove();
-
-            final Object delegate = proxyFactory.createDecoratorDelegate(bean, newDelegateHandler);
-
-            // Gets component decorator stack
-            List<Object> decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate, ownerCreationalContext);
-            //Sets decorator stack of delegate
-            newDelegateHandler.setDecorators(decorators);
-            decoratorDelegateHandler = newDelegateHandler;
-        }
-    }
 
     /**
      * Call around invoke method of the given bean on

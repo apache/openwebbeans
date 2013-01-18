@@ -46,19 +46,17 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.component.creation.DecoratorBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.decorator.DecoratorUtil;
-import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.portable.InjectionTargetImpl;
-import org.apache.webbeans.portable.ProducerFieldProducer;
-import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeIsnotInterface;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeMustImplementAllDecoratedTypes;
@@ -284,7 +282,6 @@ public abstract class TestContext implements ITestContext
         if (bean != null)
         {
             DecoratorUtil.checkManagedBeanDecoratorConditions(bean,null);
-            WebBeansDecoratorConfig.configureDecorators(bean);
             webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(bean);
 
             getComponents().add((AbstractOwbBean<?>) bean);
@@ -332,21 +329,18 @@ public abstract class TestContext implements ITestContext
     @SuppressWarnings("unchecked")
     protected <T> AbstractOwbBean<T> defineDecorator(Class<T> clazz)
     {
-        ManagedBean<T> component = null;
 
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         if (webBeansContext.getDecoratorsManager().isDecoratorEnabled(clazz))
         {
-            DecoratorUtil.checkDecoratorConditions(clazz);
-            component = define(clazz, WebBeansType.DECORATOR, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
+            AnnotatedType<T> annotatedType = webBeansContext.getBeanManagerImpl().createAnnotatedType(clazz);
+            DecoratorBeanBuilder<T> dbb = new DecoratorBeanBuilder<T>(webBeansContext, annotatedType);
+            dbb.defineDecoratorRules();
 
-            if (component != null)
-            {
-                WebBeansDecoratorConfig.configureDecoratorClass((ManagedBean<Object>) component);
-            }
+            return dbb.getBean();
         }
 
-        return component;
+        return null;
     }
 
     /**

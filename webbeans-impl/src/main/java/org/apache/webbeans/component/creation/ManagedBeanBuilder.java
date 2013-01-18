@@ -19,7 +19,6 @@
 package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
@@ -35,12 +34,8 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.decorator.DecoratorUtil;
-import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
-import org.apache.webbeans.exception.inject.DeploymentException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.portable.AbstractDecoratorInjectionTarget;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -147,60 +142,6 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
         bean.setConstructor(constructor.getJavaMember());
     }
 
-    /**
-     * Define decorator bean.
-     * @param annotatedType
-     */
-    public ManagedBean<T> defineDecorator(AnnotatedType<T> annotatedType)
-    {
-        Class<T> clazz = annotatedType.getJavaClass();
-        if (webBeansContext.getDecoratorsManager().isDecoratorEnabled(clazz))
-        {
-            ManagedBean<T> delegate = null;
-
-            DecoratorUtil.checkDecoratorConditions(clazz);
-
-            if(Modifier.isAbstract(clazz.getModifiers()))
-            {
-                delegate = defineAbstractDecorator(annotatedType);
-            }
-            else
-            {
-                delegate = defineManagedBean(annotatedType);
-            }
-
-            if (delegate != null)
-            {
-                WebBeansDecoratorConfig.configureDecoratorClass(delegate);
-            }
-            else
-            {
-                // TODO could probably be a bit more descriptive
-                throw new DeploymentException("Cannot create Decorator for class" + annotatedType);
-            }
-            return delegate;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    private ManagedBean<T> defineAbstractDecorator(AnnotatedType<T> annotatedType)
-    {
-
-        ManagedBean<T> bean = defineManagedBean(annotatedType);
-        if (bean == null)
-        {
-            // TODO could probably be a bit more descriptive
-            throw new DeploymentException("Cannot create ManagedBean for class" + annotatedType);
-        }
-
-        //X TODO move proxy instance creation into JavassistProxyFactory!
-
-        bean.setProducer(new AbstractDecoratorInjectionTarget<T>(bean));
-        return bean;
-    }
 
     @Override
     protected M createBean(Set<Type> types,
