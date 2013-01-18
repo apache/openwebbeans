@@ -108,6 +108,7 @@ import org.apache.webbeans.component.creation.ExtensionBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.component.creation.NewEjbBeanBuilder;
 import org.apache.webbeans.component.creation.NewManagedBeanBuilder;
+import org.apache.webbeans.component.creation.ProducerMethodProducerBuilder;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
@@ -1883,7 +1884,8 @@ public final class WebBeansUtil
 
     public GProcessProducer fireProcessProducerEventForMethod(ProducerMethodBean<?> producerMethod, AnnotatedMethod<?> method)
     {
-        GProcessProducer producerEvent = new GProcessProducer(new ProducerMethodProducer(producerMethod.getParent(), method, null, producerMethod.getInjectionPoints()),method);
+        ProducerMethodProducerBuilder builder = new ProducerMethodProducerBuilder(producerMethod);
+        GProcessProducer producerEvent = new GProcessProducer(builder.build(method), method);
 
         //Fires ProcessProducer for methods
         webBeansContext.getBeanManagerImpl().fireEvent(producerEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);

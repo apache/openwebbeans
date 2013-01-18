@@ -27,7 +27,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
@@ -35,6 +34,9 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.util.Asserts;
 
+/**
+ * A {@link javax.enterprise.inject.spi.Producer} for producer-method beans.
+ */
 public class ProducerMethodProducer<T, P> extends AbstractProducer<T> {
 
     private Bean<P> owner;
