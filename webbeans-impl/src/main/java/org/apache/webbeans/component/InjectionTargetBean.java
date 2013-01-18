@@ -18,10 +18,8 @@
  */
 package org.apache.webbeans.component;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -29,15 +27,11 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 
-import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorData;
 
 import javax.enterprise.inject.spi.InjectionTarget;
 
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.Asserts;
 
 
@@ -120,52 +114,5 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
     {
         return annotatedType;
     }
-    
-    /* (non-Javadoc)
-     * @see org.apache.webbeans.component.AbstractOwbBean#validatePassivationDependencies()
-     */
-    @Override
-    public void validatePassivationDependencies()
-    {        
-        super.validatePassivationDependencies();
 
-        
-        for(int i = 0, size = interceptorStack.size(); i < size; i++)
-        {
-            InterceptorData interceptorData = interceptorStack.get(i);
-            if(interceptorData.isDefinedWithWebBeansInterceptor())
-            {
-                WebBeansInterceptorBeanPleaseRemove<?> interceptor = (WebBeansInterceptorBeanPleaseRemove<?>)interceptorData.getWebBeansInterceptor();
-                if(!interceptor.isPassivationCapable())
-                {
-                    throw new WebBeansConfigurationException(MessageFormat.format(
-                            WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0016), toString()));
-                }
-                else
-                {
-                    interceptor.validatePassivationDependencies();
-                }
-            }
-            else
-            {
-                if(interceptorData.isDefinedInInterceptorClass())
-                {
-                    Class<?> interceptorClass = interceptorData.getInterceptorClass();
-                    if(!Serializable.class.isAssignableFrom(interceptorClass))
-                    {
-                        throw new WebBeansConfigurationException(MessageFormat.format(
-                                WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0016), toString()));
-                    }               
-                    else
-                    {
-                        if(!getWebBeansContext().getAnnotationManager().checkInjectionPointForInterceptorPassivation(interceptorClass))
-                        {
-                            throw new WebBeansConfigurationException(MessageFormat.format(
-                                    WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0017), toString(), interceptorClass));
-                        }
-                    }
-                }
-            }
-        }
-    }    
 }
