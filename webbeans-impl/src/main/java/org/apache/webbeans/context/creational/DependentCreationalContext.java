@@ -39,8 +39,6 @@ public class DependentCreationalContext<S> implements Serializable
 
     private Contextual<S> contextual;
     
-    private DependentType dependentType;
-    
     private Object instance;
     
     /**
@@ -60,37 +58,12 @@ public class DependentCreationalContext<S> implements Serializable
         this.instance = instance;
     }
 
-
-    public enum DependentType
-    {
-        DECORATOR,
-        INTERCEPTOR,
-        BEAN
-    }
     
     public DependentCreationalContext(Contextual<S> contextual)
     {
         this.contextual = contextual;
     }
     
-    
-    /**
-     * @return the dependentType
-     */
-    public DependentType getDependentType()
-    {
-        return dependentType;
-    }
-
-
-
-    /**
-     * @param dependentType the dependentType to set
-     */
-    public void setDependentType(DependentType dependentType)
-    {
-        this.dependentType = dependentType;
-    }
 
     /**
      * @return the contextual
@@ -103,7 +76,6 @@ public class DependentCreationalContext<S> implements Serializable
     private void writeObject(ObjectOutputStream s)
     throws IOException
     {
-        s.writeObject(dependentType);
         s.writeObject(instance);
 
         //Write for contextual
@@ -131,7 +103,6 @@ public class DependentCreationalContext<S> implements Serializable
     private void readObject(ObjectInputStream s)
     throws IOException, ClassNotFoundException
     {
-        dependentType = (DependentType) s.readObject();
         instance = s.readObject();
 
         //Read for contextual

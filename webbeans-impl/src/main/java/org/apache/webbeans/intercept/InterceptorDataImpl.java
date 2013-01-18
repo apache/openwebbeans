@@ -20,23 +20,16 @@ package org.apache.webbeans.intercept;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
 
-import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.context.creational.EjbInterceptorContext;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
-import org.apache.webbeans.inject.OWBInjector;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptorBeanPleaseRemove;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 
@@ -411,62 +404,8 @@ public class InterceptorDataImpl implements InterceptorData
     @SuppressWarnings("unchecked")
     public Object createNewInstance(Object ownerInstance, CreationalContextImpl<?> ownerCreationalContext)
     {
-        // check for this InterceptorData is defined by interceptor class
-        if (isDefinedWithWebBeansInterceptor && definedInInterceptorClass)
-        {
-            Object interceptor;
-
-            // Means that it is the last interceptor added by InterceptorHandler
-            if (webBeansInterceptor == null)
-            {
-                return decoratorInterceptor;
-            }
-
-            interceptor = ownerCreationalContext.getDependentInterceptor(ownerInstance, webBeansInterceptor);
-            // There is no define interceptor, define and add it into dependent
-            if (interceptor == null)
-            {
-                BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-
-                WebBeansInterceptorBeanPleaseRemove<Object> actualInterceptor = (WebBeansInterceptorBeanPleaseRemove<Object>) webBeansInterceptor;
-                CreationalContext<?> creationalContext = manager.createCreationalContext(webBeansInterceptor);
-                interceptor = manager.getReference(webBeansInterceptor, actualInterceptor.getBeanClass(), creationalContext);
-
-                ownerCreationalContext.addDependent(ownerInstance, (WebBeansInterceptorBeanPleaseRemove<Object>) webBeansInterceptor, interceptor);
-            }
-            return interceptor;
-        }
-
-        EjbInterceptorContext ejbInterceptorContext ;
-        Object interceptor = null;
-        // control for this InterceptorData is defined by interceptor class
-        if (definedInInterceptorClass)
-        {
-            ejbInterceptorContext = ownerCreationalContext.getEjbInterceptor(ownerInstance, interceptorClass);
-            if (ejbInterceptorContext == null)
-            {
-                interceptor = webBeansContext.getWebBeansUtil().newInstanceForced(interceptorClass);
-                try
-                {
-                    OWBInjector.inject(webBeansContext.getBeanManagerImpl(), interceptor, ownerCreationalContext);
-
-                    ejbInterceptorContext = new EjbInterceptorContext();
-                    ejbInterceptorContext.setInterceptorInstance(interceptor);
-                    ejbInterceptorContext.setInterceptorClass(interceptorClass);
-                }
-                catch (Exception e)
-                {
-                    logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0022, interceptorClass), e);
-                }
-
-                ownerCreationalContext.addEjbInterceptor(ownerInstance, ejbInterceptorContext);
-            }
-            else
-            {
-                interceptor = ejbInterceptorContext.getInterceptorInstance();
-            }
-        }
-        return interceptor;
+        // this got pruned completely...
+        return null;
     }
 
     @Override

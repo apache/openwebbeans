@@ -23,26 +23,19 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.context.creational.DependentCreationalContext;
-import org.apache.webbeans.context.creational.DependentCreationalContext.DependentType;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.inject.AbstractInjectable;
 import org.apache.webbeans.inject.InjectableMethod;
-import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
