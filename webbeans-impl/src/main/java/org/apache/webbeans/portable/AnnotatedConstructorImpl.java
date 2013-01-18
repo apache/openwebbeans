@@ -32,14 +32,14 @@ import javax.enterprise.inject.spi.AnnotatedType;
  *
  * @param <X> class info
  */
-class AnnotatedConstructorImpl<X> extends AbstractAnnotatedCallable<X> implements AnnotatedConstructor<X>
+public class AnnotatedConstructorImpl<X> extends AbstractAnnotatedCallable<X> implements AnnotatedConstructor<X>
 {
     /**
      * Create a ew instance.
      * 
      * @param javaMember constructor
      */
-    AnnotatedConstructorImpl(WebBeansContext webBeansContext, Constructor<X> javaMember, AnnotatedType<X> declaringType)
+    public AnnotatedConstructorImpl(WebBeansContext webBeansContext, Constructor<X> javaMember, AnnotatedType<X> declaringType)
     {        
         super(webBeansContext, javaMember.getDeclaringClass(), javaMember, declaringType);
         setAnnotations(javaMember.getDeclaredAnnotations());

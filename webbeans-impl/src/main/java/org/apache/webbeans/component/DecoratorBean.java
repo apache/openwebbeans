@@ -18,14 +18,19 @@
  */
 package org.apache.webbeans.component;
 
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 
 /**
  * Decorator Bean implementation.

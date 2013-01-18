@@ -51,7 +51,6 @@ import javax.interceptor.InvocationContext;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.inject.InjectableField;
@@ -71,9 +70,10 @@ import org.apache.webbeans.util.ExceptionUtil;
 public class InjectionTargetImpl<T> extends AbstractProducer<T> implements InjectionTarget<T>
 {
 
-    private AnnotatedType<T> type;
-    private AnnotatedConstructor<T> constructor;
     protected final WebBeansContext webBeansContext;
+
+    protected final AnnotatedType<T> annotatedType;
+    protected AnnotatedConstructor<T> constructor;
 
     /**
      * If the InjectionTarget has a &#064;PostConstruct method, <code>null</code> if not.
@@ -131,7 +131,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         super(points);
         Asserts.assertNotNull(annotatedType);
         Asserts.assertNotNull(webBeansContext);
-        type = annotatedType;
+        this.annotatedType = annotatedType;
         this.webBeansContext = webBeansContext;
         this.postConstructMethods = postConstructMethods;
         this.preDestroyMethods = preDestroyMethods;
@@ -281,7 +281,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
      */
     private void injectInitializerMethods(Class<?> declaringType, T instance, CreationalContextImpl<T> context)
     {
-        for (AnnotatedMethod<? super T> method : type.getMethods())
+        for (AnnotatedMethod<? super T> method : annotatedType.getMethods())
         {
             if (method.getDeclaringType().getJavaClass().equals(declaringType) && method.isAnnotationPresent(Inject.class) && method.getParameters().isEmpty())
             {
@@ -385,7 +385,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         }
     }
 
-    private AnnotatedConstructor<T> getConstructor()
+    protected AnnotatedConstructor<T> getConstructor()
     {
         if (constructor != null)
         {
@@ -413,14 +413,14 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         }
         else
         {
-            this.constructor = new AnnotatedConstructorImpl<T>(webBeansContext, getDefaultConstructor(), type);
+            this.constructor = new AnnotatedConstructorImpl<T>(webBeansContext, getDefaultConstructor(), annotatedType);
         }
         return this.constructor;
     }
 
     private Constructor<T> getDefaultConstructor()
     {
-        return webBeansContext.getWebBeansUtil().getNoArgConstructor(type.getJavaClass());
+        return webBeansContext.getWebBeansUtil().getNoArgConstructor(annotatedType.getJavaClass());
     }
     
     private boolean isProducerMethod(InjectionPoint injectionPoint)
