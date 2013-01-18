@@ -79,10 +79,10 @@ public final class ContextFactory
     {
         if (webBeansContext.getBeanManagerImpl().isPassivatingScope(context.getScope()))
         {
-            return new CustomPassivatingContextImpl(context);
+            return new CustomPassivatingContextImpl(webBeansContext.getSerializableBeanVault(), context);
         }
 
-        return new CustomContextImpl(context);
+        return context;
     }
 
     public void destroyRequestContext(Object request)

@@ -18,42 +18,47 @@
  */
 package org.apache.webbeans.context;
 
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.SerializableBeanVault;
 
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import java.lang.annotation.Annotation;
 
 /**
  *
  */
-public class CustomPassivatingContextImpl extends CustomContextImpl
+public class CustomPassivatingContextImpl implements Context
 {
-    private SerializableBeanVault sbv = null;
+    private final SerializableBeanVault sbv;
+    private final Context context;
 
-    CustomPassivatingContextImpl(Context context)
+
+    CustomPassivatingContextImpl(SerializableBeanVault sbv, Context context)
     {
-        super(context);
+        this.sbv = sbv;
+        this.context = context;
     }
 
     public <T> T get(Contextual<T> contextual, CreationalContext<T> creationalContext)
     {
-        return super.get(getSerializableBeanVault().getSerializableBean(contextual), creationalContext);
+        return context.get(sbv.getSerializableBean(contextual), creationalContext);
     }
 
     public <T> T get(Contextual<T> contextual)
     {
-        return super.get(getSerializableBeanVault().getSerializableBean(contextual));
+        return context.get(sbv.getSerializableBean(contextual));
     }
 
-    private SerializableBeanVault getSerializableBeanVault()
+    @Override
+    public Class<? extends Annotation> getScope()
     {
-        if (sbv == null)
-        {
-            sbv = WebBeansContext.getInstance().getSerializableBeanVault();
-        }
+        return context.getScope();
+    }
 
-        return sbv;
+    @Override
+    public boolean isActive()
+    {
+        return context.isActive();
     }
 }

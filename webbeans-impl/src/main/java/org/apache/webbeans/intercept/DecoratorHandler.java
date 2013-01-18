@@ -31,6 +31,10 @@ import org.apache.webbeans.intercept.InterceptorResolutionService.BusinessMethod
 import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.util.ExceptionUtil;
 
+/**
+ * InterceptorHandler which handles all the Decorators on the InjectionTarget.
+ * This one always gets added at the last position in the interceptor chain.
+ */
 public class DecoratorHandler implements InterceptorHandler {
 
     private BeanInterceptorInfo interceptorInfo;

@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.spi.Contextual;
 
-import org.apache.webbeans.context.creational.BeanInstanceBagRemove;
+import org.apache.webbeans.context.creational.BeanInstanceBag;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -53,14 +53,14 @@ public class ConversationContext extends AbstractContext implements Externalizab
     @Override
     public void setComponentInstanceMap()
     {
-        componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBagRemove<?>>();
+        componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
     }
 
     public void readExternal(ObjectInput in) throws IOException,
             ClassNotFoundException 
     {
         scopeType = (Class<? extends Annotation>) in.readObject();
-        Map<String, BeanInstanceBagRemove<?>> map = (Map<String, BeanInstanceBagRemove<?>>)in.readObject();
+        Map<String, BeanInstanceBag<?>> map = (Map<String, BeanInstanceBag<?>>)in.readObject();
         setComponentInstanceMap();
         Iterator<String> it = map.keySet().iterator();
         Contextual<?> contextual = null;
@@ -82,7 +82,7 @@ public class ConversationContext extends AbstractContext implements Externalizab
     {
             out.writeObject(scopeType);
             Iterator<Contextual<?>> it = componentInstanceMap.keySet().iterator();
-            Map<String, BeanInstanceBagRemove<?>> map = new HashMap<String, BeanInstanceBagRemove<?>>();
+            Map<String, BeanInstanceBag<?>> map = new HashMap<String, BeanInstanceBag<?>>();
             while(it.hasNext()) 
             {
                 Contextual<?>contextual = it.next();

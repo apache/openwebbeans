@@ -25,9 +25,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * @deprecated we don't need the ContextualBag anymore once we have the new Interceptor handling
+ * Stores the CreationalContext and the Contextual Instance.
+ * This also makes sure that we don't create the same bean
+ * twice.
  */
-public class BeanInstanceBagRemove<T> implements Serializable
+public class BeanInstanceBag<T> implements Serializable
 {
     private static final long serialVersionUID = 1656996021599122499L;
     private final CreationalContext<T> beanCreationalContext;
@@ -36,7 +38,7 @@ public class BeanInstanceBagRemove<T> implements Serializable
     
     private final Lock lock = new ReentrantLock();
     
-    public BeanInstanceBagRemove(CreationalContext<T> beanCreationalContext)
+    public BeanInstanceBag(CreationalContext<T> beanCreationalContext)
     {
         this.beanCreationalContext = beanCreationalContext;
     }
