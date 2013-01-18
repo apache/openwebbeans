@@ -265,44 +265,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         return null;
     }
 
-    /**
-     * Gets bean decorator instance.
-     * @param decorator decorator bean
-     * @return bean decorator instance
-     */
-    public Object getDependentDecorator(Object ownerInstance, Contextual<?> decorator)
-    {
-        Asserts.assertNotNull(decorator, "Decorator parameter can not be null");
-
-        if (ownerInstance == null || dependentObjects == null)
-        {
-            return null;
-        }
-
-        synchronized(this)
-        {
-            if (dependentObjects != null)
-            {
-                List<DependentCreationalContext<?>> values = dependentObjects.get(ownerInstance);
-                if (values != null && values.size() > 0)
-                {
-                    Iterator<DependentCreationalContext<?>> it = values.iterator();
-                    while (it.hasNext())
-                    {
-                        DependentCreationalContext<?> dc = it.next();
-
-                        if (dc.getDependentType().equals(DependentType.DECORATOR) &&
-                                dc.getContextual().equals(decorator))
-                        {
-                            return dc.getInstance();
-                        }
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
 
     @SuppressWarnings("unchecked")
     public void removeAllDependents()

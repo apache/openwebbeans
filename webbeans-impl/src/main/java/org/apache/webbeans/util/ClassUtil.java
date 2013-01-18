@@ -19,13 +19,11 @@
 package org.apache.webbeans.util;
 
 import org.apache.webbeans.config.BeanTypeSetResolver;
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Provider;
-import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -1143,24 +1141,6 @@ public final class ClassUtil
         return true;
     }
 
-    public static Field[] getFieldsWithType(WebBeansContext webBeansContext, Class<?> clazz, Type type)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(type, "type parameter can not be null");
-
-        List<Field> fieldsWithType = new ArrayList<Field>();
-        Field[] fields = webBeansContext.getSecurityService().doPrivilegedGetDeclaredFields(clazz);
-        for (Field field : fields)
-        {
-            if(field.getType().equals(type))
-            {
-                fieldsWithType.add(field);
-            }
-        }
-
-        return fieldsWithType.toArray(new Field[fieldsWithType.size()]);
-
-    }
 
     /**
      * Returns injection point raw type.

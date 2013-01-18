@@ -51,7 +51,6 @@ import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.DependentContext;
-import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -281,7 +280,6 @@ public abstract class TestContext implements ITestContext
         bean = define(clazz, WebBeansType.MANAGED, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
         if (bean != null)
         {
-            DecoratorUtil.checkManagedBeanDecoratorConditions(bean,null);
             webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(bean);
 
             getComponents().add((AbstractOwbBean<?>) bean);
