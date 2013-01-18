@@ -55,7 +55,15 @@ public class InjectableField<T> extends AbstractInjectable<T>
                 getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(field, true);
             }
 
-            Object object = inject(injectedField);
+            Object object;
+            if (injectedField.isDelegate())
+            {
+                object = creationalContext.getDelegate();
+            }
+            else
+            {
+                object = inject(injectedField);
+            }
             
             field.set(instance, object);
 

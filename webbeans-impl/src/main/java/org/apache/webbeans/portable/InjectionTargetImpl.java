@@ -40,6 +40,7 @@ import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
@@ -50,12 +51,15 @@ import javax.interceptor.InvocationContext;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethod;
+import org.apache.webbeans.intercept.DecoratorHandler;
 import org.apache.webbeans.intercept.DefaultInterceptorHandler;
 import org.apache.webbeans.intercept.LifecycleInterceptorInvocationContext;
+import org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.InterceptorHandler;
@@ -63,9 +67,6 @@ import org.apache.webbeans.proxy.OwbInterceptorProxy;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ExceptionUtil;
-
-
-import static org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
 
 public class InjectionTargetImpl<T> extends AbstractProducer<T> implements InjectionTarget<T>
 {
@@ -190,7 +191,22 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                 interceptorInstances.put(interceptorInfo.getSelfInterceptorBean(), instance);
             }
 
-            InterceptorHandler interceptorHandler = new DefaultInterceptorHandler<T>(instance, methodInterceptors, interceptorInstances);
+            T delegate = instance;
+            if (interceptorInfo.getDecorators() != null)
+            {
+                List<Decorator<?>> decorators = interceptorInfo.getDecorators();
+                Map<Decorator<?>, Object> instances = new HashMap<Decorator<?>, Object>();
+                for (int i = decorators.size(); i > 0; i--)
+                {
+                    Decorator<?> decorator = decorators.get(i - 1);
+                    CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>)creationalContext;
+                    creationalContextImpl.putDelegate(delegate);
+                    Object decoratorInstance = decorator.create((CreationalContext) creationalContext);
+                    instances.put(decorator, decoratorInstance);
+                    delegate = pf.createProxyInstance(proxyClass, instance, new DecoratorHandler(interceptorInfo, instances, i - 1, instance));
+                }
+            }
+            InterceptorHandler interceptorHandler = new DefaultInterceptorHandler<T>(instance, delegate, methodInterceptors, interceptorInstances);
 
             T proxyInstance = pf.createProxyInstance(proxyClass, instance, interceptorHandler);
             instance = proxyInstance;

@@ -50,6 +50,11 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     private static final long serialVersionUID = 1L;
 
     /**
+     * The delegate object to be injected into delegate injection points
+     */
+    private transient T delegate;
+
+    /**
      * Contextual bean dependent instances
      * key: contextual instance --> value: dependents
      *
@@ -149,7 +154,21 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         return null;
     }
     
-    
+    public T getDelegate()
+    {
+        return this.delegate;
+    }
+
+    /**
+     * @return the previously set delegate instance
+     */
+    public T putDelegate(T delegate)
+    {
+        T oldValue = this.delegate;
+        this.delegate = delegate;
+        return oldValue;
+    }
+
     /**
      * Save this incomplete instance.
      * 

@@ -72,6 +72,11 @@ public class InjectableConstructor<T> extends AbstractInjectable<T>
                 AnnotatedParameter<?> parameter = (AnnotatedParameter<?>)point.getAnnotated();
                 if(parameter.getPosition() == i)
                 {
+                    if (point.isDelegate())
+                    {
+                        list.add(creationalContext.getDelegate());
+                        break;
+                    }
                     list.add(inject(point));
                     break;
                 }

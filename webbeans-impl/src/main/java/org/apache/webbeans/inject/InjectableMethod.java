@@ -83,8 +83,14 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
             for(InjectionPoint point : injectedPoints)
             {                
                 AnnotatedParameter<?> parameter = (AnnotatedParameter<?>)point.getAnnotated();
-                if(parameter.getPosition() == i)
+                if (parameter.getPosition() == i)
                 {
+                    if (point.isDelegate())
+                    {
+                        list.add(creationalContext.getDelegate());
+                        break;
+                    }
+
                     boolean injectionPoint = false;
                     if(getBean() instanceof ProducerMethodBean)
                     {

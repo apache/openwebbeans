@@ -39,9 +39,9 @@ public class DecoratorHandler implements InterceptorHandler {
     private int index;
     private Object target;
 
-    public DecoratorHandler(BeanInterceptorInfo interceptorInfo, List<Decorator<?>> decorators, Map<Decorator<?>, ?> instances, int index, Object target) {
+    public DecoratorHandler(BeanInterceptorInfo interceptorInfo, Map<Decorator<?>, ?> instances, int index, Object target) {
         this.interceptorInfo = interceptorInfo;
-        this.decorators = decorators;
+        this.decorators = interceptorInfo.getDecorators();
         this.instances = instances;
         this.index = index;
         this.target = target;

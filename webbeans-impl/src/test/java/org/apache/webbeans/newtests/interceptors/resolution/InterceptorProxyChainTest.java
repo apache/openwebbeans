@@ -140,7 +140,7 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
             interceptorInstances.put(interceptorBean, interceptorInstance);
         }
         InterceptorHandler interceptorHandler
-                = new DefaultInterceptorHandler<ClassMultiInterceptedClass>(internalInstance, methodInterceptors, interceptorInstances);
+                = new DefaultInterceptorHandler<ClassMultiInterceptedClass>(internalInstance, internalInstance, methodInterceptors, interceptorInstances);
 
         ClassMultiInterceptedClass proxyInstance = pf.createProxyInstance(proxyClass, internalInstance, interceptorHandler);
         Assert.assertNotNull(proxyInstance);

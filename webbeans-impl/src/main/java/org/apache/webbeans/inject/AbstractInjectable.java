@@ -64,7 +64,7 @@ public abstract class AbstractInjectable<T>
 
     private Producer<?> owner;
     
-    private CreationalContextImpl<?> context;
+    protected final CreationalContextImpl<?> creationalContext;
 
     /**
      * @deprecated TODO remove this public ThreadLocal!
@@ -74,7 +74,7 @@ public abstract class AbstractInjectable<T>
     protected AbstractInjectable(Producer<?> owner, CreationalContextImpl<?> creationalContext)
     {
         this.owner = owner;
-        this.context = creationalContext;
+        this.creationalContext = creationalContext;
     }
 
     /**
@@ -85,7 +85,7 @@ public abstract class AbstractInjectable<T>
     public T inject(InjectionPoint injectionPoint)
     {
         T injected;
-        BeanManagerImpl beanManager = context.getWebBeansContext().getBeanManagerImpl();
+        BeanManagerImpl beanManager = creationalContext.getWebBeansContext().getBeanManagerImpl();
 
         //Injected contextual beam
         InjectionResolver instance = beanManager.getInjectionResolver();
@@ -117,7 +117,7 @@ public abstract class AbstractInjectable<T>
                 {
                     if(injectedBean instanceof AbstractProducerBean)
                     {
-                        if((context.getBean() instanceof OwbBean) && ((OwbBean<?>) context.getBean()).isPassivationCapable())
+                        if((creationalContext.getBean() instanceof OwbBean) && ((OwbBean<?>) creationalContext.getBean()).isPassivationCapable())
                         {
                             dependentProducer = true;   
                         }
@@ -126,7 +126,7 @@ public abstract class AbstractInjectable<T>
             }        
 
             //Gets injectable reference for injected bean
-            injected = (T) beanManager.getInjectableReference(injectionPoint, context);
+            injected = (T) beanManager.getInjectableReference(injectionPoint, creationalContext);
 
             /*X TODO see spec issue CDI-140 */
             if(dependentProducer)
@@ -143,7 +143,7 @@ public abstract class AbstractInjectable<T>
             {
                 if(instanceUnderInjection.get() != null)
                 {
-                    context.addDependent(instanceUnderInjection.get(), injectedBean, injected);
+                    creationalContext.addDependent(instanceUnderInjection.get(), injectedBean, injected);
                 }
             }
         } 
@@ -161,12 +161,12 @@ public abstract class AbstractInjectable<T>
     
     protected Contextual<?> getBean()
     {
-        return context.getBean();
+        return creationalContext.getBean();
     }
 
     protected WebBeansContext getWebBeansContext()
     {
-        return context.getWebBeansContext();
+        return creationalContext.getWebBeansContext();
     }
         
     /**

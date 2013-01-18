@@ -75,7 +75,7 @@ public class NewProxyTest extends AbstractUnitTest
         Map instances = new HashMap();
         instances.put(interceptorBean, interceptor);
         InterceptorHandler interceptorHandler
-                = new DefaultInterceptorHandler<RuntimeExceptionBindingTypeBean>(target, interceptors, instances);
+                = new DefaultInterceptorHandler<RuntimeExceptionBindingTypeBean>(target, target, interceptors, instances);
         
         InterceptorDecoratorProxyFactory factory = new InterceptorDecoratorProxyFactory(getWebBeansContext());
         Class<RuntimeExceptionBindingTypeBean> proxyClass
