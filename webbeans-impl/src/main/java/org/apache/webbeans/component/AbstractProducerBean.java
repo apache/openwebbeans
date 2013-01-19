@@ -27,7 +27,6 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Abstract class for producer components.
@@ -102,57 +101,6 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
         destroy.destroy(inst, cc);
     }
 
-    /**
-     * Returns producer bean's owner bean instance.
-     * 
-     * @return owner bean instance
-     */
-    @SuppressWarnings("unchecked")
-    protected Object getParentInstance(CreationalContext<?> creationalContext)
-    {
-        // return getManager().getInstance(this.ownerComponent);
-
-        Object parentInstance;
-
-        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(),
-                (AbstractOwbBean<T>) ownerComponent);
-
-        if (specialize != null)
-        {
-            parentInstance = getManager().getReference(specialize, null, creationalContext);
-        }
-        else
-        {
-            parentInstance = getManager().getReference(ownerComponent, null, creationalContext);
-        }
-
-        return parentInstance;
-
-    }
-    
-    @SuppressWarnings("unchecked")
-    protected Object getParentInstanceFromContext(CreationalContext<?> creationalContext)
-    {
-        Object parentInstance;
-
-        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(),
-                (AbstractOwbBean<T>) ownerComponent);
-
-        if (specialize != null)
-        {
-            parentInstance = getManager().getContext(specialize.getScope()).
-                    get((Bean<Object>)specialize,(CreationalContext<Object>) creationalContext);
-        }
-        else
-        {
-            parentInstance = getManager().getContext(
-                    ownerComponent.getScope()).get((Bean<Object>)ownerComponent,
-                                                   (CreationalContext<Object>) creationalContext);
-        }
-
-        return parentInstance;
-
-    }
 
     protected boolean isPassivationCapable(Class<?> returnType, Integer modifiers)
     {

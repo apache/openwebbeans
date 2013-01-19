@@ -143,36 +143,7 @@ public final class AnnotationUtil
     }
 
 
-    /**
-     * Check given annotation exist in the any parameter of the given method.
-     * Return true if exist false otherwise.
-     * 
-     * @param method method
-     * @param clazz checking annotation
-     * @return true or false
-     */
-    public static boolean hasMethodParameterAnnotation(Method method, Class<? extends Annotation> clazz)
-    {
-        Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.nullCheckForClass(clazz);
 
-        Annotation[][] parameterAnns = method.getParameterAnnotations();
-
-        for (Annotation[] parameters : parameterAnns)
-        {
-            for (Annotation param : parameters)
-            {
-                Class<? extends Annotation> btype = param.annotationType();
-                if (btype.equals(clazz))
-                {
-                    return true;
-                }
-            }
-
-        }
-        return false;
-    }
-    
     public static <X> boolean hasAnnotatedMethodParameterAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");

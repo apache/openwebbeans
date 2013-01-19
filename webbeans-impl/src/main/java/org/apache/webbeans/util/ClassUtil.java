@@ -321,23 +321,6 @@ public final class ClassUtil
         return getObjectMethodNames().contains(methodName);
     }
 
-    public static boolean isMoreThanOneMethodWithName(String methodName, Class<?> clazz)
-    {
-        Asserts.assertNotNull(methodName, "methodName parameter can not be null");
-        Asserts.nullCheckForClass(clazz);
-
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
-        int methodCount = 0;
-        for (Method m : methods)
-        {
-            if (m.getName().equals(methodName))
-            {
-                methodCount++;
-            }
-        }
-
-        return methodCount > 1;
-    }
 
     /**
      * Returns true if type is an instance of <code>ParameterizedType</code>

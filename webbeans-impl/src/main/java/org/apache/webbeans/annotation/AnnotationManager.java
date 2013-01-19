@@ -44,7 +44,6 @@ import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -847,27 +846,4 @@ public final class AnnotationManager
         }
     }
 
-    /**
-     * Returns trur for serializable types.
-     * @param clazz class info
-     * @return true if class is serializable
-     */
-    public boolean checkInjectionPointForInterceptorPassivation(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Field[] fields = webBeansContext.getSecurityService().doPrivilegedGetDeclaredFields(clazz);
-        for(Field field : fields)
-        {
-            if(field.getAnnotation(Inject.class) != null)
-            {
-                Class<?> type = field.getType();
-                if(!Serializable.class.isAssignableFrom(type))
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
 }

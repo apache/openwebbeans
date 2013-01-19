@@ -59,19 +59,9 @@ public abstract class AbstractContext implements Context, Serializable
     /**Contextual Scope Type*/
     protected Class<? extends Annotation> scopeType;
     
-    /**
-     * Creates a new context instance
-     */
-    protected AbstractContext()
-    {
 
-    }
-    
 
-    public <T> void initContextualBag(Contextual<T> contextual, CreationalContext<T> creationalContext)
-    {
-        createContextualBag(contextual, creationalContext);
-    }
+
 
     @SuppressWarnings("unchecked")
     private <T> void createContextualBag(Contextual<T> contextual, CreationalContext<T> creationalContext)
@@ -170,21 +160,6 @@ public abstract class AbstractContext implements Context, Serializable
         }
 
         return  instance;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    public <T> CreationalContext<T> getCreationalContext(Contextual<T> contextual)
-    {
-        BeanInstanceBag<?> bag = componentInstanceMap.get(contextual);
-        if (bag != null)
-        {
-            return (CreationalContext<T>) bag.getBeanCreationalContext();
-        }
-        
-        return null;
     }
 
     /**

@@ -185,23 +185,5 @@ public final class ContextFactory
         return contextService.getCurrentContext(scopeType);
     }
 
-    /**
-     * Activate context.
-     */
-    public void activateContext(Class<? extends Annotation> scopeType)
-    {
-        ContextsService contextService = getContextsService();
-        contextService.activateContext(scopeType);
-    }
-
-    /**
-     * Deactivate context.
-     */
-    public void deActivateContext(Class<? extends Annotation> scopeType)
-    {
-        ContextsService contextService = getContextsService();
-        contextService.deActivateContext(scopeType);
-    }
-
 
 }
