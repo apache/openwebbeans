@@ -295,6 +295,7 @@ public class ExceptionComponentTest extends AbstractUnitTest
     {
         try
         {
+
             startContainer(AroundInvokeWithoutParameterComponent.class);
         }
         catch (WebBeansConfigurationException e)

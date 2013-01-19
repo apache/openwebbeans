@@ -193,4 +193,26 @@ public abstract class AbstractUnitTest
     public void addExtension(Extension ext) {
         this.extensions.add(ext);
     }
+
+    /**
+     * Add the given interceptor class to get picked up
+     * by startContainer.
+     * This has the same effect as adding it to the
+     * &lt;interceptors&gt; section in beans.xml.
+     */
+    public void addInterceptor(Class interceptorClass)
+    {
+        interceptors.add(interceptorClass);
+    }
+
+    /**
+     * Add the given interceptor class to get picked up
+     * by startContainer.
+     * This has the same effect as adding it to the
+     * &lt;interceptors&gt; section in beans.xml.
+     */
+    public void addDecorator(Class decoratorClass)
+    {
+        decorators.add(decoratorClass);
+    }
 }

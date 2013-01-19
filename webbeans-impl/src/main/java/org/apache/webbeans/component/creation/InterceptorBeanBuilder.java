@@ -30,9 +30,11 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
+import javax.interceptor.InvocationContext;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +47,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
+import org.apache.webbeans.util.ClassUtil;
 
 
 /**
@@ -191,6 +194,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
                         {
                             throw new WebBeansConfigurationException("only one AroundInvoke allowed per Interceptor");
                         }
+                        checkAroundInvokeConditions(m);
                         aroundInvokeMethod = m;
                     }
 
@@ -286,6 +290,42 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
         }
 
         return interceptorFound;
+    }
+
+    private void checkAroundInvokeConditions(AnnotatedMethod method)
+    {
+        AnnotatedType annotatedType = method.getDeclaringType();
+
+        List<AnnotatedParameter<T>> parameters = method.getParameters();
+        List<Class<?>> clazzParameters = new ArrayList<Class<?>>();
+        for(AnnotatedParameter<T> parameter : parameters)
+        {
+            clazzParameters.add(ClassUtil.getClazz(parameter.getBaseType()));
+        }
+
+        Class<?>[] params = clazzParameters.toArray(new Class<?>[clazzParameters.size()]);
+
+        if (params.length != 1 || !params[0].equals(InvocationContext.class))
+        {
+            throw new WebBeansConfigurationException("@AroundInvoke annotated method : "
+                    + method.getJavaMember().getName() + " in class : " + annotatedType.getJavaClass().getName()
+                    + " can not take any formal arguments other than InvocationContext");
+        }
+
+        if (!method.getJavaMember().getReturnType().equals(Object.class))
+        {
+            throw new WebBeansConfigurationException("@AroundInvoke annotated method : "
+                    + method.getJavaMember().getName()+ " in class : " + annotatedType.getJavaClass().getName()
+                    + " must return Object type");
+        }
+
+        if (Modifier.isStatic(method.getJavaMember().getModifiers()) ||
+                Modifier.isFinal(method.getJavaMember().getModifiers()))
+        {
+            throw new WebBeansConfigurationException("@AroundInvoke annotated method : "
+                    + method.getJavaMember().getName( )+ " in class : " + annotatedType.getJavaClass().getName()
+                    + " can not be static or final");
+        }
     }
 
     /**
