@@ -22,13 +22,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
-import javax.interceptor.Interceptors;
-
-import org.apache.webbeans.ejb.common.interceptor.OpenWebBeansEjbInterceptor;
 
 @Stateless
 @Dependent
-@Interceptors(value=OpenWebBeansEjbInterceptor.class)
 public class EchoBean implements Echo
 {
     @LogInterceptorBinding

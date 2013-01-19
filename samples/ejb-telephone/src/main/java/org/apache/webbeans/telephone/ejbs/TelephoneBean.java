@@ -24,17 +24,14 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.context.Dependent;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.webbeans.ejb.common.interceptor.OpenWebBeansEjbInterceptor;
 import org.apache.webbeans.telephone.entity.Record;
 
 @Stateless
 @Dependent
-@Interceptors(value=OpenWebBeansEjbInterceptor.class)
 public class TelephoneBean implements Telephone
 {
     private @PersistenceContext(name="pu") EntityManager entityManager; 
