@@ -44,6 +44,7 @@ import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
+import org.apache.webbeans.proxy.SubclassProxyFactory;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
 import org.apache.webbeans.service.DefaultLoaderService;
@@ -81,6 +82,7 @@ public class WebBeansContext
     private final WebBeansInterceptorConfig webBeansInterceptorConfig = new WebBeansInterceptorConfig(this);
     private final InterceptorDecoratorProxyFactory interceptorDecoratorProxyFactory = new InterceptorDecoratorProxyFactory(this);
     private final NormalScopeProxyFactory normalScopeProxyFactory = new NormalScopeProxyFactory(this);
+    private final SubclassProxyFactory subclassProxyFactory = new SubclassProxyFactory(this);
     private final OpenWebBeansConfiguration openWebBeansConfiguration;
     private final PluginLoader pluginLoader = new PluginLoader();
     private final SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
@@ -151,6 +153,7 @@ public class WebBeansContext
         managerMap.put(InterceptorsManager.class, interceptorsManager);
         managerMap.put(InterceptorDecoratorProxyFactory.class, interceptorDecoratorProxyFactory);
         managerMap.put(NormalScopeProxyFactory.class, normalScopeProxyFactory);
+        managerMap.put(SubclassProxyFactory.class, subclassProxyFactory);
         managerMap.put(OpenWebBeansConfiguration.class, openWebBeansConfiguration);
         managerMap.put(PluginLoader.class, pluginLoader);
         managerMap.put(SerializableBeanVault.class, serializableBeanVault);
@@ -332,6 +335,11 @@ public class WebBeansContext
     public NormalScopeProxyFactory getNormalScopeProxyFactory()
     {
         return normalScopeProxyFactory;
+    }
+
+    public SubclassProxyFactory getSubclassProxyFactory()
+    {
+        return subclassProxyFactory;
     }
 
     public ScannerService getScannerService()

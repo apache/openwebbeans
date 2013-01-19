@@ -133,7 +133,6 @@ public final class WebBeansInterceptorConfig
                 // we only need to create a proxy class for intercepted or decorated Beans
                 InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
 
-                // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
                 ClassLoader classLoader = this.getClass().getClassLoader();
 
                 Method[] businessMethods = methodInterceptors.keySet().toArray(new Method[methodInterceptors.size()]);
