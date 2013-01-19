@@ -51,7 +51,7 @@ public class EJBInterceptorExceptionComponentTest extends TestContext
             InjectionTargetBean<MultpleInterceptor> component = defineManagedBean(MultpleInterceptor.class);
 
             AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(component.getReturnType());
-            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType, component.getInterceptorStack());
+            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType);
         }
         catch (WebBeansConfigurationException e)
         {

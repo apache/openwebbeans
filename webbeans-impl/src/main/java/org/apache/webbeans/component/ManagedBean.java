@@ -27,7 +27,6 @@ import java.util.Set;
 import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.intercept.InterceptorData;
 
 /**
  * Managed bean implementation of the {@link javax.enterprise.inject.spi.Bean}.
@@ -96,19 +95,8 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
         }
         if(Serializable.class.isAssignableFrom(getReturnType()))
         {
+            //X TODO add proper serialisation checks for all decorators and interceptors!
 
-            for(InterceptorData interceptorData : interceptorStack)
-            {
-                if(interceptorData.isDefinedInInterceptorClass())
-                {
-                    Class<?> interceptor = interceptorData.getInterceptorClass();
-                    if(!Serializable.class.isAssignableFrom(interceptor))
-                    {
-                        isPassivationCapable = Boolean.FALSE;
-                        return false;
-                    }
-                }
-            }
 
             isPassivationCapable = Boolean.TRUE;
             return true;

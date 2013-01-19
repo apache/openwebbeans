@@ -20,14 +20,11 @@ package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.intercept.InterceptorData;
 
 import javax.enterprise.inject.spi.InjectionTarget;
 
@@ -44,14 +41,6 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
 {    
     /**Annotated type for bean*/
     private AnnotatedType<T> annotatedType;
-    
-    /**
-     * Holds the all of the interceptor related data, contains around-invoke,
-     * post-construct and pre-destroy
-     * @deprecated old InterceptorData based config
-     */
-    protected List<InterceptorData> interceptorStack = new ArrayList<InterceptorData>();
-
 
     protected InjectionTargetBean(WebBeansContext webBeansContext,
                                   WebBeansType webBeansType,
@@ -88,14 +77,6 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
     public InjectionTarget<T> getInjectionTarget()
     {
         return (InjectionTarget<T>) getProducer();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<InterceptorData> getInterceptorStack()
-    {
-        return interceptorStack;
     }
 
     /**

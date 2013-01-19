@@ -19,6 +19,7 @@
 package org.apache.webbeans.intercept.ejb;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -55,9 +56,8 @@ public final class EJBInterceptorConfig
      * Configures the given class for applicable interceptors.
      *
      * @param annotatedType to configure interceptors for
-     * @param interceptorStack to fill
      */
-    public void configure(AnnotatedType<?> annotatedType, List<InterceptorData> interceptorStack)
+    public void configure(AnnotatedType<?> annotatedType)
     {
         Asserts.assertNotNull(annotatedType);
 
@@ -69,14 +69,14 @@ public final class EJBInterceptorConfig
 
             for (Class<?> intClass : interceptorClasses)
             {
-                configureInterceptorAnnots(webBeansContext.getAnnotatedElementFactory().newAnnotatedType(intClass), interceptorStack, false, null);
+                configureInterceptorAnnots(webBeansContext.getAnnotatedElementFactory().newAnnotatedType(intClass), Collections.EMPTY_LIST, false, null);
             }
 
         }
-        configureBeanAnnots(annotatedType, interceptorStack);
+        configureBeanAnnots(annotatedType, Collections.EMPTY_LIST);
 
         Class clazz = annotatedType.getJavaClass();
-        webBeansContext.getInterceptorUtil().filterOverridenLifecycleInterceptor(clazz, interceptorStack);
+        webBeansContext.getInterceptorUtil().filterOverridenLifecycleInterceptor(clazz, Collections.EMPTY_LIST);
     }
 
     /**

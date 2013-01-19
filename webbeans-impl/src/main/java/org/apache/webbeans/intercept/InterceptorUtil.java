@@ -509,28 +509,6 @@ public final class InterceptorUtil
         return false;
     }
 
-    /**
-     * Filter bean interceptor stack.
-     * @param stack interceptor stack
-     * @param method called method on proxy
-     */
-    public void filterCommonInterceptorStackList(List<InterceptorData> stack, Method method)
-    {
-        if (stack.size() > 0)
-        {
-            Iterator<InterceptorData> it = stack.iterator();
-            while (it.hasNext())
-            {
-                InterceptorData data = it.next();
-
-                if (shouldRemoveInterceptorCommon(data, method))
-                {
-                    it.remove();
-                }
-            }
-        }
-    }
-
 
 
     /**
