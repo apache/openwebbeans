@@ -51,6 +51,7 @@ import java.util.logging.Logger;
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.SelfInterceptorBean;
 import org.apache.webbeans.component.creation.SelfInterceptorBeanBuilder;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -73,6 +74,12 @@ public class InterceptorResolutionService
     private final Class<? extends Annotation> prePassivateClass;
     private final Class<? extends Annotation> postActivateClass;
     private final Class<? extends Annotation> aroundTimeoutClass;
+
+    /**
+     * Enforcing that interceptor callbacks should not be
+     * able to throw checked exceptions is configurable
+     */
+    private static volatile Boolean enforceCheckedException;
 
 
     public InterceptorResolutionService(WebBeansContext webBeansContext)
@@ -133,9 +140,7 @@ public class InterceptorResolutionService
         // iterate over all methods and build up the interceptor/decorator stack
         for (AnnotatedMethod annotatedMethod : interceptableAnnotatedMethods)
         {
-            // this probably needs some more fine tuning if a method is both lifecycle and used as business invocation.
-            Set<InterceptionType> interceptionTypes = collectInterceptionTypes(annotatedMethod);
-            BusinessMethodInterceptorInfo methodInterceptorInfo = new BusinessMethodInterceptorInfo(interceptionTypes);
+            BusinessMethodInterceptorInfo methodInterceptorInfo = new BusinessMethodInterceptorInfo();
 
             calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, annotatedMethod);
 
@@ -187,6 +192,26 @@ public class InterceptorResolutionService
                                        nonInterceptedMethods, lifecycleMethodInterceptorInfos);
     }
 
+    /**
+     * Lifycycle methods like {@link javax.annotation.PostConstruct} and
+     * {@link javax.annotation.PreDestroy} must not define a checked Exception
+     * regarding to the spec. But this is often unnecessary restrictive so we
+     * allow to disable this check application wide.
+     *
+     * @return <code>true</code> if the spec rule of having no checked exception should be enforced
+     */
+    private boolean isNoCheckedExceptionEnforced()
+    {
+        if (enforceCheckedException == null)
+        {
+            enforceCheckedException = Boolean.parseBoolean(webBeansContext.getOpenWebBeansConfiguration().
+                    getProperty(OpenWebBeansConfiguration.INTERCEPTOR_FORCE_NO_CHECKED_EXCEPTIONS, "true"));
+        }
+
+        return enforceCheckedException.booleanValue();
+    }
+
+
     private void addCdiClassLifecycleInterceptors(Set<Annotation> classInterceptorBindings, Set<Interceptor<?>> allUsedCdiInterceptors)
     {
         if (classInterceptorBindings.size() > 0)
@@ -218,22 +243,22 @@ public class InterceptorResolutionService
     private void addLifecycleMethods(Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos,
                                      AnnotatedType<?> annotatedType,
                                      InterceptionType interceptionType,
-                                     Class<? extends Annotation> annotation,
+                                     Class<? extends Annotation> lifeycleAnnotation,
                                      Set<Interceptor<?>> allUsedCdiInterceptors,
                                      Set<Interceptor<?>> allUsedEjbInterceptors,
                                      List<Interceptor<?>> classLevelEjbInterceptors,
                                      Set<Annotation> classInterceptorBindings,
                                      boolean parentFirst)
     {
-        Set<InterceptionType> it = new HashSet<InterceptionType>();
-        it.add(interceptionType);
         List<AnnotatedMethod<?>> foundMethods = new ArrayList<AnnotatedMethod<?>>();
-        BusinessMethodInterceptorInfo methodInterceptorInfo = new BusinessMethodInterceptorInfo(it);
+        BusinessMethodInterceptorInfo methodInterceptorInfo = new BusinessMethodInterceptorInfo();
 
-        List<AnnotatedMethod<?>> lifecycleMethodCandidates = webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, annotation, parentFirst);
+        List<AnnotatedMethod<?>> lifecycleMethodCandidates = webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, lifeycleAnnotation, parentFirst);
 
         for (AnnotatedMethod<?> lifecycleMethod : lifecycleMethodCandidates)
         {
+            verifyLifecycleMethod(lifeycleAnnotation, lifecycleMethod);
+
             if (lifecycleMethod.getParameters().size() == 0)
             {
                 foundMethods.add(lifecycleMethod);
@@ -441,62 +466,49 @@ public class InterceptorResolutionService
         allUsedCdiInterceptors.addAll(methodInterceptors);
     }
 
-
     /**
-     * Determine the {@link InterceptionType} of the given AnnotatedMethod
-     * of an intercepted method.
-     * An empty list means that this is an AroundInvoke method.
-     */
-    private Set<InterceptionType> collectInterceptionTypes(AnnotatedMethod interceptableAnnotatedMethod)
-    {
-        Set<InterceptionType> interceptionTypes = new HashSet<InterceptionType>();
-        for (Annotation annotation : interceptableAnnotatedMethod.getAnnotations())
-        {
-            if (annotation instanceof PostConstruct)
-            {
-                verifyLifecycleMethodParameters(annotation, interceptableAnnotatedMethod);
-                interceptionTypes.add(InterceptionType.POST_CONSTRUCT);
-            }
-            if (annotation instanceof PreDestroy)
-            {
-                verifyLifecycleMethodParameters(annotation, interceptableAnnotatedMethod);
-                interceptionTypes.add(InterceptionType.PRE_DESTROY);
-            }
-            if (null != ejbPlugin && prePassivateClass.isAssignableFrom(annotation.getClass()))
-            {
-                verifyLifecycleMethodParameters(annotation, interceptableAnnotatedMethod);
-                interceptionTypes.add(InterceptionType.PRE_PASSIVATE);
-            }
-            if (null != ejbPlugin && postActivateClass.isAssignableFrom(annotation.getClass()))
-            {
-                verifyLifecycleMethodParameters(annotation, interceptableAnnotatedMethod);
-                interceptionTypes.add(InterceptionType.POST_ACTIVATE);
-            }
-            if (null != ejbPlugin && aroundTimeoutClass.isAssignableFrom(annotation.getClass()))
-            {
-                verifyLifecycleMethodParameters(annotation, interceptableAnnotatedMethod);
-                interceptionTypes.add(InterceptionType.AROUND_TIMEOUT);
-            }
-        }
-
-        return interceptionTypes;
-    }
-
-    /**
-     * Check that the given lifecycle method either has
-     * no parameter at all (standard case), or
-     * exactly one InvocationContext parameter (self-interception)
+     * Check that the given lifecycle method has:
+     * <ul>
+     *     <li>either has no parameter at all (standard case), or</li>
+     *     <li>has exactly one InvocationContext parameter (self-interception)</li>
+     *     <li>has no return value</li>
+     * </ul>
+     *
      * @param annotatedMethod
      */
-    private void verifyLifecycleMethodParameters(Annotation lifecycleAnnotation, AnnotatedMethod annotatedMethod)
+    private <T> void verifyLifecycleMethod(Class<? extends Annotation> lifecycleAnnotation, AnnotatedMethod<T> annotatedMethod)
     {
-        List<AnnotatedParameter<?>> params = annotatedMethod.getParameters();
+        List<AnnotatedParameter<T>> params = annotatedMethod.getParameters();
         if (params.size() > 0 && (params.size() > 1 || !params.get(0).getBaseType().equals(InvocationContext.class)))
         {
-            throw new WebBeansConfigurationException(lifecycleAnnotation + " LifecycleMethod "
+            throw new WebBeansConfigurationException(lifecycleAnnotation.getName() + " LifecycleMethod "
                                                      + annotatedMethod.getJavaMember()
                                                      + " must either have no parameter or InvocationContext but has:"
                                                      + Arrays.toString(annotatedMethod.getJavaMember().getParameterTypes()));
+        }
+
+        if (!annotatedMethod.getJavaMember().getReturnType().equals(Void.TYPE))
+        {
+            throw new WebBeansConfigurationException("@" + lifecycleAnnotation.getName()
+                    + " annotated method : " + annotatedMethod.getJavaMember().getName()
+                    + " in class : " + annotatedMethod.getDeclaringType().getJavaClass().getName()
+                    + " must return void type");
+        }
+
+        if (isNoCheckedExceptionEnforced() && ClassUtil.isMethodHasCheckedException(annotatedMethod.getJavaMember()))
+        {
+            throw new WebBeansConfigurationException("@" + lifecycleAnnotation.getName()
+                    + " annotated method : " + annotatedMethod.getJavaMember().getName()
+                    + " in class : " + annotatedMethod.getDeclaringType().getJavaClass().getName()
+                    + " can not throw any checked exception");
+        }
+
+        if (Modifier.isStatic(annotatedMethod.getJavaMember().getModifiers()))
+        {
+            throw new WebBeansConfigurationException("@" + lifecycleAnnotation.getName()
+                    + " annotated method : " + annotatedMethod.getJavaMember().getName()
+                    + " in class : " + annotatedMethod.getDeclaringType().getJavaClass().getName()
+                    + " can not be static");
         }
     }
 
@@ -641,19 +653,8 @@ public class InterceptorResolutionService
         private Interceptor<?>[] cdiInterceptors = null;
         private LinkedHashMap<Decorator<?>, Method> methodDecorators = null;
 
-        /**
-         * lifecycle methods can serve multiple intercepton types :/
-         */
-        private Set<InterceptionType> interceptionTypes;
-
-        public BusinessMethodInterceptorInfo(Set<InterceptionType> interceptionTypes)
+        public BusinessMethodInterceptorInfo()
         {
-            this.interceptionTypes = interceptionTypes;
-        }
-
-        public Set<InterceptionType> getInterceptionTypes()
-        {
-            return interceptionTypes;
         }
 
         /**

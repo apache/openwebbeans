@@ -114,12 +114,6 @@ public final class WebBeansInterceptorConfig
                 {
                     methodInterceptors.put(interceptedMethod, Collections.EMPTY_LIST);
                 }
-
-                // empty InterceptionType -> AROUND_INVOKE
-                if (!mii.getInterceptionTypes().isEmpty())
-                {
-                    nonBusinessMethods.add(interceptedMethod);
-                }
             }
 
             List<Interceptor<?>> postConstructInterceptors
