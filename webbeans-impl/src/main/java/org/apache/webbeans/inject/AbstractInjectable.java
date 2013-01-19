@@ -141,10 +141,7 @@ public abstract class AbstractInjectable<T>
             // add this dependent into bean dependent list
             if (!WebBeansUtil.isStaticInjection(injectionPoint) && WebBeansUtil.isDependent(injectedBean))
             {
-                if(instanceUnderInjection.get() != null)
-                {
-                    creationalContext.addDependent(instanceUnderInjection.get(), injectedBean, injected);
-                }
+                creationalContext.addDependent(injectedBean, injected);
             }
         } 
         finally

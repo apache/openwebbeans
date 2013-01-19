@@ -164,10 +164,6 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
                 injectionTarget.inject(instance, creationalContext);
                 injectionTarget.postConstruct(instance);
             }
-            if (getScope().equals(Dependent.class))
-            {
-                ((CreationalContextImpl<T>)creationalContext).addDependent(null, this, instance);
-            }
             return instance;
         }
         catch (Exception re)
@@ -209,7 +205,7 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
                 injectionTarget.preDestroy(instance);
             }
             producer.dispose(instance);
-            //Destory dependent instances
+            //Destroy dependent instances
             creationalContext.release();
         }
         catch(Exception e)

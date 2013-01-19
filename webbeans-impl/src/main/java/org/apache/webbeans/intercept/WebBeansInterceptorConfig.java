@@ -144,7 +144,10 @@ public final class WebBeansInterceptorConfig
 
                 injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors, postConstructInterceptors, preDestroyInterceptors);
             }
-
+            else // we have no interceptors so we have to define lifecycle methods
+            {
+                
+            }
         }
 
     }

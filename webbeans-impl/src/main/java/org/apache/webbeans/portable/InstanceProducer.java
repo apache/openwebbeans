@@ -75,7 +75,7 @@ public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
 
             Object ownerInstance = AbstractInjectable.instanceUnderInjection.get();
 
-            Instance<T> instance = new InstanceImpl<T>(type, injectionPoint, webBeansContext, creationalContext, ownerInstance, qualifiers.toArray(new Annotation[qualifiers.size()]));
+            Instance<T> instance = new InstanceImpl<T>(type, injectionPoint, webBeansContext, creationalContext, qualifiers.toArray(new Annotation[qualifiers.size()]));
             
             return instance;
         }

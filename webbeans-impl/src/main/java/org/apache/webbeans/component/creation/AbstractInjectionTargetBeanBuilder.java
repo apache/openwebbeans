@@ -27,10 +27,13 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
@@ -736,12 +739,52 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
 
     protected List<AnnotatedMethod<?>> getPostConstructMethods()
     {
-        return null;
+        List<AnnotatedMethod<?>> postConstructMethods = new ArrayList<AnnotatedMethod<?>>();
+        collectPostConstructMethods(getAnnotated().getJavaClass(), postConstructMethods);
+        return postConstructMethods;
+    }
+
+    private void collectPostConstructMethods(Class<?> type, List<AnnotatedMethod<?>> postConstructMethods)
+    {
+        if (type == null)
+        {
+            return;
+        }
+        collectPostConstructMethods(type.getSuperclass(), postConstructMethods);
+        for (AnnotatedMethod<?> annotatedMethod: getAnnotated().getMethods())
+        {
+            if (annotatedMethod.getJavaMember().getDeclaringClass() == type
+                && annotatedMethod.isAnnotationPresent(PostConstruct.class)
+                && annotatedMethod.getParameters().isEmpty())
+            {
+                postConstructMethods.add(annotatedMethod);
+            }
+        }
     }
 
     protected List<AnnotatedMethod<?>> getPreDestroyMethods()
     {
-        return null;
+        List<AnnotatedMethod<?>> preDestroyMethods = new ArrayList<AnnotatedMethod<?>>();
+        collectPreDestroyMethods(getAnnotated().getJavaClass(), preDestroyMethods);
+        return preDestroyMethods;
+    }
+
+    private void collectPreDestroyMethods(Class<?> type, List<AnnotatedMethod<?>> preDestroyMethods)
+    {
+        if (type == null)
+        {
+            return;
+        }
+        collectPreDestroyMethods(type.getSuperclass(), preDestroyMethods);
+        for (AnnotatedMethod<?> annotatedMethod: getAnnotated().getMethods())
+        {
+            if (annotatedMethod.getJavaMember().getDeclaringClass() == type
+                && annotatedMethod.isAnnotationPresent(PreDestroy.class)
+                && annotatedMethod.getParameters().isEmpty())
+            {
+                preDestroyMethods.add(annotatedMethod);
+            }
+        }
     }
 
     public boolean isEnabled()

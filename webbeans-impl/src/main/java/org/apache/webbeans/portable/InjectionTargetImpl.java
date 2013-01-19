@@ -202,7 +202,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                     CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>)creationalContext;
                     creationalContextImpl.putDelegate(delegate);
                     Object decoratorInstance = decorator.create((CreationalContext) creationalContext);
-                    creationalContextImpl.addDependent(instance, decorator, decoratorInstance);
+                    creationalContextImpl.addDependent(decorator, decoratorInstance);
                     instances.put(decorator, decoratorInstance);
                     delegate = pf.createProxyInstance(proxyClass, instance, new DecoratorHandler(interceptorInfo, instances, i - 1, instance));
                 }
