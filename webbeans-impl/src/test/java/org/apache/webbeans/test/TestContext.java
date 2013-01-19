@@ -309,7 +309,7 @@ public abstract class TestContext implements ITestContext
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         webBeansContext.getWebBeansUtil().checkManagedBeanCondition(clazz);
 
-        webBeansContext.getInterceptorsManager().addNewInterceptorClass(clazz);
+        webBeansContext.getInterceptorsManager().addEnabledInterceptorClass(clazz);
         AnnotatedType annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
         CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType);
         ibb.defineCdiInterceptorRules();
@@ -445,7 +445,7 @@ public abstract class TestContext implements ITestContext
      */
     protected void initializeInterceptorType(Class<?> interceptorClazz)
     {
-        WebBeansContext.getInstance().getInterceptorsManager().addNewInterceptorClass(interceptorClazz);
+        WebBeansContext.getInstance().getInterceptorsManager().addEnabledInterceptorClass(interceptorClazz);
 
     }
 
@@ -456,7 +456,7 @@ public abstract class TestContext implements ITestContext
      */
     protected void initializeDecoratorType(Class<?> decoratorClazz)
     {
-        WebBeansContext.getInstance().getDecoratorsManager().addNewDecorator(decoratorClazz);
+        WebBeansContext.getInstance().getDecoratorsManager().addEnabledDecorator(decoratorClazz);
 
     }
 

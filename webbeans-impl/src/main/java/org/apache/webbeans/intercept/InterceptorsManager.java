@@ -98,7 +98,7 @@ public class InterceptorsManager
     /**
      * Add a certain class to the enabled interceptors list.
      */
-    public void addNewInterceptorClass(Class<?> interceptorClazz)
+    public void addEnabledInterceptorClass(Class<?> interceptorClazz)
     {
         Asserts.nullCheckForClass(interceptorClazz, "interceptorClazz can not be null");
 

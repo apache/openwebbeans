@@ -36,18 +36,30 @@ import org.apache.webbeans.lifecycle.test.OpenWebBeansTestLifeCycle;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.util.WebBeansUtil;
+
 import org.junit.Assert;
+import org.junit.Before;
 
 
 public abstract class AbstractUnitTest
 {
     private OpenWebBeansTestLifeCycle testLifecycle;
     private List<Extension>  extensions = new ArrayList<Extension>();
+    private List<Class<?>> interceptors = new ArrayList<Class<?>>();
+    private List<Class<?>> decorators = new ArrayList<Class<?>>();
     private WebBeansContext webBeansContext;
 
     protected AbstractUnitTest()
     {
 
+    }
+
+    @Before
+    public void cleanup()
+    {
+        extensions.clear();
+        interceptors.clear();
+        decorators.clear();
     }
 
     protected void startContainer(Class<?>... beanClasses)
@@ -72,6 +84,24 @@ public abstract class AbstractUnitTest
             webBeansContext.getExtensionLoader().addExtension(ext);
         }
         
+        for (Class interceptor : interceptors)
+        {
+            // add it as enabled interceptor class, like it would be listed in beans.xml
+            webBeansContext.getInterceptorsManager().addEnabledInterceptorClass(interceptor);
+
+            // but also add it for scanning
+            beanClasses.add(interceptor);
+        }
+
+        for (Class decorator : decorators)
+        {
+            // add it as enabled decorator class, like it would be listed in beans.xml
+            webBeansContext.getDecoratorsManager().addEnabledDecorator(decorator);
+
+            // but also add it for scanning
+            beanClasses.add(decorator);
+        }
+
         //Deploy bean classes
         OpenWebBeansTestMetaDataDiscoveryService discoveryService = (OpenWebBeansTestMetaDataDiscoveryService)webBeansContext.getScannerService();
         discoveryService.deployClasses(beanClasses);

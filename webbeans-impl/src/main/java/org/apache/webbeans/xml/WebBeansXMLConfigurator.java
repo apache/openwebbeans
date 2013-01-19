@@ -318,7 +318,7 @@ public final class WebBeansXMLConfigurator
                 }
                 else
                 {
-                    manager.addNewInterceptorClass(clazz);
+                    manager.addEnabledInterceptorClass(clazz);
                 }
             }
 
@@ -364,7 +364,7 @@ public final class WebBeansXMLConfigurator
                                                              child.getTextContent().trim() + " is already defined");
                 }
 
-                manager.addNewDecorator(clazz);
+                manager.addEnabledDecorator(clazz);
             }
 
         }

@@ -58,7 +58,7 @@ public class DecoratorsManager
         this.webBeansContext = webBeansContext;
     }
 
-    public void addNewDecorator(Class<?> decoratorClazz)
+    public void addEnabledDecorator(Class<?> decoratorClazz)
     {
         Asserts.assertNotNull(decoratorClazz, "decoratorClazz parameter can not be emtpy");
         if (!enabledDecorators.contains(decoratorClazz))
