@@ -18,13 +18,11 @@
  */
 package org.apache.webbeans.proxy;
 
-import javax.enterprise.inject.spi.Bean;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.ClassUtil;
@@ -52,22 +50,8 @@ public class SubclassProxyFactory extends AbstractProxyFactory
     }
 
 
-    public <T> Class<T> createDecoratorSubclass(Bean<T> bean)
+    public <T> Class<T> createImplementedSubclass(ClassLoader classLoader, Class<T> classToProxy)
     {
-        ClassLoader classLoader = bean.getClass().getClassLoader();
-
-        Class<T> classToProxy;
-        if (bean instanceof OwbBean)
-        {
-            classToProxy = ((OwbBean<T>) bean).getReturnType();
-
-        }
-        else
-        {
-            // TODO: that might be wrong sometimes
-            classToProxy = (Class<T>) bean.getBeanClass();
-        }
-
         if (!Modifier.isAbstract(classToProxy.getModifiers()))
         {
             throw new WebBeansConfigurationException("Only abstract classes should get subclassed, not " + classToProxy);

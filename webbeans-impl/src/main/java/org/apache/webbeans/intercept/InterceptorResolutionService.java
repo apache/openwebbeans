@@ -326,6 +326,7 @@ public class InterceptorResolutionService
                 ParameterizedType parameterizedType = (ParameterizedType)decoratedType;
                 decoratedType = parameterizedType.getRawType();
             }
+
             if (decoratedType instanceof Class)
             {
                 Class decoratedClass = (Class) decoratedType;
@@ -340,27 +341,40 @@ public class InterceptorResolutionService
                         continue;
                     }
 
-                    if (decoratorMethod.getName().equals(annotatedMethodName))
+                    if (methodEquals(decoratorMethod, annotatedMethod.getJavaMember()))
                     {
-                        Class<?>[] decoratorMethodParams = decoratorMethod.getParameterTypes();
-                        Class<?>[] annotatedMethodParams = annotatedMethod.getJavaMember().getParameterTypes();
-                        if (decoratorMethodParams.length == annotatedMethodParams.length)
+                        // yikes our method is decorated by this very decorator type.
+
+                        if (Modifier.isAbstract((decorator.getBeanClass().getModifiers())))
                         {
-                            boolean paramsMatch = true;
-                            for (int i = 0; i < decoratorMethodParams.length; i++)
+                            // For abstract classes we will only decorate this method if it's really implemented on the decorator itself
+                            Class decoratorClass = decorator.getBeanClass();
+                            while (decoratorClass != Object.class)
                             {
-                                if (!decoratorMethodParams[i].equals(annotatedMethodParams[i]))
+                                try
                                 {
-                                    paramsMatch = false;
-                                    break;
+                                    Method m = decoratorClass.getDeclaredMethod(decoratorMethod.getName(), decoratorMethod.getParameterTypes());
+                                    if (Modifier.isAbstract(m.getModifiers()))
+                                    {
+                                        return null;
+                                    }
+                                    else
+                                    {
+                                        return decoratorMethod;
+                                    }
                                 }
+                                catch (NoSuchMethodException e)
+                                {
+                                    // all ok, just continue
+                                }
+
+                                decoratorClass = decoratorClass.getSuperclass();
                             }
 
-                            if (paramsMatch)
-                            {
-                                // yikes our method is decorated by this very decorator type.
-                                return decoratorMethod;
-                            }
+                            return null;
+                        }
+                        {
+                            return decoratorMethod;
                         }
                     }
                 }
@@ -368,6 +382,34 @@ public class InterceptorResolutionService
         }
 
         return null;
+    }
+
+    private boolean methodEquals(Method method1, Method method2)
+    {
+        if (method1.getName().equals(method2.getName()))
+        {
+            Class<?>[] method1Params = method1.getParameterTypes();
+            Class<?>[] method2Params = method2.getParameterTypes();
+            if (method1Params.length == method2Params.length)
+            {
+                boolean paramsMatch = true;
+                for (int i = 0; i < method1Params.length; i++)
+                {
+                    if (!method1Params[i].equals(method2Params[i]))
+                    {
+                        paramsMatch = false;
+                        break;
+                    }
+                }
+
+                if (paramsMatch)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private void calculateCdiMethodInterceptors(BusinessMethodInterceptorInfo methodInterceptorInfo,

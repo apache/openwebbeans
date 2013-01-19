@@ -37,4 +37,10 @@ public class Cow extends Animal implements Breeded
     {
         this.color = color;
     }
+
+    @Override
+    public String getFarmer()
+    {
+        return "Deary Farmer";
+    }
 }

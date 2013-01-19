@@ -24,4 +24,6 @@ package org.apache.webbeans.newtests.decorators.common;
 public interface Breeded
 {
     int getAge();
+
+    String getFarmer();
 }

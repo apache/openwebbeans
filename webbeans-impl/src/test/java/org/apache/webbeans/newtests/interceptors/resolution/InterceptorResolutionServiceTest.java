@@ -29,10 +29,12 @@ import java.util.Map;
 
 import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.newtests.decorators.common.Cow;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassMultiInterceptedClass;
 import org.apache.webbeans.newtests.interceptors.factory.beans.DecoratedClass;
 import org.apache.webbeans.newtests.interceptors.factory.beans.MethodInterceptedClass;
+import org.apache.webbeans.newtests.interceptors.factory.beans.MyAbstractTestDecorator;
 import org.apache.webbeans.newtests.interceptors.factory.beans.StereotypeInterceptedClass;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.component.decorator.clean.ServiceDecorator;
@@ -252,6 +254,36 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         shutDownContainer();
     }
 
+
+    @Test
+    public void testAbstractDecoratorResolution() throws Exception
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Cow.class);
+        beanClasses.add(MyAbstractTestDecorator.class);
+
+        startContainer(beanClasses, beanXmls);
+
+        InterceptorResolutionService ir = new InterceptorResolutionService(getWebBeansContext());
+        AnnotatedType<Cow> annotatedType = getBeanManager().createAnnotatedType(Cow.class);
+        Bean<Cow> bean = (Bean<Cow>) getBeanManager().resolve(
+                getBeanManager().getBeans(Cow.class));
+        Assert.assertNotNull(bean);
+
+        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
+        Assert.assertNotNull(interceptorInfo);
+
+        Assert.assertNotNull(interceptorInfo.getBusinessMethodsInfo());
+        Assert.assertEquals(1, interceptorInfo.getBusinessMethodsInfo().size());
+
+        Assert.assertNotNull(interceptorInfo.getDecorators());
+        Assert.assertEquals(1, interceptorInfo.getDecorators().size());
+
+        shutDownContainer();
+    }
     @Test
     public void testEjbStyleInterceptorResolution() throws Exception
     {

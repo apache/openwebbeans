@@ -26,5 +26,6 @@ under the License.
     </interceptors>
     <decorators>
         <class>org.apache.webbeans.test.component.decorator.clean.ServiceDecorator</class>
+        <class>org.apache.webbeans.newtests.interceptors.factory.beans.MyAbstractTestDecorator</class>
     </decorators>
 </beans>

@@ -31,7 +31,6 @@ import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -364,10 +363,7 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
             ClassLoader classLoader = this.getClass().getClassLoader();
             Class<T> classToProxy = annotatedType.getJavaClass();
 
-            List<Method> methods = ClassUtil.getNonPrivateMethods(classToProxy);
-
-            proxySubClass = webBeansContext.getSubclassProxyFactory().createDecoratorSubclass(null);
-
+            proxySubClass = webBeansContext.getSubclassProxyFactory().createImplementedSubclass(classLoader, classToProxy);
 
             //X TODO what about @Inject constructors?
             Constructor<T> ct = webBeansContext.getWebBeansUtil().getNoArgConstructor(proxySubClass);
