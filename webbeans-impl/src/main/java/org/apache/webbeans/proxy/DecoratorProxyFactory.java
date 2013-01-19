@@ -161,9 +161,9 @@ public class DecoratorProxyFactory extends AbstractProxyFactory
         {
             T proxy = proxyClass.newInstance();
 
-            Field delegateField = proxy.getClass().getDeclaredField(FIELD_INSTANCE_PROVIDER);
-            delegateField.setAccessible(true);
-            delegateField.set(proxy, provider);
+//            Field delegateField = proxy.getClass().getDeclaredField(FIELD_INSTANCE_PROVIDER);
+//            delegateField.setAccessible(true);
+//            delegateField.set(proxy, provider);
 
             return proxy;
         }
@@ -175,10 +175,10 @@ public class DecoratorProxyFactory extends AbstractProxyFactory
         {
             throw new ProxyGenerationException(e);
         }
-        catch (NoSuchFieldException e)
-        {
-            throw new ProxyGenerationException(e);
-        }
+//        catch (NoSuchFieldException e)
+//        {
+//            throw new ProxyGenerationException(e);
+//        }
     }
 
 
@@ -208,7 +208,7 @@ public class DecoratorProxyFactory extends AbstractProxyFactory
 
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitInsn(Opcodes.ACONST_NULL);
-            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_INSTANCE_PROVIDER, Type.getDescriptor(Provider.class));
+//            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_INSTANCE_PROVIDER, Type.getDescriptor(Provider.class));
 
             mv.visitInsn(Opcodes.RETURN);
             mv.visitMaxs(-1, -1);
@@ -224,8 +224,8 @@ public class DecoratorProxyFactory extends AbstractProxyFactory
     protected void createInstanceVariables(ClassWriter cw, Class<?> classToProxy, String classFileName)
     {
         // variable #1, the Provider<?> for the Contextual Instance
-        cw.visitField(Opcodes.ACC_PRIVATE,
-                FIELD_INSTANCE_PROVIDER, Type.getDescriptor(Provider.class), null, null).visitEnd();
+//        cw.visitField(Opcodes.ACC_PRIVATE,
+//                FIELD_INSTANCE_PROVIDER, Type.getDescriptor(Provider.class), null, null).visitEnd();
     }
 
     @Override
@@ -263,7 +263,7 @@ public class DecoratorProxyFactory extends AbstractProxyFactory
 
             // load the contextual instance Provider
             mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_INSTANCE_PROVIDER, Type.getDescriptor(Provider.class));
+//            mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_INSTANCE_PROVIDER, Type.getDescriptor(Provider.class));
 
             // invoke the get() method on the Provider
             mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, Type.getInternalName(Provider.class), "get", "()Ljava/lang/Object;");

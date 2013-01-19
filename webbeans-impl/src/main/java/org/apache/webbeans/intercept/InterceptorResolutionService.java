@@ -32,6 +32,7 @@ import javax.interceptor.Interceptors;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -319,6 +320,10 @@ public class InterceptorResolutionService
         Set<Type> decoratedTypes = decorator.getDecoratedTypes();
         for (Type decoratedType : decoratedTypes)
         {
+            if (decoratedType instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType)decoratedType;
+                decoratedType = parameterizedType.getRawType();
+            }
             if (decoratedType instanceof Class)
             {
                 Class decoratedClass = (Class) decoratedType;
