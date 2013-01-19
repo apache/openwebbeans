@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.component.creation;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
@@ -35,6 +37,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -116,7 +119,53 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
         bean.setConstructor(constructor.getJavaMember());
     }
 
+    @Override
+    protected List<AnnotatedMethod<?>> getPostConstructMethods()
+    {
+        List<AnnotatedMethod<?>> postConstructMethods = new ArrayList<AnnotatedMethod<?>>();
+        collectPostConstructMethods(getAnnotated().getJavaClass(), postConstructMethods);
+        return postConstructMethods;
+    }
 
+    private void collectPostConstructMethods(Class<?> type, List<AnnotatedMethod<?>> postConstructMethods)
+    {
+        if (type == null)
+        {
+            return;
+        }
+        collectPostConstructMethods(type.getSuperclass(), postConstructMethods);
+        for (AnnotatedMethod<?> annotatedMethod: getAnnotated().getMethods())
+        {
+            if (annotatedMethod.getJavaMember().getDeclaringClass() == type && annotatedMethod.isAnnotationPresent(PostConstruct.class))
+            {
+                postConstructMethods.add(annotatedMethod);
+            }
+        }
+    }
+
+    @Override
+    protected List<AnnotatedMethod<?>> getPreDestroyMethods()
+    {
+        List<AnnotatedMethod<?>> preDestroyMethods = new ArrayList<AnnotatedMethod<?>>();
+        collectPreDestroyMethods(getAnnotated().getJavaClass(), preDestroyMethods);
+        return preDestroyMethods;
+    }
+
+    private void collectPreDestroyMethods(Class<?> type, List<AnnotatedMethod<?>> preDestroyMethods)
+    {
+        if (type == null)
+        {
+            return;
+        }
+        collectPreDestroyMethods(type.getSuperclass(), preDestroyMethods);
+        for (AnnotatedMethod<?> annotatedMethod: getAnnotated().getMethods())
+        {
+            if (annotatedMethod.getJavaMember().getDeclaringClass() == type && annotatedMethod.isAnnotationPresent(PreDestroy.class))
+            {
+                preDestroyMethods.add(annotatedMethod);
+            }
+        }
+    }
 
     /**
      * If this method returns <code>false</code> the {@link #getBean()} method must not get called.
