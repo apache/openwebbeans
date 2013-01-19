@@ -39,6 +39,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.After;
 
 
 public abstract class AbstractUnitTest
@@ -60,6 +61,15 @@ public abstract class AbstractUnitTest
         extensions.clear();
         interceptors.clear();
         decorators.clear();
+    }
+
+    /**
+     * always shut down the container after each test.
+     */
+    @After
+    public void shutdown()
+    {
+        shutDownContainer();
     }
 
     protected void startContainer(Class<?>... beanClasses)
@@ -133,6 +143,8 @@ public abstract class AbstractUnitTest
         if(this.testLifecycle != null)
         {
             this.testLifecycle.stopApplication(null);
+            this.testLifecycle = null;
+            cleanup();
         }        
     }
         
