@@ -139,7 +139,7 @@ public class InterceptorResolutionService
 
             calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, annotatedMethod);
 
-            calculateCdiMethodInterceptors(methodInterceptorInfo, allUsedCdiInterceptors, annotatedMethod, classInterceptorBindings);
+            calculateCdiMethodInterceptors(methodInterceptorInfo, InterceptionType.AROUND_INVOKE, allUsedCdiInterceptors, annotatedMethod, classInterceptorBindings);
 
             calculateCdiMethodDecorators(methodInterceptorInfo, decorators, annotatedMethod);
 
@@ -239,7 +239,7 @@ public class InterceptorResolutionService
                 foundMethods.add(lifecycleMethod);
                 calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, lifecycleMethod);
 
-                calculateCdiMethodInterceptors(methodInterceptorInfo, allUsedCdiInterceptors, lifecycleMethod, classInterceptorBindings);
+                calculateCdiMethodInterceptors(methodInterceptorInfo, interceptionType, allUsedCdiInterceptors, lifecycleMethod, classInterceptorBindings);
             }
         }
 
@@ -415,6 +415,7 @@ public class InterceptorResolutionService
     }
 
     private void calculateCdiMethodInterceptors(BusinessMethodInterceptorInfo methodInterceptorInfo,
+                                                InterceptionType interceptionType,
                                                 Set<Interceptor<?>> allUsedCdiInterceptors,
                                                 AnnotatedMethod annotatedMethod,
                                                 Set<Annotation> classInterceptorBindings)
@@ -431,10 +432,6 @@ public class InterceptorResolutionService
         {
             return;
         }
-
-        InterceptionType interceptionType = methodInterceptorInfo.getInterceptionTypes().isEmpty()
-                                                ? InterceptionType.AROUND_INVOKE
-                                                : methodInterceptorInfo.getInterceptionTypes().iterator().next(); //X TODO dirty hack for now...
 
         List<Interceptor<?>> methodInterceptors
                 = webBeansContext.getBeanManagerImpl().resolveInterceptors(interceptionType, AnnotationUtil.asArray(cummulatedInterceptorBindings));
