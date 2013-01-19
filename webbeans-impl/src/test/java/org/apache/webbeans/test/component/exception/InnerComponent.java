@@ -21,7 +21,10 @@ package org.apache.webbeans.test.component.exception;
 
 public class InnerComponent
 {
-        public class InnerInnerComponent
+    /**
+     * only static inner classes get picked up as CDI beans as per 3.1.1
+     */
+    public class InnerInnerComponent
     {
 
     }

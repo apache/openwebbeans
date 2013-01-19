@@ -19,32 +19,15 @@
 package org.apache.webbeans.test.unittests.exception;
 
 
+import javax.enterprise.inject.spi.Bean;
+
+import java.util.Set;
+
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.test.component.exception.AroundInvokeWithFinalMethodComponent;
-import org.apache.webbeans.test.component.exception.AroundInvokeWithSameMethodNameComponent;
-import org.apache.webbeans.test.component.exception.AroundInvokeWithStaticMethodComponent;
-import org.apache.webbeans.test.component.exception.AroundInvokeWithWrongReturnTypeComponent;
-import org.apache.webbeans.test.component.exception.AroundInvokeWithoutParameterComponent;
-import org.apache.webbeans.test.component.exception.AroundInvokeWithoutReturnTypeComponent;
-import org.apache.webbeans.test.component.exception.FinalComponent;
-import org.apache.webbeans.test.component.exception.HasFinalMethodComponent;
-import org.apache.webbeans.test.component.exception.MoreThanOneAroundInvokeComponent;
-import org.apache.webbeans.test.component.exception.MoreThanOneConstructureComponent;
-import org.apache.webbeans.test.component.exception.MoreThanOneConstructureComponent2;
-import org.apache.webbeans.test.component.exception.MoreThanOnePostConstructComponent;
-import org.apache.webbeans.test.component.exception.MultipleDisposalMethodComponent;
-import org.apache.webbeans.test.component.exception.NewComponentBindingComponent;
-import org.apache.webbeans.test.component.exception.NoConstructureComponent;
-import org.apache.webbeans.test.component.exception.PostContructMethodHasCheckedExceptionComponent;
-import org.apache.webbeans.test.component.exception.PostContructMethodHasParameterComponent;
-import org.apache.webbeans.test.component.exception.PostContructMethodHasReturnTypeComponent;
-import org.apache.webbeans.test.component.exception.PostContructMethodHasStaticComponent;
-import org.apache.webbeans.test.component.exception.ProducerTypeStaticComponent;
-import org.apache.webbeans.test.component.exception.InnerComponent.InnerInnerComponent;
+import org.apache.webbeans.test.component.exception.*;
 import org.apache.webbeans.test.component.intercept.NoArgConstructorInterceptorComponent;
 import org.junit.Test;
 
@@ -59,34 +42,14 @@ public class ExceptionComponentTest extends AbstractUnitTest
     }
 
     @Test
-    public void testAbstract()
-    {
-        try
-        {
-            startContainer(AbstractOwbBean.class);
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            System.out.println("got expected exception: " + e.getMessage());
-            return; // all ok!
-        }
-        Assert.fail("expecting an exception!");
-        shutDownContainer();
-    }
-
-    @Test
     public void testInner()
     {
-        try
-        {
-            startContainer(InnerInnerComponent.class);
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            System.out.println("got expected exception: " + e.getMessage());
-            return; // all ok!
-        }
-        Assert.fail("expecting an exception!");
+        startContainer(InnerComponent.class);
+
+        // this should not have been picked up as managed bean according to CDI-1.0 paragraph 3.1.1
+        Set<Bean<?>> innerinnerComponentBeans = getBeanManager().getBeans(InnerComponent.InnerInnerComponent.class);
+        Assert.assertNotNull(innerinnerComponentBeans);
+        Assert.assertEquals(0, innerinnerComponentBeans.size());
         shutDownContainer();
     }
 
