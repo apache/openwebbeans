@@ -60,7 +60,9 @@ public class AnnotatedFieldImpl<X> extends AbstractAnnotatedMember<X> implements
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("Annotated Field,");
+        builder.append("Annotated Field '");
+        builder.append(javaMember.getName());
+        builder.append("', ");
         builder.append(super.toString());
         
         return builder.toString();

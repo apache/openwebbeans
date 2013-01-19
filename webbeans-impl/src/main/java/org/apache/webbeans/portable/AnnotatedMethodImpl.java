@@ -60,9 +60,11 @@ class AnnotatedMethodImpl<X> extends AbstractAnnotatedCallable<X> implements Ann
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("Annotated Method,");
+        builder.append("Annotated Method '");
+        builder.append(javaMember.getName());
+        builder.append("', ");
         builder.append(super.toString());
-        
+
         return builder.toString();
     }
     
