@@ -92,18 +92,18 @@ public class ReplaceInjectionTargetTest extends AbstractUnitTest
     public void checkCustomWrapperIsUsed() {
         addExtension(new InjectionTargetReplacer());
 
-        final Collection<String> beanXmls = new ArrayList<String>();
-
         final Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(IJBean.class);
         beanClasses.add(InjectedBean.class);
 
-        startContainer(beanClasses, beanXmls);
+        startContainer(beanClasses, null);
 
         final Set<Bean<?>> beans = getBeanManager().getBeans(IJBean.class);
         assertNotNull(beans);
         assertFalse(beans.isEmpty());
-        assertNotNull(getBeanManager().getReference(beans.iterator().next(), IJBean.class, null));
+        Bean<?> bean = getBeanManager().resolve(beans);
+        CreationalContext<?> cc = getBeanManager().createCreationalContext(bean);
+        assertNotNull(getBeanManager().getReference(beans.iterator().next(), IJBean.class, cc));
         assertTrue(MyInjectionTarget.injected);
 
         shutDownContainer();

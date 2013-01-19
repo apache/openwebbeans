@@ -677,12 +677,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             }
             
         }
-        
-        if(!(creationalContext instanceof CreationalContextImpl))
-        {
-            creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(creationalContext, bean);
-        }        
-        
                 
         //Scope is normal
         if (webBeansContext.getWebBeansUtil().isScopeTypeNormal(bean.getScope()))
