@@ -18,65 +18,29 @@
  */
 package org.apache.webbeans.test.unittests.intercept;
 
-import java.util.List;
-
-import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.PostConstructComponent;
-import org.junit.Before;
 import org.junit.Test;
 
-public class PostConstructComponentTest extends TestContext
+public class PostConstructComponentTest extends AbstractUnitTest
 {
-    BeanManager container = null;
-
-    public PostConstructComponentTest()
-    {
-        super(PostConstructComponentTest.class.getSimpleName());
-    }
-
-    @Before
-    public void init()
-    {
-        super.init();
-    }
-
     @SuppressWarnings("unchecked")
     @Test
     public void testTypedComponent() throws Throwable
     {
-        clear();
+        startContainer(CheckWithCheckPayment.class, PostConstructComponent.class);
 
-        defineManagedBean(CheckWithCheckPayment.class);
-        defineManagedBean(PostConstructComponent.class);
-        List<AbstractOwbBean<?>> comps = getComponents();
-
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-
-        Assert.assertEquals(2, comps.size());
-
-        CheckWithCheckPayment object =(CheckWithCheckPayment) getManager().getInstance(comps.get(0));
-        Object object2 = getManager().getInstance(comps.get(1));
-
-        Assert.assertTrue(object instanceof CheckWithCheckPayment);
-        Assert.assertTrue(object2 instanceof PostConstructComponent);
-
-        PostConstructComponent pcc = (PostConstructComponent) object2;
+        CheckWithCheckPayment object = getInstance("checkWithCheckPayment");
+        PostConstructComponent pcc = getInstance(PostConstructComponent.class);
 
         CheckWithCheckPayment chk = (CheckWithCheckPayment) pcc.getP();
 
         Assert.assertNotNull(pcc.getP());
         Assert.assertSame(object.getValue(), chk.getValue());
-
-        contextFactory.destroyRequestContext(null);
     }
 
 }
