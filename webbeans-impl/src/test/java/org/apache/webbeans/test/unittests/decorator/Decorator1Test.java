@@ -67,8 +67,8 @@ public class Decorator1Test extends TestContext
         initializeDecoratorType(ServiceDecorator.class);
         initializeDecoratorType(LargeTransactionDecorator.class);        
         
-        defineManagedBean(CheckWithCheckPayment.class);
         defineDecorator(ServiceDecorator.class);
+        defineManagedBean(CheckWithCheckPayment.class);
         AbstractOwbBean<ServiceImpl1> component = defineManagedBean(ServiceImpl1.class);
 
         WebBeansContext webBeansContext = WebBeansContext.getInstance();

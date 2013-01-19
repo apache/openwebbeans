@@ -40,6 +40,8 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.CdiInterceptorBean;
+import org.apache.webbeans.component.DecoratorBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.ManagedBean;
@@ -311,7 +313,9 @@ public abstract class TestContext implements ITestContext
         AnnotatedType annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
         CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType);
         ibb.defineCdiInterceptorRules();
-        return ibb.getBean();
+        CdiInterceptorBean<T> bean = ibb.getBean();
+        webBeansContext.getInterceptorsManager().addCdiInterceptor(bean);
+        return bean;
     }
 
     /**
@@ -320,7 +324,6 @@ public abstract class TestContext implements ITestContext
      * @param clazz decorator class
      * @return the new decorator
      */
-    @SuppressWarnings("unchecked")
     protected <T> AbstractOwbBean<T> defineDecorator(Class<T> clazz)
     {
 
@@ -331,7 +334,9 @@ public abstract class TestContext implements ITestContext
             DecoratorBeanBuilder<T> dbb = new DecoratorBeanBuilder<T>(webBeansContext, annotatedType);
             dbb.defineDecoratorRules();
 
-            return dbb.getBean();
+            DecoratorBean<T> bean = dbb.getBean();
+            webBeansContext.getDecoratorsManager().addDecorator(bean);
+            return bean;
         }
 
         return null;
