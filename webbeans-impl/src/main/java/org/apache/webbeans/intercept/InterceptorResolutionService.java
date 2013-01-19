@@ -22,6 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
@@ -29,12 +30,14 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
+import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,6 +52,7 @@ import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.SelfInterceptorBean;
 import org.apache.webbeans.component.creation.SelfInterceptorBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -315,8 +319,6 @@ public class InterceptorResolutionService
      */
     private Method getDecoratingMethod(Decorator decorator, AnnotatedMethod annotatedMethod)
     {
-        String annotatedMethodName = annotatedMethod.getJavaMember().getName();
-
         Set<Type> decoratedTypes = decorator.getDecoratedTypes();
         for (Type decoratedType : decoratedTypes)
         {
@@ -453,29 +455,52 @@ public class InterceptorResolutionService
         Set<InterceptionType> interceptionTypes = new HashSet<InterceptionType>();
         for (Annotation annotation : interceptableAnnotatedMethod.getAnnotations())
         {
-            if (annotation.equals(PostConstruct.class))
+            if (annotation instanceof PostConstruct)
             {
+                verifyLifecycleMethodParameters(annotation, interceptableAnnotatedMethod);
                 interceptionTypes.add(InterceptionType.POST_CONSTRUCT);
             }
-            if (annotation.equals(PreDestroy.class))
+            if (annotation instanceof PreDestroy)
             {
+                verifyLifecycleMethodParameters(annotation, interceptableAnnotatedMethod);
                 interceptionTypes.add(InterceptionType.PRE_DESTROY);
             }
-            if (null != ejbPlugin && annotation.equals(prePassivateClass))
+            if (null != ejbPlugin && prePassivateClass.isAssignableFrom(annotation.getClass()))
             {
+                verifyLifecycleMethodParameters(annotation, interceptableAnnotatedMethod);
                 interceptionTypes.add(InterceptionType.PRE_PASSIVATE);
             }
-            if (null != ejbPlugin && annotation.equals(postActivateClass))
+            if (null != ejbPlugin && postActivateClass.isAssignableFrom(annotation.getClass()))
             {
+                verifyLifecycleMethodParameters(annotation, interceptableAnnotatedMethod);
                 interceptionTypes.add(InterceptionType.POST_ACTIVATE);
             }
-            if (null != ejbPlugin && annotation.equals(aroundTimeoutClass))
+            if (null != ejbPlugin && aroundTimeoutClass.isAssignableFrom(annotation.getClass()))
             {
+                verifyLifecycleMethodParameters(annotation, interceptableAnnotatedMethod);
                 interceptionTypes.add(InterceptionType.AROUND_TIMEOUT);
             }
         }
 
         return interceptionTypes;
+    }
+
+    /**
+     * Check that the given lifecycle method either has
+     * no parameter at all (standard case), or
+     * exactly one InvocationContext parameter (self-interception)
+     * @param annotatedMethod
+     */
+    private void verifyLifecycleMethodParameters(Annotation lifecycleAnnotation, AnnotatedMethod annotatedMethod)
+    {
+        List<AnnotatedParameter<?>> params = annotatedMethod.getParameters();
+        if (params.size() > 0 && (params.size() > 1 || !params.get(0).getBaseType().equals(InvocationContext.class)))
+        {
+            throw new WebBeansConfigurationException(lifecycleAnnotation + " LifecycleMethod "
+                                                     + annotatedMethod.getJavaMember()
+                                                     + " must either have no parameter or InvocationContext but has:"
+                                                     + Arrays.toString(annotatedMethod.getJavaMember().getParameterTypes()));
+        }
     }
 
     /**

@@ -18,15 +18,12 @@
  */
 package org.apache.webbeans.test.unittests.exception;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.exception.AroundInvokeWithFinalMethodComponent;
 import org.apache.webbeans.test.component.exception.AroundInvokeWithSameMethodNameComponent;
 import org.apache.webbeans.test.component.exception.AroundInvokeWithStaticMethodComponent;
@@ -49,29 +46,16 @@ import org.apache.webbeans.test.component.exception.PostContructMethodHasStaticC
 import org.apache.webbeans.test.component.exception.ProducerTypeStaticComponent;
 import org.apache.webbeans.test.component.exception.InnerComponent.InnerInnerComponent;
 import org.apache.webbeans.test.component.intercept.NoArgConstructorInterceptorComponent;
-import org.junit.Before;
 import org.junit.Test;
 
-public class ExceptionComponentTest extends TestContext
+public class ExceptionComponentTest extends AbstractUnitTest
 {
-
-    public ExceptionComponentTest()
-    {
-        super(ExceptionComponentTest.class.getName());
-    }
-
-    @Before
-    public void init()
-    {
-        super.init();
-
-    }
 
     @Test
     public void testFinal()
     {
-        clear();
-        defineManagedBean(FinalComponent.class);
+        startContainer(FinalComponent.class);
+        shutDownContainer();
     }
 
     @Test
@@ -79,8 +63,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            defineManagedBean(AbstractOwbBean.class);
+            startContainer(AbstractOwbBean.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -88,6 +71,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -95,8 +79,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            defineManagedBean(InnerInnerComponent.class);
+            startContainer(InnerInnerComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -104,6 +87,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -111,8 +95,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            defineManagedBean(HasFinalMethodComponent.class);
+            startContainer(HasFinalMethodComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -120,6 +103,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -127,9 +111,9 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            defineManagedBean(MoreThanOneConstructureComponent.class);
+            startContainer(MoreThanOneConstructureComponent.class);
             Assert.fail("expecting an exception!");
+            shutDownContainer();
         }
         catch (WebBeansConfigurationException e)
         {
@@ -139,24 +123,24 @@ public class ExceptionComponentTest extends TestContext
 
         try
         {
-            clear();
-            defineManagedBean(MoreThanOneConstructureComponent2.class);
+            startContainer(MoreThanOneConstructureComponent2.class);
             // all ok
         }
         catch (WebBeansConfigurationException e)
         {
             System.out.println("got expected exception: " + e.getMessage());
         }
+        shutDownContainer();
 
-        clear();
-        defineManagedBean(NoConstructureComponent.class);
+        startContainer(NoConstructureComponent.class);
+        shutDownContainer();
     }
 
     @Test
     public void testStaticProducerMethod()
     {
-        clear();
-        defineManagedBean(ProducerTypeStaticComponent.class);
+        startContainer(ProducerTypeStaticComponent.class);
+        shutDownContainer();
     }
 
     @Test
@@ -164,8 +148,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            defineManagedBean(MultipleDisposalMethodComponent.class);
+            startContainer(MultipleDisposalMethodComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -173,6 +156,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -186,8 +170,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            defineManagedBean(NewComponentBindingComponent.class);
+            startContainer(NewComponentBindingComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -195,6 +178,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -208,10 +192,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            InjectionTargetBean<MoreThanOnePostConstructComponent> component = defineManagedBean(MoreThanOnePostConstructComponent.class);
-            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(component.getReturnType());
-            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType);
+            startContainer(MoreThanOnePostConstructComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -219,6 +200,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -226,10 +208,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            InjectionTargetBean<PostContructMethodHasParameterComponent> component = defineManagedBean(PostContructMethodHasParameterComponent.class);
-            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(component.getReturnType());
-            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType);
+            startContainer(PostContructMethodHasParameterComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -237,6 +216,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -244,10 +224,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            InjectionTargetBean<?> component = defineManagedBean(PostContructMethodHasReturnTypeComponent.class);
-            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(component.getReturnType());
-            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType);
+            startContainer(PostContructMethodHasReturnTypeComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -255,6 +232,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -262,10 +240,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            InjectionTargetBean<?> component = defineManagedBean(PostContructMethodHasCheckedExceptionComponent.class);
-            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(component.getReturnType());
-            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType);
+            startContainer(PostContructMethodHasCheckedExceptionComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -273,6 +248,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -280,10 +256,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            InjectionTargetBean<?> component = defineManagedBean(PostContructMethodHasStaticComponent.class);
-            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(component.getReturnType());
-            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType);
+            startContainer(PostContructMethodHasStaticComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -291,6 +264,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -298,10 +272,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            InjectionTargetBean<?> component = defineManagedBean(MoreThanOneAroundInvokeComponent.class);
-            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(component.getReturnType());
-            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType);
+            startContainer(MoreThanOneAroundInvokeComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -309,16 +280,14 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
     public void testAroundInvokeWithSameMethodName()
     {
-        clear();
-        defineManagedBean(AroundInvokeWithSameMethodNameComponent.class);
-        Bean<?> comp = getComponents().get(0);
-
-        //X TODO reimplement with new test suite: Assert.assertEquals(0, ((InjectionTargetBean<?>) comp).getInterceptorStack().size());
+        startContainer(AroundInvokeWithSameMethodNameComponent.class);
+        shutDownContainer();
     }
 
     @Test
@@ -326,10 +295,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            InjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithoutParameterComponent.class);
-            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(component.getReturnType());
-            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType);
+            startContainer(AroundInvokeWithoutParameterComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -337,6 +303,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -344,10 +311,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            InjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithoutReturnTypeComponent.class);
-            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(component.getReturnType());
-            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType);
+            startContainer(AroundInvokeWithoutReturnTypeComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -355,6 +319,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -362,10 +327,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            InjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithWrongReturnTypeComponent.class);
-            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(component.getReturnType());
-            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType);
+            startContainer(AroundInvokeWithWrongReturnTypeComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -373,6 +335,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -380,10 +343,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            InjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithStaticMethodComponent.class);
-            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(component.getReturnType());
-            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType);
+            startContainer(AroundInvokeWithStaticMethodComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -391,6 +351,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -398,10 +359,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            InjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithFinalMethodComponent.class);
-            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(component.getReturnType());
-            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType);
+            startContainer(AroundInvokeWithFinalMethodComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -409,6 +367,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
     @Test
@@ -416,10 +375,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
-            clear();
-            InjectionTargetBean<?> component = defineManagedBean(NoArgConstructorInterceptorComponent.class);
-            AnnotatedType annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(component.getReturnType());
-            getWebBeansContext().getEJBInterceptorConfig().configure(annotatedType);
+            startContainer(NoArgConstructorInterceptorComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -427,6 +383,7 @@ public class ExceptionComponentTest extends TestContext
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
+        shutDownContainer();
     }
 
 }

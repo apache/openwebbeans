@@ -61,8 +61,6 @@ import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.InterceptionType;
-import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
@@ -78,7 +76,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Scope;
 import javax.interceptor.AroundInvoke;
-import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.annotation.AnnotationManager;
@@ -116,10 +113,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
-import org.apache.webbeans.intercept.InterceptorData;
-import org.apache.webbeans.intercept.InterceptorDataImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.ProducerFieldProducer;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
@@ -884,142 +878,6 @@ public final class WebBeansUtil
         {
             return null;
         }
-    }
-
-
-    /**
-     * Configures the interceptor stack of the web beans component.
-     *
-     * @param annotation annotation type
-     * @param definedInInterceptorClass check if annotation is defined in
-     *            interceptor class (as opposed to bean class)
-     * @param definedInMethod check if the interceptor is defined in the comp.
-     *            method
-     * @param stack interceptor stack
-     * @param annotatedInterceptorClassMethod if definedInMethod, this specify
-     *            method
-     * @param defineWithInterceptorBinding if interceptor is defined with WebBeans
-     *            spec, not EJB spec
-     */
-    public <T> void configureInterceptorMethods(Interceptor<?> webBeansInterceptor,
-                                                 AnnotatedType<T> annotatedType,
-                                                 Class<? extends Annotation> annotation,
-                                                 boolean definedInInterceptorClass,
-                                                 boolean definedInMethod,
-                                                 List<InterceptorData> stack,
-                                                 Method annotatedInterceptorClassMethod,
-                                                 boolean defineWithInterceptorBinding)
-    {
-        InterceptorData intData;
-        Set<Method> methods = null;
-        OpenWebBeansEjbLCAPlugin ejbPlugin;
-        Class<? extends Annotation> prePassivateClass  = null;
-        Class<? extends Annotation> postActivateClass  = null;
-
-        ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
-        if(ejbPlugin != null)
-        {
-            prePassivateClass  = ejbPlugin.getPrePassivateClass();
-            postActivateClass  = ejbPlugin.getPostActivateClass();
-        }
-
-        //Check for default constructor of EJB based interceptor
-        if(webBeansInterceptor == null)
-        {
-            if(definedInInterceptorClass)
-            {
-                Constructor<?> ct = getNoArgConstructor(annotatedType.getJavaClass());
-                if (ct == null)
-                {
-                    throw new WebBeansConfigurationException("class : " + annotatedType.getJavaClass().getName()
-                            + " must have no-arg constructor");
-                }
-            }
-        }
-
-        if (annotation.equals(AroundInvoke.class) ||
-                annotation.equals(AroundTimeout.class))
-        {
-            methods = checkAroundInvokeAnnotationCriterias(annotatedType, annotation);
-        }
-        else if (annotation.equals(PostConstruct.class) || ((postActivateClass != null) && (annotation.equals(postActivateClass)))
-                 || annotation.equals(PreDestroy.class) || ((prePassivateClass != null) && (annotation.equals(prePassivateClass))))
-        {
-            methods = checkCommonAnnotationCriterias(annotatedType, annotation, definedInInterceptorClass);
-        }
-
-        if (methods != null && !methods.isEmpty())
-        {
-            for (Method method : methods)
-            {
-                intData = new InterceptorDataImpl(defineWithInterceptorBinding, webBeansContext);
-                intData.setDefinedInInterceptorClass(definedInInterceptorClass);
-                intData.setDefinedInMethod(definedInMethod);
-                intData.setInterceptorBindingMethod(annotatedInterceptorClassMethod);
-                intData.setWebBeansInterceptor(webBeansInterceptor);
-
-                if (definedInInterceptorClass)
-                {
-                    intData.setInterceptorClass(annotatedType.getJavaClass());
-                }
-
-                intData.setInterceptorMethod(method, annotation);
-                stack.add(intData);
-            }
-        }
-    }
-
-    /**
-     * Returns true if interceptor stack contains interceptor with given type.
-     *
-     * @param stack interceptor stack
-     * @param type interceptor type
-     * @return true if stack contains the interceptor with given type
-     */
-    public static boolean isContainsInterceptorMethod(List<InterceptorData> stack, InterceptionType type)
-    {
-        if (stack.size() > 0)
-        {
-            Iterator<InterceptorData> it = stack.iterator();
-            while (it.hasNext())
-            {
-                Method m = null;
-                InterceptorData data = it.next();
-
-                if (type.equals(InterceptionType.AROUND_INVOKE))
-                {
-                    m = data.getAroundInvoke();
-                }
-                else if (type.equals(InterceptionType.AROUND_TIMEOUT))
-                {
-                    m = data.getAroundTimeout();
-                }
-                else if (type.equals(InterceptionType.POST_CONSTRUCT))
-                {
-                    m = data.getPostConstruct();
-                }
-                else if (type.equals(InterceptionType.POST_ACTIVATE))
-                {
-                    m = data.getPostActivate();
-                }
-                else if (type.equals(InterceptionType.PRE_DESTROY))
-                {
-                    m = data.getPreDestroy();
-                }
-                else if (type.equals(InterceptionType.PRE_PASSIVATE))
-                {
-                    m = data.getPrePassivate();
-                }
-
-                if (m != null)
-                {
-                    return true;
-                }
-
-            }
-        }
-
-        return false;
     }
 
     public static String getManagedBeanDefaultName(String clazzName)
