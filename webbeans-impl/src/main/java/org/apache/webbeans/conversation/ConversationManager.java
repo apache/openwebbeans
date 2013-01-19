@@ -148,7 +148,7 @@ public class ConversationManager
      * @param sessionId session id
      * @return conversation
      */
-    public Conversation getPropogatedConversation(String conversationId, String sessionId)
+    public ConversationImpl getPropogatedConversation(String conversationId, String sessionId)
     {
         Asserts.assertNotNull(conversationId, "conversationId parameter can not be null");
         Asserts.assertNotNull(sessionId,"sessionId parameter can not be null");

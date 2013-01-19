@@ -91,7 +91,7 @@ public final class InterceptorUtil
     public List<Class> getReverseClassHierarchy(Class clazz)
     {
         List<Class> hierarchy = new ArrayList<Class>();
-        while (clazz != Object.class)
+        while (clazz != null && clazz != Object.class)
         {
             hierarchy.add(0, clazz);
             clazz = clazz.getSuperclass();

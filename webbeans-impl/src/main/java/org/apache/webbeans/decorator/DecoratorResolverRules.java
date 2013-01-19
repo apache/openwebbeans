@@ -31,7 +31,6 @@ public final class DecoratorResolverRules
         throw new UnsupportedOperationException();
     }
     
-    @SuppressWarnings("unchecked")
     public static boolean compareType(Type delegateType, Type beanType)
     {
         Asserts.assertNotNull(delegateType, "delegateType parameter is null");

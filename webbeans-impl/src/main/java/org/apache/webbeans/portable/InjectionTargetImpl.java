@@ -164,7 +164,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public T produce(CreationalContext<T> creationalContext)
     {
-        T instance = new InjectableConstructor<T>(getConstructor().getJavaMember(), this, (CreationalContextImpl<T>) creationalContext).doInjection();
+        T instance = newInstance((CreationalContextImpl<T>) creationalContext);
 
         if (interceptorInfo != null)
         {
@@ -202,6 +202,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                     CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>)creationalContext;
                     creationalContextImpl.putDelegate(delegate);
                     Object decoratorInstance = decorator.create((CreationalContext) creationalContext);
+                    creationalContextImpl.addDependent(instance, decorator, decoratorInstance);
                     instances.put(decorator, decoratorInstance);
                     delegate = pf.createProxyInstance(proxyClass, instance, new DecoratorHandler(interceptorInfo, instances, i - 1, instance));
                 }
@@ -213,6 +214,11 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         }
 
         return instance;
+    }
+    
+    protected T newInstance(CreationalContextImpl<T> creationalContext)
+    {
+        return new InjectableConstructor<T>(getConstructor().getJavaMember(), this, creationalContext).doInjection();
     }
 
     @Override

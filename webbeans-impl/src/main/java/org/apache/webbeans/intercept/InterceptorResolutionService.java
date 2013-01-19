@@ -321,6 +321,7 @@ public class InterceptorResolutionService
         for (Type decoratedType : decoratedTypes)
         {
             if (decoratedType instanceof ParameterizedType) {
+                // TODO handle the case that method parameter types are TypeVariables
                 ParameterizedType parameterizedType = (ParameterizedType)decoratedType;
                 decoratedType = parameterizedType.getRawType();
             }

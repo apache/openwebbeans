@@ -94,14 +94,6 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
     /**
      * {@inheritDoc}
      */
-    protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
-    {
-        getInjectionTarget().preDestroy(instance);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public List<InterceptorData> getInterceptorStack()
     {
         return interceptorStack;

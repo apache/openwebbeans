@@ -25,9 +25,11 @@ import java.util.Collections;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationImpl;
+import org.apache.webbeans.portable.ConversationProducer;
 import org.apache.webbeans.spi.ConversationService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
@@ -37,7 +39,7 @@ import org.apache.webbeans.util.CollectionUtil;
  * @version $Rev$ $Date$
  *
  */
-public class ConversationBean extends InjectionTargetBean<Conversation>
+public class ConversationBean extends InjectionTargetBean<ConversationImpl> implements InterceptedMarker
 {
     /**
      * Default constructor.
@@ -47,14 +49,15 @@ public class ConversationBean extends InjectionTargetBean<Conversation>
     {
         super(webBeansContext,
               WebBeansType.CONVERSATION,
-              webBeansContext.getAnnotatedElementFactory().newAnnotatedType(Conversation.class),
+              webBeansContext.getAnnotatedElementFactory().newAnnotatedType(ConversationImpl.class),
               CollectionUtil.<Type>unmodifiableSet(Conversation.class, ConversationImpl.class, Object.class),
               AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
               RequestScoped.class,
               "javax.enterprise.context.conversation",
-              Conversation.class,
+              ConversationImpl.class,
               Collections.<Class<? extends Annotation>>emptySet(),
               false);
         setEnabled(true);
+        setProducer(new ConversationProducer(getAnnotatedType(), webBeansContext));
     }
 }
