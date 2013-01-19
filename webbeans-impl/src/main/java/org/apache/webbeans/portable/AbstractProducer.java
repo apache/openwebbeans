@@ -21,7 +21,6 @@ package org.apache.webbeans.portable;
 import java.util.Collections;
 import java.util.Set;
 
-import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
@@ -48,6 +47,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
     }
 
     @Override
-    public void dispose(T instance) {
+    public void dispose(T instance)
+    {
     }
 }

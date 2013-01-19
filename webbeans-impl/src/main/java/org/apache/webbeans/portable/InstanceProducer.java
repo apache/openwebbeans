@@ -21,21 +21,15 @@ package org.apache.webbeans.portable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.Set;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.util.TypeLiteral;
-import javax.inject.Provider;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.inject.AbstractInjectable;
 import org.apache.webbeans.inject.instance.InstanceImpl;
-import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.CollectionUtil;
 
 public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
 {

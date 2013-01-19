@@ -20,13 +20,10 @@ package org.apache.webbeans.ee.common.beans;
 
 import java.security.Principal;
 
-import javax.enterprise.context.spi.CreationalContext;
-
 import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.ProviderBasedProxyProducer;
-import org.apache.webbeans.spi.SecurityService;
 
 public class PrincipalBean extends BuildInOwbBean<Principal>
 {

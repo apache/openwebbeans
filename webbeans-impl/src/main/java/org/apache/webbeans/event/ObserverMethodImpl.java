@@ -49,8 +49,6 @@ import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.component.EventBean;
-import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;

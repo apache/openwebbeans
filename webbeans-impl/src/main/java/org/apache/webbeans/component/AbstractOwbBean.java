@@ -215,26 +215,6 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
     }
 
     /**
-     * Destroy the instance of the bean. Each subclass must define its own
-     * destroy mechanism.
-     * 
-     * @param instance instance of the bean that is being destroyed
-     * @param creationalContext the contextual instance has been created in
-     */
-    protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
-    {
-        
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void destroyCreatedInstance(T instance, CreationalContext<T> creationalContext)
-    {
-        destroyInstance(instance, creationalContext);
-    }
-    
-    /**
      * get the unique Id of the bean. This will get used as reference on
      * passivation.
      *

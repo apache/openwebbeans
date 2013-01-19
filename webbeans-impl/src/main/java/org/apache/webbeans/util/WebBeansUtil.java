@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -542,7 +541,6 @@ public final class WebBeansUtil
      * Creates a new instance bean.
      * @return new instance bean
      */
-    @SuppressWarnings("serial")
     public <T> InstanceBean<T> getInstanceBean()
     {
         return new InstanceBean<T>(webBeansContext);
@@ -552,7 +550,6 @@ public final class WebBeansUtil
      * Creates a new event bean.
      * @return new event bean
      */
-    @SuppressWarnings("serial")
     public <T> EventBean<T> getEventBean()
     {
         return new EventBean<T>(webBeansContext);

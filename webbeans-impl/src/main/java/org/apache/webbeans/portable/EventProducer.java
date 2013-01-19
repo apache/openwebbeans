@@ -30,7 +30,8 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansException;
 
-public class EventProducer<T> extends AbstractProducer<Event<T>> {
+public class EventProducer<T> extends AbstractProducer<Event<T>>
+{
 
     //X TODO refactor. public static variables are utterly ugly
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
@@ -45,7 +46,8 @@ public class EventProducer<T> extends AbstractProducer<Event<T>> {
      * {@inheritDoc}
      */
     @Override
-    public Event<T> produce(CreationalContext<Event<T>> creationalContext) {
+    public Event<T> produce(CreationalContext<Event<T>> creationalContext)
+    {
         Event<T> instance = null;
 
         InjectionPoint injectionPoint = local.get();

@@ -18,15 +18,12 @@
  */
 package org.apache.webbeans.ee.beans;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.validation.ValidatorFactory;
 
-import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.ProviderBasedProxyProducer;
-import org.apache.webbeans.spi.ValidatorService;
 
 public class ValidatorFactoryBean extends BuildInOwbBean<ValidatorFactory>
 {

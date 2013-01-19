@@ -24,7 +24,8 @@ import javax.inject.Provider;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
 
-public class ProviderBasedProxyProducer<T> extends AbstractProducer<T> {
+public class ProviderBasedProxyProducer<T> extends AbstractProducer<T>
+{
 
     private WebBeansContext webBeansContext;
     private Class<T> returnType;
@@ -39,7 +40,8 @@ public class ProviderBasedProxyProducer<T> extends AbstractProducer<T> {
     }
 
     @Override
-    public T produce(CreationalContext<T> creationalContext) {
+    public T produce(CreationalContext<T> creationalContext)
+    {
         if (proxyInstance == null)
         {
             NormalScopeProxyFactory proxyFactory = webBeansContext.getNormalScopeProxyFactory();

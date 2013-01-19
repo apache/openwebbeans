@@ -31,26 +31,30 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.util.Asserts;
 
-public class ProducerMethodProducerBuilder<T, P> {
+public class ProducerMethodProducerBuilder<T, P>
+{
 
     private ProducerMethodBean<T> bean;
     private AnnotatedMethod<P> producerMethod;
     private AnnotatedMethod<P> disposalMethod;
     private Set<InjectionPoint> injectionPoints;
 
-    public ProducerMethodProducerBuilder(ProducerMethodBean<T> producerMethodBean) {
+    public ProducerMethodProducerBuilder(ProducerMethodBean<T> producerMethodBean)
+    {
         Asserts.assertNotNull(producerMethodBean);
         this.bean = producerMethodBean;
     }
 
-    public ProducerMethodProducer<T, P> build(AnnotatedMethod<P> method) {
+    public ProducerMethodProducer<T, P> build(AnnotatedMethod<P> method)
+    {
         producerMethod = method;
         defineDisposalMethod();
         defineInjectionPoints();
         return new ProducerMethodProducer<T, P>((OwbBean<P>) bean.getParent(), producerMethod, disposalMethod, injectionPoints);
     }
 
-    private void defineDisposalMethod() {
+    private void defineDisposalMethod()
+    {
         Set<AnnotatedMethod<? super P>> annotatedMethods = producerMethod.getDeclaringType().getMethods();
         for (AnnotatedMethod<? super P> annotatedMethod : annotatedMethods)
         {            
@@ -68,7 +72,8 @@ public class ProducerMethodProducerBuilder<T, P> {
         }
     }    
 
-    private void defineInjectionPoints() {
+    private void defineInjectionPoints()
+    {
         injectionPoints = new HashSet<InjectionPoint>(bean.getWebBeansContext().getInjectionPointFactory().getMethodInjectionPointData(bean, producerMethod));
         if (disposalMethod != null)
         {

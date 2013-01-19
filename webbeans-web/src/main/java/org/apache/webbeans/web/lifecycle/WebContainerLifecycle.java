@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.web.lifecycle;
 
-import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;

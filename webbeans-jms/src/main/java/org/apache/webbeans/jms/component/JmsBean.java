@@ -19,24 +19,18 @@
 package org.apache.webbeans.jms.component;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Set;
-import java.util.logging.Level;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.jms.Destination;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.jms.JMSModel;
-import org.apache.webbeans.jms.util.Closable;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 public class JmsBean<T> extends AbstractOwbBean<T> implements JmsBeanMarker
 {
@@ -47,25 +41,6 @@ public class JmsBean<T> extends AbstractOwbBean<T> implements JmsBeanMarker
         super(webBeansContext, WebBeansType.JMS, types, qualifiers, Dependent.class, Destination.class, Collections.<Class<? extends Annotation>>emptySet());
         this.jmsModel = jmsModel;
     }
-
-    @Override
-    protected void destroyInstance(T instance,CreationalContext<T> creationalContext)
-    {        
-        try
-        {
-            if(instance != null)
-            {
-                Method method = Closable.class.getMethod("closeJMSObject", new Class[]{});
-                
-                method.invoke(instance, new Object[]{});                    
-            }
-        }
-        
-        catch (Exception e)
-        {
-            logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0010, e));
-        }
-}
         
     public JMSModel getJmsModel()
     {

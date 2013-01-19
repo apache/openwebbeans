@@ -577,7 +577,8 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                             = new ResourceBeanBuilder<T, Annotation>(bean, resourceRef, annotatedField);
                         resourceBeanCreator.defineQualifiers();
                         ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
-                        resourceBean.setProducer(new ProviderBasedProxyProducer(webBeansContext, resourceBean.getReturnType(), new ResourceProvider(resourceBean.getReference(), webBeansContext)));
+                        ResourceProvider<T> resourceProvider = new ResourceProvider<T>(resourceBean.getReference(), webBeansContext);
+                        resourceBean.setProducer(new ProviderBasedProxyProducer<T>(webBeansContext, resourceBean.getReturnType(), resourceProvider));
 
 
                         resourceBean.setProducerField(field);

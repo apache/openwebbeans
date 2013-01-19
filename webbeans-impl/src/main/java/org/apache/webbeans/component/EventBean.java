@@ -19,19 +19,14 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Event;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.event.EventImpl;
-import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.portable.EventProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;

@@ -24,13 +24,10 @@ import java.util.Collections;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.portable.ConversationProducer;
-import org.apache.webbeans.spi.ConversationService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
 

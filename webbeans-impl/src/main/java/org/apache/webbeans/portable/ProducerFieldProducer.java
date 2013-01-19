@@ -25,19 +25,17 @@ import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.util.WebBeansUtil;
 
-public class ProducerFieldProducer<T, P> extends AbstractProducer<T> {
+public class ProducerFieldProducer<T, P> extends AbstractProducer<T>
+{
 
     private Bean<P> owner;
     private WebBeansContext webBeansContext;
@@ -52,7 +50,8 @@ public class ProducerFieldProducer<T, P> extends AbstractProducer<T> {
     }
 
     @Override
-    public T produce(CreationalContext<T> creationalContext) {
+    public T produce(CreationalContext<T> creationalContext)
+    {
         T instance = null;
         P parentInstance = null;
         CreationalContext<P> parentCreational = null;

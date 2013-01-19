@@ -64,7 +64,6 @@ import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
-import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.NewBean;

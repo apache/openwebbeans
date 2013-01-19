@@ -27,9 +27,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.Context;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.SessionBeanType;
 
@@ -84,42 +81,6 @@ public abstract class BaseEjbBean<T> extends InjectionTargetBean<T> implements E
         }
         
         return false;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void destroyInstance(T instance, CreationalContext<T> creational)
-    {
-        if (getEjbType().equals(SessionBeanType.STATEFUL))
-        {
-            if ((this.getScope() == Dependent.class))
-            {
-                try
-                {
-                    Object ejbInstance = getDependentSFSBForProxy(instance);
-                    if (ejbInstance != null)
-                    {
-                        destroyStatefulSessionBeanInstance(instance, ejbInstance);
-                    }
-                }
-                finally
-                {
-                    removeDependentSFSB(instance);
-                }
-            }
-            else // normal scope  
-            { 
-                // The EjbBeanProxyHandler may not have actually obtained an EJB for this normal-scope Bean.
-                Context webbeansContext = WebBeansContext.getInstance().getBeanManagerImpl().getContext(this.getScope());
-                Object ejbInstance = webbeansContext.get(this);
-                if (ejbInstance != null)
-                {
-                    destroyStatefulSessionBeanInstance(instance, ejbInstance);
-                }
-            }
-        }
     }
 
     /**

@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.component.creation;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
@@ -37,7 +35,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;

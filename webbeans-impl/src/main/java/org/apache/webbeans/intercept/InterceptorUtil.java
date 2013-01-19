@@ -65,7 +65,7 @@ public final class InterceptorUtil
     /**
      * all the bit flags of private static and final modifiers
      */
-    public final int MODIFIER_STATIC_FINAL_PRIVATE = Modifier.STATIC | Modifier.FINAL | Modifier.PRIVATE;
+    public static final int MODIFIER_STATIC_FINAL_PRIVATE = Modifier.STATIC | Modifier.FINAL | Modifier.PRIVATE;
 
     private final WebBeansContext webBeansContext;
 

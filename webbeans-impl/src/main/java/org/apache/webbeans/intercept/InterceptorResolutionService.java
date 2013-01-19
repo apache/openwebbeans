@@ -320,7 +320,8 @@ public class InterceptorResolutionService
         Set<Type> decoratedTypes = decorator.getDecoratedTypes();
         for (Type decoratedType : decoratedTypes)
         {
-            if (decoratedType instanceof ParameterizedType) {
+            if (decoratedType instanceof ParameterizedType)
+            {
                 // TODO handle the case that method parameter types are TypeVariables
                 ParameterizedType parameterizedType = (ParameterizedType)decoratedType;
                 decoratedType = parameterizedType.getRawType();

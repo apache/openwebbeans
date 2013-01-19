@@ -19,14 +19,9 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.enterprise.context.spi.CreationalContext;
-import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.portable.ProviderBasedProxyProducer;
-import org.apache.webbeans.proxy.ResourceProxyHandler;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
 

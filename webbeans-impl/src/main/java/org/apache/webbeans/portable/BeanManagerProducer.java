@@ -24,7 +24,8 @@ import javax.enterprise.inject.spi.BeanManager;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectableBeanManager;
 
-public class BeanManagerProducer extends AbstractProducer<BeanManager> {
+public class BeanManagerProducer extends AbstractProducer<BeanManager>
+{
 
     private WebBeansContext context;
     private BeanManager manager;
@@ -35,7 +36,8 @@ public class BeanManagerProducer extends AbstractProducer<BeanManager> {
     }
 
     @Override
-    public BeanManager produce(CreationalContext<BeanManager> creationalContext) {
+    public BeanManager produce(CreationalContext<BeanManager> creationalContext)
+    {
         if (manager == null)
         {
             manager = new InjectableBeanManager(context.getBeanManagerImpl());
@@ -45,7 +47,8 @@ public class BeanManagerProducer extends AbstractProducer<BeanManager> {
     }
 
     @Override
-    public void dispose(BeanManager instance) {
+    public void dispose(BeanManager instance)
+    {
         manager = null;
     }
 }

@@ -23,7 +23,8 @@ import java.util.Stack;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-public class InjectionPointProducer extends AbstractProducer<InjectionPoint> {
+public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
+{
 
     //X TODO refactor. public static variables are utterly ugly
     private static ThreadLocal<Stack<InjectionPoint>> localThreadlocalStack = new ThreadLocal<Stack<InjectionPoint>>();
@@ -32,12 +33,14 @@ public class InjectionPointProducer extends AbstractProducer<InjectionPoint> {
      * {@inheritDoc}
      */
     @Override
-    public InjectionPoint produce(CreationalContext<InjectionPoint> creationalContext) {
+    public InjectionPoint produce(CreationalContext<InjectionPoint> creationalContext)
+    {
         return getStackOfInjectionPoints().peek();
     }
 
     @Override
-    public void dispose(InjectionPoint ip) {
+    public void dispose(InjectionPoint ip)
+    {
         removeThreadLocal();
     }
 

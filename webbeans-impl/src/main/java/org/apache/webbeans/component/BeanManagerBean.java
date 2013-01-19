@@ -23,19 +23,15 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.portable.BeanManagerProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
 
 public class BeanManagerBean extends AbstractOwbBean<BeanManager>
 {
-    private BeanManager manager = null;
-
     public BeanManagerBean(WebBeansContext webBeansContext)
     {
         super(webBeansContext,
@@ -47,12 +43,6 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
               Collections.<Class<? extends Annotation>>emptySet());
         setProducer(new BeanManagerProducer(webBeansContext));
     }
-
-    @Override
-    protected void destroyInstance(BeanManager instance,CreationalContext<BeanManager> creationalContext)
-    {
-        manager = null;
-    }
     
     /**
      * @see org.apache.webbeans.component.AbstractOwbBean#isPassivationCapable()
@@ -62,5 +52,4 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
     {
         return true;
     }    
-
 }

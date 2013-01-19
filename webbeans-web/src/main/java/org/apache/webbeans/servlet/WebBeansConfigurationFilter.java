@@ -19,7 +19,6 @@
 package org.apache.webbeans.servlet;
 
 
-import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.el.ELContextStore;

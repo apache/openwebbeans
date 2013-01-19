@@ -19,10 +19,8 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
-import java.util.Set;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;

@@ -34,9 +34,6 @@ import javax.enterprise.inject.spi.Producer;
 import javax.inject.Provider;
 
 import org.apache.webbeans.component.AbstractProducerBean;
-import org.apache.webbeans.component.EventBean;
-import org.apache.webbeans.component.InjectionPointBean;
-import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;

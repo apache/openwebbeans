@@ -21,8 +21,10 @@ package org.apache.webbeans.component;
 import java.lang.reflect.Member;
 import java.util.List;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.*;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Producer;
+
 import org.apache.webbeans.config.WebBeansContext;
 
 /**
@@ -49,13 +51,6 @@ public interface OwbBean<T> extends Bean<T>
      * @see WebBeansType
      */
     public WebBeansType getWebBeansType();
-
-    /**
-     * Destroys instance.
-     * @param instance instance
-     * @param creationalContext creational
-     */
-    public void destroyCreatedInstance(T instance, CreationalContext<T> creationalContext);
     
     /**
      * Adds new injection point.

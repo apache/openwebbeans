@@ -21,21 +21,12 @@ package org.apache.webbeans.component;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionTarget;
 
-import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.context.creational.DependentCreationalContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -124,7 +115,8 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     }
     
     @Override
-    public T create(CreationalContext<T> creationalContext) {
+    public T create(CreationalContext<T> creationalContext)
+    {
         T instance = super.create(creationalContext);
         // Check null instance
         checkNullInstance(instance);
@@ -132,79 +124,6 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         // Check scope type
         checkScopeType();
         return instance;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
-    {
-        dispose(instance,creationalContext);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void dispose(T instance, CreationalContext<T> creationalContext)
-    {
-        disposeDefault(instance, creationalContext);
-    }
-
-    /**
-     * Default dispose method used.
-     * 
-     * @param instance bean instance
-     */
-    @SuppressWarnings("unchecked")
-    protected void disposeDefault(T instance, CreationalContext<T> creationalContext)
-    {
-        if (disposalMethod != null)
-        {
-            Object parentInstance = null;
-            CreationalContext<?> parentCreational = null;
-            InjectableMethod<T> m = null;
-            try
-            {
-                parentCreational = getManager().createCreationalContext(ownerComponent);
-                
-                if (!Modifier.isStatic(disposalMethod.getModifiers()))
-                {
-                    parentInstance = getParentInstance(parentCreational);
-                }
-
-                InjectionTarget injectionTarget = ownerComponent.getInjectionTarget();
-                m = new InjectableMethod<T>(disposalMethod, parentInstance, injectionTarget, (CreationalContextImpl<T>) creationalContext);
-                m.setDisposable(true);
-                m.setProducerMethodInstance(instance);
-
-                m.doInjection();
-
-            }
-            finally
-            {
-                if (getParent().getScope().equals(Dependent.class))
-                {
-                    destroyBean(getParent(), parentInstance, parentCreational);
-                }
-
-                //Destroy dependent parameters
-                Map<Bean<?>, Object> dependents = m.getDependentBeanParameters();
-                if(dependents != null)
-                {
-                    Set<Bean<?>> beans = dependents.keySet();
-                    for(Bean<?> bean : beans)
-                    {
-                        Bean<Object> beanTt = (Bean<Object>)bean;
-                        if(creationalContext instanceof CreationalContextImpl)
-                        {
-                            beanTt.destroy(dependents.get(beanTt), (CreationalContext<Object>)creationalContext);
-                        }
-                    }
-                }
-                
-            }
-        }
     }
     
     /**

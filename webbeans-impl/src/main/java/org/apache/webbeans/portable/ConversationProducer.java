@@ -20,7 +20,6 @@ package org.apache.webbeans.portable;
 
 import java.util.Collections;
 
-import javax.enterprise.context.Conversation;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 
@@ -29,7 +28,8 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.spi.ConversationService;
 
-public class ConversationProducer extends InjectionTargetImpl<ConversationImpl> {
+public class ConversationProducer extends InjectionTargetImpl<ConversationImpl>
+{
 
     private WebBeansContext webBeansContext;
     
@@ -43,7 +43,8 @@ public class ConversationProducer extends InjectionTargetImpl<ConversationImpl> 
      * {@inheritDoc}
      */
     @Override
-    protected ConversationImpl newInstance(CreationalContextImpl<ConversationImpl> creationalContext) {
+    protected ConversationImpl newInstance(CreationalContextImpl<ConversationImpl> creationalContext)
+    {
         ConversationImpl conversation = null;
         //Gets conversation service
         ConversationService conversationService = webBeansContext.getService(ConversationService.class);

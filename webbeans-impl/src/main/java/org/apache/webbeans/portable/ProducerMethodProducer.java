@@ -37,7 +37,8 @@ import org.apache.webbeans.util.Asserts;
 /**
  * A {@link javax.enterprise.inject.spi.Producer} for producer-method beans.
  */
-public class ProducerMethodProducer<T, P> extends AbstractProducer<T> {
+public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
+{
 
     private Bean<P> owner;
     private WebBeansContext webBeansContext;
@@ -60,14 +61,16 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T> {
     }
 
     @Override
-    public T produce(CreationalContext<T> creationalContext) {
+    public T produce(CreationalContext<T> creationalContext)
+    {
         CreationalContextImpl<T> context = (CreationalContextImpl<T>)creationalContext;
         P ownerInstance = (P)webBeansContext.getBeanManagerImpl().getReference(owner, owner.getBeanClass(), creationalContext);
         return new InjectableMethod<T>(producerMethod.getJavaMember(), ownerInstance, this, context).doInjection();
     }
 
     @Override
-    public void dispose(T instance) {
+    public void dispose(T instance)
+    {
         if (disposalMethod != null)
         {
             P parentInstance = null;

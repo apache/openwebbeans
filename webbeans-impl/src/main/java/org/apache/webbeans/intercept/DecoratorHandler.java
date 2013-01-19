@@ -35,7 +35,8 @@ import org.apache.webbeans.util.ExceptionUtil;
  * InterceptorHandler which handles all the Decorators on the InjectionTarget.
  * This one always gets added at the last position in the interceptor chain.
  */
-public class DecoratorHandler implements InterceptorHandler {
+public class DecoratorHandler implements InterceptorHandler
+{
 
     private BeanInterceptorInfo interceptorInfo;
     private List<Decorator<?>> decorators;
@@ -43,7 +44,8 @@ public class DecoratorHandler implements InterceptorHandler {
     private int index;
     private Object target;
 
-    public DecoratorHandler(BeanInterceptorInfo interceptorInfo, Map<Decorator<?>, ?> instances, int index, Object target) {
+    public DecoratorHandler(BeanInterceptorInfo interceptorInfo, Map<Decorator<?>, ?> instances, int index, Object target)
+    {
         this.interceptorInfo = interceptorInfo;
         this.decorators = interceptorInfo.getDecorators();
         this.instances = instances;
@@ -52,7 +54,8 @@ public class DecoratorHandler implements InterceptorHandler {
     }
 
     @Override
-    public Object invoke(Method method, Object[] args) {
+    public Object invoke(Method method, Object[] args)
+    {
         BusinessMethodInterceptorInfo methodInterceptorInfo = interceptorInfo.getBusinessMethodsInfo().get(method);
         LinkedHashMap<Decorator<?>, Method> methodDecorators = methodInterceptorInfo.getMethodDecorators();
         for (int i = index; i < decorators.size(); i++)
@@ -61,20 +64,30 @@ public class DecoratorHandler implements InterceptorHandler {
             Method decoratingMethod = methodDecorators.get(decorator);
             if (decoratingMethod != null)
             {
-                try {
+                try
+                {
                     return decoratingMethod.invoke(instances.get(decorator), args);
-                } catch (InvocationTargetException e) {
+                }
+                catch (InvocationTargetException e)
+                {
                     return ExceptionUtil.throwAsRuntimeException(e.getTargetException());
-                } catch (Exception e) {
+                }
+                catch (Exception e)
+                {
                     return ExceptionUtil.throwAsRuntimeException(e);
                 }
             }
         }
-        try {
+        try
+        {
             return method.invoke(target, args);
-        } catch (InvocationTargetException e) {
+        }
+        catch (InvocationTargetException e)
+        {
             return ExceptionUtil.throwAsRuntimeException(e.getTargetException());
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             return ExceptionUtil.throwAsRuntimeException(e);
         }
     }

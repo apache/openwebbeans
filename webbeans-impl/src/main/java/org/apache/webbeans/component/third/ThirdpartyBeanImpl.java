@@ -132,13 +132,6 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
     }
 
     @Override
-    protected void destroyInstance(T instance,CreationalContext<T> creationalContext)
-    {
-        throw new UnsupportedOperationException();
-        
-    }
-
-    @Override
     public Class<?> getBeanClass()
     {
         return bean.getBeanClass();
