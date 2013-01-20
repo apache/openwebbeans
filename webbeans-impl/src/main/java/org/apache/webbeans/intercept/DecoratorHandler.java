@@ -66,6 +66,10 @@ public class DecoratorHandler implements InterceptorHandler
             {
                 try
                 {
+                    if (!decoratingMethod.isAccessible())
+                    {
+                        decoratingMethod.setAccessible(true);
+                    }
                     return decoratingMethod.invoke(instances.get(decorator), args);
                 }
                 catch (InvocationTargetException e)
@@ -80,6 +84,10 @@ public class DecoratorHandler implements InterceptorHandler
         }
         try
         {
+            if (!method.isAccessible())
+            {
+                method.setAccessible(true);
+            }
             return method.invoke(target, args);
         }
         catch (InvocationTargetException e)

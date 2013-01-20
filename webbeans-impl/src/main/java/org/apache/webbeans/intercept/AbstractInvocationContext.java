@@ -38,6 +38,10 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
         this.target = target;
         this.method = method;
         this.parameters = parameters;
+        if (!method.isAccessible())
+        {
+            method.setAccessible(true);
+        }
     }
 
     public AbstractInvocationContext(T target, Method method, Object[] parameters, Object timer)
