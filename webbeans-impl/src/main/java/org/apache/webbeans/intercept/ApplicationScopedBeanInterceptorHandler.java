@@ -23,7 +23,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
 
 /**
- * <p>This is a {@link org.apache.webbeans.proxy.MethodHandler} especially
+ * <p>This is a {@link javax.inject.Provider} especially
  * made for &#064;ApplicationScoped beans.</p>
  * 
  * <p>Since there is only one single contextual instance of an &#064;ApplicationScoped bean,

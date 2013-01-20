@@ -131,12 +131,6 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 @SuppressWarnings("unchecked")
 public final class WebBeansUtil
 {
-    /**
-     * Enforcing that interceptor callbacks should not be
-     * able to throw checked exceptions is configurable
-     */
-    private static volatile Boolean enforceCheckedException;
-
     private final WebBeansContext webBeansContext;
 
     public WebBeansUtil(WebBeansContext webBeansContext)
