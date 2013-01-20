@@ -145,7 +145,7 @@ public class InjectionPointFactory
 
         List<AnnotatedParameter<X>> parameters = method.getParameters();
 
-        InjectionPoint point = null;
+        InjectionPoint point;
 
         for(AnnotatedParameter<?> parameter : parameters)
         {
@@ -184,7 +184,7 @@ public class InjectionPointFactory
 
         List<AnnotatedParameter<T>> parameters = constructor.getParameters();
 
-        InjectionPoint point = null;
+        InjectionPoint point;
 
         for(AnnotatedParameter<?> parameter : parameters)
         {
@@ -209,7 +209,7 @@ public class InjectionPointFactory
         AnnotatedConstructor constructor = webBeansContext.getAnnotatedElementFactory().newAnnotatedConstructor((Constructor<Object>)member,annotated);
         List<AnnotatedParameter<?>> parameters = constructor.getParameters();
 
-        InjectionPoint point = null;
+        InjectionPoint point;
 
         for(AnnotatedParameter<?> parameter : parameters)
         {

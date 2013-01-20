@@ -409,22 +409,12 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                 if (constructor == null)
                 {
                     constructor = (AnnotatedConstructor<T>)((AnnotatedParameter<T>)injectionPoint.getAnnotated()).getDeclaringCallable();
-                }
-                else if (!constructor.equals(injectionPoint.getAnnotated()))
-                {
-                    throw new IllegalArgumentException("More than one constructor found for injection: "
-                                                       + constructor.getJavaMember() + " and " + injectionPoint.getAnnotated());
+                    return constructor;
                 }
             }
         }
-        if (constructor != null)
-        {
-            return constructor;
-        }
-        else
-        {
-            return new AnnotatedConstructorImpl<T>(webBeansContext, getDefaultConstructor(), annotatedType);
-        }
+
+        return new AnnotatedConstructorImpl<T>(webBeansContext, getDefaultConstructor(), annotatedType);
     }
 
     private Constructor<T> getDefaultConstructor()
