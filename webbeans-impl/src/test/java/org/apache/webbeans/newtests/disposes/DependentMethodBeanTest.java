@@ -35,14 +35,11 @@ import org.apache.webbeans.newtests.disposes.beans.IntermediateDependentBean;
 import org.apache.webbeans.newtests.disposes.beans.RequestModelProducer;
 import org.apache.webbeans.newtests.disposes.common.DependentModel;
 import org.apache.webbeans.newtests.disposes.common.RequestModel;
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
 public class DependentMethodBeanTest extends AbstractUnitTest
 {
     @Test
-    @Ignore
     @SuppressWarnings("unchecked")
     public void testDisposerMethod()
     {
@@ -123,7 +120,4 @@ public class DependentMethodBeanTest extends AbstractUnitTest
         //Disposer should only be called once
         Assert.assertEquals(1, DependentModelProducer.disposerCount);
     }
-
-
-
 }

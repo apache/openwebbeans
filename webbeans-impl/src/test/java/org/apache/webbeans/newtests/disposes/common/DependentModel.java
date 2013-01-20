@@ -18,9 +18,6 @@
  */
 package org.apache.webbeans.newtests.disposes.common;
 
-import javax.enterprise.inject.Typed;
-
-@Typed()
 public class DependentModel
 {
     public boolean value = false;
