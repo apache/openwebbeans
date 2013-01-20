@@ -36,7 +36,8 @@ import org.junit.Test;
 public class InjectionPointInjectionTest extends AbstractUnitTest {
 
     @Test
-    public void testInjectionPointInjection() {
+    public void testInjectionPointInjection()
+    {
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(ConstructorInjectionPointOwner.class);
         beanClasses.add(FieldInjectionPointOwner.class);
@@ -63,5 +64,15 @@ public class InjectionPointInjectionTest extends AbstractUnitTest {
         assertThat(owner.getObserverInjectionName(), is("observerInjection"));
 
         shutDownContainer();
+    }
+
+    @Test
+    public void testPackagePrivateInjectionPoint()
+    {
+        startContainer(PackageMethodInjectionPointOwner.class, PackageInjectionPointOwner.class);
+
+        PackageInjectionPointOwner pipo = getInstance(PackageInjectionPointOwner.class);
+        assertThat(pipo, is(notNullValue()));
+        assertThat(pipo.getName(), is("pimp"));
     }
 }

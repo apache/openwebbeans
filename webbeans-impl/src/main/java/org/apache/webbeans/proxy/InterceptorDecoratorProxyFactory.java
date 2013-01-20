@@ -223,7 +223,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
     {
         try
         {
-            Constructor superDefaultCt = classToProxy.getConstructor(null);
+            Constructor superDefaultCt = classToProxy.getDeclaredConstructor(null);
 
             final String descriptor = Type.getConstructorDescriptor(superDefaultCt);
             final MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
