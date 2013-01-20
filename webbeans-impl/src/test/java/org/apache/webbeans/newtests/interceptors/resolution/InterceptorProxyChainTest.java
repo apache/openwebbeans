@@ -151,7 +151,7 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
         //X this is for creating the NormalScoping Proxy which is now separate
         proxyInstance = createNormalScopingProxy(classLoader, ClassMultiInterceptedClass.class, proxyInstance);
 
-        performBenchmarkOn(proxyInstance);
+        //X performBenchmarkOn(proxyInstance);
 
         shutDownContainer();
     }

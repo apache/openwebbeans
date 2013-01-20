@@ -99,7 +99,6 @@ import org.apache.webbeans.component.creation.NewManagedBeanBuilder;
 import org.apache.webbeans.component.creation.ProducerMethodProducerBuilder;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
@@ -143,25 +142,6 @@ public final class WebBeansUtil
     public WebBeansUtil(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-    }
-
-    /**
-     * Lifycycle methods like {@link javax.annotation.PostConstruct} and
-     * {@link javax.annotation.PreDestroy} must not define a checked Exception
-     * regarding to the spec. But this is often unnecessary restrictive so we
-     * allow to disable this check application wide.
-     *
-     * @return <code>true</code> if the spec rule of having no checked exception should be enforced
-     */
-    private boolean isNoCheckedExceptionEnforced()
-    {
-        if (enforceCheckedException == null)
-        {
-            enforceCheckedException = Boolean.parseBoolean(webBeansContext.getOpenWebBeansConfiguration().
-                    getProperty(OpenWebBeansConfiguration.INTERCEPTOR_FORCE_NO_CHECKED_EXCEPTIONS, "true"));
-        }
-
-        return enforceCheckedException.booleanValue();
     }
 
     /**
