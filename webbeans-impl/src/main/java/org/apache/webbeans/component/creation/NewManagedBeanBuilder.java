@@ -20,13 +20,18 @@ package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.annotation.NewLiteral;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.NewManagedBean;
+import org.apache.webbeans.component.ProducerFieldBean;
+import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 
@@ -36,6 +41,33 @@ public class NewManagedBeanBuilder<T> extends ManagedBeanBuilder<T, NewManagedBe
     public NewManagedBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
         super(webBeansContext, annotatedType);
+    }
+
+    @Override
+    public void defineDisposalMethods()
+    {
+        // not available in @New beans!
+    }
+
+    @Override
+    public Set<ProducerFieldBean<?>> defineProducerFields(InjectionTargetBean<T> bean)
+    {
+        // not available in @New beans!
+        return Collections.EMPTY_SET;
+    }
+
+    @Override
+    public Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<T> bean)
+    {
+        // not available in @New beans!
+        return Collections.EMPTY_SET;
+    }
+
+    @Override
+    public Set<ObserverMethod<?>> defineObserverMethods(InjectionTargetBean<T> bean)
+    {
+        // not available in @New beans!
+        return Collections.EMPTY_SET;
     }
 
     @Override

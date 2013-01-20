@@ -213,7 +213,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             else
             {
                 parentClassFileName = classFileName;
-                superDefaultCt = classToProxy.getConstructor(null);
+                superDefaultCt = classToProxy.getDeclaredConstructor(null);
             }
 
             final String descriptor = Type.getConstructorDescriptor(superDefaultCt);
