@@ -36,7 +36,6 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
-import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -414,7 +413,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                 else if (!constructor.equals(injectionPoint.getAnnotated()))
                 {
                     throw new IllegalArgumentException("More than one constructor found for injection: "
-                                                       + constructor.getJavaMember() + " and " + ((AnnotatedMember)injectionPoint.getAnnotated()).getJavaMember());
+                                                       + constructor.getJavaMember() + " and " + injectionPoint.getAnnotated());
                 }
             }
         }
