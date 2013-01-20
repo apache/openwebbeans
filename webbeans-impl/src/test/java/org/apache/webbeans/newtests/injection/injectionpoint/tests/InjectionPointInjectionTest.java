@@ -16,6 +16,7 @@
 package org.apache.webbeans.newtests.injection.injectionpoint.tests;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
@@ -42,11 +43,16 @@ public class InjectionPointInjectionTest extends AbstractUnitTest {
         beanClasses.add(MethodInjectionPointOwner.class);
         beanClasses.add(InjectionPointObserver.class);
         beanClasses.add(InjectionPointBeansOwner.class);
-        startContainer(beanClasses, null);  
+        beanClasses.add(ConstructorInjectionPointOwner.SomeInnerClassWithInstructorInjectionPoint.class);
+        startContainer(beanClasses, null);
 
         Bean<InjectionPointBeansOwner> bean = (Bean<InjectionPointBeansOwner>) getBeanManager().getBeans(InjectionPointBeansOwner.class).iterator().next();
         CreationalContext<InjectionPointBeansOwner> cc = getBeanManager().createCreationalContext(bean);
         InjectionPointBeansOwner owner = (InjectionPointBeansOwner) getBeanManager().getReference(bean, InjectionPointBeansOwner.class, cc);
+
+        ConstructorInjectionPointOwner.SomeInnerClassWithInstructorInjectionPoint innerClass
+                = getInstance(ConstructorInjectionPointOwner.SomeInnerClassWithInstructorInjectionPoint.class);
+        assertThat(innerClass, is(notNullValue()));
 
         assertThat(owner.getConstructorInjectionName(), is("constructorInjection"));
         assertThat(owner.getFieldInjectionName(), is("fieldInjection"));

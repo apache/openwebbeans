@@ -15,13 +15,31 @@
  */
 package org.apache.webbeans.newtests.injection.injectionpoint.beans;
 
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
+import java.io.Serializable;
 
-public class ConstructorInjectionPointOwner extends AbstractInjectionPointOwner {
+public class ConstructorInjectionPointOwner extends AbstractInjectionPointOwner
+{
 
     @Inject
-    public ConstructorInjectionPointOwner(InjectionPoint ip) {
+    public ConstructorInjectionPointOwner(InjectionPoint ip)
+    {
         injectionPoint = ip;
+    }
+
+    public ConstructorInjectionPointOwner()
+    {
+
+    }
+
+    @SessionScoped
+    public static class SomeInnerClassWithInstructorInjectionPoint implements Serializable
+    {
+
+        public SomeInnerClassWithInstructorInjectionPoint()
+        {
+        }
     }
 }
