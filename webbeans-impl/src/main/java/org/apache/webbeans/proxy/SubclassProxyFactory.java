@@ -158,6 +158,11 @@ public class SubclassProxyFactory extends AbstractProxyFactory
     @Override
     protected void delegateInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] interceptedMethods) throws ProxyGenerationException
     {
+    }
+
+    @Override
+    protected void createSerialisation(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName)
+    {
         // nothing to do ;)
     }
 

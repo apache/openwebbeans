@@ -21,12 +21,14 @@ package org.apache.webbeans.proxy;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Provider;
+import java.io.ObjectStreamException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
@@ -49,6 +51,8 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
 {
     /** the name of the field which stores the {@link Provider} for the Contextual Instance */
     public static final String FIELD_INSTANCE_PROVIDER = "owbContextualInstanceProvider";
+
+    private ConcurrentHashMap<Bean<?>, Class<?>> cachedProxyClasses = new ConcurrentHashMap<Bean<?>, Class<?>>();
 
 
     public NormalScopeProxyFactory(WebBeansContext webBeansContext)
@@ -95,7 +99,14 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             classToProxy = (Class<T>) bean.getBeanClass();
         }
 
-        Class<? extends T> proxyClass = createProxyClass(classLoader, classToProxy);
+
+
+        Class<? extends T> proxyClass = (Class<? extends T>) cachedProxyClasses.get(bean);
+
+        if (proxyClass == null)
+        {
+            proxyClass = createProxyClass(bean, classLoader, classToProxy);
+        }
 
         return createProxyInstance(proxyClass, getInstanceProvider(classLoader, bean));
     }
@@ -141,15 +152,45 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         return null;
     }
 
+    public synchronized <T> Class<T> createProxyClass(Bean<T> bean, ClassLoader classLoader, Class<T> classToProxy)
+    {
+        Class<T> proxyClass = (Class<T>) cachedProxyClasses.get(bean);
+
+        if (proxyClass == null)
+        {
+            proxyClass = createProxyClass(classLoader, classToProxy);
+            cachedProxyClasses.putIfAbsent(bean, proxyClass);
+        }
+
+        return proxyClass;
+    }
+
+    @Override
+    protected void createSerialisation(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName)
+    {
+        String[] exceptionTypeNames = {Type.getType(ObjectStreamException.class).getInternalName()};
+        MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "writeReplace", "()Ljava/lang/Object;", null, exceptionTypeNames);
+
+        // fill method body
+        mv.visitCode();
+
+        // load the contextual instance Provider
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_INSTANCE_PROVIDER, Type.getDescriptor(Provider.class));
+
+        mv.visitInsn(Opcodes.ARETURN);
+
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+    }
 
     /**
      * @param classLoader to use for creating the class in
      * @param classToProxy the class for which a subclass will get generated
      * @param <T>
      * @return the proxy class
-     * //X TODO for serialisation reasons this probably needs the Bean it serves.
      */
-    public synchronized <T> Class<T> createProxyClass(ClassLoader classLoader, Class<T> classToProxy)
+    public <T> Class<T> createProxyClass(ClassLoader classLoader, Class<T> classToProxy)
             throws ProxyGenerationException
     {
         String proxyClassName = getUnusedProxyClassName(classLoader, classToProxy.getName() + "$OwbNormalScopeProxy");

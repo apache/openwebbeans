@@ -23,20 +23,42 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.PassivationCapable;
 import javax.inject.Provider;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+
+import org.apache.webbeans.config.WebBeansContext;
 
 /**
- * TODO add serialisation
+ * <p>A Provider which handles all NormalScoped proxying.
+ * It's two main responsibilities are to provide the one active
+ * Contextual Instance, the second is to provide serialisation.</p>
+ *
+ * <p>The generated proxy will writeReplace() with this class and any
+ * NormalScopedBean provider must readResolve() and regenerate the
+ * proxy class from the {@link org.apache.webbeans.proxy.NormalScopeProxyFactory}
+ * again.
+ * </p>
+ * <p>Any subclass should either declare all their fields <code>transient</code>
+ * or handle the serialisation properly!</p>
  */
-public class NormalScopedBeanInterceptorHandler implements Provider
+public class NormalScopedBeanInterceptorHandler implements Provider, Serializable
 {
     private transient BeanManager beanManager;
     protected transient Bean<?> bean;
+
+    // we just keep this field for serializing it away
+    private String beanPassivationId;
 
     public NormalScopedBeanInterceptorHandler(BeanManager beanManager, Bean<?> bean)
     {
         this.beanManager = beanManager;
         this.bean = bean;
+        if (bean instanceof PassivationCapable)
+        {
+            beanPassivationId = ((PassivationCapable) bean).getId();
+        }
     }
 
     @Override
@@ -76,4 +98,22 @@ public class NormalScopedBeanInterceptorHandler implements Provider
         return webbeansInstance;
     }
 
+    /**
+     * The following code gets generated into the proxy:
+     *
+     * <pre>
+     * Object writeReplace() throws ObjectStreamException
+     * {
+     *     return provider;
+     * }
+     * </pre>
+    */
+    Object readResolve() throws ObjectStreamException
+    {
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        this.beanManager = webBeansContext.getBeanManagerImpl();
+        this.bean = beanManager.getPassivationCapableBean(beanPassivationId);
+
+        return webBeansContext.getNormalScopeProxyFactory().createNormalScopeProxy(bean);
+    }
 }

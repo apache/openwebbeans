@@ -32,6 +32,7 @@ import org.apache.webbeans.newtests.injection.circular.beans.CircularApplication
 import org.apache.webbeans.newtests.injection.circular.beans.CircularConstructorOrProducerMethodParameterBean;
 import org.apache.webbeans.newtests.injection.circular.beans.CircularDependentScopedBean;
 import org.apache.webbeans.newtests.injection.circular.beans.CircularNormalInConstructor;
+import org.apache.webbeans.proxy.OwbNormalScopeProxy;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
 import org.apache.webbeans.test.component.IPayment;
@@ -43,10 +44,8 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 import junit.framework.Assert;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
-import javassist.util.proxy.ProxyObject;
 
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
@@ -91,7 +90,6 @@ public class SerializationTest extends AbstractUnitTest
         Assert.assertNotNull(cc2);
     }
 
-    @Ignore // TODO Make this work!!! XXX
     @Test
     public void testPersonalDataBean() throws ClassNotFoundException, IOException
     {
@@ -150,8 +148,8 @@ public class SerializationTest extends AbstractUnitTest
         Context sessContext2 = (Context) deSerializeObject(ba);
         Assert.assertNotNull(sessContext2);
     }
-    
-    //X TODO this will work after JASSIST-97 got fixed @Test
+
+    @Test
     public void testProxySerialization() throws Exception
     {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
@@ -173,7 +171,7 @@ public class SerializationTest extends AbstractUnitTest
         
         SessScopedBean reference = (SessScopedBean) getBeanManager().getReference(bean, SessScopedBean.class, ssbCreational);
         Assert.assertNotNull(reference);
-        Assert.assertTrue(reference instanceof ProxyObject);
+        Assert.assertTrue(reference instanceof OwbNormalScopeProxy);
         
         reference.getApp().setI(4711);
         

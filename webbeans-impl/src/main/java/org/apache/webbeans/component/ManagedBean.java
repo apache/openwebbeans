@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.config.WebBeansContext;
 
@@ -33,7 +34,7 @@ import org.apache.webbeans.config.WebBeansContext;
  * 
  * @version $Rev$ $Date$
  */
-public class ManagedBean<T> extends InjectionTargetBean<T> implements InterceptedMarker
+public class ManagedBean<T> extends InjectionTargetBean<T> implements InterceptedMarker, PassivationCapable
 {
     /** Constructor of the web bean component */
     private Constructor<T> constructor;

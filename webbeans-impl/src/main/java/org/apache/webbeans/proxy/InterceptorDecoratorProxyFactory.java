@@ -44,7 +44,6 @@ import org.objectweb.asm.Type;
  * This factory will create and cache the proxy classes for a given type.
  *
  */
-//X TODO: clarify how serialisation works! The proxy classes might need to get created on deserialisation!
 public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
 {
 
@@ -133,6 +132,11 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         return null;
     }
 
+    @Override
+    protected void createSerialisation(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName)
+    {
+        // nothing to do ;)
+    }
 
     /**
      * <p>Create a decorator and interceptor proxy for the given type. A single instance

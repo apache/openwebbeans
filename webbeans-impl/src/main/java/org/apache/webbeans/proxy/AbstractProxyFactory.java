@@ -62,6 +62,11 @@ public abstract class AbstractProxyFactory
     protected abstract void createInstanceVariables(ClassWriter cw, Class<?> classToProxy, String classFileName);
 
     /**
+     * generate the bytecode for serialization.
+     */
+    protected abstract void createSerialisation(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName);
+
+    /**
      * Each of our interceptor/decorator proxies has exactly 1 constructor
      * which invokes the super ct + sets the delegation field.
      *
@@ -182,6 +187,8 @@ public abstract class AbstractProxyFactory
         cw.visitSource(classFileName + ".java", null);
 
         createInstanceVariables(cw, classToProxy, classFileName);
+        createSerialisation(cw, proxyClassFileName, classToProxy, classFileName);
+
 
 
         // create a static String Field which contains the passivationId of the Bean or null if not PassivationCapable
@@ -203,8 +210,6 @@ public abstract class AbstractProxyFactory
 
         return cw.toByteArray();
     }
-
-
 
 
     /**
