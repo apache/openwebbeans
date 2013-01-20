@@ -30,7 +30,7 @@ public class BeansImpl implements Beans
 
     public boolean isProxy( Object instance )
     {
-        return instance.getClass().getName().contains("$$");
+        return instance.getClass().getName().contains("$Owb");
     }
 
     public byte[] serialize(Object o) throws IOException
