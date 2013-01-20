@@ -40,6 +40,7 @@ import javax.enterprise.inject.spi.Producer;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
@@ -150,6 +151,11 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
     {
         try
         {
+            if(!(creationalContext instanceof CreationalContextImpl))
+            {
+                creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(creationalContext, this);
+            }
+
             T instance = producer.produce(creationalContext);
             if (producer instanceof InjectionTarget)
             {

@@ -674,7 +674,14 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {
             bean = ((SerializableBean)bean).getBean();
         }
-        
+
+        if(!(creationalContext instanceof CreationalContextImpl))
+        {
+            creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(creationalContext, bean);
+        }
+
+
+
         //Check type if bean type is given
         if(beanType != null)
         {
