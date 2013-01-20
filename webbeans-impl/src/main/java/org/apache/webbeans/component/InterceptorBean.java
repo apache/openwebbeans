@@ -75,15 +75,20 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
               Collections.<Class<? extends Annotation>>emptySet());
         this.interceptionMethods = Collections.unmodifiableMap(interceptionMethods);
 
-        // extract the aroundInvokeMethod if any
+        for (Method[] methods: interceptionMethods.values())
+        {
+            for (Method method: methods)
+            {
+                if (!method.isAccessible())
+                {
+                    method.setAccessible(true);
+                }
+            }
+        }
         Method[] aroundInvokeMethods = interceptionMethods.get(InterceptionType.AROUND_INVOKE);
         if (aroundInvokeMethods != null && aroundInvokeMethods.length == 1)
         {
             aroundInvokeMethod = aroundInvokeMethods[0];
-            if (!aroundInvokeMethod.isAccessible())
-            {
-                aroundInvokeMethod.setAccessible(true);
-            }
         }
     }
 
