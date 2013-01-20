@@ -524,7 +524,7 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
     protected void checkUnproxiableApiType()
     {
         //Unproxiable test for NormalScoped beans
-        if (webBeansContext.getWebBeansUtil().isScopeTypeNormal(scope))
+        if (webBeansContext.getBeanManagerImpl().isNormalScope(scope))
         {
             ViolationMessageBuilder violationMessage = ViolationMessageBuilder.newViolation();
 

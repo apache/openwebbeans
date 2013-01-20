@@ -167,9 +167,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     private ConcurrentHashMap<String, Bean<?>> passivationBeans = new ConcurrentHashMap<String, Bean<?>>(); 
 
-//    private Map<Contextual<?>, Producer<?>> producers =
-//        Collections.synchronizedMap(new IdentityHashMap<Contextual<?>, Producer<?>>());
-    
     /**InjectionTargets for Java EE component instances that supports injections*/
     private Map<Class<?>, Producer<?>> producersForJavaEeComponents =
         new ConcurrentHashMap<Class<?>, Producer<?>>();
@@ -184,6 +181,16 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * gets set.
      */
     private boolean inUse = false;
+
+
+    /**
+     * we cache results of calls to {@link #isScopeTypeNormalCache} because
+     * this doesn't change at runtime.
+     * We don't need to take special care about classloader
+     * hierarchies, because each cl has other classes.
+     */
+    private static Map<Class<? extends Annotation>, Boolean> isScopeTypeNormalCache =
+            new ConcurrentHashMap<Class<? extends Annotation>, Boolean>();
 
 
     /**
@@ -679,7 +686,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
                 
         //Scope is normal
-        if (webBeansContext.getWebBeansUtil().isScopeTypeNormal(bean.getScope()))
+        if (isNormalScope(bean.getScope()))
         {
             instance = getEjbOrJmsProxyReference(bean, beanType,creationalContext);
             
@@ -757,7 +764,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Create session bean proxy
         if(bean instanceof EnterpriseBeanMarker)
         {
-            if(webBeansContext.getWebBeansUtil().isScopeTypeNormal(bean.getScope()))
+            if(isNormalScope(bean.getScope()))
             {
                 //Maybe it is cached
                 if(cacheProxies.containsKey(bean))
@@ -837,18 +844,29 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return false;
     }
     
-    public boolean isNormalScope(Class<? extends Annotation> annotationType)
+    public boolean isNormalScope(Class<? extends Annotation> scopeType)
     {
+        Boolean isNormal = isScopeTypeNormalCache.get(scopeType);
+
+        if (isNormal != null)
+        {
+            return isNormal.booleanValue();
+        }
+
         for(int i = 0, size = additionalScopes.size(); i < size; i++)
         {
             ExternalScope extScope = additionalScopes.get(i);
-            if (extScope.getScope().equals(annotationType))
+            if (extScope.getScope().equals(scopeType))
             {
+                isScopeTypeNormalCache.put(scopeType, extScope.isNormal());
                 return extScope.isNormal();
             }
         }
-        
-        return annotationType.getAnnotation(NormalScope.class) != null;
+
+        isNormal = scopeType.getAnnotation(NormalScope.class) != null;
+        isScopeTypeNormalCache.put(scopeType, isNormal);
+
+        return isNormal;
     }
     
     public boolean isPassivatingScope(Class<? extends Annotation> annotationType)
