@@ -57,11 +57,37 @@ public class SubclassProxyFactory extends AbstractProxyFactory
             throw new WebBeansConfigurationException("Only abstract classes should get subclassed, not " + classToProxy);
         }
 
-        Class<T> proxyClass = createSubClass(classLoader, classToProxy);
+
+        Class<T> proxyClass = tryToLoadClass(classLoader, classToProxy);
+        if (proxyClass != null)
+        {
+            return proxyClass;
+        }
+
+        proxyClass = createSubClass(classLoader, classToProxy);
 
         return proxyClass;
     }
 
+    private <T> Class<T> tryToLoadClass(ClassLoader classLoader, Class<T> classToProxy)
+    {
+        String proxyClassName = getSubClassName(classToProxy);
+        try
+        {
+            // if the class is already registered, then use this one.
+            return (Class<T>) Class.forName(proxyClassName, true, classLoader);
+        }
+        catch (ClassNotFoundException cnfe)
+        {
+            // this means we need to generate that class
+        }
+        return null;
+    }
+
+    private <T> String getSubClassName(Class<T> classToProxy)
+    {
+        return fixPreservedPackages(classToProxy.getName() + "$OwbSubClass");
+    }
 
     /**
      * @param classLoader to use for creating the class in
@@ -73,12 +99,18 @@ public class SubclassProxyFactory extends AbstractProxyFactory
     public synchronized <T> Class<T> createSubClass(ClassLoader classLoader, Class<T> classToProxy)
             throws ProxyGenerationException
     {
-        String proxyClassName = getUnusedProxyClassName(classLoader, classToProxy.getName() + "$OwbSubClass");
+        Class<T> clazz = tryToLoadClass(classLoader, classToProxy);
+        if (clazz != null)
+        {
+            return clazz;
+        }
+
+        String proxyClassName = getSubClassName(classToProxy);
 
         List<Method> methods = ClassUtil.getNonPrivateMethods(classToProxy);
         Method[] businessMethods = methods.toArray(new Method[methods.size()]);
 
-        Class<T> clazz = createProxyClass(classLoader, proxyClassName, classToProxy, businessMethods, new Method[0]);
+        clazz = createProxyClass(classLoader, proxyClassName, classToProxy, businessMethods, new Method[0]);
 
         return clazz;
     }
