@@ -24,35 +24,29 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
-
-public abstract class AbstractBean<T> implements Bean<T>
+public class BeanAttributesImpl<T>
 {
     private final Set<Type> types;
     private final Set<Annotation> qualifiers;
     private final Class<? extends Annotation> scope;
     private final String name;
     private final boolean nullable;
-    private final Class<?> beanClass;
     private final Set<Class<? extends Annotation>> stereotypes;
     private final boolean alternative;
 
-    public AbstractBean(Set<Type> types,
+    public BeanAttributesImpl(Set<Type> types,
                         Set<Annotation> qualifiers,
                         Class<? extends Annotation> scope,
-                        Class<?> beanClass,
                         Set<Class<? extends Annotation>> stereotypes)
     {
-        this(types, qualifiers, scope, null, false, beanClass, stereotypes, false);
+        this(types, qualifiers, scope, null, false, stereotypes, false);
     }
 
-    public AbstractBean(Set<Type> types,
+    public BeanAttributesImpl(Set<Type> types,
                         Set<Annotation> qualifiers,
                         Class<? extends Annotation> scope,
                         String name,
                         boolean nullable,
-                        Class<?> beanClass,
                         Set<Class<? extends Annotation>> stereotypes,
                         boolean alternative)
     {
@@ -61,62 +55,42 @@ public abstract class AbstractBean<T> implements Bean<T>
         this.scope = scope;
         this.name = name;
         this.nullable = nullable;
-        this.beanClass = beanClass;
         this.stereotypes = stereotypes == null
                 ? Collections.<Class<? extends Annotation>>emptySet()
                 : Collections.unmodifiableSet(new HashSet<Class<? extends Annotation>>(stereotypes));
         this.alternative = alternative;
     }
 
-    @Override
     public Set<Type> getTypes()
     {
         return types;
     }
 
-    @Override
     public Set<Annotation> getQualifiers()
     {
         return qualifiers;
     }
 
-    @Override
     public Class<? extends Annotation> getScope()
     {
         return scope;
     }
 
-    @Override
     public String getName()
     {
         return name;
     }
 
-    @Override
     public boolean isNullable()
     {
         return nullable;
     }
 
-    @Override
-    public Set<InjectionPoint> getInjectionPoints()
-    {
-        return Collections.EMPTY_SET;
-    }
-
-    @Override
-    public Class<?> getBeanClass()
-    {
-        return beanClass;
-    }
-
-    @Override
     public Set<Class<? extends Annotation>> getStereotypes()
     {
         return stereotypes;
     }
 
-    @Override
     public boolean isAlternative()
     {
         return alternative;

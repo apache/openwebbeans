@@ -52,13 +52,16 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
  * @see javax.enterprise.inject.spi.Bean
  * 
  */
-public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbBean<T>
+public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implements OwbBean<T>
 {
     /**Logger instance*/
     protected Logger logger = null;
     
     /** Web Beans type */
     protected WebBeansType webBeansType;
+
+    /** the bean class */
+    private final Class<?> beanClass;
 
     /**This bean is specialized or not*/
     protected boolean specializedBean;
@@ -113,8 +116,9 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
                               Set<Class<? extends Annotation>> stereotypes,
                               boolean alternative)
     {
-        super(types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative);
+        super(types, qualifiers, scope, name, nullable, stereotypes, alternative);
         this.webBeansType = webBeansType;
+        this.beanClass = beanClass;
         this.webBeansContext = webBeansContext;
     }
 
@@ -137,6 +141,12 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
     {
         return webBeansContext.getBeanManagerImpl();
     }
+
+    @Override
+    public Class<?> getBeanClass()
+    {
+        return beanClass;
+    }
     
     public Producer<T> getProducer()
     {
@@ -146,7 +156,6 @@ public abstract class AbstractOwbBean<T> extends AbstractBean<T> implements OwbB
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public T create(CreationalContext<T> creationalContext)
     {
         try
