@@ -241,7 +241,7 @@ public final class ClassUtil
      *
      * Note: we filter out the {@link Object#finalize()} method as users must not deal with it
      */
-    public static List<Method> getNonPrivateMethods(Class<?> clazz)
+    public static List<Method> getNonPrivateMethods(Class<?> clazz, boolean noFinalMethods)
     {
         Map<String, List<Method>> methodMap = new HashMap<String, List<Method>>();
         List<Method> allMethods = new ArrayList<Method>(10);
@@ -252,8 +252,11 @@ public final class ClassUtil
             {
                 final int modifiers = method.getModifiers();
 
-                if (Modifier.isFinal(modifiers) || Modifier.isPrivate(modifiers) ||
-                    Modifier.isStatic(modifiers) || Modifier.isAbstract(modifiers))
+                if (Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers) || Modifier.isAbstract(modifiers))
+                {
+                    continue;
+                }
+                if (noFinalMethods && Modifier.isFinal(modifiers))
                 {
                     continue;
                 }

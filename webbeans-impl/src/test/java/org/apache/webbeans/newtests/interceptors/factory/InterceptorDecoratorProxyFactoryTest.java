@@ -53,7 +53,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
         ClassLoader classLoader = new URLClassLoader(new URL[0]);
 
-        List<Method> methods = ClassUtil.getNonPrivateMethods(ClassInterceptedClass.class);
+        List<Method> methods = ClassUtil.getNonPrivateMethods(ClassInterceptedClass.class, true);
 
         Method[] interceptedMethods = methods.toArray(new Method[methods.size()]);
         Method[] nonInterceptedMethods = null;

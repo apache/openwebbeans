@@ -36,11 +36,6 @@ import org.apache.webbeans.util.Asserts;
 public final class InterceptorUtil
 {
 
-    /**
-     * all the bit flags of private static and final modifiers
-     */
-    public static final int MODIFIER_STATIC_FINAL_PRIVATE = Modifier.STATIC | Modifier.FINAL | Modifier.PRIVATE;
-
     private final WebBeansContext webBeansContext;
 
     public InterceptorUtil(WebBeansContext webBeansContext)
@@ -94,26 +89,6 @@ public final class InterceptorUtil
         }
 
         return lifecycleMethods;
-    }
-
-    /**
-     * Check if the given method is a 'business method'
-     * in the sense of the Interceptor specification
-     * @param annotatedMethod
-     * @return <code>true</code> if the given method is an interceptable business method
-     */
-    public boolean isWebBeansBusinessMethod(AnnotatedMethod annotatedMethod)
-    {
-        Method method = annotatedMethod.getJavaMember();
-        int modifiers = method.getModifiers();
-
-        if ((modifiers & MODIFIER_STATIC_FINAL_PRIVATE) != 0)
-        {
-            // static, final and private methods are NO business methods!
-            return false;
-        }
-
-        return true;
     }
 
     public void checkSimpleWebBeansInterceptorConditions(Class<?> clazz)

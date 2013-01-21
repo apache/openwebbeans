@@ -58,11 +58,13 @@ public final class WebBeansInterceptorConfig
     }
 
     /**
+     * TODO: move this method to some other, better place!
+     *
+     * Configure bean instance interceptor stack.
+     *
      * This method gets invoked in the ValidateBean phase and will fill all the
      * interceptor information into the given InjectionTargetBean
      *
-     * TODO: move this method to some other, better place!
-     * Configure bean instance interceptor stack.
      * @param bean bean instance
      */
     public void defineBeanInterceptorStack(InjectionTargetBean<?> bean)
@@ -73,10 +75,7 @@ public final class WebBeansInterceptorConfig
             BeanInterceptorInfo interceptorInfo = webBeansContext.getInterceptorResolutionService().
                     calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), bean.getAnnotatedType());
 
-            //X TODO decorator stack
-
             Map<Method, List<Interceptor<?>>> methodInterceptors = new HashMap<Method, List<Interceptor<?>>>();
-            List<Method> nonBusinessMethods = new ArrayList<Method>();
             for (Map.Entry<Method, BusinessMethodInterceptorInfo> miEntry : interceptorInfo.getBusinessMethodsInfo().entrySet())
             {
                 Method interceptedMethod = miEntry.getKey();
@@ -138,10 +137,7 @@ public final class WebBeansInterceptorConfig
 
                 injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors, postConstructInterceptors, preDestroyInterceptors);
             }
-            else // we have no interceptors so we have to define lifecycle methods
-            {
-                
-            }
+
         }
 
     }

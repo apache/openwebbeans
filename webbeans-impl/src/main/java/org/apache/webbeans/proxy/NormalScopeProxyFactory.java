@@ -202,7 +202,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         }
         else
         {
-            List<Method> methods = ClassUtil.getNonPrivateMethods(classToProxy);
+            List<Method> methods = ClassUtil.getNonPrivateMethods(classToProxy, true);
             nonInterceptedMethods = methods.toArray(new Method[methods.size()]);
         }
 

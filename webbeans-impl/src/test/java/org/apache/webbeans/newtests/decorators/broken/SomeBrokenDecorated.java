@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.newtests.decorators.broken;
 
-public class BrokenBean implements IBroken
+public class SomeBrokenDecorated implements IBroken
 {
 
     @Override

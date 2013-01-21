@@ -107,7 +107,7 @@ public class SubclassProxyFactory extends AbstractProxyFactory
 
         String proxyClassName = getSubClassName(classToProxy);
 
-        List<Method> methods = ClassUtil.getNonPrivateMethods(classToProxy);
+        List<Method> methods = ClassUtil.getNonPrivateMethods(classToProxy, true);
         Method[] businessMethods = methods.toArray(new Method[methods.size()]);
 
         clazz = createProxyClass(classLoader, proxyClassName, classToProxy, businessMethods, new Method[0]);

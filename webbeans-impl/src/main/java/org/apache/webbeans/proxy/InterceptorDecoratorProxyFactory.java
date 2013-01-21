@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -329,6 +330,12 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         final Class<?>[] parameterTypes = method.getParameterTypes();
         final Class<?>[] exceptionTypes = method.getExceptionTypes();
         final int modifiers = method.getModifiers();
+
+        if (Modifier.isFinal(modifiers) || Modifier.isStatic(modifiers))
+        {
+            throw new WebBeansConfigurationException("It's not possible to proxy a final or static method: " + classToProxy.getName() +
+                                                     " " + method.getName());
+        }
 
         // push the method definition
         int modifier = modifiers & (Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED);

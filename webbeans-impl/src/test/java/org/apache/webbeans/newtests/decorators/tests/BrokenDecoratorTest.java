@@ -21,11 +21,16 @@ package org.apache.webbeans.newtests.decorators.tests;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.decorators.broken.BrokenAlternative;
-import org.apache.webbeans.newtests.decorators.broken.BrokenBean;
+import org.apache.webbeans.newtests.decorators.broken.FinalMethodDecoratedBean;
+import org.apache.webbeans.newtests.decorators.broken.SomeBrokenDecorated;
 import org.apache.webbeans.newtests.decorators.broken.BrokenName;
 import org.apache.webbeans.newtests.decorators.broken.BrokenScope;
+import org.apache.webbeans.newtests.decorators.broken.ValidDecorator;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 public class BrokenDecoratorTest extends AbstractUnitTest
@@ -36,17 +41,28 @@ public class BrokenDecoratorTest extends AbstractUnitTest
     public void testWarnings()
     {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
-        classes.add(BrokenBean.class);
+        classes.add(SomeBrokenDecorated.class);
         classes.add(BrokenScope.class);
         classes.add(BrokenAlternative.class);
         classes.add(BrokenName.class);
         
         Collection<String> xmls = new ArrayList<String>();
         xmls.add(getXmlPath(PACKAGE_NAME, "BrokenDecoratorTest"));
-        
-        startContainer(classes,xmls);
-                
+
+        startContainer(classes, xmls);
+
+
+
         shutDownContainer();
-        
+    }
+
+    @Test(expected = WebBeansConfigurationException.class)
+    public void testDecoratingFinalMethod() throws Exception
+    {
+        addDecorator(ValidDecorator.class);
+
+        startContainer(FinalMethodDecoratedBean.class);
+
+        Assert.fail("this point should not get reached because we had a final method decorated");
     }
 }

@@ -74,7 +74,7 @@ public abstract class AbstractUnitTest
 
     protected void startContainer(Class<?>... beanClasses)
     {
-        startContainer(Arrays.asList(beanClasses), null);
+        startContainer(new ArrayList<Class<?>>(Arrays.asList(beanClasses)), null);
     }
 
     protected void startContainer(Collection<Class<?>> beanClasses)

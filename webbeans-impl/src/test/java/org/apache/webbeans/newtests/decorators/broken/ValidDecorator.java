@@ -20,21 +20,21 @@ package org.apache.webbeans.newtests.decorators.broken;
 
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-
+/**
+ * In this test not the decorator is broken, but the decorated bean is.
+ */
 @Decorator
-@RequestScoped
-public class BrokenScope implements IBroken
+public class ValidDecorator implements IBroken
 {
-    private @Inject @Delegate IBroken broken;
-    
+    @Inject
+    @Delegate
+    private IBroken broken;
+
     @Override
     public void broke()
     {
-        // TODO Auto-generated method stub
-        
+        broken.broke();
     }
-
 }

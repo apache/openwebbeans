@@ -116,7 +116,7 @@ public class InterceptorResolutionService
         // pick up EJB-style interceptors from a class level
         List<Interceptor<?>> classLevelEjbInterceptors = new ArrayList<Interceptor<?>>();
 
-        collectEjbInterceptors(classLevelEjbInterceptors, annotatedType);
+        collectEjbInterceptors(classLevelEjbInterceptors, annotatedType, false);
 
         // pick up the decorators
         List<Decorator<?>> decorators = beanManager.resolveDecorators(beanTypes, AnnotationUtil.asArray(qualifiers));
@@ -274,11 +274,16 @@ public class InterceptorResolutionService
         }
     }
 
-    private <T> void collectEjbInterceptors(List<Interceptor<?>> ejbInterceptors, Annotated annotatedType)
+    private <T> void collectEjbInterceptors(List<Interceptor<?>> ejbInterceptors, Annotated annotated, boolean unproxyable)
     {
-        Interceptors interceptorsAnnot = annotatedType.getAnnotation(Interceptors.class);
+        Interceptors interceptorsAnnot = annotated.getAnnotation(Interceptors.class);
         if (interceptorsAnnot != null)
         {
+            if (unproxyable)
+            {
+                throw new WebBeansConfigurationException(annotated + " is not proxyable, but an Interceptor got defined on it!");
+            }
+
             for (Class interceptorClass : interceptorsAnnot.value())
             {
                 Interceptor ejbInterceptor = webBeansContext.getInterceptorsManager().getEjbInterceptorForClass(interceptorClass);
@@ -290,9 +295,11 @@ public class InterceptorResolutionService
     private void calculateEjbMethodInterceptors(BusinessMethodInterceptorInfo methodInterceptorInfo, Set<Interceptor<?>> allUsedEjbInterceptors,
                                                 List<Interceptor<?>> classLevelEjbInterceptors, AnnotatedMethod annotatedMethod)
     {
+        boolean unproxyable = isUnproxyable(annotatedMethod);
+
         List<Interceptor<?>> methodInterceptors = new ArrayList<Interceptor<?>>();
 
-        if (classLevelEjbInterceptors != null && classLevelEjbInterceptors.size() > 0)
+        if (classLevelEjbInterceptors != null && classLevelEjbInterceptors.size() > 0 && !unproxyable)
         {
             // add the class level defined Interceptors first
 
@@ -304,13 +311,19 @@ public class InterceptorResolutionService
             }
         }
 
-        collectEjbInterceptors(methodInterceptors, annotatedMethod);
+        collectEjbInterceptors(methodInterceptors, annotatedMethod, unproxyable);
         allUsedEjbInterceptors.addAll(methodInterceptors);
 
         if (methodInterceptors.size() > 0)
         {
             methodInterceptorInfo.setEjbInterceptors(methodInterceptors);
         }
+    }
+
+    private boolean isUnproxyable(AnnotatedMethod annotatedMethod)
+    {
+        int modifiers = annotatedMethod.getJavaMember().getModifiers();
+        return Modifier.isFinal(modifiers) || Modifier.isPrivate(modifiers);
     }
 
 
@@ -328,6 +341,11 @@ public class InterceptorResolutionService
             Method decoratingMethod = getDecoratingMethod(decorator, annotatedMethod);
             if (decoratingMethod != null)
             {
+                if (isUnproxyable(annotatedMethod))
+                {
+                    throw new WebBeansConfigurationException(annotatedMethod + " is not proxyable, but an Decorator got defined on it!");
+                }
+
                 appliedDecorators.put(decorator, decoratingMethod);
             }
         }
@@ -447,9 +465,25 @@ public class InterceptorResolutionService
     {
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
+        boolean unproxyable = isUnproxyable(annotatedMethod);
+
         Set<Annotation> cummulatedInterceptorBindings = new HashSet<Annotation>();
         cummulatedInterceptorBindings.addAll(
                 annotationManager.getInterceptorAnnotations(annotatedMethod.getAnnotations()));
+
+        if (unproxyable && cummulatedInterceptorBindings.size() > 0)
+        {
+            if (unproxyable)
+            {
+                throw new WebBeansConfigurationException(annotatedMethod + " is not proxyable, but an Interceptor got defined on it!");
+            }
+        }
+
+        if (unproxyable)
+        {
+            // don't apply class level interceptors - instead just return
+            return;
+        }
 
         cummulatedInterceptorBindings.addAll(classInterceptorBindings);
 
@@ -517,7 +551,7 @@ public class InterceptorResolutionService
      */
     private List<AnnotatedMethod> getInterceptableBusinessMethods(AnnotatedType annotatedType)
     {
-        List<Method> interceptableMethods = ClassUtil.getNonPrivateMethods(annotatedType.getJavaClass());
+        List<Method> interceptableMethods = ClassUtil.getNonPrivateMethods(annotatedType.getJavaClass(), false);
 
         List<AnnotatedMethod> interceptableAnnotatedMethods = new ArrayList<AnnotatedMethod>();
 
@@ -528,7 +562,8 @@ public class InterceptorResolutionService
             {
                 if (annotatedMethod.getJavaMember().equals(interceptableMethod))
                 {
-                    if (!webBeansContext.getInterceptorUtil().isWebBeansBusinessMethod(annotatedMethod))
+                    int modifiers = annotatedMethod.getJavaMember().getModifiers();
+                    if (Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers))
                     {
                         // we must only intercept business methods
                         continue;

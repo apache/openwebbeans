@@ -18,23 +18,14 @@
  */
 package org.apache.webbeans.newtests.decorators.broken;
 
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-
-
-@Decorator
-@RequestScoped
-public class BrokenScope implements IBroken
+/**
+ *
+ */
+public class FinalMethodDecoratedBean implements IBroken
 {
-    private @Inject @Delegate IBroken broken;
-    
     @Override
-    public void broke()
+    public final void broke()
     {
-        // TODO Auto-generated method stub
-        
+        System.out.println("this should not get reached at all!");
     }
-
 }
