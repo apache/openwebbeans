@@ -281,12 +281,6 @@ public class InterceptorsManager
     }
 
 
-    public Set<Annotation> getInterceptorBindingTypeMetaAnnotations(Class<? extends Annotation> interceptorBindingType)
-    {
-        return Collections.unmodifiableSet(additionalInterceptorBindingTypes.get(interceptorBindingType));
-    }
-
-
     public void validateInterceptorClasses()
     {
         for(Class<?> interceptorClass : configuredInterceptorClasses)
