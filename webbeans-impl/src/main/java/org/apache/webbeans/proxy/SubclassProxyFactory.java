@@ -26,10 +26,10 @@ import java.util.List;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.ClassUtil;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
+import org.apache.xbean.asm.ClassWriter;
+import org.apache.xbean.asm.MethodVisitor;
+import org.apache.xbean.asm.Opcodes;
+import org.apache.xbean.asm.Type;
 
 /**
  * This factory creates subclasses for abstract classes.

@@ -47,11 +47,18 @@
             <artifactId>scannotation</artifactId>
         </dependency>
 
+<!--X
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-all</artifactId>
             <version>4.1</version>
             <optional>true</optional>
+        </dependency>
+-->
+        <dependency>
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-asm-shaded</artifactId>
+            <version>3.13-SNAPSHOT</version>
         </dependency>
 
         <dependency>

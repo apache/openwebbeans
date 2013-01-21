@@ -27,10 +27,10 @@ import java.security.PrivilegedAction;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
+import org.apache.xbean.asm.ClassWriter;
+import org.apache.xbean.asm.MethodVisitor;
+import org.apache.xbean.asm.Opcodes;
+import org.apache.xbean.asm.Type;
 
 /**
  * Base class for all OWB Proxy factories
