@@ -18,6 +18,11 @@
  */
 package org.apache.webbeans.lifecycle;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Singleton;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -45,21 +50,21 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
     @Override
     public void beforeStartApplication(Object object)
     {
-        webBeansContext.getContextFactory().initRequestContext(null);
-        webBeansContext.getContextFactory().initSessionContext(null);
-        webBeansContext.getContextFactory().initConversationContext(null);
-        webBeansContext.getContextFactory().initApplicationContext(null);
-        webBeansContext.getContextFactory().initSingletonContext(null);
+        webBeansContext.getContextsService().startContext(RequestScoped.class, null);
+        webBeansContext.getContextsService().startContext(SessionScoped.class, null);
+        webBeansContext.getContextsService().startContext(ConversationScoped.class, null);
+        webBeansContext.getContextsService().startContext(ApplicationScoped.class, null);
+        webBeansContext.getContextsService().startContext(Singleton.class, null);
     }
 
     @Override
     public void beforeStopApplication(Object endObject)
     {
-        webBeansContext.getContextFactory().destroyRequestContext(null);
-        webBeansContext.getContextFactory().destroySessionContext(null);
-        webBeansContext.getContextFactory().destroyConversationContext();
-        webBeansContext.getContextFactory().destroyApplicationContext(null);
-        webBeansContext.getContextFactory().destroySingletonContext(null);
+        webBeansContext.getContextsService().endContext(RequestScoped.class, null);
+        webBeansContext.getContextsService().endContext(SessionScoped.class, null);
+        webBeansContext.getContextsService().endContext(ConversationScoped.class, null);
+        webBeansContext.getContextsService().endContext(ApplicationScoped.class, null);
+        webBeansContext.getContextsService().endContext(Singleton.class, null);
 
         // clean up the EL caches after each request
         ELContextStore elStore = ELContextStore.getInstance(false);

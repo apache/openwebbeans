@@ -159,7 +159,6 @@ public class WebBeansContext
         managerMap.put(InterceptorResolutionService.class, interceptorResolutionService);
     }
 
-    @Deprecated
     public static WebBeansContext getInstance()
     {
         WebBeansContext webBeansContext = WebBeansFinder.getSingletonInstance();

@@ -272,7 +272,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         Asserts.assertNotNull(scopeType, "scopeType paramter can not be null");
 
-        Context standardContext = webBeansContext.getContextFactory().getStandardContext(scopeType);
+        Context standardContext = webBeansContext.getContextsService().getCurrentContext(scopeType);
 
         if(standardContext != null && standardContext.isActive())
         {

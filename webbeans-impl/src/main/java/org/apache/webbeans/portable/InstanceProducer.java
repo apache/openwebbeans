@@ -28,7 +28,6 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.inject.AbstractInjectable;
 import org.apache.webbeans.inject.instance.InstanceImpl;
 
 public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
@@ -66,8 +65,6 @@ public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
                 qualifiers = this.qualifiers;
                 type = this.returnType;
             }
-
-            Object ownerInstance = AbstractInjectable.instanceUnderInjection.get();
 
             Instance<T> instance = new InstanceImpl<T>(type, injectionPoint, webBeansContext, creationalContext, qualifiers.toArray(new Annotation[qualifiers.size()]));
             
