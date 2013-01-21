@@ -86,5 +86,4 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
     {
         return annotatedType;
     }
-
 }

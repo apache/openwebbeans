@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.component;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
@@ -84,30 +83,4 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
     {
         this.constructor = constructor;
     }
-
-    /**
-     * TODO this must be performed at bean-build time!
-     */
-    public boolean isPassivationCapable()
-    {
-        if (isPassivationCapable != null)
-        {
-            return isPassivationCapable.booleanValue();
-        }
-        if(Serializable.class.isAssignableFrom(getReturnType()))
-        {
-            //X TODO add proper serialisation checks for all decorators and interceptors!
-
-
-            isPassivationCapable = Boolean.TRUE;
-            return true;
-        }
-
-        isPassivationCapable = Boolean.FALSE;
-        return false;
-    }
-
-    /** cache previously calculated result */
-    private Boolean isPassivationCapable = null;
-
 }

@@ -136,6 +136,11 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         this.preDestroyMethods = preDestroyMethods;
     }
 
+    public BeanInterceptorInfo getInterceptorInfo()
+    {
+        return interceptorInfo;
+    }
+
     public void setInterceptorInfo(BeanInterceptorInfo interceptorInfo, Class<? extends T> proxyClass, Map<Method, List<Interceptor<?>>> methodInterceptors,
                                    List<Interceptor<?>> postConstructInterceptors, List<Interceptor<?>> preDestroyInterceptors)
     {

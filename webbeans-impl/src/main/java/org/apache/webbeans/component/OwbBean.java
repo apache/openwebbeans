@@ -38,6 +38,11 @@ import org.apache.webbeans.config.WebBeansContext;
 public interface OwbBean<T> extends Bean<T>
 {
     /**
+     * @return the producer for this bean;
+     */
+    public Producer<T> getProducer();
+
+    /**
      * Sets the producer for this bean
      *
      * @param producer
@@ -126,11 +131,5 @@ public interface OwbBean<T> extends Bean<T>
      */
     public boolean isDependent();
     
-    /**
-     * If bean is passivation capable, it validate all of its dependencies.
-     * @throws org.apache.webbeans.exception.WebBeansConfigurationException if not satisfy passivation dependencies
-     */
-    public void validatePassivationDependencies();
-
     public WebBeansContext getWebBeansContext();
 }

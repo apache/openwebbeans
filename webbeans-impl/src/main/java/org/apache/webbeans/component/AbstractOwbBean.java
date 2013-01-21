@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.component;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
@@ -32,7 +33,6 @@ import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
-import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.Producer;
@@ -41,7 +41,6 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 /**
@@ -263,10 +262,26 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
         return passivatingId;
     }
     
+    /**
+     * TODO this must be performed at bean-build time!
+     */
     public boolean isPassivationCapable()
     {
+        if (isPassivationCapable != null)
+        {
+            return isPassivationCapable.booleanValue();
+        }
+        if(Serializable.class.isAssignableFrom(getReturnType()))
+        {
+            isPassivationCapable = Boolean.TRUE;
+            return true;
+        }
+        isPassivationCapable = Boolean.FALSE;
         return false;
     }
+
+    /** cache previously calculated result */
+    private Boolean isPassivationCapable = null;
 
     public void setProducer(Producer<T> producer)
     {
@@ -456,30 +471,5 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
     public boolean isDependent()
     {
         return getScope().equals(Dependent.class);
-    }
-    
-    public void validatePassivationDependencies()
-    {
-        if(isPassivationCapable())
-        {
-            Set<InjectionPoint> beanInjectionPoints = getInjectionPoints();
-            for(InjectionPoint injectionPoint : beanInjectionPoints)
-            {
-                if(!injectionPoint.isTransient())
-                {
-                    if(!getWebBeansContext().getWebBeansUtil().isPassivationCapableDependency(injectionPoint))
-                    {
-                        if(injectionPoint.getAnnotated().isAnnotationPresent(Disposes.class))
-                        {
-                            continue;
-                        }
-                        throw new WebBeansConfigurationException(
-                                "Passivation capable beans must satisfy passivation capable dependencies. " +
-                                "Bean : " + toString() + " does not satisfy. Details about the Injection-point: " +
-                                        injectionPoint.toString());
-                    }
-                }
-            }            
-        }
     }
 }

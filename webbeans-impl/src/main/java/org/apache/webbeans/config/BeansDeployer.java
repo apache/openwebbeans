@@ -735,7 +735,7 @@ public class BeansDeployer
         
         if(validate)
         {
-            ((OwbBean<?>)beanObj).validatePassivationDependencies();
+            webBeansContext.getDeploymentValidationService().validatePassivationCapable((OwbBean<?>)beanObj);
         }
     }
 
