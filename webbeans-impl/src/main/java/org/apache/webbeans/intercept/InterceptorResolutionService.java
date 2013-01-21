@@ -187,6 +187,16 @@ public class InterceptorResolutionService
 
         SelfInterceptorBean<T> selfInterceptorBean = resolveSelfInterceptorBean(annotatedType);
 
+        if (Modifier.isFinal(annotatedType.getJavaClass().getModifiers()) &&
+            (allUsedEjbInterceptors.size() > 0 || 
+             allUsedCdiInterceptors.size() > 0 || 
+             lifecycleMethodInterceptorInfos.size() > 0 ||
+             (decorators != null && decorators.size() > 0)))
+        {
+            throw new WebBeansConfigurationException("Cannot apply Decorators or Interceptors on a final class: " 
+                                                     + annotatedType.getJavaClass().getName());
+        }
+        
         return new BeanInterceptorInfo(decorators, allUsedEjbInterceptors, cdiInterceptors, selfInterceptorBean,
                                        businessMethodInterceptorInfos,
                                        nonInterceptedMethods, lifecycleMethodInterceptorInfos);
