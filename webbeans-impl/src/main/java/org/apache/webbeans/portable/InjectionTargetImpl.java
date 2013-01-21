@@ -195,13 +195,12 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             {
                 List<Decorator<?>> decorators = interceptorInfo.getDecorators();
                 Map<Decorator<?>, Object> instances = new HashMap<Decorator<?>, Object>();
+                CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>)creationalContext;
                 for (int i = decorators.size(); i > 0; i--)
                 {
                     Decorator<?> decorator = decorators.get(i - 1);
-                    CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>)creationalContext;
                     creationalContextImpl.putDelegate(delegate);
                     Object decoratorInstance = decorator.create((CreationalContext) creationalContext);
-                    creationalContextImpl.addDependent(decorator, decoratorInstance);
                     instances.put(decorator, decoratorInstance);
                     delegate = pf.createProxyInstance(proxyClass, instance, new DecoratorHandler(interceptorInfo, instances, i - 1, instance));
                 }

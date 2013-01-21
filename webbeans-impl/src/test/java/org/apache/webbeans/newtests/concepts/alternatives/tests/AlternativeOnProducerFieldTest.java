@@ -37,11 +37,6 @@ public class AlternativeOnProducerFieldTest extends AbstractUnitTest
 {
    private static final String PACKAGE_NAME = AlternativeOnProducerFieldTest.class.getPackage().getName(); 
     
-    public AlternativeOnProducerFieldTest()
-    {
-        
-    }
-    
     @Test
     public void testProducerFieldAlternativeNotEnabled()
     {

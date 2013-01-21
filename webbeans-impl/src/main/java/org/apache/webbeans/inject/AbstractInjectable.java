@@ -134,12 +134,6 @@ public abstract class AbstractInjectable<T>
                                                     "into an injection point "+ injectionPoint +" that requires a passivation capable dependency");
                 }
             }
-
-            // add this dependent into bean dependent list
-            if (!WebBeansUtil.isStaticInjection(injectionPoint) && WebBeansUtil.isDependent(injectedBean))
-            {
-                creationalContext.addDependent(injectedBean, injected);
-            }
         } 
         finally
         {

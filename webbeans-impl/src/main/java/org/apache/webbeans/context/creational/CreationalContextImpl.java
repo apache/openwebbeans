@@ -129,7 +129,24 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         }
     }
 
-
+    public boolean containsDependent(Contextual<?> contextual, Object instance)
+    {
+        if (dependentObjects == null)
+        {
+            return false;
+        }
+        synchronized (this)
+        {
+            for (DependentCreationalContext<?> dependentCreationalContext: dependentObjects)
+            {
+                if (dependentCreationalContext.getContextual().equals(contextual) && dependentCreationalContext.getInstance() == instance)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 
     @SuppressWarnings("unchecked")
     public void removeAllDependents()
@@ -152,9 +169,8 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
                     // we don't use an iterator because the destroyal might register a 
                     // fresh PreDestroy interceptor as dependent object...
                     DependentCreationalContext<T> dependent = (DependentCreationalContext<T>) dependentObjects.get(0);
-                    dependent.getContextual().destroy((T) dependent.getInstance(), this);
-                    
                     dependentObjects.remove(0);
+                    dependent.getContextual().destroy((T) dependent.getInstance(), this);
                     maxRemoval--;
                 }
                     

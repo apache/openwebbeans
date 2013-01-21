@@ -65,7 +65,10 @@ public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
     public static void unsetThreadLocal()
     {
         Stack<InjectionPoint> stackIP = getStackOfInjectionPoints();
-        stackIP.pop();
+        if (!stackIP.isEmpty())
+        {
+            stackIP.pop();
+        }
     }
     
     /**

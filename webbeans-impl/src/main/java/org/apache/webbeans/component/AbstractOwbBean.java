@@ -172,6 +172,10 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
                 injectionTarget.inject(instance, creationalContext);
                 injectionTarget.postConstruct(instance);
             }
+            if (getScope().equals(Dependent.class))
+            {
+                ((CreationalContextImpl<T>)creationalContext).addDependent(this, instance);
+            }
             return instance;
         }
         catch (Exception re)
@@ -205,6 +209,14 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
      */
     public void destroy(T instance, CreationalContext<T> creationalContext)
     {
+        if (getScope().equals(Dependent.class)
+            && creationalContext instanceof CreationalContextImpl
+            && ((CreationalContextImpl<T>)creationalContext).containsDependent(this, instance))
+        {
+            // we just have to call release, because release will destroy us since we are @Dependent
+            creationalContext.release();
+            return;
+        }
         try
         {
             if (producer instanceof InjectionTarget)

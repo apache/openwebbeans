@@ -37,7 +37,6 @@ import javax.enterprise.util.TypeLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.InjectionExceptionUtil;
@@ -131,11 +130,6 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             }
 
             instance = (T) beanManager.getReference(bean, null, creationalContext);
-
-            if (isDependentBean && creationalContext instanceof CreationalContextImpl)
-            {
-                ((CreationalContextImpl<?>) creationalContext).addDependent(bean, instance);
-            }
         }
         finally
         {
@@ -245,7 +239,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         
         Annotation[] newQualifiers = getAdditionalQualifiers(qualifiers);
         
-        InstanceImpl<U> newInstance = new InstanceImpl(sub, injectionPoint, webBeansContext, parentCreationalContext, newQualifiers);
+        InstanceImpl<U> newInstance = new InstanceImpl<U>(sub, injectionPoint, webBeansContext, parentCreationalContext, newQualifiers);
                     
         return newInstance;
     }

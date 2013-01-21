@@ -18,11 +18,8 @@
  */
 package org.apache.webbeans.portable;
 
-import java.lang.reflect.Modifier;
-import java.util.Map;
 import java.util.Set;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.Bean;
@@ -63,9 +60,30 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
     @Override
     public T produce(CreationalContext<T> creationalContext)
     {
-        CreationalContextImpl<T> context = (CreationalContextImpl<T>)creationalContext;
-        P ownerInstance = (P)webBeansContext.getBeanManagerImpl().getReference(owner, owner.getBeanClass(), creationalContext);
-        return new InjectableMethod<T>(producerMethod.getJavaMember(), ownerInstance, this, context).doInjection();
+        P parentInstance = null;
+        CreationalContext<P> parentCreationalContext = null;
+        InjectableMethod<T> m = null;
+        try
+        {
+            parentCreationalContext = webBeansContext.getBeanManagerImpl().createCreationalContext(owner);
+
+            if (!producerMethod.isStatic())
+            {
+                parentInstance = (P)webBeansContext.getBeanManagerImpl().getReference(owner, owner.getBeanClass(), parentCreationalContext);
+            }
+            
+            m = new InjectableMethod<T>(producerMethod.getJavaMember(), parentInstance, this, (CreationalContextImpl<T>) parentCreationalContext);
+            
+            return m.doInjection();
+
+        }
+        finally
+        {
+            if (parentCreationalContext != null)
+            {
+                parentCreationalContext.release();
+            }
+        }
     }
 
     @Override
@@ -74,18 +92,18 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
         if (disposalMethod != null)
         {
             P parentInstance = null;
-            CreationalContext<P> parentCreational = null;
+            CreationalContext<P> parentCreationalContext = null;
             InjectableMethod<T> m = null;
             try
             {
-                parentCreational = webBeansContext.getBeanManagerImpl().createCreationalContext(owner);
+                parentCreationalContext = webBeansContext.getBeanManagerImpl().createCreationalContext(owner);
                 
-                if (!Modifier.isStatic(disposalMethod.getJavaMember().getModifiers()))
+                if (!disposalMethod.isStatic())
                 {
-                    parentInstance = (P)webBeansContext.getBeanManagerImpl().getReference(owner, owner.getBeanClass(), parentCreational);
+                    parentInstance = (P)webBeansContext.getBeanManagerImpl().getReference(owner, owner.getBeanClass(), parentCreationalContext);
                 }
 
-                m = new InjectableMethod<T>(disposalMethod.getJavaMember(), parentInstance, this, (CreationalContextImpl<T>) parentCreational);
+                m = new InjectableMethod<T>(disposalMethod.getJavaMember(), parentInstance, this, (CreationalContextImpl<T>) parentCreationalContext);
                 m.setDisposable(true);
                 m.setProducerMethodInstance(instance);
 
@@ -94,22 +112,7 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
             }
             finally
             {
-                if (owner.getScope().equals(Dependent.class))
-                {
-                    owner.destroy(parentInstance, parentCreational);
-                }
-
-                //Destroy dependent parameters
-                Map<Bean<?>, Object> dependents = m.getDependentBeanParameters();
-                if(dependents != null)
-                {
-                    Set<Bean<?>> beans = dependents.keySet();
-                    for(Bean<?> bean : beans)
-                    {
-                        Bean<Object> beanTt = (Bean<Object>)bean;
-                        beanTt.destroy(dependents.get(beanTt), (CreationalContext<Object>) parentCreational);
-                    }
-                }
+                parentCreationalContext.release();
             }
         }
     }
