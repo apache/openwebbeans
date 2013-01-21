@@ -18,9 +18,12 @@
  */
 package org.apache.webbeans.proxy;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
@@ -39,6 +42,15 @@ public abstract class AbstractProxyFactory
     protected WebBeansContext webBeansContext;
 
     /**
+     * contains the instance of sun.misc.Unsafe.
+     * We use it for creating the proxy instance without fully
+     * initializing the class.
+     */
+    private Object unsafe = null;
+    private Method unsafeAllocateInstance;
+
+
+    /**
      * The name of the field which stores the passivationID of the Bean this proxy serves.
      * This is needed in case the proxy gets de-serialized back into a JVM
      * which didn't have this bean loaded yet.
@@ -49,6 +61,7 @@ public abstract class AbstractProxyFactory
     protected AbstractProxyFactory(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
+        initializeUnsafe();
     }
 
     /**
@@ -89,7 +102,6 @@ public abstract class AbstractProxyFactory
      */
     protected abstract void delegateNonInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] noninterceptedMethods)
             throws ProxyGenerationException;
-
 
     /**
      * Detect a free classname based on the given one
@@ -527,6 +539,96 @@ public abstract class AbstractProxyFactory
     {
         final Class<?> returnType = delegatedMethod.getReturnType();
         mv.visitInsn(getReturnInsn(returnType));
+    }
+
+    protected <T> T unsafeNewInstance(Class<T> clazz)
+    {
+        T instance = null;
+
+        try
+        {
+            return (T) unsafeAllocateInstance.invoke(unsafe, clazz);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new IllegalStateException("Failed to allocateInstance of Proxy class " + clazz.getName(), e);
+        }
+        catch (InvocationTargetException e)
+        {
+            Throwable throwable = e.getTargetException() != null ? e.getTargetException() : e;
+            throw new IllegalStateException("Failed to allocateInstance of Proxy class " + clazz.getName(),
+                    throwable);
+        }
+    }
+
+
+    private void initializeUnsafe()
+    {
+        final Class<?> unsafeClass;
+        try
+        {
+            unsafeClass = AccessController.doPrivileged(new PrivilegedAction<Class<?>>()
+            {
+                public Class<?> run()
+                {
+                    try
+                    {
+                        return Thread.currentThread().getContextClassLoader().loadClass("sun.misc.Unsafe");
+                    }
+                    catch (Exception e)
+                    {
+                        try
+                        {
+                            return ClassLoader.getSystemClassLoader().loadClass("sun.misc.Unsafe");
+                        }
+                        catch (ClassNotFoundException e1)
+                        {
+                            throw new IllegalStateException("Cannot get sun.misc.Unsafe", e);
+                        }
+                    }
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            throw new IllegalStateException("Cannot get sun.misc.Unsafe class", e);
+        }
+
+        Object unsafe = AccessController.doPrivileged(new PrivilegedAction<Object>()
+        {
+            public Object run()
+            {
+                try
+                {
+                    Field field = unsafeClass.getDeclaredField("theUnsafe");
+                    field.setAccessible(true);
+                    return field.get(null);
+                }
+                catch (Exception e)
+                {
+                    throw new IllegalStateException("Cannot get sun.misc.Unsafe", e);
+                }
+            }
+        });
+
+        this.unsafe = unsafe;
+
+        this.unsafeAllocateInstance = AccessController.doPrivileged(new PrivilegedAction<Method>()
+        {
+            public Method run()
+            {
+                try
+                {
+                    Method mtd = unsafeClass.getDeclaredMethod("allocateInstance", Class.class);
+                    mtd.setAccessible(true);
+                    return mtd;
+                }
+                catch (Exception e)
+                {
+                    throw new IllegalStateException("Cannot get sun.misc.Unsafe.allocateInstance", e);
+                }
+            }
+        });
     }
 
 }

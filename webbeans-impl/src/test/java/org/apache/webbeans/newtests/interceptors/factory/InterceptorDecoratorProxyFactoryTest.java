@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.newtests.interceptors.factory;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -69,14 +68,6 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
 
         ClassInterceptedClass proxy = pf.createProxyInstance(proxyClass, internalInstance, testInvocationHandler);
         Assert.assertNotNull(proxy);
-
-        // we need to get the field from the proxy via reflection
-        // otherwise we will end up seeing the proxied method on the internal state
-        Field field = proxy.getClass().getSuperclass().getDeclaredField("defaultCtInvoked");
-        Assert.assertNotNull(field);
-        field.setAccessible(true);
-        Boolean isDefaultCtInvoked = (Boolean) field.get(proxy);
-        Assert.assertTrue(isDefaultCtInvoked);
 
         Assert.assertTrue(proxy instanceof OwbInterceptorProxy);
 

@@ -216,17 +216,13 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
     {
         try
         {
-            T proxy = proxyClass.newInstance();
+            T proxy = unsafeNewInstance(proxyClass);
 
             Field delegateField = proxy.getClass().getDeclaredField(FIELD_INSTANCE_PROVIDER);
             delegateField.setAccessible(true);
             delegateField.set(proxy, provider);
 
             return proxy;
-        }
-        catch (InstantiationException e)
-        {
-            throw new ProxyGenerationException(e);
         }
         catch (IllegalAccessException e)
         {
