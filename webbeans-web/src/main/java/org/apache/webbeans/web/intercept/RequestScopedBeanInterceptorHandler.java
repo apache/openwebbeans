@@ -32,8 +32,6 @@ import java.util.HashMap;
  * <p>Since there is only one single contextual instance of an &#064;RequestScoped bean per thread,
  * we can simply cache this instance inside our bean. We only need to reload this instance
  * if it is null or if the thread ends.</p>
- *
- * TODO: move caching to new InterceptorHandler logic
  */
 public class RequestScopedBeanInterceptorHandler extends NormalScopedBeanInterceptorHandler
 {
