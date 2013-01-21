@@ -91,4 +91,9 @@ public class ClassInterceptedClass
         throw new NumberFormatException("should fit");
     }
 
+    protected void initConf()
+    {
+        //
+    }
+
 }

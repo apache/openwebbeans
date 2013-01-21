@@ -99,8 +99,6 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             classToProxy = (Class<T>) bean.getBeanClass();
         }
 
-
-
         Class<? extends T> proxyClass = (Class<? extends T>) cachedProxyClasses.get(bean);
 
         if (proxyClass == null)
@@ -224,11 +222,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
 
             return proxy;
         }
-        catch (IllegalAccessException e)
-        {
-            throw new ProxyGenerationException(e);
-        }
-        catch (NoSuchFieldException e)
+        catch (Exception e)
         {
             throw new ProxyGenerationException(e);
         }
