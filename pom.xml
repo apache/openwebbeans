@@ -558,6 +558,20 @@
                 <version>3.7</version>
             </dependency>
 
+            <!--X TODO use a shaded version of:
+                    <dependency>
+                        <groupId>org.ow2.asm</groupId>
+                        <artifactId>asm-all</artifactId>
+                        <version>4.1</version>
+                        <optional>true</optional>
+                    </dependency>
+            -->
+            <dependency>
+                <groupId>org.apache.xbean</groupId>
+                <artifactId>xbean-asm-shaded</artifactId>
+                <version>3.13-SNAPSHOT</version>
+            </dependency>
+
             <dependency>
                 <groupId>net.sf.scannotation</groupId>
                 <artifactId>scannotation</artifactId>
