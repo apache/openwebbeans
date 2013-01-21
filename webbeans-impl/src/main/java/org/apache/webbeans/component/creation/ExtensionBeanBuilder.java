@@ -20,8 +20,10 @@ package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
@@ -38,9 +40,13 @@ public class ExtensionBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
         super(webBeansContext, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type));
     }
 
-    protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType,
+    protected InjectionTarget<T> buildInjectionTarget(Set<Type> types,
+                                                      Set<Annotation> qualifiers,
+                                                      AnnotatedType<T> annotatedType,
                                                       Set<InjectionPoint> points,
-                                                      WebBeansContext webBeansContext)
+                                                      WebBeansContext webBeansContext,
+                                                      List<AnnotatedMethod<?>> postConstructMethods,
+                                                      List<AnnotatedMethod<?>> preDestroyMethods)
     {
         return new ExtensionProducer<T>(annotatedType, points, webBeansContext);
     }

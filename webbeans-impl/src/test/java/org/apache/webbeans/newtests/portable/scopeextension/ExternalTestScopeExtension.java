@@ -29,6 +29,10 @@ import org.junit.Assert;
 
 public class ExternalTestScopeExtension implements Extension 
 {
+    public ExternalTestScopeExtension()
+    {
+        System.out.println("ExternalTestScopeExtension got created");
+    }
 
     public void addViewScoped(@Observes BeforeBeanDiscovery beforeBeanDiscovery, BeanManager beanManager)
     {
