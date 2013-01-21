@@ -59,6 +59,7 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.EventProducer;
 import org.apache.webbeans.portable.InjectionPointProducer;
+import org.apache.webbeans.proxy.OwbNormalScopeProxy;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -198,7 +199,6 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
 
         Object object = null;
         
-        CreationalContext<Object> creationalContext = null;
         List<ObserverParams> methodArgsMap;
         if(annotatedMethod == null)
         {
@@ -208,16 +208,14 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         {
             methodArgsMap = getAnnotatedMethodArguments(event);
         }
-        
+
+        BeanManagerImpl manager = bean.getWebBeansContext().getBeanManagerImpl();
+        CreationalContext<Object> creationalContext = manager.createCreationalContext(component);
+
+
         ObserverParams[] obargs = null;
         try
         {
-            boolean isPrivateMethod = !observerMethod.isAccessible();
-            if (isPrivateMethod)
-            {
-                bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(observerMethod, true);
-            }
-
             obargs = new ObserverParams[methodArgsMap.size()];
             obargs = methodArgsMap.toArray(obargs);
             Object[] args = new Object[obargs.length];
@@ -230,12 +228,15 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             //Static or not
             if (Modifier.isStatic(observerMethod.getModifiers()))
             {
+                if (!observerMethod.isAccessible())
+                {
+                    observerMethod.setAccessible(true);
+                }
                 //Invoke Method
-                observerMethod.invoke(object, args);
+                observerMethod.invoke(null, args);
             }
             else
             {
-                BeanManagerImpl manager = bean.getWebBeansContext().getBeanManagerImpl();
                 Context context;
                 try
                 {
@@ -257,25 +258,14 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     return;
                 }
 
-                creationalContext = manager.createCreationalContext(component);
-
-                if (isPrivateMethod)
+                if (object == null)
                 {
-                    // since private methods cannot be intercepted, we can just call them directly
-                    // so we get the contextual instance directly from the context because we do not
-                    // proxy private methods (thus the invocation on the contextual reference would fail)
-                    if (object == null)
-                    {
-                        object = context.get(component, creationalContext);
-                    }
+                    object = context.get(component, creationalContext);
                 }
-                else
+
+                if (object == null)
                 {
-                    // on Reception.ALWAYS we must get a contextual reference if we didn't find the contextual instance
-                    // we need to pick the contextual reference because of section 7.2:
-                    //  "Invocations of producer, disposer and observer methods by the container are
-                    //  business method invocations and are in- tercepted by method interceptors and decorators."
-                    
+                    // this might happen for EJB components.
                     Type t = component.getBeanClass();
 
                     // If the bean is an EJB, its beanClass may not be one of
@@ -286,10 +276,25 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     }
 
                     object = manager.getReference(component, t, creationalContext);
+
                 }
 
                 if (object != null)
                 {
+                    if (!observerMethod.isAccessible())
+                    {
+                        bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(observerMethod, true);
+                    }
+
+                    if (Modifier.isPrivate(observerMethod.getModifiers()))
+                    {
+                        // since private methods cannot be intercepted, we have to unwrap anny possible proxy
+                        if (object instanceof OwbNormalScopeProxy)
+                        {
+                            object = getWebBeansContext().getInterceptorDecoratorProxyFactory().getInternalInstance(object);
+                        }
+                    }
+
                     //Invoke Method
                     observerMethod.invoke(object, args);
                 }
