@@ -23,10 +23,10 @@ import javax.enterprise.inject.Produces;
 
 public class DefaultPenProducer {
 
-	@Produces @QualifierSpecialized IPen makeMeAPen(@New Pen pen) {
-		pen.str = "An default ";
-		return pen;
-	}
-	
-	
+   @Produces @QualifierSpecialized IPen makeMeAPen(@New Pen pen) {
+      pen.str = "An default ";
+      return pen;
+   }
+
+
 }

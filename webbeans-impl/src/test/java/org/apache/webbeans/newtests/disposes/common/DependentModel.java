@@ -25,7 +25,7 @@ public class DependentModel
     public int id = 0;
     
     public DependentModel() {
-    	System.out.println(this.getClass().getSimpleName() + ".DependentModel() is constructed");
+       System.out.println(this.getClass().getSimpleName() + ".DependentModel() is constructed");
     }
     /**
      * @return the value
@@ -44,11 +44,11 @@ public class DependentModel
     }
     
     public void setId(int id) {
-    	this.id = id;
+       this.id = id;
     }
     
     public int getId() {
-    	return this.id;
+       return this.id;
     }
     
 }

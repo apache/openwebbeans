@@ -44,8 +44,8 @@ public class RequestModelProducer {
         RequestModel rmodel =  new RequestModel();
         rmodel.setDisposeModel(dependentModel);
 
-    	System.out.println("produced RequestModel=" + rmodel);
-    	return rmodel;
+        System.out.println("produced RequestModel=" + rmodel);
+        return rmodel;
     }
     
     public void rdispose(@Disposes RequestModel rmodel)

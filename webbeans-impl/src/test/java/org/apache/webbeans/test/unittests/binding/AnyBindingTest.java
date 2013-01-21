@@ -33,35 +33,35 @@ import org.junit.Test;
 
 public class AnyBindingTest extends TestContext{
 
-	public AnyBindingTest()
-	{
-		super(AnyBindingTest.class.getName());
-	}
-	
-	@Before
-	public void init()
-	{
-	}
-	
-	@Test
-	public void testAny()
-	{
-		AbstractOwbBean<AnyBindingComponent> comp1 = defineManagedBean(AnyBindingComponent.class);
-		Set<Annotation> qualifiers = comp1.getQualifiers();
-		
-		Assert.assertEquals(2, qualifiers.size());
-		
-		AbstractOwbBean<NonAnyBindingComponent> comp2 = defineManagedBean(NonAnyBindingComponent.class);
-		qualifiers = comp2.getQualifiers();
-		
-		Assert.assertEquals(4, qualifiers.size());
-		
+   public AnyBindingTest()
+   {
+      super(AnyBindingTest.class.getName());
+   }
 
-		AbstractOwbBean<DefaultAnyBinding> comp3 = defineManagedBean(DefaultAnyBinding.class);
-		qualifiers = comp3.getQualifiers();
-		
-		Assert.assertEquals(2, qualifiers.size());
+   @Before
+   public void init()
+   {
+   }
 
-		
-	}
+   @Test
+   public void testAny()
+   {
+      AbstractOwbBean<AnyBindingComponent> comp1 = defineManagedBean(AnyBindingComponent.class);
+      Set<Annotation> qualifiers = comp1.getQualifiers();
+
+      Assert.assertEquals(2, qualifiers.size());
+
+      AbstractOwbBean<NonAnyBindingComponent> comp2 = defineManagedBean(NonAnyBindingComponent.class);
+      qualifiers = comp2.getQualifiers();
+
+      Assert.assertEquals(4, qualifiers.size());
+
+
+      AbstractOwbBean<DefaultAnyBinding> comp3 = defineManagedBean(DefaultAnyBinding.class);
+      qualifiers = comp3.getQualifiers();
+
+      Assert.assertEquals(2, qualifiers.size());
+
+
+   }
 }

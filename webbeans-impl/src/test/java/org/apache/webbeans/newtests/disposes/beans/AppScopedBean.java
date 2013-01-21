@@ -47,7 +47,7 @@ public class AppScopedBean
         if (producedModel == null) {
             producedModel = model;
         }
-    	System.out.println("produced DependentModel=" + model);
+        System.out.println("produced DependentModel=" + model);
         return model;
     }
     
@@ -56,8 +56,8 @@ public class AppScopedBean
     {
         OK = model.isValue();
         if (OK) {
-        	OK = (model.getId() == producedModel.getId());
+            OK = (model.getId() == producedModel.getId());
         }
-    	System.out.println("disposed DependentModel=" + model + "OK=" + OK);
+        System.out.println("disposed DependentModel=" + model + "OK=" + OK);
     }
 }

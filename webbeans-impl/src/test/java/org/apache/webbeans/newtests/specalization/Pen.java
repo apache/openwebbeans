@@ -21,16 +21,16 @@ package org.apache.webbeans.newtests.specalization;
 import javax.inject.Inject;
 
 public class Pen implements IPen {
-	
-	String str;
-	
-	@Inject
-	public Pen() {
-		this.str = "";
-	}
-	
-	public String getID() {
-		return str + " Pen";
-	}
+
+   String str;
+
+   @Inject
+   public Pen() {
+      this.str = "";
+   }
+
+   public String getID() {
+      return str + " Pen";
+   }
 
 }

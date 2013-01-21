@@ -26,13 +26,13 @@ import javax.enterprise.inject.Specializes;
 @Alternative
 public class PremiumPenProducer extends AdvancedPenProducer {
 
-	@Override
-	@Produces
-	@Alternative
-	@Specializes
-	@QualifierSpecialized IPen makeMeAPen(@New Pen pen) {
-		pen.str = "An premium ";
-		return pen;
-	}
+   @Override
+   @Produces
+   @Alternative
+   @Specializes
+   @QualifierSpecialized IPen makeMeAPen(@New Pen pen) {
+      pen.str = "An premium ";
+      return pen;
+   }
 
 }

@@ -25,12 +25,12 @@ import javax.enterprise.inject.Typed;
 public class RequestModel
 {
 
-	private DependentModel disposeModel;
-	
-	public int getID()
+   private DependentModel disposeModel;
+
+   public int getID()
     {
-		return disposeModel.getId();
-	}
+      return disposeModel.getId();
+   }
 
     public DependentModel getDisposeModel() {
         return disposeModel;

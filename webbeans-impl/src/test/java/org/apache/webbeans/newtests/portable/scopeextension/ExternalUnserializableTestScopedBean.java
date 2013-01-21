@@ -21,7 +21,7 @@ package org.apache.webbeans.newtests.portable.scopeextension;
 @ExternalTestScoped
 public class ExternalUnserializableTestScopedBean {
 
-	public int i = 0;
+   public int i = 0;
 
     public int getI() {
         return i;

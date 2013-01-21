@@ -20,5 +20,5 @@ package org.apache.webbeans.newtests.specalization;
 
 public interface IPen {
 
-	public String getID();
+   public String getID();
 }
