@@ -57,7 +57,7 @@ import static org.apache.webbeans.util.InjectionExceptionUtil.throwAmbiguousReso
  * Injection point resolver class.
  * <p/>
  * <p>
- * It is a singleton class per ClassLoader per JVM. It is
+ * It is a singleton class per BeanManager. It is
  * responsible for resolving the bean instances at the injection points for
  * its bean manager.
  * </p>
