@@ -126,7 +126,7 @@ public final class WebBeansInterceptorConfig
                 // we only need to create a proxy class for intercepted or decorated Beans
                 InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
 
-                ClassLoader classLoader = this.getClass().getClassLoader();
+                ClassLoader classLoader = bean.getBeanClass().getClassLoader();
 
                 Method[] businessMethods = methodInterceptors.keySet().toArray(new Method[methodInterceptors.size()]);
                 Method[] nonInterceptedMethods = interceptorInfo.getNonInterceptedMethods().toArray(new Method[interceptorInfo.getNonInterceptedMethods().size()]);

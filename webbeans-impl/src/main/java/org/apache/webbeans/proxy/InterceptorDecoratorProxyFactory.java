@@ -255,7 +255,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
      *
      * @param noninterceptedMethods all methods which are neither intercepted nor decorated
      */
-    protected void delegateNonInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] noninterceptedMethods)
+    protected void delegateNonInterceptedMethods(ClassLoader classLoader, ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] noninterceptedMethods)
     {
         for (Method delegatedMethod : noninterceptedMethods)
         {
@@ -304,7 +304,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         }
     }
 
-    protected void delegateInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] interceptedMethods)
+    protected void delegateInterceptedMethods(ClassLoader classLoader, ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] interceptedMethods)
             throws ProxyGenerationException
     {
         for (int i = 0; i < interceptedMethods.length; i++)

@@ -276,19 +276,31 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
     }
 
     @Override
-    protected void delegateInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] interceptedMethods) throws ProxyGenerationException
+    protected void delegateInterceptedMethods(ClassLoader classLoader, ClassWriter cw, String proxyClassFileName,
+                                              Class<?> classToProxy, Method[] interceptedMethods)
+            throws ProxyGenerationException
     {
         // nothing to do ;)
     }
 
     @Override
-    protected void delegateNonInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] noninterceptedMethods) throws ProxyGenerationException
+    protected void delegateNonInterceptedMethods(ClassLoader classLoader, ClassWriter cw, String proxyClassFileName,
+                                                 Class<?> classToProxy, Method[] noninterceptedMethods)
+            throws ProxyGenerationException
     {
         for (Method delegatedMethod : noninterceptedMethods)
         {
             if (unproxyableMethod(delegatedMethod))
             {
                 continue;
+            }
+            if (classLoader != classToProxy.getClassLoader())
+            {
+                // we can only proxy protected methods that way if the subclass and proxied class are in the same classloader
+                if (Modifier.isProtected(delegatedMethod.getModifiers()))
+                {
+                    continue;
+                }
             }
 
             String methodDescriptor = Type.getMethodDescriptor(delegatedMethod);

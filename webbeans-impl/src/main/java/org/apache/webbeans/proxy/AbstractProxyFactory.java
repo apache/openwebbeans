@@ -94,13 +94,13 @@ public abstract class AbstractProxyFactory
     /**
      * generate the bytecode for invoking all intercepted methods
      */
-    protected abstract void delegateInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] interceptedMethods)
+    protected abstract void delegateInterceptedMethods(ClassLoader classLoader, ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] interceptedMethods)
             throws ProxyGenerationException;
 
     /**
      * generate the bytecode for invoking all non-intercepted methods
      */
-    protected abstract void delegateNonInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] noninterceptedMethods)
+    protected abstract void delegateNonInterceptedMethods(ClassLoader classLoader, ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] noninterceptedMethods)
             throws ProxyGenerationException;
 
     /**
@@ -172,14 +172,14 @@ public abstract class AbstractProxyFactory
     {
         String proxyClassFileName = proxyClassName.replace('.', '/');
 
-        final byte[] proxyBytes = generateProxy(classToProxy, proxyClassName, proxyClassFileName, interceptedMethods, nonInterceptedMethods);
+        final byte[] proxyBytes = generateProxy(classLoader, classToProxy, proxyClassName, proxyClassFileName, interceptedMethods, nonInterceptedMethods);
 
         Class<T> clazz = defineAndLoadClass(classLoader, proxyClassName, proxyBytes);
 
         return clazz;
     }
 
-    private byte[] generateProxy(Class<?> classToProxy, String proxyClassName, String proxyClassFileName,
+    private byte[] generateProxy(ClassLoader classLoader, Class<?> classToProxy, String proxyClassName, String proxyClassFileName,
                                  Method[] interceptedMethods, Method[] nonInterceptedMethods)
             throws ProxyGenerationException
     {
@@ -212,12 +212,12 @@ public abstract class AbstractProxyFactory
 
         if (nonInterceptedMethods != null)
         {
-            delegateNonInterceptedMethods(cw, proxyClassFileName, classToProxy, nonInterceptedMethods);
+            delegateNonInterceptedMethods(classLoader, cw, proxyClassFileName, classToProxy, nonInterceptedMethods);
         }
 
         if (interceptedMethods != null)
         {
-            delegateInterceptedMethods(cw, proxyClassFileName, classToProxy, interceptedMethods);
+            delegateInterceptedMethods(classLoader, cw, proxyClassFileName, classToProxy, interceptedMethods);
         }
 
         return cw.toByteArray();
@@ -284,7 +284,7 @@ public abstract class AbstractProxyFactory
         int modifiers = delegatedMethod.getModifiers();
 
         //X TODO how to deal with native functions?
-        return (modifiers & (Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL | Modifier.PROTECTED | Modifier.NATIVE)) > 0 ||
+        return (modifiers & (Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL | Modifier.NATIVE)) > 0 ||
                "finalize".equals(delegatedMethod.getName());
     }
 

@@ -156,7 +156,8 @@ public class SubclassProxyFactory extends AbstractProxyFactory
     }
 
     @Override
-    protected void delegateInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] interceptedMethods) throws ProxyGenerationException
+    protected void delegateInterceptedMethods(ClassLoader classLoader, ClassWriter cw, String proxyClassFileName, Class<?> classToProxy,
+                                              Method[] interceptedMethods) throws ProxyGenerationException
     {
     }
 
@@ -167,7 +168,8 @@ public class SubclassProxyFactory extends AbstractProxyFactory
     }
 
     @Override
-    protected void delegateNonInterceptedMethods(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] noninterceptedMethods) throws ProxyGenerationException
+    protected void delegateNonInterceptedMethods(ClassLoader classLoader, ClassWriter cw, String proxyClassFileName, Class<?> classToProxy,
+                                                 Method[] noninterceptedMethods) throws ProxyGenerationException
     {
         for (Method delegatedMethod : noninterceptedMethods)
         {
