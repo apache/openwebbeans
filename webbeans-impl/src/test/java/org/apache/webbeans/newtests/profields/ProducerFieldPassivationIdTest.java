@@ -21,8 +21,6 @@ package org.apache.webbeans.newtests.profields;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import junit.framework.Assert;
-
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.profields.beans.stringproducer.MultipleListProducer;
 import org.junit.Test;

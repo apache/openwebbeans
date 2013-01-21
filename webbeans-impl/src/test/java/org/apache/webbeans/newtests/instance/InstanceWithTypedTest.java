@@ -19,7 +19,6 @@
 package org.apache.webbeans.newtests.instance;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.test.component.PaymentProcessorComponent;
 import org.junit.Test;
 
 import javax.enterprise.inject.Any;

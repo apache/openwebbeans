@@ -21,7 +21,6 @@ package org.apache.webbeans.newtests.disposes.beans;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;

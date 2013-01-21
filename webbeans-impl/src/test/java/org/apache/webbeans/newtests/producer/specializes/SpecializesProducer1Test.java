@@ -33,7 +33,6 @@ import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.component.producer.specializes.SpecializesProducer1;
 import org.apache.webbeans.test.component.producer.specializes.superclazz.SpecializesProducer1SuperClazz;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class SpecializesProducer1Test extends AbstractUnitTest

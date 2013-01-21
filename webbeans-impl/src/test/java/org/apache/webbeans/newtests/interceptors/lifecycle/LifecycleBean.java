@@ -20,7 +20,6 @@ package org.apache.webbeans.newtests.interceptors.lifecycle;
 
 import javax.enterprise.inject.New;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 @LifecycleBinding
 public class LifecycleBean

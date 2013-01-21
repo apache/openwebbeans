@@ -20,7 +20,6 @@ package org.apache.webbeans.newtests.disposes.common;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
 
 @Typed
 public class RequestModel
