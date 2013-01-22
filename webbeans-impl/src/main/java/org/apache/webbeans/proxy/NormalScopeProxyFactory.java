@@ -296,7 +296,9 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             }
             if (classLoader != classToProxy.getClassLoader())
             {
-                // we can only proxy protected methods that way if the subclass and proxied class are in the same classloader
+                // We can only proxy protected methods that way if the subclass
+                // and the proxied class are in the same classloader
+                // Otherwise they don't technically count as being 'in the same package'
                 if (Modifier.isProtected(delegatedMethod.getModifiers()))
                 {
                     continue;

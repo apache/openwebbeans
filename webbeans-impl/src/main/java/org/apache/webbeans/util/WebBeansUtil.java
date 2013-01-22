@@ -1615,7 +1615,10 @@ public final class WebBeansUtil
         managedBeanCreator.defineProducerFields(managedBean);
         managedBeanCreator.defineObserverMethods(managedBean);
 
-        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(managedBean);
+        if (managedBean instanceof InjectionTargetBean)
+        {
+            ((InjectionTargetBean) managedBean).defineBeanInterceptorStack();
+        }
 
         managedBeanCreator.validateDisposalMethods(managedBean);//Define disposal method after adding producers
 
@@ -1758,7 +1761,11 @@ public final class WebBeansUtil
         managedBeanCreator.defineProducerMethods(managedBean);
         managedBeanCreator.defineProducerFields(managedBean);
         managedBeanCreator.defineObserverMethods(managedBean);
-        webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(managedBean);
+
+        if (managedBean instanceof InjectionTargetBean)
+        {
+            ((InjectionTargetBean) managedBean).defineBeanInterceptorStack();
+        }
 
         managedBeanCreator.validateDisposalMethods(managedBean); //Define disposal method after adding producers
 

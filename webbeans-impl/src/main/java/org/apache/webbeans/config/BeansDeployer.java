@@ -403,7 +403,7 @@ public class BeansDeployer
                 
                 if (bean instanceof InjectionTargetBean && bean instanceof InterceptedMarker)
                 {
-                    webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack((InjectionTargetBean<Object>) bean);
+                    ((InjectionTargetBean<Object>) bean).defineBeanInterceptorStack();
                 }
                 
                 //Check passivation scope

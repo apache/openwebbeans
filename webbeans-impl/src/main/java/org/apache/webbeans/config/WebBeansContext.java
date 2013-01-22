@@ -39,7 +39,6 @@ import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
-import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
@@ -77,7 +76,6 @@ public class WebBeansContext
     private final DecoratorsManager decoratorsManager = new DecoratorsManager(this);
     private final ExtensionLoader extensionLoader = new ExtensionLoader(this);
     private final InterceptorsManager interceptorsManager = new InterceptorsManager(this);
-    private final WebBeansInterceptorConfig webBeansInterceptorConfig = new WebBeansInterceptorConfig(this);
     private final InterceptorDecoratorProxyFactory interceptorDecoratorProxyFactory = new InterceptorDecoratorProxyFactory(this);
     private final NormalScopeProxyFactory normalScopeProxyFactory = new NormalScopeProxyFactory(this);
     private final SubclassProxyFactory subclassProxyFactory = new SubclassProxyFactory(this);
@@ -283,12 +281,6 @@ public class WebBeansContext
     {
         return decoratorsManager;
     }
-
-    public WebBeansInterceptorConfig getWebBeansInterceptorConfig()
-    {
-        return webBeansInterceptorConfig;
-    }
-
 
     public StereoTypeManager getStereoTypeManager()
     {

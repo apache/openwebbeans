@@ -283,7 +283,10 @@ public abstract class TestContext implements ITestContext
         bean = define(clazz, WebBeansType.MANAGED, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
         if (bean != null)
         {
-            webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack(bean);
+            if (bean instanceof InjectionTargetBean)
+            {
+                ((InjectionTargetBean) bean).defineBeanInterceptorStack();
+            }
 
             getComponents().add((AbstractOwbBean<?>) bean);
             manager.addBean(bean);

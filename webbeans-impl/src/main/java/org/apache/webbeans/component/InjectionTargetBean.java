@@ -19,7 +19,14 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -27,7 +34,13 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import org.apache.webbeans.config.WebBeansContext;
 
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.InterceptionType;
+import javax.enterprise.inject.spi.Interceptor;
+import javax.interceptor.AroundInvoke;
 
+import org.apache.webbeans.intercept.InterceptorResolutionService;
+import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.util.Asserts;
 
 
@@ -86,4 +99,113 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
     {
         return annotatedType;
     }
+
+    /**
+     *
+     * Configure bean instance interceptor stack.
+     *
+     * This method gets invoked in the ValidateBean phase and will fill all the
+     * interceptor information into the given InjectionTargetBean
+     *
+     */
+    public <T> void defineBeanInterceptorStack()
+    {
+        if (this instanceof InterceptedMarker && getInjectionTarget() instanceof InjectionTargetImpl)
+        {
+            InjectionTargetImpl<T> injectionTarget = (InjectionTargetImpl<T>) getInjectionTarget();
+            InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = webBeansContext.getInterceptorResolutionService().
+                    calculateInterceptorInfo(getTypes(), getQualifiers(), getAnnotatedType());
+
+            Map<Method, List<Interceptor<?>>> methodInterceptors = new HashMap<Method, List<Interceptor<?>>>();
+            for (Map.Entry<Method, InterceptorResolutionService.BusinessMethodInterceptorInfo> miEntry : interceptorInfo.getBusinessMethodsInfo().entrySet())
+            {
+                Method interceptedMethod = miEntry.getKey();
+                InterceptorResolutionService.BusinessMethodInterceptorInfo mii = miEntry.getValue();
+                List<Interceptor<?>> activeInterceptors = new ArrayList<Interceptor<?>>();
+
+                if (mii.getEjbInterceptors() != null)
+                {
+                    for (Interceptor<?> i : mii.getEjbInterceptors())
+                    {
+                        activeInterceptors.add(i);
+                    }
+                }
+                if (mii.getCdiInterceptors() != null)
+                {
+                    for (Interceptor<?> i : mii.getCdiInterceptors())
+                    {
+                        activeInterceptors.add(i);
+                    }
+                }
+                if (interceptorInfo.getSelfInterceptorBean() != null)
+                {
+                    if (interceptedMethod.getAnnotation(AroundInvoke.class) == null) // this check is a dirty hack for now to prevent infinite loops
+                    {
+                        // add self-interception as last interceptor in the chain.
+                        activeInterceptors.add(interceptorInfo.getSelfInterceptorBean());
+                    }
+                }
+
+                if (activeInterceptors.size() > 0)
+                {
+                    methodInterceptors.put(interceptedMethod, activeInterceptors);
+                }
+                else if (mii.getMethodDecorators() != null)
+                {
+                    methodInterceptors.put(interceptedMethod, Collections.EMPTY_LIST);
+                }
+            }
+
+            List<Interceptor<?>> postConstructInterceptors
+                    = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.POST_CONSTRUCT);
+
+            List<Interceptor<?>> preDestroyInterceptors
+                    = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.PRE_DESTROY);
+
+            Class<? extends T> proxyClass = null;
+            if (methodInterceptors.size() > 0 || postConstructInterceptors.size() > 0 || preDestroyInterceptors.size() > 0)
+            {
+                // we only need to create a proxy class for intercepted or decorated Beans
+                InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
+
+                ClassLoader classLoader = getBeanClass().getClassLoader();
+
+                Method[] businessMethods = methodInterceptors.keySet().toArray(new Method[methodInterceptors.size()]);
+                Method[] nonInterceptedMethods = interceptorInfo.getNonInterceptedMethods().toArray(new Method[interceptorInfo.getNonInterceptedMethods().size()]);
+
+                proxyClass = (Class<? extends T>) pf.createProxyClass(classLoader, getReturnType(), businessMethods, nonInterceptedMethods);
+
+                // now we collect the post-construct and pre-destroy interceptors
+
+            }
+            injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors, postConstructInterceptors, preDestroyInterceptors);
+
+        }
+
+    }
+
+
+    private List<Interceptor<?>> getLifecycleInterceptors(LinkedHashSet<Interceptor<?>> ejbInterceptors, List<Interceptor<?>> cdiInterceptors, InterceptionType interceptionType)
+    {
+        List<Interceptor<?>> lifecycleInterceptors = new ArrayList<Interceptor<?>>();
+
+        for (Interceptor<?> ejbInterceptor : ejbInterceptors)
+        {
+            if (ejbInterceptor.intercepts(interceptionType))
+            {
+                lifecycleInterceptors.add(ejbInterceptor);
+            }
+        }
+        for (Interceptor<?> cdiInterceptor : cdiInterceptors)
+        {
+            if (cdiInterceptor.intercepts(interceptionType))
+            {
+                lifecycleInterceptors.add(cdiInterceptor);
+            }
+        }
+
+        return lifecycleInterceptors;
+    }
+
+
 }
