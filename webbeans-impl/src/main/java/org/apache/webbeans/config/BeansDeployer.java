@@ -205,7 +205,7 @@ public class BeansDeployer
         }
         catch(Exception e)
         {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+//            logger.log(Level.SEVERE, e.getMessage(), e);
             WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
@@ -401,7 +401,7 @@ public class BeansDeployer
                 }
                 
                 
-                if(bean instanceof InjectionTargetBean && bean instanceof InterceptedMarker)
+                if (bean instanceof InjectionTargetBean && bean instanceof InterceptedMarker)
                 {
                     webBeansContext.getWebBeansInterceptorConfig().defineBeanInterceptorStack((InjectionTargetBean<Object>) bean);
                 }

@@ -170,7 +170,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     {
         T instance = newInstance((CreationalContextImpl<T>) creationalContext);
 
-        if (interceptorInfo != null)
+        if (proxyClass != null)
         {
             // apply interceptorInfo
             InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();

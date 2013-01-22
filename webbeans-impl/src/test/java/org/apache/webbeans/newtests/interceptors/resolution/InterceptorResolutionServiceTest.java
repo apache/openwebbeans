@@ -85,7 +85,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         Assert.assertNotNull(interceptorInfo.getCdiInterceptors());
         Assert.assertEquals(1, interceptorInfo.getCdiInterceptors().size());
 
-        Assert.assertNull(interceptorInfo.getDecorators());
+        Assert.assertEquals(0, interceptorInfo.getDecorators().size());
 
         Map<Method, BusinessMethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
         Assert.assertNotNull(methodInterceptorInfos);
@@ -157,7 +157,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         Assert.assertNotNull(interceptorInfo.getCdiInterceptors());
         Assert.assertEquals(3, interceptorInfo.getCdiInterceptors().size());
 
-        Assert.assertNull(interceptorInfo.getDecorators());
+        Assert.assertEquals(0, interceptorInfo.getDecorators().size());
 
         Map<Method, BusinessMethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
         Assert.assertNotNull(methodInterceptorInfos);
@@ -201,7 +201,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         Assert.assertNotNull(interceptorInfo.getCdiInterceptors());
         Assert.assertEquals(2, interceptorInfo.getCdiInterceptors().size());
 
-        Assert.assertNull(interceptorInfo.getDecorators());
+        Assert.assertEquals(0, interceptorInfo.getDecorators().size());
 
         Map<Method, BusinessMethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
         Assert.assertNotNull(methodInterceptorInfos);

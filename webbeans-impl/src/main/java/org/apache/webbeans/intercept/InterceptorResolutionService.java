@@ -122,7 +122,7 @@ public class InterceptorResolutionService
         List<Decorator<?>> decorators = beanManager.resolveDecorators(beanTypes, AnnotationUtil.asArray(qualifiers));
         if (decorators.size() == 0)
         {
-            decorators = null; // less to store
+            decorators = Collections.<Decorator<?>>emptyList(); // less to store
         }
 
         // pick up CDI interceptors from a class level

@@ -67,11 +67,11 @@ public final class WebBeansInterceptorConfig
      *
      * @param bean bean instance
      */
-    public void defineBeanInterceptorStack(InjectionTargetBean<?> bean)
+    public <T> void defineBeanInterceptorStack(InjectionTargetBean<T> bean)
     {
         if (bean instanceof InterceptedMarker && bean.getInjectionTarget() instanceof InjectionTargetImpl)
         {
-            InjectionTargetImpl<?> injectionTarget = (InjectionTargetImpl<?>) bean.getInjectionTarget();
+            InjectionTargetImpl<T> injectionTarget = (InjectionTargetImpl<T>) bean.getInjectionTarget();
             BeanInterceptorInfo interceptorInfo = webBeansContext.getInterceptorResolutionService().
                     calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), bean.getAnnotatedType());
 
@@ -121,6 +121,7 @@ public final class WebBeansInterceptorConfig
             List<Interceptor<?>> preDestroyInterceptors
                     = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.PRE_DESTROY);
 
+            Class<? extends T> proxyClass = null;
             if (methodInterceptors.size() > 0 || postConstructInterceptors.size() > 0 || preDestroyInterceptors.size() > 0)
             {
                 // we only need to create a proxy class for intercepted or decorated Beans
@@ -131,12 +132,12 @@ public final class WebBeansInterceptorConfig
                 Method[] businessMethods = methodInterceptors.keySet().toArray(new Method[methodInterceptors.size()]);
                 Method[] nonInterceptedMethods = interceptorInfo.getNonInterceptedMethods().toArray(new Method[interceptorInfo.getNonInterceptedMethods().size()]);
 
-                Class proxyClass = pf.createProxyClass(classLoader, bean.getReturnType(), businessMethods, nonInterceptedMethods);
+                proxyClass = pf.createProxyClass(classLoader, bean.getReturnType(), businessMethods, nonInterceptedMethods);
 
                 // now we collect the post-construct and pre-destroy interceptors
 
-                injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors, postConstructInterceptors, preDestroyInterceptors);
             }
+            injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors, postConstructInterceptors, preDestroyInterceptors);
 
         }
 
