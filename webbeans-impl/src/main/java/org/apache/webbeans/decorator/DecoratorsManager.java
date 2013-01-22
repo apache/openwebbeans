@@ -197,7 +197,7 @@ public class DecoratorsManager
 
         for (Annotation annot : annotations)
         {
-            if (AnnotationUtil.isQualifierEqual(annot, bindingType))
+            if (AnnotationUtil.isCdiAnnotationEqual(annot, bindingType))
             {
                 return true;
             }

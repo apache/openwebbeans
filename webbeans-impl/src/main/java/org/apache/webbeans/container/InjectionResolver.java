@@ -737,7 +737,7 @@ public class InjectionResolver
                     Annotation qualifier = itQualifiers.next();
                     if (annot.annotationType().equals(qualifier.annotationType()))
                     {
-                        if (AnnotationUtil.isQualifierEqual(qualifier, annot))
+                        if (AnnotationUtil.isCdiAnnotationEqual(qualifier, annot))
                         {
                             i++;
                         }

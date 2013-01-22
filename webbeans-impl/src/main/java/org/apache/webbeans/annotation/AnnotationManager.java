@@ -51,8 +51,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -118,34 +120,48 @@ public final class AnnotationManager
      */
     public Set<Annotation> getInterceptorAnnotations(Set<Annotation> typeAnns)
     {
-        Set<Annotation> bindingTypeSet = new HashSet<Annotation>();
+        // use a map to ensure that every annotation type is present only once
+        Map<Class<? extends Annotation>, Annotation> bindings = new HashMap<Class<? extends Annotation>, Annotation>();
 
-        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-
-        Annotation[] anns = annotationManager.getInterceptorBindingMetaAnnotations(typeAnns);
+        Annotation[] anns = getInterceptorBindingMetaAnnotations(typeAnns);
 
         for (Annotation ann : anns)
         {
-            bindingTypeSet.add(ann);
+            Annotation oldBinding = bindings.get(ann.annotationType());
+            if (oldBinding != null && !AnnotationUtil.isCdiAnnotationEqual(oldBinding, ann))
+            {
+                throw new WebBeansConfigurationException("Illegal interceptor binding: annotation of type "
+                        + ann.annotationType().getName()
+                        + " is present twice with diffenent values: "
+                        + oldBinding.toString() + " and " + ann.toString());
+            }
+            bindings.put(ann.annotationType(), ann);
         }
 
         // check for stereotypes _explicitly_ declared on the bean class (not inherited)
-        Annotation[] stereoTypes = annotationManager.getStereotypeMetaAnnotations(typeAnns.toArray(new Annotation[typeAnns.size()]));
+        Annotation[] stereoTypes = getStereotypeMetaAnnotations(typeAnns.toArray(new Annotation[typeAnns.size()]));
         for (Annotation stereoType : stereoTypes)
         {
-            if (annotationManager.hasInterceptorBindingMetaAnnotation(stereoType.annotationType().getDeclaredAnnotations()))
+            if (hasInterceptorBindingMetaAnnotation(stereoType.annotationType().getDeclaredAnnotations()))
             {
-                Annotation[] steroInterceptorBindings =
-                        annotationManager.getInterceptorBindingMetaAnnotations(stereoType.annotationType().getDeclaredAnnotations());
+                Annotation[] steroInterceptorBindings = getInterceptorBindingMetaAnnotations(stereoType.annotationType().getDeclaredAnnotations());
 
                 for (Annotation ann : steroInterceptorBindings)
                 {
-                    bindingTypeSet.add(ann);
+                    Annotation oldBinding = bindings.get(ann.annotationType());
+                    if (oldBinding != null && !AnnotationUtil.isCdiAnnotationEqual(oldBinding, ann))
+                    {
+                        throw new WebBeansConfigurationException("Illegal interceptor binding: annotation of type "
+                                + ann.annotationType().getName()
+                                + " is present twice with diffenent values: "
+                                + oldBinding.toString() + " and " + ann.toString());
+                    }
+                    bindings.put(ann.annotationType(), ann);
                 }
             }
         }
 
-        return bindingTypeSet;
+        return new HashSet<Annotation>(bindings.values());
     }
 
     /**
@@ -803,7 +819,7 @@ public final class AnnotationManager
                                 {
                                     for(Annotation ann :annots)
                                     {
-                                        if(!AnnotationUtil.isQualifierEqual(qualifier, ann))
+                                        if(!AnnotationUtil.isCdiAnnotationEqual(qualifier, ann))
                                         {
                                             return null;
                                         }

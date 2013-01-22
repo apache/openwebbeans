@@ -421,7 +421,7 @@ public final class NotificationManager
                 boolean found = false;
                 for(Annotation inList : eventQualifiers)
                 {
-                    if(AnnotationUtil.isQualifierEqual(inList, qualifier))
+                    if(AnnotationUtil.isCdiAnnotationEqual(inList, qualifier))
                     {
                         found = true;
                         break;

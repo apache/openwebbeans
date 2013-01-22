@@ -215,7 +215,7 @@ public class InterceptorsManager
     {
         for (Annotation requestedBinding : requestedInterceptorBindings)
         {
-            if (AnnotationUtil.isQualifierEqual(requestedBinding, interceptorBinding))
+            if (AnnotationUtil.isCdiAnnotationEqual(requestedBinding, interceptorBinding))
             {
                 return true;
             }

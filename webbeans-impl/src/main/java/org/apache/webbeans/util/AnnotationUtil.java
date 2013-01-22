@@ -296,40 +296,40 @@ public final class AnnotationUtil
     }    
 
     /**
-     * Checks if the given qualifiers are equal.
+     * Checks if the given cdi annotations are equal. cdi annotations may either be qualifiers or interceptor bindings.
      *
-     * Qualifiers are equal if they have the same annotationType and all their
+     * CDI annotations are equal if they have the same annotationType and all their
      * methods, except those annotated with @Nonbinding, return the same value.
      *
-     * @param qualifier1
-     * @param qualifier2
+     * @param annotation1
+     * @param annotation2
      * @return 
      */
-    public static boolean isQualifierEqual(Annotation qualifier1, Annotation qualifier2)
+    public static boolean isCdiAnnotationEqual(Annotation annotation1, Annotation annotation2)
     {
-        Asserts.assertNotNull(qualifier1, "qualifier1 argument can not be null");
-        Asserts.assertNotNull(qualifier2, "qualifier2 argument can not be null");
+        Asserts.assertNotNull(annotation1, "annotation1 argument can not be null");
+        Asserts.assertNotNull(annotation2, "annotation2 argument can not be null");
 
         Class<? extends Annotation> qualifier1AnnotationType
-                = qualifier1.annotationType();
+                = annotation1.annotationType();
 
         // check if the annotationTypes are equal
         if (qualifier1AnnotationType == null
-            || !qualifier1AnnotationType.equals(qualifier2.annotationType()))
+            || !qualifier1AnnotationType.equals(annotation2.annotationType()))
         {
             return false;
         }
 
         // check the values of all qualifier-methods
         // except those annotated with @Nonbinding
-        List<Method> bindingQualifierMethods
-                = getBindingQualifierMethods(qualifier1AnnotationType);
+        List<Method> bindingCdiAnnotationMethods
+                = getBindingCdiAnnotationMethods(qualifier1AnnotationType);
 
-        for (int i = 0, size = bindingQualifierMethods.size(); i < size; i++)
+        for (int i = 0, size = bindingCdiAnnotationMethods.size(); i < size; i++)
         {
-            Method method = bindingQualifierMethods.get(i);
-            Object value1 = callMethod(qualifier1, method);
-            Object value2 = callMethod(qualifier2, method);
+            Method method = bindingCdiAnnotationMethods.get(i);
+            Object value1 = callMethod(annotation1, method);
+            Object value2 = callMethod(annotation2, method);
 
             if (!checkEquality(value1, value2))
             {
@@ -456,7 +456,7 @@ public final class AnnotationUtil
      *
      * @param qualifierAnnotationType
      */
-    private static List<Method> getBindingQualifierMethods(
+    private static List<Method> getBindingCdiAnnotationMethods(
             Class<? extends Annotation> qualifierAnnotationType)
     {
         Method[] qualifierMethods = qualifierAnnotationType.getDeclaredMethods();

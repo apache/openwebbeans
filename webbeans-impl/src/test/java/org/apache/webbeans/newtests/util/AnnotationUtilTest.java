@@ -43,7 +43,7 @@ public class AnnotationUtilTest
         Annotation q1 = DefaultAnnotation.of(EmptyQualifier.class);
         Annotation q2 = DefaultAnnotation.of(EmptyQualifier.class);
 
-        Assert.assertTrue(AnnotationUtil.isQualifierEqual(q1, q2));
+        Assert.assertTrue(AnnotationUtil.isCdiAnnotationEqual(q1, q2));
     }
 
     @Test
@@ -52,7 +52,7 @@ public class AnnotationUtilTest
         Annotation q1 = DefaultAnnotation.of(EmptyQualifier.class);
         EmptyQualifier q2 = new EmptyQualifierAnnotationLiteral();
 
-        Assert.assertTrue(AnnotationUtil.isQualifierEqual(q1, q2));
+        Assert.assertTrue(AnnotationUtil.isCdiAnnotationEqual(q1, q2));
     }
 
     @Test
@@ -61,7 +61,7 @@ public class AnnotationUtilTest
         Annotation q1 = DefaultAnnotation.of(TestQualifier.class);
         Annotation q2 = DefaultAnnotation.of(TestQualifier.class);
 
-        Assert.assertTrue(AnnotationUtil.isQualifierEqual(q1, q2));
+        Assert.assertTrue(AnnotationUtil.isCdiAnnotationEqual(q1, q2));
     }
 
     @Test
@@ -70,7 +70,7 @@ public class AnnotationUtilTest
         Annotation q1 = DefaultAnnotation.of(TestQualifier.class);
         TestQualifier q2 = new TestQualifierAnnotationLiteral();
 
-        Assert.assertTrue(AnnotationUtil.isQualifierEqual(q1, q2));
+        Assert.assertTrue(AnnotationUtil.isCdiAnnotationEqual(q1, q2));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class AnnotationUtilTest
         TestQualifier q1 = new TestQualifierAnnotationLiteral();
         TestQualifier q2 = new TestQualifierAnnotationLiteral();
 
-        Assert.assertTrue(AnnotationUtil.isQualifierEqual(q1, q2));
+        Assert.assertTrue(AnnotationUtil.isCdiAnnotationEqual(q1, q2));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class AnnotationUtilTest
     
         q2.setValue("different value");
 
-        Assert.assertFalse(AnnotationUtil.isQualifierEqual(q1, q2));
+        Assert.assertFalse(AnnotationUtil.isCdiAnnotationEqual(q1, q2));
     }
 
     @Test
@@ -101,7 +101,7 @@ public class AnnotationUtilTest
 
         q2.setNumber(4711);
 
-        Assert.assertFalse(AnnotationUtil.isQualifierEqual(q1, q2));
+        Assert.assertFalse(AnnotationUtil.isCdiAnnotationEqual(q1, q2));
     }
 
     @Test
@@ -112,7 +112,7 @@ public class AnnotationUtilTest
 
         q2.setFloatArray(new float[]{47F, 11F});
 
-        Assert.assertFalse(AnnotationUtil.isQualifierEqual(q1, q2));
+        Assert.assertFalse(AnnotationUtil.isCdiAnnotationEqual(q1, q2));
     }
 
     @Test
@@ -123,7 +123,7 @@ public class AnnotationUtilTest
 
         q2.setEnumValue(RetentionPolicy.SOURCE);
 
-        Assert.assertFalse(AnnotationUtil.isQualifierEqual(q1, q2));
+        Assert.assertFalse(AnnotationUtil.isCdiAnnotationEqual(q1, q2));
     }
 
     @Test
@@ -132,7 +132,7 @@ public class AnnotationUtilTest
         Annotation q1 = DefaultAnnotation.of(TestQualifierNonbinding.class);
         TestQualifierNonbinding q2 = new TestQualifierNonbindingAnnotationLiteral();
 
-        Assert.assertTrue(AnnotationUtil.isQualifierEqual(q1, q2));
+        Assert.assertTrue(AnnotationUtil.isCdiAnnotationEqual(q1, q2));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class AnnotationUtilTest
         TestQualifierMultipleNonbindingAnnotationLiteral q2 = new TestQualifierMultipleNonbindingAnnotationLiteral();
         q2.setValue("my value");
 
-        Assert.assertFalse(AnnotationUtil.isQualifierEqual(q1, q2));
+        Assert.assertFalse(AnnotationUtil.isCdiAnnotationEqual(q1, q2));
     }
     
     @Test
@@ -152,7 +152,7 @@ public class AnnotationUtilTest
         TestQualifierMultipleNonbindingAnnotationLiteral q2 = new TestQualifierMultipleNonbindingAnnotationLiteral();
         q2.setValue("default-value");
 
-        Assert.assertTrue(AnnotationUtil.isQualifierEqual(q1, q2));
+        Assert.assertTrue(AnnotationUtil.isCdiAnnotationEqual(q1, q2));
     }
     
     @Test
@@ -164,7 +164,7 @@ public class AnnotationUtilTest
         TestQualifierMultipleNonbindingAnnotationLiteral q2 = new TestQualifierMultipleNonbindingAnnotationLiteral();
         q2.setValue("hello");
 
-        Assert.assertTrue(AnnotationUtil.isQualifierEqual(q1, q2));
+        Assert.assertTrue(AnnotationUtil.isCdiAnnotationEqual(q1, q2));
     }
     
     @Test
@@ -176,7 +176,7 @@ public class AnnotationUtilTest
         TestQualifierMultipleNonbindingAnnotationLiteral q2 = new TestQualifierMultipleNonbindingAnnotationLiteral();
         q2.setValue("hello");
 
-        Assert.assertFalse(AnnotationUtil.isQualifierEqual(q1, q2));
+        Assert.assertFalse(AnnotationUtil.isCdiAnnotationEqual(q1, q2));
     }    
 }
 
