@@ -258,21 +258,10 @@ public abstract class AbstractProxyFactory
         {
             Class<T> definedClass = (Class<T>) defineClassMethod.invoke(classLoader, proxyName, proxyBytes, 0, proxyBytes.length);
 
-            try
-            {
-                Class<T> loadedClass = (Class<T>) Class.forName(definedClass.getName(), true, classLoader);
-                return loadedClass;
-            }
-            catch (ClassNotFoundException e)
-            {
-                throw new ProxyGenerationException(e);
-            }
+            Class<T> loadedClass = (Class<T>) Class.forName(definedClass.getName(), true, classLoader);
+            return loadedClass;
         }
-        catch (IllegalAccessException e)
-        {
-            throw new ProxyGenerationException(e);
-        }
-        catch (InvocationTargetException e)
+        catch (Throwable e)
         {
             throw new ProxyGenerationException(e);
         }
@@ -284,7 +273,7 @@ public abstract class AbstractProxyFactory
         int modifiers = delegatedMethod.getModifiers();
 
         //X TODO how to deal with native functions?
-        return (modifiers & (Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL | Modifier.NATIVE)) > 0 ||
+        return (modifiers & (Modifier.PRIVATE | Modifier.PROTECTED | Modifier.STATIC | Modifier.FINAL | Modifier.NATIVE)) > 0 ||
                "finalize".equals(delegatedMethod.getName());
     }
 
