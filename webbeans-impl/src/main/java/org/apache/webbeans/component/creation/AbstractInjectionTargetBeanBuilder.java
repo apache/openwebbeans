@@ -641,11 +641,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                 
                 ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<T>(bean, annotatedMethod);
                 
-                if(specialize)
-                {
-                    producerMethodBeanCreator.configureProducerSpecialization((AnnotatedMethod<T>) annotatedMethod);
-                }
-                
                 producerMethodBeanCreator.defineStereoTypes();
                 producerMethodBeanCreator.defineScopeType("Annotated producer method : " + annotatedMethod
                         +  "must declare default @Scope annotation");
@@ -656,6 +651,11 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                 producerMethodBeanCreator.defineApiType();
                 producerMethodBeanCreator.defineName();
                 ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
+                
+                if(specialize)
+                {
+                    producerMethodBeanCreator.configureProducerSpecialization(producerMethodBean, (AnnotatedMethod<T>) annotatedMethod);
+                }
                 ProducerMethodProducerBuilder producerBuilder = new ProducerMethodProducerBuilder(producerMethodBean);
                 producerMethodBean.setProducer(producerBuilder.build(annotatedMethod));
                 producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());

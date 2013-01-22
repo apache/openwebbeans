@@ -49,7 +49,7 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
         super(parent, annotatedMethod);
     }
 
-    public void configureProducerSpecialization(AnnotatedMethod<T> annotatedMethod)
+    public void configureProducerSpecialization(ProducerMethodBean<T> bean, AnnotatedMethod<T> annotatedMethod)
     {
         List<AnnotatedParameter<T>> annotatedParameters = annotatedMethod.getParameters();
         List<Class<?>> parameters = new ArrayList<Class<?>>();
@@ -86,7 +86,7 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
         WebBeansUtil.configuredProducerSpecializedName(bean, annotatedMethod.getJavaMember(), superMethod);
         */
         
-        getBean().setSpecializedBean(true);        
+        bean.setSpecializedBean(true);        
     }
     
     /**

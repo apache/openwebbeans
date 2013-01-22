@@ -106,6 +106,7 @@ import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.ProducerFieldProducer;
+import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
@@ -759,10 +760,21 @@ public final class WebBeansUtil
                                 + " may not explicitly declare a bean name");
                     }
 
-                    comp.setSpecializedBean(true);
+                }
+                comp.setSpecializedBean(true);
+                for (Bean<?> bean: webBeansContext.getBeanManagerImpl().getComponents())
+                {
+                    if (bean instanceof ProducerMethodBean)
+                    {
+                        ProducerMethodBean<?> producerBean = (ProducerMethodBean<?>)bean;
+                        if (producerBean.getParent() == superBean && producerBean.getProducer() instanceof ProducerMethodProducer)
+                        {
+                            ProducerMethodProducer<?, ?> producer = (ProducerMethodProducer<?, ?>) producerBean.getProducer();
+                            producer.setOwner((Bean) comp);
+                        }
+                    }
                 }
             }
-
             else
             {
                 throw new InconsistentSpecializationException("WebBean component class : " + specializedClass.getName()

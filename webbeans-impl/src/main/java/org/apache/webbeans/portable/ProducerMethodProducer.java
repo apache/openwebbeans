@@ -52,6 +52,11 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
         this.disposalMethod = disposerMethod;
     }
     
+    public void setOwner(Bean<P> owner)
+    {
+        this.owner = owner;
+    }
+
     public void setDisposalMethod(AnnotatedMethod<P> disposalMethod)
     {
         this.disposalMethod = disposalMethod;
