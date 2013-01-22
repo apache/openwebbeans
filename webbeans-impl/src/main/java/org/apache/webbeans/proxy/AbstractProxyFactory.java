@@ -543,8 +543,6 @@ public abstract class AbstractProxyFactory
 
     protected <T> T unsafeNewInstance(Class<T> clazz)
     {
-        T instance = null;
-
         try
         {
             return (T) unsafeAllocateInstance.invoke(unsafe, clazz);
