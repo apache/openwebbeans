@@ -332,6 +332,11 @@ public final class AnnotationManager
         return result;
     }
 
+    public Set<Annotation> getQualifierAnnotations(Set<Annotation> annotations)
+    {
+        return new HashSet<Annotation>(Arrays.asList(getQualifierAnnotations(annotations.toArray(new Annotation[annotations.size()]))));
+    }
+
     /**
      * Gets the array of qualifier annotations on the given array.
      *

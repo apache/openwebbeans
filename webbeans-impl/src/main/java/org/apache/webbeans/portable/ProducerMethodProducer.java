@@ -72,7 +72,7 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
                 parentInstance = (P)webBeansContext.getBeanManagerImpl().getReference(owner, owner.getBeanClass(), parentCreationalContext);
             }
             
-            m = new InjectableMethod<T>(producerMethod.getJavaMember(), parentInstance, this, (CreationalContextImpl<T>) parentCreationalContext);
+            m = new InjectableMethod<T>(producerMethod.getJavaMember(), parentInstance, this, (CreationalContextImpl<T>) creationalContext);
             
             return m.doInjection();
 
