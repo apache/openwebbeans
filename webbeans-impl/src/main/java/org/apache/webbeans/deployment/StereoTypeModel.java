@@ -48,19 +48,19 @@ import org.apache.webbeans.util.AnnotationUtil;
  */
 public class StereoTypeModel implements IStereoTypeModel
 {
-    /**Name of the stereotype model. It is usd for registering model with StereoTypeManager*/
+    /** Name of the stereotype model. It is usd for registering model with StereoTypeManager */
     private String name;
 
-    /**Default deployment type*/
+    /** Default deployment type */
     private Annotation defaultDeploymentType;
 
-    /**Default scope type*/
+    /** Default scope type */
     private Annotation defaultScopeType;
 
-    /**Interceptor Bindings*/
+    /** Interceptor Bindings */
     private Set<Annotation> interceptorBindingTypes = new HashSet<Annotation>();
 
-    /**Inherit StereoType annotations*/
+    /** Inherit StereoType annotations */
     private Set<Annotation> inherits = new HashSet<Annotation>();
     
     private static final Logger logger = WebBeansLoggerFacade.getLogger(StereoTypeModel.class);
