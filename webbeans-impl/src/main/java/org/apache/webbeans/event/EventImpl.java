@@ -24,6 +24,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -100,24 +101,10 @@ public class EventImpl<T> implements Event<T>, Serializable
         webBeansContext.getAnnotationManager().checkQualifierConditions(annotations);
 
         Set<Annotation> eventBindings = new HashSet<Annotation>();
-        
-        for(Annotation ann : injectedBindings)
-        {
-            eventBindings.add(ann);
-        }
-        
-        Annotation[] anns = null;
+        Collections.addAll(eventBindings, injectedBindings);
+        Collections.addAll(eventBindings, annotations);
 
-        for (Annotation binding : annotations)
-        {
-            eventBindings.add(binding);
-        }
-
-        anns = new Annotation[eventBindings.size()];
-        anns = eventBindings.toArray(anns);
-
-        return anns;
-
+        return eventBindings.toArray(new Annotation[eventBindings.size()]);
     }
 
     /**

@@ -89,34 +89,7 @@ public class AnnotationDB
         }
     }
 
-    public String[] getIgnoredPackages()
-    {
-        return ignoredPackages;
-    }
 
-    /**
-     * Override/overwrite any ignored packages
-     *
-     * @param ignoredPackages cannot be null
-     */
-    public void setIgnoredPackages(String[] ignoredPackages)
-    {
-        this.ignoredPackages = ignoredPackages;
-    }
-
-    public void addIgnoredPackages(String... ignored)
-    {
-        String[] tmp = new String[ignoredPackages.length + ignored.length];
-        int i = 0;
-        for (String ign : ignoredPackages)
-        {
-            tmp[i++] = ign;
-        }
-        for (String ign : ignored)
-        {
-            tmp[i++] = ign;
-        }
-    }
 
     /**
      * This method will cross reference annotations in the annotation index with any meta-annotations that they have

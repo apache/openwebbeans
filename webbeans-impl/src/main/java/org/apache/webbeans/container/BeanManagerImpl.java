@@ -646,10 +646,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
         if(binding.isAnnotationPresent(InterceptorBinding.class))
         {
-            for(Annotation ann : annotations)
-            {
-                set.add(ann);
-            }            
+            Collections.addAll(set, annotations);
         }
         
         return set;
@@ -812,10 +809,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
         if(stereotype.isAnnotationPresent(Stereotype.class))
         {
-            for(Annotation ann : annotations)
-            {
-                set.add(ann);
-            }            
+            Collections.addAll(set, annotations);
         }
         
         return set;

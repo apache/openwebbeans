@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.util;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -93,12 +94,8 @@ public final class ArrayUtil
 
     public static <T> Set<T> asSet(T... items)
     {
-        Set<T> set = new HashSet<T>();
-
-        for(T item : items)
-        {
-            set.add(item);
-        }
+        Set<T> set = new HashSet<T>(items.length);
+        Collections.addAll(set, items);
 
         return set;
     }

@@ -218,11 +218,7 @@ public final class AnnotationManager
                 //check for transitive
                 Annotation[] transitives = getInterceptorBindingMetaAnnotations(ann.annotationType().getDeclaredAnnotations());
 
-                for(Annotation transitive : transitives)
-                {
-                    interAnns.add(transitive);
-                }
-
+                Collections.addAll(interAnns, transitives);
             }
         }
 
@@ -507,11 +503,7 @@ public final class AnnotationManager
 
                 //check for transitive
                 Annotation[] transitives = getTransitiveStereoTypes(ann.annotationType().getDeclaredAnnotations());
-
-                for(Annotation transitive : transitives)
-                {
-                    interAnns.add(transitive);
-                }
+                Collections.addAll(interAnns, transitives);
             }
         }
 
