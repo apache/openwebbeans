@@ -63,7 +63,7 @@ public class ProducerMethodProducerBuilder<T, P>
         Set<Annotation> producerQualifiers = bean.getWebBeansContext().getAnnotationManager().getQualifierAnnotations(producerMethod.getAnnotations());
         if (producerQualifiers.size() == 1 && producerQualifiers.iterator().next().annotationType().equals(Default.class))
         {
-            producerQualifiers = Collections.<Annotation>emptySet();
+            producerQualifiers = Collections.emptySet();
         }
         Set<Annotation> producerQualifiersWithoutNamed = new HashSet<Annotation>();
         for (Annotation qualifier: producerQualifiers)
@@ -86,7 +86,7 @@ public class ProducerMethodProducerBuilder<T, P>
                         Set<Annotation> disposalQualifiers = bean.getWebBeansContext().getAnnotationManager().getQualifierAnnotations(annotatedParameter.getAnnotations());
                         if (disposalQualifiers.size() == 1 && disposalQualifiers.iterator().next().annotationType().equals(Default.class))
                         {
-                            disposalQualifiers = Collections.<Annotation>emptySet();
+                            disposalQualifiers = Collections.emptySet();
                         }
                         if (disposalQualifiers.size() == producerQualifiersToCompare.size() - 1)
                         {

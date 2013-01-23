@@ -1115,7 +1115,7 @@ public final class WebBeansUtil
          if (component instanceof EnterpriseBeanMarker)
          {
              beans = new HashSet<Bean<?>>();
-             Set<Bean<?>> allBeans = ((BeanManagerImpl)(manager)).getBeans(Object.class, AnnotationUtil.asArray(component.getQualifiers()));
+             Set<Bean<?>> allBeans = manager.getBeans(Object.class, AnnotationUtil.asArray(component.getQualifiers()));
 
              for(Bean<?> candidateBean : allBeans)
              {

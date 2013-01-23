@@ -236,7 +236,7 @@ public class InterceptorsManager
             OwbBean<?> owbBean = (OwbBean<?>)interceptor;
             if(owbBean.isPassivationCapable())
             {
-                beanManager.addPassivationInfo((OwbBean) interceptor);
+                beanManager.addPassivationInfo(interceptor);
             }
 
         }

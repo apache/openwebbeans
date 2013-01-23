@@ -119,7 +119,7 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
                             Object instance = inject(point);
                             InjectionResolver injectionResolver = getWebBeansContext().getBeanManagerImpl().getInjectionResolver();
 
-                            Bean<?> injectedBean = (Bean<?>) injectionResolver.getInjectionPointBean(point);
+                            Bean<?> injectedBean = injectionResolver.getInjectionPointBean(point);
                             if(injectedBean.getScope() == Dependent.class)
                             {
                                 dependentParameters.put(injectedBean, instance);

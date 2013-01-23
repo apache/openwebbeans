@@ -556,7 +556,7 @@ public final class AnnotationManager
             return getStereotypeMetaAnnotations(anns);
         }
 
-        return Collections.<Class<? extends Annotation>>emptySet();
+        return Collections.emptySet();
     }
 
     /**

@@ -159,7 +159,7 @@ public class DefaultContextsService extends AbstractContextsService
             }
             else if(scopeType.equals(ConversationScoped.class))
             {
-                startConversationContext((ConversationContext)startParameter);
+                startConversationContext(startParameter);
             }
             else if(scopeType.equals(Dependent.class))
             {
