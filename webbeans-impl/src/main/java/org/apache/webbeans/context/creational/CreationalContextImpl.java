@@ -105,7 +105,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     /**
      * Adds given dependent instance to the map.
      * 
-     * @param ownerInstance the contextual instance our dependent instance got injected into
      * @param dependent dependent contextual
      * @param instance dependent instance
      */

@@ -184,7 +184,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
 
     /**
-     * we cache results of calls to {@link #isScopeTypeNormalCache} because
+     * we cache results of calls to {@link #isNormalScope(Class)} because
      * this doesn't change at runtime.
      * We don't need to take special care about classloader
      * hierarchies, because each cl has other classes.

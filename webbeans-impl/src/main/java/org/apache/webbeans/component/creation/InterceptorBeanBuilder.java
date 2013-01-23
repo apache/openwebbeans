@@ -342,10 +342,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
         return methods;
     }
 
-    /**
-     *
-     * @return
-     */
     private void checkSameClassInterceptors(List<AnnotatedMethod> alreadyDefinedMethods, AnnotatedMethod annotatedMethod)
     {
         Class clazz = null;

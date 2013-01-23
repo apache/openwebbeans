@@ -565,8 +565,8 @@ public class BeansDeployer
      * Common helper method used to deploy annotated types discovered through
      * scanning or during beforeBeanDiscovery.
      * 
-     * @Param Class implClass the class of the bean to be deployed
-     * @Param AnnotatedType the AnnotatedType representing the bean to be deployed
+     * @param Class implClass the class of the bean to be deployed
+     * @param AnnotatedType the AnnotatedType representing the bean to be deployed
      */
     private void deploySingleAnnotatedType(Class implClass, AnnotatedType annotatedType)
     {

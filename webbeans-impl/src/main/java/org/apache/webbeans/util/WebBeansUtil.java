@@ -281,9 +281,6 @@ public final class WebBeansUtil
     /**
      * Return <code>true</code> if the given class is ok for manage bean conditions,
      * <code>false</code> otherwise.
-     *
-     * @param clazz class in hand
-     * @return <code>true</code> if the given class is ok for simple web bean conditions.
      */
     public void isManagedBeanClass(Class<?> clazz)
     {

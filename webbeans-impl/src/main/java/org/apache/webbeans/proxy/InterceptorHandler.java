@@ -21,16 +21,18 @@ package org.apache.webbeans.proxy;
 import java.lang.reflect.Method;
 
 /**
+ * An InterceptorHandler can be used to dynamically invoke methods on
+ * an internally stored target instance.
  */
 public interface InterceptorHandler
 {
 
     /**
-     *
+     * This method will get called whenever the proxy
+     * of the intercepted instance will get invoked.
      * @param method Method which should get invoked
-     * @param args
-     * @return
-     * @throws Throwable
+     * @param args original invocation parameters
+     * @return the return value of the intercepted methos
      */
     public Object invoke(Method method, Object[] args);
 }

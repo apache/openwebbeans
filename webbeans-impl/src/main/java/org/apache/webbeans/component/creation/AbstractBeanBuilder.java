@@ -65,6 +65,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> bean class info
  */
+@SuppressWarnings({"ALL", "JavaDoc"})
 public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean<T>>
 {
     private A annotated;

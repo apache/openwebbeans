@@ -74,7 +74,6 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
      * @param injectionPoint null or injection point
      * @param webBeansContext
      * @param creationalContext will get used for creating &#064;Dependent beans
-     * @param ownerInstance the object the current Instance got injected into
      * @param annotations qualifier annotations
      */
     public InstanceImpl(Type injectionClazz, InjectionPoint injectionPoint, WebBeansContext webBeansContext,

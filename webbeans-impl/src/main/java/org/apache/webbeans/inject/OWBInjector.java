@@ -41,7 +41,6 @@ public final class OWBInjector
      * @param beanManager the BeanManager to use
      * @param instanceUnderInjection instance
      * @param ownerCreationalContext CreationalContext of the owner
-     * @return this injector
      * @throws Exception if exception occurs
      */
     @SuppressWarnings("unchecked")

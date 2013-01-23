@@ -41,8 +41,7 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
  * <p>Core functionality are all parts which are available in a standard
  * JDK-1.5 SE runtime. Extended functionality are things like JPA, JSF, EJB etc.</p>
  * 
- * <p>The plugin mechanism is based on the ServiceProvider functionality 
- * {@link http://java.sun.com/javase/6/docs/technotes/guides/jar/jar.html#Service%20Provider}.
+ * <p>The plugin mechanism is based on the ServiceProvider functionality.
  * A jar containing an OWB plugin has to expose itself in the file
  * <code>META-INF/services/org.apache.webbeans.plugins.OpenWebBeansPlugin</code></p> 
  */

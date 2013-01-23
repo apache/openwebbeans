@@ -32,7 +32,6 @@ import org.apache.webbeans.spi.JNDIService;
  * because they are only readonly (tomcat, resin, jetty, ...) or
  * don't exist at all (JDK standalone applications)
  *
- * @see org.apache.webbeans.corespi.ee.JNDIServiceEnterpriseImpl
  */
 public class DefaultJndiService implements JNDIService
 {
