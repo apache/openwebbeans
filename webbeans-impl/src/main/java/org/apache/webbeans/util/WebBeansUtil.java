@@ -93,7 +93,6 @@ import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.component.creation.AnnotatedTypeBeanBuilder;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.ExtensionBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
@@ -1724,7 +1723,7 @@ public final class WebBeansUtil
         Class<T> clazz = type.getJavaClass();
 
         BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(type).build();
-        AnnotatedTypeBeanBuilder<T> managedBeanCreator = new AnnotatedTypeBeanBuilder<T>(type, webBeansContext, beanAttributes);
+        ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, type, beanAttributes);
 
         //Check for Enabled via Alternative
         managedBeanCreator.defineEnabled();
