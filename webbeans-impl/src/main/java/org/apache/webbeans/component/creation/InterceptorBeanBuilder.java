@@ -186,7 +186,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
                         checkSameClassInterceptors(postConstructMethods, m);
                         postConstructMethods.add(m); // add at last position
                     }
-                    removeOverriddenMethod(postConstructMethods, m);
 
                     // PreDestroy
                     if (m.getAnnotation(PreDestroy.class) != null)
@@ -194,7 +193,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
                         checkSameClassInterceptors(preDestroyMethods, m);
                         preDestroyMethods.add(m); // add at last position
                     }
-                    removeOverriddenMethod(preDestroyMethods, m);
 
                     // AroundTimeout
                     if (m.getAnnotation(AroundTimeout.class) != null)
@@ -202,7 +200,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
                         checkSameClassInterceptors(aroundTimeoutMethods, m);
                         aroundTimeoutMethods.add(m); // add at last position
                     }
-                    removeOverriddenMethod(aroundTimeoutMethods, m);
 
                     // and now the EJB related interceptors
                     if (ejbPlugin != null)
@@ -212,7 +209,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
                             checkSameClassInterceptors(prePassivateMethods, m);
                             prePassivateMethods.add(m); // add at last position
                         }
-                        removeOverriddenMethod(prePassivateMethods, m);
 
                         // AroundTimeout
                         if (m.getAnnotation(AroundTimeout.class) != null)
@@ -220,7 +216,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
                             checkSameClassInterceptors(aroundTimeoutMethods, m);
                             postActivateMethods.add(m); // add at last position
                         }
-                        removeOverriddenMethod(postActivateMethods, m);
 
                         // AroundTimeout
                         if (m.getAnnotation(postActivateClass) != null)
@@ -228,7 +223,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
                             checkSameClassInterceptors(postActivateMethods, m);
                             postActivateMethods.add(m); // add at last position
                         }
-                        removeOverriddenMethod(postActivateMethods, m);
                     }
                 }
             }
