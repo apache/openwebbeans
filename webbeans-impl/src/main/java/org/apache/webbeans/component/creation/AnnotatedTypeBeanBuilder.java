@@ -18,14 +18,12 @@
  */
 package org.apache.webbeans.component.creation;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
@@ -36,22 +34,5 @@ public class AnnotatedTypeBeanBuilder<T> extends ManagedBeanBuilder<T, ManagedBe
     public AnnotatedTypeBeanBuilder(AnnotatedType<T> annotatedType, WebBeansContext context, BeanAttributesImpl<T> beanAttributes)
     {
         super(context, annotatedType, beanAttributes);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void defineConstructor()
-    {
-        try
-        {
-            super.defineConstructor();
-        }
-        catch(Exception e)
-        {
-            // if no constructor could be found, we just leave the empty set.
-            logger.log(Level.INFO, OWBLogConst.WARN_0012, annotatedType.getJavaClass());
-        }
     }
 }

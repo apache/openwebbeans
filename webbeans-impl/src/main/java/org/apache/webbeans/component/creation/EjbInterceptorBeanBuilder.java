@@ -22,12 +22,14 @@ package org.apache.webbeans.component.creation;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InterceptionType;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.EjbInterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 
 /**
  * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
@@ -42,14 +44,26 @@ public class EjbInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, EjbI
 
     public void defineEjbInterceptorRules()
     {
+        checkDefaultConstructor();
         checkInterceptorConditions();
-        defineInterceptorRules();
-
+        defineInterceptorMethods();
     }
 
     public boolean isInterceptorEnabled()
     {
         return true;
+    }
+
+    public void checkDefaultConstructor()
+    {
+        for (AnnotatedConstructor<T> constructor: annotatedType.getConstructors())
+        {
+            if (constructor.getParameters().isEmpty())
+            {
+                return;
+            }
+        }
+        throw new WebBeansConfigurationException("@Interceptors interceptor must have no-arg constructor, but " + annotatedType.getJavaClass() + " has not");
     }
 
     @Override

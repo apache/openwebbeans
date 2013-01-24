@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.reflect.Constructor;
-
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.PassivationCapable;
 
@@ -31,10 +29,7 @@ import org.apache.webbeans.config.WebBeansContext;
  * @version $Rev$ $Date$
  */
 public class ManagedBean<T> extends InjectionTargetBean<T> implements InterceptedMarker, PassivationCapable
-{
-    /** Constructor of the web bean component */
-    private Constructor<T> constructor;
-    
+{    
     public ManagedBean(WebBeansContext webBeansContext,
                        WebBeansType webBeansType,
                        AnnotatedType<T> annotated,
@@ -42,25 +37,5 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
                        Class<T> beanClass)
     {
         super(webBeansContext, webBeansType, annotated, beanAttributes, beanClass);
-    }
-
-    /**
-     * Get constructor.
-     * 
-     * @return constructor
-     */
-    public Constructor<T> getConstructor()
-    {
-        return constructor;
-    }
-
-    /**
-     * Set constructor.
-     * 
-     * @param constructor constructor instance
-     */
-    public void setConstructor(Constructor<T> constructor)
-    {
-        this.constructor = constructor;
     }
 }

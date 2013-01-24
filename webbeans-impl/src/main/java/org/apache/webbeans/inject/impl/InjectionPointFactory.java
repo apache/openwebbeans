@@ -63,10 +63,18 @@ public class InjectionPointFactory
     public <X> Set<InjectionPoint> buildInjectionPoints(Bean<X> owner, AnnotatedType<X> annotatedType)
     {
         Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
+        boolean constructorFound = false;
         for (AnnotatedConstructor<X> constructor: annotatedType.getConstructors())
         {
             if (constructor.isAnnotationPresent(Inject.class))
             {
+                if (constructorFound)
+                {
+                    throw new WebBeansConfigurationException("There are more than one constructor with @Inject annotation in annotation type : "
+                            + annotatedType);
+                }
+                constructorFound = true;
+                validateInitializerConstructor(constructor);
                 buildInjectionPoints(owner, constructor, injectionPoints);
             }
         }
@@ -89,7 +97,7 @@ public class InjectionPointFactory
         {
             if (method.isAnnotationPresent(Inject.class) && !Modifier.isStatic(method.getJavaMember().getModifiers()))
             {
-                checkForInjectedInitializerMethod(method);
+                validateInitializerMethod(method);
                 buildInjectionPoints(owner, method, injectionPoints);
             }
         }
@@ -156,10 +164,26 @@ public class InjectionPointFactory
         return new InjectionPointImpl(owner, type, Arrays.asList(bindings), parameter);
     }
 
+    private void validateInitializerConstructor(AnnotatedConstructor<?> constructor)
+    {
+        for (AnnotatedParameter<?> parameter: constructor.getParameters())
+        {
+            if (parameter.isAnnotationPresent(Disposes.class))
+            {
+                throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Disposes annotation in annotated constructor : " + constructor);
+            }
+
+            if(parameter.isAnnotationPresent(Observes.class))
+            {
+                throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Observes annotation in annotated constructor : " + constructor);
+            }
+        }
+    }
+
     /**
      * add the definitions for a &#x0040;Initializer method.
      */
-    private void checkForInjectedInitializerMethod(AnnotatedMethod<?> annotatedMethod)
+    private void validateInitializerMethod(AnnotatedMethod<?> annotatedMethod)
     {
         Method method = annotatedMethod.getJavaMember();
         

@@ -37,7 +37,6 @@ import javax.enterprise.event.Reception;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
@@ -103,68 +102,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
             return null;
         }
         return webBeansContext.getAnnotatedElementFactory().getAnnotatedType(superclass);
-    }
-    
-    protected AnnotatedConstructor<T> getBeanConstructor()
-    {
-        Asserts.assertNotNull(annotatedType,"Type is null");
-        AnnotatedConstructor<T> result = null;
-
-        Set<AnnotatedConstructor<T>> annConsts = annotatedType.getConstructors();
-        if(annConsts != null)
-        {
-            boolean found = false;
-            boolean noParamConsIsDefined = false;
-            for(AnnotatedConstructor<T> annConst : annConsts)
-            {
-                if(annConst.isAnnotationPresent(Inject.class))
-                {
-                    if (found)
-                    {
-                        throw new WebBeansConfigurationException("There are more than one constructor with @Inject annotation in annotation type : "
-                                + annotatedType);
-                    }
-
-                    found = true;
-                    result = annConst;
-                }
-                else
-                {
-                    if(!found && !noParamConsIsDefined)
-                    {
-                        List<AnnotatedParameter<T>> parameters = annConst.getParameters();
-                        if(parameters != null && parameters.isEmpty())
-                        {
-                            result = annConst;
-                            noParamConsIsDefined = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (result == null)
-        {
-            throw new WebBeansConfigurationException("No constructor is found for the annotated type : " + annotatedType);
-        }
-
-        List<AnnotatedParameter<T>> parameters = result.getParameters();
-        for(AnnotatedParameter<T> parameter : parameters)
-        {
-            if (parameter.isAnnotationPresent(Disposes.class))
-            {
-                throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Disposes annotation in annotated constructor : "
-                        + result);
-            }
-
-            if(parameter.isAnnotationPresent(Observes.class))
-            {
-                throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Observes annotation in annotated constructor : " + result);
-            }
-
-        }
-
-        return result;
     }
 
     /**

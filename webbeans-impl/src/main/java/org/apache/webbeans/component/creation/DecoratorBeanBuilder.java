@@ -93,12 +93,6 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
         return result;
     }
 
-
-    public void defineConstructor()
-    {
-        constructor = getBeanConstructor();
-    }
-
     /**
      * If this method returns <code>false</code> the {@link #getBean()} method must not get called.
      *
@@ -162,8 +156,6 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
     public void defineDecoratorRules()
     {
         checkDecoratorConditions();
-
-        defineConstructor();
 
         defineDecoratedTypes();
     }

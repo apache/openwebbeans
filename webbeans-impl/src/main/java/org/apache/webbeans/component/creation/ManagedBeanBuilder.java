@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 
@@ -42,19 +41,12 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInjectionTargetBeanBuilder<T, M>
 {
-    private AnnotatedConstructor<T> constructor;
-    
     /**
      * Creates a new creator.
      */
     public ManagedBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
         super(webBeansContext, annotatedType, beanAttributes);
-    }
-
-    public void defineConstructor()
-    {
-        constructor = getBeanConstructor();
     }
 
     /**
@@ -66,7 +58,6 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
         webBeansContext.getWebBeansUtil().checkManagedBeanCondition(annotatedType);
         WebBeansUtil.checkGenericType(annotatedType.getJavaClass(), beanAttributes.getScope());
         webBeansContext.getDeploymentValidationService().validateProxyable(bean);
-        addConstructorInjectionPointMetaData(bean);
         return bean;
     }
 
@@ -75,8 +66,6 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
     {
         //Check for Enabled via Alternative
         defineEnabled();
-
-        defineConstructor();
 
         return getBean();
     }
@@ -92,16 +81,6 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
     {
         return webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, PreDestroy.class, false);
     }
-
-    protected void addConstructorInjectionPointMetaData(ManagedBean<T> bean)
-    {
-        if (constructor == null)
-        {
-            return;
-        }
-        bean.setConstructor(constructor.getJavaMember());
-    }
-
 
     @Override
     protected M createBean(Class<T> beanClass, boolean enabled)

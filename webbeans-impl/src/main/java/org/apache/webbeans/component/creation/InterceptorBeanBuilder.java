@@ -21,7 +21,6 @@ package org.apache.webbeans.component.creation;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -57,8 +56,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
     private final Class<? extends Annotation> prePassivateClass;
     private final Class<? extends Annotation> postActivateClass;
 
-    private AnnotatedConstructor<T> constructor;
-
     private Map<InterceptionType, Method[]> interceptionMethods;
     
     protected InterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
@@ -75,21 +72,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
             prePassivateClass = null;
             postActivateClass = null;
         }
-    }
-
-    public void defineConstructor()
-    {
-        constructor = getBeanConstructor();
-    }
-
-
-    protected void addConstructorInjectionPointMetaData(B bean)
-    {
-        if (constructor == null)
-        {
-            return;
-        }
-        bean.setConstructor(constructor.getJavaMember());
     }
 
     /**
@@ -116,12 +98,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
                 }
             }
         }
-    }
-
-    protected void defineInterceptorRules()
-    {
-        defineConstructor();
-        defineInterceptorMethods();
     }
 
     /**
@@ -344,8 +320,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
     @Override
     protected B createBean(Class<T> beanClass, boolean enabled)
     {
-        B bean = createBean(beanClass, enabled, interceptionMethods);
-        addConstructorInjectionPointMetaData(bean);
-        return bean;
+        return createBean(beanClass, enabled, interceptionMethods);
     }
 }

@@ -436,7 +436,6 @@ public final class WebBeansUtil
         BeanAttributesImpl<T> newBeanAttributes = new BeanAttributesImpl<T>(defaultBeanAttributes.getTypes(), Collections.<Annotation>singleton(new NewLiteral(type)));
         // TODO replace this by InjectionPointBuilder
         ManagedBeanBuilder<T, ManagedBean<T>> beanBuilder = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, newBeanAttributes);
-        beanBuilder.defineConstructor();
         NewManagedBean<T> newBean
             = new NewManagedBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, newBeanAttributes, type, beanBuilder.getBean().getInjectionPoints());
         return newBean;
@@ -1599,7 +1598,6 @@ public final class WebBeansUtil
 
         //Check for Enabled via Alternative
         setInjectionTargetBeanEnableFlag(managedBeanCreator.getBean());
-        managedBeanCreator.defineConstructor();
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
         managedBeanCreator.defineProducerMethods(managedBean);
         managedBeanCreator.defineProducerFields(managedBean);
@@ -1730,7 +1728,6 @@ public final class WebBeansUtil
 
         //Check for Enabled via Alternative
         managedBeanCreator.defineEnabled();
-        managedBeanCreator.defineConstructor();
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
         managedBeanCreator.defineProducerMethods(managedBean);
         managedBeanCreator.defineProducerFields(managedBean);
