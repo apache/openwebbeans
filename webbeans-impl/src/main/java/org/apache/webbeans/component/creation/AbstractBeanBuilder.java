@@ -20,41 +20,27 @@ package org.apache.webbeans.component.creation;
 
 import static org.apache.webbeans.util.InjectionExceptionUtil.throwUnproxyableResolutionException;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.NormalScope;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.util.Nonbinding;
-import javax.inject.Named;
-import javax.inject.Scope;
 
-import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.annotation.AnyLiteral;
-import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.annotation.NamedLiteral;
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.event.EventUtil;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
-import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -71,17 +57,9 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
     private A annotated;
     
     private WebBeansContext webBeansContext;
-    
-    private String beanName;
-    
-    private Class<? extends Annotation> scope;
 
-    private Set<Type> apiTypes = new HashSet<Type>();
-    
-    private Set<Annotation> qualifiers = new HashSet<Annotation>();
-    
-    private Set<Class<? extends Annotation>> stereotypes = new HashSet<Class<? extends Annotation>>();
-    
+    private BeanAttributesImpl<T> beanAttributes;
+
     private Set<AnnotatedMember<? super T>> injectionPoints = new HashSet<AnnotatedMember<? super T>>();
 
     /**
@@ -89,30 +67,19 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
      * 
      * @param annotated
      */
-    public AbstractBeanBuilder(WebBeansContext webBeansContext, A annotated)
+    public AbstractBeanBuilder(WebBeansContext webBeansContext, A annotated, BeanAttributesImpl<T> beanAttributes)
     {
+        Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
+        Asserts.assertNotNull(annotated, "annotated may not be null");
+        Asserts.assertNotNull(beanAttributes, "beanAttributes may not be null");
         this.annotated = annotated;
         this.webBeansContext = webBeansContext;
+        this.beanAttributes = beanAttributes;
     }
 
-    public Class<? extends Annotation> getScope()
+    public BeanAttributesImpl<T> getBeanAttributes()
     {
-        return scope;
-    }
-
-    public String getName()
-    {
-        return beanName;
-    }
-
-    protected Set<Class<? extends Annotation>> getStereotypes()
-    {
-        return stereotypes;
-    }
-
-    protected Set<Type> getApiTypes()
-    {
-        return apiTypes;
+        return beanAttributes;
     }
 
     /**
@@ -191,161 +158,6 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
         return false;
     }
 
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public void defineApiType()
-    {
-        if (getBeanType().isArray())
-        {
-            // 3.3.1
-            apiTypes.add(Object.class);
-            apiTypes.add(getBeanType());
-        }
-        else
-        {
-            Set<Type> types = annotated.getTypeClosure();
-            apiTypes.addAll(types);
-            Set<String> ignored = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
-            for (Iterator<Type> i = apiTypes.iterator(); i.hasNext();)
-            {
-                Type t = i.next();
-                if (t instanceof Class && ignored.contains(((Class<?>)t).getName()))
-                {
-                    i.remove();
-                }
-            }
-        }
-    }
-
-    protected void defineName(Annotated annotated, String name)
-    {
-        Annotation[] anns = AnnotationUtil.asArray(annotated.getAnnotations());
-        Named nameAnnot = null;
-        boolean isDefault = false;
-        for (Annotation ann : anns)
-        {
-            if (ann.annotationType().equals(Named.class))
-            {
-                nameAnnot = (Named) ann;
-                break;
-            }
-        }
-
-        if (nameAnnot == null) // no @Named
-        {
-            // Check for stereottype
-            if (webBeansContext.getAnnotationManager().hasNamedOnStereoTypes(stereotypes))
-            {
-                isDefault = true;
-            }
-
-        }
-        else
-        // yes @Named
-        {
-            if (nameAnnot.value().equals(""))
-            {
-                isDefault = true;
-            }
-            else
-            {
-                beanName = nameAnnot.value();
-            }
-
-        }
-
-        if (isDefault)
-        {
-            beanName = name;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void defineQualifiers()
-    {
-        HashSet<Class<? extends Annotation>> qualifiedTypes = new HashSet<Class<? extends Annotation>>();
-        if (annotated.isAnnotationPresent(Specializes.class))
-        {
-            defineQualifiers(getSuperAnnotated(), qualifiedTypes);
-        }
-        defineQualifiers(annotated, qualifiedTypes);
-    }
-    
-    protected abstract Annotated getSuperAnnotated();
-
-    private void defineQualifiers(Annotated annotated, Set<Class<? extends Annotation>> qualifiedTypes)
-    {
-        Annotation[] annotations = AnnotationUtil.asArray(annotated.getAnnotations());
-        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-
-        for (Annotation annotation : annotations)
-        {
-            Class<? extends Annotation> type = annotation.annotationType();
-
-            if (annotationManager.isQualifierAnnotation(type))
-            {
-                Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(type);
-
-                for (Method method : methods)
-                {
-                    Class<?> clazz = method.getReturnType();
-                    if (clazz.isArray() || clazz.isAnnotation())
-                    {
-                        if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), Nonbinding.class))
-                        {
-                            throw new WebBeansConfigurationException("WebBeans definition class : " + method.getDeclaringClass().getName() + " @Qualifier : "
-                                                                     + annotation.annotationType().getName()
-                                                                     + " must have @NonBinding valued members for its array-valued and annotation valued members");
-                        }
-                    }
-                }
-
-                if (qualifiedTypes.contains(annotation.annotationType()))
-                {
-                    continue;
-                }
-                else
-                {
-                    qualifiedTypes.add(annotation.annotationType());
-                }
-                if (annotation.annotationType().equals(Named.class) && beanName != null)
-                {
-                    qualifiers.add(new NamedLiteral(beanName));
-                }
-                else
-                {
-                    qualifiers.add(annotation);
-                }
-            }
-        }
-        
-        // No-binding annotation
-        if (qualifiers.size() == 0 )
-        {
-            qualifiers.add(DefaultLiteral.INSTANCE);
-        }
-        else if(qualifiers.size() == 1)
-        {
-            Annotation annot = qualifiers.iterator().next();
-            if(annot.annotationType().equals(Named.class))
-            {
-                qualifiers.add(DefaultLiteral.INSTANCE);
-            }
-        }
-        
-        //Add @Any support
-        if(!hasAnyQualifier())
-        {
-            qualifiers.add(new AnyLiteral());
-        }
-        
-    }
-
     protected void addInjectionPoint(AnnotatedMember<? super T> member)
     {
         injectionPoints.add(member);
@@ -360,172 +172,13 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
     }
 
     /**
-     * Returns true if any binding exist
-     * 
-     * @return true if any binding exist
-     */
-    private boolean hasAnyQualifier()
-    {
-        return AnnotationUtil.getAnnotation(qualifiers, Any.class) != null;
-    }
-
-    public void defineScopeType(String errorMessage)
-    {
-        defineScopeType(null, errorMessage);
-    }
-
-    protected void defineScopeType(Class<?> declaringClass, String errorMessage)
-    {
-        Annotation[] annotations = AnnotationUtil.asArray(annotated.getAnnotations());
-        boolean found = false;
-
-        List<ExternalScope> additionalScopes = webBeansContext.getBeanManagerImpl().getAdditionalScopes();
-        
-        for (Annotation annotation : annotations)
-        {   
-            if (declaringClass != null && AnnotationUtil.getDeclaringClass(annotation, declaringClass) != null && !AnnotationUtil.isDeclaringClass(declaringClass, annotation))
-            {
-                continue;
-            }
-            Class<? extends Annotation> annotationType = annotation.annotationType();
-            
-            /*Normal scope*/
-            Annotation var = annotationType.getAnnotation(NormalScope.class);
-            /*Pseudo scope*/
-            Annotation pseudo = annotationType.getAnnotation(Scope.class);
-        
-            if (var == null && pseudo == null)
-            {
-                // check for additional scopes registered via a CDI Extension
-                for (ExternalScope additionalScope : additionalScopes)
-                {
-                    if (annotationType.equals(additionalScope.getScope()))
-                    {
-                        // create a proxy which implements the given annotation
-                        Annotation scopeAnnotation = additionalScope.getScopeAnnotation();
-    
-                        if (additionalScope.isNormal())
-                        {
-                            var = scopeAnnotation;
-                        }
-                        else
-                        {
-                            pseudo = scopeAnnotation;
-                        }
-                    }
-                }
-            }
-            
-            if (var != null)
-            {
-                if(pseudo != null)
-                {
-                    throw new WebBeansConfigurationException("Not to define both @Scope and @NormalScope on bean : " + getBeanType().getName());
-                }
-                
-                if (found)
-                {
-                    throw new WebBeansConfigurationException(errorMessage);
-                }
-
-                found = true;
-                scope = annotation.annotationType();
-            }
-            else
-            {
-                if(pseudo != null)
-                {
-                    if (found)
-                    {
-                        throw new WebBeansConfigurationException(errorMessage);
-                    }
-
-                    found = true;
-                    scope = annotation.annotationType();
-                }
-            }
-        }
-
-        if (!found && declaringClass != null && !hasDeclaredNonInheritedScope(declaringClass))
-        {
-            defineScopeType(declaringClass.getSuperclass(), errorMessage);
-        }
-        else if (!found)
-        {
-            defineDefaultScopeType(errorMessage);
-        }
-    }
-
-    private void defineDefaultScopeType(String exceptionMessage)
-    {
-        if (scope == null)
-        {
-            Set<Class<? extends Annotation>> stereos = stereotypes;
-            if (stereos.size() == 0)
-            {
-                scope = Dependent.class;
-            }
-            else
-            {
-                Annotation defined = null;
-                Set<Class<? extends Annotation>> anns = stereotypes;
-                for (Class<? extends Annotation> stero : anns)
-                {
-                    boolean containsNormal = AnnotationUtil.hasMetaAnnotation(stero.getDeclaredAnnotations(), NormalScope.class);
-                    
-                    if (AnnotationUtil.hasMetaAnnotation(stero.getDeclaredAnnotations(), NormalScope.class) ||
-                            AnnotationUtil.hasMetaAnnotation(stero.getDeclaredAnnotations(), Scope.class))
-                    {                        
-                        Annotation next;
-                        
-                        if(containsNormal)
-                        {
-                            next = AnnotationUtil.getMetaAnnotations(stero.getDeclaredAnnotations(), NormalScope.class)[0];
-                        }
-                        else
-                        {
-                            next = AnnotationUtil.getMetaAnnotations(stero.getDeclaredAnnotations(), Scope.class)[0];
-                        }
-
-                        if (defined == null)
-                        {
-                            defined = next;
-                        }
-                        else
-                        {
-                            if (!defined.equals(next))
-                            {
-                                throw new WebBeansConfigurationException(exceptionMessage);
-                            }
-                        }
-                    }
-                }
-
-                if (defined != null)
-                {
-                    scope = defined.annotationType();
-                }
-                else
-                {
-                    scope = Dependent.class;
-                }
-            }
-        }
-    }
-
-    private boolean hasDeclaredNonInheritedScope(Class<?> type)
-    {
-        return webBeansContext.getAnnotationManager().getDeclaredScopeAnnotation(type) != null;
-    }
-
-    /**
      * Checks the unproxiable condition.
-     * @throws WebBeansConfigurationException if bean is not proxied by the container
+     * @throws org.apache.webbeans.exception.WebBeansConfigurationException if bean is not proxied by the container
      */
     protected void checkUnproxiableApiType()
     {
         //Unproxiable test for NormalScoped beans
-        if (webBeansContext.getBeanManagerImpl().isNormalScope(scope))
+        if (webBeansContext.getBeanManagerImpl().isNormalScope(beanAttributes.getScope()))
         {
             ViolationMessageBuilder violationMessage = ViolationMessageBuilder.newViolation();
 
@@ -582,25 +235,6 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void defineStereoTypes()
-    {
-        Annotation[] anns = AnnotationUtil.asArray(annotated.getAnnotations());
-        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-        if (annotationManager.hasStereoTypeMetaAnnotation(anns))
-        {
-            Annotation[] steroAnns =
-                annotationManager.getStereotypeMetaAnnotations(anns);
-
-            for (Annotation stereo : steroAnns)
-            {
-                stereotypes.add(stereo.annotationType());
-            }
-        }
-    }
-
     protected <X> void addFieldInjectionPointMetaData(OwbBean<T> bean, AnnotatedField<X> annotField)
     {
         InjectionPoint injectionPoint = webBeansContext.getInjectionPointFactory().getFieldInjectionPointData(bean, annotField);
@@ -629,21 +263,14 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
         }        
     }
 
-    protected abstract B createBean(Set<Type> types,
-                                    Set<Annotation> qualifiers,
-                                    Class<? extends Annotation> scope,
-                                    String name,
-                                    boolean nullable,
-                                    Class<T> returnType,
-                                    Set<Class<? extends Annotation>> stereotypes,
-                                    boolean alternative);
+    protected abstract B createBean(Class<T> returnType);
 
     /**
      * {@inheritDoc}
      */
     public B getBean()
     {
-        B bean = createBean(apiTypes, qualifiers, getScope(), beanName, false, getBeanType(), stereotypes, false);
+        B bean = createBean(getBeanType());
         for (Iterator<AnnotatedMember<? super T>> memberIterator = injectionPoints.iterator(); memberIterator.hasNext();)
         {
             AnnotatedMember<? super T> member = memberIterator.next();

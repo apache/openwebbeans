@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.DecoratorBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
@@ -80,9 +81,10 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
 
     private final Set<String> ignoredDecoratorInterfaces;
 
-    public DecoratorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
+    public DecoratorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
-        super(webBeansContext, annotatedType);
+        super(webBeansContext, annotatedType, beanAttributes);
+        decoratedTypes = new HashSet<Type>(beanAttributes.getTypes());
         ignoredDecoratorInterfaces = getIgnoredDecoratorInterfaces();
     }
 
@@ -128,7 +130,7 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
 
     protected void checkDecoratorConditions()
     {
-        if(getScope() != Dependent.class)
+        if(getBeanAttributes().getScope() != Dependent.class)
         {
             if(logger.isLoggable(Level.WARNING))
             {
@@ -136,7 +138,7 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
             }
         }
 
-        if(getName() != null)
+        if(getBeanAttributes().getName() != null)
         {
             if(logger.isLoggable(Level.WARNING))
             {
@@ -178,12 +180,8 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
 
     public void defineDecoratorRules()
     {
-        defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + getBeanType() +
-                WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
-
         checkDecoratorConditions();
 
-        defineApiType();
         defineConstructor();
         defineInjectedMethods();
         defineInjectedFields();
@@ -193,7 +191,6 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
 
     private void defineDecoratedTypes()
     {
-        decoratedTypes = new HashSet<Type>(getApiTypes());
         Class<T> beanClass = getBeanType();
 
         // determine a safe Type for for a later BeanManager.getReference(...)
@@ -300,10 +297,10 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
     }
 
     @Override
-    protected InjectionTarget<T> buildInjectionTarget(Set<Type> types, Set<Annotation> qualifiers, AnnotatedType<T> annotatedType, Set<InjectionPoint> points,
+    protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType, Set<InjectionPoint> points,
                                                       WebBeansContext webBeansContext, List<AnnotatedMethod<?>> postConstructMethods, List<AnnotatedMethod<?>> preDestroyMethods)
     {
-        InjectionTarget<T> injectionTarget = super.buildInjectionTarget(types, qualifiers, annotatedType, points, webBeansContext, postConstructMethods, preDestroyMethods);
+        InjectionTarget<T> injectionTarget = super.buildInjectionTarget(annotatedType, points, webBeansContext, postConstructMethods, preDestroyMethods);
 
         if (Modifier.isAbstract(annotatedType.getJavaClass().getModifiers()))
         {
@@ -313,18 +310,9 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
     }
 
     @Override
-    protected DecoratorBean<T> createBean(Set<Type> types,
-                           Set<Annotation> qualifiers,
-                           Class<? extends Annotation> scope,
-                           String name,
-                           boolean nullable,
-                           Class<T> beanClass,
-                           Set<Class<? extends Annotation>> stereotypes,
-                           boolean alternative,
-                           boolean enabled)
+    protected DecoratorBean<T> createBean(Class<T> beanClass, boolean enabled)
     {
-        DecoratorBean<T> decorator = new DecoratorBean<T>(webBeansContext, WebBeansType.MANAGED, getAnnotated(), types, qualifiers,
-                                                          scope, beanClass, stereotypes);
+        DecoratorBean<T> decorator = new DecoratorBean<T>(webBeansContext, WebBeansType.MANAGED, getAnnotated(), getBeanAttributes(), beanClass);
         addConstructorInjectionPointMetaData(decorator);
 
         decorator.setEnabled(enabled);

@@ -53,10 +53,13 @@ public class DecoratorBean<T> extends InjectionTargetBean<T> implements Decorato
     private Set<Annotation> delegateQualifiers;
 
 
-    public DecoratorBean(WebBeansContext webBeansContext, WebBeansType webBeansType, AnnotatedType<T> annotatedType, Set<Type> types,
-                         Set<Annotation> qualifiers, Class<? extends Annotation> scope, Class<T> beanClass, Set<Class<? extends Annotation>> stereotypes)
+    public DecoratorBean(WebBeansContext webBeansContext,
+                         WebBeansType webBeansType,
+                         AnnotatedType<T> annotatedType,
+                         BeanAttributesImpl<T> beanAttributes,
+                         Class<T> beanClass)
     {
-        super(webBeansContext, webBeansType, annotatedType, types, qualifiers, scope, beanClass, stereotypes);
+        super(webBeansContext, webBeansType, annotatedType, beanAttributes, beanClass);
     }
 
     public void setDecoratorInfo(Set<Type> decoratedTypes, Type delegateType, Set<Annotation> delegateQualifiers)

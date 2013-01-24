@@ -18,35 +18,29 @@
  */
 package org.apache.webbeans.component.creation;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.inject.Named;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T, AnnotatedMethod<?>, ProducerMethodBean<T>>
 {
 
     private boolean specialized;
 
-    public ProducerMethodBeanBuilder(InjectionTargetBean<T> parent, AnnotatedMethod<?> annotatedMethod)
+    public ProducerMethodBeanBuilder(InjectionTargetBean<T> parent, AnnotatedMethod<?> annotatedMethod, BeanAttributesImpl<T> beanAttributes)
     {
-        super(parent, annotatedMethod);
+        super(parent, annotatedMethod, beanAttributes);
     }
 
     public void configureProducerSpecialization(ProducerMethodBean<T> bean, AnnotatedMethod<T> annotatedMethod)
@@ -89,32 +83,6 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
         bean.setSpecializedBean(true);        
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public void defineName()
-    {
-        if (getAnnotated().isAnnotationPresent(Specializes.class))
-        {
-            specialized = true;
-            AnnotatedMethod<?> superAnnotated = getSuperAnnotated();
-            defineName(superAnnotated, WebBeansUtil.getProducerDefaultName(superAnnotated.getJavaMember().getName()));
-        }
-        if (getName() == null)
-        {
-            defineName(getAnnotated(), WebBeansUtil.getProducerDefaultName(getAnnotated().getJavaMember().getName()));
-        }
-        else
-        {
-            // TODO XXX We have to check stereotypes here, too
-            if (getAnnotated().isAnnotationPresent(Named.class))
-            {
-                throw new DefinitionException("@Specialized Producer method : " + getAnnotated().getJavaMember().getName()
-                        + " may not explicitly declare a bean name");
-            }
-        }
-    }
-
     protected AnnotatedMethod<?> getSuperAnnotated()
     {
         AnnotatedMethod<?> thisMethod = getAnnotated();
@@ -151,17 +119,9 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
     }
 
     @Override
-    protected ProducerMethodBean<T> createBean(InjectionTargetBean<?> parent,
-                                               Set<Type> types,
-                                               Set<Annotation> qualifiers,
-                                               Class<? extends Annotation> scope,
-                                               String name,
-                                               boolean nullable,
-                                               Class<T> beanClass,
-                                               Set<Class<? extends Annotation>> stereotypes,
-                                               boolean alternative)
+    protected ProducerMethodBean<T> createBean(InjectionTargetBean<?> parent, Class<T> beanClass)
     {
-        ProducerMethodBean<T> producerMethodBean = new ProducerMethodBean<T>(parent, types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative);
+        ProducerMethodBean<T> producerMethodBean = new ProducerMethodBean<T>(parent, getBeanAttributes(), beanClass);
         producerMethodBean.setSpecializedBean(specialized);
         return producerMethodBean;
     }

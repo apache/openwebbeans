@@ -24,6 +24,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.spi.Bean;
+
+import org.apache.webbeans.util.AnnotationUtil;
+
 public class BeanAttributesImpl<T>
 {
     private final Set<Type> types;
@@ -33,6 +38,45 @@ public class BeanAttributesImpl<T>
     private final boolean nullable;
     private final Set<Class<? extends Annotation>> stereotypes;
     private final boolean alternative;
+
+    public BeanAttributesImpl(Bean<T> bean)
+    {
+        this(bean.getTypes(),
+             bean.getQualifiers(),
+             bean.getScope(),
+             bean.getName(),
+             bean.isNullable(),
+             bean.getStereotypes(),
+             bean.isAlternative());
+    }
+
+    public BeanAttributesImpl(BeanAttributesImpl<T> beanAttributes)
+    {
+        this(beanAttributes.getTypes(),
+             beanAttributes.getQualifiers(),
+             beanAttributes.getScope(),
+             beanAttributes.getName(),
+             beanAttributes.isNullable(),
+             beanAttributes.getStereotypes(),
+             beanAttributes.isAlternative());
+    }
+
+    public BeanAttributesImpl(Set<Type> types)
+    {
+        this(types, AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION, Dependent.class, null, false, Collections.<Class<? extends Annotation>>emptySet(), false);
+    }
+
+    public BeanAttributesImpl(Set<Type> types, Set<Annotation> qualifiers)
+    {
+        this(types, qualifiers, Dependent.class, null, false, Collections.<Class<? extends Annotation>>emptySet(), false);
+    }
+
+    public BeanAttributesImpl(Set<Type> types,
+                        Set<Annotation> qualifiers,
+                        Class<? extends Annotation> scope)
+    {
+        this(types, qualifiers, scope, null, false, Collections.<Class<? extends Annotation>>emptySet(), false);
+    }
 
     public BeanAttributesImpl(Set<Type> types,
                         Set<Annotation> qualifiers,

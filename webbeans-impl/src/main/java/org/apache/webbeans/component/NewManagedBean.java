@@ -18,14 +18,15 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.Set;
 
-import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 
 /**
  * Component definition with {@link javax.enterprise.inject.New} binding annotation.
@@ -41,12 +42,13 @@ public class NewManagedBean<T> extends ManagedBean<T> implements NewBean<T>
     public NewManagedBean(WebBeansContext webBeansContext,
                           WebBeansType webBeansType,
                           AnnotatedType<T> annotatedType,
-                          Set<Type> types,
-                          Set<Annotation> qualifiers,
+                          BeanAttributesImpl<T> beanAttributes,
                           Class<T> beanClass,
-                          Set<Class<? extends Annotation>> stereotypes)
+                          Set<InjectionPoint> injectionPoints)
     {
-        super(webBeansContext, webBeansType, annotatedType, types, qualifiers, Dependent.class, beanClass, stereotypes);
+        super(webBeansContext, webBeansType, annotatedType, beanAttributes, beanClass);
+        setProducer(new InjectionTargetImpl<T>(
+                annotatedType, injectionPoints, webBeansContext, Collections.<AnnotatedMethod<?>>emptyList(), Collections.<AnnotatedMethod<?>>emptyList()));
     }
 
     /**

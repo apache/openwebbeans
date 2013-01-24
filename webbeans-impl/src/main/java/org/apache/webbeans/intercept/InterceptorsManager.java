@@ -34,7 +34,9 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.PassivationCapable;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.EjbInterceptorBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -120,7 +122,8 @@ public class InterceptorsManager
         if (interceptor == null)
         {
             AnnotatedType<T> annotatedType = webBeansContext.getBeanManagerImpl().createAnnotatedType(interceptorClass);
-            EjbInterceptorBeanBuilder<T> buildr = new EjbInterceptorBeanBuilder<T>(webBeansContext, annotatedType);
+            BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
+            EjbInterceptorBeanBuilder<T> buildr = new EjbInterceptorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
             buildr.defineEjbInterceptorRules();
             Interceptor<T> i = buildr.getBean();
             interceptor = (Interceptor<T>) ejbInterceptors.putIfAbsent(interceptorClass, i);

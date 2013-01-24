@@ -34,6 +34,7 @@ import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.JMSModel.JMSType;
@@ -84,6 +85,6 @@ public final class JmsComponentFactory
             qualifiers.add(a);
         }
         
-        return new JmsBean<T>(webBeansContext, model, apiTypes, qualifiers);
+        return new JmsBean<T>(webBeansContext, model, new BeanAttributesImpl<T>(apiTypes, qualifiers));
     }
 }

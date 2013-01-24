@@ -25,7 +25,9 @@ import javax.enterprise.inject.spi.Interceptor;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InterceptorBean;
+import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.EjbInterceptorBeanBuilder;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 
@@ -53,8 +55,9 @@ public class EjbInterceptorBeanBuilderTest extends AbstractUnitTest
 
         AnnotatedType<EjbInterceptor> annotatedType = getBeanManager().createAnnotatedType(EjbInterceptor.class);
 
+        BeanAttributesImpl<EjbInterceptor> beanAttributes = BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes(annotatedType).build();
         EjbInterceptorBeanBuilder<EjbInterceptor> ibb
-                = new EjbInterceptorBeanBuilder<EjbInterceptor>(getWebBeansContext(), annotatedType);
+                = new EjbInterceptorBeanBuilder<EjbInterceptor>(getWebBeansContext(), annotatedType, beanAttributes);
         ibb.defineEjbInterceptorRules();
         InterceptorBean<EjbInterceptor> bean = ibb.getBean();
         Assert.assertNotNull(bean);

@@ -18,14 +18,11 @@
  */
 package org.apache.webbeans.component.creation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Set;
-
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.component.AbstractProducerBean;
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 
 public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?>, P extends AbstractProducerBean<T>> extends AbstractBeanBuilder<T, A, P>
@@ -33,9 +30,9 @@ public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?
 
     private InjectionTargetBean<?> parent;
 
-    public AbstractProducerBeanBuilder(InjectionTargetBean<?> parent, A annotated)
+    public AbstractProducerBeanBuilder(InjectionTargetBean<?> parent, A annotated, BeanAttributesImpl<T> beanAttributes)
     {
-        super(parent.getWebBeansContext(), annotated);
+        super(parent.getWebBeansContext(), annotated, beanAttributes);
         this.parent = parent;
     }
 
@@ -49,25 +46,10 @@ public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?
         return parent.getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(superclass);
     }
 
-    protected abstract P createBean(InjectionTargetBean<?> parent,
-                                    Set<Type> types,
-                                    Set<Annotation> qualifiers,
-                                    Class<? extends Annotation> scope,
-                                    String name,
-                                    boolean nullable,
-                                    Class<T> beanClass,
-                                    Set<Class<? extends Annotation>> stereotypes,
-                                    boolean alternative);
+    protected abstract P createBean(InjectionTargetBean<?> parent, Class<T> beanClass);
     @Override
-    protected P createBean(Set<Type> types,
-                           Set<Annotation> qualifiers,
-                           Class<? extends Annotation> scope,
-                           String name,
-                           boolean nullable,
-                           Class<T> beanClass,
-                           Set<Class<? extends Annotation>> stereotypes,
-                           boolean alternative)
+    protected P createBean(Class<T> beanClass)
     {
-        return createBean(parent, types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative);
+        return createBean(parent, beanClass);
     }
 }

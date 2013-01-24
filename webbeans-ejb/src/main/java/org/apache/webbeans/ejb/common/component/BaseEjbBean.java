@@ -18,18 +18,16 @@
  */
 package org.apache.webbeans.ejb.common.component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.SessionBeanType;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.WebBeansType;
@@ -58,13 +56,10 @@ public abstract class BaseEjbBean<T> extends InjectionTargetBean<T> implements E
     protected BaseEjbBean(WebBeansContext webBeansContext,
                           SessionBeanType type,
                           AnnotatedType<T> annotatedType,
-                          Set<Type> types,
-                          Set<Annotation> qualifiers,
-                          Class<? extends Annotation> scope,
-                          Class<T> beanClass,
-                          Set<Class<? extends Annotation>> stereotypes)
+                          BeanAttributesImpl<T> beanAttributes,
+                          Class<T> beanClass)
     {
-        super(webBeansContext, WebBeansType.ENTERPRISE, annotatedType, types, qualifiers, scope, beanClass, stereotypes);
+        super(webBeansContext, WebBeansType.ENTERPRISE, annotatedType, beanAttributes, beanClass);
         //type of the ejb
         this.ejbType = type;
     }

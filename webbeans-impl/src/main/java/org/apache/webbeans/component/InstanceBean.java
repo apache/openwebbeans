@@ -18,11 +18,8 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collections;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Provider;
@@ -40,11 +37,11 @@ public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
     {
         super(webBeansContext,
               WebBeansType.INSTANCE,
-              CollectionUtil.<Type>unmodifiableSet(new TypeLiteral<Instance<T>>(){}.getRawType(), new TypeLiteral<Provider<T>>() {}.getRawType(), Object.class),
-              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
-              Dependent.class,
-              new TypeLiteral<Instance<T>>(){}.getRawType(),
-              Collections.<Class<? extends Annotation>>emptySet());
+              new BeanAttributesImpl<Instance<T>>(CollectionUtil.<Type>unmodifiableSet(
+                      new TypeLiteral<Instance<T>>(){}.getRawType(), 
+                      new TypeLiteral<Provider<T>>() {}.getRawType(), 
+                      Object.class)),
+              new TypeLiteral<Instance<T>>(){}.getRawType());
         setProducer(new InstanceProducer<T>(getReturnType(), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION, webBeansContext));
     }
 

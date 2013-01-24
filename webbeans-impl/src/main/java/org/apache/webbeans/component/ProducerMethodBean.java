@@ -19,10 +19,7 @@
 package org.apache.webbeans.component;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 
@@ -54,16 +51,10 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      * @param returnType producer method return type
      */
     public <P> ProducerMethodBean(InjectionTargetBean<P> ownerComponent,
-                              Set<Type> types,
-                              Set<Annotation> qualifiers,
-                              Class<? extends Annotation> scope,
-                              String name,
-                              boolean nullable,
-                              Class<T> returnType,
-                              Set<Class<? extends Annotation>> stereotypes,
-                              boolean alternative)
+                                  BeanAttributesImpl<T> beanAttributes,
+                                  Class<T> returnType)
     {
-        super(ownerComponent, WebBeansType.PRODUCERMETHOD, types, qualifiers, scope, name, nullable, returnType, stereotypes, alternative);
+        super(ownerComponent, WebBeansType.PRODUCERMETHOD, beanAttributes, returnType);
     }
 
     /**

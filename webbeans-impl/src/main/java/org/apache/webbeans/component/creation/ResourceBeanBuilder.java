@@ -19,11 +19,10 @@
 package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedField;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.spi.api.ResourceReference;
@@ -33,23 +32,15 @@ public class ResourceBeanBuilder<T, R extends Annotation> extends ProducerFieldB
 
     private ResourceReference<T, R> resourceRef;
 
-    public ResourceBeanBuilder(InjectionTargetBean<?> parent, ResourceReference<T, R> resourceRef, AnnotatedField<?> annotatedField)
+    public ResourceBeanBuilder(InjectionTargetBean<?> parent, ResourceReference<T, R> resourceRef, AnnotatedField<?> annotatedField, BeanAttributesImpl<T> beanAttributes)
     {
-        super(parent, annotatedField);
+        super(parent, annotatedField, beanAttributes);
         this.resourceRef = resourceRef;
     }
 
     @Override
-    protected ResourceBean<T, R> createBean(InjectionTargetBean<?> owner,
-                           Set<Type> types,
-                           Set<Annotation> qualifiers,
-                           Class<? extends Annotation> scope,
-                           String name,
-                           boolean nullable,
-                           Class<T> beanClass,
-                           Set<Class<? extends Annotation>> stereotypes,
-                           boolean alternative)
+    protected ResourceBean<T, R> createBean(InjectionTargetBean<?> owner, Class<T> beanClass)
     {
-        return new ResourceBean<T, R>(owner, resourceRef, types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative);
+        return new ResourceBean<T, R>(owner, resourceRef, getBeanAttributes(), beanClass);
     }
 }

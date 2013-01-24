@@ -19,10 +19,7 @@
 package org.apache.webbeans.component;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
-import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -49,16 +46,10 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
      */
     protected AbstractProducerBean(InjectionTargetBean<?> ownerComponent,
                                    WebBeansType webBeansType,
-                                   Set<Type> types,
-                                   Set<Annotation> qualifiers,
-                                   Class<? extends Annotation> scope,
-                                   String name,
-                                   boolean nullable,
-                                   Class<T> returnType,
-                                   Set<Class<? extends Annotation>> stereotypes,
-                                   boolean alternative)
+                                   BeanAttributesImpl<T> beanAttributes,
+                                   Class<T> returnType)
     {
-        super(ownerComponent.getWebBeansContext(), webBeansType, types, qualifiers, scope, name, nullable, ownerComponent.getBeanClass(), stereotypes, alternative);
+        super(ownerComponent.getWebBeansContext(), webBeansType, beanAttributes, ownerComponent.getBeanClass());
         this.ownerComponent = ownerComponent;
         this.returnType = returnType;
     }

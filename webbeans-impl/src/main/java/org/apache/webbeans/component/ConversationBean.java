@@ -47,13 +47,15 @@ public class ConversationBean extends InjectionTargetBean<ConversationImpl> impl
         super(webBeansContext,
               WebBeansType.CONVERSATION,
               webBeansContext.getAnnotatedElementFactory().newAnnotatedType(ConversationImpl.class),
-              CollectionUtil.<Type>unmodifiableSet(Conversation.class, ConversationImpl.class, Object.class),
-              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
-              RequestScoped.class,
-              "javax.enterprise.context.conversation",
-              ConversationImpl.class,
-              Collections.<Class<? extends Annotation>>emptySet(),
-              false);
+              new BeanAttributesImpl<ConversationImpl>(
+                      CollectionUtil.<Type>unmodifiableSet(Conversation.class, ConversationImpl.class, Object.class),
+                      AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+                      RequestScoped.class,
+                      "javax.enterprise.context.conversation",
+                      false,
+                      Collections.<Class<? extends Annotation>>emptySet(),
+                      false),
+              ConversationImpl.class);
         setEnabled(true);
         setProducer(new ConversationProducer(getAnnotatedType(), webBeansContext));
     }

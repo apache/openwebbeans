@@ -18,15 +18,10 @@
  */
 package org.apache.webbeans.jms.component;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Set;
-
-import javax.enterprise.context.Dependent;
 import javax.jms.Destination;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
@@ -36,9 +31,9 @@ public class JmsBean<T> extends AbstractOwbBean<T> implements JmsBeanMarker
 {
     private JMSModel jmsModel = null;
     
-    JmsBean(WebBeansContext webBeansContext, JMSModel jmsModel, Set<Type> types, Set<Annotation> qualifiers)
+    JmsBean(WebBeansContext webBeansContext, JMSModel jmsModel, BeanAttributesImpl<T> beanAttributes)
     {
-        super(webBeansContext, WebBeansType.JMS, types, qualifiers, Dependent.class, Destination.class, Collections.<Class<? extends Annotation>>emptySet());
+        super(webBeansContext, WebBeansType.JMS, beanAttributes, Destination.class);
         this.jmsModel = jmsModel;
     }
         

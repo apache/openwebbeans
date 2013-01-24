@@ -18,12 +18,7 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collections;
-
-import javax.enterprise.context.Dependent;
-import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -33,12 +28,6 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
 
     protected BuildInOwbBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType)
     {
-        super(webBeansContext,
-              webBeansType,
-              CollectionUtil.<Type>unmodifiableSet(returnType, Object.class),
-              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
-              Dependent.class,
-              returnType,
-              Collections.<Class<? extends Annotation>>emptySet());
+        super(webBeansContext, webBeansType, new BeanAttributesImpl<T>(CollectionUtil.<Type>unmodifiableSet(returnType, Object.class)), returnType);
     }
 }

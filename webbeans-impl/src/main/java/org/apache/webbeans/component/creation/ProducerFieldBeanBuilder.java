@@ -18,41 +18,20 @@
  */
 package org.apache.webbeans.component.creation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Set;
-
-import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedField;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
-import org.apache.webbeans.util.WebBeansUtil;
 
 public class ProducerFieldBeanBuilder<T, P extends ProducerFieldBean<T>> extends AbstractProducerBeanBuilder<T, AnnotatedField<?>, P>
 {
 
-    public ProducerFieldBeanBuilder(InjectionTargetBean<?> owner, AnnotatedField<?> annotated)
+    public ProducerFieldBeanBuilder(InjectionTargetBean<?> owner, AnnotatedField<?> annotated, BeanAttributesImpl<T> beanAttributes)
     {
-        super(owner, annotated);
+        super(owner, annotated, beanAttributes);
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public void defineName()
-    {
-        if (getAnnotated().isAnnotationPresent(Specializes.class))
-        {
-            AnnotatedField<?> superAnnotated = getSuperAnnotated();
-            defineName(superAnnotated, WebBeansUtil.getProducerDefaultName(superAnnotated.getJavaMember().getName()));
-        }
-        if (getName() == null)
-        {
-            defineName(getAnnotated(), WebBeansUtil.getProducerDefaultName(getAnnotated().getJavaMember().getName()));
-        }
-    }
-
     @Override
     protected Class<T> getBeanType()
     {
@@ -74,16 +53,8 @@ public class ProducerFieldBeanBuilder<T, P extends ProducerFieldBean<T>> extends
     }
 
     @Override
-    protected P createBean(InjectionTargetBean<?> owner,
-                           Set<Type> types,
-                           Set<Annotation> qualifiers,
-                           Class<? extends Annotation> scope,
-                           String name,
-                           boolean nullable,
-                           Class<T> beanClass,
-                           Set<Class<? extends Annotation>> stereotypes,
-                           boolean alternative)
+    protected P createBean(InjectionTargetBean<?> owner, Class<T> beanClass)
     {
-        return (P) new ProducerFieldBean<T>(owner, types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative);
+        return (P) new ProducerFieldBean<T>(owner, getBeanAttributes(), beanClass);
     }
 }

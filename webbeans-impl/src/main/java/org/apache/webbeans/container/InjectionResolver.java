@@ -39,6 +39,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -172,17 +173,7 @@ public class InjectionResolver
         {
             if (qualifiers.length == 1 && qualifiers[0].annotationType().equals(New.class))
             {
-                New newQualifier = (New) qualifiers[0];
-
-                if (newQualifier.value() == New.class)
-                {
-                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(clazz, type));
-                }
-                else
-                {
-                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(newQualifier.value(), null));
-                }
-
+                createNewBean(injectionPoint, type, qualifiers, beanSet);
             }
         }
 
@@ -247,16 +238,7 @@ public class InjectionResolver
         {
             if (qualifiers.length == 1 && qualifiers[0].annotationType().equals(New.class))
             {
-                New newQualifier = (New) qualifiers[0];
-
-                if (newQualifier.value() == New.class)
-                {
-                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(clazz, type));
-                }
-                else
-                {
-                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(newQualifier.value(), null));
-                }
+                createNewBean(injectionPoint, type, qualifiers, beanSet);
             }
             else
             {
@@ -265,6 +247,42 @@ public class InjectionResolver
         }
 
         return resolve(beanSet);
+    }
+
+    private void createNewBean(InjectionPoint injectionPoint, Type type, Annotation[] qualifiers, Set<Bean<?>> beanSet)
+    {
+        New newQualifier = (New) qualifiers[0];
+        Class<?> newType;
+        if (newQualifier.value() == New.class)
+        {
+            newType = ClassUtil.getClass(type);
+        }
+        else
+        {
+            newType = newQualifier.value();
+        }
+        Set<Bean<?>> beans = implResolveByType(newType, injectionPoint.getBean().getBeanClass(), new AnyLiteral());
+        if (beans.isEmpty())
+        {
+            beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(newType));
+        }
+        else
+        {
+            // we just need the bean for the injection points. So when we find an InjectionTargetBean, we can just take it.
+            for (Bean<?> bean: beans)
+            {
+                if (bean instanceof InjectionTargetBean)
+                {
+                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent((OwbBean)bean, (Class)newType));
+                    break;
+                }
+            }
+            if (beanSet.isEmpty())
+            {
+                //Hmm, no InjectionTargetBean available, then we have to create the injection points on our own
+                beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent((Class)newType));
+            }
+        }
     }
 
 

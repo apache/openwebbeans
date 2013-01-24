@@ -24,10 +24,10 @@ import javax.enterprise.inject.spi.InterceptionType;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.CdiInterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -41,9 +41,9 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
 
     private Set<Annotation> interceptorBindings;
 
-    public CdiInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
+    public CdiInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
-        super(webBeansContext, annotatedType);
+        super(webBeansContext, annotatedType, beanAttributes);
     }
 
     public void defineCdiInterceptorRules()
@@ -71,8 +71,8 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
     }
 
     @Override
-    protected CdiInterceptorBean<T> createBean(Set<Type> types, Class<T> beanClass, boolean enabled, Map<InterceptionType, Method[]> interceptionMethods)
+    protected CdiInterceptorBean<T> createBean(Class<T> beanClass, boolean enabled, Map<InterceptionType, Method[]> interceptionMethods)
     {
-        return new CdiInterceptorBean<T>(webBeansContext, getAnnotated(), types, beanClass, interceptorBindings, enabled, interceptionMethods);
+        return new CdiInterceptorBean<T>(webBeansContext, getAnnotated(), getBeanAttributes(), beanClass, interceptorBindings, enabled, interceptionMethods);
     }
 }

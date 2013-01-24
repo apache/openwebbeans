@@ -19,7 +19,6 @@
 package org.apache.webbeans.component.third;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -28,6 +27,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.inject.AlternativesManager;
@@ -40,59 +40,17 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
     {
         super(webBeansContext,
               WebBeansType.THIRDPARTY,
-              bean.getTypes(),
-              bean.getQualifiers(),
-              bean.getScope(),
-              bean.getName(),
-              bean.isNullable(),
-              bean.getBeanClass(),
-              bean.getStereotypes(),
-              bean.isAlternative());
+              new BeanAttributesImpl<T>(bean),
+              bean.getBeanClass());
         
         this.bean = bean;
         
-    }
-    
-    @Override
-    public Set<Annotation> getQualifiers()
-    {
-        
-        return bean.getQualifiers();
     }
 
     @Override
     public Set<InjectionPoint> getInjectionPoints()
     {
-        
         return bean.getInjectionPoints();
-    }
-
-    @Override
-    public String getName()
-    {
-        
-        return bean.getName();
-    }
-
-    @Override
-    public Class<? extends Annotation> getScope()
-    {
-        
-        return bean.getScope();
-    }
-
-    @Override
-    public Set<Type> getTypes()
-    {
-        
-        return bean.getTypes();
-    }
-
-    @Override
-    public boolean isNullable()
-    {
-        
-        return bean.isNullable();
     }
 
     public T create(CreationalContext<T> context)
@@ -106,7 +64,6 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
         bean.destroy(instance,context);
         
     }
-
 
     /* (non-Javadoc)
      * @see org.apache.webbeans.component.AbstractBean#getId()
@@ -138,15 +95,9 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
     }
 
     @Override
-    public Set<Class<? extends Annotation>> getStereotypes()
-    {
-        return bean.getStereotypes();
-    }
-
-    @Override
     public boolean isAlternative()
     {
-        boolean alternative = bean.isAlternative();
+        boolean alternative = super.isAlternative();
         if(alternative)
         {
             AlternativesManager manager = getWebBeansContext().getAlternativesManager();

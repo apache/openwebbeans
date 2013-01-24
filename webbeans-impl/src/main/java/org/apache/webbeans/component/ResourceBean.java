@@ -19,8 +19,6 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Set;
 
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
@@ -32,16 +30,10 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
 
     public ResourceBean(InjectionTargetBean<?> ownerComponent,
                         ResourceReference<X, T> resourceReference,
-                        Set<Type> types,
-                        Set<Annotation> qualifiers,
-                        Class<? extends Annotation> scope,
-                        String name,
-                        boolean nullable,
-                        Class<X> beanClass,
-                        Set<Class<? extends Annotation>> stereotypes,
-                        boolean alternative)
+                        BeanAttributesImpl<X> beanAttributes,
+                        Class<X> beanClass)
     {
-        super(ownerComponent, types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative);
+        super(ownerComponent, beanAttributes, beanClass);
         this.resourceReference = resourceReference;
     }
     

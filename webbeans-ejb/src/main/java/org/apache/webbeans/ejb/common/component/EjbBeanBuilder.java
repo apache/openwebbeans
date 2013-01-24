@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.ejb.common.component;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
 
@@ -30,6 +28,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ObserverMethod;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.creation.AbstractInjectionTargetBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
@@ -45,9 +44,9 @@ import org.apache.webbeans.portable.AbstractEjbInjectionTarget;
  */
 public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>> extends AbstractInjectionTargetBeanBuilder<T, E>
 {
-    public EjbBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
+    public EjbBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
-        super(webBeansContext, annotatedType);
+        super(webBeansContext, annotatedType, beanAttributes);
     }
 
     /**
@@ -57,16 +56,10 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>> extends Abstra
     public void checkCreateConditions()
     {        
         EjbValidator.validateDecoratorOrInterceptor(getBeanType());
-    }
-
-    public void defineScopeType(String errorMessage)
-    {
-        super.defineScopeType(errorMessage);
-
         EjbValidator.validateEjbScopeType(getBean());
-        EjbValidator.validateGenericBeanType(getBeanType(), getScope());
+        EjbValidator.validateGenericBeanType(getBeanType(), getBeanAttributes().getScope());
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.webbeans.component.creation.AbstractInjectedTargetBeanCreator#defineObserverMethods()
      */
@@ -80,9 +73,7 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>> extends Abstra
     }
 
     @Override
-    protected InjectionTarget<T> buildInjectionTarget(Set<Type> types,
-                                                      Set<Annotation> qualifiers,
-                                                      AnnotatedType<T> annotatedType,
+    protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType,
                                                       Set<InjectionPoint> points,
                                                       WebBeansContext webBeansContext,
                                                       List<AnnotatedMethod<?>> postConstructMethods,

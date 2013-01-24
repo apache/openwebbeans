@@ -20,7 +20,6 @@ package org.apache.webbeans.component.creation;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -35,13 +34,13 @@ import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -64,9 +63,9 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 
     private Map<InterceptionType, Method[]> interceptionMethods;
     
-    protected InterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
+    protected InterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
-        super(webBeansContext, annotatedType);
+        super(webBeansContext, annotatedType, beanAttributes);
         ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
         if (ejbPlugin != null)
         {
@@ -78,13 +77,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
             prePassivateClass = null;
             postActivateClass = null;
         }
-    }
-
-    @Override
-    public Class<? extends Annotation> getScope()
-    {
-        // Interceptors are always Dependent scoped
-        return Dependent.class;
     }
 
     public void defineConstructor()
@@ -137,7 +129,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 
     protected void defineInterceptorRules()
     {
-        defineApiType();
         defineConstructor();
         defineInterceptorMethods();
         defineInjectedMethods();
@@ -363,23 +354,14 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
         }
     }
 
-    protected abstract B createBean(Set<Type> types,
-                                    Class<T> beanClass,
+    protected abstract B createBean(Class<T> beanClass,
                                     boolean enabled,
                                     Map<InterceptionType, Method[]> interceptionMethods);
 
     @Override
-    protected B createBean(Set<Type> types,
-                           Set<Annotation> qualifiers,
-                           Class<? extends Annotation> scope,
-                           String name,
-                           boolean nullable,
-                           Class<T> beanClass,
-                           Set<Class<? extends Annotation>> stereotypes,
-                           boolean alternative,
-                           boolean enabled)
+    protected B createBean(Class<T> beanClass, boolean enabled)
     {
-        B bean = createBean(types, beanClass, enabled, interceptionMethods);
+        B bean = createBean(beanClass, enabled, interceptionMethods);
         addConstructorInjectionPointMetaData(bean);
         return bean;
     }

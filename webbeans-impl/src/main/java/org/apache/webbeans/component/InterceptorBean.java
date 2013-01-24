@@ -26,10 +26,8 @@ import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.ExceptionUtil;
@@ -61,18 +59,15 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
 
     public InterceptorBean(WebBeansContext webBeansContext, 
                            AnnotatedType<T> annotatedType,
-                           Set<Type> types,
+                           BeanAttributesImpl<T> beanAttributes,
                            Class<T> beanClass,
                            Map<InterceptionType, Method[]> interceptionMethods)
     {
         super(webBeansContext,
               WebBeansType.INTERCEPTOR,
               annotatedType,
-              types,
-              Collections.<Annotation>emptySet(),
-              Dependent.class,
-              beanClass,
-              Collections.<Class<? extends Annotation>>emptySet());
+              beanAttributes,
+              beanClass);
         this.interceptionMethods = Collections.unmodifiableMap(interceptionMethods);
 
         for (Method[] methods: interceptionMethods.values())

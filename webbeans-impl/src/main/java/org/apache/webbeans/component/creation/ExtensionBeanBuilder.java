@@ -37,7 +37,9 @@ public class ExtensionBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
 
     public ExtensionBeanBuilder(WebBeansContext webBeansContext, Class<T> type)
     {
-        super(webBeansContext, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type));
+        super(webBeansContext,
+              webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type),
+              BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(webBeansContext.getAnnotatedElementFactory().getAnnotatedType(type)).build());
     }
 
     protected InjectionTarget<T> buildInjectionTarget(Set<Type> types,
@@ -52,15 +54,7 @@ public class ExtensionBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
     }
 
     @Override
-    protected ExtensionBean<T> createBean(Set<Type> types,
-                                          Set<Annotation> qualifiers,
-                                          Class<? extends Annotation> scope,
-                                          String name,
-                                          boolean nullable,
-                                          Class<T> beanClass,
-                                          Set<Class<? extends Annotation>> stereotypes,
-                                          boolean alternative,
-                                          boolean enabled)
+    protected ExtensionBean<T> createBean(Class<T> beanClass, boolean enabled)
     {
         return new ExtensionBean<T>(webBeansContext, beanClass);
     }

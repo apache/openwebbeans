@@ -21,7 +21,6 @@ package org.apache.webbeans.ejb.common.util;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +35,10 @@ import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.Producer;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
@@ -69,18 +70,11 @@ public final class EjbUtility
         AnnotatedType<T> annotatedType = annotatedElementFactory.newAnnotatedType(clazz);
         
         //Fires ProcessAnnotatedType
-        ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = (ProcessAnnotatedTypeImpl<T>)event;             
-        EjbBeanBuilder<T, BaseEjbBean<T>> ejbBeanCreator = new EjbBeanBuilder<T, BaseEjbBean<T>>(ejbBean.getWebBeansContext(), annotatedType) {
+        ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = (ProcessAnnotatedTypeImpl<T>)event;
+        BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
+        EjbBeanBuilder<T, BaseEjbBean<T>> ejbBeanCreator = new EjbBeanBuilder<T, BaseEjbBean<T>>(ejbBean.getWebBeansContext(), annotatedType, beanAttributes) {
             @Override
-            protected BaseEjbBean<T> createBean(Set<Type> types,
-                                                Set<Annotation> qualifiers,
-                                                Class<? extends Annotation> scope,
-                                                String name,
-                                                boolean nullable,
-                                                Class<T> beanClass,
-                                                Set<Class<? extends Annotation>> stereotypes,
-                                                boolean alternative,
-                                                boolean enabled)
+            protected BaseEjbBean<T> createBean(Class<T> beanClass, boolean enabled)
             {
                 return ejbBean;
             }
@@ -99,11 +93,6 @@ public final class EjbUtility
         }
         
         //Define meta-data
-        ejbBeanCreator.defineStereoTypes();
-        ejbBeanCreator.defineApiType();
-        ejbBeanCreator.defineScopeType("Session Bean implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations");
-        ejbBeanCreator.defineName();            
-        ejbBeanCreator.defineQualifiers();
         Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods(ejbBean);        
         checkProducerMethods(producerMethodBeans, ejbBean);
         Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields(ejbBean);           
@@ -199,17 +188,12 @@ public final class EjbUtility
 
         final AnnotatedType<T> annotatedType = ejbBean.getAnnotatedType();
 
-        final EjbBeanBuilder<T, BaseEjbBean<T>> ejbBeanCreator = new EjbBeanBuilder<T, BaseEjbBean<T>>(ejbBean.getWebBeansContext(), annotatedType) {
+        final BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
+        
+        final EjbBeanBuilder<T, BaseEjbBean<T>> ejbBeanCreator = new EjbBeanBuilder<T, BaseEjbBean<T>>(ejbBean.getWebBeansContext(), annotatedType, beanAttributes) {
 
             @Override
-            protected BaseEjbBean<T> createBean(Set<Type> types,
-                                                Set<Annotation> qualifiers,
-                                                Class<? extends Annotation> scope, String name,
-                                                boolean nullable,
-                                                Class<T> beanClass,
-                                                Set<Class<? extends Annotation>> stereotypes,
-                                                boolean alternative,
-                                                boolean enabled)
+            protected BaseEjbBean<T> createBean(Class<T> beanClass, boolean enabled)
             {
                 return ejbBean;
             }

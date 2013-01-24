@@ -23,7 +23,6 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -38,9 +37,13 @@ import org.apache.webbeans.config.WebBeansContext;
 public class EjbInterceptorBean<T> extends InterceptorBean<T> implements Interceptor<T>
 {
 
-    public EjbInterceptorBean(WebBeansContext webBeansContext, AnnotatedType<T> annotated, Set<Type> types, Class<T> beanClass, Map<InterceptionType, Method[]> interceptionMethods)
+    public EjbInterceptorBean(WebBeansContext webBeansContext,
+                              AnnotatedType<T> annotated,
+                              BeanAttributesImpl<T> beanAttributes,
+                              Class<T> beanClass,
+                              Map<InterceptionType, Method[]> interceptionMethods)
     {
-        super(webBeansContext, annotated, types, beanClass, interceptionMethods);
+        super(webBeansContext, annotated, beanAttributes, beanClass, interceptionMethods);
     }
 
     /**

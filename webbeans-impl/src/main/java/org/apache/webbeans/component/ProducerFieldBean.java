@@ -19,10 +19,7 @@
 package org.apache.webbeans.component;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 
@@ -45,17 +42,9 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
      * 
      * @param returnType type of the field decleration
      */
-    public ProducerFieldBean(InjectionTargetBean<?> ownerComponent,
-                             Set<Type> types,
-                             Set<Annotation> qualifiers,
-                             Class<? extends Annotation> scope,
-                             String name,
-                             boolean nullable,
-                             Class<T> returnType,
-                             Set<Class<? extends Annotation>> stereotypes,
-                             boolean alternative)
+    public ProducerFieldBean(InjectionTargetBean<?> ownerComponent, BeanAttributesImpl<T> beanAttributes, Class<T> returnType)
     {
-        super(ownerComponent, WebBeansType.PRODUCERFIELD, types, qualifiers, scope, name, nullable, returnType, stereotypes, alternative);
+        super(ownerComponent, WebBeansType.PRODUCERFIELD, beanAttributes, returnType);
     }
 
     /**

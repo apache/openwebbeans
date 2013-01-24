@@ -18,16 +18,13 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 
@@ -55,36 +52,19 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
     /**Annotated type for bean*/
     private AnnotatedType<T> annotatedType;
 
-    protected InjectionTargetBean(WebBeansContext webBeansContext,
-                                  WebBeansType webBeansType,
-                                  AnnotatedType<T> annotatedType,
-                                  Set<Type> types,
-                                  Set<Annotation> qualifiers,
-                                  Class<? extends Annotation> scope,
-                                  Class<T> beanClass,
-                                  Set<Class<? extends Annotation>> stereotypes)
-    {
-        this(webBeansContext, webBeansType, annotatedType, types, qualifiers, scope, null, beanClass, stereotypes, false);
-        setEnabled(true);
-    }
-
     /**
      * Initializes the InjectionTarget Bean part.
      */
     protected InjectionTargetBean(WebBeansContext webBeansContext,
                                   WebBeansType webBeansType,
                                   AnnotatedType<T> annotatedType,
-                                  Set<Type> types,
-                                  Set<Annotation> qualifiers,
-                                  Class<? extends Annotation> scope,
-                                  String name,
-                                  Class<T> beanClass,
-                                  Set<Class<? extends Annotation>> stereotypes,
-                                  boolean alternative)
+                                  BeanAttributesImpl<T> beanAttributes,
+                                  Class<T> beanClass)
     {
-        super(webBeansContext, webBeansType, types, qualifiers, scope, name, false, beanClass, stereotypes, alternative);
+        super(webBeansContext, webBeansType, beanAttributes, beanClass);
         Asserts.assertNotNull(annotatedType, "AnnotatedType may not be null");
         this.annotatedType = annotatedType;
+        setEnabled(true);
     }
 
     public InjectionTarget<T> getInjectionTarget()

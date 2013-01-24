@@ -54,6 +54,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.webbeans.annotation.AnnotationManager;
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
@@ -62,7 +63,6 @@ import org.apache.webbeans.component.ResourceProvider;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.ProducerFieldProducer;
 import org.apache.webbeans.portable.ProducerMethodProducer;
@@ -91,9 +91,9 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
      * Creates a new instance.
      * 
      */
-    public AbstractInjectionTargetBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
+    public AbstractInjectionTargetBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
-        super(webBeansContext, annotatedType);
+        super(webBeansContext, annotatedType, beanAttributes);
         this.webBeansContext = webBeansContext;
     }
 
@@ -107,31 +107,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
         return webBeansContext.getAnnotatedElementFactory().getAnnotatedType(superclass);
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public void defineName()
-    {
-        if (getAnnotated().isAnnotationPresent(Specializes.class))
-        {
-            AnnotatedType<? super T> superAnnotated = getSuperAnnotated();
-            defineName(superAnnotated, WebBeansUtil.getManagedBeanDefaultName(superAnnotated.getJavaClass().getSimpleName()));
-        }
-        if (getName() == null)
-        {
-            defineName(getAnnotated(), WebBeansUtil.getManagedBeanDefaultName(getAnnotated().getJavaClass().getSimpleName()));
-        }
-        else
-        {
-            // TODO XXX We have to check stereotypes here, too
-            if (getAnnotated().getJavaClass().isAnnotationPresent(Named.class))
-            {
-                throw new DefinitionException("@Specialized Class : " + getAnnotated().getJavaClass().getName()
-                        + " may not explicitly declare a bean name");
-            }
-        }
-    }
-
     protected AnnotatedConstructor<T> getBeanConstructor()
     {
         Asserts.assertNotNull(getAnnotated(),"Type is null");
@@ -309,11 +284,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
         }        
     }
 
-    public void defineScopeType(String errorMessage)
-    {
-        defineScopeType(getAnnotated().getJavaClass(), errorMessage);
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -326,7 +296,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
         {
             if(Modifier.isPublic(annotatedField.getJavaMember().getModifiers()) && !annotatedField.isStatic())
             {
-                if(webBeansContext.getBeanManagerImpl().isNormalScope(getScope()))
+                if(webBeansContext.getBeanManagerImpl().isNormalScope(getBeanAttributes().getScope()))
                 {
                     throw new WebBeansConfigurationException("If bean has a public field, bean scope must be defined as @Scope. Bean is : "
                             + getBeanType().getName());
@@ -347,7 +317,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
             Annotation[] anns = AnnotationUtil.asArray(annotatedField.getAnnotations());
             if(Modifier.isPublic(field.getModifiers()))
             {
-                if(!getScope().equals(Dependent.class))
+                if(!getBeanAttributes().getScope().equals(Dependent.class))
                 {
                     throw new WebBeansConfigurationException("Error in annotated field : " + annotatedField
                                                     +" while definining injected field. If bean has a public modifier injection point, bean scope must be defined as @Dependent");
@@ -573,9 +543,9 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                             throw new WebBeansConfigurationException("Resource producer annotated field : " + annotatedField + " can not define EL name");
                         }
                         
+                        BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)annotatedField).build();
                         ResourceBeanBuilder<T, Annotation> resourceBeanCreator
-                            = new ResourceBeanBuilder<T, Annotation>(bean, resourceRef, annotatedField);
-                        resourceBeanCreator.defineQualifiers();
+                            = new ResourceBeanBuilder<T, Annotation>(bean, resourceRef, annotatedField, beanAttributes);
                         ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
                         ResourceProvider<T> resourceProvider = new ResourceProvider<T>(resourceBean.getReference(), webBeansContext);
                         resourceBean.setProducer(new ProviderBasedProxyProducer<T>(webBeansContext, resourceBean.getReturnType(), resourceProvider));
@@ -588,13 +558,10 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                 }
                 else
                 {
-                    ProducerFieldBeanBuilder<T, ProducerFieldBean<T>> producerFieldBeanCreator = new ProducerFieldBeanBuilder<T, ProducerFieldBean<T>>(bean, annotatedField);
-                    producerFieldBeanCreator.defineApiType();
-                    producerFieldBeanCreator.defineStereoTypes();
-                    producerFieldBeanCreator.defineScopeType("Annotated producer field: " + annotatedField +  "must declare default @Scope annotation");
+                    BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)annotatedField).build();
+                    ProducerFieldBeanBuilder<T, ProducerFieldBean<T>> producerFieldBeanCreator
+                        = new ProducerFieldBeanBuilder<T, ProducerFieldBean<T>>(bean, annotatedField, beanAttributes);
                     producerFieldBeanCreator.checkUnproxiableApiType();
-                    producerFieldBeanCreator.defineQualifiers();
-                    producerFieldBeanCreator.defineName();
                     ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
                     producerFieldBean.setProducer(new ProducerFieldProducer(bean, annotatedField, producerFieldBean.getInjectionPoints()));
                     producerFieldBean.setProducerField(field);
@@ -639,17 +606,12 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                     specialize = true;
                 }
                 
-                ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<T>(bean, annotatedMethod);
+                BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedMethod<T>)annotatedMethod).build();
+                ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<T>(bean, annotatedMethod, beanAttributes);
                 
-                producerMethodBeanCreator.defineStereoTypes();
-                producerMethodBeanCreator.defineScopeType("Annotated producer method : " + annotatedMethod
-                        +  "must declare default @Scope annotation");
                 producerMethodBeanCreator.checkUnproxiableApiType();
-                producerMethodBeanCreator.defineQualifiers();
-                
+
                 producerMethodBeanCreator.addInjectionPoint(annotatedMethod);
-                producerMethodBeanCreator.defineApiType();
-                producerMethodBeanCreator.defineName();
                 ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
                 
                 if(specialize)
@@ -695,9 +657,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
         }
     }
 
-    protected InjectionTarget<T> buildInjectionTarget(Set<Type> types,
-                                                      Set<Annotation> qualifiers,
-                                                      AnnotatedType<T> annotatedType,
+    protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType,
                                                       Set<InjectionPoint> points,
                                                       WebBeansContext webBeansContext,
                                                       List<AnnotatedMethod<?>> postConstructMethods,
@@ -708,31 +668,16 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
         return injectionTarget;
     }
 
-    protected abstract I createBean(Set<Type> types,
-                                    Set<Annotation> qualifiers,
-                                    Class<? extends Annotation> scope,
-                                    String name,
-                                    boolean nullable,
-                                    Class<T> beanClass,
-                                    Set<Class<? extends Annotation>> stereotypes,
-                                    boolean alternative,
-                                    boolean enabled);
+    protected abstract I createBean(Class<T> beanClass, boolean enabled);
 
     @Override
-    protected final I createBean(Set<Type> types,
-                           Set<Annotation> qualifiers,
-                           Class<? extends Annotation> scope,
-                           String name,
-                           boolean nullable,
-                           Class<T> beanClass,
-                           Set<Class<? extends Annotation>> stereotypes,
-                           boolean alternative)
+    protected final I createBean(Class<T> beanClass)
     {
-        I bean =  createBean(types, qualifiers, scope, name, nullable, beanClass, stereotypes, alternative, enabled);
+        I bean =  createBean(beanClass, enabled);
 
         //X TODO hack to set the InjectionTarget
         InjectionTarget<T> injectionTarget
-                = buildInjectionTarget(types, qualifiers, bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
+                = buildInjectionTarget(bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
         bean.setProducer(injectionTarget);
 
         return bean;
@@ -795,7 +740,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
 
     public void defineEnabled()
     {
-        enabled = webBeansContext.getWebBeansUtil().isBeanEnabled(getAnnotated(), getBeanType(), getStereotypes());
+        enabled = webBeansContext.getWebBeansUtil().isBeanEnabled(getAnnotated(), getBeanType(), getBeanAttributes().getStereotypes());
     }
 
     @Override

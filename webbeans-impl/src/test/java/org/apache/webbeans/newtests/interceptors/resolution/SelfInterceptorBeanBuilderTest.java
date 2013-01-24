@@ -22,7 +22,9 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InterceptorBean;
+import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.SelfInterceptorBeanBuilder;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.resolution.interceptors.SelfInterceptedClass;
@@ -45,8 +47,10 @@ public class SelfInterceptorBeanBuilderTest extends AbstractUnitTest
 
         AnnotatedType<SelfInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(SelfInterceptedClass.class);
 
+        BeanAttributesImpl<SelfInterceptedClass> beanAttributes = BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes(annotatedType).build();
+
         SelfInterceptorBeanBuilder<SelfInterceptedClass> ibb
-                = new SelfInterceptorBeanBuilder<SelfInterceptedClass>(getWebBeansContext(), annotatedType);
+                = new SelfInterceptorBeanBuilder<SelfInterceptedClass>(getWebBeansContext(), annotatedType, beanAttributes);
         ibb.defineSelfInterceptorRules();
         InterceptorBean<SelfInterceptedClass> bean = ibb.getBean();
         Assert.assertNotNull(bean);

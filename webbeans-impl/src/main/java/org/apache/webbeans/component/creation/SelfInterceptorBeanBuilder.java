@@ -20,13 +20,12 @@ package org.apache.webbeans.component.creation;
 
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InterceptionType;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.SelfInterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
 
@@ -37,9 +36,9 @@ public class SelfInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, Sel
 {
     private boolean enabled = false;
 
-    public SelfInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
+    public SelfInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
-        super(webBeansContext, annotatedType);
+        super(webBeansContext, annotatedType, beanAttributes);
     }
 
     public void defineSelfInterceptorRules()
@@ -50,7 +49,6 @@ public class SelfInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, Sel
 
         // we do NOT invoke defineInterceptorRules() !
 
-        defineApiType();
         enabled = defineInterceptorMethods();
     }
 
@@ -60,8 +58,8 @@ public class SelfInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, Sel
     }
 
     @Override
-    protected SelfInterceptorBean<T> createBean(Set<Type> types, Class<T> beanClass, boolean enabled, Map<InterceptionType, Method[]> interceptionMethods)
+    protected SelfInterceptorBean<T> createBean(Class<T> beanClass, boolean enabled, Map<InterceptionType, Method[]> interceptionMethods)
     {
-        return new SelfInterceptorBean<T>(webBeansContext, getAnnotated(), types, beanClass, interceptionMethods);
+        return new SelfInterceptorBean<T>(webBeansContext, getAnnotated(), getBeanAttributes(), beanClass, interceptionMethods);
     }
 }

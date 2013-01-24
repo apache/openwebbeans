@@ -49,6 +49,7 @@ import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.annotation.AnnotationManager;
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.DecoratorBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
@@ -59,6 +60,7 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.CdiInterceptorBeanBuilder;
 import org.apache.webbeans.component.creation.DecoratorBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
@@ -822,8 +824,10 @@ public class BeansDeployer
         {
             //Check conditions
             webBeansContext.getWebBeansUtil().checkManagedBeanCondition(clazz);
+            
+            BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
 
-            ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType);
+            ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, beanAttributes);
 
             InjectionTargetBean<T> bean;
             GProcessInjectionTarget processInjectionTarget = null;
@@ -833,7 +837,7 @@ public class BeansDeployer
                 {
                     logger.log(Level.FINE, "Found Managed Bean Decorator with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
-                DecoratorBeanBuilder<T> dbb = new DecoratorBeanBuilder<T>(webBeansContext, annotatedType);
+                DecoratorBeanBuilder<T> dbb = new DecoratorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
                 if (dbb.isDecoratorEnabled())
                 {
                     dbb.defineDecoratorRules();
@@ -853,7 +857,7 @@ public class BeansDeployer
                     logger.log(Level.FINE, "Found Managed Bean Interceptor with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
                 
-                CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType);
+                CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
                 if (ibb.isInterceptorEnabled())
                 {
                     ibb.defineCdiInterceptorRules();

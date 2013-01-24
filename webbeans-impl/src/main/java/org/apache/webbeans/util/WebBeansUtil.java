@@ -30,7 +30,9 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -71,6 +73,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.webbeans.annotation.AnnotationManager;
+import org.apache.webbeans.annotation.NewLiteral;
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractProducerBean;
@@ -88,14 +92,12 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
+import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.AnnotatedTypeBeanBuilder;
+import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.ExtensionBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
-import org.apache.webbeans.component.creation.NewEjbBeanBuilder;
-import org.apache.webbeans.component.creation.NewManagedBeanBuilder;
 import org.apache.webbeans.component.creation.ProducerMethodProducerBuilder;
-import org.apache.webbeans.config.EJBWebBeansConfigurator;
-import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
@@ -103,7 +105,6 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.ProducerFieldProducer;
 import org.apache.webbeans.portable.ProducerMethodProducer;
@@ -426,6 +427,23 @@ public final class WebBeansUtil
         return false;
     }
 
+    public <T> NewManagedBean<T> createNewComponent(Class<T> type)
+    {
+        Asserts.nullCheckForClass(type);
+
+        AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
+        BeanAttributesImpl<T> defaultBeanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
+        BeanAttributesImpl<T> newBeanAttributes = new BeanAttributesImpl<T>(defaultBeanAttributes.getTypes(), Collections.<Annotation>singleton(new NewLiteral(type)));
+        // TODO replace this by InjectionPointBuilder
+        ManagedBeanBuilder<T, ManagedBean<T>> beanBuilder = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, newBeanAttributes);
+        beanBuilder.defineInjectedFields();
+        beanBuilder.defineInjectedMethods();
+        beanBuilder.defineConstructor();
+        NewManagedBean<T> newBean
+            = new NewManagedBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, newBeanAttributes, type, beanBuilder.getBean().getInjectionPoints());
+        return newBean;
+    }
+    
     /**
      * New WebBeans component class.
      *
@@ -433,39 +451,20 @@ public final class WebBeansUtil
      * @param clazz impl. class
      * @return the new component
      */
-    public <T> NewManagedBean<T> createNewComponent(Class<T> clazz, Type apiType)
+    public <T> NewManagedBean<T> createNewComponent(OwbBean<T> bean, Class<T> type)
     {
-        Asserts.nullCheckForClass(clazz);
+        Asserts.assertNotNull(bean, "bean may not be null");
+        if (!EnumSet.of(WebBeansType.MANAGED, WebBeansType.ENTERPRISE, WebBeansType.PRODUCERMETHOD, WebBeansType.PRODUCERFIELD).contains(bean.getWebBeansType()))
+        {
+            throw new WebBeansConfigurationException("@New annotation on type : " + bean.getBeanClass()
+                    + " must defined as a simple or an enterprise web bean");
+        }
 
-        NewManagedBean<T> comp;
-
-        if (webBeansContext.getWebBeansUtil().isManagedBean(clazz))
-        {
-            NewManagedBeanBuilder<T> newBeanCreator
-                = new NewManagedBeanBuilder<T>(webBeansContext, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
-            newBeanCreator.defineApiType();
-            newBeanCreator.defineScopeType("");
-            newBeanCreator.defineConstructor();
-            newBeanCreator.defineInjectedFields();
-            newBeanCreator.defineInjectedMethods();
-            newBeanCreator.defineDisposalMethods();
-            comp = newBeanCreator.getBean();
-        }
-        else if (EJBWebBeansConfigurator.isSessionBean(clazz, webBeansContext))
-        {
-            NewEjbBeanBuilder<T> newBeanCreator
-                = new NewEjbBeanBuilder<T>(webBeansContext, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
-            newBeanCreator.defineApiType();
-            newBeanCreator.defineInjectedFields();
-            newBeanCreator.defineInjectedMethods();
-            comp = newBeanCreator.getBean();
-        }
-        else
-        {
-            throw new WebBeansConfigurationException("@New annotation on type : " + clazz.getName()
-                                                     + " must defined as a simple or an enterprise web bean");
-        }
-        return comp;
+        AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
+        BeanAttributesImpl<T> newBeanAttributes = new BeanAttributesImpl<T>(bean.getTypes(), Collections.<Annotation>singleton(new NewLiteral(type)));
+        NewManagedBean<T> newBean = new NewManagedBean<T>(bean.getWebBeansContext(), bean.getWebBeansType(), annotatedType, newBeanAttributes, type, bean.getInjectionPoints());
+        //TODO XXX set producer
+        return newBean;
     }
 
     /**
@@ -1597,24 +1596,12 @@ public final class WebBeansUtil
      */
     public <T> ManagedBean<T> defineManagedBeanWithoutFireEvents(AnnotatedType<T> type)
     {
-        Class<T> clazz = type.getJavaClass();
-
-        ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, type);
-
-        managedBeanCreator.defineApiType();
-
-        //Define meta-data
-        managedBeanCreator.defineStereoTypes();
-
-        //Scope type
-        managedBeanCreator.defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
-                WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
+        BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(type).build();
+        ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, type, beanAttributes);
 
         //Check for Enabled via Alternative
         setInjectionTargetBeanEnableFlag(managedBeanCreator.getBean());
         managedBeanCreator.checkCreateConditions();
-        managedBeanCreator.defineName();
-        managedBeanCreator.defineQualifiers();
         managedBeanCreator.defineConstructor();
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
@@ -1746,22 +1733,12 @@ public final class WebBeansUtil
     {
         Class<T> clazz = type.getJavaClass();
 
-        AnnotatedTypeBeanBuilder<T> managedBeanCreator = new AnnotatedTypeBeanBuilder<T>(type, webBeansContext);
-
-        managedBeanCreator.defineApiType();
-
-        //Define meta-data
-        managedBeanCreator.defineStereoTypes();
-
-        //Scope type
-        managedBeanCreator.defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName()
-                                           + WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
+        BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(type).build();
+        AnnotatedTypeBeanBuilder<T> managedBeanCreator = new AnnotatedTypeBeanBuilder<T>(type, webBeansContext, beanAttributes);
 
         //Check for Enabled via Alternative
         managedBeanCreator.defineEnabled();
         managedBeanCreator.checkCreateConditions();
-        managedBeanCreator.defineName();
-        managedBeanCreator.defineQualifiers();
         managedBeanCreator.defineConstructor();
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();

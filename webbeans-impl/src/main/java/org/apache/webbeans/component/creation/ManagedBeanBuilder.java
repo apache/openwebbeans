@@ -18,10 +18,7 @@
  */
 package org.apache.webbeans.component.creation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -30,12 +27,11 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -53,9 +49,9 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
     /**
      * Creates a new creator.
      */
-    public ManagedBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
+    public ManagedBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
-        super(webBeansContext, annotatedType);
+        super(webBeansContext, annotatedType, beanAttributes);
     }
 
     /**
@@ -65,7 +61,7 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
     public void checkCreateConditions()
     {
         webBeansContext.getWebBeansUtil().checkManagedBeanCondition(getAnnotated());
-        WebBeansUtil.checkGenericType(getBeanType(), getScope());
+        WebBeansUtil.checkGenericType(getBeanType(), getBeanAttributes().getScope());
         //Check Unproxiable
         checkUnproxiableApiType();
     }
@@ -89,22 +85,10 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
 
     public ManagedBean<T> defineManagedBean(AnnotatedType<T> annotatedType)
     {
-        Class<T> clazz = annotatedType.getJavaClass();
-
-        defineApiType();
-
-        //Define meta-data
-        defineStereoTypes();
-        //Scope type
-        defineScopeType(WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
-                WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
-
         //Check for Enabled via Alternative
         defineEnabled();
 
         checkCreateConditions();
-        defineName();
-        defineQualifiers();
 
         defineConstructor();
         defineInjectedFields();
@@ -144,17 +128,9 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
 
 
     @Override
-    protected M createBean(Set<Type> types,
-                           Set<Annotation> qualifiers,
-                           Class<? extends Annotation> scope,
-                           String name,
-                           boolean nullable,
-                           Class<T> beanClass,
-                           Set<Class<? extends Annotation>> stereotypes,
-                           boolean alternative,
-                           boolean enabled)
+    protected M createBean(Class<T> beanClass, boolean enabled)
     {
-        M managedBean = (M)new ManagedBean<T>(webBeansContext, WebBeansType.MANAGED, getAnnotated(), types, qualifiers, scope, name, beanClass, stereotypes, alternative);
+        M managedBean = (M)new ManagedBean<T>(webBeansContext, WebBeansType.MANAGED, getAnnotated(), getBeanAttributes(), beanClass);
         managedBean.setEnabled(enabled);
         return managedBean;
     }

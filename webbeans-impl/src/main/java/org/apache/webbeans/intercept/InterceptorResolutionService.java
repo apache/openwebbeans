@@ -49,7 +49,9 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.webbeans.annotation.AnnotationManager;
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.SelfInterceptorBean;
+import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.SelfInterceptorBeanBuilder;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
@@ -240,7 +242,8 @@ public class InterceptorResolutionService
      */
     private <T> SelfInterceptorBean<T> resolveSelfInterceptorBean(AnnotatedType<T> annotatedType)
     {
-        SelfInterceptorBeanBuilder sibb = new SelfInterceptorBeanBuilder(webBeansContext, annotatedType);
+        BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
+        SelfInterceptorBeanBuilder<T>sibb = new SelfInterceptorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
         sibb.defineSelfInterceptorRules();
         if (!sibb.isInterceptorEnabled())
         {

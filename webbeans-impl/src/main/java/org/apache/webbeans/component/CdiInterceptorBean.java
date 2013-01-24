@@ -23,7 +23,6 @@ import javax.enterprise.inject.spi.InterceptionType;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,13 +42,13 @@ public class CdiInterceptorBean<T> extends InterceptorBean<T>
 
     public CdiInterceptorBean(WebBeansContext webBeansContext,
                               AnnotatedType<T> annotatedType,
-                              Set<Type> types,
+                              BeanAttributesImpl<T> beanAttributes,
                               Class<T> beanClass,
                               Set<Annotation> interceptorBindings,
                               boolean enabled,
                               Map<InterceptionType, Method[]> interceptionMethods)
     {
-        super(webBeansContext, annotatedType, types, beanClass, interceptionMethods);
+        super(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods);
         this.interceptorBindings = interceptorBindings;
     }
 

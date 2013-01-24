@@ -40,6 +40,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.CdiInterceptorBean;
 import org.apache.webbeans.component.DecoratorBean;
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -48,6 +49,7 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.CdiInterceptorBeanBuilder;
 import org.apache.webbeans.component.creation.DecoratorBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
@@ -67,6 +69,7 @@ import org.apache.webbeans.test.component.decorator.broken.PaymentDecorator;
 import org.apache.webbeans.test.component.decorator.clean.LargeTransactionDecorator;
 import org.apache.webbeans.test.component.decorator.clean.ServiceDecorator;
 import org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor;
+import org.apache.webbeans.test.component.intercept.webbeans.SecureAndTransactionalInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor2;
 import org.apache.webbeans.test.containertests.ComponentResolutionByTypeTest;
 import org.apache.webbeans.test.mock.MockManager;
@@ -313,8 +316,9 @@ public abstract class TestContext implements ITestContext
         webBeansContext.getWebBeansUtil().checkManagedBeanCondition(clazz);
 
         webBeansContext.getInterceptorsManager().addEnabledInterceptorClass(clazz);
-        AnnotatedType annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
-        CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType);
+        AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
+        BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes(annotatedType).build();
+        CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
         ibb.defineCdiInterceptorRules();
         CdiInterceptorBean<T> bean = ibb.getBean();
         webBeansContext.getInterceptorsManager().addCdiInterceptor(bean);
@@ -334,7 +338,8 @@ public abstract class TestContext implements ITestContext
         if (webBeansContext.getDecoratorsManager().isDecoratorEnabled(clazz))
         {
             AnnotatedType<T> annotatedType = webBeansContext.getBeanManagerImpl().createAnnotatedType(clazz);
-            DecoratorBeanBuilder<T> dbb = new DecoratorBeanBuilder<T>(webBeansContext, annotatedType);
+            BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
+            DecoratorBeanBuilder<T> dbb = new DecoratorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
             dbb.defineDecoratorRules();
 
             DecoratorBean<T> bean = dbb.getBean();
@@ -495,7 +500,7 @@ public abstract class TestContext implements ITestContext
      * @return the newly created Simple WebBean Component
      * @throws WebBeansConfigurationException if any configuration exception occurs
      */
-    private <T> ManagedBean<T> define(Class<T> clazz, WebBeansType type, AnnotatedType<T> anntotatedType) throws WebBeansConfigurationException
+    private <T> ManagedBean<T> define(Class<T> clazz, WebBeansType type, AnnotatedType<T> annotatedType) throws WebBeansConfigurationException
     {
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
@@ -518,16 +523,9 @@ public abstract class TestContext implements ITestContext
             throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not _defined as interface");
         }
 
-        ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, anntotatedType);
-        managedBeanCreator.defineStereoTypes();
-        
-        managedBeanCreator.defineApiType();
-        managedBeanCreator.defineScopeType("Simple WebBean Component implementation class : " + clazz.getName()
-                + " stereotypes must declare same @Scope annotations");
-        
+        BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes(annotatedType).build();
+        ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, beanAttributes);
         managedBeanCreator.checkCreateConditions();
-        managedBeanCreator.defineName();
-        managedBeanCreator.defineQualifiers();
         managedBeanCreator.defineEnabled();
         managedBeanCreator.defineConstructor();
         managedBeanCreator.defineInjectedFields();

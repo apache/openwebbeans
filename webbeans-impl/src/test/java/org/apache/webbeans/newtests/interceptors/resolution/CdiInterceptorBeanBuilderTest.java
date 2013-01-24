@@ -26,7 +26,9 @@ import javax.enterprise.inject.spi.Interceptor;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InterceptorBean;
+import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.CdiInterceptorBeanBuilder;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
@@ -65,17 +67,19 @@ public class CdiInterceptorBeanBuilderTest extends AbstractUnitTest
         {
             // take an Interceptor class which is not listed in beans.xml and verify that is is not enabled
             AnnotatedType<SecureAndTransactionalInterceptor> annotatedType = getBeanManager().createAnnotatedType(SecureAndTransactionalInterceptor.class);
+            BeanAttributesImpl<SecureAndTransactionalInterceptor> beanAttributes = BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes(annotatedType).build();
 
             CdiInterceptorBeanBuilder<SecureAndTransactionalInterceptor> ibb
-                    = new CdiInterceptorBeanBuilder<SecureAndTransactionalInterceptor>(getWebBeansContext(), annotatedType);
+                    = new CdiInterceptorBeanBuilder<SecureAndTransactionalInterceptor>(getWebBeansContext(), annotatedType, beanAttributes);
             Assert.assertFalse(ibb.isInterceptorEnabled());
         }
 
         {
             AnnotatedType<TransactionalInterceptor> annotatedType = getBeanManager().createAnnotatedType(TransactionalInterceptor.class);
+            BeanAttributesImpl<TransactionalInterceptor> beanAttributes = BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes(annotatedType).build();
 
             CdiInterceptorBeanBuilder<TransactionalInterceptor> ibb
-                    = new CdiInterceptorBeanBuilder<TransactionalInterceptor>(getWebBeansContext(), annotatedType);
+                    = new CdiInterceptorBeanBuilder<TransactionalInterceptor>(getWebBeansContext(), annotatedType, beanAttributes);
             ibb.defineCdiInterceptorRules();
             Interceptor<TransactionalInterceptor> bean = ibb.getBean();
             Assert.assertNotNull(bean);
@@ -107,9 +111,10 @@ public class CdiInterceptorBeanBuilderTest extends AbstractUnitTest
         startContainer(beanClasses, beanXmls);
 
         AnnotatedType<TestInterceptor1> annotatedType = getBeanManager().createAnnotatedType(TestInterceptor1.class);
+        BeanAttributesImpl<TestInterceptor1> beanAttributes = BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes(annotatedType).build();
 
         CdiInterceptorBeanBuilder<TestInterceptor1> ibb
-                = new CdiInterceptorBeanBuilder<TestInterceptor1>(getWebBeansContext(), annotatedType);
+                = new CdiInterceptorBeanBuilder<TestInterceptor1>(getWebBeansContext(), annotatedType, beanAttributes);
         ibb.defineCdiInterceptorRules();
         InterceptorBean<TestInterceptor1> bean = ibb.getBean();
         Assert.assertNotNull(bean);

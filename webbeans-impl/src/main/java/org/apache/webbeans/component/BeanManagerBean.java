@@ -18,11 +18,8 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collections;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -36,11 +33,8 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
     {
         super(webBeansContext,
               WebBeansType.MANAGER,
-              CollectionUtil.<Type>unmodifiableSet(BeanManager.class, Object.class),
-              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
-              Dependent.class,
-              BeanManager.class,
-              Collections.<Class<? extends Annotation>>emptySet());
+              new BeanAttributesImpl<BeanManager>(CollectionUtil.<Type>unmodifiableSet(BeanManager.class, Object.class), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION),
+              BeanManager.class);
         setProducer(new BeanManagerProducer(webBeansContext));
     }
     

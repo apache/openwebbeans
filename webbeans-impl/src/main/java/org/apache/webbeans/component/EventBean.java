@@ -18,17 +18,13 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collections;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.EventProducer;
-import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
 
 /**
@@ -48,11 +44,8 @@ public class EventBean<T> extends AbstractOwbBean<Event<T>>
     {
         super(webBeansContext,
               WebBeansType.OBSERVABLE,
-              CollectionUtil.<Type>unmodifiableSet(new TypeLiteral<Event<T>>() {}.getRawType(), Object.class),
-              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
-              Dependent.class,
-              new TypeLiteral<Event<T>>(){}.getRawType(),
-              Collections.<Class<? extends Annotation>>emptySet());
+              new BeanAttributesImpl<Event<T>>(CollectionUtil.<Type>unmodifiableSet(new TypeLiteral<Event<T>>() {}.getRawType(), Object.class)),
+              new TypeLiteral<Event<T>>(){}.getRawType());
         setProducer(new EventProducer<T>(webBeansContext));
     }
     

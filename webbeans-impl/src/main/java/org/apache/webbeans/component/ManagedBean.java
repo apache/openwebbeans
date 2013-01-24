@@ -18,10 +18,7 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Type;
-import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.PassivationCapable;
@@ -40,28 +37,11 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
     
     public ManagedBean(WebBeansContext webBeansContext,
                        WebBeansType webBeansType,
-                       AnnotatedType<T> annotatedType,
-                       Set<Type> types,
-                       Set<Annotation> qualifiers,
-                       Class<? extends Annotation> scope,
-                       Class<T> beanClass,
-                       Set<Class<? extends Annotation>> stereotypes)
-    {
-        super(webBeansContext, webBeansType, annotatedType, types, qualifiers, scope, beanClass, stereotypes);
-    }
-
-    public ManagedBean(WebBeansContext webBeansContext,
-                       WebBeansType webBeansType,
                        AnnotatedType<T> annotated,
-                       Set<Type> types,
-                       Set<Annotation> qualifiers,
-                       Class<? extends Annotation> scope,
-                       String name,
-                       Class<T> beanClass,
-                       Set<Class<? extends Annotation>> stereotypes,
-                       boolean alternative)
+                       BeanAttributesImpl<T> beanAttributes,
+                       Class<T> beanClass)
     {
-        super(webBeansContext, webBeansType, annotated, types, qualifiers, scope, name, beanClass, stereotypes, alternative);
+        super(webBeansContext, webBeansType, annotated, beanAttributes, beanClass);
     }
 
     /**

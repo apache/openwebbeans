@@ -24,7 +24,6 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -44,11 +43,11 @@ public class SelfInterceptorBean<T> extends InterceptorBean<T> implements Interc
 
     public SelfInterceptorBean(WebBeansContext webBeansContext,
                                AnnotatedType<T> annotatedType,
-                               Set<Type> types,
+                               BeanAttributesImpl<T> beanAttributes,
                                Class<T> beanClass,
                                Map<InterceptionType, Method[]> interceptionMethods)
     {
-        super(webBeansContext, annotatedType, types, beanClass, interceptionMethods);
+        super(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods);
     }
 
     /**

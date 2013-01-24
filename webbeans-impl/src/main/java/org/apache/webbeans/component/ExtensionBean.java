@@ -18,9 +18,6 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.annotation.Annotation;
-import java.util.Collections;
-
 import javax.enterprise.context.ApplicationScoped;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -47,11 +44,11 @@ public class ExtensionBean<T> extends InjectionTargetBean<T>
         super(webBeansContext,
                 WebBeansType.EXTENSION,
                 webBeansContext.getAnnotatedElementFactory().newAnnotatedType(returnType),
-                webBeansContext.getAnnotatedElementFactory().newAnnotatedType(returnType).getTypeClosure(),
-                AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
-                ApplicationScoped.class,
-                returnType,
-                Collections.<Class<? extends Annotation>>emptySet());
+                new BeanAttributesImpl<T>(
+                        webBeansContext.getAnnotatedElementFactory().getAnnotatedType(returnType).getTypeClosure(),
+                        AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+                        ApplicationScoped.class),
+                returnType);
         setEnabled(true);
     }
 

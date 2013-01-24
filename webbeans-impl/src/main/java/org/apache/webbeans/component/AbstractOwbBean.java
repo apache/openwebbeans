@@ -88,34 +88,10 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
 
     protected AbstractOwbBean(WebBeansContext webBeansContext,
                               WebBeansType webBeansType,
-                              Set<Type> types,
-                              Set<Annotation> qualifiers,
-                              Class<? extends Annotation> scope,
-                              Class<?> beanClass,
-                              Set<Class<? extends Annotation>> stereotypes)
+                              BeanAttributesImpl<T> beanAttributes,
+                              Class<?> beanClass)
     {
-        this(webBeansContext, webBeansType, types, qualifiers, scope, null, false, beanClass, stereotypes, false);
-    }
-    
-    /**
-     * Constructor definiton. Each subclass redefines its own constructor with
-     * calling this.
-     * 
-     * @param webBeansContext
-     * @param webBeansType web beans type
-     */
-    protected AbstractOwbBean(WebBeansContext webBeansContext,
-                              WebBeansType webBeansType,
-                              Set<Type> types,
-                              Set<Annotation> qualifiers,
-                              Class<? extends Annotation> scope,
-                              String name,
-                              boolean nullable,
-                              Class<?> beanClass,
-                              Set<Class<? extends Annotation>> stereotypes,
-                              boolean alternative)
-    {
-        super(types, qualifiers, scope, name, nullable, stereotypes, alternative);
+        super(beanAttributes);
         this.webBeansType = webBeansType;
         this.beanClass = beanClass;
         this.webBeansContext = webBeansContext;
