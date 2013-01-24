@@ -68,9 +68,6 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
     /**This bean is enabled or disabled*/
     protected boolean enabled = true;
 
-    /** The bean allows nullable object */
-    protected boolean nullable = true;
-
     /**Beans injection points*/
     protected Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
 
@@ -284,22 +281,6 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
     public Class<T> getReturnType()
     {
         return (Class<T>) getBeanClass();
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void setNullable(boolean nullable)
-    {
-        this.nullable = nullable;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public boolean isNullable()
-    {
-        return nullable;
     }
 
     /**

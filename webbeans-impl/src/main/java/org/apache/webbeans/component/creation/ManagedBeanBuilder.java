@@ -25,13 +25,11 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -115,13 +113,6 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
         if (constructor == null)
         {
             return;
-        }
-        InjectionPointFactory injectionPointFactory = webBeansContext.getInjectionPointFactory();
-        List<InjectionPoint> injectionPoints = injectionPointFactory.getConstructorInjectionPointData(bean, constructor);
-        for (InjectionPoint injectionPoint : injectionPoints)
-        {
-            addImplicitComponentForInjectionPoint(injectionPoint);
-            bean.addInjectionPoint(injectionPoint);
         }
         bean.setConstructor(constructor.getJavaMember());
     }

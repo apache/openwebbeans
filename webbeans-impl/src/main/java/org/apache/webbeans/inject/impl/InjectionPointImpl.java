@@ -29,13 +29,18 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.decorator.Delegate;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
+import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -43,7 +48,9 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
 class InjectionPointImpl implements InjectionPoint, Serializable
@@ -64,22 +71,38 @@ class InjectionPointImpl implements InjectionPoint, Serializable
     
     private boolean delegate;
     
-    InjectionPointImpl(Bean<?> ownerBean, Type type, Member member, Annotated annotated)
+    InjectionPointImpl(Bean<?> ownerBean, Type type, Collection<Annotation> qualifiers, AnnotatedField<?> annotatedField)
     {
-        this.ownerBean = ownerBean;
-        injectionMember = member;
-        injectionType = type;
-        this.annotated = annotated;
+        this(ownerBean, type, qualifiers, annotatedField,
+                annotatedField.getJavaMember(), annotatedField.isAnnotationPresent(Delegate.class), Modifier.isTransient(annotatedField.getJavaMember().getModifiers()));
     }
     
-    void addBindingAnnotation(Annotation qualifierAnnotations)
+    InjectionPointImpl(Bean<?> ownerBean, Type type, Collection<Annotation> qualifiers, AnnotatedParameter<?> parameter)
     {
-        this.qualifierAnnotations.add(qualifierAnnotations);
+        this(ownerBean, type, qualifiers, parameter, parameter.getDeclaringCallable().getJavaMember(), parameter.isAnnotationPresent(Delegate.class), false);
+    }
+    
+    private InjectionPointImpl(Bean<?> ownerBean, Type type, Collection<Annotation> qualifiers, Annotated annotated, Member member, boolean delegate, boolean isTransient)
+    {
+        Asserts.assertNotNull(type, "required type may not be null");
+        Asserts.assertNotNull(qualifiers, "qualifiers may not be null");
+        Asserts.assertNotNull(annotated, "annotated may not be null");
+        Asserts.assertNotNull(member, "member may not be null");
+        this.ownerBean = ownerBean;
+        this.injectionType = type;
+        this.qualifierAnnotations = Collections.unmodifiableSet(new HashSet<Annotation>(qualifiers));
+        this.annotated = annotated;
+        this.injectionMember = member;
+        this.delegate = delegate;
+        this.transientt = isTransient;
+        if(!WebBeansUtil.checkObtainsInjectionPointConditions(this))
+        {
+            EventUtil.checkObservableInjectionPointConditions(this);
+        }        
     }
     
     public Bean<?> getBean()
     {
-        
         return ownerBean;
     }
 
@@ -114,16 +137,6 @@ class InjectionPointImpl implements InjectionPoint, Serializable
     public boolean isTransient()
     {
         return transientt;
-    }
-    
-    void setDelegate(boolean delegate)
-    {
-        this.delegate = delegate;
-    }
-    
-    void setTransient(boolean transientt)
-    {
-        this.transientt = transientt;
     }
     
     private void writeObject(java.io.ObjectOutputStream op) throws IOException

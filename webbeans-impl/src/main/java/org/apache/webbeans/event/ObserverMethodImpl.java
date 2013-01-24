@@ -390,7 +390,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     AnnotatedParameter<T> annotatedParameter = newAnnotatedMethod.getParameters().get(i);
                     
                     //Creating injection point
-                    InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(bean, type, observerMethod, annotatedParameter, bindingTypes);
+                    InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(bean, type, annotatedParameter, bindingTypes);
                     
                     //Injected Bean
                     Bean<Object> injectedBean = (Bean<Object>)getWebBeansContext().getBeanManagerImpl().getInjectionResolver().getInjectionPointBean(point);
@@ -461,8 +461,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     annotationManager.getQualifierAnnotations(AnnotationUtil.
                             asArray(parameter.getAnnotations()));
 
-                InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(bean, parameter.getBaseType(),
-                        parameter.getDeclaringCallable().getJavaMember(), parameter, bindingTypes);
+                InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(bean, parameter.getBaseType(), parameter, bindingTypes);
 
                 //Get observer parameter instance
                 @SuppressWarnings("unchecked")

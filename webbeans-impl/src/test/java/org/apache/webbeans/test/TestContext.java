@@ -557,7 +557,6 @@ public abstract class TestContext implements ITestContext
             manager.addBean(producerField);
         }
 
-        managedBeanCreator.validateDisposalMethods(component);
         managedBeanCreator.defineObserverMethods(component);
 
         return component;

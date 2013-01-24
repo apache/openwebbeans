@@ -29,20 +29,15 @@ import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
-import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.SecurityUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Abstract implementation.
@@ -235,34 +230,6 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
         }
     }
 
-    protected <X> void addFieldInjectionPointMetaData(OwbBean<T> bean, AnnotatedField<X> annotField)
-    {
-        InjectionPoint injectionPoint = webBeansContext.getInjectionPointFactory().getFieldInjectionPointData(bean, annotField);
-        if (injectionPoint != null)
-        {
-            addImplicitComponentForInjectionPoint(injectionPoint);
-            bean.addInjectionPoint(injectionPoint);
-        }
-    }
-    
-    protected <X> void addMethodInjectionPointMetaData(OwbBean<T> bean, AnnotatedMethod<X> method)
-    {
-        List<InjectionPoint> methodInjectionPoints = webBeansContext.getInjectionPointFactory().getMethodInjectionPointData(bean, method);
-        for (InjectionPoint injectionPoint : methodInjectionPoints)
-        {
-            addImplicitComponentForInjectionPoint(injectionPoint);
-            bean.addInjectionPoint(injectionPoint);
-        }
-    }
-    
-    protected void addImplicitComponentForInjectionPoint(InjectionPoint injectionPoint)
-    {
-        if(!WebBeansUtil.checkObtainsInjectionPointConditions(injectionPoint))
-        {
-            EventUtil.checkObservableInjectionPointConditions(injectionPoint);
-        }        
-    }
-
     protected abstract B createBean(Class<T> returnType);
 
     /**
@@ -270,21 +237,7 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
      */
     public B getBean()
     {
-        B bean = createBean(getBeanType());
-        for (Iterator<AnnotatedMember<? super T>> memberIterator = injectionPoints.iterator(); memberIterator.hasNext();)
-        {
-            AnnotatedMember<? super T> member = memberIterator.next();
-            if (member instanceof AnnotatedField)
-            {
-                addFieldInjectionPointMetaData((OwbBean<T>)bean, (AnnotatedField<?>) member);
-            }
-            else if (member instanceof AnnotatedMethod)
-            {
-                addMethodInjectionPointMetaData((OwbBean<T>)bean, (AnnotatedMethod<?>) member);
-            }
-        }
-
-        return bean;
+        return createBean(getBeanType());
     }
 
     protected A getAnnotated()

@@ -975,7 +975,6 @@ public class BeansDeployer
                         // add them one after the other to enable serialization handling et al
                         beanManager.addBean(producerMethod);
                     }
-                    managedBeanCreator.validateDisposalMethods(bean);//Define disposal method after adding producers
                     for (ProducerFieldBean<?> producerField : producerFields)
                     {
                         // add them one after the other to enable serialization handling et al

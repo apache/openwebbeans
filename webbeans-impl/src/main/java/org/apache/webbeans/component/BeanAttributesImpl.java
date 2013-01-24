@@ -39,6 +39,9 @@ public class BeanAttributesImpl<T>
     private final Set<Class<? extends Annotation>> stereotypes;
     private final boolean alternative;
 
+    /**
+     * TODO This constructor can be removed, when we move to CDI 1.1 since {@link Bean} extends BeanAttributes.
+     */
     public BeanAttributesImpl(Bean<T> bean)
     {
         this(bean.getTypes(),

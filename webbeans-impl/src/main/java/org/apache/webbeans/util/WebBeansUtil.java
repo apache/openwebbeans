@@ -1616,8 +1616,6 @@ public final class WebBeansUtil
             ((InjectionTargetBean) managedBean).defineBeanInterceptorStack();
         }
 
-        managedBeanCreator.validateDisposalMethods(managedBean);//Define disposal method after adding producers
-
         return managedBean;
     }
 
@@ -1752,9 +1750,6 @@ public final class WebBeansUtil
         {
             ((InjectionTargetBean) managedBean).defineBeanInterceptorStack();
         }
-
-        managedBeanCreator.validateDisposalMethods(managedBean); //Define disposal method after adding producers
-
         return managedBean;
     }
 

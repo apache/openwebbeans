@@ -119,7 +119,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     /**
      * {@inheritDoc}
      */
-    public void defineTypes()
+    protected void defineTypes()
     {
         Class<?> baseType = ClassUtil.getClass(annotated.getBaseType());
         if (baseType.isArray())
@@ -147,7 +147,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     /**
      * {@inheritDoc}
      */
-    public void defineQualifiers()
+    protected void defineQualifiers()
     {
         HashSet<Class<? extends Annotation>> qualifiedTypes = new HashSet<Class<? extends Annotation>>();
         if (annotated.isAnnotationPresent(Specializes.class))
@@ -434,15 +434,17 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     
     protected abstract Annotated getSuperAnnotated();
 
-    public void defineNullable()
+    protected abstract void defineNullable();
+    
+    protected void defineNullable(boolean nullable)
     {
-        nullable = false;
+        this.nullable = nullable;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void defineStereotypes()
+    protected void defineStereotypes()
     {
         Annotation[] anns = AnnotationUtil.asArray(annotated.getAnnotations());
         final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
@@ -458,7 +460,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         }
     }
     
-    public void defineAlternative()
+    protected void defineAlternative()
     {
         alternative = false;
     }
@@ -526,6 +528,12 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
                 }
             }
         }
+        
+        @Override
+        protected void defineNullable()
+        {
+            defineNullable(false);
+        }
 
         @Override
         protected AnnotatedType<? super C> getSuperAnnotated()
@@ -557,6 +565,12 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         protected void defineName()
         {
             defineName(getAnnotated(), WebBeansUtil.getProducerDefaultName(getAnnotated().getJavaMember().getName()));
+        }
+        
+        @Override
+        protected void defineNullable()
+        {
+            defineNullable(!getAnnotated().getJavaMember().getType().isPrimitive());
         }
 
         @Override
@@ -610,6 +624,12 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
                             + " may not explicitly declare a bean name");
                 }
             }
+        }
+        
+        @Override
+        protected void defineNullable()
+        {
+            defineNullable(!getAnnotated().getJavaMember().getReturnType().isPrimitive());
         }
 
         @Override

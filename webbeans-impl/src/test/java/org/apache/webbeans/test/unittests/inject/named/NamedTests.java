@@ -23,12 +23,16 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Set;
 
+import javax.enterprise.inject.spi.AnnotatedConstructor;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Named;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.inject.named.NamedFieldWithNamedValue;
@@ -60,8 +64,11 @@ public class NamedTests extends TestContext
         Bean<NamedFieldWithNamedValue> bean = defineManagedBean(NamedFieldWithNamedValue.class);
         Field field = NamedFieldWithNamedValue.class.getDeclaredField("paymentProcessor");
 
+        AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
+        AnnotatedType<NamedFieldWithNamedValue> annotatedType = (AnnotatedType<NamedFieldWithNamedValue>) annotatedElementFactory.getAnnotatedType(field.getDeclaringClass());
+        AnnotatedField<NamedFieldWithNamedValue> annotatedField = annotatedElementFactory.newAnnotatedField(field, annotatedType);
         InjectionPoint point =
-            WebBeansContext.getInstance().getInjectionPointFactory().getFieldInjectionPointData(bean, field);
+            WebBeansContext.getInstance().getInjectionPointFactory().buildInjectionPoint(bean, annotatedField);
         
         WebBeansUtil.checkInjectionPointNamedQualifier(point);
         
@@ -76,8 +83,11 @@ public class NamedTests extends TestContext
         Bean<NamedFieldWithoutNamedValue> bean = defineManagedBean(NamedFieldWithoutNamedValue.class);
         Field field = NamedFieldWithoutNamedValue.class.getDeclaredField("paymentProcessor");
 
+        AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
+        AnnotatedType<NamedFieldWithNamedValue> annotatedType = (AnnotatedType<NamedFieldWithNamedValue>) annotatedElementFactory.getAnnotatedType(field.getDeclaringClass());
+        AnnotatedField<NamedFieldWithNamedValue> annotatedField = annotatedElementFactory.newAnnotatedField(field, annotatedType);
         InjectionPoint point =
-            WebBeansContext.getInstance().getInjectionPointFactory().getFieldInjectionPointData(bean, field);
+            WebBeansContext.getInstance().getInjectionPointFactory().buildInjectionPoint(bean, annotatedField);
         
         WebBeansUtil.checkInjectionPointNamedQualifier(point);
         
@@ -91,11 +101,13 @@ public class NamedTests extends TestContext
     public void testOtherWithNamedValue() throws Exception
     {
         Bean<NamedOtherWithNamedValue> bean = defineManagedBean(NamedOtherWithNamedValue.class);
-        Constructor<?> constructor = NamedOtherWithNamedValue.class.getDeclaredConstructor(new Class<?>[]{IPayment.class});
+        Constructor<NamedOtherWithNamedValue> constructor = NamedOtherWithNamedValue.class.getDeclaredConstructor(new Class<?>[]{IPayment.class});
 
+        AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
+        AnnotatedType<NamedOtherWithNamedValue> annotatedType = annotatedElementFactory.getAnnotatedType(constructor.getDeclaringClass());
+        AnnotatedConstructor<NamedOtherWithNamedValue> annotatedConstructor = annotatedElementFactory.newAnnotatedConstructor(constructor, annotatedType);
         InjectionPoint point =
-            WebBeansContext.getInstance().getInjectionPointFactory().getConstructorInjectionPointData(bean,
-                                                                                                       constructor).get(0);
+            WebBeansContext.getInstance().getInjectionPointFactory().buildInjectionPoints(bean, annotatedConstructor).get(0);
         
         WebBeansUtil.checkInjectionPointNamedQualifier(point);
         
@@ -109,11 +121,13 @@ public class NamedTests extends TestContext
     public void testOtherWithoutNamedValue() throws Exception
     {
         Bean<NamedOtherWithoutNamedValue> bean = defineManagedBean(NamedOtherWithoutNamedValue.class);
-        Constructor<?> constructor = NamedOtherWithoutNamedValue.class.getDeclaredConstructor(new Class<?>[]{IPayment.class});
+        Constructor<NamedOtherWithoutNamedValue> constructor = NamedOtherWithoutNamedValue.class.getDeclaredConstructor(new Class<?>[]{IPayment.class});
 
+        AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
+        AnnotatedType<NamedOtherWithoutNamedValue> annotatedType = annotatedElementFactory.getAnnotatedType(constructor.getDeclaringClass());
+        AnnotatedConstructor<NamedOtherWithoutNamedValue> annotatedConstructor = annotatedElementFactory.newAnnotatedConstructor(constructor, annotatedType);
         InjectionPoint point =
-            WebBeansContext.getInstance().getInjectionPointFactory().getConstructorInjectionPointData(bean,
-                                                                                                       constructor).get(0);
+            WebBeansContext.getInstance().getInjectionPointFactory().buildInjectionPoints(bean, annotatedConstructor).get(0);
                 
         String value = qulifier(point);
         

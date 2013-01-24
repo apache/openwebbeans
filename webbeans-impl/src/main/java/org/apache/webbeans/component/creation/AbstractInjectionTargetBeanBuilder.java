@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.component.creation;
 
-import static org.apache.webbeans.util.InjectionExceptionUtil.throwUnsatisfiedResolutionException;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -45,11 +43,9 @@ import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.Producer;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -61,11 +57,9 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.component.ResourceProvider;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.ProducerFieldProducer;
-import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.portable.ProviderBasedProxyProducer;
 import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -183,105 +177,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                 }
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void validateDisposalMethods(InjectionTargetBean<T> bean)
-    {
-        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-        Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();    
-        ProducerMethodBean<?> previous = null;
-        for (InjectionPoint injectionPoint : bean.getInjectionPoints())
-        {
-            if (injectionPoint.getAnnotated().isAnnotationPresent(Disposes.class))
-            {
-                AnnotatedParameter<T> annotatedParameter = (AnnotatedParameter<T>) injectionPoint.getAnnotated();
-                AnnotatedMethod<T> annotatedMethod = (AnnotatedMethod<T>) annotatedParameter.getDeclaringCallable();
-                Method declaredMethod = annotatedMethod.getJavaMember();
-                checkProducerMethodDisposal(annotatedMethod);
-                Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Disposes.class);
-                Annotation[] annot = annotationManager.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
-
-                InjectionResolver injectionResolver = webBeansContext.getBeanManagerImpl().getInjectionResolver();
-
-                Set<Bean<?>> set = injectionResolver.implResolveByType(type, annot);
-                if (set.isEmpty())
-                {
-                    throwUnsatisfiedResolutionException(type, declaredMethod, annot);
-                }
-                
-                Bean<?> foundBean = set.iterator().next();
-                ProducerMethodBean<?> pr = null;
-
-                if (foundBean == null || !(foundBean instanceof ProducerMethodBean))
-                {
-                    throwUnsatisfiedResolutionException(annotatedMethod.getDeclaringType().getJavaClass(), declaredMethod, annot);
-                }
-
-                pr = (ProducerMethodBean<?>) foundBean;
-
-                if (previous == null)
-                {
-                    previous = pr;
-                }
-                else
-                {
-                    // multiple same producer
-                    if (previous.equals(pr))
-                    {
-                        throw new WebBeansConfigurationException("There are multiple disposal method for the producer method : " + pr.getCreatorMethod().getName() + " in class : "
-                                                                 + annotatedMethod.getDeclaringType().getJavaClass());
-                    }
-                }
-
-                Method producerMethod = pr.getCreatorMethod();
-                //Disposer methods and producer methods must be in the same class
-                if(!producerMethod.getDeclaringClass().getName().equals(declaredMethod.getDeclaringClass().getName()))
-                {
-                    throw new WebBeansConfigurationException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : "
-                                                             + annotatedMethod.getDeclaringType().getJavaClass() + " must be in the same class!");
-                }
-                
-                pr.setDisposalMethod(declaredMethod);
-                Producer<?> producer = pr.getProducer();
-                if (producer instanceof ProducerMethodProducer)
-                {
-                    ((ProducerMethodProducer)producer).setDisposalMethod(annotatedMethod);
-                }
-            }
-        }
-    }
-
-    /**
-     * CheckProducerMethodDisposal.
-     * @param annotatedMethod disposal method
-     */
-    private void checkProducerMethodDisposal(AnnotatedMethod<T> annotatedMethod)
-    {
-        List<AnnotatedParameter<T>> parameters = annotatedMethod.getParameters();
-        boolean found = false;
-        for(AnnotatedParameter<T> parameter : parameters)
-        {
-            if(parameter.isAnnotationPresent(Disposes.class))
-            {
-                if(found)
-                {
-                    throw new WebBeansConfigurationException("Error in definining disposal method of annotated method : " + annotatedMethod
-                            + ". Multiple disposes annotation.");
-                }
-                found = true;
-            }
-        }
-        
-        if(annotatedMethod.isAnnotationPresent(Inject.class) 
-                || AnnotationUtil.hasAnnotatedMethodParameterAnnotation(annotatedMethod, Observes.class) 
-                || annotatedMethod.isAnnotationPresent(Produces.class))
-        {
-            throw new WebBeansConfigurationException("Error in definining disposal method of annotated method : " + annotatedMethod
-                    + ". Disposal methods  can not be annotated with" + " @Initializer/@Destructor/@Produces annotation or has a parameter annotated with @Observes.");
-        }        
     }
 
     /**
@@ -565,11 +460,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                     ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
                     producerFieldBean.setProducer(new ProducerFieldProducer(bean, annotatedField, producerFieldBean.getInjectionPoints()));
                     producerFieldBean.setProducerField(field);
-                    
-                    if (producerFieldBean.getReturnType().isPrimitive())
-                    {
-                        producerFieldBean.setNullable(false);
-                    }                    
 
                     webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean, producerFieldBean, anns);
                     WebBeansUtil.checkProducerGenericType(producerFieldBean, annotatedField.getJavaMember());
@@ -621,10 +511,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                 ProducerMethodProducerBuilder producerBuilder = new ProducerMethodProducerBuilder(producerMethodBean);
                 producerMethodBean.setProducer(producerBuilder.build(annotatedMethod));
                 producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
-                if (ClassUtil.getClass(annotatedMethod.getBaseType()).isPrimitive())
-                {
-                    producerMethodBean.setNullable(false);
-                }
                 
                 webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
                         producerMethodBean,
@@ -747,5 +633,16 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
     protected Class<T> getBeanType()
     {
         return getAnnotated().getJavaClass();
+    }
+    
+    @Override
+    public I getBean()
+    {
+        I bean = super.getBean();
+        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, getAnnotated()))
+        {
+            bean.addInjectionPoint(injectionPoint);
+        }
+        return bean;
     }
 }

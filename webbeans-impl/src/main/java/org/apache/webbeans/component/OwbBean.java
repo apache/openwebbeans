@@ -82,12 +82,6 @@ public interface OwbBean<T> extends Bean<T>
     public Class<T> getReturnType();
 
     /**
-     * Set nullable flag.
-     * @param nullable flag
-     */
-    public void setNullable(boolean nullable);
-    
-    /**
      * Set specialized flag.
      * @param specialized flag
      */

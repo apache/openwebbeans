@@ -47,6 +47,7 @@ public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?
     }
 
     protected abstract P createBean(InjectionTargetBean<?> parent, Class<T> beanClass);
+
     @Override
     protected P createBean(Class<T> beanClass)
     {

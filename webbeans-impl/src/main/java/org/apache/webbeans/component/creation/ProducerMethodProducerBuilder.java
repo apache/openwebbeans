@@ -23,15 +23,19 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Disposes;
+import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -119,20 +123,57 @@ public class ProducerMethodProducerBuilder<T, P>
                         {
                             continue;
                         }
+                        if (disposalMethod != null)
+                        {
+                            throw new WebBeansConfigurationException("There are multiple disposal method for the producer method : "
+                                    + disposalMethod.getJavaMember().getName() + " in class : "
+                                    + annotatedMethod.getDeclaringType().getJavaClass());
+                        }
+                        if (!annotatedMethod.getDeclaringType().equals(producerMethod.getDeclaringType()))
+                        {
+                            throw new WebBeansConfigurationException("Producer method component of the disposal method : "
+                                    + annotatedMethod.getJavaMember().getName() + " in class : "
+                                    + annotatedMethod.getDeclaringType().getJavaClass() + " must be in the same class!");
+                        }
+                        checkDisposalMethod(annotatedMethod);
                         disposalMethod = (AnnotatedMethod<P>)annotatedMethod;
-                        break;
                     }
                 }
             }
         }
     }    
 
+    private void checkDisposalMethod(AnnotatedMethod<? super P> annotatedMethod)
+    {
+        boolean found = false;
+        for (AnnotatedParameter<?> parameter : annotatedMethod.getParameters())
+        {
+            if(parameter.isAnnotationPresent(Disposes.class))
+            {
+                if(found)
+                {
+                    throw new WebBeansConfigurationException("Error in definining disposal method of annotated method : " + annotatedMethod
+                            + ". Multiple disposes annotation.");
+                }
+                found = true;
+            }
+        }
+        
+        if(annotatedMethod.isAnnotationPresent(Inject.class) 
+                || AnnotationUtil.hasAnnotatedMethodParameterAnnotation(annotatedMethod, Observes.class) 
+                || annotatedMethod.isAnnotationPresent(Produces.class))
+        {
+            throw new WebBeansConfigurationException("Error in definining disposal method of annotated method : " + annotatedMethod
+                    + ". Disposal methods  can not be annotated with" + " @Initializer/@Destructor/@Produces annotation or has a parameter annotated with @Observes.");
+        }        
+    }
+
     private void defineInjectionPoints()
     {
-        injectionPoints = new HashSet<InjectionPoint>(bean.getWebBeansContext().getInjectionPointFactory().getMethodInjectionPointData(bean, producerMethod));
+        injectionPoints = new HashSet<InjectionPoint>(bean.getWebBeansContext().getInjectionPointFactory().buildInjectionPoints(bean, producerMethod));
         if (disposalMethod != null)
         {
-            injectionPoints.addAll(bean.getWebBeansContext().getInjectionPointFactory().getMethodInjectionPointData(bean, disposalMethod));
+            injectionPoints.addAll(bean.getWebBeansContext().getInjectionPointFactory().buildInjectionPoints(bean, disposalMethod));
         }
     }
 }

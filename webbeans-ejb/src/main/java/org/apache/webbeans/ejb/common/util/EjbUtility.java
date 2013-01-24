@@ -172,7 +172,6 @@ public final class EjbUtility
         // Let the plugin handle adding the new bean instance as it knows more about its EJB Bean
         
         manager.getBeans().addAll(producerMethodBeans);
-        ejbBeanCreator.validateDisposalMethods(ejbBean);
         manager.getBeans().addAll(producerFieldBeans);
     }
     
@@ -251,8 +250,6 @@ public final class EjbUtility
 
         manager.getBeans().addAll(producerMethodBeans);
         manager.getBeans().addAll(producerFieldBeans);
-
-        ejbBeanCreator.validateDisposalMethods(ejbBean);
     }
 
     private static void checkProducerMethods(Set<ProducerMethodBean<?>> producerMethodBeans, BaseEjbBean<?> bean)

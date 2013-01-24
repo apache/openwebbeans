@@ -25,7 +25,6 @@ import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
@@ -44,7 +43,6 @@ import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -90,13 +88,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
         if (constructor == null)
         {
             return;
-        }
-        InjectionPointFactory injectionPointFactory = webBeansContext.getInjectionPointFactory();
-        List<InjectionPoint> injectionPoints = injectionPointFactory.getConstructorInjectionPointData(bean, constructor);
-        for (InjectionPoint injectionPoint : injectionPoints)
-        {
-            addImplicitComponentForInjectionPoint(injectionPoint);
-            bean.addInjectionPoint(injectionPoint);
         }
         bean.setConstructor(constructor.getJavaMember());
     }

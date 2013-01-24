@@ -48,7 +48,6 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AnnotatedConstructorImpl;
 import org.apache.webbeans.portable.InjectionTargetImpl;
@@ -88,7 +87,7 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
         ignoredDecoratorInterfaces = getIgnoredDecoratorInterfaces();
     }
 
-    private <T> Set<String> getIgnoredDecoratorInterfaces()
+    private Set<String> getIgnoredDecoratorInterfaces()
     {
         Set<String> result = new HashSet<String>(webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces());
         return result;
@@ -100,23 +99,6 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
         constructor = getBeanConstructor();
     }
 
-
-    protected void addConstructorInjectionPointMetaData(DecoratorBean<T> bean)
-    {
-        if (constructor == null)
-        {
-            return;
-        }
-        InjectionPointFactory injectionPointFactory = webBeansContext.getInjectionPointFactory();
-        List<InjectionPoint> injectionPoints = injectionPointFactory.getConstructorInjectionPointData(bean, constructor);
-        for (InjectionPoint injectionPoint : injectionPoints)
-        {
-            addImplicitComponentForInjectionPoint(injectionPoint);
-            bean.addInjectionPoint(injectionPoint);
-        }
-        bean.setConstructor(constructor.getJavaMember());
-    }
-
     /**
      * If this method returns <code>false</code> the {@link #getBean()} method must not get called.
      *
@@ -126,7 +108,6 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
     {
         return webBeansContext.getDecoratorsManager().isDecoratorEnabled(getBeanType());
     }
-
 
     protected void checkDecoratorConditions()
     {
@@ -313,8 +294,6 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
     protected DecoratorBean<T> createBean(Class<T> beanClass, boolean enabled)
     {
         DecoratorBean<T> decorator = new DecoratorBean<T>(webBeansContext, WebBeansType.MANAGED, getAnnotated(), getBeanAttributes(), beanClass);
-        addConstructorInjectionPointMetaData(decorator);
-
         decorator.setEnabled(enabled);
         return decorator;
     }
