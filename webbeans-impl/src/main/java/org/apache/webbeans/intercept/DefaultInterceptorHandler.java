@@ -30,9 +30,20 @@ import org.apache.webbeans.util.ExceptionUtil;
 
 public class DefaultInterceptorHandler<T> implements InterceptorHandler
 {
-
+    /**
+     * The native contextual instance target instance.
+     * This is the unproxies and undecorated instance.
+     * It e.g. get's used for direct event delivery to private Observer methods.
+     */
     private T target;
+
+    /**
+     * The instance the Interceptors get applied on.
+     * If there is no Decorator involved, then this is the same like {@link #target}.
+     * For decorated beans this will point to the outermost Decorator instance.
+     */
     private T delegate;
+
     private Map<Method, List<Interceptor<?>>> interceptors;
     private Map<Interceptor<?>, ?> instances;
 
