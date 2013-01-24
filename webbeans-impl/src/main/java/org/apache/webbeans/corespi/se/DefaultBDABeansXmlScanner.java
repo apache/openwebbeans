@@ -45,24 +45,24 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
      * Maps BDA beans.xml file to the set of interceptors defined in the
      * beans.xml
      */
-    private Map<String, Set<Class<?>>> interceptorsPerBDA;
+    private final Map<String, Set<Class<?>>> interceptorsPerBDA;
 
     /**
      * Maps BDA beans.xml file to the set of decorators defined in the beans.xml
      */
-    private Map<String, Set<Class<?>>> decoratorsPerBDA;
+    private final Map<String, Set<Class<?>>> decoratorsPerBDA;
 
     /**
      * Maps BDA beans.xml file to the set of alternatives defined in the
      * beans.xml
      */
-    private Map<String, Set<Class<?>>> alternativesPerBDA;
+    private final Map<String, Set<Class<?>>> alternativesPerBDA;
 
     /**
      * Maps BDA beans.xml file to the set of stereotypes defined in the
      * beans.xml
      */
-    private Map<String, Set<Class<? extends Annotation>>> stereotypesPerBDA;
+    private final Map<String, Set<Class<? extends Annotation>>> stereotypesPerBDA;
 
     public DefaultBDABeansXmlScanner()
     {
