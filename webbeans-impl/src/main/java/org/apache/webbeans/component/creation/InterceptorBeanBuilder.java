@@ -122,8 +122,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
     {
         defineConstructor();
         defineInterceptorMethods();
-        defineInjectedMethods();
-        defineInjectedFields();
     }
 
     /**

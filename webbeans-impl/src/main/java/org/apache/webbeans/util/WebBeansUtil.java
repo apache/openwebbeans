@@ -436,8 +436,6 @@ public final class WebBeansUtil
         BeanAttributesImpl<T> newBeanAttributes = new BeanAttributesImpl<T>(defaultBeanAttributes.getTypes(), Collections.<Annotation>singleton(new NewLiteral(type)));
         // TODO replace this by InjectionPointBuilder
         ManagedBeanBuilder<T, ManagedBean<T>> beanBuilder = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, newBeanAttributes);
-        beanBuilder.defineInjectedFields();
-        beanBuilder.defineInjectedMethods();
         beanBuilder.defineConstructor();
         NewManagedBean<T> newBean
             = new NewManagedBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, newBeanAttributes, type, beanBuilder.getBean().getInjectionPoints());
@@ -1603,9 +1601,6 @@ public final class WebBeansUtil
         setInjectionTargetBeanEnableFlag(managedBeanCreator.getBean());
         managedBeanCreator.checkCreateConditions();
         managedBeanCreator.defineConstructor();
-        managedBeanCreator.defineInjectedFields();
-        managedBeanCreator.defineInjectedMethods();
-        managedBeanCreator.defineDisposalMethods();
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
         managedBeanCreator.defineProducerMethods(managedBean);
         managedBeanCreator.defineProducerFields(managedBean);
@@ -1738,9 +1733,6 @@ public final class WebBeansUtil
         managedBeanCreator.defineEnabled();
         managedBeanCreator.checkCreateConditions();
         managedBeanCreator.defineConstructor();
-        managedBeanCreator.defineInjectedFields();
-        managedBeanCreator.defineInjectedMethods();
-        managedBeanCreator.defineDisposalMethods();
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
         managedBeanCreator.defineProducerMethods(managedBean);
         managedBeanCreator.defineProducerFields(managedBean);

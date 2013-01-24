@@ -96,9 +96,6 @@ public final class EjbUtility
         Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods(ejbBean);        
         checkProducerMethods(producerMethodBeans, ejbBean);
         Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields(ejbBean);           
-        ejbBeanCreator.defineInjectedFields();
-        ejbBeanCreator.defineInjectedMethods();
-        ejbBeanCreator.defineDisposalMethods();
         Set<ObserverMethod<?>> observerMethods = ejbBeanCreator.defineObserverMethods(ejbBean);        
         
         //Fires ProcessInjectionTarget

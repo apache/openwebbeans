@@ -164,8 +164,6 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
         checkDecoratorConditions();
 
         defineConstructor();
-        defineInjectedMethods();
-        defineInjectedFields();
 
         defineDecoratedTypes();
     }

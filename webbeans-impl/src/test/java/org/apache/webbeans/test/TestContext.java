@@ -528,9 +528,6 @@ public abstract class TestContext implements ITestContext
         managedBeanCreator.checkCreateConditions();
         managedBeanCreator.defineEnabled();
         managedBeanCreator.defineConstructor();
-        managedBeanCreator.defineInjectedFields();
-        managedBeanCreator.defineInjectedMethods();
-        managedBeanCreator.defineDisposalMethods();
         ManagedBean<T> component = managedBeanCreator.getBean();
         List<AnnotatedMethod<?>> postConstructMethods
             = webBeansContext.getInterceptorUtil().getLifecycleMethods(component.getAnnotatedType(), PostConstruct.class, true);

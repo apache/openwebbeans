@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +48,6 @@ import javax.enterprise.inject.spi.ObserverMethod;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
@@ -163,155 +161,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
         return result;
     }
 
-    public void defineDisposalMethods()
-    {
-        Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();
-        
-        for (AnnotatedMethod<? super T> annotatedMethod : annotatedMethods)
-        {            
-            for (AnnotatedParameter<? super T> annotatedParameter : annotatedMethod.getParameters())
-            {
-                if (annotatedParameter.isAnnotationPresent(Disposes.class))
-                {
-                    addInjectionPoint(annotatedMethod);
-                }
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void defineInjectedFields()
-    {
-        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-
-        Set<AnnotatedField<? super T>> annotatedFields = getAnnotated().getFields();
-        for(AnnotatedField<? super T> annotatedField: annotatedFields)
-        {
-            if(Modifier.isPublic(annotatedField.getJavaMember().getModifiers()) && !annotatedField.isStatic())
-            {
-                if(webBeansContext.getBeanManagerImpl().isNormalScope(getBeanAttributes().getScope()))
-                {
-                    throw new WebBeansConfigurationException("If bean has a public field, bean scope must be defined as @Scope. Bean is : "
-                            + getBeanType().getName());
-                }
-            }                
-            
-            if(!annotatedField.isAnnotationPresent(Inject.class))
-            {
-                continue;
-            }
-
-            if (annotatedField.isAnnotationPresent(Produces.class))
-            {
-                throw new WebBeansConfigurationException("Injection fields can not be annotated with @Produces");
-            }
-            
-            Field field = annotatedField.getJavaMember();
-            Annotation[] anns = AnnotationUtil.asArray(annotatedField.getAnnotations());
-            if(Modifier.isPublic(field.getModifiers()))
-            {
-                if(!getBeanAttributes().getScope().equals(Dependent.class))
-                {
-                    throw new WebBeansConfigurationException("Error in annotated field : " + annotatedField
-                                                    +" while definining injected field. If bean has a public modifier injection point, bean scope must be defined as @Dependent");
-                }
-            }
-
-            Annotation[] qualifierAnns = annotationManager.getQualifierAnnotations(anns);
-
-            if (qualifierAnns.length > 0)
-            {
-                if (qualifierAnns.length > 0)
-                {
-                    annotationManager.checkForNewQualifierForDeployment(annotatedField.getBaseType(), annotatedField.getDeclaringType().getJavaClass(), field.getName(), anns);
-                }
-
-                int mod = field.getModifiers();
-                
-                if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod))
-                {
-                    addInjectionPoint(annotatedField);
-                }
-            }                                    
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void defineInjectedMethods()
-    {
-        Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();
-        
-        for (AnnotatedMethod<? super T> annotatedMethod : annotatedMethods)
-        {            
-            boolean isInitializer = annotatedMethod.isAnnotationPresent(Inject.class);            
-
-            if (isInitializer)
-            {
-                //Do not support static
-                if(annotatedMethod.isStatic())
-                {
-                    continue;
-                }
-                
-                checkForInjectedInitializerMethod((AnnotatedMethod<T>)annotatedMethod);
-            }
-            else
-            {
-                continue;
-            }
-
-            Method method = annotatedMethod.getJavaMember();
-            
-            if (!Modifier.isStatic(method.getModifiers()))
-            {
-                addInjectionPoint(annotatedMethod);
-            }
-        }
-    }
-
-    /**
-     * add the definitions for a &#x0040;Initializer method.
-     */
-    private void checkForInjectedInitializerMethod(AnnotatedMethod<T> annotatedMethod)
-    {
-        Method method = annotatedMethod.getJavaMember();
-        
-        TypeVariable<?>[] args = method.getTypeParameters();
-        if(args.length > 0)
-        {
-            throw new WebBeansConfigurationException("Error in defining injected methods in annotated method : " + annotatedMethod+ 
-                    ". Reason : Initializer methods must not be generic.");
-        }
-        
-        if (annotatedMethod.isAnnotationPresent(Produces.class))
-        {
-            throw new WebBeansConfigurationException("Error in defining injected methods in annotated method : " + annotatedMethod+ 
-            ". Reason : Initializer method can not be annotated with @Produces.");
-        
-        }
-
-        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-
-        List<AnnotatedParameter<T>> annotatedParameters = annotatedMethod.getParameters();
-        for (AnnotatedParameter<T> annotatedParameter : annotatedParameters)
-        {
-            annotationManager.checkForNewQualifierForDeployment(annotatedParameter.getBaseType(), annotatedMethod.getDeclaringType().getJavaClass(),
-                    method.getName(), AnnotationUtil.asArray(annotatedParameter.getAnnotations()));
-
-            if(annotatedParameter.isAnnotationPresent(Disposes.class) ||
-                    annotatedParameter.isAnnotationPresent(Observes.class))
-            {
-                throw new WebBeansConfigurationException("Error in defining injected methods in annotated method : " + annotatedMethod+ 
-                ". Reason : Initializer method parameters does not contain @Observes or @Dispose annotations.");
-                
-            }
-        }
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -348,9 +197,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                          throw new WebBeansConfigurationException("Dependent Bean : " + getBeanType() + " can not define observer method with @Receiver = IF_EXIST");
                      }
                 }
-                
-                //Add injection point data
-                addInjectionPoint(annotatedMethod);
                 
                 //Looking for ObserverMethod
                 ObserverMethod<?> definedObserver = webBeansContext.getBeanManagerImpl().getNotificationManager().getObservableMethodForAnnotatedMethod(annotatedMethod, bean);
@@ -501,7 +347,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                 
                 producerMethodBeanCreator.checkUnproxiableApiType();
 
-                producerMethodBeanCreator.addInjectionPoint(annotatedMethod);
                 ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
                 
                 if(specialize)

@@ -23,11 +23,8 @@ import static org.apache.webbeans.util.InjectionExceptionUtil.throwUnproxyableRe
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
@@ -51,8 +48,6 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
     private WebBeansContext webBeansContext;
 
     private BeanAttributesImpl<T> beanAttributes;
-
-    private Set<AnnotatedMember<? super T>> injectionPoints = new HashSet<AnnotatedMember<? super T>>();
 
     /**
      * Creates a bean instance.
@@ -80,19 +75,6 @@ public abstract class AbstractBeanBuilder<T, A extends Annotated, B extends Bean
     public void checkCreateConditions()
     {
         //Sub-class can override this
-    }
-
-    protected void addInjectionPoint(AnnotatedMember<? super T> member)
-    {
-        injectionPoints.add(member);
-    }
-
-    /**
-     * @return the AnnotatedMember of all found injection points <i>before</i> InjectionPoint will be constructed from it.
-     */
-    protected Set<AnnotatedMember<? super T>> getInjectionPointsAnnotated()
-    {
-        return injectionPoints;
     }
 
     /**

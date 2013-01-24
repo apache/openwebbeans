@@ -89,9 +89,6 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
         checkCreateConditions();
 
         defineConstructor();
-        defineInjectedFields();
-        defineInjectedMethods();
-        defineDisposalMethods();
 
         return getBean();
     }
