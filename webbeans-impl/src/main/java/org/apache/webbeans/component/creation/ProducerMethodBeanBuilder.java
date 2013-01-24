@@ -85,7 +85,7 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
     
     protected AnnotatedMethod<?> getSuperAnnotated()
     {
-        AnnotatedMethod<?> thisMethod = getAnnotated();
+        AnnotatedMethod<?> thisMethod = annotatedMember;
         for (AnnotatedMethod<?> superMethod: getSuperType().getMethods())
         {
             List<AnnotatedParameter<?>> thisParameters = (List<AnnotatedParameter<?>>)(List<?>)thisMethod.getParameters();
@@ -113,16 +113,15 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
     }
 
     @Override
-    protected Class<T> getBeanType()
-    {
-        return (Class<T>) getAnnotated().getJavaMember().getReturnType();
-    }
-
-    @Override
     protected ProducerMethodBean<T> createBean(InjectionTargetBean<?> parent, Class<T> beanClass)
     {
-        ProducerMethodBean<T> producerMethodBean = new ProducerMethodBean<T>(parent, getBeanAttributes(), beanClass);
+        ProducerMethodBean<T> producerMethodBean = new ProducerMethodBean<T>(parent, beanAttributes, beanClass);
         producerMethodBean.setSpecializedBean(specialized);
         return producerMethodBean;
+    }
+    
+    public ProducerMethodBean<T> getBean()
+    {
+        return createBean((Class<T>) annotatedMember.getJavaMember().getReturnType());
     }
 }

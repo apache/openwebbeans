@@ -24,21 +24,28 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.util.Asserts;
 
-public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?>, P extends AbstractProducerBean<T>> extends AbstractBeanBuilder<T, A, P>
+public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?>, P extends AbstractProducerBean<T>>
 {
 
-    private InjectionTargetBean<?> parent;
+    protected final InjectionTargetBean<?> parent;
+    protected final A annotatedMember;
+    protected final BeanAttributesImpl<T> beanAttributes;
 
     public AbstractProducerBeanBuilder(InjectionTargetBean<?> parent, A annotated, BeanAttributesImpl<T> beanAttributes)
     {
-        super(parent.getWebBeansContext(), annotated, beanAttributes);
+        Asserts.assertNotNull(parent, "webBeansContext may not be null");
+        Asserts.assertNotNull(annotated, "annotated may not be null");
+        Asserts.assertNotNull(beanAttributes, "beanAttributes may not be null");
         this.parent = parent;
+        this.annotatedMember = annotated;
+        this.beanAttributes = beanAttributes;
     }
 
     protected AnnotatedType<?> getSuperType()
     {
-        Class<?> superclass = getAnnotated().getDeclaringType().getJavaClass().getSuperclass();
+        Class<?> superclass = annotatedMember.getDeclaringType().getJavaClass().getSuperclass();
         if (superclass == null)
         {
             return null;
@@ -48,7 +55,6 @@ public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?
 
     protected abstract P createBean(InjectionTargetBean<?> parent, Class<T> beanClass);
 
-    @Override
     protected P createBean(Class<T> beanClass)
     {
         return createBean(parent, beanClass);

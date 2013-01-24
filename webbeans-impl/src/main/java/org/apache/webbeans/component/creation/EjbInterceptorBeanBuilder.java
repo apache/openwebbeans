@@ -55,6 +55,6 @@ public class EjbInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, EjbI
     @Override
     protected EjbInterceptorBean<T> createBean(Class<T> beanClass, boolean enabled, Map<InterceptionType, Method[]> interceptionMethods)
     {
-        return new EjbInterceptorBean<T>(webBeansContext, getAnnotated(), getBeanAttributes(), beanClass, interceptionMethods);
+        return new EjbInterceptorBean<T>(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods);
     }
 }

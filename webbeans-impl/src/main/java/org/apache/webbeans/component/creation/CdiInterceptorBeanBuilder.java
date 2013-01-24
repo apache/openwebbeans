@@ -55,15 +55,15 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
 
     public boolean isInterceptorEnabled()
     {
-        return webBeansContext.getInterceptorsManager().isInterceptorClassEnabled(getBeanType());
+        return webBeansContext.getInterceptorsManager().isInterceptorClassEnabled(annotatedType.getJavaClass());
     }
 
     protected void defineInterceptorBindings()
     {
-        Annotation[] bindings = webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(getAnnotated().getAnnotations());
+        Annotation[] bindings = webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(annotatedType.getAnnotations());
         if (bindings == null || bindings.length == 0)
         {
-            throw new WebBeansConfigurationException("WebBeans Interceptor class : " + getBeanType()
+            throw new WebBeansConfigurationException("WebBeans Interceptor class : " + annotatedType.getJavaClass()
                     + " must have at least one @InterceptorBinding annotation");
         }
 
@@ -73,6 +73,6 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
     @Override
     protected CdiInterceptorBean<T> createBean(Class<T> beanClass, boolean enabled, Map<InterceptionType, Method[]> interceptionMethods)
     {
-        return new CdiInterceptorBean<T>(webBeansContext, getAnnotated(), getBeanAttributes(), beanClass, interceptorBindings, enabled, interceptionMethods);
+        return new CdiInterceptorBean<T>(webBeansContext, annotatedType, beanAttributes, beanClass, interceptorBindings, enabled, interceptionMethods);
     }
 }

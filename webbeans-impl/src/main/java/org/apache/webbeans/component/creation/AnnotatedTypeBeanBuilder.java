@@ -51,7 +51,7 @@ public class AnnotatedTypeBeanBuilder<T> extends ManagedBeanBuilder<T, ManagedBe
         catch(Exception e)
         {
             // if no constructor could be found, we just leave the empty set.
-            logger.log(Level.INFO, OWBLogConst.WARN_0012, getAnnotated().getJavaClass());
+            logger.log(Level.INFO, OWBLogConst.WARN_0012, annotatedType.getJavaClass());
         }
     }
 }

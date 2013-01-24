@@ -85,8 +85,6 @@ public final class EjbUtility
                 throw new UnsupportedOperationException("Please implement ejb lookup");
             }
         };
-        ejbBeanCreator.checkCreateConditions();
-        
         if(processAnnotatedEvent.isVeto())
         {
             return;

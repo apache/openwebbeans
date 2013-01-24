@@ -60,6 +60,6 @@ public class SelfInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, Sel
     @Override
     protected SelfInterceptorBean<T> createBean(Class<T> beanClass, boolean enabled, Map<InterceptionType, Method[]> interceptionMethods)
     {
-        return new SelfInterceptorBean<T>(webBeansContext, getAnnotated(), getBeanAttributes(), beanClass, interceptionMethods);
+        return new SelfInterceptorBean<T>(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods);
     }
 }

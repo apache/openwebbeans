@@ -102,7 +102,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 
     protected void checkInterceptorConditions()
     {
-        Set<AnnotatedMethod<? super T>> methods = getAnnotated().getMethods();
+        Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
         for(AnnotatedMethod method : methods)
         {
             List<AnnotatedParameter> parms = method.getParameters();
@@ -110,7 +110,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
             {
                 if (parameter.isAnnotationPresent(Produces.class))
                 {
-                    throw new WebBeansConfigurationException("Interceptor class : " + getBeanType()
+                    throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass()
                             + " can not have producer methods but it has one with name : "
                             + method.getJavaMember().getName());
                 }
@@ -144,7 +144,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
      */
     public boolean defineInterceptorMethods()
     {
-        List<Class> classHierarchy = webBeansContext.getInterceptorUtil().getReverseClassHierarchy(getAnnotated().getJavaClass());
+        List<Class> classHierarchy = webBeansContext.getInterceptorUtil().getReverseClassHierarchy(annotatedType.getJavaClass());
 
         AnnotatedMethod aroundInvokeMethod = null;
         List<AnnotatedMethod> postConstructMethods = new ArrayList<AnnotatedMethod>();
@@ -157,7 +157,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 
         boolean interceptorFound = false;
 
-        Set<AnnotatedMethod<? super T>> methods = getAnnotated().getMethods();
+        Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
 
         for (Class clazz : classHierarchy)
         {

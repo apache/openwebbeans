@@ -106,24 +106,24 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
      */
     public boolean isDecoratorEnabled()
     {
-        return webBeansContext.getDecoratorsManager().isDecoratorEnabled(getBeanType());
+        return webBeansContext.getDecoratorsManager().isDecoratorEnabled(annotatedType.getJavaClass());
     }
 
     protected void checkDecoratorConditions()
     {
-        if(getBeanAttributes().getScope() != Dependent.class)
+        if (beanAttributes.getScope() != Dependent.class)
         {
             if(logger.isLoggable(Level.WARNING))
             {
-                logger.log(Level.WARNING, OWBLogConst.WARN_0005_1, getBeanType().getName());
+                logger.log(Level.WARNING, OWBLogConst.WARN_0005_1, annotatedType.getJavaClass().getName());
             }
         }
 
-        if(getBeanAttributes().getName() != null)
+        if (beanAttributes.getName() != null)
         {
             if(logger.isLoggable(Level.WARNING))
             {
-                logger.log(Level.WARNING, OWBLogConst.WARN_0005_2, getBeanType().getName());
+                logger.log(Level.WARNING, OWBLogConst.WARN_0005_2, annotatedType.getJavaClass().getName());
             }
         }
 
@@ -140,10 +140,10 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
 
         if (logger.isLoggable(Level.FINE))
         {
-            logger.log(Level.FINE, "Configuring decorator class : [{0}]", getBeanType());
+            logger.log(Level.FINE, "Configuring decorator class : [{0}]", annotatedType.getJavaClass());
         }
 
-        Set<AnnotatedMethod<? super T>> methods = getAnnotated().getMethods();
+        Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
         for(AnnotatedMethod method : methods)
         {
             List<AnnotatedParameter> parms = method.getParameters();
@@ -151,7 +151,7 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
             {
                 if (parameter.isAnnotationPresent(Produces.class))
                 {
-                    throw new WebBeansConfigurationException("Interceptor class : " + getBeanType()
+                    throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass()
                             + " can not have producer methods but it has one with name : "
                             + method.getJavaMember().getName());
                 }
@@ -170,7 +170,7 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
 
     private void defineDecoratedTypes()
     {
-        Class<T> beanClass = getBeanType();
+        Class<T> beanClass = annotatedType.getJavaClass();
 
         // determine a safe Type for for a later BeanManager.getReference(...)
         if (ClassUtil.isDefinitionContainsTypeVariables(beanClass))
@@ -291,7 +291,7 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
     @Override
     protected DecoratorBean<T> createBean(Class<T> beanClass, boolean enabled)
     {
-        DecoratorBean<T> decorator = new DecoratorBean<T>(webBeansContext, WebBeansType.MANAGED, getAnnotated(), getBeanAttributes(), beanClass);
+        DecoratorBean<T> decorator = new DecoratorBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, beanClass);
         decorator.setEnabled(enabled);
         return decorator;
     }

@@ -525,7 +525,6 @@ public abstract class TestContext implements ITestContext
 
         BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes(annotatedType).build();
         ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, beanAttributes);
-        managedBeanCreator.checkCreateConditions();
         managedBeanCreator.defineEnabled();
         managedBeanCreator.defineConstructor();
         ManagedBean<T> component = managedBeanCreator.getBean();

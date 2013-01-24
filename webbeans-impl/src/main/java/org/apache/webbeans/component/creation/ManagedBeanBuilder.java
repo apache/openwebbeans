@@ -52,19 +52,6 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
         super(webBeansContext, annotatedType, beanAttributes);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void checkCreateConditions()
-    {
-        webBeansContext.getWebBeansUtil().checkManagedBeanCondition(getAnnotated());
-        WebBeansUtil.checkGenericType(getBeanType(), getBeanAttributes().getScope());
-        //Check Unproxiable
-        checkUnproxiableApiType();
-    }
-
-
     public void defineConstructor()
     {
         constructor = getBeanConstructor();
@@ -76,6 +63,9 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
     public M getBean()
     {
         M bean = super.getBean();
+        webBeansContext.getWebBeansUtil().checkManagedBeanCondition(annotatedType);
+        WebBeansUtil.checkGenericType(annotatedType.getJavaClass(), beanAttributes.getScope());
+        webBeansContext.getDeploymentValidationService().validateProxyable(bean);
         addConstructorInjectionPointMetaData(bean);
         return bean;
     }
@@ -86,8 +76,6 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
         //Check for Enabled via Alternative
         defineEnabled();
 
-        checkCreateConditions();
-
         defineConstructor();
 
         return getBean();
@@ -96,13 +84,13 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
     @Override
     protected List<AnnotatedMethod<?>> getPostConstructMethods()
     {
-        return webBeansContext.getInterceptorUtil().getLifecycleMethods(getAnnotated(), PostConstruct.class, true);
+        return webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, PostConstruct.class, true);
     }
 
     @Override
     protected List<AnnotatedMethod<?>> getPreDestroyMethods()
     {
-        return webBeansContext.getInterceptorUtil().getLifecycleMethods(getAnnotated(), PreDestroy.class, false);
+        return webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, PreDestroy.class, false);
     }
 
     protected void addConstructorInjectionPointMetaData(ManagedBean<T> bean)
@@ -118,7 +106,7 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
     @Override
     protected M createBean(Class<T> beanClass, boolean enabled)
     {
-        M managedBean = (M)new ManagedBean<T>(webBeansContext, WebBeansType.MANAGED, getAnnotated(), getBeanAttributes(), beanClass);
+        M managedBean = (M)new ManagedBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, beanClass);
         managedBean.setEnabled(enabled);
         return managedBean;
     }

@@ -31,16 +31,10 @@ public class ProducerFieldBeanBuilder<T, P extends ProducerFieldBean<T>> extends
     {
         super(owner, annotated, beanAttributes);
     }
-    
-    @Override
-    protected Class<T> getBeanType()
-    {
-        return (Class<T>) getAnnotated().getJavaMember().getType();
-    }
 
     protected AnnotatedField<?> getSuperAnnotated()
     {
-        AnnotatedField<?> thisField = getAnnotated();
+        AnnotatedField<?> thisField = annotatedMember;
         for (AnnotatedField<?> superField: getSuperType().getFields())
         {
             if (thisField.getJavaMember().getName().equals(superField.getJavaMember().getName())
@@ -55,6 +49,11 @@ public class ProducerFieldBeanBuilder<T, P extends ProducerFieldBean<T>> extends
     @Override
     protected P createBean(InjectionTargetBean<?> owner, Class<T> beanClass)
     {
-        return (P) new ProducerFieldBean<T>(owner, getBeanAttributes(), beanClass);
+        return (P) new ProducerFieldBean<T>(owner, beanAttributes, beanClass);
+    }
+    
+    public P getBean()
+    {
+        return createBean((Class<T>) annotatedMember.getJavaMember().getType());
     }
 }

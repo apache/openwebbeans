@@ -73,11 +73,13 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> bean class type
  */
-public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionTargetBean<T>> extends AbstractBeanBuilder<T, AnnotatedType<T>, I>
+public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionTargetBean<T>>
 {    
     
+    protected final WebBeansContext webBeansContext;
+    protected final AnnotatedType<T> annotatedType;
+    protected final BeanAttributesImpl<T> beanAttributes;
     private boolean enabled = true;
-    protected WebBeansContext webBeansContext;
 
     /**
      * Creates a new instance.
@@ -85,13 +87,17 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
      */
     public AbstractInjectionTargetBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
-        super(webBeansContext, annotatedType, beanAttributes);
+        Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
+        Asserts.assertNotNull(annotatedType, "annotated type may not be null");
+        Asserts.assertNotNull(beanAttributes, "beanAttributes may not be null");
         this.webBeansContext = webBeansContext;
+        this.annotatedType = annotatedType;
+        this.beanAttributes = beanAttributes;
     }
 
     protected AnnotatedType<? super T> getSuperAnnotated()
     {
-        Class<? super T> superclass = getAnnotated().getJavaClass().getSuperclass();
+        Class<? super T> superclass = annotatedType.getJavaClass().getSuperclass();
         if (superclass == null)
         {
             return null;
@@ -101,10 +107,10 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
     
     protected AnnotatedConstructor<T> getBeanConstructor()
     {
-        Asserts.assertNotNull(getAnnotated(),"Type is null");
+        Asserts.assertNotNull(annotatedType,"Type is null");
         AnnotatedConstructor<T> result = null;
 
-        Set<AnnotatedConstructor<T>> annConsts = getAnnotated().getConstructors();
+        Set<AnnotatedConstructor<T>> annConsts = annotatedType.getConstructors();
         if(annConsts != null)
         {
             boolean found = false;
@@ -116,7 +122,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                     if (found)
                     {
                         throw new WebBeansConfigurationException("There are more than one constructor with @Inject annotation in annotation type : "
-                                + getAnnotated());
+                                + annotatedType);
                     }
 
                     found = true;
@@ -139,7 +145,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
 
         if (result == null)
         {
-            throw new WebBeansConfigurationException("No constructor is found for the annotated type : " + getAnnotated());
+            throw new WebBeansConfigurationException("No constructor is found for the annotated type : " + annotatedType);
         }
 
         List<AnnotatedParameter<T>> parameters = result.getParameters();
@@ -167,7 +173,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
     public Set<ObserverMethod<?>> defineObserverMethods(InjectionTargetBean<T> bean)
     {   
         Set<ObserverMethod<?>> definedObservers = new HashSet<ObserverMethod<?>>();
-        Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();    
+        Set<AnnotatedMethod<? super T>> annotatedMethods = annotatedType.getMethods();    
         for (AnnotatedMethod<? super T> annotatedMethod : annotatedMethods)
         {
             AnnotatedMethod<T> annt = (AnnotatedMethod<T>)annotatedMethod;
@@ -194,7 +200,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                      Reception reception = observes.notifyObserver();
                      if(reception.equals(Reception.IF_EXISTS))
                      {
-                         throw new WebBeansConfigurationException("Dependent Bean : " + getBeanType() + " can not define observer method with @Receiver = IF_EXIST");
+                         throw new WebBeansConfigurationException("Dependent Bean : " + annotatedType.getJavaClass() + " can not define observer method with @Receiver = IF_EXIST");
                      }
                 }
                 
@@ -244,10 +250,10 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
     public Set<ProducerFieldBean<?>> defineProducerFields(InjectionTargetBean<T> bean)
     {
         Set<ProducerFieldBean<?>> producerBeans = new HashSet<ProducerFieldBean<?>>();
-        Set<AnnotatedField<? super T>> annotatedFields = getAnnotated().getFields();        
+        Set<AnnotatedField<? super T>> annotatedFields = annotatedType.getFields();        
         for(AnnotatedField<? super T> annotatedField: annotatedFields)
         {
-            if(annotatedField.isAnnotationPresent(Produces.class) && annotatedField.getDeclaringType().equals(getAnnotated()))
+            if(annotatedField.isAnnotationPresent(Produces.class) && annotatedField.getDeclaringType().equals(annotatedType))
             {
                 Type genericType = annotatedField.getBaseType();
                 
@@ -275,7 +281,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                     //WebBeansUtil.checkForValidResources(annotatedField.getDeclaringType().getJavaClass(), field.getType(), field.getName(), anns);
                     if(!Modifier.isStatic(field.getModifiers()))
                     {
-                        ResourceReference<T, Annotation> resourceRef = new ResourceReference<T, Annotation>(getBeanType(), field.getName(),
+                        ResourceReference<T, Annotation> resourceRef = new ResourceReference<T, Annotation>(annotatedType.getJavaClass(), field.getName(),
                                                                                                             (Class<T>)field.getType(), resourceAnnotation);
                         
                         //Can not define EL name
@@ -302,8 +308,8 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                     BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)annotatedField).build();
                     ProducerFieldBeanBuilder<T, ProducerFieldBean<T>> producerFieldBeanCreator
                         = new ProducerFieldBeanBuilder<T, ProducerFieldBean<T>>(bean, annotatedField, beanAttributes);
-                    producerFieldBeanCreator.checkUnproxiableApiType();
                     ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
+                    webBeansContext.getDeploymentValidationService().validateProxyable(producerFieldBean);
                     producerFieldBean.setProducer(new ProducerFieldProducer(bean, annotatedField, producerFieldBean.getInjectionPoints()));
                     producerFieldBean.setProducerField(field);
 
@@ -324,11 +330,11 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
     public Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<T> bean)
     {
         Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
-        Set<AnnotatedMethod<? super T>> annotatedMethods = getAnnotated().getMethods();
+        Set<AnnotatedMethod<? super T>> annotatedMethods = annotatedType.getMethods();
         
         for(AnnotatedMethod<? super T> annotatedMethod: annotatedMethods)
         {
-            if(annotatedMethod.isAnnotationPresent(Produces.class) && annotatedMethod.getDeclaringType().equals(getAnnotated()))
+            if(annotatedMethod.isAnnotationPresent(Produces.class) && annotatedMethod.getDeclaringType().equals(annotatedType))
             {
                 checkProducerMethodForDeployment(annotatedMethod);
                 boolean specialize = false;
@@ -345,10 +351,10 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
                 BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedMethod<T>)annotatedMethod).build();
                 ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<T>(bean, annotatedMethod, beanAttributes);
                 
-                producerMethodBeanCreator.checkUnproxiableApiType();
-
                 ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
                 
+                webBeansContext.getDeploymentValidationService().validateProxyable(producerMethodBean);
+
                 if(specialize)
                 {
                     producerMethodBeanCreator.configureProducerSpecialization(producerMethodBean, (AnnotatedMethod<T>) annotatedMethod);
@@ -401,7 +407,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
 
     protected abstract I createBean(Class<T> beanClass, boolean enabled);
 
-    @Override
     protected final I createBean(Class<T> beanClass)
     {
         I bean =  createBean(beanClass, enabled);
@@ -417,7 +422,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
     protected List<AnnotatedMethod<?>> getPostConstructMethods()
     {
         List<AnnotatedMethod<?>> postConstructMethods = new ArrayList<AnnotatedMethod<?>>();
-        collectPostConstructMethods(getAnnotated().getJavaClass(), postConstructMethods);
+        collectPostConstructMethods(annotatedType.getJavaClass(), postConstructMethods);
         return postConstructMethods;
     }
 
@@ -428,7 +433,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
             return;
         }
         collectPostConstructMethods(type.getSuperclass(), postConstructMethods);
-        for (AnnotatedMethod<?> annotatedMethod: getAnnotated().getMethods())
+        for (AnnotatedMethod<?> annotatedMethod: annotatedType.getMethods())
         {
             if (annotatedMethod.getJavaMember().getDeclaringClass() == type
                 && annotatedMethod.isAnnotationPresent(PostConstruct.class)
@@ -442,7 +447,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
     protected List<AnnotatedMethod<?>> getPreDestroyMethods()
     {
         List<AnnotatedMethod<?>> preDestroyMethods = new ArrayList<AnnotatedMethod<?>>();
-        collectPreDestroyMethods(getAnnotated().getJavaClass(), preDestroyMethods);
+        collectPreDestroyMethods(annotatedType.getJavaClass(), preDestroyMethods);
         return preDestroyMethods;
     }
 
@@ -453,7 +458,7 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
             return;
         }
         collectPreDestroyMethods(type.getSuperclass(), preDestroyMethods);
-        for (AnnotatedMethod<?> annotatedMethod: getAnnotated().getMethods())
+        for (AnnotatedMethod<?> annotatedMethod: annotatedType.getMethods())
         {
             if (annotatedMethod.getJavaMember().getDeclaringClass() == type
                 && annotatedMethod.isAnnotationPresent(PreDestroy.class)
@@ -471,20 +476,13 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
 
     public void defineEnabled()
     {
-        enabled = webBeansContext.getWebBeansUtil().isBeanEnabled(getAnnotated(), getBeanType(), getBeanAttributes().getStereotypes());
-    }
-
-    @Override
-    protected Class<T> getBeanType()
-    {
-        return getAnnotated().getJavaClass();
+        enabled = webBeansContext.getWebBeansUtil().isBeanEnabled(annotatedType, annotatedType.getJavaClass(), beanAttributes.getStereotypes());
     }
     
-    @Override
     public I getBean()
     {
-        I bean = super.getBean();
-        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, getAnnotated()))
+        I bean = createBean(annotatedType.getJavaClass());
+        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType))
         {
             bean.addInjectionPoint(injectionPoint);
         }

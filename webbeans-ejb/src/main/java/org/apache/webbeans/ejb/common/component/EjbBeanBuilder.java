@@ -49,17 +49,6 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>> extends Abstra
         super(webBeansContext, annotatedType, beanAttributes);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void checkCreateConditions()
-    {        
-        EjbValidator.validateDecoratorOrInterceptor(getBeanType());
-        EjbValidator.validateEjbScopeType(getBean());
-        EjbValidator.validateGenericBeanType(getBeanType(), getBeanAttributes().getScope());
-    }
-
     /* (non-Javadoc)
      * @see org.apache.webbeans.component.creation.AbstractInjectedTargetBeanCreator#defineObserverMethods()
      */
@@ -89,5 +78,14 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>> extends Abstra
         };
     }
     
+    public E getBean()
+    {
+        E bean = super.getBean();
+        EjbValidator.validateDecoratorOrInterceptor(bean.getReturnType());
+        EjbValidator.validateEjbScopeType(bean);
+        EjbValidator.validateGenericBeanType(bean.getReturnType(), bean.getScope());
+        return bean;
+    }
+
     protected abstract T getInstance(CreationalContext<T> creationalContext);
 }
