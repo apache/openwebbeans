@@ -96,6 +96,7 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.ExtensionBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
+import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
 import org.apache.webbeans.component.creation.ProducerMethodProducerBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -475,7 +476,7 @@ public final class WebBeansUtil
         Asserts.nullCheckForClass(clazz);
         ExtensionBeanBuilder<T> extensionBeanCreator = new ExtensionBeanBuilder<T>(webBeansContext, clazz);
         ExtensionBean<T> bean = extensionBeanCreator.getBean();
-        extensionBeanCreator.defineObserverMethods(bean);
+        new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, bean.getAnnotatedType()).defineObserverMethods(bean);
         return bean;
     }
 
@@ -1600,7 +1601,7 @@ public final class WebBeansUtil
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
         managedBeanCreator.defineProducerMethods(managedBean);
         managedBeanCreator.defineProducerFields(managedBean);
-        managedBeanCreator.defineObserverMethods(managedBean);
+        new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, managedBean.getAnnotatedType()).defineObserverMethods(managedBean);
 
         if (managedBean instanceof InjectionTargetBean)
         {
@@ -1730,7 +1731,7 @@ public final class WebBeansUtil
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
         managedBeanCreator.defineProducerMethods(managedBean);
         managedBeanCreator.defineProducerFields(managedBean);
-        managedBeanCreator.defineObserverMethods(managedBean);
+        new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, managedBean.getAnnotatedType()).defineObserverMethods(managedBean);
 
         if (managedBean instanceof InjectionTargetBean)
         {

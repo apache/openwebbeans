@@ -64,6 +64,7 @@ import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.CdiInterceptorBeanBuilder;
 import org.apache.webbeans.component.creation.DecoratorBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
+import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
@@ -895,7 +896,7 @@ public class BeansDeployer
                 Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
                 if(managedBeanCreator.isEnabled())
                 {
-                    observerMethods = managedBeanCreator.defineObserverMethods(bean);
+                    observerMethods = new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, bean.getAnnotatedType()).defineObserverMethods(bean);
                 }
                 Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods(bean);
                 Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields(bean);

@@ -36,9 +36,11 @@ import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
+import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
@@ -94,7 +96,8 @@ public final class EjbUtility
         Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods(ejbBean);        
         checkProducerMethods(producerMethodBeans, ejbBean);
         Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields(ejbBean);           
-        Set<ObserverMethod<?>> observerMethods = ejbBeanCreator.defineObserverMethods(ejbBean);        
+        Set<ObserverMethod<?>> observerMethods = new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, ejbBean.getAnnotatedType()).defineObserverMethods(ejbBean);
+        EjbValidator.validateObserverMethods(ejbBean, observerMethods);
         
         //Fires ProcessInjectionTarget
         ProcessInjectionTargetImpl<T> processInjectionTargetEvent =

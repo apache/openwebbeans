@@ -26,10 +26,8 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
-import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.creation.AbstractInjectionTargetBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.ejb.common.util.EjbValidator;
@@ -47,18 +45,6 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>> extends Abstra
     public EjbBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
         super(webBeansContext, annotatedType, beanAttributes);
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.webbeans.component.creation.AbstractInjectedTargetBeanCreator#defineObserverMethods()
-     */
-    @Override
-    public Set<ObserverMethod<?>> defineObserverMethods(InjectionTargetBean<T> bean)
-    {
-        Set<ObserverMethod<?>> observerMethods = super.defineObserverMethods(bean);
-        EjbValidator.validateObserverMethods((BaseEjbBean<?>) bean, observerMethods);
-        
-        return observerMethods;
     }
 
     @Override

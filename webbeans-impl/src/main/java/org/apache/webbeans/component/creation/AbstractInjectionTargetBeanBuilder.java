@@ -20,7 +20,6 @@ package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -31,19 +30,15 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
-import javax.enterprise.event.Reception;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.ObserverMethod;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -63,7 +58,6 @@ import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
-
 
 /**
  * Abstract implementation of {@link AbstractBeanBuilder}.
@@ -102,83 +96,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
             return null;
         }
         return webBeansContext.getAnnotatedElementFactory().getAnnotatedType(superclass);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Set<ObserverMethod<?>> defineObserverMethods(InjectionTargetBean<T> bean)
-    {   
-        Set<ObserverMethod<?>> definedObservers = new HashSet<ObserverMethod<?>>();
-        Set<AnnotatedMethod<? super T>> annotatedMethods = annotatedType.getMethods();    
-        for (AnnotatedMethod<? super T> annotatedMethod : annotatedMethods)
-        {
-            AnnotatedMethod<T> annt = (AnnotatedMethod<T>)annotatedMethod;
-            List<AnnotatedParameter<T>> parameters = annt.getParameters();
-            boolean found = false;
-            for(AnnotatedParameter<T> parameter : parameters)
-            {
-                if(parameter.isAnnotationPresent(Observes.class))
-                {
-                    found = true;
-                    break;
-                }
-            }
-            
-            if(found)
-            {
-                checkObserverMethodConditions((AnnotatedMethod<T>) annotatedMethod, annotatedMethod.getDeclaringType().getJavaClass());
-                if (bean.getScope().equals(Dependent.class))
-                {
-                    //Check Reception
-                     AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Observes.class);
-                    
-                     Observes observes = AnnotationUtil.getAnnotatedMethodFirstParameterAnnotation(annotatedMethod, Observes.class);
-                     Reception reception = observes.notifyObserver();
-                     if(reception.equals(Reception.IF_EXISTS))
-                     {
-                         throw new WebBeansConfigurationException("Dependent Bean : " + annotatedType.getJavaClass() + " can not define observer method with @Receiver = IF_EXIST");
-                     }
-                }
-                
-                //Looking for ObserverMethod
-                ObserverMethod<?> definedObserver = webBeansContext.getBeanManagerImpl().getNotificationManager().getObservableMethodForAnnotatedMethod(annotatedMethod, bean);
-                if(definedObserver != null)
-                {
-                    definedObservers.add(definedObserver);
-                }
-            }
-        }
-        
-        return definedObservers;
-    }
-
-    private void checkObserverMethodConditions(AnnotatedMethod<T> annotatedMethod, Class<?> clazz)
-    {
-        Asserts.assertNotNull(annotatedMethod, "annotatedMethod parameter can not be null");
-        Asserts.nullCheckForClass(clazz);
-        
-        Method candidateObserverMethod = annotatedMethod.getJavaMember();
-        
-        if (AnnotationUtil.hasAnnotatedMethodMultipleParameterAnnotation(annotatedMethod, Observes.class))
-        {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName()
-                                                     + " can not define two parameters with annotated @Observes");
-        }
-
-        if (annotatedMethod.isAnnotationPresent(Produces.class) 
-                || annotatedMethod.isAnnotationPresent(Inject.class))
-        {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName()
-                                                     + " can not annotated with annotation in the list {@Produces, @Initializer, @Destructor}");
-
-        }
-
-        if (AnnotationUtil.hasAnnotatedMethodParameterAnnotation(annotatedMethod, Disposes.class))
-        {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : "
-                                                     + clazz.getName() + " can not annotated with annotation @Disposes");
-        }                
     }
 
     /**
