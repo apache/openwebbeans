@@ -833,9 +833,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             return true;
         }
         
-        for(int i = 0, size = additionalScopes.size(); i < size; i++)
+        for(ExternalScope ext : additionalScopes)
         {
-            ExternalScope ext = additionalScopes.get(i);
             if(ext.getScope().equals(annotationType))
             {
                 return true;
@@ -851,12 +850,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         if (isNormal != null)
         {
-            return isNormal.booleanValue();
+            return isNormal;
         }
 
-        for(int i = 0, size = additionalScopes.size(); i < size; i++)
+        for(ExternalScope extScope : additionalScopes)
         {
-            ExternalScope extScope = additionalScopes.get(i);
             if (extScope.getScope().equals(scopeType))
             {
                 isScopeTypeNormalCache.put(scopeType, extScope.isNormal());
@@ -872,9 +870,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     public boolean isPassivatingScope(Class<? extends Annotation> annotationType)
     {
-        for(int i = 0, size = additionalScopes.size(); i < size; i++)
+        for(ExternalScope extScope : additionalScopes)
         {
-            ExternalScope extScope = additionalScopes.get(i);
             if (extScope.getScope().equals(annotationType))
             {
                 return extScope.isPassivating();

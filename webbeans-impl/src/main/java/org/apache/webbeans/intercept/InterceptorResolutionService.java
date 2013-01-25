@@ -220,7 +220,7 @@ public class InterceptorResolutionService
                     getProperty(OpenWebBeansConfiguration.INTERCEPTOR_FORCE_NO_CHECKED_EXCEPTIONS, "true"));
         }
 
-        return enforceCheckedException.booleanValue();
+        return enforceCheckedException;
     }
 
 

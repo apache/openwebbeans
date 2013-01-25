@@ -242,7 +242,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
     {
         if (isPassivationCapable != null)
         {
-            return isPassivationCapable.booleanValue();
+            return isPassivationCapable;
         }
         if(Serializable.class.isAssignableFrom(getReturnType()))
         {

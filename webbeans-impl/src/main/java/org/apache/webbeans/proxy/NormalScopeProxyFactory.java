@@ -148,10 +148,8 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         }
         catch (IllegalAccessException e)
         {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new WebBeansConfigurationException("Configured InterceptorHandler " + className +" creation exception", e);
         }
-
-        return null;
     }
 
     public synchronized <T> Class<T> createProxyClass(Bean<T> bean, ClassLoader classLoader, Class<T> classToProxy)

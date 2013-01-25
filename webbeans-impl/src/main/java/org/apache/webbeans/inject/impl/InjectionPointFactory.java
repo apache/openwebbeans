@@ -152,7 +152,8 @@ public class InjectionPointFactory
             //@Observes is not injection point type for method parameters
             if (parameter.getAnnotation(Observes.class) == null)
             {
-                Annotation[] qualifierAnnots = webBeansContext.getAnnotationManager().getQualifierAnnotations(parameter.getAnnotations().toArray(new Annotation[0]));
+                Set<Annotation> anns = parameter.getAnnotations();
+                Annotation[] qualifierAnnots = webBeansContext.getAnnotationManager().getQualifierAnnotations(anns.toArray(new Annotation[anns.size()]));
                 InjectionPoint point = new InjectionPointImpl(owner, parameter.getBaseType(), Arrays.asList(qualifierAnnots), parameter);
                 lists.add(point);
             }

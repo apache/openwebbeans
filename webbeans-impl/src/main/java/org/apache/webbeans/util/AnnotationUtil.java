@@ -325,9 +325,8 @@ public final class AnnotationUtil
         List<Method> bindingCdiAnnotationMethods
                 = getBindingCdiAnnotationMethods(qualifier1AnnotationType);
 
-        for (int i = 0, size = bindingCdiAnnotationMethods.size(); i < size; i++)
+        for (Method method : bindingCdiAnnotationMethods)
         {
-            Method method = bindingCdiAnnotationMethods.get(i);
             Object value1 = callMethod(annotation1, method);
             Object value2 = callMethod(annotation2, method);
 
@@ -355,7 +354,7 @@ public final class AnnotationUtil
             return false;
         }
 
-        if (value1 == null && value2 == null)
+        if (value1 == null)
         {
             return true;
         }
