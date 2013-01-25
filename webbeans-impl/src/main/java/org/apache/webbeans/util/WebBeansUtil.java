@@ -97,6 +97,8 @@ import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.ExtensionBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
+import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
+import org.apache.webbeans.component.creation.ProducerMethodBeansBuilder;
 import org.apache.webbeans.component.creation.ProducerMethodProducerBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -1599,8 +1601,8 @@ public final class WebBeansUtil
         //Check for Enabled via Alternative
         setInjectionTargetBeanEnableFlag(managedBeanCreator.getBean());
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
-        managedBeanCreator.defineProducerMethods(managedBean);
-        managedBeanCreator.defineProducerFields(managedBean);
+        new ProducerMethodBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerMethods(managedBean);
+        new ProducerFieldBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerFields(managedBean);
         new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, managedBean.getAnnotatedType()).defineObserverMethods(managedBean);
 
         if (managedBean instanceof InjectionTargetBean)
@@ -1729,8 +1731,8 @@ public final class WebBeansUtil
         //Check for Enabled via Alternative
         managedBeanCreator.defineEnabled();
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
-        managedBeanCreator.defineProducerMethods(managedBean);
-        managedBeanCreator.defineProducerFields(managedBean);
+        new ProducerMethodBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerMethods(managedBean);
+        new ProducerFieldBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerFields(managedBean);
         new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, managedBean.getAnnotatedType()).defineObserverMethods(managedBean);
 
         if (managedBean instanceof InjectionTargetBean)

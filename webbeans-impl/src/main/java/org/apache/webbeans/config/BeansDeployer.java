@@ -65,6 +65,8 @@ import org.apache.webbeans.component.creation.CdiInterceptorBeanBuilder;
 import org.apache.webbeans.component.creation.DecoratorBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
+import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
+import org.apache.webbeans.component.creation.ProducerMethodBeansBuilder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
@@ -898,8 +900,8 @@ public class BeansDeployer
                 {
                     observerMethods = new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, bean.getAnnotatedType()).defineObserverMethods(bean);
                 }
-                Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods(bean);
-                Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields(bean);
+                Set<ProducerMethodBean<?>> producerMethods = new ProducerMethodBeansBuilder(bean.getWebBeansContext(), bean.getAnnotatedType()).defineProducerMethods(bean);
+                Set<ProducerFieldBean<?>> producerFields = new ProducerFieldBeansBuilder(bean.getWebBeansContext(), bean.getAnnotatedType()).defineProducerFields(bean);
 
                 //Put final InjectionTarget instance
                 bean.setProducer(processInjectionTargetEvent.getInjectionTarget());

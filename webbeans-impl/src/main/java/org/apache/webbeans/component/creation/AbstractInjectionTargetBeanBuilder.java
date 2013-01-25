@@ -18,46 +18,22 @@
  */
 package org.apache.webbeans.component.creation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
-import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.component.ProducerFieldBean;
-import org.apache.webbeans.component.ProducerMethodBean;
-import org.apache.webbeans.component.ResourceBean;
-import org.apache.webbeans.component.ResourceProvider;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.portable.InjectionTargetImpl;
-import org.apache.webbeans.portable.ProducerFieldProducer;
-import org.apache.webbeans.portable.ProviderBasedProxyProducer;
-import org.apache.webbeans.spi.api.ResourceReference;
-import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Abstract implementation of {@link AbstractBeanBuilder}.
@@ -96,156 +72,6 @@ public abstract class AbstractInjectionTargetBeanBuilder<T, I extends InjectionT
             return null;
         }
         return webBeansContext.getAnnotatedElementFactory().getAnnotatedType(superclass);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Set<ProducerFieldBean<?>> defineProducerFields(InjectionTargetBean<T> bean)
-    {
-        Set<ProducerFieldBean<?>> producerBeans = new HashSet<ProducerFieldBean<?>>();
-        Set<AnnotatedField<? super T>> annotatedFields = annotatedType.getFields();        
-        for(AnnotatedField<? super T> annotatedField: annotatedFields)
-        {
-            if(annotatedField.isAnnotationPresent(Produces.class) && annotatedField.getDeclaringType().equals(annotatedType))
-            {
-                Type genericType = annotatedField.getBaseType();
-                
-                if(ClassUtil.isTypeVariable(genericType))
-                {
-                    throw new WebBeansConfigurationException("Producer annotated field : " + annotatedField + " can not be Wildcard type or Type variable");
-                }
-                if(ClassUtil.isParametrizedType(genericType))
-                {
-                    if(!ClassUtil.checkParametrizedType((ParameterizedType)genericType))
-                    {
-                        throw new WebBeansConfigurationException("Producer annotated field : " + annotatedField + " can not be Wildcard type or Type variable");
-                    }
-                }
-                
-                Annotation[] anns = AnnotationUtil.asArray(annotatedField.getAnnotations());
-                Field field = annotatedField.getJavaMember();
-                
-                //Producer field for resource
-                Annotation resourceAnnotation = AnnotationUtil.hasOwbInjectableResource(anns);                
-                //Producer field for resource
-                if(resourceAnnotation != null)
-                {                    
-                    //Check for valid resource annotation
-                    //WebBeansUtil.checkForValidResources(annotatedField.getDeclaringType().getJavaClass(), field.getType(), field.getName(), anns);
-                    if(!Modifier.isStatic(field.getModifiers()))
-                    {
-                        ResourceReference<T, Annotation> resourceRef = new ResourceReference<T, Annotation>(annotatedType.getJavaClass(), field.getName(),
-                                                                                                            (Class<T>)field.getType(), resourceAnnotation);
-                        
-                        //Can not define EL name
-                        if(annotatedField.isAnnotationPresent(Named.class))
-                        {
-                            throw new WebBeansConfigurationException("Resource producer annotated field : " + annotatedField + " can not define EL name");
-                        }
-                        
-                        BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)annotatedField).build();
-                        ResourceBeanBuilder<T, Annotation> resourceBeanCreator
-                            = new ResourceBeanBuilder<T, Annotation>(bean, resourceRef, annotatedField, beanAttributes);
-                        ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
-                        ResourceProvider<T> resourceProvider = new ResourceProvider<T>(resourceBean.getReference(), webBeansContext);
-                        resourceBean.setProducer(new ProviderBasedProxyProducer<T>(webBeansContext, resourceBean.getReturnType(), resourceProvider));
-
-
-                        resourceBean.setProducerField(field);
-                        
-                        producerBeans.add(resourceBean);                                            
-                    }
-                }
-                else
-                {
-                    BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)annotatedField).build();
-                    ProducerFieldBeanBuilder<T, ProducerFieldBean<T>> producerFieldBeanCreator
-                        = new ProducerFieldBeanBuilder<T, ProducerFieldBean<T>>(bean, annotatedField, beanAttributes);
-                    ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
-                    webBeansContext.getDeploymentValidationService().validateProxyable(producerFieldBean);
-                    producerFieldBean.setProducer(new ProducerFieldProducer(bean, annotatedField, producerFieldBean.getInjectionPoints()));
-                    producerFieldBean.setProducerField(field);
-
-                    webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean, producerFieldBean, anns);
-                    WebBeansUtil.checkProducerGenericType(producerFieldBean, annotatedField.getJavaMember());
-                    
-                    producerBeans.add(producerFieldBean);
-                }
-            }
-        }
-        
-        return producerBeans;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<T> bean)
-    {
-        Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
-        Set<AnnotatedMethod<? super T>> annotatedMethods = annotatedType.getMethods();
-        
-        for(AnnotatedMethod<? super T> annotatedMethod: annotatedMethods)
-        {
-            if(annotatedMethod.isAnnotationPresent(Produces.class) && annotatedMethod.getDeclaringType().equals(annotatedType))
-            {
-                checkProducerMethodForDeployment(annotatedMethod);
-                boolean specialize = false;
-                if(annotatedMethod.isAnnotationPresent(Specializes.class))
-                {
-                    if (annotatedMethod.isStatic())
-                    {
-                        throw new WebBeansConfigurationException("Specializing annotated producer method : " + annotatedMethod + " can not be static");
-                    }
-                    
-                    specialize = true;
-                }
-                
-                BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedMethod<T>)annotatedMethod).build();
-                ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<T>(bean, annotatedMethod, beanAttributes);
-                
-                ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
-                
-                webBeansContext.getDeploymentValidationService().validateProxyable(producerMethodBean);
-
-                if(specialize)
-                {
-                    producerMethodBeanCreator.configureProducerSpecialization(producerMethodBean, (AnnotatedMethod<T>) annotatedMethod);
-                }
-                ProducerMethodProducerBuilder producerBuilder = new ProducerMethodProducerBuilder(producerMethodBean);
-                producerMethodBean.setProducer(producerBuilder.build(annotatedMethod));
-                producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
-                
-                webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
-                        producerMethodBean,
-                        AnnotationUtil.asArray(annotatedMethod.getAnnotations()));
-                WebBeansUtil.checkProducerGenericType(producerMethodBean, annotatedMethod.getJavaMember());
-                producerBeans.add(producerMethodBean);
-                
-            }
-            
-        }
-        
-        return producerBeans;
-    }
-
-    /**
-     * Check producer method is ok for deployment.
-     * 
-     * @param annotatedMethod producer method
-     */
-    private void checkProducerMethodForDeployment(AnnotatedMethod<? super T> annotatedMethod)
-    {
-        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
-
-        if (annotatedMethod.isAnnotationPresent(Inject.class) || 
-                annotatedMethod.isAnnotationPresent(Disposes.class) ||  
-                annotatedMethod.isAnnotationPresent(Observes.class))
-        {
-            throw new WebBeansConfigurationException("Producer annotated method : " + annotatedMethod + " can not be annotated with"
-                                                     + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
-        }
     }
 
     protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType,

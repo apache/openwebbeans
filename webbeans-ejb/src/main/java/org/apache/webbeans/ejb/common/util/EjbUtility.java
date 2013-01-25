@@ -41,6 +41,8 @@ import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
+import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
+import org.apache.webbeans.component.creation.ProducerMethodBeansBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
@@ -93,9 +95,11 @@ public final class EjbUtility
         }
         
         //Define meta-data
-        Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods(ejbBean);        
+        Set<ProducerMethodBean<?>> producerMethodBeans
+            = new ProducerMethodBeansBuilder(ejbBean.getWebBeansContext(), ejbBean.getAnnotatedType()).defineProducerMethods(ejbBean);        
         checkProducerMethods(producerMethodBeans, ejbBean);
-        Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields(ejbBean);           
+        Set<ProducerFieldBean<?>> producerFieldBeans
+            = new ProducerFieldBeansBuilder(ejbBean.getWebBeansContext(), ejbBean.getAnnotatedType()).defineProducerFields(ejbBean);           
         Set<ObserverMethod<?>> observerMethods = new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, ejbBean.getAnnotatedType()).defineObserverMethods(ejbBean);
         EjbValidator.validateObserverMethods(ejbBean, observerMethods);
         
@@ -202,9 +206,10 @@ public final class EjbUtility
             }
         };
 
-        final Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods(ejbBean);
+        final Set<ProducerMethodBean<?>> producerMethodBeans
+            = new ProducerMethodBeansBuilder(ejbBean.getWebBeansContext(), ejbBean.getAnnotatedType()).defineProducerMethods(ejbBean);
 
-        final Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields(ejbBean);
+        final Set<ProducerFieldBean<?>> producerFieldBeans = new ProducerFieldBeansBuilder(ejbBean.getWebBeansContext(), ejbBean.getAnnotatedType()).defineProducerFields(ejbBean);
 
         checkProducerMethods(producerMethodBeans, ejbBean);
 

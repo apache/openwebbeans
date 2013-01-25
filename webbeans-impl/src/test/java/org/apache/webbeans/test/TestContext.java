@@ -51,6 +51,8 @@ import org.apache.webbeans.component.creation.CdiInterceptorBeanBuilder;
 import org.apache.webbeans.component.creation.DecoratorBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
+import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
+import org.apache.webbeans.component.creation.ProducerMethodBeansBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.DependentContext;
@@ -534,14 +536,14 @@ public abstract class TestContext implements ITestContext
         //Dropped from the speicification
         //WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "Simple WebBean Component implementation class : " + clazz.getName());
 
-        Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods(component);
+        Set<ProducerMethodBean<?>> producerMethods = new ProducerMethodBeansBuilder(component.getWebBeansContext(), component.getAnnotatedType()).defineProducerMethods(component);
         for (ProducerMethodBean<?> producerMethod : producerMethods)
         {
             // add them one after the other to enable serialization handling et al
             manager.addBean(producerMethod);
         }
 
-        Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields(component);
+        Set<ProducerFieldBean<?>> producerFields = new ProducerFieldBeansBuilder(component.getWebBeansContext(), component.getAnnotatedType()).defineProducerFields(component);
         for (ProducerFieldBean<?> producerField : producerFields)
         {
             // add them one after the other to enable serialization handling et al
