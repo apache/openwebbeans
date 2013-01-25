@@ -65,23 +65,23 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public abstract class BeanAttributesBuilder<T, A extends Annotated>
 {
-    A annotated;
-    
-    WebBeansContext webBeansContext;
-        
-    Set<Type> types = new HashSet<Type>();
+    protected A annotated;
 
-    Set<Annotation> qualifiers = new HashSet<Annotation>();
-    
-    Class<? extends Annotation> scope;
-    
-    String name;
-    
-    boolean nullable;
-    
-    Set<Class<? extends Annotation>> stereotypes = new HashSet<Class<? extends Annotation>>();
-    
-    boolean alternative;
+    protected WebBeansContext webBeansContext;
+
+    protected Set<Type> types = new HashSet<Type>();
+
+    protected Set<Annotation> qualifiers = new HashSet<Annotation>();
+
+    protected Class<? extends Annotation> scope;
+
+    protected String name;
+
+    protected boolean nullable;
+
+    protected Set<Class<? extends Annotation>> stereotypes = new HashSet<Class<? extends Annotation>>();
+
+    protected boolean alternative;
     
     public static BeanAttributesBuilderFactory forContext(WebBeansContext webBeansContext)
     {
