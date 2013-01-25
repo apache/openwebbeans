@@ -176,6 +176,7 @@ public abstract class AbstractProxyFactory
 
         Class<T> clazz = defineAndLoadClass(classLoader, proxyClassName, proxyBytes);
 
+
         return clazz;
     }
 

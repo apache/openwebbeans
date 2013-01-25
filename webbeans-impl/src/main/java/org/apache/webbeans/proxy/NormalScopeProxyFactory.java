@@ -52,6 +52,10 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
     /** the name of the field which stores the {@link Provider} for the Contextual Instance */
     public static final String FIELD_INSTANCE_PROVIDER = "owbContextualInstanceProvider";
 
+    /**
+     * Caches the proxy classes for each bean.
+     * We need this to prevent filling up the ClassLoaders by
+     */
     private ConcurrentHashMap<Bean<?>, Class<?>> cachedProxyClasses = new ConcurrentHashMap<Bean<?>, Class<?>>();
 
 

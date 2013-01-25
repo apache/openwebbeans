@@ -153,12 +153,13 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
                 Method[] businessMethods = methodInterceptors.keySet().toArray(new Method[methodInterceptors.size()]);
                 Method[] nonInterceptedMethods = interceptorInfo.getNonInterceptedMethods().toArray(new Method[interceptorInfo.getNonInterceptedMethods().size()]);
 
-                proxyClass = (Class<? extends T>) pf.createProxyClass(classLoader, getReturnType(), businessMethods, nonInterceptedMethods);
+                proxyClass = (Class<? extends T>) pf.createProxyClass(this, classLoader, getReturnType(), businessMethods, nonInterceptedMethods);
 
                 // now we collect the post-construct and pre-destroy interceptors
 
             }
-            injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors, postConstructInterceptors, preDestroyInterceptors);
+
+            injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors, postConstructInterceptors, preDestroyInterceptors, getId());
 
         }
 

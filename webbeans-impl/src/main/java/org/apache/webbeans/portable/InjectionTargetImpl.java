@@ -108,6 +108,13 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     private BeanInterceptorInfo interceptorInfo = null;
 
     /**
+     * The passivationId of the bean this InjectionTarget serves.
+     * We need this to restore the interceptor proxy on de-serialisation.
+     * Only needed for Beans which are {@link javax.enterprise.inject.spi.PassivationCapable}.
+     */
+    private String beanPassivationId = null;
+
+    /**
      * Defines the interceptor/decorator stack for the InjectionTargetBean.
      * In case this is already defined, we get the ProxyClass for the Bean
      * or <code>null</code> if this Bean doesn't need any proxy.
@@ -142,13 +149,14 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     }
 
     public void setInterceptorInfo(BeanInterceptorInfo interceptorInfo, Class<? extends T> proxyClass, Map<Method, List<Interceptor<?>>> methodInterceptors,
-                                   List<Interceptor<?>> postConstructInterceptors, List<Interceptor<?>> preDestroyInterceptors)
+                                   List<Interceptor<?>> postConstructInterceptors, List<Interceptor<?>> preDestroyInterceptors, String beanPassivationId)
     {
         this.interceptorInfo = interceptorInfo;
         this.proxyClass = proxyClass;
         this.methodInterceptors = methodInterceptors;
         this.postConstructInterceptors = postConstructInterceptors;
         this.preDestroyInterceptors = preDestroyInterceptors;
+        this.beanPassivationId = beanPassivationId;
     }
 
     /**
@@ -210,7 +218,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                     delegate = pf.createProxyInstance(proxyClass, instance, new DecoratorHandler(interceptorInfo, instances, i - 1, instance));
                 }
             }
-            InterceptorHandler interceptorHandler = new DefaultInterceptorHandler<T>(instance, delegate, methodInterceptors, interceptorInstances);
+            InterceptorHandler interceptorHandler = new DefaultInterceptorHandler<T>(instance, delegate, methodInterceptors, interceptorInstances, beanPassivationId);
 
             T proxyInstance = pf.createProxyInstance(proxyClass, instance, interceptorHandler);
             instance = proxyInstance;

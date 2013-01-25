@@ -19,10 +19,13 @@
 package org.apache.webbeans.proxy;
 
 
+import javax.enterprise.inject.spi.Bean;
+import java.io.ObjectStreamException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -57,8 +60,11 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
     /** the name of the field which stores the Method[] of all intercepted methods */
     public static final String FIELD_INTERCEPTED_METHODS = "owbIntDecMethods";
 
-    //X TODO add caching of created proxy classes. This is needed to prevent class loading clashes.
-    //X a generated proxy cannot easily get redefined later!
+    /**
+     * Caches the proxy classes for each bean.
+     * We need this to prevent filling up the ClassLoaders by
+     */
+    private ConcurrentHashMap<Bean<?>, Class<?>> cachedProxyClasses = new ConcurrentHashMap<Bean<?>, Class<?>>();
 
 
     public InterceptorDecoratorProxyFactory(WebBeansContext webBeansContext)
@@ -129,12 +135,6 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         return null;
     }
 
-    @Override
-    protected void createSerialisation(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName)
-    {
-        // nothing to do ;)
-    }
-
     /**
      * <p>Create a decorator and interceptor proxy for the given type. A single instance
      * of such a proxy class has exactly one single internal instance.</p>
@@ -158,15 +158,15 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
      * </p>
      *
      *
+     * @param bean the bean the proxy serves for. Needed for caching and serialisation.
      * @param classLoader to use for creating the class in
      * @param classToProxy the class for which a subclass will get generated
      * @param interceptedMethods the list of intercepted or decorated business methods.
      * @param nonInterceptedMethods all methods which are <b>not</b> intercepted nor decorated and shall get delegated directly
      * @param <T>
      * @return the proxy class
-     * //X TODO for serialisation reasons this probably needs the Bean it serves.
      */
-    public synchronized <T> Class<T> createProxyClass(ClassLoader classLoader, Class<T> classToProxy,
+    public synchronized <T> Class<T> createProxyClass(Bean<T> bean, ClassLoader classLoader, Class<T> classToProxy,
                                                       Method[] interceptedMethods, Method[] nonInterceptedMethods)
             throws ProxyGenerationException
     {
@@ -186,7 +186,14 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
             throw new ProxyGenerationException(e);
         }
 
+        cachedProxyClasses.put(bean, clazz);
+
         return clazz;
+    }
+
+    public <T> Class<T> getCachedProxyClass(Bean<T> bean)
+    {
+        return (Class<T>) cachedProxyClasses.get(bean);
     }
 
     @Override
@@ -209,6 +216,26 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC,
                 FIELD_INTERCEPTED_METHODS, Type.getDescriptor(Method[].class), null, null).visitEnd();
     }
+
+    @Override
+    protected void createSerialisation(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName)
+    {
+        String[] exceptionTypeNames = {Type.getType(ObjectStreamException.class).getInternalName()};
+        MethodVisitor mv = cw.visitMethod(Modifier.PUBLIC, "writeReplace", "()Ljava/lang/Object;", null, exceptionTypeNames);
+
+        // fill method body
+        mv.visitCode();
+
+        // load the contextual instance Provider
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_INTERCEPTOR_HANDLER, Type.getDescriptor(InterceptorHandler.class));
+
+        mv.visitInsn(Opcodes.ARETURN);
+
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+    }
+
 
     /**
      * Each of our interceptor/decorator proxies has exactly 1 constructor

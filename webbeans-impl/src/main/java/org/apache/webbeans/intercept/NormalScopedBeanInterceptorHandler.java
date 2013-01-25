@@ -48,7 +48,10 @@ public class NormalScopedBeanInterceptorHandler implements Provider, Serializabl
     private transient BeanManager beanManager;
     protected transient Bean<?> bean;
 
-    // we just keep this field for serializing it away
+    /**
+     * The passivation if in case this is a {@link PassivationCapable} bean.
+     * we just keep this field for serializing it away
+     */
     private String beanPassivationId;
 
     public NormalScopedBeanInterceptorHandler(BeanManager beanManager, Bean<?> bean)

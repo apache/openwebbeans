@@ -18,13 +18,17 @@
  */
 package org.apache.webbeans.intercept;
 
+import java.io.ObjectStreamException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.util.ExceptionUtil;
 
@@ -44,18 +48,37 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler
      */
     private T delegate;
 
+    /**
+     * The passivation if in case this is a
+     * {@link javax.enterprise.inject.spi.PassivationCapable} bean.
+     * we just keep this field for serializing it away
+     */
+    private String beanPassivationId;
+
+
     private Map<Method, List<Interceptor<?>>> interceptors;
     private Map<Interceptor<?>, ?> instances;
 
+    /**
+     * InterceptorHandler wich gets used in our InjectionTargets which
+     * support interceptors and decorators
+     * @param target the decorated and intercepted instance. Needed for delivering Events to private methods, etc.
+     * @param delegate the outermost Decorator or the intercepted instance
+     * @param interceptors Map with all active interceptors for each method.
+     * @param instances the Interceptor instances
+     * @param beanPassivationId passivationId if a Bean is {@link javax.enterprise.inject.spi.PassivationCapable}
+     */
     public DefaultInterceptorHandler(T target,
                                      T delegate,
                                      Map<Method, List<Interceptor<?>>> interceptors,
-                                     Map<Interceptor<?>, ?> instances)
+                                     Map<Interceptor<?>, ?> instances,
+                                     String beanPassivationId)
     {
         this.target = target;
         this.delegate = delegate;
         this.instances = instances;
         this.interceptors = interceptors;
+        this.beanPassivationId = beanPassivationId;
     }
 
     public T getTarget()
@@ -94,4 +117,24 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler
             return ExceptionUtil.throwAsRuntimeException(e);
         }
     }
+
+    /**
+     * The following code gets generated into the proxy:
+     *
+     * <pre>
+     * Object writeReplace() throws ObjectStreamException
+     * {
+     *     return provider;
+     * }
+     * </pre>
+     */
+    Object readResolve() throws ObjectStreamException
+    {
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        BeanManager beanManager = webBeansContext.getBeanManagerImpl();
+        Bean<?> bean = beanManager.getPassivationCapableBean(beanPassivationId);
+
+        return webBeansContext.getInterceptorDecoratorProxyFactory().getCachedProxyClass(bean);
+    }
+
 }

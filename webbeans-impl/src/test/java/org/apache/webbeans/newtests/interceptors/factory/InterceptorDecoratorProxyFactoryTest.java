@@ -18,12 +18,18 @@
  */
 package org.apache.webbeans.newtests.interceptors.factory;
 
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
@@ -57,8 +63,74 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         Method[] interceptedMethods = methods.toArray(new Method[methods.size()]);
         Method[] nonInterceptedMethods = null;
 
+        Bean dummyBean = new Bean() {
+            @Override
+            public Object create(CreationalContext context)
+            {
+                return null;
+            }
 
-        Class<ClassInterceptedClass> proxyClass = pf.createProxyClass(classLoader, ClassInterceptedClass.class, interceptedMethods, nonInterceptedMethods);
+            @Override
+            public Set<Type> getTypes()
+            {
+                return null;
+            }
+
+            @Override
+            public Set<Annotation> getQualifiers()
+            {
+                return null;
+            }
+
+            @Override
+            public Class<? extends Annotation> getScope()
+            {
+                return null;
+            }
+
+            @Override
+            public String getName()
+            {
+                return null;
+            }
+
+            @Override
+            public boolean isNullable()
+            {
+                return false;
+            }
+
+            @Override
+            public Set<InjectionPoint> getInjectionPoints()
+            {
+                return null;
+            }
+
+            @Override
+            public Class<?> getBeanClass()
+            {
+                return null;
+            }
+
+            @Override
+            public Set<Class<? extends Annotation>> getStereotypes()
+            {
+                return null;
+            }
+
+            @Override
+            public boolean isAlternative()
+            {
+                return false;
+            }
+
+            @Override
+            public void destroy(Object instance, CreationalContext context)
+            {
+            }
+        };
+
+        Class<ClassInterceptedClass> proxyClass = pf.createProxyClass(dummyBean, classLoader, ClassInterceptedClass.class, interceptedMethods, nonInterceptedMethods);
         Assert.assertNotNull(proxyClass);
 
         ClassInterceptedClass internalInstance = new ClassInterceptedClass();

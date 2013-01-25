@@ -122,7 +122,7 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
         Method[] businessMethods = methodInterceptors.keySet().toArray(new Method[methodInterceptors.size()]);
         Method[] nonInterceptedMethods = interceptorInfo.getNonInterceptedMethods().toArray(new Method[interceptorInfo.getNonInterceptedMethods().size()]);
 
-        Class<? extends ClassMultiInterceptedClass> proxyClass = pf.createProxyClass(classLoader, ClassMultiInterceptedClass.class, businessMethods, nonInterceptedMethods);
+        Class<? extends ClassMultiInterceptedClass> proxyClass = pf.createProxyClass(bean, classLoader, ClassMultiInterceptedClass.class, businessMethods, nonInterceptedMethods);
         Assert.assertNotNull(proxyClass);
 
 
@@ -135,7 +135,7 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
             interceptorInstances.put(interceptorBean, interceptorInstance);
         }
         InterceptorHandler interceptorHandler
-                = new DefaultInterceptorHandler<ClassMultiInterceptedClass>(internalInstance, internalInstance, methodInterceptors, interceptorInstances);
+                = new DefaultInterceptorHandler<ClassMultiInterceptedClass>(internalInstance, internalInstance, methodInterceptors, interceptorInstances, null);
 
         ClassMultiInterceptedClass proxyInstance = pf.createProxyInstance(proxyClass, internalInstance, interceptorHandler);
         Assert.assertNotNull(proxyInstance);
