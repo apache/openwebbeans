@@ -42,7 +42,6 @@ public class AbstractDecoratorTest extends AbstractUnitTest
 {
     public static final String PACKAGE_NAME = MultipleDecoratorStackTests.class.getPackage().getName();
 
-    @Ignore // TODO Make this work!!! XXX
     @Test
     public void testDecoratorStackWithAbstractAtEnd()
     {
