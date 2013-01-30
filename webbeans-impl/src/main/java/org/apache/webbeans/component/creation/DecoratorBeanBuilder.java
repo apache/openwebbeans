@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.component.creation;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
@@ -34,6 +36,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -51,17 +54,20 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AnnotatedConstructorImpl;
 import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
 
 /**
  * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
  */
-public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T, DecoratorBean<T>>
+public class DecoratorBeanBuilder<T>
 {
     private static Logger logger = WebBeansLoggerFacade.getLogger(DecoratorBeanBuilder.class);
 
-    private AnnotatedConstructor<T> constructor;
+    protected final WebBeansContext webBeansContext;
+    protected final AnnotatedType<T> annotatedType;
+    protected final BeanAttributesImpl<T> beanAttributes;
 
     /**
      * The Types the decorator itself implements
@@ -82,15 +88,19 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
 
     public DecoratorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
-        super(webBeansContext, annotatedType, beanAttributes);
+        Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
+        Asserts.assertNotNull(annotatedType, "annotated type may not be null");
+        Asserts.assertNotNull(beanAttributes, "beanAttributes may not be null");
+        this.webBeansContext = webBeansContext;
+        this.annotatedType = annotatedType;
+        this.beanAttributes = beanAttributes;
         decoratedTypes = new HashSet<Type>(beanAttributes.getTypes());
         ignoredDecoratorInterfaces = getIgnoredDecoratorInterfaces();
     }
 
     private Set<String> getIgnoredDecoratorInterfaces()
     {
-        Set<String> result = new HashSet<String>(webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces());
-        return result;
+        return webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
     }
 
     /**
@@ -138,10 +148,9 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
         }
 
         Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
-        for(AnnotatedMethod method : methods)
+        for(AnnotatedMethod<?> method : methods)
         {
-            List<AnnotatedParameter> parms = method.getParameters();
-            for (AnnotatedParameter parameter : parms)
+            for (AnnotatedParameter<?> parameter : method.getParameters())
             {
                 if (parameter.isAnnotationPresent(Produces.class))
                 {
@@ -267,37 +276,89 @@ public class DecoratorBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<
         }
     }
 
-    @Override
     protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType, Set<InjectionPoint> points,
                                                       WebBeansContext webBeansContext, List<AnnotatedMethod<?>> postConstructMethods, List<AnnotatedMethod<?>> preDestroyMethods)
     {
-        InjectionTarget<T> injectionTarget = super.buildInjectionTarget(annotatedType, points, webBeansContext, postConstructMethods, preDestroyMethods);
+        InjectionTarget<T> injectionTarget;
 
         if (Modifier.isAbstract(annotatedType.getJavaClass().getModifiers()))
         {
-            injectionTarget = new AbstractDecoratorInjectionTarget(annotatedType, points, webBeansContext, postConstructMethods, preDestroyMethods);
+            injectionTarget = new AbstractDecoratorInjectionTarget<T>(annotatedType, points, webBeansContext, postConstructMethods, preDestroyMethods);
+        }
+        else
+        {
+            injectionTarget = new InjectionTargetImpl<T>(annotatedType, points, webBeansContext, postConstructMethods, preDestroyMethods);
         }
         return injectionTarget;
     }
 
-    @Override
-    protected DecoratorBean<T> createBean(Class<T> beanClass, boolean enabled)
-    {
-        DecoratorBean<T> decorator = new DecoratorBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, beanClass);
-        decorator.setEnabled(enabled);
-        return decorator;
-    }
-
-    @Override
     public DecoratorBean<T> getBean()
     {
-        DecoratorBean<T> decorator = super.getBean();
+        DecoratorBean<T> decorator = new DecoratorBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, annotatedType.getJavaClass());
+        decorator.setEnabled(webBeansContext.getDecoratorsManager().isDecoratorEnabled(annotatedType.getJavaClass()));
+        InjectionTarget<T> injectionTarget
+                = buildInjectionTarget(annotatedType, decorator.getInjectionPoints(), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
+        decorator.setProducer(injectionTarget);
+        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(decorator, annotatedType))
+        {
+            decorator.addInjectionPoint(injectionPoint);
+        }
 
         // we can only do this after the bean injection points got scanned
         defineDelegate(decorator.getInjectionPoints());
         decorator.setDecoratorInfo(decoratedTypes, delegateType, delegateQualifiers);
 
         return decorator;
+    }
+
+    protected List<AnnotatedMethod<?>> getPostConstructMethods()
+    {
+        List<AnnotatedMethod<?>> postConstructMethods = new ArrayList<AnnotatedMethod<?>>();
+        collectPostConstructMethods(annotatedType.getJavaClass(), postConstructMethods);
+        return postConstructMethods;
+    }
+
+    private void collectPostConstructMethods(Class<?> type, List<AnnotatedMethod<?>> postConstructMethods)
+    {
+        if (type == null)
+        {
+            return;
+        }
+        collectPostConstructMethods(type.getSuperclass(), postConstructMethods);
+        for (AnnotatedMethod<?> annotatedMethod: annotatedType.getMethods())
+        {
+            if (annotatedMethod.getJavaMember().getDeclaringClass() == type
+                && annotatedMethod.isAnnotationPresent(PostConstruct.class)
+                && annotatedMethod.getParameters().isEmpty())
+            {
+                postConstructMethods.add(annotatedMethod);
+            }
+        }
+    }
+
+    protected List<AnnotatedMethod<?>> getPreDestroyMethods()
+    {
+        List<AnnotatedMethod<?>> preDestroyMethods = new ArrayList<AnnotatedMethod<?>>();
+        collectPreDestroyMethods(annotatedType.getJavaClass(), preDestroyMethods);
+        return preDestroyMethods;
+    }
+
+    private void collectPreDestroyMethods(Class<?> type, List<AnnotatedMethod<?>> preDestroyMethods)
+    {
+        if (type == null)
+        {
+            return;
+        }
+        collectPreDestroyMethods(type.getSuperclass(), preDestroyMethods);
+        for (AnnotatedMethod<?> annotatedMethod: annotatedType.getMethods())
+        {
+            if (annotatedMethod.getJavaMember().getDeclaringClass() == type
+                && annotatedMethod.isAnnotationPresent(PreDestroy.class)
+                && annotatedMethod.getParameters().isEmpty())
+            {
+                preDestroyMethods.add(annotatedMethod);
+            }
+        }
     }
 
     /**

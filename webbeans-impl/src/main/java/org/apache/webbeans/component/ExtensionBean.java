@@ -21,6 +21,7 @@ package org.apache.webbeans.component;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.ExtensionProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 
 /**
@@ -50,7 +51,6 @@ public class ExtensionBean<T> extends InjectionTargetBean<T>
                         ApplicationScoped.class),
                 returnType);
         setEnabled(true);
+        setProducer(new ExtensionProducer<T>(getAnnotatedType(), getInjectionPoints(), webBeansContext));
     }
-
-    
 }

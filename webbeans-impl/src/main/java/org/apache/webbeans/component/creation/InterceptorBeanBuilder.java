@@ -24,6 +24,8 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
@@ -33,6 +35,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,14 +46,19 @@ import org.apache.webbeans.component.InterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
+import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
 
 /**
  * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
  */
-public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> extends AbstractInjectionTargetBeanBuilder<T, B>
+public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>>
 {
+    protected final WebBeansContext webBeansContext;
+    protected final AnnotatedType<T> annotatedType;
+    protected final BeanAttributesImpl<T> beanAttributes;
 
     private final OpenWebBeansEjbLCAPlugin ejbPlugin;
     private final Class<? extends Annotation> prePassivateClass;
@@ -60,7 +68,12 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
     
     protected InterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
-        super(webBeansContext, annotatedType, beanAttributes);
+        Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
+        Asserts.assertNotNull(annotatedType, "annotated type may not be null");
+        Asserts.assertNotNull(beanAttributes, "beanAttributes may not be null");
+        this.webBeansContext = webBeansContext;
+        this.annotatedType = annotatedType;
+        this.beanAttributes = beanAttributes;
         ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
         if (ejbPlugin != null)
         {
@@ -81,14 +94,12 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
      */
     public abstract boolean isInterceptorEnabled();
 
-
     protected void checkInterceptorConditions()
     {
         Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
-        for(AnnotatedMethod method : methods)
+        for(AnnotatedMethod<?> method : methods)
         {
-            List<AnnotatedParameter> parms = method.getParameters();
-            for (AnnotatedParameter parameter : parms)
+            for (AnnotatedParameter<?> parameter : method.getParameters())
             {
                 if (parameter.isAnnotationPresent(Produces.class))
                 {
@@ -317,9 +328,22 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
                                     boolean enabled,
                                     Map<InterceptionType, Method[]> interceptionMethods);
 
-    @Override
-    protected B createBean(Class<T> beanClass, boolean enabled)
+    public B getBean()
     {
-        return createBean(beanClass, enabled, interceptionMethods);
+        B bean = createBean(annotatedType.getJavaClass(), isInterceptorEnabled(), interceptionMethods);
+
+        //X TODO hack to set the InjectionTarget
+        InjectionTarget<T> injectionTarget = new InjectionTargetImpl<T>(
+                bean.getAnnotatedType(),
+                bean.getInjectionPoints(),
+                webBeansContext,
+                Collections.<AnnotatedMethod<?>>emptyList(),
+                Collections.<AnnotatedMethod<?>>emptyList());
+        bean.setProducer(injectionTarget);
+        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType))
+        {
+            bean.addInjectionPoint(injectionPoint);
+        }
+        return bean;
     }
 }

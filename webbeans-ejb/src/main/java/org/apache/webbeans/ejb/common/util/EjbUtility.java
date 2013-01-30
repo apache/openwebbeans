@@ -77,7 +77,6 @@ public final class EjbUtility
         ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = (ProcessAnnotatedTypeImpl<T>)event;
         BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
         EjbBeanBuilder<T, BaseEjbBean<T>> ejbBeanCreator = new EjbBeanBuilder<T, BaseEjbBean<T>>(ejbBean.getWebBeansContext(), annotatedType, beanAttributes) {
-            @Override
             protected BaseEjbBean<T> createBean(Class<T> beanClass, boolean enabled)
             {
                 return ejbBean;
@@ -192,8 +191,6 @@ public final class EjbUtility
         final BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
         
         final EjbBeanBuilder<T, BaseEjbBean<T>> ejbBeanCreator = new EjbBeanBuilder<T, BaseEjbBean<T>>(ejbBean.getWebBeansContext(), annotatedType, beanAttributes) {
-
-            @Override
             protected BaseEjbBean<T> createBean(Class<T> beanClass, boolean enabled)
             {
                 return ejbBean;

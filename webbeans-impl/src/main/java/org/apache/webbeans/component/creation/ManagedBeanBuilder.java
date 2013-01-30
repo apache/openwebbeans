@@ -24,11 +24,15 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -39,14 +43,23 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> bean type info
  */
-public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInjectionTargetBeanBuilder<T, M>
+public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
 {
+    protected final WebBeansContext webBeansContext;
+    protected final AnnotatedType<T> annotatedType;
+    protected final BeanAttributesImpl<T> beanAttributes;
+
     /**
      * Creates a new creator.
      */
     public ManagedBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
-        super(webBeansContext, annotatedType, beanAttributes);
+        Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
+        Asserts.assertNotNull(annotatedType, "annotated type may not be null");
+        Asserts.assertNotNull(beanAttributes, "beanAttributes may not be null");
+        this.webBeansContext = webBeansContext;
+        this.annotatedType = annotatedType;
+        this.beanAttributes = beanAttributes;
     }
 
     /**
@@ -54,39 +67,29 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>> extends AbstractInj
      */
     public M getBean()
     {
-        M bean = super.getBean();
+        M bean = (M)new ManagedBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, annotatedType.getJavaClass());
+        bean.setEnabled(webBeansContext.getWebBeansUtil().isBeanEnabled(annotatedType, annotatedType.getJavaClass(), beanAttributes.getStereotypes()));
+        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType))
+        {
+            bean.addInjectionPoint(injectionPoint);
+        }
+        
+        InjectionTarget<T> injectionTarget
+            = new InjectionTargetImpl<T>(bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
+        bean.setProducer(injectionTarget);
         webBeansContext.getWebBeansUtil().checkManagedBeanCondition(annotatedType);
         WebBeansUtil.checkGenericType(annotatedType.getJavaClass(), beanAttributes.getScope());
         webBeansContext.getDeploymentValidationService().validateProxyable(bean);
         return bean;
     }
 
-
-    public ManagedBean<T> defineManagedBean(AnnotatedType<T> annotatedType)
-    {
-        //Check for Enabled via Alternative
-        defineEnabled();
-
-        return getBean();
-    }
-
-    @Override
     protected List<AnnotatedMethod<?>> getPostConstructMethods()
     {
         return webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, PostConstruct.class, true);
     }
 
-    @Override
     protected List<AnnotatedMethod<?>> getPreDestroyMethods()
     {
         return webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, PreDestroy.class, false);
-    }
-
-    @Override
-    protected M createBean(Class<T> beanClass, boolean enabled)
-    {
-        M managedBean = (M)new ManagedBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, beanClass);
-        managedBean.setEnabled(enabled);
-        return managedBean;
     }
 }

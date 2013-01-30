@@ -876,7 +876,7 @@ public class BeansDeployer
             else
             {
             
-                bean = managedBeanCreator.defineManagedBean(annotatedType);
+                bean = managedBeanCreator.getBean();
 
                 if(processInjectionTargetEvent == null)
                 {
@@ -896,7 +896,7 @@ public class BeansDeployer
                 }
 
                 Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
-                if(managedBeanCreator.isEnabled())
+                if(bean.isEnabled())
                 {
                     observerMethods = new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, bean.getAnnotatedType()).defineObserverMethods(bean);
                 }

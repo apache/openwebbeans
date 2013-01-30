@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.ejb.common.component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -28,10 +29,10 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
-import org.apache.webbeans.component.creation.AbstractInjectionTargetBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.ejb.common.util.EjbValidator;
 import org.apache.webbeans.portable.AbstractEjbInjectionTarget;
+import org.apache.webbeans.util.Asserts;
 
 /**
  * EjbBeanCreatorImpl.
@@ -40,14 +41,22 @@ import org.apache.webbeans.portable.AbstractEjbInjectionTarget;
  *
  * @param <T> ejb class type
  */
-public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>> extends AbstractInjectionTargetBeanBuilder<T, E>
+public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>>
 {
+    protected final WebBeansContext webBeansContext;
+    protected final AnnotatedType<T> annotatedType;
+    protected final BeanAttributesImpl<T> beanAttributes;
+
     public EjbBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
-        super(webBeansContext, annotatedType, beanAttributes);
+        Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
+        Asserts.assertNotNull(annotatedType, "annotated type may not be null");
+        Asserts.assertNotNull(beanAttributes, "beanAttributes may not be null");
+        this.webBeansContext = webBeansContext;
+        this.annotatedType = annotatedType;
+        this.beanAttributes = beanAttributes;
     }
 
-    @Override
     protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType,
                                                       Set<InjectionPoint> points,
                                                       WebBeansContext webBeansContext,
@@ -64,9 +73,31 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>> extends Abstra
         };
     }
     
+    protected final E createBean(Class<T> beanClass)
+    {
+        E bean =  createBean(beanClass, webBeansContext.getWebBeansUtil().isBeanEnabled(annotatedType, annotatedType.getJavaClass(), beanAttributes.getStereotypes()));
+
+        //X TODO hack to set the InjectionTarget
+        InjectionTarget<T> injectionTarget = buildInjectionTarget(
+                bean.getAnnotatedType(),
+                bean.getInjectionPoints(),
+                webBeansContext,
+                Collections.<AnnotatedMethod<?>>emptyList(),
+                Collections.<AnnotatedMethod<?>>emptyList());
+        bean.setProducer(injectionTarget);
+
+        return bean;
+    }
+    
+    protected abstract E createBean(Class<T> beanClass, boolean beanEnabled);
+
     public E getBean()
     {
-        E bean = super.getBean();
+        E bean = createBean(annotatedType.getJavaClass());
+        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType))
+        {
+            bean.addInjectionPoint(injectionPoint);
+        }
         EjbValidator.validateDecoratorOrInterceptor(bean.getReturnType());
         EjbValidator.validateEjbScopeType(bean);
         EjbValidator.validateGenericBeanType(bean.getReturnType(), bean.getScope());

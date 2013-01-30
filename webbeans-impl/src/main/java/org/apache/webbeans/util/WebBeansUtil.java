@@ -1729,7 +1729,6 @@ public final class WebBeansUtil
         ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, type, beanAttributes);
 
         //Check for Enabled via Alternative
-        managedBeanCreator.defineEnabled();
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
         new ProducerMethodBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerMethods(managedBean);
         new ProducerFieldBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerFields(managedBean);

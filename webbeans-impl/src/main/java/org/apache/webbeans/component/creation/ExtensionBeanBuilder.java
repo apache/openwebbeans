@@ -18,44 +18,27 @@
  */
 package org.apache.webbeans.component.creation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Set;
-
-import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.portable.ExtensionProducer;
+import org.apache.webbeans.util.Asserts;
 
-public class ExtensionBeanBuilder<T> extends AbstractInjectionTargetBeanBuilder<T, ExtensionBean<T>>
+public class ExtensionBeanBuilder<T>
 {
+    protected final WebBeansContext webBeansContext;
+    protected final AnnotatedType<T> annotatedType;
 
     public ExtensionBeanBuilder(WebBeansContext webBeansContext, Class<T> type)
     {
-        super(webBeansContext,
-              webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type),
-              BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(webBeansContext.getAnnotatedElementFactory().getAnnotatedType(type)).build());
+        Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
+        Asserts.assertNotNull(type, "type may not be null");
+        this.webBeansContext = webBeansContext;
+        this.annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
     }
 
-    protected InjectionTarget<T> buildInjectionTarget(Set<Type> types,
-                                                      Set<Annotation> qualifiers,
-                                                      AnnotatedType<T> annotatedType,
-                                                      Set<InjectionPoint> points,
-                                                      WebBeansContext webBeansContext,
-                                                      List<AnnotatedMethod<?>> postConstructMethods,
-                                                      List<AnnotatedMethod<?>> preDestroyMethods)
+    public ExtensionBean<T> getBean()
     {
-        return new ExtensionProducer<T>(annotatedType, points, webBeansContext);
-    }
-
-    @Override
-    protected ExtensionBean<T> createBean(Class<T> beanClass, boolean enabled)
-    {
-        return new ExtensionBean<T>(webBeansContext, beanClass);
+        return new ExtensionBean<T>(webBeansContext, annotatedType.getJavaClass());
     }
 }
