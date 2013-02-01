@@ -296,13 +296,13 @@ public class DecoratorBeanBuilder<T>
     {
         DecoratorBean<T> decorator = new DecoratorBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, annotatedType.getJavaClass());
         decorator.setEnabled(webBeansContext.getDecoratorsManager().isDecoratorEnabled(annotatedType.getJavaClass()));
-        InjectionTarget<T> injectionTarget
-                = buildInjectionTarget(annotatedType, decorator.getInjectionPoints(), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
-        decorator.setProducer(injectionTarget);
+        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
         for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(decorator, annotatedType))
         {
-            decorator.addInjectionPoint(injectionPoint);
+            injectionPoints.add(injectionPoint);
         }
+        InjectionTarget<T> injectionTarget = buildInjectionTarget(annotatedType, injectionPoints, webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
+        decorator.setProducer(injectionTarget);
 
         // we can only do this after the bean injection points got scanned
         defineDelegate(decorator.getInjectionPoints());

@@ -37,6 +37,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -331,19 +332,18 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>>
     public B getBean()
     {
         B bean = createBean(annotatedType.getJavaClass(), isInterceptorEnabled(), interceptionMethods);
-
-        //X TODO hack to set the InjectionTarget
+        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
+        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType))
+        {
+            injectionPoints.add(injectionPoint);
+        }
         InjectionTarget<T> injectionTarget = new InjectionTargetImpl<T>(
                 bean.getAnnotatedType(),
-                bean.getInjectionPoints(),
+                injectionPoints,
                 webBeansContext,
                 Collections.<AnnotatedMethod<?>>emptyList(),
                 Collections.<AnnotatedMethod<?>>emptyList());
         bean.setProducer(injectionTarget);
-        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType))
-        {
-            bean.addInjectionPoint(injectionPoint);
-        }
         return bean;
     }
 }

@@ -67,18 +67,6 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
                                                      + " found in super class : " + annotatedMethod.getDeclaringType().getJavaClass().getSuperclass().getName()
                                                      + " is not annotated with @Produces" + " for annotated method : " + annotatedMethod);
         }
-
-        /* To avoid multiple invocations of setBeanName(), following code is delayed to
-         * configSpecializedProducerMethodBeans() when checkSpecializations.
-        Annotation[] anns = AnnotationUtil.getQualifierAnnotations(superMethod.getAnnotations());
-
-        for (Annotation ann : anns)
-        {
-            bean.addQualifier(ann);
-        }
-        
-        WebBeansUtil.configuredProducerSpecializedName(bean, annotatedMethod.getJavaMember(), superMethod);
-        */
         
         bean.setSpecializedBean(true);        
     }

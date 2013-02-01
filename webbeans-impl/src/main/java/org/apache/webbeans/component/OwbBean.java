@@ -18,11 +18,7 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.reflect.Member;
-import java.util.List;
-
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -57,24 +53,6 @@ public interface OwbBean<T> extends Bean<T>
      */
     public WebBeansType getWebBeansType();
     
-    /**
-     * Adds new injection point.
-     * 
-     * @param injectionPoint injection point
-     */
-    public void addInjectionPoint(InjectionPoint injectionPoint);
-    
-    /**
-     * Gets injection points for given member.
-     * <p>
-     * For example, if member is field, it gets all
-     * injected field's injection points of bean.
-     * </p>
-     * @param member java member
-     * @return injection points for given member
-     */
-    public List<InjectionPoint> getInjectionPoint(Member member);
-
     /**
      * Returns bean class type
      * @return bean class type

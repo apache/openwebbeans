@@ -19,6 +19,7 @@
 package org.apache.webbeans.ejb.common.component;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -77,10 +78,14 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>>
     {
         E bean =  createBean(beanClass, webBeansContext.getWebBeansUtil().isBeanEnabled(annotatedType, annotatedType.getJavaClass(), beanAttributes.getStereotypes()));
 
-        //X TODO hack to set the InjectionTarget
+        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
+        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType))
+        {
+            injectionPoints.add(injectionPoint);
+        }
         InjectionTarget<T> injectionTarget = buildInjectionTarget(
                 bean.getAnnotatedType(),
-                bean.getInjectionPoints(),
+                injectionPoints,
                 webBeansContext,
                 Collections.<AnnotatedMethod<?>>emptyList(),
                 Collections.<AnnotatedMethod<?>>emptyList());
@@ -94,10 +99,6 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>>
     public E getBean()
     {
         E bean = createBean(annotatedType.getJavaClass());
-        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType))
-        {
-            bean.addInjectionPoint(injectionPoint);
-        }
         EjbValidator.validateDecoratorOrInterceptor(bean.getReturnType());
         EjbValidator.validateEjbScopeType(bean);
         EjbValidator.validateGenericBeanType(bean.getReturnType(), bean.getScope());

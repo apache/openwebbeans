@@ -18,7 +18,9 @@
  */
 package org.apache.webbeans.component.creation;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -69,13 +71,13 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
     {
         M bean = (M)new ManagedBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, annotatedType.getJavaClass());
         bean.setEnabled(webBeansContext.getWebBeansUtil().isBeanEnabled(annotatedType, annotatedType.getJavaClass(), beanAttributes.getStereotypes()));
+        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
         for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType))
         {
-            bean.addInjectionPoint(injectionPoint);
+            injectionPoints.add(injectionPoint);
         }
-        
         InjectionTarget<T> injectionTarget
-            = new InjectionTargetImpl<T>(bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
+            = new InjectionTargetImpl<T>(bean.getAnnotatedType(), injectionPoints, webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
         bean.setProducer(injectionTarget);
         webBeansContext.getWebBeansUtil().checkManagedBeanCondition(annotatedType);
         WebBeansUtil.checkGenericType(annotatedType.getJavaClass(), beanAttributes.getScope());

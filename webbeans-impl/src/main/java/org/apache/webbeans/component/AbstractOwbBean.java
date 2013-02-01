@@ -20,12 +20,9 @@ package org.apache.webbeans.component;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Collections;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -67,9 +64,6 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
 
     /**This bean is enabled or disabled*/
     protected boolean enabled = true;
-
-    /**Beans injection points*/
-    protected Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
 
     /** The producer */
     private Producer<T> producer;
@@ -282,21 +276,17 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
     {
         return (Class<T>) getBeanClass();
     }
-
-    /**
-     * {@inheritDoc}
-     */    
-    public void addInjectionPoint(InjectionPoint injectionPoint)
-    {
-        injectionPoints.add(injectionPoint);
-    }
     
     /**
      * {@inheritDoc}
      */    
     public Set<InjectionPoint> getInjectionPoints()
     {
-        return injectionPoints;
+        if (producer == null)
+        {
+            return Collections.<InjectionPoint> emptySet();
+        }
+        return producer.getInjectionPoints();
     }
     
     /**
@@ -321,24 +311,6 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
     public boolean isSpecializedBean()
     {
         return specializedBean;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */    
-    public List<InjectionPoint> getInjectionPoint(Member member)
-    {
-        List<InjectionPoint> points = new ArrayList<InjectionPoint>();
-        
-        for(InjectionPoint ip : injectionPoints)
-        {
-            if(ip.getMember().equals(member))
-            {
-                points.add(ip);
-            }
-        }
-        
-        return points;
     }
     
      /**
