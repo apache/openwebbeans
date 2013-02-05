@@ -270,7 +270,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     public Context getContext(Class<? extends Annotation> scopeType)
     {
-        Asserts.assertNotNull(scopeType, "scopeType paramter can not be null");
+        Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
 
         Context standardContext = webBeansContext.getContextsService().getCurrentContext(scopeType);
 
