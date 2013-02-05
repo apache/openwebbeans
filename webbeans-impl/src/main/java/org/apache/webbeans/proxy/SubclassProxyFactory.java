@@ -94,7 +94,6 @@ public class SubclassProxyFactory extends AbstractProxyFactory
      * @param classToProxy the class for which a subclass will get generated
      * @param <T>
      * @return the proxy class
-     * //X TODO for serialisation reasons this probably needs the Bean it serves.
      */
     public synchronized <T> Class<T> createSubClass(ClassLoader classLoader, Class<T> classToProxy)
             throws ProxyGenerationException

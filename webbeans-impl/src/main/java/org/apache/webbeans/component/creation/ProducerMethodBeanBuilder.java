@@ -51,9 +51,10 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
         {
             parameters.add(ClassUtil.getClass(annotatedParam.getBaseType()));
         }
-        
-        Method superMethod = ClassUtil.getClassMethodWithTypes(annotatedMethod.getDeclaringType().getJavaClass().getSuperclass(), 
-                annotatedMethod.getJavaMember().getName(), parameters);
+
+        Method superMethod = bean.getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethod(annotatedMethod.getDeclaringType().getJavaClass().getSuperclass(),
+                annotatedMethod.getJavaMember().getName(), parameters.toArray(new Class[parameters.size()]));
+
         if (superMethod == null)
         {
             throw new WebBeansConfigurationException("Anontated producer method specialization is failed : " + annotatedMethod.getJavaMember().getName()

@@ -100,12 +100,7 @@ public class AlternativesManager
     
     public boolean isClassAlternative(Class<?> clazz)
     {
-        if(alternatives.contains(clazz))
-        {
-            return true;
-        }
-        
-        return false;
+        return alternatives.contains(clazz);
     }
 
     public boolean isStereoAlternative(Class<? extends Annotation> stereo)

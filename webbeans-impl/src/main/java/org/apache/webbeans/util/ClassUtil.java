@@ -420,12 +420,7 @@ public final class ClassUtil
 
         Integer modifier = clazz.getModifiers();
 
-        if (!Modifier.isAbstract(modifier) && !Modifier.isInterface(modifier))
-        {
-            return true;
-        }
-
-        return false;
+        return !Modifier.isAbstract(modifier) && !Modifier.isInterface(modifier);
     }
 
     /**
@@ -912,118 +907,6 @@ public final class ClassUtil
         }
         
         return false;
-    }
-
-    /**
-     * @param clazz webbeans implementation class
-     * @param methodName name of the method that is searched
-     * @param parameterTypes parameter types of the method(it can be subtype of
-     *            the actual type arguments of the method)
-     * @return the list of method that satisfies the condition
-     */
-    public static List<Method> getClassMethodsWithTypes(Class<?> clazz, String methodName, List<Class<?>> parameterTypes)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(methodName, "methodName parameter can not be null");
-        Asserts.assertNotNull(parameterTypes, "parameterTypes parameter can not be null");
-
-        List<Method> methodList = new ArrayList<Method>();
-
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
-
-        for (Method method : methods)
-        {
-            if (method.getName().equals(methodName))
-            {
-                Class<?>[] defineTypes = method.getParameterTypes();
-
-                if (defineTypes.length != parameterTypes.size())
-                {
-                    continue;
-                }
-
-                boolean ok = true;
-
-                if (parameterTypes.size() > 0)
-                {
-                    ok = false;
-                }
-
-                if (!ok)
-                {
-                    for (int i = 0; i < defineTypes.length; i++)
-                    {
-                        if (defineTypes[i].isAssignableFrom(parameterTypes.get(i)))
-                        {
-                            ok = true;
-                        }
-                        else
-                        {
-                            ok = false;
-                        }
-                    }
-                }
-
-                if (ok)
-                {
-                    methodList.add(method);
-                }
-            }
-
-        }
-
-        return methodList;
-    }
-
-    public static Method getClassMethodWithTypes(Class<?> clazz, String methodName, List<Class<?>> parameterTypes)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(methodName, "methodName parameter can not be null");
-        Asserts.assertNotNull(parameterTypes, "parameterTypes parameter can not be null");
-
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
-
-        int j = 0;
-        for (Method method : methods)
-        {
-            if (method.getName().equals(methodName))
-            {
-                if (parameterTypes != null && parameterTypes.size() > 0)
-                {
-                    Class<?>[] defineTypes = method.getParameterTypes();
-
-                    if (defineTypes.length != parameterTypes.size())
-                    {
-                        continue;
-                    }
-
-                    boolean ok = false;
-
-                    for (Class<?> defineType : defineTypes)
-                    {
-                        if (defineType.equals(parameterTypes.get(j)))
-                        {
-                            ok = true;
-                        }
-                        else
-                        {
-                            ok = false;
-                        }
-                    }
-
-                    if (ok)
-                    {
-                        return method;
-                    }
-                }
-                else
-                {
-                    return method;
-                }
-            }
-        }
-
-        return null;
     }
 
     /**

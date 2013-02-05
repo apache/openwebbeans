@@ -21,7 +21,6 @@ package org.apache.webbeans.ejb.common.util;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -143,15 +142,16 @@ public final class EjbValidator
                 while(it.hasNext())
                 {
                     Class<?> clazz = (Class<?>)it.next();
-                    List<Method> methods = ClassUtil.getClassMethodsWithTypes(clazz, method.getName(), Arrays.asList(method.getParameterTypes()));
-                    if(methods.isEmpty())
+                    Method classMethod = bean.getWebBeansContext().getSecurityService().
+                            doPrivilegedGetDeclaredMethod(clazz, method.getName(), method.getParameterTypes());
+                    if(classMethod == null)
                     {
                         continue;
                     }
                     else
                     {
                         //Should only be a single method that matches the names & params
-                        obs.setObserverMethod(methods.get(0));
+                        obs.setObserverMethod(classMethod);
                         found = true;
                         break;
                     }

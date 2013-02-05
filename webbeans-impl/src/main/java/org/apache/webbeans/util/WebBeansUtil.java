@@ -29,7 +29,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -446,8 +445,6 @@ public final class WebBeansUtil
     /**
      * New WebBeans component class.
      *
-     * @param <T>
-     * @param clazz impl. class
      * @return the new component
      */
     public <T> NewManagedBean<T> createNewComponent(OwbBean<T> bean, Class<T> type)
@@ -902,8 +899,7 @@ public final class WebBeansUtil
                     if (pLeft!= null &&
                         pLeft.getBeanClass().getSuperclass().equals(pb.getBeanClass()))
                     {
-                        Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(),
-                                Arrays.asList(method.getParameterTypes()));
+                        Method superMethod = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(pb.getBeanClass(), method.getName(), method.getParameterTypes());
 
                         //Added by GE, method check is necessary otherwise getting wrong method qualifier annotations
                         if (superMethod != null && superMethod.equals(pb.getCreatorMethod()))
@@ -930,8 +926,8 @@ public final class WebBeansUtil
                         }
                         else
                         {
-                            Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(),
-                                    Arrays.asList(method.getParameterTypes()));
+                            Method superMethod = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(pb.getBeanClass(),
+                                                                                                                    method.getName(), method.getParameterTypes());
                             //Added by GE, method check is necessary otherwise getting wrong method qualifier annotations
                             if (superMethod != null && superMethod.equals(pb.getCreatorMethod()))
                             {
