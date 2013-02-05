@@ -85,7 +85,7 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
     @Override
     public boolean isPassivationCapable()
     {
-        return bean instanceof PassivationCapable ? true : false;
+        return bean instanceof PassivationCapable;
     }
 
     @Override

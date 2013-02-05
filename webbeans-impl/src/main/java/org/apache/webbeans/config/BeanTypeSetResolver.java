@@ -57,8 +57,7 @@ public class BeanTypeSetResolver
             if(beanType instanceof Class)
             {
                 normalClassConfiguration((Class<?>) beanType);
-   
-            }            
+            }
         }
     }
     

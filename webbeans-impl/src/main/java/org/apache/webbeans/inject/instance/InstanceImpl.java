@@ -168,7 +168,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     {
         Set<Bean<?>> beans = resolveBeans();
         
-        return beans.size() > 1 ? true : false;
+        return beans.size() > 1;
     }
 
     /**
@@ -178,7 +178,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     {
         Set<Bean<?>> beans = resolveBeans();
         
-        return beans.size() == 0 ? true : false;
+        return beans.size() == 0;
     }
 
     /**

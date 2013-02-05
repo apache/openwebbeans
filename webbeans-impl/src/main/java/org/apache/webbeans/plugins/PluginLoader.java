@@ -270,11 +270,6 @@ public class PluginLoader
     
     private boolean pluginsExist()
     {
-        if(plugins == null)
-        {
-            return false;
-        }
-        
-        return true;
+        return plugins == null && plugins.size() > 0;
     }
 }

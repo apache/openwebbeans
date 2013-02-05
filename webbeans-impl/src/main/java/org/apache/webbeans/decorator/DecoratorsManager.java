@@ -225,12 +225,7 @@ public class DecoratorsManager
             }
         }
 
-        if(ok)
-        {
-            return true;
-        }
-
-        return false;
+        return ok;
     }
 
 

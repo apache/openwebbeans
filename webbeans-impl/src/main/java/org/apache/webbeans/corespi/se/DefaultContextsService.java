@@ -189,18 +189,12 @@ public class DefaultContextsService extends AbstractContextsService
     public boolean supportsContext(Class<? extends Annotation> scopeType)
     {
         
-        if(scopeType.equals(RequestScoped.class) ||
-                scopeType.equals(SessionScoped.class) ||
-                scopeType.equals(ApplicationScoped.class) ||
-                scopeType.equals(ConversationScoped.class) ||
-                scopeType.equals(Dependent.class) ||
-                scopeType.equals(Singleton.class))
-        {
-            return true;
-        }
-        
-        return false;
-
+        return scopeType.equals(RequestScoped.class) ||
+               scopeType.equals(SessionScoped.class) ||
+               scopeType.equals(ApplicationScoped.class) ||
+               scopeType.equals(ConversationScoped.class) ||
+               scopeType.equals(Dependent.class) ||
+               scopeType.equals(Singleton.class);
     }
 
 

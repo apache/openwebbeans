@@ -1351,11 +1351,7 @@ public final class WebBeansUtil
             isAlternative =  at.getAnnotation(Alternative.class) != null;
         }
         
-        if(isAlternative && !webBeansContext.getAlternativesManager().isAlternative(beanType, stereotypes))
-        {
-            return false;
-        }
-        return true;
+        return !isAlternative || webBeansContext.getAlternativesManager().isAlternative(beanType, stereotypes);
     }
 
     public static boolean hasInjectionTargetBeanAnnotatedWithAlternative(InjectionTargetBean<?> bean)
@@ -1434,84 +1430,53 @@ public final class WebBeansUtil
 
     public static boolean isExtensionEventType(Class<?> clazz)
     {
-        if(clazz.equals(BeforeBeanDiscovery.class) ||
-                clazz.equals(AfterBeanDiscovery.class) ||
-                clazz.equals(AfterDeploymentValidation.class) ||
-                clazz.equals(BeforeShutdown.class) ||
-                clazz.equals(GProcessAnnotatedType.class) ||
-                clazz.equals(GProcessInjectionTarget.class) ||
-                clazz.equals(GProcessProducer.class) ||
-                clazz.equals(GProcessProducerField.class) ||
-                clazz.equals(GProcessProducerMethod.class) ||
-                clazz.equals(GProcessManagedBean.class) ||
-                clazz.equals(GProcessBean.class) ||
-                clazz.equals(GProcessSessionBean.class) ||
-                clazz.equals(GProcessObservableMethod.class)
-                )
-        {
-            return true;
-        }
-
-        return false;
+        return clazz.equals(BeforeBeanDiscovery.class) ||
+               clazz.equals(AfterBeanDiscovery.class) ||
+               clazz.equals(AfterDeploymentValidation.class) ||
+               clazz.equals(BeforeShutdown.class) ||
+               clazz.equals(GProcessAnnotatedType.class) ||
+               clazz.equals(GProcessInjectionTarget.class) ||
+               clazz.equals(GProcessProducer.class) ||
+               clazz.equals(GProcessProducerField.class) ||
+               clazz.equals(GProcessProducerMethod.class) ||
+               clazz.equals(GProcessManagedBean.class) ||
+               clazz.equals(GProcessBean.class) ||
+               clazz.equals(GProcessSessionBean.class) ||
+               clazz.equals(GProcessObservableMethod.class);
     }
 
     public static boolean isExtensionBeanEventType(Class<?> clazz)
     {
-        if(clazz.equals(GProcessAnnotatedType.class) ||
-                clazz.equals(GProcessInjectionTarget.class) ||
-                clazz.equals(GProcessManagedBean.class) ||
-                clazz.equals(GProcessSessionBean.class) ||
-                clazz.equals(GProcessBean.class)
-                )
-        {
-            return true;
-        }
-
-        return false;
+        return clazz.equals(GProcessAnnotatedType.class) ||
+               clazz.equals(GProcessInjectionTarget.class) ||
+               clazz.equals(GProcessManagedBean.class) ||
+               clazz.equals(GProcessSessionBean.class) ||
+               clazz.equals(GProcessBean.class);
     }
 
     public static boolean isDefaultExtensionBeanEventType(Class<?> clazz)
     {
-        if(clazz.equals(ProcessAnnotatedType.class) ||
-                clazz.equals(ProcessInjectionTarget.class) ||
-                clazz.equals(ProcessManagedBean.class) ||
-                clazz.equals(ProcessBean.class) ||
-                clazz.equals(ProcessSessionBean.class)
-                )
-        {
-            return true;
-        }
-
-        return false;
+        return clazz.equals(ProcessAnnotatedType.class) ||
+               clazz.equals(ProcessInjectionTarget.class) ||
+               clazz.equals(ProcessManagedBean.class) ||
+               clazz.equals(ProcessBean.class) ||
+               clazz.equals(ProcessSessionBean.class);
     }
 
     public static boolean isExtensionProducerOrObserverEventType(Class<?> clazz)
     {
-        if(clazz.equals(GProcessProducer.class) ||
-                clazz.equals(GProcessProducerField.class) ||
-                clazz.equals(GProcessProducerMethod.class) ||
-                clazz.equals(GProcessObservableMethod.class)
-                )
-        {
-            return true;
-        }
-
-        return false;
-
+        return clazz.equals(GProcessProducer.class) ||
+               clazz.equals(GProcessProducerField.class) ||
+               clazz.equals(GProcessProducerMethod.class) ||
+               clazz.equals(GProcessObservableMethod.class);
     }
 
     public static boolean isDefaultExtensionProducerOrObserverEventType(Class<?> clazz)
     {
-        if(clazz.equals(ProcessProducer.class) ||
-                clazz.equals(ProcessProducerField.class) ||
-                clazz.equals(ProcessProducerMethod.class) ||
-                clazz.equals(ProcessObserverMethod.class)
-                )
-        {
-            return true;
-        }
-
-        return false;
+        return clazz.equals(ProcessProducer.class) ||
+               clazz.equals(ProcessProducerField.class) ||
+               clazz.equals(ProcessProducerMethod.class) ||
+               clazz.equals(ProcessObserverMethod.class);
 
     }
 
@@ -1519,12 +1484,7 @@ public final class WebBeansUtil
     {
         if(!(bean instanceof OwbBean))
         {
-            if(bean.getScope().equals(Dependent.class))
-            {
-                return true;
-            }
-
-            return false;
+            return bean.getScope().equals(Dependent.class);
         }
 
         return ((OwbBean) bean).isDependent();
