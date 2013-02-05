@@ -126,7 +126,6 @@ public class ExtensionLoader
 
     /**
      * Clear service list.
-     * TODO since this doesn't remove the beans from the BeanManager it's unlikely to allow you to call loadExtensionServices again
      */
     public void clear()
     {

@@ -46,7 +46,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.BeanAttributesImpl;
@@ -56,8 +55,6 @@ import org.apache.webbeans.component.creation.SelfInterceptorBeanBuilder;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -68,14 +65,7 @@ import org.apache.webbeans.util.ClassUtil;
  */
 public class InterceptorResolutionService
 {
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(InterceptorResolutionService.class);
-
     private final WebBeansContext webBeansContext;
-
-    private final OpenWebBeansEjbLCAPlugin ejbPlugin;
-    private final Class<? extends Annotation> prePassivateClass;
-    private final Class<? extends Annotation> postActivateClass;
-    private final Class<? extends Annotation> aroundTimeoutClass;
 
     /**
      * Enforcing that interceptor callbacks should not be
@@ -87,19 +77,6 @@ public class InterceptorResolutionService
     public InterceptorResolutionService(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-        ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
-        if (ejbPlugin != null)
-        {
-            prePassivateClass = ejbPlugin.getPrePassivateClass();
-            postActivateClass = ejbPlugin.getPostActivateClass();
-            aroundTimeoutClass = ejbPlugin.getAroundTimeoutClass();
-        }
-        else
-        {
-            prePassivateClass = null;
-            postActivateClass = null;
-            aroundTimeoutClass = null;
-        }
     }
 
 

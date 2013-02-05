@@ -228,10 +228,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
 
         return passivatingId;
     }
-    
-    /**
-     * TODO this must be performed at bean-build time!
-     */
+
     public boolean isPassivationCapable()
     {
         if (isPassivationCapable != null)

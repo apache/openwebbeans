@@ -33,7 +33,7 @@ import org.apache.xbean.asm.Type;
 
 /**
  * This factory creates subclasses for abstract classes.
- * TODO this is not used/nor finished yet.
+ * This is being used for Abstract Decorators.
  */
 public class SubclassProxyFactory extends AbstractProxyFactory
 {
