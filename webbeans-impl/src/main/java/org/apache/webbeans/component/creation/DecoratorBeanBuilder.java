@@ -22,6 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -131,15 +132,13 @@ public class DecoratorBeanBuilder<T>
             }
         }
 
-/*X TODO enable again
-        if(isAlternative())
+        if (annotatedType.isAnnotationPresent(Alternative.class))
         {
             if(logger.isLoggable(Level.WARNING))
             {
-                logger.log(Level.WARNING, OWBLogConst.WARN_0005_3, getBeanType().getName());
+                logger.log(Level.WARNING, OWBLogConst.WARN_0005_3, annotatedType.getJavaClass().getName());
             }
         }
-*/
 
 
         if (logger.isLoggable(Level.FINE))
