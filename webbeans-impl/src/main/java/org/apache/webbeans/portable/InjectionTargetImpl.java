@@ -167,7 +167,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     {
         if (probableProxyInstance instanceof OwbInterceptorProxy)
         {
-            return webBeansContext.getInterceptorDecoratorProxyFactory().getInternalInstance(probableProxyInstance);
+            return webBeansContext.getInterceptorDecoratorProxyFactory().unwrapInstance(probableProxyInstance);
         }
 
         return probableProxyInstance;

@@ -27,6 +27,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -52,6 +53,9 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
     /** the name of the field which stores the {@link Provider} for the Contextual Instance */
     public static final String FIELD_INSTANCE_PROVIDER = "owbContextualInstanceProvider";
 
+    /** the Method[] for all protected methods. We need to invoke them via reflection. */
+    public static final String FIELD_PROTECTED_METHODS = "owbProtectedMethods";
+
     /**
      * Caches the proxy classes for each bean.
      * We need this to prevent filling up the ClassLoaders by
@@ -68,6 +72,27 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
     protected Class getMarkerInterface()
     {
         return OwbNormalScopeProxy.class;
+    }
+
+
+    public static <T> T unwrapInstance(T proxyInstance)
+    {
+        if (proxyInstance instanceof OwbNormalScopeProxy)
+        {
+            try
+            {
+                Field internalInstanceField = proxyInstance.getClass().getDeclaredField(FIELD_INSTANCE_PROVIDER);
+                internalInstanceField.setAccessible(true);
+                Provider<T> provider = (Provider<T>) internalInstanceField.get(proxyInstance);
+                return provider.get();
+            }
+            catch (Exception e)
+            {
+                ExceptionUtil.throwAsRuntimeException(e);
+            }
+        }
+
+        return proxyInstance;
     }
 
     /**
@@ -196,18 +221,52 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         String proxyClassName = getUnusedProxyClassName(classLoader, classToProxy.getName() + "$OwbNormalScopeProxy");
 
         Method[] nonInterceptedMethods;
+        Method[] interceptedMethods = null;
         if (classToProxy.isInterface())
         {
             nonInterceptedMethods = classToProxy.getMethods();
         }
         else
         {
-            List<Method> methods = ClassUtil.getNonPrivateMethods(classToProxy, true);
+            List<Method> methods = new ArrayList<Method>();
+            List<Method> protectedMethods = new ArrayList<Method>();
+
+
+            for (Method method : ClassUtil.getNonPrivateMethods(classToProxy, true))
+            {
+                if (unproxyableMethod(method))
+                {
+                    continue;
+                }
+                if (Modifier.isProtected(method.getModifiers()))
+                {
+                    protectedMethods.add(method);
+                }
+                else
+                {
+                    methods.add(method);
+                }
+            }
+
             nonInterceptedMethods = methods.toArray(new Method[methods.size()]);
+            interceptedMethods = protectedMethods.toArray(new Method[protectedMethods.size()]);
         }
 
-        Class<T> clazz = createProxyClass(classLoader, proxyClassName, classToProxy, null, nonInterceptedMethods);
+        Class<T> clazz = createProxyClass(classLoader, proxyClassName, classToProxy, interceptedMethods, nonInterceptedMethods);
 
+        if (interceptedMethods != null && interceptedMethods.length > 0)
+        {
+            try
+            {
+                Field protectedMethodsField = clazz.getDeclaredField(FIELD_PROTECTED_METHODS);
+                protectedMethodsField.setAccessible(true);
+                protectedMethodsField.set(null, interceptedMethods);
+            }
+            catch (Exception e)
+            {
+                throw new ProxyGenerationException(e);
+            }
+        }
         return clazz;
     }
 
@@ -255,6 +314,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitMethodInsn(Opcodes.INVOKESPECIAL, parentClassFileName, "<init>", descriptor);
 
+            // the instance provider field
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitInsn(Opcodes.ACONST_NULL);
             mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_INSTANCE_PROVIDER, Type.getDescriptor(Provider.class));
@@ -275,14 +335,22 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         // variable #1, the Provider<?> for the Contextual Instance
         cw.visitField(Opcodes.ACC_PRIVATE,
                 FIELD_INSTANCE_PROVIDER, Type.getDescriptor(Provider.class), null, null).visitEnd();
+
+        // variable #2, the Method[] for all protected methods
+        cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC,
+                FIELD_PROTECTED_METHODS, Type.getDescriptor(Method[].class), null, null).visitEnd();
     }
 
+    /**
+     * In the NormalScope proxying case this is used for all the protected methods
+     * as they need to get invoked via reflection.
+     */
     @Override
     protected void delegateInterceptedMethods(ClassLoader classLoader, ClassWriter cw, String proxyClassFileName,
                                               Class<?> classToProxy, Method[] interceptedMethods)
             throws ProxyGenerationException
     {
-        // nothing to do ;)
+        //X TODO invoke protected methods via reflection
     }
 
     @Override
@@ -290,13 +358,9 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
                                                  Class<?> classToProxy, Method[] noninterceptedMethods)
             throws ProxyGenerationException
     {
+
         for (Method delegatedMethod : noninterceptedMethods)
         {
-            if (unproxyableMethod(delegatedMethod))
-            {
-                continue;
-            }
-
             String methodDescriptor = Type.getMethodDescriptor(delegatedMethod);
 
             //X TODO handle generic exception types?
@@ -346,6 +410,8 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
 
             mv.visitEnd();
         }
+
     }
+
 
 }

@@ -102,13 +102,20 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
     /**
      * @return the internal instance which gets proxied.
      */
-    public <T> T getInternalInstance(T proxyInstance)
+    public static <T> T unwrapInstance(T proxyInstance)
     {
         try
         {
-            Field internalInstanceField = proxyInstance.getClass().getDeclaredField(FIELD_PROXIED_INSTANCE);
-            internalInstanceField.setAccessible(true);
-            return (T) internalInstanceField.get(proxyInstance);
+            if (proxyInstance instanceof OwbInterceptorProxy)
+            {
+                Field internalInstanceField = proxyInstance.getClass().getDeclaredField(FIELD_PROXIED_INSTANCE);
+                internalInstanceField.setAccessible(true);
+                return (T) internalInstanceField.get(proxyInstance);
+            }
+            else
+            {
+                return proxyInstance;
+            }
         }
         catch (Exception e)
         {
@@ -143,7 +150,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
      * <ol>
      *     <li>
      *         private methods - they do not get proxied at all! If you like to invoke a private method,
-     *         then you can use {@link #getInternalInstance(Object)} and use reflection on it.
+     *         then you can use {@link #unwrapInstance(Object)} and use reflection on it.
      *     </li>
      *     <li>
      *         non-proxied methods - all methods which do not have a business interceptor nor decorator

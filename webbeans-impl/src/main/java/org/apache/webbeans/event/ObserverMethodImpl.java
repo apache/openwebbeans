@@ -291,7 +291,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                         // since private methods cannot be intercepted, we have to unwrap anny possible proxy
                         if (object instanceof OwbNormalScopeProxy)
                         {
-                            object = getWebBeansContext().getInterceptorDecoratorProxyFactory().getInternalInstance(object);
+                            object = getWebBeansContext().getInterceptorDecoratorProxyFactory().unwrapInstance(object);
                         }
                     }
 

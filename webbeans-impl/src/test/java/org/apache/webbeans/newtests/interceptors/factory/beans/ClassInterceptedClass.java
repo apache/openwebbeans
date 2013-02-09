@@ -91,9 +91,9 @@ public class ClassInterceptedClass
         throw new NumberFormatException("should fit");
     }
 
-    protected void initConf()
+    protected int protectedMethod()
     {
-        //
+        return 21;
     }
 
 }

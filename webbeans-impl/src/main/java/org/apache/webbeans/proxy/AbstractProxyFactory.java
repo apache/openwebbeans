@@ -274,7 +274,7 @@ public abstract class AbstractProxyFactory
         int modifiers = delegatedMethod.getModifiers();
 
         //X TODO how to deal with native functions?
-        return (modifiers & (Modifier.PRIVATE | Modifier.PROTECTED | Modifier.STATIC | Modifier.FINAL | Modifier.NATIVE)) > 0 ||
+        return (modifiers & (Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL | Modifier.NATIVE)) > 0 ||
                "finalize".equals(delegatedMethod.getName());
     }
 
