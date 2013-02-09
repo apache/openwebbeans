@@ -54,7 +54,6 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     private final BeansDeployer deployer;
 
     /**XML discovery. */
-    //XML discovery is removed from the specification. It is here for next revisions of spec.
     private final WebBeansXMLConfigurator xmlDeployer;
     
     /**Using for lookup operations*/
@@ -176,10 +175,6 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
 
             // Clear BeanManager
             beanManager.clear();
-
-            // Clear singleton list
-            WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
-                        
         }
         catch (Exception e)
         {
@@ -188,7 +183,11 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
                 logger.log(Level.SEVERE, OWBLogConst.ERROR_0021, e);
             }
         }
-        
+        finally
+        {
+            // Clear singleton list
+            WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
+        }
     }
 
     /**
