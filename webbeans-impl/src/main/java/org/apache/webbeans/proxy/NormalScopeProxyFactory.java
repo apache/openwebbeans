@@ -400,7 +400,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
 
             // and finally invoke the target method on the provided Contextual Instance
             final Type declaringClass = Type.getType(delegatedMethod.getDeclaringClass());
-            boolean interfaceMethod = Modifier.isAbstract(delegatedMethod.getModifiers());
+            boolean interfaceMethod = Modifier.isInterface(delegatedMethod.getDeclaringClass().getModifiers());
             mv.visitMethodInsn(interfaceMethod ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKEVIRTUAL,
                                declaringClass.getInternalName(), delegatedMethod.getName(), methodDescriptor);
 

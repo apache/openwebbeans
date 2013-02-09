@@ -252,7 +252,7 @@ public final class ClassUtil
             {
                 final int modifiers = method.getModifiers();
 
-                if (Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers) || Modifier.isAbstract(modifiers))
+                if (Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers))
                 {
                     continue;
                 }
