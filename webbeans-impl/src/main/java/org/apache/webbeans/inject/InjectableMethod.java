@@ -37,6 +37,8 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.proxy.NormalScopeProxyFactory;
+import org.apache.webbeans.proxy.OwbNormalScopeProxy;
 
 @SuppressWarnings("unchecked")
 public class InjectableMethod<T> extends AbstractInjectable<T>
@@ -45,7 +47,7 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
     protected Method method;
 
     /** Bean parent instance that owns the method */
-    protected Object instance;
+    protected Object ownerInstance;
     
     /**If this method is dispose method*/
     private boolean disposable;
@@ -65,7 +67,7 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
     {
         super(owner,creationalContext);
         method = m;
-        this.instance = instance;
+        this.ownerInstance = instance;
     }
 
     /*
@@ -74,6 +76,12 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
      */
     public T doInjection()
     {
+        Object owner = ownerInstance;
+        if (owner instanceof OwbNormalScopeProxy)
+        {
+            owner = NormalScopeProxyFactory.unwrapInstance(owner);
+        }
+
         List<InjectionPoint> injectedPoints = getInjectionPoints(method);
         List<Object> list = new ArrayList<Object>();
                 
@@ -141,7 +149,7 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
                 getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, true);
             }
 
-            return (T) method.invoke(instance, list.toArray(new Object[list.size()]));
+            return (T) method.invoke(owner, list.toArray(new Object[list.size()]));
 
         }
         catch (Exception e)
