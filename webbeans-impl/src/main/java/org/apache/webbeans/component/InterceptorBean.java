@@ -25,6 +25,7 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
@@ -183,6 +184,10 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
                     return mmInvocationContext.proceed();
                 }
             }
+        }
+        catch (InvocationTargetException ite)
+        {
+            throw ExceptionUtil.throwAsRuntimeException(ite.getCause());
         }
         catch (Exception e)
         {
