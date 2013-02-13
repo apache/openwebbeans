@@ -18,11 +18,14 @@
  */
 package org.apache.webbeans.intercept;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.interceptor.InvocationContext;
+
+import org.apache.webbeans.util.ExceptionUtil;
 
 public abstract class AbstractInvocationContext<T> implements InvocationContext
 {
@@ -93,6 +96,14 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
     @Override
     public Object proceed() throws Exception
     {
-        return method.invoke(target, parameters);
+        try
+        {
+            return method.invoke(target, parameters);
+        }
+        catch (InvocationTargetException ite)
+        {
+            // unpack the reflection Exception
+            throw ExceptionUtil.throwAsRuntimeException(ite.getCause());
+        }
     }
 }
