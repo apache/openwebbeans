@@ -78,6 +78,23 @@ public class NormalScopeProxyFactoryTest extends AbstractUnitTest
     }
 
 
+    /**
+     * Test if protected and package scope methods are proxied as well.
+     * @throws Exception
+     */
+    @Test
+    public void testProtectedMethod() throws Exception
+    {
+        startContainer(ProtectedUsageBean.class);
+
+        ProtectedUsageBean protectedUsage = getInstance(ProtectedUsageBean.class);
+        Assert.assertNotNull(protectedUsage);
+
+        Assert.assertEquals(42, protectedUsage.getPackageMeaningOfLife());
+        Assert.assertEquals(42, protectedUsage.getProtectedMeaningOfLife());
+        Assert.assertEquals(Integer.valueOf(42), protectedUsage.getProtectedIntegerMeaningOfLife());
+    }
+
     public static class TestContextualInstanceProvider<T> implements Provider<T>
     {
         private T instance;
