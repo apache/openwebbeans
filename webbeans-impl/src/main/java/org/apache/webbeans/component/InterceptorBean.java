@@ -24,7 +24,6 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -41,10 +40,6 @@ import org.apache.webbeans.util.ExceptionUtil;
  */
 public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implements Interceptor<T>
 {
-   /**
-     * Constructor of the Interceptor component
-     */
-    private Constructor<T> constructor;
 
     /**
      * The Methods to be called per interception type.
@@ -86,26 +81,6 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
         {
             aroundInvokeMethod = aroundInvokeMethods[0];
         }
-    }
-
-    /**
-     * Get constructor.
-     *
-     * @return constructor
-     */
-    public Constructor<T> getConstructor()
-    {
-        return constructor;
-    }
-
-    /**
-     * Set constructor.
-     *
-     * @param constructor constructor instance
-     */
-    public void setConstructor(Constructor<T> constructor)
-    {
-        this.constructor = constructor;
     }
 
     /**

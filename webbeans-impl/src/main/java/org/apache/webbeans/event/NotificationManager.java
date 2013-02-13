@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.Observes;
@@ -59,8 +58,6 @@ import org.apache.webbeans.util.WebBeansUtil;
 @SuppressWarnings("unchecked")
 public final class NotificationManager
 {
-    private final static Logger logger = WebBeansLoggerFacade.getLogger(NotificationManager.class);
-
     private final Map<Type, Set<ObserverMethod<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverMethod<?>>>();
     private final WebBeansContext webBeansContext;
 
@@ -117,7 +114,7 @@ public final class NotificationManager
                         catch(NoSuchMethodException nsme)
                         {
                             // that's perfectly fine.
-                            // it means that we don't need to remove anything becasue the
+                            // it means that we don't need to remove anything because the
                             // observer method didn't get overridden.
                         }
                     }
