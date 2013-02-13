@@ -127,7 +127,12 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler
      *     return provider;
      * }
      * </pre>
+     *
+     * The trick is to replace the generated proxy class with this handler
+     * and on deserialisation we use readResolve to create/resolve
+     * the proxy class again.
      */
+    @SuppressWarnings("unused")
     Object readResolve() throws ObjectStreamException
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();

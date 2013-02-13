@@ -157,7 +157,8 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
             throw new WebBeansException(e);
         }
     }
-    
+
+    //X TODO is this still needed? If not we can also drop the whole dependentParameters...
     public Map<Bean<?>,Object> getDependentBeanParameters()
     {
         return dependentParameters;
