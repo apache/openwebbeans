@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.lang.reflect.Modifier;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.PassivationCapable;
 
 
@@ -76,24 +75,6 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
         // Do nothing
     }
 
-    /**
-     * Destroys bean.
-     * 
-     * @param <K> bean type info
-     * @param bean bean info
-     * @param instance bean instance
-     */
-    @SuppressWarnings("unchecked")
-    protected <K> void destroyBean(Bean<?> bean, Object instance, CreationalContext<?> creationalContext)
-    {
-        Bean<K> destroy = (Bean<K>) bean;
-        K inst = (K) instance;
-
-        CreationalContext<K> cc = (CreationalContext<K>) creationalContext;
-        destroy.destroy(inst, cc);
-    }
-
-
     protected boolean isPassivationCapable(Class<?> returnType, Integer modifiers)
     {
         if(Modifier.isFinal(modifiers) && !(Serializable.class.isAssignableFrom(returnType)))
@@ -107,13 +88,6 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
         }
         
         return false;
-    }
-
-    public void validatePassivationDependencies()
-    {
-        // don't call super.validatePassivationDependencies()!
-        // the injection points of producers are the parameters of the producermethod.
-        // since CDI-1.1 we must not check those for is serializable anymore.
     }
 
     @Override

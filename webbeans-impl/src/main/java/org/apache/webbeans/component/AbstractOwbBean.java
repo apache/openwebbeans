@@ -36,7 +36,6 @@ import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
@@ -98,16 +97,6 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
         return webBeansContext;
     }
     
-    /**
-     * Gets manager instance
-     * 
-     * @return manager instance
-     */
-    protected BeanManagerImpl getManager()
-    {
-        return webBeansContext.getBeanManagerImpl();
-    }
-
     @Override
     public Class<?> getBeanClass()
     {
