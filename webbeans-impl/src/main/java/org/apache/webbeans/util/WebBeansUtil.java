@@ -1569,27 +1569,6 @@ public final class WebBeansUtil
         return managedBean;
     }
 
-
-    /**
-     * Determines if the injection is to be performed into a static field.
-     *
-     * @param injectionPoint
-     * @return <code>true</code> if the injection is into a static field
-     */
-    public static boolean isStaticInjection(InjectionPoint injectionPoint)
-    {
-        if (injectionPoint != null)
-        {
-            Member member = injectionPoint.getMember();
-            if (member != null && Modifier.isStatic(member.getModifiers()))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public boolean isPassivationCapableDependency(InjectionPoint injectionPoint)
     {
         //Don't attempt to get an instance of the delegate injection point
@@ -1679,8 +1658,6 @@ public final class WebBeansUtil
 
     public <T> ManagedBean<T> defineManagedBean(AnnotatedType<T> type)
     {
-        Class<T> clazz = type.getJavaClass();
-
         BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(type).build();
         ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, type, beanAttributes);
 

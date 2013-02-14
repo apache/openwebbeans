@@ -57,17 +57,12 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
         this.owner = owner;
     }
 
-    public void setDisposalMethod(AnnotatedMethod<P> disposalMethod)
-    {
-        this.disposalMethod = disposalMethod;
-    }
-
     @Override
     public T produce(CreationalContext<T> creationalContext)
     {
         P parentInstance = null;
         CreationalContext<P> parentCreationalContext = null;
-        InjectableMethod<T> m = null;
+        InjectableMethod<T> m;
         try
         {
             parentCreationalContext = webBeansContext.getBeanManagerImpl().createCreationalContext(owner);
@@ -98,7 +93,7 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
         {
             P parentInstance = null;
             CreationalContext<P> parentCreationalContext = null;
-            InjectableMethod<T> m = null;
+            InjectableMethod<T> m;
             try
             {
                 parentCreationalContext = webBeansContext.getBeanManagerImpl().createCreationalContext(owner);

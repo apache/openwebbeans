@@ -36,6 +36,7 @@ import org.apache.webbeans.util.ClassUtil;
 public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T, AnnotatedMethod<?>, ProducerMethodBean<T>>
 {
 
+    //X TODO arne: this should get evaluated or deleted if not needed anymore
     private boolean specialized;
 
     public ProducerMethodBeanBuilder(InjectionTargetBean<T> parent, AnnotatedMethod<?> annotatedMethod, BeanAttributesImpl<T> beanAttributes)
@@ -71,7 +72,8 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
         
         bean.setSpecializedBean(true);        
     }
-    
+
+    //X TODO arne: this should get implemented or removed if not needed anymore
     protected AnnotatedMethod<?> getSuperAnnotated()
     {
         AnnotatedMethod<?> thisMethod = annotatedMember;
