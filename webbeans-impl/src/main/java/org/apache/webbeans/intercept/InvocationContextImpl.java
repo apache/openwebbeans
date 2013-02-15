@@ -183,8 +183,6 @@ public class InvocationContextImpl implements InvocationContext
         }
         catch (InvocationTargetException ite)
         {
-            this.target = null; // destroy target instance
-            
             // Try to provide the original exception to the interceptor stack, 
             // not the InvocationTargetException from Method.invoke
             Throwable t = ite.getCause();
@@ -196,8 +194,6 @@ public class InvocationContextImpl implements InvocationContext
         }
         catch (Exception e)
         {
-            this.target = null; // destroy target instance
-
             throw e;
         }
     }

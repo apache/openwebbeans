@@ -30,6 +30,8 @@ public class DependentInterceptor
     public static boolean DEP_OK = false;
     
     public static int refCount = 0;
+
+    public static Class<?> exceptionTarget = null;
     
     public DependentInterceptor()
     {
@@ -41,6 +43,12 @@ public class DependentInterceptor
     {
         DEP_OK = true;
         
-        return ctx.proceed();
+        try {  
+            return ctx.proceed();
+        }
+        catch (Exception e) { 
+            exceptionTarget = ctx.getTarget().getClass();
+            throw e;
+        }
     }
 }
