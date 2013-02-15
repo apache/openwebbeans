@@ -20,6 +20,7 @@ package org.apache.webbeans.newtests.interceptors.common;
 
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
+import javax.interceptor.AroundInvoke;
 
 import org.apache.webbeans.newtests.interceptors.annotation.DependentInterceptorBindingType;
 
@@ -35,6 +36,7 @@ public class DependentInterceptor
         refCount++;
     }
     
+@AroundInvoke
     public Object aroundInvoke(InvocationContext ctx) throws Exception
     {
         DEP_OK = true;
