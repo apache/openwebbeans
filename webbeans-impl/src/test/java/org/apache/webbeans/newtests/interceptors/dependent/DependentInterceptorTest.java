@@ -77,6 +77,15 @@ public class DependentInterceptorTest extends AbstractUnitTest
         Assert.assertTrue(DependentInterceptor.refCount == 1);
         
         Assert.assertTrue(DependentScopedBean.SAY_HELLO);
+
+        try { 
+            dbean.throwException();
+        }
+        catch (Exception e) { 
+            Assert.assertNotNull(DependentInterceptor.exceptionTarget);
+            Assert.assertTrue(DependentInterceptor.exceptionTarget.equals(DependentScopedBean.class));
+        }
+            
                 
         bean.destroy(dbean, ctx);
         

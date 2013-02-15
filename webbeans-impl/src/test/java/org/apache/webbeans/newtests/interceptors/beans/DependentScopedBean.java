@@ -43,7 +43,13 @@ public class DependentScopedBean
     {
         SAY_HELLO = true;
     }
-    
+
+    @DependentInterceptorBindingType
+    public void throwException()
+    {
+        throw new RuntimeException("goodbye");
+    }
+ 
     @PostConstruct
     public void postConstruct()
     {
