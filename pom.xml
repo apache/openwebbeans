@@ -554,8 +554,8 @@
 
             <dependency>
                 <groupId>org.apache.xbean</groupId>
-                <artifactId>xbean-finder</artifactId>
-                <version>3.7</version>
+                <artifactId>xbean-finder-shaded</artifactId>
+                <version>3.13-SNAPSHOT</version>
             </dependency>
 
             <!--X TODO use a shaded version of:
@@ -566,11 +566,6 @@
                         <optional>true</optional>
                     </dependency>
             -->
-            <dependency>
-                <groupId>org.apache.xbean</groupId>
-                <artifactId>xbean-asm-shaded</artifactId>
-                <version>3.13-SNAPSHOT</version>
-            </dependency>
 
             <dependency>
                 <groupId>net.sf.scannotation</groupId>

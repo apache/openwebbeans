@@ -18,16 +18,18 @@
  */
 package org.apache.webbeans.test.tck.mock;
 
-import java.io.IOException;
-import java.net.URL;
-
-import javassist.ClassPool;
-
 import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
+import org.apache.webbeans.corespi.scanner.xbean.CdiArchive;
 import org.apache.webbeans.util.Asserts;
+import org.apache.xbean.finder.AnnotationFinder;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class TCKMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
 {
+    private Collection<Class<?>> classes = new ArrayList<Class<?>>();
 
     public TCKMetaDataDiscoveryImpl()
     {
@@ -39,19 +41,22 @@ public class TCKMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
     {
     }
 
+    @Override
+    protected AnnotationFinder initFinder()
+    {
+        if (finder != null)
+        {
+            return finder;
+        }
+
+        archive = new CdiArchive(classes);
+        finder = new AnnotationFinder(archive);
+        return finder;
+    }
+
     public void addBeanClass(Class<?> clazz)
     {
-        Asserts.assertNotNull(clazz);
-        
-        URL url = ClassPool.getDefault().find(clazz.getName());
-        try
-        {
-            this.getAnnotationDB().scanClass(url.openStream());
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        classes.add(clazz);
     }
     
     public void addBeanXml(URL url)

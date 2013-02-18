@@ -19,27 +19,30 @@
 package org.apache.webbeans.corespi.scanner;
 
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.corespi.se.BeansXmlAnnotationDB;
-import org.apache.webbeans.corespi.se.DefaultBDABeansXmlScanner;
+import org.apache.webbeans.corespi.scanner.xbean.CdiArchive;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.xbean.finder.AnnotationFinder;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class AbstractMetaDataDiscovery implements ScannerService
 {
@@ -52,42 +55,56 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
 
     //private Map<String, InputStream> EJB_XML_LOCATIONS = new HashMap<String, InputStream>();
 
-    /** Annotation Database */
-    private AnnotationDB annotationDB;
-
+    protected ClassLoader loader;
+    protected CdiArchive archive;
+    protected AnnotationFinder finder;
     protected boolean isBDAScannerEnabled = false;
     protected BDABeansXmlScanner bdaBeansXmlScanner;
 
-    /**
-     * determines if cross referencing already got performed or not
-     */
-    private boolean isCrossReferenzed = false;
-
-    protected AbstractMetaDataDiscovery()
+    protected AnnotationFinder initFinder()
     {
-        initAnnotationDB();
+        if (finder != null)
+        {
+            return finder;
+        }
+
+        final Collection<URL> trimmedUrls = new ArrayList<URL>();
+        for (final URL url : getUrls())
+        {
+            try
+            {
+                String file = url.getFile();
+                if (file.endsWith(META_INF_BEANS_XML))
+                {
+                    file = file.substring(0, file.length() - META_INF_BEANS_XML.length());
+                }
+                else if (file.endsWith("WEB-INF/beans.xml"))
+                {
+                    file = file.substring(0, file.length() - "WEB-INF/beans.xml".length());
+                }
+                trimmedUrls.add(new URL(url.getProtocol(), url.getHost(), url.getPort(), file));
+            }
+            catch (MalformedURLException e)
+            {
+                throw new WebBeansConfigurationException("Can't trim url " + url.toExternalForm());
+            }
+        }
+
+        archive = new CdiArchive(WebBeansUtil.getCurrentClassLoader(), trimmedUrls);
+        finder = new AnnotationFinder(archive);
+
+        return finder;
     }
 
-    private void initAnnotationDB()
+    protected Iterable<URL> getUrls()
     {
-        try
-        {
-            annotationDB = new AnnotationDB();
-            annotationDB.setScanClassAnnotations(true);
-            annotationDB.setScanFieldAnnotations(true);
-            annotationDB.setScanMethodAnnotations(true);
-            annotationDB.setScanParameterAnnotations(true);
-        }
-        catch(Exception e)
-        {
-            throw new WebBeansDeploymentException(e);
-        }
+        return webBeansXmlLocations;
     }
 
     /**
      * Configure the Web Beans Container with deployment information and fills
      * annotation database and beans.xml stream database.
-     * 
+     *
      * @throws org.apache.webbeans.exception.WebBeansConfigurationException if any run time exception occurs
      */
     public void scan() throws WebBeansDeploymentException
@@ -104,7 +121,9 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
 
     public void release()
     {
-        initAnnotationDB();
+        finder = null;
+        archive = null;
+        loader = null;
     }
 
     abstract protected void configure();
@@ -120,6 +139,8 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
      */
     protected String[] findBeansXmlBases(String resourceName, ClassLoader loader)
     {
+        this.loader = loader;
+
         ArrayList<String> list = new ArrayList<String>();
         try
         {
@@ -143,12 +164,14 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
             throw new RuntimeException(e);
         }
 
+        initFinder();
+
         return list.toArray(new String[list.size()]);
 
     }
 
 
-    
+
     public void init(Object object)
     {
         // set per BDA beans.xml flag here because setting it in constructor
@@ -156,31 +179,16 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         // properties are loaded.
         String usage = WebBeansContext.currentInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_BDA_BEANSXML_SCANNER);
         isBDAScannerEnabled = Boolean.parseBoolean(usage);
-        if (isBDAScannerEnabled)
-        {
-            annotationDB = new BeansXmlAnnotationDB();
-            ((BeansXmlAnnotationDB)annotationDB).setBdaBeansXmlScanner(this);
-
-            bdaBeansXmlScanner = new DefaultBDABeansXmlScanner();
-        }
-    }
-
-    /**
-     * @return the aNNOTATION_DB
-     */
-    protected AnnotationDB getAnnotationDB()
-    {
-        return annotationDB;
     }
 
     public Set<String> getAllAnnotations(String className)
     {
-        return annotationDB.getAnnotationIndex().get(className);
+        throw new UnsupportedOperationException();
     }
 
 
     /**
-     * add the given beans.xml path to the locations list 
+     * add the given beans.xml path to the locations list
      * @param beansXmlUrl location path
      */
     protected void addWebBeansXmlLocation(URL beansXmlUrl)
@@ -197,65 +205,35 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
      */
     public Set<Class<?>> getBeanClasses()
     {
-        crossReferenceBeans();
-
-        Set<Class<?>> classSet = new HashSet<Class<?>>();
-        Map<String,Set<String>> index = annotationDB.getClassIndex();
-        
-        if(index != null)
-        {
-            Set<String> strSet = index.keySet();
-            if(strSet != null)
-            {
-                for(String str : strSet)
-                {
-                    try
-                    {
-                        Class<?> clazz = ClassUtil.getClassFromName(str);
-                        if (clazz != null)
-                        {
-                            
-                            // try to provoke a NoClassDefFoundError exception which is thrown 
-                            // if some dependencies of the class are missing
-                            clazz.getDeclaredFields();
-                            clazz.getDeclaredMethods();
-                            
-                            // we can add this class cause it has been loaded completely
-                            classSet.add(clazz);
-                            
-                        }
-                    }
-                    catch (NoClassDefFoundError e)
-                    {
-                        if (logger.isLoggable(Level.WARNING))
-                        {
-                            logger.log(Level.WARNING, OWBLogConst.WARN_0018, new Object[] { str, e.toString() });
-                        }
-                    }
-                }
-            }   
-        }    
-        
-        return classSet;
-    }
-
-    /**
-     * Ensure that all Annotation CrossReferences got resolved.
-     */
-    protected synchronized void crossReferenceBeans()
-    {
-        if (!isCrossReferenzed)
+        final Set<Class<?>> classSet = new HashSet<Class<?>>();
+        for(String str : archive.getClasses())
         {
             try
             {
-                annotationDB.crossReferenceMetaAnnotations();
+                Class<?> clazz = ClassUtil.getClassFromName(str);
+                if (clazz != null)
+                {
+
+                    // try to provoke a NoClassDefFoundError exception which is thrown
+                    // if some dependencies of the class are missing
+                    clazz.getDeclaredFields();
+                    clazz.getDeclaredMethods();
+
+                    // we can add this class cause it has been loaded completely
+                    classSet.add(clazz);
+
+                }
             }
-            catch (AnnotationDB.CrossReferenceException e)
+            catch (NoClassDefFoundError e)
             {
-                throw new RuntimeException(e);
+                if (logger.isLoggable(Level.WARNING))
+                {
+                    logger.log(Level.WARNING, OWBLogConst.WARN_0018, new Object[] { str, e.toString() });
+                }
             }
-            isCrossReferenzed = true;
         }
+
+        return classSet;
     }
 
 

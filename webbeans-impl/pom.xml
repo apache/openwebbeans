@@ -43,13 +43,8 @@
         </dependency>
 
         <dependency>
-            <groupId>net.sf.scannotation</groupId>
-            <artifactId>scannotation</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-asm-shaded</artifactId>
+            <artifactId>xbean-finder-shaded</artifactId>
         </dependency>
 
         <dependency>

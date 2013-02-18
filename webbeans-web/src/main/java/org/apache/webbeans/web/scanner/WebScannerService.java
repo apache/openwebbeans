@@ -18,22 +18,24 @@
  */
 package org.apache.webbeans.web.scanner;
 
+import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
+import org.apache.webbeans.corespi.scanner.xbean.CdiArchive;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.xbean.finder.AnnotationFinder;
+
+import javax.servlet.ServletContext;
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.servlet.ServletContext;
-
-import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
-import org.apache.webbeans.corespi.scanner.AnnotationDB;
-import org.apache.webbeans.corespi.se.BeansXmlAnnotationDB;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.util.WebBeansUtil;
-import org.scannotation.WarUrlFinder;
 
 /**
  * Configures the web application to find beans.
@@ -51,6 +53,40 @@ public class WebScannerService extends AbstractMetaDataDiscovery
         
     }
 
+    @Override
+    protected AnnotationFinder initFinder()
+    {
+        final Collection<URL> trimmedUrls = new ArrayList<URL>();
+        try
+        {
+            for (final String trimmed : getArchives())
+            {
+                try
+                {
+                    String file = trimmed;
+                    if (file.endsWith(META_INF_BEANS_XML))
+                    {
+                        file = file.substring(0, file.length() - META_INF_BEANS_XML.length());
+                    }
+                    trimmedUrls.add(new URL(file));
+                }
+                catch (MalformedURLException e)
+                {
+                    throw new WebBeansConfigurationException("Can't trim url " + trimmed);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            throw new WebBeansConfigurationException(WebBeansLoggerFacade.getTokenString(OWBLogConst.ERROR_0002), e);
+        }
+
+        archive = new CdiArchive(WebBeansUtil.getCurrentClassLoader(), trimmedUrls);
+        finder = new AnnotationFinder(archive);
+
+        return finder;
+    }
+
     public void init(Object context)
     {
         super.init(context);
@@ -63,12 +99,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
         {
             if (!configure)
             {
-                Set<String> arcs = getArchives();
-                String[] urls = new String[arcs.size()];
-                urls = arcs.toArray(urls);
-
-                getAnnotationDB().scanArchives(urls);
-                
+                initFinder();
                 configure = true;
             }
 
@@ -173,20 +204,23 @@ public class WebScannerService extends AbstractMetaDataDiscovery
         if (url != null)
         {
             addWebBeansXmlLocation(url);
-            URL resourceUrl = WarUrlFinder.findWebInfClassesPath(this.servletContext);
+
+            URL resourceUrl = null;
+            final String path = servletContext.getRealPath("/WEB-INF/classes");
+            if (path != null)
+            {
+                final File fp = new File(path);
+                if (fp.exists())
+                {
+                    resourceUrl = fp.toURI().toURL();
+                }
+            }
 
             if (resourceUrl == null)
             {
                 return null;
             }
 
-            //set resource to beans.xml mapping
-            AnnotationDB annotationDB = getAnnotationDB();
-
-            if(annotationDB instanceof BeansXmlAnnotationDB)
-            {
-                ((BeansXmlAnnotationDB)annotationDB).setResourceBeansXml(resourceUrl.toExternalForm(), url.toExternalForm());
-            }
             return resourceUrl.toExternalForm();
         }
 

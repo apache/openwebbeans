@@ -18,19 +18,15 @@
  */
 package org.apache.webbeans.lifecycle.test;
 
-import java.io.IOException;
+import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
+import org.apache.webbeans.corespi.scanner.xbean.CdiArchive;
+import org.apache.webbeans.exception.WebBeansDeploymentException;
+import org.apache.webbeans.util.Asserts;
+import org.apache.xbean.finder.AnnotationFinder;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javassist.ClassPool;
-
-import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
-import org.apache.webbeans.exception.WebBeansDeploymentException;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.util.Asserts;
 
 /**
  * Used by each test. 
@@ -39,8 +35,6 @@ import org.apache.webbeans.util.Asserts;
  */
 public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDiscovery
 {
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(OpenWebBeansTestMetaDataDiscoveryService.class);
-
     public OpenWebBeansTestMetaDataDiscoveryService()
     {
         
@@ -60,10 +54,8 @@ public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDi
     {
         if(classes != null)
         {
-            for(Class<?> clazz : classes)
-            {
-                addBeanClass(clazz);
-            }
+            archive = new CdiArchive(classes);
+            finder = new AnnotationFinder(archive);
         }
     }
     
@@ -86,27 +78,6 @@ public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDi
                     throw new WebBeansDeploymentException("could not convert to URL: " + url, e);
                 }
             }
-        }
-    }
-    
-    
-    /**
-     * Adds new class for scanning.
-     * @param clazz new scanned class
-     */
-    private void addBeanClass(Class<?> clazz)
-    {
-        Asserts.assertNotNull(clazz);
-        
-        URL url = ClassPool.getDefault().find(clazz.getName());
-        
-        try
-        {
-            getAnnotationDB().scanClass(url.openStream());
-        }
-        catch (IOException e)
-        {
-            logger.log(Level.WARNING, "Problems while scanning class " + clazz.getName());
         }
     }
     
