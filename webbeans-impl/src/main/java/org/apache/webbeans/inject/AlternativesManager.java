@@ -45,7 +45,7 @@ public class AlternativesManager
     }
 
     @SuppressWarnings("unchecked")
-    public void addStereoTypeAlternative(Class<?> alternative,String fileName,ScannerService scanner)
+    public void addStereoTypeAlternative(Class<?> alternative, String fileName, ScannerService scanner)
     {                
         if(Annotation.class.isAssignableFrom(alternative))
         {
@@ -79,7 +79,7 @@ public class AlternativesManager
         }        
     }
     
-    public void addClazzAlternative(Class<?> alternative,String fileName,ScannerService scanner)
+    public void addClazzAlternative(Class<?> alternative, String fileName, ScannerService scanner)
     {
         if(AnnotationUtil.hasClassAnnotation(alternative, Alternative.class))
         {
