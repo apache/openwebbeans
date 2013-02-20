@@ -248,22 +248,6 @@
                                             <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
                                         </artifactItem>
 
-                                        <!-- javassist -->
-                                        <artifactItem>
-                                            <groupId>javassist</groupId>
-                                            <artifactId>javassist</artifactId>
-                                            <overWrite>true</overWrite>
-                                            <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
-                                        </artifactItem>
-
-                                        <!-- scannotation -->
-                                        <artifactItem>
-                                            <groupId>net.sf.scannotation</groupId>
-                                            <artifactId>scannotation</artifactId>
-                                            <overWrite>true</overWrite>
-                                            <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
-                                        </artifactItem>
-
                                         <!-- commons-logging -->
                                         <artifactItem>
                                             <groupId>commons-logging</groupId>

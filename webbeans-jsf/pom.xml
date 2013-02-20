@@ -103,8 +103,7 @@
                         <Export-Package>!org.apache.webbeans.internal.*,org.apache.webbeans.*;version="${project.version}"</Export-Package>
                         <Private-Package>org.apache.webbeans.internal.*</Private-Package>
                         <Import-Package>
-                            *,
-                            javassist.util.proxy
+                            *
                         </Import-Package>
                     </instructions>
                 </configuration>

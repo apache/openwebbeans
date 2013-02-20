@@ -69,7 +69,6 @@
         <dom4j.version>1.6.1</dom4j.version>
         <geronimo_ejb.version>1.0.2</geronimo_ejb.version>
         <geronimo_el.version>1.0.2</geronimo_el.version>
-        <scannatation.version>1.0.2</scannatation.version>
         <geronimo_annotation.version>1.0.1</geronimo_annotation.version>
         <geronimo_jpa.version>1.1</geronimo_jpa.version>
         <geronimo_jta.version>1.1.1</geronimo_jta.version>
@@ -78,7 +77,6 @@
         <geronimo_atinject.version>1.0</geronimo_atinject.version>
         <geronimo_interceptor.version>1.0</geronimo_interceptor.version>
         <geronimo_validation.version>1.1</geronimo_validation.version>
-        <javassist.version>3.12.0.GA</javassist.version>
         <openejb.version>3.1.4</openejb.version>
         <myfaces.version>2.0.7</myfaces.version>
     </properties>
@@ -547,36 +545,9 @@
             </dependency>
 
             <dependency>
-                <groupId>javassist</groupId>
-                <artifactId>javassist</artifactId>
-                <version>${javassist.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.apache.xbean</groupId>
                 <artifactId>xbean-finder-shaded</artifactId>
                 <version>3.13-SNAPSHOT</version>
-            </dependency>
-
-            <!--X TODO use a shaded version of:
-                    <dependency>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm-all</artifactId>
-                        <version>4.1</version>
-                        <optional>true</optional>
-                    </dependency>
-            -->
-
-            <dependency>
-                <groupId>net.sf.scannotation</groupId>
-                <artifactId>scannotation</artifactId>
-                <version>${scannatation.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javassist</groupId>
-                        <artifactId>javassist</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <dependency>
