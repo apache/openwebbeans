@@ -44,8 +44,6 @@ public class WebScannerService extends AbstractMetaDataDiscovery
 {
     private final static Logger logger = WebBeansLoggerFacade.getLogger(WebScannerService.class);
 
-    private boolean configure = false;
-
     protected ServletContext servletContext = null;
 
     public WebScannerService()
@@ -95,20 +93,6 @@ public class WebScannerService extends AbstractMetaDataDiscovery
     
     protected void configure()
     {
-        try
-        {
-            if (!configure)
-            {
-                initFinder();
-                configure = true;
-            }
-
-        }
-        catch (Exception e)
-        {
-            throw new WebBeansConfigurationException(WebBeansLoggerFacade.getTokenString(OWBLogConst.ERROR_0002), e);
-        }
-
     }
 
     /**

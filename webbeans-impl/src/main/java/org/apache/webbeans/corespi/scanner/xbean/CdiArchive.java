@@ -37,10 +37,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-// this delegate pattern is interesting
-// because we will be able to add
-// some exclusion config through it
-// using Filter + FilterArchive
+/**
+ * this delegate pattern is interesting
+ * because we will be able to add
+ * some exclusion config through it
+ * using Filter + FilterArchive
+ */
 public class CdiArchive implements Archive
 {
     private final Map<URL, Collection<String>> map = new HashMap<URL, Collection<String>>();

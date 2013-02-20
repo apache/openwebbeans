@@ -112,6 +112,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         try
         {
             configure();
+            initFinder();
         }
         catch (Exception e)
         {
