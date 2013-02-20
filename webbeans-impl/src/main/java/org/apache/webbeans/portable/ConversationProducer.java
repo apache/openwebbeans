@@ -58,7 +58,7 @@ public class ConversationProducer extends InjectionTargetImpl<ConversationImpl>
         if (conversationId != null)
         {
             //Gets propogated conversation
-            conversation = webBeansContext.getConversationManager().getPropogatedConversation(conversationId,sessionId);
+            conversation = webBeansContext.getConversationManager().getPropogatedConversation(conversationId, sessionId);
         }
         
         if (conversation == null)

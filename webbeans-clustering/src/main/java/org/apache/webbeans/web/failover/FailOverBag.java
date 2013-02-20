@@ -126,8 +126,9 @@ public class FailOverBag implements Serializable, Externalizable
             return;
         }
 
-        // We could not directly use java object stream since we are using javassist.
-        // Serialize the bag by use javassist object stream.
+        // In old times (< OWB-1.2.0) We could not directly use java object stream since we were using javassist.
+        // Thus we had to serialize the bag by use javassist object stream.
+        // this is needed anymore since owb-1.2.0!
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = failOverService.getObjectOutputStream(baos);
         oos.writeObject(items);

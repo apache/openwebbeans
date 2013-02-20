@@ -98,7 +98,10 @@ public interface FailOverService
      * Container provided object input stream.
      * 
      * Note, the stream should support deserializing javassist objects.
-     * 
+     *
+     * @deprecated we do not use javassist anymore since owb-1.2.0, thus no special handling is needed!
+     *
+     *
      * @return custom object input stream.
      */
     public ObjectInputStream getObjectInputStream(InputStream in) throws IOException;
@@ -107,7 +110,9 @@ public interface FailOverService
      * Container provided object output stream.
      * 
      * Note, the stream should support serializing javassist objects.
-     * 
+     *
+     * @deprecated as we do not use Javassist anymore this is not needed anymore!
+     *
      * @return custom object output stream.
      */
     public ObjectOutputStream getObjectOutputStream(OutputStream out) throws IOException;

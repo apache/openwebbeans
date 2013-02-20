@@ -25,8 +25,14 @@ import org.apache.webbeans.spi.ConversationService;
 
 public class MockConversationService implements ConversationService
 {
-    private String conversationId;
-    private String sessionId;
+    private final String conversationId;
+    private final String sessionId;
+
+
+    public MockConversationService() {
+        this.conversationId = "0815";
+        this.sessionId = "dummySession";
+    }
 
     public MockConversationService(HttpSession session, Conversation conversation)
     {

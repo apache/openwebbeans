@@ -31,8 +31,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javassist.util.proxy.ProxyObjectOutputStream;
-
 import javax.enterprise.context.Conversation;
 import javax.enterprise.inject.spi.Bean;
 import javax.servlet.http.HttpSession;
@@ -327,18 +325,20 @@ public class DefaultOwbFailOverService implements FailOverService
      */
     public ObjectInputStream getObjectInputStream(InputStream in) throws IOException
     {
-        return new OwbProxyObjectInputStream(in);
+        return new ObjectInputStream(in);
     }
 
     /**
      * Get object output stream. Note, the stream should support deserialize
      * javassist objects.
-     * 
+     *
+     * @deprecated as we do not use Javassist anymore this is not needed anymore!
+     *
      * @return custom object output stream.
      */
     public ObjectOutputStream getObjectOutputStream(OutputStream out) throws IOException
     {
-        return new ProxyObjectOutputStream(out);
+        return new ObjectOutputStream(out);
     }
 
     public String getJvmId()
