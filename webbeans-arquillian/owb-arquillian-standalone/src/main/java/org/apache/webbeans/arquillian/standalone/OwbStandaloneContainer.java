@@ -18,11 +18,21 @@
  */
 package org.apache.webbeans.arquillian.standalone;
 
+import javax.enterprise.inject.spi.BeanManager;
+
+import java.util.logging.Logger;
+
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.spi.ContainerLifecycle;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.spi.client.container.LifecycleException;
 import org.jboss.arquillian.container.spi.client.protocol.ProtocolDescription;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
+import org.jboss.arquillian.container.spi.context.annotation.DeploymentScoped;
+import org.jboss.arquillian.core.api.InstanceProducer;
+import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 
@@ -30,48 +40,89 @@ import org.jboss.shrinkwrap.descriptor.api.Descriptor;
  */
 public class OwbStandaloneContainer implements DeployableContainer<OwbStandaloneConfiguration>
 {
-    public ProtocolMetaData deploy(Archive<?> archive) throws DeploymentException
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+    private static final Logger LOG = Logger.getLogger(OwbStandaloneContainer.class.getName());
+
+
+    @Inject
+    @DeploymentScoped
+    private InstanceProducer<ContainerLifecycle> lifecycleProducer;
+
+    @Inject
+    @DeploymentScoped
+    private InstanceProducer<BeanManager> beanManagerProducer;
+
+    private WebBeansContext webBeansContext;
 
     public Class<OwbStandaloneConfiguration> getConfigurationClass()
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void setup(OwbStandaloneConfiguration owbStandaloneConfiguration)
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void start() throws LifecycleException
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void stop() throws LifecycleException
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
+        return OwbStandaloneConfiguration.class;
     }
 
     public ProtocolDescription getDefaultProtocol()
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new ProtocolDescription("Local");
+    }
+
+    public void setup(OwbStandaloneConfiguration owbStandaloneConfiguration)
+    {
+        LOG.fine("OpenWebBeans Arquillian setup started");
+
+        WebBeansFinder.setSingletonService(new OwbArquillianSingletonService());
+
+    }
+
+    public void start() throws LifecycleException
+    {
+        LOG.fine("OpenWebBeans Arquillian starting");
+
+        webBeansContext = WebBeansContext.getInstance();
+    }
+
+    public ProtocolMetaData deploy(Archive<?> archive) throws DeploymentException
+    {
+        LOG.fine("OpenWebBeans Arquillian starting deployment");
+
+        ContainerLifecycle lifecycle = webBeansContext.getService(ContainerLifecycle.class);
+
+        lifecycleProducer.set(lifecycle);
+        beanManagerProducer.set(lifecycle.getBeanManager());
+
+        OwbArquillianScannerService dummyScannerService = (OwbArquillianScannerService) webBeansContext.getScannerService();
+        dummyScannerService.setArchive(archive);
+
+        lifecycle.startApplication(null);
+
+        return new ProtocolMetaData();
     }
 
     public void undeploy(Archive<?> archive) throws DeploymentException
     {
+        LOG.fine("OpenWebBeans Arquillian undeploying");
+
+        ContainerLifecycle lifecycle = lifecycleProducer.get();
+        if (lifecycle != null)
+        {
+            // end the session lifecycle
+
+            lifecycle.stopApplication(null);
+        }
+    }
+
+    public void stop() throws LifecycleException
+    {
+        LOG.fine("OpenWebBeans Arquillian stopping");
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void deploy(Descriptor descriptor) throws DeploymentException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException("Deployment of Descriptors is not supported in owb-arquillian-standalone!");
     }
 
     public void undeploy(Descriptor descriptor) throws DeploymentException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException("Deployment of Descriptors is not supported in owb-arquillian-standalone!");
     }
+
+
 }

@@ -16,18 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.arquillian.standalone;
+package org.apache.webbeans.arquillian.test.beans;
 
-import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
-import org.jboss.arquillian.core.spi.LoadableExtension;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import java.io.Serializable;
 
 /**
+ * A sample User to get injected into an Arquillian test
  */
-public class OwbArquillianExtension implements LoadableExtension
+@SessionScoped
+public class SampleUser implements Serializable
 {
-    public void register(ExtensionBuilder builder)
+    private String firstName;
+
+    @PostConstruct
+    public void init()
     {
-        builder.service(DeployableContainer.class, OwbStandaloneContainer.class)
-                .observer(OwbLifecycleHandler.class);
+        firstName = "Hans";
+    }
+
+    public String getFirstName()
+    {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName)
+    {
+        this.firstName = firstName;
     }
 }

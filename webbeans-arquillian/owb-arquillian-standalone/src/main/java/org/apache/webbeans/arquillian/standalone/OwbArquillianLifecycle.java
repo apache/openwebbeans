@@ -18,16 +18,23 @@
  */
 package org.apache.webbeans.arquillian.standalone;
 
-import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
-import org.jboss.arquillian.core.spi.LoadableExtension;
+
+import org.apache.webbeans.lifecycle.AbstractLifeCycle;
+import org.apache.webbeans.spi.ScannerService;
 
 /**
+ *
  */
-public class OwbArquillianExtension implements LoadableExtension
+public class OwbArquillianLifecycle extends AbstractLifeCycle
 {
-    public void register(ExtensionBuilder builder)
+
+
+    public OwbArquillianLifecycle(ScannerService scannerService)
     {
-        builder.service(DeployableContainer.class, OwbStandaloneContainer.class)
-                .observer(OwbLifecycleHandler.class);
+        super();
+
+        // we replace the ScannerService which shall get used
+        this.scannerService = scannerService;
     }
+
 }
