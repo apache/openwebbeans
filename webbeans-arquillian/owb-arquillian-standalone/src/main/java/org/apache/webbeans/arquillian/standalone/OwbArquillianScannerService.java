@@ -18,7 +18,11 @@
  */
 package org.apache.webbeans.arquillian.standalone;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -115,16 +119,16 @@ public class OwbArquillianScannerService implements ScannerService
 
     private void scanJarArchive(JavaArchive archive)
     {
-        Node beansXml = archive.get("META-INF/beans.xml");
+        URL beansXmlUrl = getBeanXmlUrl(archive, "META-INF/beans.xml");
 
-        if (beansXml == null)
+        if (beansXmlUrl == null)
         {
             // this is not a CDI archive
             return;
         }
 
         // otherwise we store it for later use
-        //X TODO beansXmls.add(beansXml.getAsset())
+        beansXmls.add(beansXmlUrl);
 
         // and now add all classes
         Map<ArchivePath, Node> classes = archive.getContent(Filters.include(".*\\.class"));
@@ -154,6 +158,50 @@ public class OwbArquillianScannerService implements ScannerService
             }
         }
 
+    }
+
+    private URL getBeanXmlUrl(Archive archive, String beansXmlPath)
+    {
+        final Node beansXml = archive.get(beansXmlPath);
+
+        try
+        {
+            String urlLocation = "archive://" + archive.getName() + beansXmlPath;
+
+            return  new URL(null, urlLocation, new URLStreamHandler()
+                        {
+                            @Override
+                            protected URLConnection openConnection(URL u) throws IOException
+                            {
+                                return new URLConnection(u)
+                                {
+                                    @Override
+                                    public void connect() throws IOException
+                                    {}
+
+                                    @Override
+                                    public InputStream getInputStream() throws IOException
+                                    {
+                                        return beansXml.getAsset().openStream();
+                                    }
+                                };
+                            };
+                        });
+        }
+        catch (Exception e)
+        {
+            RuntimeException runtimeException;
+            if (e instanceof RuntimeException)
+            {
+                runtimeException = (RuntimeException) e;
+            }
+            else
+            {
+                runtimeException = new RuntimeException("Error while parsing beans.xml location", e);
+            }
+
+            throw runtimeException;
+        }
     }
 
 
