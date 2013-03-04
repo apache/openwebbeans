@@ -33,13 +33,18 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.Node;
+import org.jboss.shrinkwrap.api.asset.ArchiveAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /**
  *
  */
 public class OwbArquillianScannerService implements ScannerService
 {
+
+    private final static String WEB_INF_CLASS_FOLDER = "/WEB-INF/classes/";
+
     private final boolean beansXmlBdaScanningEnabled;
     private Archive archive;
 
@@ -82,6 +87,10 @@ public class OwbArquillianScannerService implements ScannerService
         {
             scanJarArchive((JavaArchive) archive);
         }
+        else if (archive instanceof WebArchive)
+        {
+            scanWebArchive((WebArchive) archive);
+        }
         else
         {
             //X TODO
@@ -116,6 +125,38 @@ public class OwbArquillianScannerService implements ScannerService
 
     // --------- private implementation -----------
 
+    private void scanWebArchive(WebArchive archive)
+    {
+        URL webBeansXmlUrl = getBeanXmlUrl(archive, "WEB-INF/beans.xml");
+        if (webBeansXmlUrl != null)
+        {
+            beansXmls.add(webBeansXmlUrl);
+        }
+
+        URL metainfBeansXmlUrl = getBeanXmlUrl(archive, WEB_INF_CLASS_FOLDER + "META-INF/beans.xml");
+        if (metainfBeansXmlUrl != null)
+        {
+            beansXmls.add(webBeansXmlUrl);
+        }
+
+        if (metainfBeansXmlUrl != null || webBeansXmlUrl != null)
+        {
+            // in this case we need to scan the WEB-INF/classses folder for .class files
+            Map<ArchivePath, Node> classes = archive.getContent(Filters.include(WEB_INF_CLASS_FOLDER + ".*\\.class"));
+            scanClasses(classes, WEB_INF_CLASS_FOLDER);
+        }
+
+
+        // and now scan all the jars in the WAR
+        Map<ArchivePath, Node> jars = archive.getContent(Filters.include("/WEB-INF/lib/.*\\.jar"));
+        for (Map.Entry<ArchivePath, Node> jarEntry : jars.entrySet())
+        {
+            ArchiveAsset archiveAsset = (ArchiveAsset) jarEntry.getValue().getAsset();
+            JavaArchive jarArchive = (JavaArchive) archiveAsset.getArchive();
+            scanJarArchive(jarArchive);
+        }
+
+    }
 
     private void scanJarArchive(JavaArchive archive)
     {
@@ -132,9 +173,24 @@ public class OwbArquillianScannerService implements ScannerService
 
         // and now add all classes
         Map<ArchivePath, Node> classes = archive.getContent(Filters.include(".*\\.class"));
+        scanClasses(classes, null);
+    }
+
+    /**
+     *
+     * @param classes the scanned classes
+     * @param classBasePath the base class in which the classes are, or null if they are directly in the root
+     */
+    private void scanClasses(Map<ArchivePath, Node> classes, String classBasePath)
+    {
         for (Map.Entry<ArchivePath, Node> classEntry : classes.entrySet())
         {
             String className = classEntry.getKey().get();
+
+            if (classBasePath != null && className.startsWith(WEB_INF_CLASS_FOLDER))
+            {
+                className = className.substring(WEB_INF_CLASS_FOLDER.length());
+            }
 
             // cut off leading slashes
             if (className.startsWith("/"))
@@ -147,6 +203,7 @@ public class OwbArquillianScannerService implements ScannerService
 
             className = className.replace('/', '.');
 
+
             try
             {
                 Class<?> beanClass = Class.forName(className);
@@ -157,16 +214,20 @@ public class OwbArquillianScannerService implements ScannerService
                 throw new RuntimeException("Could not scan class", cnfe);
             }
         }
-
     }
 
     private URL getBeanXmlUrl(Archive archive, String beansXmlPath)
     {
         final Node beansXml = archive.get(beansXmlPath);
 
+        if (beansXml == null)
+        {
+            return null;
+        }
+
         try
         {
-            String urlLocation = "archive://" + archive.getName() + beansXmlPath;
+            String urlLocation = "archive://" + archive.getName() + "/" + beansXmlPath;
 
             return  new URL(null, urlLocation, new URLStreamHandler()
                         {
