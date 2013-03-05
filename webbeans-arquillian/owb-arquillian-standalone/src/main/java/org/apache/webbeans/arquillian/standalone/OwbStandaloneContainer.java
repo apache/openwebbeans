@@ -51,6 +51,7 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
     @DeploymentScoped
     private InstanceProducer<BeanManager> beanManagerProducer;
 
+    private OwbArquillianSingletonService singletonService;
     private WebBeansContext webBeansContext;
 
     public Class<OwbStandaloneConfiguration> getConfigurationClass()
@@ -67,19 +68,22 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
     {
         LOG.fine("OpenWebBeans Arquillian setup started");
 
-        WebBeansFinder.setSingletonService(new OwbArquillianSingletonService());
+        singletonService = new OwbArquillianSingletonService();
+        WebBeansFinder.setSingletonService(singletonService);
 
     }
 
     public void start() throws LifecycleException
     {
         LOG.fine("OpenWebBeans Arquillian starting");
-
-        webBeansContext = WebBeansContext.getInstance();
     }
 
     public ProtocolMetaData deploy(Archive<?> archive) throws DeploymentException
     {
+        singletonService.initOwb();
+
+        webBeansContext = WebBeansContext.getInstance();
+
         LOG.fine("OpenWebBeans Arquillian starting deployment");
 
         ContainerLifecycle lifecycle = webBeansContext.getService(ContainerLifecycle.class);
@@ -99,6 +103,8 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
     {
         LOG.fine("OpenWebBeans Arquillian undeploying");
 
+        OwbArquillianScannerService dummyScannerService = (OwbArquillianScannerService) webBeansContext.getScannerService();
+        dummyScannerService.clear();
         ContainerLifecycle lifecycle = lifecycleProducer.get();
         if (lifecycle != null)
         {

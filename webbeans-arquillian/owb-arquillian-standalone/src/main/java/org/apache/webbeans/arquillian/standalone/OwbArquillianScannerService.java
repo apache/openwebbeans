@@ -45,7 +45,7 @@ public class OwbArquillianScannerService implements ScannerService
 
     private final static String WEB_INF_CLASS_FOLDER = "/WEB-INF/classes/";
 
-    private final boolean beansXmlBdaScanningEnabled;
+    private boolean beansXmlBdaScanningEnabled;
     private Archive archive;
 
     private Set<URL> beansXmls = new HashSet<URL>();
@@ -94,7 +94,7 @@ public class OwbArquillianScannerService implements ScannerService
         else
         {
             //X TODO
-            throw new IllegalStateException("Not yet implemented");
+            throw new IllegalStateException("Scanning of Archive " + archive.getClass().getName() + "Not yet implemented");
         }
     }
 
@@ -266,4 +266,11 @@ public class OwbArquillianScannerService implements ScannerService
     }
 
 
+    public void clear()
+    {
+        archive = null;
+
+        beansXmls = new HashSet<URL>();
+        beanClasses = new HashSet<Class<?>>();
+    }
 }

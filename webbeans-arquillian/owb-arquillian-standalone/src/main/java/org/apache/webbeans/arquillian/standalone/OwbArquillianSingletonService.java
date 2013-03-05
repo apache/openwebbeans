@@ -34,9 +34,14 @@ import org.apache.webbeans.spi.SingletonService;
 public class OwbArquillianSingletonService implements SingletonService<WebBeansContext>
 {
 
-    private final WebBeansContext webBeansContext;
+    private WebBeansContext webBeansContext;
 
     public OwbArquillianSingletonService()
+    {
+        initOwb();
+    }
+
+    public synchronized void initOwb()
     {
         ScannerService dummyScannerService = new OwbArquillianScannerService();
 
@@ -55,6 +60,7 @@ public class OwbArquillianSingletonService implements SingletonService<WebBeansC
     @Override
     public void clear(Object key)
     {
+        webBeansContext.clear();
     }
 
     @Override
