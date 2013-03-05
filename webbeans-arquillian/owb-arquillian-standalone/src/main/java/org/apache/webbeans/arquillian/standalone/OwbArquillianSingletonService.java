@@ -48,7 +48,7 @@ public class OwbArquillianSingletonService implements SingletonService<WebBeansC
         Map<Class<?>, Object> initialServices = new HashMap<Class<?>, Object>();
         initialServices.put(ScannerService.class,  dummyScannerService);
 
-        //X TODO this is needed because of a dirty hack in the OpenWebBeansConfiguration
+        // this is needed because of a dirty hack in the OpenWebBeansConfiguration
         initialServices.put(SecurityService.class, new SimpleSecurityService());
 
         Properties initialConfig = new Properties();

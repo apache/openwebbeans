@@ -28,6 +28,6 @@ public class OwbStandaloneConfiguration implements ContainerConfiguration
 {
     public void validate() throws ConfigurationException
     {
-        //X TODO implement validation
+        // not needed right now
     }
 }

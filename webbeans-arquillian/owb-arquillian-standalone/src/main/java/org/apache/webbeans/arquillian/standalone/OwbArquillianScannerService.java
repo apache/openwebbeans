@@ -82,7 +82,6 @@ public class OwbArquillianScannerService implements ScannerService
             return;
         }
 
-        //X TODO add WebArchive and others as well
         if (archive instanceof JavaArchive)
         {
             scanJarArchive((JavaArchive) archive);
@@ -93,7 +92,6 @@ public class OwbArquillianScannerService implements ScannerService
         }
         else
         {
-            //X TODO
             throw new IllegalStateException("Scanning of Archive " + archive.getClass().getName() + "Not yet implemented");
         }
     }
