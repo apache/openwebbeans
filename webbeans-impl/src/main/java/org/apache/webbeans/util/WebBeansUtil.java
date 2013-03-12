@@ -655,14 +655,8 @@ public final class WebBeansUtil
         Set<Bean<?>> resolvers = isConfiguredWebBeans(specializedClass, true);
         AlternativesManager altManager = webBeansContext.getAlternativesManager();
 
-        if (resolvers != null)
+        if (resolvers != null && !resolvers.isEmpty())
         {
-            if(resolvers.isEmpty())
-            {
-                throw new InconsistentSpecializationException("Specialized bean for class : " + specializedClass
-                        + " is not enabled in the deployment.");
-            }
-
             specialized = resolvers.iterator().next();
 
             if(resolvers.size() > 1)
