@@ -469,6 +469,7 @@
         <module>webbeans-tck</module>
         <module>distribution</module>
         <module>webbeans-doc</module>
+        <module>webbeans-arquillian</module>
     </modules>
 
     <dependencyManagement>
