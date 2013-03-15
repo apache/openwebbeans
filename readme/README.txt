@@ -76,6 +76,49 @@ for the whole Application. This behaviour will most likely also be the default b
 in the CDI-1.1 JSR-346 specification.
 
 
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.1.8
+-------------------------------------------
+
+Bug
+
+    [OWB-700] - ProcessInjectionTarget.setInjectionTarget() has no effect when trying to post process beans
+    [OWB-723] - Interceptors doesn't work for beans got from stereotype annotated producer methods
+    [OWB-736] - NPE while removing dependent beans
+    [OWB-742] - @Alternative is ignored when using the Provider interface.
+    [OWB-743] - Overloaded EJB Observer methods fail to deploy
+    [OWB-751] - OWB annotation litterals implementation uses only instanceof in equals implementation
+    [OWB-760] - CLONE - Decorator position not well managed if the decorator is abstract
+    [OWB-761] - position in DelegateHandler shouldn't be static
+    [OWB-785] - WebContextsService isn't compatible with actor-frameworks
+    [OWB-790] - owb-1.1.x - deployment error when a @Specializes bean is disabled via an Extension
+
+New Feature
+
+    [OWB-789] - owb-1.1.x - openwebbeans-arquillian container
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.1.7
+-------------------------------------------
+
+Bug
+
+    [OWB-711] - Specialization does not deactivate Observer methods in parent class
+    [OWB-713] - Static observer methods of superclasses are not called when a method with the same name and parameters exists in the subclass
+    [OWB-718] - Decorator can't call two methods of the delegate object in the same method
+    [OWB-719] - @Named qualifier is not adhering to CDI spec default naming conventions
+    [OWB-720] - injections using generic not well managed
+    [OWB-722] - @Typed not respected for beans using generics
+    [OWB-724] - Ambiguous producer methods and fields are not detected due to bug in AbstractProducerBean equals and hashCode
+    [OWB-725] - Beans containing a producerMethod are using the wrong CreationalContext
+    [OWB-732] - ClassLoader leak in WebBeansUtil.isScopeTypeNormalCache
+    [OWB-734] - CLONE - AbstractProducer stores CreationalContext
+
+Task
+
+    [OWB-712] - Enable console output for checkstyle
+    [OWB-721] - create a branch for OWB-1.1.x maintenance and switch trunk to 1.2.0-SNAPSHOT
 
 -------------------------------------------
 Release Notes - OpenWebBeans - Version 1.1.6
