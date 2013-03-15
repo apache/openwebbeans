@@ -22,10 +22,11 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.1.8-SNAPSHOT</version>
+        <version>h</version>
     </parent>
     <groupId>org.apache.openwebbeans.arquillian</groupId>
     <artifactId>owb-arquillian-parent</artifactId>
+  <version>1.1.8</version>
     <packaging>pom</packaging>
     <name>OWB Arquillian Parent</name>
     <modules>
