@@ -269,7 +269,7 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
-                    <releaseProfiles>apache-release,tck,jsr330-tck</releaseProfiles>
+                    <arguments>-Papache-release -Ptck -Pjsr330-tck</arguments>
                 </configuration>
             </plugin>
 
