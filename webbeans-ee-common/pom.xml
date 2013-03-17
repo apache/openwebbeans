@@ -20,12 +20,12 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.1.8</version>
+        <version>1.1.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>openwebbeans-ee-common</artifactId>
-  <version>1.1.8</version>
+  <version>1.1.9-SNAPSHOT</version>
     <name>EE Common plugin</name>
     <description>Apache OpenWebBeans Java EE Common</description>
 
