@@ -782,48 +782,64 @@ public final class ClassUtil
     {
         Type requiredTypeArg = null;
         Type beanTypeArg = null;
+        int ok = 0;
         for(int i = 0; i< requiredTypeArgs.length;i++)
         {
             requiredTypeArg = requiredTypeArgs[i];
             beanTypeArg = beanTypeArgs[i];
-            
+
             //Required type is parametrized and bean type is parametrized
             if(ClassUtil.isParametrizedType(requiredTypeArg) && ClassUtil.isParametrizedType(beanTypeArg))
             {
-                return checkBeanAndRequiredTypeIsParametrized(beanTypeArg, requiredTypeArg);
+                if (checkBeanAndRequiredTypeIsParametrized(beanTypeArg, requiredTypeArg))
+                {
+                    ok++;
+                }
             }
             //Required type is wildcard
             else if(ClassUtil.isWildCardType(requiredTypeArg))
             {
-                return checkRequiredTypeIsWildCard(beanTypeArg, requiredTypeArg);
+                if (checkRequiredTypeIsWildCard(beanTypeArg, requiredTypeArg))
+                {
+                    ok++;
+                }
             }
             //Required type is actual type and bean type is type variable
             else if(requiredTypeArg instanceof Class && ClassUtil.isTypeVariable(beanTypeArg))
             {
-                return checkRequiredTypeIsClassAndBeanTypeIsVariable(beanTypeArg, requiredTypeArg);
+                if (checkRequiredTypeIsClassAndBeanTypeIsVariable(beanTypeArg, requiredTypeArg))
+                {
+                    ok++;
+                }
             }
             //Required type is Type variable and bean type is type variable
             else if(ClassUtil.isTypeVariable(requiredTypeArg) && ClassUtil.isTypeVariable(beanTypeArg))
             {
-                return checkBeanTypeAndRequiredIsTypeVariable(beanTypeArg, requiredTypeArg);
-            }      
-            
+                if ( checkBeanTypeAndRequiredIsTypeVariable(beanTypeArg, requiredTypeArg))
+                {
+                    ok++;
+                }
+            }
+
             //Both type is actual type
             else if((beanTypeArg instanceof Class) && (requiredTypeArg instanceof Class))
             {
                 if(isClassAssignable((Class<?>)requiredTypeArg,(Class<?>)beanTypeArg))
                 {
-                    return true;
+                    ok++;
                 }
             }
             //Bean type is actual type and required type is type variable
             else if((beanTypeArg instanceof Class) && (ClassUtil.isTypeVariable(requiredTypeArg)))
             {
-                return checkRequiredTypeIsTypeVariableAndBeanTypeIsClass(beanTypeArg, requiredTypeArg);
+                if (checkRequiredTypeIsTypeVariableAndBeanTypeIsClass(beanTypeArg, requiredTypeArg))
+                {
+                    ok++;
+                }
             }
         }
-        
-        return false;
+
+        return ok == requiredTypeArgs.length;
     }
 
     /**
