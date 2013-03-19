@@ -105,7 +105,7 @@ public class InjectionExceptionUtils
         }
         else
         {
-            violationMessage = newViolation("Ambigious resolution");
+            violationMessage = newViolation("Ambiguous resolution");
         }
 
         throwAmbiguousResolutionExceptionForBeans(beans, violationMessage);
