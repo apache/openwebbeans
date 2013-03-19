@@ -626,8 +626,28 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
             }
             else
             {
-                Class<?> rawType = (Class<?>)((ParameterizedType)clazz).getRawType();
+                ParameterizedType parameterizedType = (ParameterizedType) clazz;
+                Class<?> rawType = (Class<?>) parameterizedType.getRawType();
                 builder.append(rawType.getName());
+                builder.append("<");
+                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+                if (actualTypeArguments.length > 0)
+                {
+                    for (Type actualType : actualTypeArguments)
+                    {
+                        if (Class.class.isInstance(actualType))
+                        {
+                            builder.append(Class.class.cast(actualType).getName().replace("java.lang.", ""));
+                        }
+                        else
+                        {
+                            builder.append(actualType);
+                        }
+                        builder.append(",");
+                    }
+                }
+                builder.delete(builder.length() - 1, builder.length());
+                builder.append(">");
             }
             
             if(index < size)
