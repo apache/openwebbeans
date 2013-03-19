@@ -337,8 +337,25 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
             }
             else
             {
-                Class<?> rawType = (Class<?>)((ParameterizedType)clazz).getRawType();
+                ParameterizedType parameterizedType = (ParameterizedType) clazz;
+                Class<?> rawType = (Class<?>) parameterizedType.getRawType();
                 builder.append(rawType.getName());
+                builder.append("<");
+                for (Type actualType : parameterizedType.getActualTypeArguments())
+                {
+                    if (Class.class.isInstance(actualType))
+                    {
+                        builder.append(Class.class.cast(actualType).getName().replace("java.lang.", ""));
+                    }
+                    else
+                    {
+                        builder.append(actualType);
+                    }
+                    builder.append(",");
+                }
+                builder.delete(builder.length() - 1, builder.length());
+                builder.append(">");
+
             }
             
             if(index < size)
