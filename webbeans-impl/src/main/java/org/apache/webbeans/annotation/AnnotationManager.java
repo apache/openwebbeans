@@ -43,7 +43,6 @@ import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -56,12 +55,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages annotation usage by classes in this application.
  */
 public final class AnnotationManager
 {
+    private Map<Class<? extends Annotation>, Boolean> checkedQualifierAnnotations =
+            new ConcurrentHashMap<Class<? extends Annotation>, Boolean>();
+    private Map<Class<? extends Annotation>, Boolean> checkedStereotypeAnnotations =
+            new ConcurrentHashMap<Class<? extends Annotation>, Boolean>();
 
     private final BeanManagerImpl beanManagerImpl;
     private final WebBeansContext webBeansContext;
@@ -239,17 +243,28 @@ public final class AnnotationManager
      */
     public boolean isQualifierAnnotation(Class<? extends Annotation> clazz)
     {
+        Boolean checkedAnnotationResult = checkedQualifierAnnotations.get(clazz);
+
+        if (checkedAnnotationResult != null)
+        {
+            return checkedAnnotationResult;
+        }
+
+        boolean result = false;
+
         Asserts.nullCheckForClass(clazz);
         if (clazz.isAnnotationPresent(Qualifier.class))
         {
-            return true;
+            result = true;
         }
         else if(beanManagerImpl.getAdditionalQualifiers().contains(clazz))
         {
-            return true;
+            result = true;
         }
 
-        return false;
+        checkedQualifierAnnotations.put(clazz, result);
+
+        return result;
     }
 
     public <X> Annotation[] getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(
@@ -438,9 +453,18 @@ public final class AnnotationManager
     {
         Asserts.nullCheckForClass(clazz);
 
+        Boolean checkedAnnotationResult = checkedStereotypeAnnotations.get(clazz);
+
+        if (checkedAnnotationResult != null)
+        {
+            return checkedAnnotationResult;
+        }
+
+        boolean result = false;
+
         if (clazz.isAnnotationPresent(Stereotype.class))
         {
-            return true;
+            result = true;
         }
         else
         {
@@ -453,11 +477,15 @@ public final class AnnotationManager
                 checkedAnnotations.add(annotation.annotationType());
                 if (isStereoTypeAnnotation(annotation.annotationType(), checkedAnnotations))
                 {
-                    return true;
+                    result = true;
+                    break;
                 }
             }
         }
-        return false;
+
+        checkedStereotypeAnnotations.put(clazz, result);
+
+        return result;
     }
 
     public boolean hasStereoTypeMetaAnnotation(Set<Class<? extends Annotation>> anns)
