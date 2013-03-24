@@ -224,7 +224,11 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
             CreationalContext<Object> cc = (CreationalContext<Object>)instance.getBeanCreationalContext();
 
             //Destroy instance
-            destroyInstance((Contextual<Object>) contextual, instance.getBeanInstance(), cc);
+            final Object beanInstance = instance.getBeanInstance();
+            if (beanInstance != null)
+            {
+                destroyInstance((Contextual<Object>) contextual, beanInstance, cc);
+            }
         }
         
         //Clear context map
