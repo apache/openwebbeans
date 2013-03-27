@@ -37,7 +37,7 @@ under the License.
         </file>
 
         <file>
-            <source>../readme/README_1_1_6.txt</source>
+            <source>../readme/README.txt</source>
         </file>
 
         <file>
@@ -223,6 +223,13 @@ under the License.
             <excludes>
                 <exclude>org.apache.openwebbeans:openwebbeans-spi:jar:sources</exclude>
             </excludes>
+        </dependencySet>
+
+        <dependencySet>
+            <outputDirectory>arquillian</outputDirectory>
+            <includes>
+                <include>org.apache.openwebbeans.arquillian:owb-arquillian-standalone</include>
+            </includes>
         </dependencySet>
 
     </dependencySets>
