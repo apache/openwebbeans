@@ -48,7 +48,7 @@ public class OwbArquillianScannerService implements ScannerService
     private boolean beansXmlBdaScanningEnabled;
     private Archive archive;
 
-    private Set<URL> beansXmls = new HashSet<URL>();
+    private Set<URL> beansXmls = new UrlSet();
     private Set<Class<?>> beanClasses = new HashSet<Class<?>>();
 
 
