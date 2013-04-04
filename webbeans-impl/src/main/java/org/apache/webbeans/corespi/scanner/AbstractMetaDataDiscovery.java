@@ -165,8 +165,6 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
             throw new RuntimeException(e);
         }
 
-        initFinder();
-
         return list.toArray(new String[list.size()]);
 
     }
