@@ -115,7 +115,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
 
     public <T> T createNormalScopeProxy(Bean<T> bean)
     {
-        ClassLoader classLoader = bean.getClass().getClassLoader();
+        ClassLoader classLoader = bean.getBeanClass().getClassLoader();
 
         Class<T> classToProxy;
         if (bean instanceof OwbBean)
