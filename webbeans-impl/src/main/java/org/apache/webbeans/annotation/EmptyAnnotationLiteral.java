@@ -27,6 +27,23 @@ import java.lang.annotation.Annotation;
  */
 public abstract class EmptyAnnotationLiteral<T extends Annotation> extends AnnotationLiteral<T>
 {
+    private Class<T> annotationType;
+
+    protected EmptyAnnotationLiteral()
+    {
+        this.annotationType = getAnnotationType(getClass());
+    }
+
+    /**
+     * Implemented for compatibility reasons with other cdi-api jar's.
+     * See OWB-802.
+     */
+    @Override
+    public Class<? extends Annotation> annotationType()
+    {
+        return annotationType;
+    }
+
     /**
      * Implemented for performance reasons.
      * This is needed because an Annotation always returns 0 as hashCode
@@ -53,5 +70,46 @@ public abstract class EmptyAnnotationLiteral<T extends Annotation> extends Annot
         // implemented for performance reasons
         return Annotation.class.isInstance(other) &&
                 Annotation.class.cast(other).annotationType().equals(annotationType());
+    }
+
+    private Class<T> getAnnotationType(Class<?> definedClazz)
+    {
+        Type superClazz = definedClazz.getGenericSuperclass();
+
+        Class<T> clazz = null;
+
+        if (superClazz.equals(Object.class))
+        {
+            throw new RuntimeException("Super class must be parametrized type!");
+        }
+        else if (superClazz instanceof ParameterizedType)
+        {
+            ParameterizedType paramType = (ParameterizedType) superClazz;
+            Type[] actualArgs = paramType.getActualTypeArguments();
+
+            if (actualArgs.length == 1)
+            {
+                //Actual annotation type
+                Type type = actualArgs[0];
+
+                if (type instanceof Class)
+                {
+                    clazz = (Class<T>) type;
+                    return clazz;
+                }
+                else
+                {
+                    throw new RuntimeException("Not class type!");
+                }
+            }
+            else
+            {
+                throw new RuntimeException("More than one parametric type!");
+            }
+        }
+        else
+        {
+            return getAnnotationType((Class<?>) superClazz);
+        }
     }
 }
