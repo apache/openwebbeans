@@ -25,6 +25,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.PassivationCapable;
+import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.BeanAttributesImpl;
@@ -45,6 +46,31 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
         
         this.bean = bean;
         
+    }
+
+    @Override
+    public Producer<T> getProducer()
+    {
+        return new Producer<T>()
+        {
+            @Override
+            public T produce(CreationalContext<T> creationalContext)
+            {
+                return bean.create(creationalContext);
+            }
+
+            @Override
+            public void dispose(T instance)
+            {
+                bean.destroy(instance, null);
+            }
+
+            @Override
+            public Set<InjectionPoint> getInjectionPoints()
+            {
+                return bean.getInjectionPoints();
+            }
+        };
     }
 
     @Override

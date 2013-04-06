@@ -21,7 +21,6 @@ package org.apache.webbeans.component;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.portable.ExtensionProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 
 /**
@@ -31,8 +30,7 @@ import org.apache.webbeans.util.AnnotationUtil;
  *
  * @param <T> type info
  */
-// TODO : Should not extend InjectionTargetBean, but AbstractOwbBean
-public class ExtensionBean<T> extends InjectionTargetBean<T>
+public class ExtensionBean<T> extends BuildInOwbBean<T>
 {
     /**
      * Creates a new extesion bean.
@@ -44,13 +42,11 @@ public class ExtensionBean<T> extends InjectionTargetBean<T>
     {
         super(webBeansContext,
                 WebBeansType.EXTENSION,
-                webBeansContext.getAnnotatedElementFactory().newAnnotatedType(returnType),
                 new BeanAttributesImpl<T>(
                         webBeansContext.getAnnotatedElementFactory().getAnnotatedType(returnType).getTypeClosure(),
                         AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
                         ApplicationScoped.class),
-                returnType);
-        setEnabled(true);
-        setProducer(new ExtensionProducer<T>(getAnnotatedType(), getInjectionPoints(), webBeansContext));
+                returnType,
+                new ExtensionProducerFactory<T>(webBeansContext.getAnnotatedElementFactory().getAnnotatedType(returnType), webBeansContext));
     }
 }

@@ -18,29 +18,34 @@
  */
 package org.apache.webbeans.portable;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Producer;
+import javax.inject.Provider;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.portable.events.ExtensionLoader;
+import org.apache.webbeans.container.ProducerFactory;
+import org.apache.webbeans.util.Asserts;
 
-public class ExtensionProducer<T> extends InjectionTargetImpl<T>
+public class ProviderBasedProxyProducerFactory<T> implements ProducerFactory<T>
 {
 
-    public ExtensionProducer(AnnotatedType<T> annotatedType,
-                             Bean<T> owner,
-                             WebBeansContext webBeansContext)
+    private Provider<T> provider;
+    private Class<T> providerType;
+    private WebBeansContext webBeansContext;
+    
+    public ProviderBasedProxyProducerFactory(Provider<T> provider, Class<T> providerType, WebBeansContext context)
     {
-        super(annotatedType, webBeansContext.getInjectionPointFactory().buildInjectionPoints(owner, annotatedType), webBeansContext, null, null);
+        Asserts.assertNotNull(provider);
+        Asserts.assertNotNull(providerType);
+        Asserts.assertNotNull(context);
+        this.provider = provider;
+        this.providerType = providerType;
+        this.webBeansContext = context;
     }
 
     @Override
-    public T produce(CreationalContext<T> creationalContext)
+    public Producer<T> createProducer(Bean<T> bean)
     {
-        ExtensionLoader loader = webBeansContext.getExtensionLoader();
-        
-        return loader.getBeanInstance((Bean<T>)((CreationalContextImpl<T>) creationalContext).getBean());
+        return new ProviderBasedProxyProducer<T>(webBeansContext, providerType, provider);
     }
 }

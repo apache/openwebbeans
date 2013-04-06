@@ -34,6 +34,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.inject.Inject;
 
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -68,7 +69,7 @@ public class ObserverMethodsBuilder<T, I extends InjectionTargetBean<T>>
     /**
      * {@inheritDoc}
      */
-    public Set<ObserverMethod<?>> defineObserverMethods(InjectionTargetBean<T> bean)
+    public Set<ObserverMethod<?>> defineObserverMethods(AbstractOwbBean<T> bean)
     {   
         Set<ObserverMethod<?>> definedObservers = new HashSet<ObserverMethod<?>>();
         Set<AnnotatedMethod<? super T>> annotatedMethods = annotatedType.getMethods();    

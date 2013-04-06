@@ -20,7 +20,7 @@ package org.apache.webbeans.portable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Set;
+import java.util.Collections;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
@@ -29,9 +29,9 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
 public class ProducerFieldProducer<T, P> extends AbstractProducer<T>
@@ -39,13 +39,16 @@ public class ProducerFieldProducer<T, P> extends AbstractProducer<T>
 
     private Bean<P> owner;
     private WebBeansContext webBeansContext;
-    private AnnotatedField<P> producerField;
+    private AnnotatedField<? super P> producerField;
 
-    public ProducerFieldProducer(OwbBean<P> owner, AnnotatedField<P> producerField, Set<InjectionPoint> points)
+    public ProducerFieldProducer(Bean<P> owner, AnnotatedField<? super P> producerField, WebBeansContext context)
     {
-        super(points);
+        super(Collections.<InjectionPoint>emptySet());
+        Asserts.assertNotNull(owner, "owner may not be null");
+        Asserts.assertNotNull(producerField, "field may not be null");
+        Asserts.assertNotNull(context, "WebBeansContext may not be null");
         this.owner = owner;
-        this.webBeansContext = owner.getWebBeansContext();
+        this.webBeansContext = context;
         this.producerField = producerField;
     }
 

@@ -104,9 +104,11 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
     }
 
     @Override
-    protected ProducerMethodBean<T> createBean(InjectionTargetBean<?> parent, Class<T> beanClass)
+    protected <P> ProducerMethodBean<T> createBean(InjectionTargetBean<P> parent, Class<T> beanClass)
     {
-        ProducerMethodBean<T> producerMethodBean = new ProducerMethodBean<T>(parent, beanAttributes, beanClass);
+        AnnotatedMethod<P> annotatedMethod = (AnnotatedMethod<P>) annotatedMember;
+        ProducerMethodBean<T> producerMethodBean
+            = new ProducerMethodBean<T>(parent, beanAttributes, beanClass, new MethodProducerFactory<T, P>(annotatedMethod, parent, parent.getWebBeansContext()));
         producerMethodBean.setSpecializedBean(specialized);
         return producerMethodBean;
     }

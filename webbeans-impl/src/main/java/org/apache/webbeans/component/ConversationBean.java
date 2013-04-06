@@ -36,7 +36,7 @@ import org.apache.webbeans.util.CollectionUtil;
  * @version $Rev$ $Date$
  *
  */
-public class ConversationBean extends InjectionTargetBean<ConversationImpl> implements InterceptedMarker
+public class ConversationBean extends BuildInOwbBean<ConversationImpl> implements InterceptedMarker
 {
     /**
      * Default constructor.
@@ -46,7 +46,6 @@ public class ConversationBean extends InjectionTargetBean<ConversationImpl> impl
     {
         super(webBeansContext,
               WebBeansType.CONVERSATION,
-              webBeansContext.getAnnotatedElementFactory().newAnnotatedType(ConversationImpl.class),
               new BeanAttributesImpl<ConversationImpl>(
                       CollectionUtil.<Type>unmodifiableSet(Conversation.class, ConversationImpl.class, Object.class),
                       AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
@@ -55,8 +54,9 @@ public class ConversationBean extends InjectionTargetBean<ConversationImpl> impl
                       false,
                       Collections.<Class<? extends Annotation>>emptySet(),
                       false),
-              ConversationImpl.class);
+              ConversationImpl.class,
+              new SimpleProducerFactory<ConversationImpl>(
+                      new ConversationProducer(webBeansContext.getAnnotatedElementFactory().newAnnotatedType(ConversationImpl.class), webBeansContext)));
         setEnabled(true);
-        setProducer(new ConversationProducer(getAnnotatedType(), webBeansContext));
     }
 }

@@ -48,6 +48,7 @@ import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
@@ -68,6 +69,7 @@ import javax.enterprise.inject.spi.ProcessProducer;
 import javax.enterprise.inject.spi.ProcessProducerField;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.ProcessSessionBean;
+import javax.enterprise.inject.spi.Producer;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -98,7 +100,6 @@ import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
 import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
 import org.apache.webbeans.component.creation.ProducerMethodBeansBuilder;
-import org.apache.webbeans.component.creation.ProducerMethodProducerBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
@@ -107,7 +108,6 @@ import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.plugins.PluginLoader;
-import org.apache.webbeans.portable.ProducerFieldProducer;
 import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
@@ -473,9 +473,9 @@ public final class WebBeansUtil
     public <T> ExtensionBean<T> createExtensionComponent(Class<T> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        ExtensionBeanBuilder<T> extensionBeanCreator = new ExtensionBeanBuilder<T>(webBeansContext, clazz);
-        ExtensionBean<T> bean = extensionBeanCreator.getBean();
-        new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, bean.getAnnotatedType()).defineObserverMethods(bean);
+        ExtensionBeanBuilder<T> extensionBeanBuilder = new ExtensionBeanBuilder<T>(webBeansContext, clazz);
+        ExtensionBean<T> bean = extensionBeanBuilder.getBean();
+        new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, extensionBeanBuilder.getAnnotatedType()).defineObserverMethods(bean);
         return bean;
     }
 
@@ -756,7 +756,7 @@ public final class WebBeansUtil
                         if (producerBean.getParent() == superBean && producerBean.getProducer() instanceof ProducerMethodProducer)
                         {
                             ProducerMethodProducer<?, ?> producer = (ProducerMethodProducer<?, ?>) producerBean.getProducer();
-                            producer.setOwner((Bean) comp);
+                            producer.specializeBy((Bean) comp);
                         }
                     }
                 }
@@ -1170,27 +1170,19 @@ public final class WebBeansUtil
      * @param bean bean instance
      * @return event
      */
-    public <T> GProcessInjectionTarget fireProcessInjectionTargetEvent(InjectionTargetBean<T> bean)
+    public <T> ProcessInjectionTarget<T> fireProcessInjectionTargetEvent(InjectionTarget<T> injectionTarget, AnnotatedType<T> annotatedType)
     {
-        GProcessInjectionTarget processInjectionTargetEvent = createProcessInjectionTargetEvent(bean);
+        GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget, annotatedType);
         return fireProcessInjectionTargetEvent(processInjectionTargetEvent);
-
-
     }
 
-    public GProcessInjectionTarget fireProcessInjectionTargetEvent(GProcessInjectionTarget processInjectionTargetEvent)
+    private GProcessInjectionTarget fireProcessInjectionTargetEvent(GProcessInjectionTarget processInjectionTargetEvent)
     {
         //Fires ProcessInjectionTarget
         webBeansContext.getBeanManagerImpl().fireEvent(processInjectionTargetEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
 
         return processInjectionTargetEvent;
     }
-
-    public <T> GProcessInjectionTarget createProcessInjectionTargetEvent(InjectionTargetBean<T> bean)
-    {
-        return new GProcessInjectionTarget(bean.getInjectionTarget(), bean.getAnnotatedType());
-    }
-
 
     /**
      * Returns <code>ProcessInjectionTarget</code> event.
@@ -1208,26 +1200,13 @@ public final class WebBeansUtil
 
     }
 
-
-    public GProcessProducer fireProcessProducerEventForMethod(ProducerMethodBean<?> producerMethod, AnnotatedMethod<?> method)
+    public <T> Producer<T> fireProcessProducerEvent(Producer<T> producer, AnnotatedMember<?> annotatedMember)
     {
-        ProducerMethodProducerBuilder builder = new ProducerMethodProducerBuilder(producerMethod);
-        GProcessProducer producerEvent = new GProcessProducer(builder.build(method), method);
-
-        //Fires ProcessProducer for methods
-        webBeansContext.getBeanManagerImpl().fireEvent(producerEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-
-        return producerEvent;
-    }
-
-    public GProcessProducer fireProcessProducerEventForField(ProducerFieldBean<?> producerField, AnnotatedField<?> field)
-    {
-        GProcessProducer producerEvent = new GProcessProducer(new ProducerFieldProducer(producerField.getParent(), field, producerField.getInjectionPoints()), field);
-
-        //Fires ProcessProducer for fields
-        webBeansContext.getBeanManagerImpl().fireEvent(producerEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-
-        return producerEvent;
+        GProcessProducer processProducerEvent = new GProcessProducer(producer, annotatedMember);
+        //Fires ProcessProducer
+        webBeansContext.getBeanManagerImpl().fireEvent(processProducerEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducer event observers. Look at logs for further details");
+        return processProducerEvent.getProducer();
     }
 
     public void fireProcessProducerMethodBeanEvent(Map<ProducerMethodBean<?>, AnnotatedMethod<?>> annotatedMethods, AnnotatedType<?> annotatedType)

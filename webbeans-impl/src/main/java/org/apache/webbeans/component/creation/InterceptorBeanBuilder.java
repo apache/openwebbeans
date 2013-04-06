@@ -24,8 +24,6 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
@@ -35,9 +33,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +43,6 @@ import org.apache.webbeans.component.InterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
-import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -331,19 +326,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>>
 
     public B getBean()
     {
-        B bean = createBean(annotatedType.getJavaClass(), isInterceptorEnabled(), interceptionMethods);
-        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
-        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType))
-        {
-            injectionPoints.add(injectionPoint);
-        }
-        InjectionTarget<T> injectionTarget = new InjectionTargetImpl<T>(
-                bean.getAnnotatedType(),
-                injectionPoints,
-                webBeansContext,
-                Collections.<AnnotatedMethod<?>>emptyList(),
-                Collections.<AnnotatedMethod<?>>emptyList());
-        bean.setProducer(injectionTarget);
-        return bean;
+        return createBean(annotatedType.getJavaClass(), isInterceptorEnabled(), interceptionMethods);
     }
 }

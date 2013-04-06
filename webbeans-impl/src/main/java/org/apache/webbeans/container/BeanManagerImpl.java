@@ -44,6 +44,8 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Stereotype;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
@@ -63,12 +65,14 @@ import javax.naming.Reference;
 import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -507,6 +511,33 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         AnnotatedType<T> annotatedType = annotatedElementFactory.newAnnotatedType(type);
         
         return annotatedType;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T> BeanAttributesImpl<T> createBeanAttributes(AnnotatedType<T> type)
+    {
+        return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(type).build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T> BeanAttributesImpl<T> createBeanAttributes(AnnotatedMember<T> member)
+    {
+        if (member instanceof AnnotatedField)
+        {
+            return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)member).build();
+        }
+        else if (member instanceof AnnotatedMethod)
+        {
+            return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedMethod<T>)member).build();
+        }
+        else
+        {
+            throw new IllegalArgumentException("Unsupported member type " + member.getClass().getName());
+        }
     }
 
     /**

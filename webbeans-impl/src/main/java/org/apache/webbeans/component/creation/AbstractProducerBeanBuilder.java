@@ -53,7 +53,7 @@ public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?
         return parent.getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(superclass);
     }
 
-    protected abstract P createBean(InjectionTargetBean<?> parent, Class<T> beanClass);
+    protected abstract <X> P createBean(InjectionTargetBean<X> parent, Class<T> beanClass);
 
     protected P createBean(Class<T> beanClass)
     {

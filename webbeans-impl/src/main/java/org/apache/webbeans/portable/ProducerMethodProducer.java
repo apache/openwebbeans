@@ -25,7 +25,6 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.InjectableMethod;
@@ -39,22 +38,32 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
 
     private Bean<P> owner;
     private WebBeansContext webBeansContext;
-    private AnnotatedMethod<P> producerMethod;
-    private AnnotatedMethod<P> disposalMethod;
+    private AnnotatedMethod<? super P> producerMethod;
+    private AnnotatedMethod<? super P> disposalMethod;
 
-    public ProducerMethodProducer(OwbBean<P> owner, AnnotatedMethod<P> producerMethod, AnnotatedMethod<P> disposerMethod, Set<InjectionPoint> points)
+    public ProducerMethodProducer(Bean<P> owner,
+                                  AnnotatedMethod<? super P> producerMethod,
+                                  AnnotatedMethod<? super P> disposerMethod,
+                                  Set<InjectionPoint> points,
+                                  WebBeansContext webBeansContext)
     {
         super(points);
-        Asserts.assertNotNull(producerMethod);
+        Asserts.assertNotNull(owner, "owner may not be null");
+        Asserts.assertNotNull(producerMethod, "method may not be null");
+        Asserts.assertNotNull(webBeansContext, "WebBeansContext may not be null");
+        if (!producerMethod.isStatic())
+        {
+            Asserts.assertNotNull(owner, "owner may not be null for non-static producer method");
+        }
         this.owner = owner;
-        this.webBeansContext = owner.getWebBeansContext();
+        this.webBeansContext = webBeansContext;
         this.producerMethod = producerMethod;
         this.disposalMethod = disposerMethod;
     }
-    
-    public void setOwner(Bean<P> owner)
+
+    public void specializeBy(Bean<P> bean)
     {
-        this.owner = owner;
+        owner = bean;
     }
 
     @Override

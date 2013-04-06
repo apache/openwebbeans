@@ -47,9 +47,9 @@ public class ProducerFieldBeanBuilder<T, P extends ProducerFieldBean<T>> extends
     }
 
     @Override
-    protected P createBean(InjectionTargetBean<?> owner, Class<T> beanClass)
+    protected <X> P createBean(InjectionTargetBean<X> owner, Class<T> beanClass)
     {
-        return (P) new ProducerFieldBean<T>(owner, beanAttributes, beanClass);
+        return (P) new ProducerFieldBean<T>(owner, beanAttributes, beanClass, new FieldProducerFactory(annotatedMember, owner, owner.getWebBeansContext()));
     }
     
     public P getBean()

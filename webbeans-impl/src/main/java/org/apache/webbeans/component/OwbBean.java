@@ -39,13 +39,6 @@ public interface OwbBean<T> extends Bean<T>
     public Producer<T> getProducer();
 
     /**
-     * Sets the producer for this bean
-     *
-     * @param producer
-     */
-    public void setProducer(Producer<T> producer);
-
-    /**
      * Returns bean type.
      * 
      * @return webbeans type

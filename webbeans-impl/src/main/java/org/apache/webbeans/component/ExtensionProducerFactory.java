@@ -16,31 +16,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.portable;
+package org.apache.webbeans.component;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.portable.events.ExtensionLoader;
+import org.apache.webbeans.container.ProducerFactory;
+import org.apache.webbeans.portable.ExtensionProducer;
 
-public class ExtensionProducer<T> extends InjectionTargetImpl<T>
+/**
+ * A factory for {@link javax.enterprise.inject.spi.Producer}s that produce CDI {@link javax.enterprise.inject.spi.Extension}s.
+ * 
+ * @version $Rev: 1440403 $ $Date: 2013-01-30 14:27:15 +0100 (Mi, 30 Jan 2013) $
+ */
+public class ExtensionProducerFactory<T> implements ProducerFactory<T>
 {
 
-    public ExtensionProducer(AnnotatedType<T> annotatedType,
-                             Bean<T> owner,
-                             WebBeansContext webBeansContext)
+    private AnnotatedType<T> annotatedType;
+    private WebBeansContext webBeansContext;
+
+    public ExtensionProducerFactory(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
-        super(annotatedType, webBeansContext.getInjectionPointFactory().buildInjectionPoints(owner, annotatedType), webBeansContext, null, null);
+        this.annotatedType = annotatedType;
+        this.webBeansContext = webBeansContext;
     }
 
     @Override
-    public T produce(CreationalContext<T> creationalContext)
+    public Producer<T> createProducer(Bean<T> bean)
     {
-        ExtensionLoader loader = webBeansContext.getExtensionLoader();
-        
-        return loader.getBeanInstance((Bean<T>)((CreationalContextImpl<T>) creationalContext).getBean());
+        return new ExtensionProducer<T>(annotatedType, bean, webBeansContext);
     }
 }

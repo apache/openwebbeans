@@ -37,6 +37,11 @@ public class ExtensionBeanBuilder<T>
         this.annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
     }
 
+    public AnnotatedType<T> getAnnotatedType()
+    {
+        return annotatedType;
+    }
+
     public ExtensionBean<T> getBean()
     {
         return new ExtensionBean<T>(webBeansContext, annotatedType.getJavaClass());

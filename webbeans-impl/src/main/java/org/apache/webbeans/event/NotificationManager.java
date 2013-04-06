@@ -41,7 +41,7 @@ import javax.enterprise.inject.spi.ProcessProducer;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.annotation.AnyLiteral;
-import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
@@ -502,7 +502,7 @@ public final class NotificationManager
      * @param bean bean instance 
      * @return ObserverMethod
      */
-    public <T> ObserverMethod<?> getObservableMethodForAnnotatedMethod(AnnotatedMethod<?> annotatedMethod, InjectionTargetBean<T> bean)
+    public <T> ObserverMethod<?> getObservableMethodForAnnotatedMethod(AnnotatedMethod<?> annotatedMethod, AbstractOwbBean<T> bean)
     {
         Asserts.assertNotNull(annotatedMethod, "annotatedMethod parameter can not be null");
 

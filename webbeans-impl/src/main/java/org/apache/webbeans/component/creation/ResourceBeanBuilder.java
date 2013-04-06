@@ -39,7 +39,7 @@ public class ResourceBeanBuilder<T, R extends Annotation> extends ProducerFieldB
     }
 
     @Override
-    protected ResourceBean<T, R> createBean(InjectionTargetBean<?> owner, Class<T> beanClass)
+    protected <X> ResourceBean<T, R> createBean(InjectionTargetBean<X> owner, Class<T> beanClass)
     {
         return new ResourceBean<T, R>(owner, resourceRef, beanAttributes, beanClass);
     }

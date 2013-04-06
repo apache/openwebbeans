@@ -19,15 +19,39 @@
 package org.apache.webbeans.component;
 
 import java.lang.reflect.Type;
+
+import javax.enterprise.inject.spi.Producer;
+
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.CollectionUtil;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.ProducerFactory;
 
 public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
 {
 
-    protected BuildInOwbBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType)
+    private Producer<T> producer;
+
+    protected BuildInOwbBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType, ProducerFactory<T> producerFactory)
     {
-        super(webBeansContext, webBeansType, new BeanAttributesImpl<T>(CollectionUtil.<Type>unmodifiableSet(returnType, Object.class)), returnType);
+        this(webBeansContext, webBeansType, new BeanAttributesImpl<T>(CollectionUtil.<Type>unmodifiableSet(returnType, Object.class)), returnType, producerFactory);
+    }
+    
+    protected BuildInOwbBean(
+            WebBeansContext webBeansContext,
+            WebBeansType webBeansType,
+            BeanAttributesImpl<T> beanAttributes,
+            Class<T> returnType,
+            ProducerFactory<T> producerFactory)
+    {
+        super(webBeansContext, webBeansType, beanAttributes, returnType);
+        Asserts.assertNotNull(producerFactory, "ProducerFactory may not be null");
+        this.producer = producerFactory.createProducer(this);
+    }
+    
+    public Producer<T> getProducer()
+    {
+        return producer;
     }
 }

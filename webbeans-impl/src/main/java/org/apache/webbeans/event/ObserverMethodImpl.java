@@ -92,7 +92,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     private final static Logger logger = WebBeansLoggerFacade.getLogger(ObserverMethodImpl.class);
 
     /**Observer owner bean that defines observer method*/
-    private final InjectionTargetBean<?> bean;
+    private final AbstractOwbBean<?> bean;
 
     /**Event observer method*/
     private Method observerMethod;
@@ -130,7 +130,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
      * @param observerMethod method
      * @param ifExist if exist parameter
      */
-    public ObserverMethodImpl(InjectionTargetBean<?> bean, Method observerMethod, boolean ifExist)
+    public ObserverMethodImpl(AbstractOwbBean<?> bean, Method observerMethod, boolean ifExist)
     {
         this.bean = bean;
         this.observerMethod = observerMethod;
@@ -160,7 +160,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
      * @param qualifiers
      * @param observedEventType
      */
-    public ObserverMethodImpl(InjectionTargetBean<?> bean, Method observerMethod, boolean ifExist,
+    public ObserverMethodImpl(AbstractOwbBean<?> bean, Method observerMethod, boolean ifExist,
                                  Annotation[] qualifiers, Type observedEventType)
     {
         this.bean = bean;

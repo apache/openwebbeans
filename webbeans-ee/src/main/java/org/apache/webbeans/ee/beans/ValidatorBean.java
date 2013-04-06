@@ -21,6 +21,7 @@ package org.apache.webbeans.ee.beans;
 import javax.validation.Validator;
 
 import org.apache.webbeans.component.BuildInOwbBean;
+import org.apache.webbeans.component.SimpleProducerFactory;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.ProviderBasedProxyProducer;
@@ -30,8 +31,10 @@ public class ValidatorBean extends BuildInOwbBean<Validator>
 
     public ValidatorBean(WebBeansContext webBeansContext)
     {
-        super(webBeansContext, WebBeansType.VALIDATION, Validator.class);
-        setProducer(new ProviderBasedProxyProducer<Validator>(webBeansContext, Validator.class, new ValidatorProvider(webBeansContext)));
+        super(webBeansContext,
+              WebBeansType.VALIDATION,
+              Validator.class,
+              new SimpleProducerFactory<Validator>(new ProviderBasedProxyProducer<Validator>(webBeansContext, Validator.class, new ValidatorProvider(webBeansContext))));
     }
 
     @Override

@@ -32,8 +32,10 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.decorators.common.ConversationDecorator;
 import org.apache.webbeans.spi.ConversationService;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore("Should it really be possible to decorate a Conversation?")
 public class ConversationDecoratorTest extends AbstractUnitTest
 {
     public static final String PACKAGE_NAME = ConversationDecoratorTest.class.getPackage().getName();

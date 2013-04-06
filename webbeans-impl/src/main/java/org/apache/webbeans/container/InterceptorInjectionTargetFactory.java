@@ -16,31 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.portable;
+package org.apache.webbeans.container;
 
-import javax.enterprise.context.spi.CreationalContext;
+import java.util.Collections;
+import java.util.List;
+
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.portable.events.ExtensionLoader;
 
-public class ExtensionProducer<T> extends InjectionTargetImpl<T>
+public class InterceptorInjectionTargetFactory<T> extends InjectionTargetFactoryImpl<T>
 {
 
-    public ExtensionProducer(AnnotatedType<T> annotatedType,
-                             Bean<T> owner,
-                             WebBeansContext webBeansContext)
+    public InterceptorInjectionTargetFactory(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
-        super(annotatedType, webBeansContext.getInjectionPointFactory().buildInjectionPoints(owner, annotatedType), webBeansContext, null, null);
+        super(annotatedType, webBeansContext);
     }
 
-    @Override
-    public T produce(CreationalContext<T> creationalContext)
+    protected List<AnnotatedMethod<?>> getPostConstructMethods()
     {
-        ExtensionLoader loader = webBeansContext.getExtensionLoader();
-        
-        return loader.getBeanInstance((Bean<T>)((CreationalContextImpl<T>) creationalContext).getBean());
+        return Collections.<AnnotatedMethod<?>>emptyList();
+    }
+
+    protected List<AnnotatedMethod<?>> getPreDestroyMethods()
+    {
+        return Collections.<AnnotatedMethod<?>>emptyList();
     }
 }

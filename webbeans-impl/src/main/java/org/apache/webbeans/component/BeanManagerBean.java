@@ -27,15 +27,15 @@ import org.apache.webbeans.portable.BeanManagerProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
 
-public class BeanManagerBean extends AbstractOwbBean<BeanManager>
+public class BeanManagerBean extends BuildInOwbBean<BeanManager>
 {
     public BeanManagerBean(WebBeansContext webBeansContext)
     {
         super(webBeansContext,
               WebBeansType.MANAGER,
               new BeanAttributesImpl<BeanManager>(CollectionUtil.<Type>unmodifiableSet(BeanManager.class, Object.class), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION),
-              BeanManager.class);
-        setProducer(new BeanManagerProducer(webBeansContext));
+              BeanManager.class,
+              new SimpleProducerFactory<BeanManager>(new BeanManagerProducer(webBeansContext)));
     }
     
     /**

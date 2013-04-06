@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 
 import javax.enterprise.context.spi.CreationalContext;
 
+import org.apache.webbeans.component.creation.MethodProducerFactory;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -52,9 +53,10 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      */
     public <P> ProducerMethodBean(InjectionTargetBean<P> ownerComponent,
                                   BeanAttributesImpl<T> beanAttributes,
-                                  Class<T> returnType)
+                                  Class<T> returnType,
+                                  MethodProducerFactory<T, P> producerFactory)
     {
-        super(ownerComponent, WebBeansType.PRODUCERMETHOD, beanAttributes, returnType);
+        super(ownerComponent, WebBeansType.PRODUCERMETHOD, beanAttributes, returnType, producerFactory);
     }
 
     /**

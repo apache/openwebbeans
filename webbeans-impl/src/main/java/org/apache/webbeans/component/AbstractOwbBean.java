@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,9 +63,6 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
     /**This bean is enabled or disabled*/
     protected boolean enabled = true;
 
-    /** The producer */
-    private Producer<T> producer;
-
     /**
      * This string will be used for passivating the Bean.
      * It will be created on the first use.
@@ -103,10 +99,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
         return beanClass;
     }
     
-    public Producer<T> getProducer()
-    {
-        return producer;
-    }
+    public abstract Producer<T> getProducer();
     
     /**
      * {@inheritDoc}
@@ -120,6 +113,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
                 creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(creationalContext, this);
             }
 
+            Producer<T> producer = getProducer();
             T instance = producer.produce(creationalContext);
             if (producer instanceof InjectionTarget)
             {
@@ -174,6 +168,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
         }
         try
         {
+            Producer<T> producer = getProducer();
             if (producer instanceof InjectionTarget)
             {
                 InjectionTarget<T> injectionTarget = (InjectionTarget<T>)producer;
@@ -236,11 +231,6 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
     /** cache previously calculated result */
     private Boolean isPassivationCapable = null;
 
-    public void setProducer(Producer<T> producer)
-    {
-        this.producer = producer;
-    }
-
     /**
      * Get web bean type of the bean.
      * 
@@ -268,11 +258,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
      */    
     public Set<InjectionPoint> getInjectionPoints()
     {
-        if (producer == null)
-        {
-            return Collections.<InjectionPoint> emptySet();
-        }
-        return producer.getInjectionPoints();
+        return getProducer().getInjectionPoints();
     }
     
     /**

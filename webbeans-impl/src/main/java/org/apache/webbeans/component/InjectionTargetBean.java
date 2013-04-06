@@ -29,6 +29,7 @@ import java.util.Map;
 import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.InjectionTargetFactoryImpl;
 
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
@@ -51,6 +52,16 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
 {    
     /**Annotated type for bean*/
     private AnnotatedType<T> annotatedType;
+    private InjectionTarget<T> injectionTarget;
+
+    protected InjectionTargetBean(WebBeansContext webBeansContext,
+            WebBeansType webBeansType,
+            AnnotatedType<T> annotatedType,
+            BeanAttributesImpl<T> beanAttributes,
+            Class<T> beanClass)
+    {
+        this(webBeansContext, webBeansType, annotatedType, beanAttributes, beanClass, new InjectionTargetFactoryImpl<T>(annotatedType, webBeansContext));
+    }
 
     /**
      * Initializes the InjectionTarget Bean part.
@@ -59,17 +70,24 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
                                   WebBeansType webBeansType,
                                   AnnotatedType<T> annotatedType,
                                   BeanAttributesImpl<T> beanAttributes,
-                                  Class<T> beanClass)
+                                  Class<T> beanClass,
+                                  InjectionTargetFactoryImpl<T> factory)
     {
         super(webBeansContext, webBeansType, beanAttributes, beanClass);
         Asserts.assertNotNull(annotatedType, "AnnotatedType may not be null");
         this.annotatedType = annotatedType;
+        this.injectionTarget = factory.createInjectionTarget(this);
         setEnabled(true);
+    }
+
+    public InjectionTarget<T> getProducer()
+    {
+        return injectionTarget;
     }
 
     public InjectionTarget<T> getInjectionTarget()
     {
-        return (InjectionTarget<T>) getProducer();
+        return injectionTarget;
     }
 
     /**

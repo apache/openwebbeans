@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 
 import javax.enterprise.context.spi.CreationalContext;
 
+import org.apache.webbeans.container.ProducerFactory;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -42,9 +43,9 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
      * 
      * @param returnType type of the field decleration
      */
-    public ProducerFieldBean(InjectionTargetBean<?> ownerComponent, BeanAttributesImpl<T> beanAttributes, Class<T> returnType)
+    public ProducerFieldBean(InjectionTargetBean<?> ownerComponent, BeanAttributesImpl<T> beanAttributes, Class<T> returnType, ProducerFactory<T> producerFactory)
     {
-        super(ownerComponent, WebBeansType.PRODUCERFIELD, beanAttributes, returnType);
+        super(ownerComponent, WebBeansType.PRODUCERFIELD, beanAttributes, returnType, producerFactory);
     }
 
     /**

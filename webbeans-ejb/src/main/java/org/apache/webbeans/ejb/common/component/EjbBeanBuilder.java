@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.ejb.common.component;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -76,22 +74,7 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>>
     
     protected final E createBean(Class<T> beanClass)
     {
-        E bean =  createBean(beanClass, webBeansContext.getWebBeansUtil().isBeanEnabled(annotatedType, annotatedType.getJavaClass(), beanAttributes.getStereotypes()));
-
-        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
-        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType))
-        {
-            injectionPoints.add(injectionPoint);
-        }
-        InjectionTarget<T> injectionTarget = buildInjectionTarget(
-                bean.getAnnotatedType(),
-                injectionPoints,
-                webBeansContext,
-                Collections.<AnnotatedMethod<?>>emptyList(),
-                Collections.<AnnotatedMethod<?>>emptyList());
-        bean.setProducer(injectionTarget);
-
-        return bean;
+        return createBean(beanClass, webBeansContext.getWebBeansUtil().isBeanEnabled(annotatedType, annotatedType.getJavaClass(), beanAttributes.getStereotypes()));
     }
     
     protected abstract E createBean(Class<T> beanClass, boolean beanEnabled);

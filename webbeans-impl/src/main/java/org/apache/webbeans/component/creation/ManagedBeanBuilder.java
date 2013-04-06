@@ -18,22 +18,12 @@
  */
 package org.apache.webbeans.component.creation;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -71,27 +61,9 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
     {
         M bean = (M)new ManagedBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, annotatedType.getJavaClass());
         bean.setEnabled(webBeansContext.getWebBeansUtil().isBeanEnabled(annotatedType, annotatedType.getJavaClass(), beanAttributes.getStereotypes()));
-        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
-        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType))
-        {
-            injectionPoints.add(injectionPoint);
-        }
-        InjectionTarget<T> injectionTarget
-            = new InjectionTargetImpl<T>(bean.getAnnotatedType(), injectionPoints, webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
-        bean.setProducer(injectionTarget);
         webBeansContext.getWebBeansUtil().checkManagedBeanCondition(annotatedType);
         WebBeansUtil.checkGenericType(annotatedType.getJavaClass(), beanAttributes.getScope());
         webBeansContext.getDeploymentValidationService().validateProxyable(bean);
         return bean;
-    }
-
-    protected List<AnnotatedMethod<?>> getPostConstructMethods()
-    {
-        return webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, PostConstruct.class, true);
-    }
-
-    protected List<AnnotatedMethod<?>> getPreDestroyMethods()
-    {
-        return webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, PreDestroy.class, false);
     }
 }

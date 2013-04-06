@@ -16,31 +16,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.portable;
+package org.apache.webbeans.container;
 
-import javax.enterprise.context.spi.CreationalContext;
+import java.lang.reflect.Modifier;
+
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.portable.events.ExtensionLoader;
+import org.apache.webbeans.portable.AbstractDecoratorInjectionTarget;
 
-public class ExtensionProducer<T> extends InjectionTargetImpl<T>
+public class DecoratorInjectionTargetFactory<T> extends InjectionTargetFactoryImpl<T>
 {
 
-    public ExtensionProducer(AnnotatedType<T> annotatedType,
-                             Bean<T> owner,
-                             WebBeansContext webBeansContext)
+    public DecoratorInjectionTargetFactory(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
-        super(annotatedType, webBeansContext.getInjectionPointFactory().buildInjectionPoints(owner, annotatedType), webBeansContext, null, null);
+        super(annotatedType, webBeansContext);
     }
 
-    @Override
-    public T produce(CreationalContext<T> creationalContext)
+    public InjectionTarget<T> createInjectionTarget(Bean<T> bean)
     {
-        ExtensionLoader loader = webBeansContext.getExtensionLoader();
-        
-        return loader.getBeanInstance((Bean<T>)((CreationalContextImpl<T>) creationalContext).getBean());
+        if (Modifier.isAbstract(getAnnotatedType().getJavaClass().getModifiers()))
+        {
+            return new AbstractDecoratorInjectionTarget<T>(
+                    getAnnotatedType(),
+                    createInjectionPoints(bean),
+                    getWebBeansContext(),
+                    getPostConstructMethods(),
+                    getPreDestroyMethods());
+        }
+        else
+        {
+            return super.createInjectionTarget(bean);
+        }
     }
 }

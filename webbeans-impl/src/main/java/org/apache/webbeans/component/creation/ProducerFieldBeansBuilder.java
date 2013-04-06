@@ -35,11 +35,8 @@ import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ResourceBean;
-import org.apache.webbeans.component.ResourceProvider;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.portable.ProducerFieldProducer;
-import org.apache.webbeans.portable.ProviderBasedProxyProducer;
 import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -121,12 +118,7 @@ public class ProducerFieldBeansBuilder<T, I extends InjectionTargetBean<T>>
                         ResourceBeanBuilder<T, Annotation> resourceBeanCreator
                             = new ResourceBeanBuilder<T, Annotation>(bean, resourceRef, annotatedField, beanAttributes);
                         ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
-                        ResourceProvider<T> resourceProvider = new ResourceProvider<T>(resourceBean.getReference(), webBeansContext);
-                        resourceBean.setProducer(new ProviderBasedProxyProducer<T>(webBeansContext, resourceBean.getReturnType(), resourceProvider));
-
-
                         resourceBean.setProducerField(field);
-                        
                         producerBeans.add(resourceBean);                                            
                     }
                 }
@@ -137,7 +129,6 @@ public class ProducerFieldBeansBuilder<T, I extends InjectionTargetBean<T>>
                         = new ProducerFieldBeanBuilder<T, ProducerFieldBean<T>>(bean, annotatedField, beanAttributes);
                     ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
                     webBeansContext.getDeploymentValidationService().validateProxyable(producerFieldBean);
-                    producerFieldBean.setProducer(new ProducerFieldProducer(bean, annotatedField, producerFieldBean.getInjectionPoints()));
                     producerFieldBean.setProducerField(field);
 
                     webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean, producerFieldBean, anns);

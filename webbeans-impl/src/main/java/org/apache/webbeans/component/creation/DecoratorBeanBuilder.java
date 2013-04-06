@@ -24,17 +24,14 @@ import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
@@ -53,8 +50,6 @@ import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.portable.AnnotatedConstructorImpl;
-import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -275,33 +270,10 @@ public class DecoratorBeanBuilder<T>
         }
     }
 
-    protected InjectionTarget<T> buildInjectionTarget(AnnotatedType<T> annotatedType, Set<InjectionPoint> points,
-                                                      WebBeansContext webBeansContext, List<AnnotatedMethod<?>> postConstructMethods, List<AnnotatedMethod<?>> preDestroyMethods)
-    {
-        InjectionTarget<T> injectionTarget;
-
-        if (Modifier.isAbstract(annotatedType.getJavaClass().getModifiers()))
-        {
-            injectionTarget = new AbstractDecoratorInjectionTarget<T>(annotatedType, points, webBeansContext, postConstructMethods, preDestroyMethods);
-        }
-        else
-        {
-            injectionTarget = new InjectionTargetImpl<T>(annotatedType, points, webBeansContext, postConstructMethods, preDestroyMethods);
-        }
-        return injectionTarget;
-    }
-
     public DecoratorBean<T> getBean()
     {
         DecoratorBean<T> decorator = new DecoratorBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, annotatedType.getJavaClass());
         decorator.setEnabled(webBeansContext.getDecoratorsManager().isDecoratorEnabled(annotatedType.getJavaClass()));
-        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
-        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(decorator, annotatedType))
-        {
-            injectionPoints.add(injectionPoint);
-        }
-        InjectionTarget<T> injectionTarget = buildInjectionTarget(annotatedType, injectionPoints, webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
-        decorator.setProducer(injectionTarget);
 
         // we can only do this after the bean injection points got scanned
         defineDelegate(decorator.getInjectionPoints());
@@ -358,34 +330,5 @@ public class DecoratorBeanBuilder<T>
                 preDestroyMethods.add(annotatedMethod);
             }
         }
-    }
-
-    /**
-     * Helper class to swap out the constructor for the proxied subclass.
-     */
-    private static class AbstractDecoratorInjectionTarget<T> extends InjectionTargetImpl<T>
-    {
-        private Class<T> proxySubClass = null;
-
-        private AbstractDecoratorInjectionTarget(AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext,
-                                                 List<AnnotatedMethod<?>> postConstructMethods, List<AnnotatedMethod<?>> preDestroyMethods)
-        {
-            super(annotatedType, points, webBeansContext, postConstructMethods, preDestroyMethods);
-        }
-
-        @Override
-        protected AnnotatedConstructor<T> createConstructor()
-        {
-            // create proxy subclass
-            ClassLoader classLoader = this.getClass().getClassLoader();
-            Class<T> classToProxy = annotatedType.getJavaClass();
-
-            proxySubClass = webBeansContext.getSubclassProxyFactory().createImplementedSubclass(classLoader, classToProxy);
-
-            //X TODO what about @Inject constructors?
-            Constructor<T> ct = webBeansContext.getWebBeansUtil().getNoArgConstructor(proxySubClass);
-            return new AnnotatedConstructorImpl<T>(webBeansContext, ct, annotatedType);
-        }
-
     }
 }

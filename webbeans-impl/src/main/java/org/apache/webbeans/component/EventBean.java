@@ -32,7 +32,7 @@ import org.apache.webbeans.util.CollectionUtil;
  * 
  * @version $Rev$ $Date$
  */
-public class EventBean<T> extends AbstractOwbBean<Event<T>>
+public class EventBean<T> extends BuildInOwbBean<Event<T>>
 {
 
     /**
@@ -45,8 +45,8 @@ public class EventBean<T> extends AbstractOwbBean<Event<T>>
         super(webBeansContext,
               WebBeansType.OBSERVABLE,
               new BeanAttributesImpl<Event<T>>(CollectionUtil.<Type>unmodifiableSet(new TypeLiteral<Event<T>>() {}.getRawType(), Object.class)),
-              new TypeLiteral<Event<T>>(){}.getRawType());
-        setProducer(new EventProducer<T>(webBeansContext));
+              new TypeLiteral<Event<T>>(){}.getRawType(),
+              new SimpleProducerFactory<Event<T>>(new EventProducer<T>(webBeansContext)));
     }
     
     /* (non-Javadoc)

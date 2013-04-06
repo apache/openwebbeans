@@ -29,42 +29,47 @@ import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Producer;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.ProducerFactory;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 
-public class ProducerMethodProducerBuilder<T, P>
+public class MethodProducerFactory<T, P> implements ProducerFactory<T>
 {
 
-    private ProducerMethodBean<T> bean;
-    private AnnotatedMethod<P> producerMethod;
-    private AnnotatedMethod<P> disposalMethod;
-    private Set<InjectionPoint> injectionPoints;
+    private AnnotatedMethod<? super P> producerMethod;
+    private AnnotatedMethod<? super P> disposalMethod;
+    private Bean<P> parent;
+    private WebBeansContext webBeansContext;
 
-    public ProducerMethodProducerBuilder(ProducerMethodBean<T> producerMethodBean)
+    public MethodProducerFactory(AnnotatedMethod<? super P> producerMethod, Bean<P> parent, WebBeansContext webBeansContext)
     {
-        Asserts.assertNotNull(producerMethodBean);
-        this.bean = producerMethodBean;
+        Asserts.assertNotNull(producerMethod, "producer method may not be null");
+        Asserts.assertNotNull(webBeansContext, "WebBeansContext may not be null");
+        this.producerMethod = producerMethod;
+        this.parent = parent;
+        this.webBeansContext = webBeansContext;
+        defineDisposalMethod();
     }
 
-    public ProducerMethodProducer<T, P> build(AnnotatedMethod<P> method)
+    @Override
+    public Producer<T> createProducer(Bean<T> bean)
     {
-        producerMethod = method;
-        defineDisposalMethod();
-        defineInjectionPoints();
-        return new ProducerMethodProducer<T, P>((OwbBean<P>) bean.getParent(), producerMethod, disposalMethod, injectionPoints);
+        Producer<T> producer = new ProducerMethodProducer<T, P>(parent, producerMethod, disposalMethod, createInjectionPoints(bean), webBeansContext);
+        return webBeansContext.getWebBeansUtil().fireProcessProducerEvent(producer, producerMethod);
     }
 
     private void defineDisposalMethod()
     {
-        Set<Annotation> producerQualifiers = bean.getWebBeansContext().getAnnotationManager().getQualifierAnnotations(producerMethod.getAnnotations());
+        Set<Annotation> producerQualifiers = webBeansContext.getAnnotationManager().getQualifierAnnotations(producerMethod.getAnnotations());
         if (producerQualifiers.size() == 1 && producerQualifiers.iterator().next().annotationType().equals(Default.class))
         {
             producerQualifiers = Collections.emptySet();
@@ -77,7 +82,7 @@ public class ProducerMethodProducerBuilder<T, P>
                 producerQualifiersWithoutNamed.add(qualifier);
             }
         }
-        Set<AnnotatedMethod<? super P>> annotatedMethods = producerMethod.getDeclaringType().getMethods();        
+        Set<AnnotatedMethod<? super P>> annotatedMethods = (Set<AnnotatedMethod<? super P>>)(Set<?>)producerMethod.getDeclaringType().getMethods();        
         for (AnnotatedMethod<? super P> annotatedMethod : annotatedMethods)
         {            
             if (annotatedMethod.getDeclaringType().equals(producerMethod.getDeclaringType()))
@@ -87,7 +92,7 @@ public class ProducerMethodProducerBuilder<T, P>
                     if (annotatedParameter.isAnnotationPresent(Disposes.class))
                     {
                         Set<Annotation> producerQualifiersToCompare = producerQualifiers;
-                        Set<Annotation> disposalQualifiers = bean.getWebBeansContext().getAnnotationManager().getQualifierAnnotations(annotatedParameter.getAnnotations());
+                        Set<Annotation> disposalQualifiers = webBeansContext.getAnnotationManager().getQualifierAnnotations(annotatedParameter.getAnnotations());
                         if (disposalQualifiers.size() == 1 && disposalQualifiers.iterator().next().annotationType().equals(Default.class))
                         {
                             disposalQualifiers = Collections.emptySet();
@@ -168,12 +173,13 @@ public class ProducerMethodProducerBuilder<T, P>
         }        
     }
 
-    private void defineInjectionPoints()
+    protected Set<InjectionPoint> createInjectionPoints(Bean<T> bean)
     {
-        injectionPoints = new HashSet<InjectionPoint>(bean.getWebBeansContext().getInjectionPointFactory().buildInjectionPoints(bean, producerMethod));
+        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>(webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, producerMethod));
         if (disposalMethod != null)
         {
-            injectionPoints.addAll(bean.getWebBeansContext().getInjectionPointFactory().buildInjectionPoints(bean, disposalMethod));
+            injectionPoints.addAll(webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, disposalMethod));
         }
+        return injectionPoints;
     }
 }

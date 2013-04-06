@@ -21,6 +21,7 @@ package org.apache.webbeans.ee.common.beans;
 import java.security.Principal;
 
 import org.apache.webbeans.component.BuildInOwbBean;
+import org.apache.webbeans.component.SimpleProducerFactory;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.ProviderBasedProxyProducer;
@@ -30,8 +31,10 @@ public class PrincipalBean extends BuildInOwbBean<Principal>
 
     public PrincipalBean(WebBeansContext webBeansContext)
     {
-        super(webBeansContext, WebBeansType.PRINCIPAL, Principal.class);
-        setProducer(new ProviderBasedProxyProducer<Principal>(webBeansContext, Principal.class, new PrincipalProvider(webBeansContext)));
+        super(webBeansContext,
+              WebBeansType.PRINCIPAL,
+              Principal.class,
+              new SimpleProducerFactory<Principal>(new ProviderBasedProxyProducer<Principal>(webBeansContext, Principal.class, new PrincipalProvider(webBeansContext))));
     }
 
     @Override

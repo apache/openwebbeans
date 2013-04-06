@@ -23,6 +23,9 @@ import java.lang.reflect.Modifier;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.PassivationCapable;
+import javax.enterprise.inject.spi.Producer;
+
+import org.apache.webbeans.container.ProducerFactory;
 
 
 /**
@@ -36,6 +39,7 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
     /** Owner of the producer field component */
     protected InjectionTargetBean<?> ownerComponent;
     private Class<T> returnType;
+    private Producer<T> producer;
 
     /**
      * Create a new instance.
@@ -46,11 +50,19 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
     protected AbstractProducerBean(InjectionTargetBean<?> ownerComponent,
                                    WebBeansType webBeansType,
                                    BeanAttributesImpl<T> beanAttributes,
-                                   Class<T> returnType)
+                                   Class<T> returnType,
+                                   ProducerFactory<T> producerFactory)
     {
         super(ownerComponent.getWebBeansContext(), webBeansType, beanAttributes, ownerComponent.getBeanClass());
         this.ownerComponent = ownerComponent;
         this.returnType = returnType;
+        this.producer = producerFactory.createProducer(this);
+    }
+
+    @Override
+    public Producer<T> getProducer()
+    {
+        return producer;
     }
 
     /**

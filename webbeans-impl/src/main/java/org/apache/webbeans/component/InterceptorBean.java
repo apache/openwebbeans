@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.InterceptorInjectionTargetFactory;
 import org.apache.webbeans.util.ExceptionUtil;
 
 /**
@@ -63,7 +64,8 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
               WebBeansType.INTERCEPTOR,
               annotatedType,
               beanAttributes,
-              beanClass);
+              beanClass,
+              new InterceptorInjectionTargetFactory<T>(annotatedType, webBeansContext));
         this.interceptionMethods = Collections.unmodifiableMap(interceptionMethods);
 
         for (Method[] methods: interceptionMethods.values())

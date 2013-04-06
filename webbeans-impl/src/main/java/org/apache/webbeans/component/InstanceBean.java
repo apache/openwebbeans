@@ -29,7 +29,7 @@ import org.apache.webbeans.portable.InstanceProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
 
-public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
+public class InstanceBean<T> extends BuildInOwbBean<Instance<T>>
 {
     
     @SuppressWarnings("serial")
@@ -41,8 +41,9 @@ public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
                       new TypeLiteral<Instance<T>>(){}.getRawType(), 
                       new TypeLiteral<Provider<T>>() {}.getRawType(), 
                       Object.class)),
-              new TypeLiteral<Instance<T>>(){}.getRawType());
-        setProducer(new InstanceProducer<T>(getReturnType(), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION, webBeansContext));
+              new TypeLiteral<Instance<T>>(){}.getRawType(),
+              new SimpleProducerFactory<Instance<T>>(
+                      new InstanceProducer<T>(new TypeLiteral<Instance<T>>(){}.getRawType(), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION, webBeansContext)));
     }
 
     /* (non-Javadoc)

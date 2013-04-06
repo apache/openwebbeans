@@ -26,15 +26,15 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.util.CollectionUtil;
 
-public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
+public class InjectionPointBean extends BuildInOwbBean<InjectionPoint>
 {
     public InjectionPointBean(WebBeansContext webBeansContext)
     {
         super(webBeansContext,
               WebBeansType.INJECTIONPOINT,
               new BeanAttributesImpl<InjectionPoint>(CollectionUtil.<Type>unmodifiableSet(InjectionPoint.class, Object.class)),
-              InjectionPoint.class);
-        setProducer(new InjectionPointProducer());
+              InjectionPoint.class,
+              new SimpleProducerFactory<InjectionPoint>(new InjectionPointProducer()));
     }
 
     /* (non-Javadoc)

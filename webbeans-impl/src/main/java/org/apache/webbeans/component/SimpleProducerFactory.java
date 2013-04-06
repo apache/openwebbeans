@@ -16,36 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.jms.component;
+package org.apache.webbeans.component;
 
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Producer;
-import javax.jms.Destination;
 
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.BeanAttributesImpl;
-import org.apache.webbeans.component.JmsBeanMarker;
-import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.jms.JMSModel;
+import org.apache.webbeans.container.ProducerFactory;
 
-public class JmsBean<T> extends AbstractOwbBean<T> implements JmsBeanMarker
+/**
+ * @version $Rev: 1440403 $ $Date: 2013-01-30 14:27:15 +0100 (Mi, 30 Jan 2013) $
+ */
+public class SimpleProducerFactory<T> implements ProducerFactory<T>
 {
-    private JMSModel jmsModel = null;
-    
-    JmsBean(WebBeansContext webBeansContext, JMSModel jmsModel, BeanAttributesImpl<T> beanAttributes)
+
+    private Producer<T> producer;
+
+    public SimpleProducerFactory(Producer<T> producer)
     {
-        super(webBeansContext, WebBeansType.JMS, beanAttributes, Destination.class);
-        this.jmsModel = jmsModel;
-    }
-        
-    public JMSModel getJmsModel()
-    {
-        return this.jmsModel;
+        this.producer = producer;
     }
 
     @Override
-    public Producer<T> getProducer()
+    public Producer<T> createProducer(Bean<T> bean)
     {
-        return null;
+        return producer;
     }
 }
