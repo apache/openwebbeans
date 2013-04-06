@@ -40,7 +40,6 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.portable.InjectionPointProducer;
-import org.apache.webbeans.portable.InstanceProducer;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -82,15 +81,10 @@ public abstract class AbstractInjectable<T>
         InjectionResolver instance = beanManager.getInjectionResolver();
 
         Bean<?> injectedBean = instance.getInjectionPointBean(injectionPoint);
-        if(isInstanceProviderInjection(injectionPoint))
-        {
-            InstanceProducer.local.set(injectionPoint);
-        }
-        
-        else if(isEventProviderInjection(injectionPoint))
+        if (isInstanceProviderInjection(injectionPoint) || isEventProviderInjection(injectionPoint))
         {
             creationalContext.putInjectionPoint(injectionPoint);
-        }        
+        }
         
         boolean injectionPointBeanLocalSetOnStack = false;
         try 

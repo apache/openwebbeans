@@ -28,12 +28,11 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.instance.InstanceImpl;
 
 public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
 {
-    // TODO refactor. public static variables are uterly ugly
-    public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
     private Class<Instance<T>> returnType;
     private Set<Annotation> qualifiers;
     private WebBeansContext webBeansContext;
@@ -50,7 +49,12 @@ public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
     {
         try
         {
-            InjectionPoint injectionPoint = local.get();
+            InjectionPoint injectionPoint = null;
+            //TODO What should we do here if creationalContext is not instanceof CreationalContextImpl?
+            if (creationalContext instanceof CreationalContextImpl)
+            {
+                injectionPoint = ((CreationalContextImpl<Instance<T>>)creationalContext).getInjectionPoint();
+            }
             Set<Annotation> qualifiers;
             Type type;
 
@@ -72,8 +76,10 @@ public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
         }
         finally
         {
-            local.set(null);
-            local.remove();
+            if (creationalContext instanceof CreationalContextImpl)
+            {
+                ((CreationalContextImpl<Instance<T>>)creationalContext).removeInjectionPoint();
+            }
         }
     }
 }
