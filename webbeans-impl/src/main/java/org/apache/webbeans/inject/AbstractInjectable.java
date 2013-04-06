@@ -39,7 +39,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.portable.EventProducer;
 import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.portable.InstanceProducer;
 import org.apache.webbeans.util.ClassUtil;
@@ -90,7 +89,7 @@ public abstract class AbstractInjectable<T>
         
         else if(isEventProviderInjection(injectionPoint))
         {
-            EventProducer.local.set(injectionPoint);
+            creationalContext.putInjectionPoint(injectionPoint);
         }        
         
         boolean injectionPointBeanLocalSetOnStack = false;

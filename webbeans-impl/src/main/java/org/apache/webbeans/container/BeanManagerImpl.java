@@ -543,7 +543,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**
      * {@inheritDoc}
      */
-    public <T> CreationalContext<T> createCreationalContext(Contextual<T> contextual)
+    public <T> CreationalContextImpl<T> createCreationalContext(Contextual<T> contextual)
     {
         if (contextual instanceof SerializableBean)
         {

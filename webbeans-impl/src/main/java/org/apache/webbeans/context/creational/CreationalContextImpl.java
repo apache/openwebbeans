@@ -24,10 +24,12 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
@@ -44,6 +46,11 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      * The delegate object to be injected into delegate injection points
      */
     private transient T delegate;
+    
+    /**
+     * The injection point object to be injected into injection points of type InjectionPoint
+     */
+    private transient Stack<InjectionPoint> injectionPoints;
 
     /**
      * Contextual bean dependent instances
@@ -90,6 +97,33 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         T oldValue = this.delegate;
         this.delegate = delegate;
         return oldValue;
+    }
+
+    public InjectionPoint getInjectionPoint()
+    {
+        if (injectionPoints == null || injectionPoints.isEmpty())
+        {
+            return null;
+        }
+        return injectionPoints.peek();
+    }
+
+    public void putInjectionPoint(InjectionPoint injectionPoint)
+    {
+        if (injectionPoints == null)
+        {
+            injectionPoints = new Stack<InjectionPoint>();
+        }
+        injectionPoints.push(injectionPoint);
+    }
+
+    public InjectionPoint removeInjectionPoint()
+    {
+        if (injectionPoints == null || injectionPoints.isEmpty())
+        {
+            return null;
+        }
+        return injectionPoints.pop();
     }
 
     /**
@@ -199,7 +233,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     {
         return contextual;
     }
-
 
     /**
      * Write Object. 

@@ -49,7 +49,7 @@ public final class CreationalContextFactory<T>
      * @param contextual contextual instance
      * @return new creational context for given contextual
      */
-    public CreationalContext<T> getCreationalContext(Contextual<T> contextual)
+    public CreationalContextImpl<T> getCreationalContext(Contextual<T> contextual)
     {        
         return new CreationalContextImpl<T>(contextual, webBeansContext);
     }        

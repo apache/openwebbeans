@@ -27,14 +27,13 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansException;
 
 public class EventProducer<T> extends AbstractProducer<Event<T>>
 {
 
-    //X TODO refactor. public static variables are utterly ugly
-    public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
     private WebBeansContext webBeansContext;
     
     public EventProducer(WebBeansContext webBeansContext)
@@ -49,8 +48,13 @@ public class EventProducer<T> extends AbstractProducer<Event<T>>
     public Event<T> produce(CreationalContext<Event<T>> creationalContext)
     {
         Event<T> instance = null;
+        InjectionPoint injectionPoint = null;
+        //TODO What should we do here if creationalContext is not instanceof CreationalContextImpl?
+        if (creationalContext instanceof CreationalContextImpl)
+        {
+            injectionPoint = ((CreationalContextImpl<Event<T>>)creationalContext).getInjectionPoint();
+        }
 
-        InjectionPoint injectionPoint = local.get();
         Type eventType;
         
         if(injectionPoint != null)
@@ -79,8 +83,10 @@ public class EventProducer<T> extends AbstractProducer<Event<T>>
             }           
             finally
             {
-                local.set(null);
-                local.remove();
+                if (creationalContext instanceof CreationalContextImpl)
+                {
+                    ((CreationalContextImpl<Event<T>>)creationalContext).removeInjectionPoint();
+                }
             }
             
         }

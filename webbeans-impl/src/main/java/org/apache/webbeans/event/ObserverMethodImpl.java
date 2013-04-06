@@ -53,11 +53,11 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.portable.EventProducer;
 import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.proxy.OwbNormalScopeProxy;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -404,12 +404,11 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                         }
                     }
                     
+                    CreationalContextImpl<Object> creational = manager.createCreationalContext(injectedBean);
                     if (isEventProviderInjection(point))
                     {
-                        EventProducer.local.set(point);
+                        creational.putInjectionPoint(point);
                     }
-                    
-                    CreationalContext<Object> creational = manager.createCreationalContext(injectedBean);
                     Object instance = manager.getReference(injectedBean, null, creational);
                     if (injectionPointBeanLocalSetOnStack)
                     {
@@ -476,12 +475,12 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     }
                 }                    
 
+                
+                CreationalContextImpl<Object> creational = manager.createCreationalContext(injectedBean);
                 if (isEventProviderInjection(point))
                 {
-                    EventProducer.local.set(point);
+                    creational.putInjectionPoint(point);
                 }
-                
-                CreationalContext<Object> creational = manager.createCreationalContext(injectedBean);
                 Object instance = manager.getReference(injectedBean, null, creational);
                 
                 if (injectionPointBeanLocalSetOnStack)
