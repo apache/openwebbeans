@@ -87,9 +87,6 @@ public class InjectionResolver
      */
     private Map<String, Set<Bean<?>>> resolvedBeansByName = new ConcurrentHashMap<String, Set<Bean<?>>>();
 
-    //X TODO refactor. public static variables are utterly ugly
-    public static ThreadLocal<InjectionPoint> injectionPoints = new ThreadLocal<InjectionPoint>();
-
     /**
      * Creates a new injection resolve for given bean manager.
      *
@@ -444,22 +441,13 @@ public class InjectionResolver
      * @param qualifiers         qualifiers of the injection point
      * @return set of resolved beans
      */
-    public Set<Bean<?>> implResolveByType(Type injectionPointType, Class<?> injectinPointClass, Annotation... qualifiers)
+    public Set<Bean<?>> implResolveByType(Type injectionPointType, Class<?> injectionPointClass, Annotation... qualifiers)
     {
         ScannerService scannerService = webBeansContext.getScannerService();
         String bdaBeansXMLFilePath = null;
         if (scannerService.isBDABeansXmlScanningEnabled())
         {
-            if (injectinPointClass == null)
-            {
-                // Retrieve ip from thread local for producer case
-                InjectionPoint ip = injectionPoints.get();
-                if (ip != null)
-                {
-                    injectinPointClass = ip.getBean().getBeanClass();
-                }
-            }
-            bdaBeansXMLFilePath = getBDABeansXMLPath(injectinPointClass);
+            bdaBeansXMLFilePath = getBDABeansXMLPath(injectionPointClass);
         }
 
         boolean currentQualifier = false;

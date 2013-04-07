@@ -72,7 +72,6 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansContext;
@@ -88,7 +87,6 @@ import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
-import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -608,32 +606,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Find the injection point Bean
         Bean<Object> injectedBean = (Bean<Object>)injectionResolver.getInjectionPointBean(injectionPoint);
         
-        boolean isSetIPForProducers=false;
-        ScannerService scannerService = webBeansContext.getScannerService();
-        if ((scannerService != null && scannerService.isBDABeansXmlScanningEnabled()))
-        {
-            if (injectedBean instanceof AbstractOwbBean<?>)
-            {
-                AbstractOwbBean<?> aob = (AbstractOwbBean) injectedBean;
-                if (aob.getWebBeansType() == WebBeansType.PRODUCERFIELD || aob.getWebBeansType() == WebBeansType.PRODUCERMETHOD)
-                {
-                    // There is no way to pass the injection point for producers
-                    // without significant refactoring, so set injection point
-                    // on
-                    // InjectionResolver to properly handle alternative
-                    // producers
-                    // per BDA.
-                    isSetIPForProducers = true;
-                }
-            }
-        }
-        if (isSetIPForProducers)
-        {
-            // retrieve injection point from thread local for alternative
-            // producers
-            InjectionResolver.injectionPoints.set(injectionPoint);
-        }
-
         if(WebBeansUtil.isDependent(injectedBean))
         {
             if (!(ownerCreationalContext instanceof CreationalContextImpl))
@@ -665,13 +637,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             {
                 injectedCreational.removeInjectionPoint();
             }
-        }
-
-        if(isSetIPForProducers)
-        {
-            //remove reference immediate after instance is retrieved
-            InjectionResolver.injectionPoints.set(null);
-            InjectionResolver.injectionPoints.remove();
         }
 
         return instance;
