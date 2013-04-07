@@ -61,7 +61,7 @@ public class DependentProducerMethodInjectionPointTest extends AbstractUnitTest
         InjectionPointMetaDataOwner model2 = (InjectionPointMetaDataOwner) getBeanManager().getReference(bean2, InjectionPointMetaDataOwner.class, cc2);
         
         InjectionPoint point = model2.getInjectionPoint();
-        Assert.assertTrue(point.getBean().equals(bean));
+        Assert.assertEquals(bean, point.getBean());
         Assert.assertTrue(point.getMember() instanceof Field);
 
         point = (InjectionPoint) deserialize(serialize(point));

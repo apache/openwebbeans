@@ -16,29 +16,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.annotation;
+package org.apache.webbeans.event;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Set;
 
-import javax.enterprise.inject.Default;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 /**
- * {@link Default} literal annotation.
- * 
- * @since 1.0
+ * This is a preview to CDI 1.1
+ * when we implement CDI 1.1 this interface can be removed
  */
-public class DefaultLiteral extends EmptyAnnotationLiteral<Default> implements Default
+public interface EventMetadata
 {
-    public static final DefaultLiteral INSTANCE = new DefaultLiteral();
-    public static final Annotation[] ARRAY = new Annotation[]{DefaultLiteral.INSTANCE};
 
-    private static final String TOSTRING = "@javax.enterprise.inject.Default()";
-    private static final long serialVersionUID = 6788272256977634238L;
+    /**
+     * Get the qualifiers for which event payload was fired.
+     */
+    public Set<Annotation> getQualifiers();
 
-    @Override
-    public String toString()
-    {
-        // implemented for performance reasons
-        return TOSTRING;
-    }
+    /**
+     * Get the {@link InjectionPoint} from which the event fired, or
+     * <code>null</code> if it was fired from
+     * {@link javax.enterprise.inject.spi.BeanManager#fireEvent(Object, Annotation...)};
+     */
+    public InjectionPoint getInjectionPoint();
+
+    /**
+     * Returns the resolved event {@link Type}.
+     */
+    public Type getType();
 }

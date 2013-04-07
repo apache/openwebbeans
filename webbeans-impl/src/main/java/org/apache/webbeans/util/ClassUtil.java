@@ -931,8 +931,9 @@ public final class ClassUtil
      * @return true if there are type parameters
      * @since 1.1.1
      */
-    public static boolean isDefinitionContainsTypeVariables(Class<?> clazz)
+    public static boolean isDefinitionContainsTypeVariables(Type type)
     {
+        Class<?> clazz = ClassUtil.getClass(type);
         Asserts.nullCheckForClass(clazz);
         
         return (clazz.getTypeParameters().length > 0) ? true : false;

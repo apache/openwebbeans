@@ -27,6 +27,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.instance.InstanceImpl;
@@ -50,11 +51,17 @@ public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
         try
         {
             InjectionPoint injectionPoint = null;
-            //TODO What should we do here if creationalContext is not instanceof CreationalContextImpl?
+            CreationalContextImpl<Instance<T>> creationalContextImpl = null;
             if (creationalContext instanceof CreationalContextImpl)
             {
-                injectionPoint = ((CreationalContextImpl<Instance<T>>)creationalContext).getInjectionPoint();
+                creationalContextImpl = (CreationalContextImpl<Instance<T>>)creationalContext;
             }
+            else
+            {
+                InstanceBean<Object> instanceBean = webBeansContext.getWebBeansUtil().getInstanceBean();
+                creationalContextImpl = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(creationalContext, instanceBean);
+            }
+            injectionPoint = creationalContextImpl.getInjectionPoint();
             Set<Annotation> qualifiers;
             Type type;
 
@@ -70,7 +77,7 @@ public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
                 type = this.returnType;
             }
 
-            Instance<T> instance = new InstanceImpl<T>(type, injectionPoint, webBeansContext, creationalContext, qualifiers.toArray(new Annotation[qualifiers.size()]));
+            Instance<T> instance = new InstanceImpl<T>(type, injectionPoint, webBeansContext, creationalContextImpl, qualifiers.toArray(new Annotation[qualifiers.size()]));
             
             return instance;
         }

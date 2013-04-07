@@ -20,18 +20,14 @@ package org.apache.webbeans.inject;
 
 import java.io.Serializable;
 import java.lang.reflect.Member;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.event.Event;
 import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
-import javax.inject.Provider;
 
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.OwbBean;
@@ -39,8 +35,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.portable.InjectionPointProducer;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -81,56 +75,35 @@ public abstract class AbstractInjectable<T>
         InjectionResolver instance = beanManager.getInjectionResolver();
 
         Bean<?> injectedBean = instance.getInjectionPointBean(injectionPoint);
-        if (isInstanceProviderInjection(injectionPoint) || isEventProviderInjection(injectionPoint))
-        {
-            creationalContext.putInjectionPoint(injectionPoint);
-        }
         
-        boolean injectionPointBeanLocalSetOnStack = false;
-        try 
+        //Injection for dependent instance InjectionPoint fields
+        boolean dependentProducer = false;
+        if(WebBeansUtil.isDependent(injectedBean))
         {
-            //Injection for dependent instance InjectionPoint fields
-            boolean dependentProducer = false;
-            if(WebBeansUtil.isDependent(injectedBean))
+            if(!injectionPoint.isTransient())
             {
-                if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(injectionPoint.getType())))
+                if(injectedBean instanceof AbstractProducerBean)
                 {
-                    injectionPointBeanLocalSetOnStack = InjectionPointProducer.setThreadLocal(injectionPoint);
-                }
-
-                if(!injectionPoint.isTransient())
-                {
-                    if(injectedBean instanceof AbstractProducerBean)
+                    if((creationalContext.getBean() instanceof OwbBean) && ((OwbBean<?>) creationalContext.getBean()).isPassivationCapable())
                     {
-                        if((creationalContext.getBean() instanceof OwbBean) && ((OwbBean<?>) creationalContext.getBean()).isPassivationCapable())
-                        {
-                            dependentProducer = true;   
-                        }
+                        dependentProducer = true;   
                     }
                 }
-            }        
-
-            //Gets injectable reference for injected bean
-            injected = (T) beanManager.getInjectableReference(injectionPoint, creationalContext);
-
-            /*X TODO see spec issue CDI-140 */
-            if(dependentProducer)
-            {
-                if(injected != null && !Serializable.class.isAssignableFrom(injected.getClass()))
-                {
-                    throw new IllegalProductException("If a producer method or field of scope @Dependent returns an serializable object for injection " +
-                                                    "into an injection point "+ injectionPoint +" that requires a passivation capable dependency");
-                }
             }
-        } 
-        finally
+        }        
+
+        //Gets injectable reference for injected bean
+        injected = (T) beanManager.getInjectableReference(injectionPoint, creationalContext);
+
+        /*X TODO see spec issue CDI-140 */
+        if(dependentProducer)
         {
-            if (injectionPointBeanLocalSetOnStack)
+            if(injected != null && !Serializable.class.isAssignableFrom(injected.getClass()))
             {
-                InjectionPointProducer.unsetThreadLocal();
+                throw new IllegalProductException("If a producer method or field of scope @Dependent returns an serializable object for injection " +
+                        "into an injection point "+ injectionPoint +" that requires a passivation capable dependency");
             }
         }
-        
 
         return injected;
     }
@@ -161,42 +134,5 @@ public abstract class AbstractInjectable<T>
             }
         }
         return injectionPoints;
-    }
-
-    private boolean isInstanceProviderInjection(InjectionPoint injectionPoint)
-    {
-        Type type = injectionPoint.getType();
-        
-        if (type instanceof ParameterizedType)
-        {
-            ParameterizedType pt = (ParameterizedType) type;            
-            Class<?> clazz = (Class<?>) pt.getRawType();
-            
-            if(Provider.class.isAssignableFrom(clazz))
-            {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    
-    private boolean isEventProviderInjection(InjectionPoint injectionPoint)
-    {
-        Type type = injectionPoint.getType();
-        
-        if (type instanceof ParameterizedType)
-        {
-            ParameterizedType pt = (ParameterizedType) type;            
-            Class<?> clazz = (Class<?>) pt.getRawType();
-            
-            if(clazz.isAssignableFrom(Event.class))
-            {
-                return true;
-            }
-        }
-        
-        return false;
     }
 }

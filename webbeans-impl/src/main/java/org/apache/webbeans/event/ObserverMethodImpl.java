@@ -19,7 +19,6 @@
 package org.apache.webbeans.event;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -40,13 +39,10 @@ import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.WebBeansType;
@@ -57,12 +53,8 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.proxy.OwbNormalScopeProxy;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Defines observers that are declared in observer methods.
@@ -78,7 +70,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  *  }
  * </pre>
  * Above class X instance observes for the event with type <code>LoggedInEvent</code>
- * and event qualifier is <code>Current</code>. Whenever event is fired, its {@link ObserverMethod#notify()}
+ * and event qualifier is <code>Current</code>. Whenever event is fired, its {@link javax.enterprise.inject.spi.ObserverMethod#notify()}
  * method is called.
  * </p>
  * 
@@ -86,16 +78,13 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> event type
  */
-public class ObserverMethodImpl<T> implements ObserverMethod<T>
+public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
 {
     /**Logger instance*/
     private final static Logger logger = WebBeansLoggerFacade.getLogger(ObserverMethodImpl.class);
 
     /**Observer owner bean that defines observer method*/
     private final AbstractOwbBean<?> bean;
-
-    /**Event observer method*/
-    private Method observerMethod;
 
     /**Using existing bean instance or not*/
     private final boolean ifExist;
@@ -110,7 +99,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     private final TransactionPhase phase;
     
     /**Annotated method*/
-    private AnnotatedMethod<T> annotatedMethod = null;
+    private AnnotatedMethod<T> observerMethod;
     
     private static class ObserverParams
     {
@@ -122,35 +111,6 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         
         private boolean isBean = false;
     }
-    
-    /**
-     * Creates a new bean observer instance.
-     * 
-     * @param bean owner
-     * @param observerMethod method
-     * @param ifExist if exist parameter
-     */
-    public ObserverMethodImpl(AbstractOwbBean<?> bean, Method observerMethod, boolean ifExist)
-    {
-        this.bean = bean;
-        this.observerMethod = observerMethod;
-        this.ifExist = ifExist;
-
-        Annotation[] qualifiers =
-            getWebBeansContext().getAnnotationManager().getMethodFirstParameterQualifierWithGivenAnnotation(
-                observerMethod, Observes.class);
-        getWebBeansContext().getAnnotationManager().checkQualifierConditions(qualifiers);
-        observedQualifiers = new HashSet<Annotation>(qualifiers.length);
-        
-        for (Annotation qualifier : qualifiers)
-        {
-            observedQualifiers.add(qualifier);
-        }
-
-        observedEventType = AnnotationUtil.getTypeOfParameterWithGivenAnnotation(observerMethod, Observes.class);
-
-        phase = EventUtil.getObserverMethodTransactionType(observerMethod);
-    }
 
     /**
      * used if the qualifiers and event type are already known, e.g. from the XML.
@@ -160,7 +120,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
      * @param qualifiers
      * @param observedEventType
      */
-    public ObserverMethodImpl(AbstractOwbBean<?> bean, Method observerMethod, boolean ifExist,
+    public ObserverMethodImpl(AbstractOwbBean<?> bean, AnnotatedMethod<T> observerMethod, boolean ifExist,
                                  Annotation[] qualifiers, Type observedEventType)
     {
         this.bean = bean;
@@ -175,21 +135,20 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         phase = EventUtil.getObserverMethodTransactionType(observerMethod);
 
     }
-    
+
     /**
-     * Sets annotated method.
-     * @param annotatedMethod annotated method
+     * {@inheritDoc}
      */
-    public void setAnnotatedMethod(AnnotatedMethod<T> annotatedMethod)
+    public void notify(T event)
     {
-        this.annotatedMethod = annotatedMethod;
+        notify(event, null);
     }
 
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public void notify(T event)
+    public void notify(T event, EventMetadata metadata)
     {
         AbstractOwbBean<Object> component = (AbstractOwbBean<Object>) bean;
         if (!bean.isEnabled())
@@ -199,19 +158,14 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
 
         Object object = null;
         
-        List<ObserverParams> methodArgsMap;
-        if(annotatedMethod == null)
-        {
-            methodArgsMap = getMethodArguments(event);
-        }
-        else
-        {
-            methodArgsMap = getAnnotatedMethodArguments(event);
-        }
+        List<ObserverParams> methodArgsMap = getMethodArguments(event, metadata);
 
         BeanManagerImpl manager = bean.getWebBeansContext().getBeanManagerImpl();
-        CreationalContext<Object> creationalContext = manager.createCreationalContext(component);
-
+        CreationalContextImpl<Object> creationalContext = manager.createCreationalContext(component);
+        if (metadata != null)
+        {
+            creationalContext.putInjectionPoint(metadata.getInjectionPoint());
+        }
 
         ObserverParams[] obargs = null;
         try
@@ -226,14 +180,14 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             }
             
             //Static or not
-            if (Modifier.isStatic(observerMethod.getModifiers()))
+            if (observerMethod.isStatic())
             {
-                if (!observerMethod.isAccessible())
+                if (!observerMethod.getJavaMember().isAccessible())
                 {
-                    observerMethod.setAccessible(true);
+                    observerMethod.getJavaMember().setAccessible(true);
                 }
                 //Invoke Method
-                observerMethod.invoke(null, args);
+                observerMethod.getJavaMember().invoke(null, args);
             }
             else
             {
@@ -281,12 +235,12 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
 
                 if (object != null)
                 {
-                    if (!observerMethod.isAccessible())
+                    if (!observerMethod.getJavaMember().isAccessible())
                     {
-                        bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(observerMethod, true);
+                        bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(observerMethod.getJavaMember(), true);
                     }
 
-                    if (Modifier.isPrivate(observerMethod.getModifiers()))
+                    if (Modifier.isPrivate(observerMethod.getJavaMember().getModifiers()))
                     {
                         // since private methods cannot be intercepted, we have to unwrap anny possible proxy
                         if (object instanceof OwbNormalScopeProxy)
@@ -296,7 +250,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     }
 
                     //Invoke Method
-                    observerMethod.invoke(object, args);
+                    observerMethod.getJavaMember().invoke(object, args);
                 }
             }                        
         }
@@ -306,6 +260,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         }
         finally
         {
+            creationalContext.removeInjectionPoint();
             //Destory bean instance
             if (component.getScope().equals(Dependent.class) && object != null)
             {
@@ -326,122 +281,19 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         }
 
     }
-
-    /**
-     * Returns list of observer method parameters.
-     * 
-     * @param event event instance
-     * @return list of observer method parameters
-     */
-    @SuppressWarnings("unchecked")
-    protected List<ObserverParams> getMethodArguments(Object event)
-    {
-        WebBeansContext webBeansContext = bean.getWebBeansContext();
-        AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
-        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-
-        Type[] types = observerMethod.getGenericParameterTypes();
-        Annotation[][] annots = observerMethod.getParameterAnnotations();
-        List<ObserverParams> list = new ArrayList<ObserverParams>();
-
-        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        ObserverParams param;
-        if (types.length > 0)
-        {
-            int i = 0;
-            for (Type type : types)
-            {
-                Annotation[] annot = annots[i];
-
-                boolean observesAnnotation = false;
-
-                if (annot.length == 0)
-                {
-                    annot = new Annotation[1];
-                    annot[0] = DefaultLiteral.INSTANCE;
-                }
-                else
-                {
-                    for (Annotation observersAnnot : annot)
-                    {
-                        if (observersAnnot.annotationType().equals(Observes.class))
-                        {
-                            param = new ObserverParams();
-                            param.instance = event;
-                            list.add(param); 
-                            observesAnnotation = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!observesAnnotation)
-                {
-                    boolean injectionPointBeanLocalSetOnStack = false;
-                    
-                    //Get parameter annotations
-                    Annotation[] bindingTypes = annotationManager.getQualifierAnnotations(annot);
-
-                    //Define annotated parameter
-                    AnnotatedType<T> annotatedType = (AnnotatedType<T>) annotatedElementFactory.newAnnotatedType(bean.getReturnType());
-                    AnnotatedMethod<T> newAnnotatedMethod = annotatedElementFactory.newAnnotatedMethod(observerMethod, annotatedType);
-
-                    //Annotated parameter
-                    AnnotatedParameter<T> annotatedParameter = newAnnotatedMethod.getParameters().get(i);
-                    
-                    //Creating injection point
-                    InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(bean, type, annotatedParameter, bindingTypes);
-                    
-                    //Injected Bean
-                    Bean<Object> injectedBean = (Bean<Object>)getWebBeansContext().getBeanManagerImpl().getInjectionResolver().getInjectionPointBean(point);
-                    
-                    //Set for @Inject InjectionPoint
-                    if(WebBeansUtil.isDependent(injectedBean))
-                    {
-                        if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(point.getType())))
-                        {
-                            injectionPointBeanLocalSetOnStack = InjectionPointProducer.setThreadLocal(point);
-                        }
-                    }
-                    
-                    CreationalContextImpl<Object> creational = manager.createCreationalContext(injectedBean);
-                    if (isEventProviderInjection(point))
-                    {
-                        creational.putInjectionPoint(point);
-                    }
-                    Object instance = manager.getReference(injectedBean, null, creational);
-                    if (injectionPointBeanLocalSetOnStack)
-                    {
-                        InjectionPointProducer.unsetThreadLocal();
-                    }
-
-                    param = new ObserverParams();
-                    param.isBean = true;
-                    param.creational = creational;
-                    param.instance = instance;
-                    param.bean = injectedBean;
-                    list.add(param);
-                }
-                
-                i++;
-            }
-        }
-
-        return list;
-    }
     
     /**
      * Gets observer method parameters.
      * @param event event payload
      * @return observer method parameters
      */
-    protected List<ObserverParams> getAnnotatedMethodArguments(Object event)
+    protected List<ObserverParams> getMethodArguments(Object event, EventMetadata metadata)
     {
         final WebBeansContext webBeansContext = bean.getWebBeansContext();
         final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         List<ObserverParams> list = new ArrayList<ObserverParams>();
-        List<AnnotatedParameter<T>> parameters = annotatedMethod.getParameters();
+        List<AnnotatedParameter<T>> parameters = observerMethod.getParameters();
         ObserverParams param = null;
         for(AnnotatedParameter<T> parameter : parameters)
         {
@@ -453,8 +305,6 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             }
             else
             {
-                boolean injectionPointBeanLocalSetOnStack = false;
-                
                 //Get parameter annotations
                 Annotation[] bindingTypes =
                     annotationManager.getQualifierAnnotations(AnnotationUtil.
@@ -465,27 +315,19 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 //Get observer parameter instance
                 @SuppressWarnings("unchecked")
                 Bean<Object> injectedBean = (Bean<Object>)getWebBeansContext().getBeanManagerImpl().getInjectionResolver().getInjectionPointBean(point);
-
-                //Set for @Inject InjectionPoint
-                if(WebBeansUtil.isDependent(injectedBean))
-                {
-                    if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(point.getType())))
-                    {
-                        injectionPointBeanLocalSetOnStack = InjectionPointProducer.setThreadLocal(point);
-                    }
-                }                    
-
                 
                 CreationalContextImpl<Object> creational = manager.createCreationalContext(injectedBean);
-                if (isEventProviderInjection(point))
+                creational.putInjectionPoint(metadata.getInjectionPoint());
+                creational.putInjectionPoint(point);
+                Object instance;
+                try
                 {
-                    creational.putInjectionPoint(point);
+                    instance = manager.getReference(injectedBean, null, creational);
                 }
-                Object instance = manager.getReference(injectedBean, null, creational);
-                
-                if (injectionPointBeanLocalSetOnStack)
+                finally
                 {
-                    InjectionPointProducer.unsetThreadLocal();
+                    creational.removeInjectionPoint();
+                    creational.removeInjectionPoint();
                 }
                                     
                 param = new ObserverParams();
@@ -559,7 +401,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         return phase;
     }
     
-    public Method getObserverMethod()
+    public AnnotatedMethod<T> getObserverMethod()
     {
         return observerMethod;
     }
@@ -576,7 +418,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
      * 
      * @param m method to be invoked as the observer
      */
-    public void setObserverMethod(Method m)
+    public void setObserverMethod(AnnotatedMethod<T> m)
     {
         observerMethod = m;
     }

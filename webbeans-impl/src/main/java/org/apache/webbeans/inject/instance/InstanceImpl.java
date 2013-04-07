@@ -37,7 +37,7 @@ import javax.enterprise.util.TypeLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.portable.InjectionPointProducer;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.InjectionExceptionUtil;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
@@ -65,7 +65,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
 
     private WebBeansContext webBeansContext;
 
-    private CreationalContext<?> parentCreationalContext;
+    private CreationalContextImpl<?> parentCreationalContext;
 
     /**
      * Creates new instance.
@@ -77,7 +77,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
      * @param annotations qualifier annotations
      */
     public InstanceImpl(Type injectionClazz, InjectionPoint injectionPoint, WebBeansContext webBeansContext,
-                 CreationalContext<?> creationalContext, Annotation... annotations)
+                 CreationalContextImpl<?> creationalContext, Annotation... annotations)
     {
         this.injectionClazz = injectionClazz;
         this.injectionPoint = injectionPoint;
@@ -100,39 +100,43 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     {
         T instance;
 
-        InjectionPointProducer.setThreadLocal(injectionPoint);
+        Annotation[] anns = new Annotation[qualifierAnnotations.size()];
+        anns = qualifierAnnotations.toArray(anns);
+
+        Set<Bean<?>> beans = resolveBeans();
+
+        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
+
+        Bean<?> bean = beanManager.resolve(beans);
+
+        if (bean == null)
+        {
+            InjectionExceptionUtil.throwUnsatisfiedResolutionException(ClassUtil.getClazz(injectionClazz), injectionPoint, anns);
+        }
+
+        // since Instance<T> is Dependent, we we gonna use the parent CreationalContext by default
+        CreationalContext<?> creationalContext = parentCreationalContext;
+
+        boolean isDependentBean = WebBeansUtil.isDependent(bean);
+
+        if (!isDependentBean)
+        {
+            // but for all NormalScoped beans we will need to create a fresh CreationalContext
+            creationalContext = beanManager.createCreationalContext(bean);
+        }
+        if (!(creationalContext instanceof CreationalContextImpl))
+        {
+            creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(creationalContext, bean);
+        }
+
+        ((CreationalContextImpl<?>)creationalContext).putInjectionPoint(injectionPoint);
         try
         {
-            Annotation[] anns = new Annotation[qualifierAnnotations.size()];
-            anns = qualifierAnnotations.toArray(anns);
-        
-            Set<Bean<?>> beans = resolveBeans();
-
-            BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
-
-            Bean<?> bean = beanManager.resolve(beans);
-            
-            if (bean == null)
-            {
-                InjectionExceptionUtil.throwUnsatisfiedResolutionException(ClassUtil.getClazz(injectionClazz), injectionPoint, anns);
-            }
-
-            // since Instance<T> is Dependent, we we gonna use the parent CreationalContext by default
-            CreationalContext<?> creationalContext = parentCreationalContext;
-
-            boolean isDependentBean = WebBeansUtil.isDependent(bean);
-
-            if (!isDependentBean)
-            {
-                // but for all NormalScoped beans we will need to create a fresh CreationalContext
-                creationalContext = beanManager.createCreationalContext(bean);
-            }
-
             instance = (T) beanManager.getReference(bean, null, creationalContext);
         }
         finally
         {
-            InjectionPointProducer.removeThreadLocal();
+            ((CreationalContextImpl<?>)creationalContext).removeInjectionPoint();
         }
 
         return instance;
@@ -259,7 +263,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     {
         Set<Bean<?>> beans = resolveBeans();
         Set<T> instances = new HashSet<T>();
-        InjectionPointProducer.setThreadLocal(injectionPoint);
+        parentCreationalContext.putInjectionPoint(injectionPoint);
         try
         {
             for(Bean<?> bean : beans)
@@ -270,7 +274,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         }
         finally
         {
-            InjectionPointProducer.removeThreadLocal();
+            parentCreationalContext.removeInjectionPoint();
         }
         
         return instances.iterator();

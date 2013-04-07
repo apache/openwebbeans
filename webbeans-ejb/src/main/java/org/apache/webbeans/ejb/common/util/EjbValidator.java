@@ -20,7 +20,6 @@ package org.apache.webbeans.ejb.common.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +27,8 @@ import java.util.Set;
 import javax.decorator.Decorator;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.SessionBeanType;
 import javax.interceptor.Interceptor;
@@ -35,6 +36,7 @@ import javax.interceptor.Interceptor;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -128,12 +130,12 @@ public final class EjbValidator
         }
     }
     
-    public static void validateObserverMethods(BaseEjbBean<?> bean, Set<ObserverMethod<?>> observers)
+    public static <T> void validateObserverMethods(BaseEjbBean<?> bean, Set<ObserverMethod<T>> observers)
     {
-        for(ObserverMethod<?> observer : observers)
+        for(ObserverMethod<T> observer : observers)
         {
-            ObserverMethodImpl<?> obs = (ObserverMethodImpl<?>)observer;
-            Method method = obs.getObserverMethod();
+            ObserverMethodImpl<T> obs = (ObserverMethodImpl<T>)observer;
+            AnnotatedMethod<T> method = obs.getObserverMethod();
             List<?> locals =  bean.getBusinessLocalInterfaces();
             if(locals != null)
             {
@@ -143,7 +145,7 @@ public final class EjbValidator
                 {
                     Class<?> clazz = (Class<?>)it.next();
                     Method classMethod = bean.getWebBeansContext().getSecurityService().
-                            doPrivilegedGetDeclaredMethod(clazz, method.getName(), method.getParameterTypes());
+                            doPrivilegedGetDeclaredMethod(clazz, method.getJavaMember().getName(), method.getJavaMember().getParameterTypes());
                     if(classMethod == null)
                     {
                         continue;
@@ -151,7 +153,9 @@ public final class EjbValidator
                     else
                     {
                         //Should only be a single method that matches the names & params
-                        obs.setObserverMethod(classMethod);
+                        AnnotatedElementFactory annotatedElementFactory = bean.getWebBeansContext().getAnnotatedElementFactory();
+                        AnnotatedType<T> declaringType = (AnnotatedType<T>) annotatedElementFactory.newAnnotatedType(classMethod.getDeclaringClass());
+                        obs.setObserverMethod(annotatedElementFactory.newAnnotatedMethod(classMethod, declaringType));
                         found = true;
                         break;
                     }
@@ -159,9 +163,9 @@ public final class EjbValidator
                 
                 if(!found)
                 {
-                    if(!Modifier.isStatic(method.getModifiers()))
+                    if(!method.isStatic())
                     {
-                        throw new WebBeansConfigurationException("Observer method : " + method.getName() + " in session bean class : " + 
+                        throw new WebBeansConfigurationException("Observer method : " + method.getJavaMember().getName() + " in session bean class : " + 
                                 bean.getBeanClass() + " must be business method");                                            
                     }
                 }

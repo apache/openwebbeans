@@ -64,6 +64,7 @@ import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
+
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
@@ -77,13 +78,14 @@ import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DecoratorComparator;
+import org.apache.webbeans.event.EventMetadata;
+import org.apache.webbeans.event.EventMetadataImpl;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.spi.ScannerService;
@@ -406,13 +408,18 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * {@inheritDoc}
      */
     public void fireEvent(Object event, Annotation... bindings)
+    {       
+        fireEvent(event, new EventMetadataImpl(event.getClass(), null, bindings));
+    }
+
+    public void fireEvent(Object event, EventMetadata metadata)
     {                
         if (ClassUtil.isDefinitionContainsTypeVariables(event.getClass()))
         {
             throw new IllegalArgumentException("Event class : " + event.getClass().getName() + " can not be defined as generic type");
         }
 
-        notificationManager.fireEvent(event, bindings);
+        notificationManager.fireEvent(event, metadata);
     }
 
     public Set<Bean<?>> getComponents()
@@ -627,33 +634,36 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             InjectionResolver.injectionPoints.set(injectionPoint);
         }
 
-        boolean ijbSet = false;
-        if (InjectionPointProducer.isStackEmpty())
+        if(WebBeansUtil.isDependent(injectedBean))
         {
-            ijbSet = true;
-            InjectionPointProducer.setThreadLocal(injectionPoint);
-        }
-
-        try
-        {
-            if(WebBeansUtil.isDependent(injectedBean))
+            if (!(ownerCreationalContext instanceof CreationalContextImpl))
             {
-                //Using owner creational context
-                //Dependents use parent creational context
+                ownerCreationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(ownerCreationalContext, injectionPoint.getBean());
+            }
+            ((CreationalContextImpl<?>)ownerCreationalContext).putInjectionPoint(injectionPoint);
+            //Using owner creational context
+            //Dependents use parent creational context
+            try
+            {
                 instance = getReference(injectedBean, injectionPoint.getType(), ownerCreationalContext);
             }
-            else
+            finally
             {
-                //New creational context for normal scoped beans
-                CreationalContextImpl<Object> injectedCreational = (CreationalContextImpl<Object>)createCreationalContext(injectedBean);
-                instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
+                ((CreationalContextImpl<?>)ownerCreationalContext).removeInjectionPoint();
             }
         }
-        finally
+        else
         {
-            if (ijbSet)
+            //New creational context for normal scoped beans
+            CreationalContextImpl<Object> injectedCreational = (CreationalContextImpl<Object>)createCreationalContext(injectedBean);
+            injectedCreational.putInjectionPoint(injectionPoint);
+            try
             {
-                InjectionPointProducer.unsetThreadLocal();
+                instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
+            }
+            finally
+            {
+                injectedCreational.removeInjectionPoint();
             }
         }
 
@@ -978,14 +988,19 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return new InjectionTargetImpl<T>(bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext, postConstructMethods, preDestroyMethods);
     }
 
-    public <T> Set<ObserverMethod<? super T>> resolveObserverMethods( T event, Annotation... qualifiers ) 
+    public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, Annotation... qualifiers)
     {
-        if(ClassUtil.isDefinitionContainsTypeVariables(event.getClass()))
+        return resolveObserverMethods(event, new EventMetadataImpl(event.getClass(), null, qualifiers));
+    }
+
+    public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, EventMetadata metadata) 
+    {
+        if(ClassUtil.isDefinitionContainsTypeVariables(ClassUtil.getClass(metadata.getType())))
         {
             throw new IllegalArgumentException("Event type can not contain type variables. Event class is : " + event.getClass());
         }
         
-        return notificationManager.resolveObservers(event, qualifiers);
+        return notificationManager.resolveObservers(event, metadata);
     }
 
     public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)

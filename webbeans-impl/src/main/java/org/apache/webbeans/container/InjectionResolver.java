@@ -75,9 +75,6 @@ public class InjectionResolver
      */
     private WebBeansContext webBeansContext;
     
-    private final static Annotation[] DEFAULT_LITERAL_ARRAY = new Annotation[]{DefaultLiteral.INSTANCE};
-    private final static Annotation[] ANY_LITERAL_ARRAY = new Annotation[]{new AnyLiteral()};
-
     /**
      * This Map contains all resolved beans via it's type and qualifiers.
      * If a bean have resolved as not existing, the entry will contain <code>null</code> as value.
@@ -223,8 +220,7 @@ public class InjectionResolver
         Annotation[] qualifiers = qualSet.toArray(new Annotation[qualSet.size()]);
         if (isInstanceOrEventInjection(type))
         {
-            qualifiers = new Annotation[1];
-            qualifiers[0] = new AnyLiteral();
+            qualifiers = AnyLiteral.ARRAY;
         }
 
         Class injectionPointClass = null;
@@ -261,7 +257,7 @@ public class InjectionResolver
         {
             newType = newQualifier.value();
         }
-        Set<Bean<?>> beans = implResolveByType(newType, injectionPoint.getBean().getBeanClass(), new AnyLiteral());
+        Set<Bean<?>> beans = implResolveByType(newType, injectionPoint.getBean().getBeanClass(), AnyLiteral.INSTANCE);
         if (beans.isEmpty())
         {
             beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(newType));
@@ -470,13 +466,13 @@ public class InjectionResolver
 
         if (isInstanceOrEventInjection(injectionPointType))
         {
-            qualifiers = ANY_LITERAL_ARRAY;
+            qualifiers = AnyLiteral.ARRAY;
         }
         else
         {
             if (qualifiers.length == 0)
             {
-                qualifiers = DEFAULT_LITERAL_ARRAY;
+                qualifiers = DefaultLiteral.ARRAY;
                 currentQualifier = true;
             }
         }

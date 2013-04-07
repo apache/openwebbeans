@@ -49,7 +49,8 @@ public final class AnnotationUtil
 
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
     
-    public static final Set<Annotation> DEFAULT_AND_ANY_ANNOTATION = Collections.unmodifiableSet(new HashSet<Annotation>(Arrays.asList(DefaultLiteral.INSTANCE, new AnyLiteral())));
+    public static final Set<Annotation> DEFAULT_AND_ANY_ANNOTATION
+        = Collections.unmodifiableSet(new HashSet<Annotation>(Arrays.<Annotation>asList(DefaultLiteral.INSTANCE, AnyLiteral.INSTANCE)));
 
     // No instantiate
     private AnnotationUtil()
@@ -245,37 +246,6 @@ public final class AnnotationUtil
         }
         return result;
     }
-
-    /**
-     * Gets the method first found parameter annotation with given type.
-     * 
-     * @param method method
-     * @param clazz checking annotation
-     * @return annotation
-     */
-    public static <T extends Annotation> T getMethodFirstParameterAnnotation(Method method, Class<T> clazz)
-    {
-        Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.nullCheckForClass(clazz);
-
-        Annotation[][] parameterAnns = method.getParameterAnnotations();
-
-        for (Annotation[] parameters : parameterAnns)
-        {
-            for (Annotation param : parameters)
-            {
-                Class<? extends Annotation> btype = param.annotationType();
-                if (btype.equals(clazz))
-                {
-                    return clazz.cast(param);
-                }
-
-            }
-
-        }
-
-        return null;
-    }    
     
     public static <X,T extends Annotation> T getAnnotatedMethodFirstParameterAnnotation(AnnotatedMethod<X> annotatedMethod, Class<T> clazz)
     {

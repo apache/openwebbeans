@@ -16,29 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.annotation;
+package org.apache.webbeans.event;
 
-import java.lang.annotation.Annotation;
-
-import javax.enterprise.inject.Default;
+import javax.enterprise.inject.spi.ObserverMethod;
 
 /**
- * {@link Default} literal annotation.
- * 
- * @since 1.0
+ * This interface fixes an issue of the CDI API. See https://issues.jboss.org/browse/CDI-36
  */
-public class DefaultLiteral extends EmptyAnnotationLiteral<Default> implements Default
+public interface OwbObserverMethod<T> extends ObserverMethod<T>
 {
-    public static final DefaultLiteral INSTANCE = new DefaultLiteral();
-    public static final Annotation[] ARRAY = new Annotation[]{DefaultLiteral.INSTANCE};
 
-    private static final String TOSTRING = "@javax.enterprise.inject.Default()";
-    private static final long serialVersionUID = 6788272256977634238L;
+    /**
+     * will actually call the underlying observer method with the specified event metadata
+     */
+    public void notify(T event, EventMetadata metadata);    
 
-    @Override
-    public String toString()
-    {
-        // implemented for performance reasons
-        return TOSTRING;
-    }
 }

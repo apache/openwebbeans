@@ -924,7 +924,7 @@ public class BeansDeployer
                 for(ObserverMethod<?> observerMethod : observerMethods)
                 {
                     ObserverMethodImpl<?> impl = (ObserverMethodImpl<?>)observerMethod;
-                    AnnotatedMethod<?> method = webBeansContext.getAnnotatedElementFactory().newAnnotatedMethod(impl.getObserverMethod(), annotatedType);
+                    AnnotatedMethod<?> method = impl.getObserverMethod();
 
                     observerMethodsMap.put(observerMethod, method);
                 }

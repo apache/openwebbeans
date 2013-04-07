@@ -50,7 +50,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     /**
      * The injection point object to be injected into injection points of type InjectionPoint
      */
-    private transient Stack<InjectionPoint> injectionPoints;
+    private transient Stack<InjectionPoint> injectionPoints = null;
 
     /**
      * Contextual bean dependent instances

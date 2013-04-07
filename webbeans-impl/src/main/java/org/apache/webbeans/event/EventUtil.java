@@ -21,13 +21,14 @@ package org.apache.webbeans.event;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Set;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.TransactionPhase;
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -53,7 +54,7 @@ public final class EventUtil
         }
     }
 
-    public static void checkEventBindings(WebBeansContext webBeansContext, Annotation... annotations)
+    public static void checkEventBindings(WebBeansContext webBeansContext, Set<Annotation> annotations)
     {
         for(Annotation ann : annotations)
         {
@@ -70,9 +71,9 @@ public final class EventUtil
         webBeansContext.getAnnotationManager().checkQualifierConditions(annotations);
     }
 
-    public static TransactionPhase getObserverMethodTransactionType(Method observerMethod)
+    public static TransactionPhase getObserverMethodTransactionType(AnnotatedMethod<?> observerMethod)
     {
-        Observes observes = AnnotationUtil.getMethodFirstParameterAnnotation(observerMethod, Observes.class);
+        Observes observes = AnnotationUtil.getAnnotatedMethodFirstParameterAnnotation(observerMethod, Observes.class);
         if (observes != null)
         {
             return observes.during();

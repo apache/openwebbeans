@@ -23,7 +23,6 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -223,8 +222,6 @@ public class WebBeansConfigurationFilter implements Filter
     private void cleanupRequestThreadLocals()
     {
         // TODO maybe there are more to cleanup
-
-        InjectionPointProducer.removeThreadLocal();
         WebContextsService.removeThreadLocals();
     }
 }

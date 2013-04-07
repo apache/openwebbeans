@@ -26,6 +26,8 @@ import javax.transaction.Transaction;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.event.EventMetadata;
+import org.apache.webbeans.event.OwbObserverMethod;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.TransactionService;
 
@@ -45,7 +47,7 @@ public class TransactionalEventNotifier
     /**
      * This will get called by the EJB integration code
      */
-    public static void registerTransactionSynchronization(TransactionPhase phase, ObserverMethod<? super Object> observer, Object event) throws Exception
+    public static void registerTransactionSynchronization(TransactionPhase phase, ObserverMethod<? super Object> observer, Object event, EventMetadata metadata) throws Exception
     {
         TransactionService transactionService = WebBeansContext.currentInstance().getService(TransactionService.class);
         
@@ -59,19 +61,19 @@ public class TransactionalEventNotifier
         {
             if (phase.equals(TransactionPhase.AFTER_COMPLETION))
             {
-                transaction.registerSynchronization(new AfterCompletion(observer, event));
+                transaction.registerSynchronization(new AfterCompletion(observer, event, metadata));
             }
             else if (phase.equals(TransactionPhase.AFTER_SUCCESS))
             {
-                transaction.registerSynchronization(new AfterCompletionSuccess(observer, event));
+                transaction.registerSynchronization(new AfterCompletionSuccess(observer, event, metadata));
             }
             else if (phase.equals(TransactionPhase.AFTER_FAILURE))
             {
-                transaction.registerSynchronization(new AfterCompletionFailure(observer, event));
+                transaction.registerSynchronization(new AfterCompletionFailure(observer, event, metadata));
             }
             else if (phase.equals(TransactionPhase.BEFORE_COMPLETION))
             {
-                transaction.registerSynchronization(new BeforeCompletion(observer, event));
+                transaction.registerSynchronization(new BeforeCompletion(observer, event, metadata));
             }
             else
             {
@@ -85,11 +87,13 @@ public class TransactionalEventNotifier
 
         private final ObserverMethod<T> observer;
         private final T event;
+        private final EventMetadata metadata;
 
-        public AbstractSynchronization(ObserverMethod<T> observer, T event)
+        public AbstractSynchronization(ObserverMethod<T> observer, T event, EventMetadata metadata)
         {
             this.observer = observer;
             this.event = event;
+            this.metadata = metadata;
         }
 
         public void beforeCompletion()
@@ -106,7 +110,14 @@ public class TransactionalEventNotifier
         {
             try
             {
-                observer.notify(event);
+                if (observer instanceof OwbObserverMethod)
+                {
+                    ((OwbObserverMethod<T>)observer).notify(event, metadata);
+                }
+                else
+                {
+                    observer.notify(event);
+                }
             }
             catch (Exception e)
             {
@@ -117,9 +128,9 @@ public class TransactionalEventNotifier
 
     private final static class BeforeCompletion extends AbstractSynchronization
     {
-        private BeforeCompletion(ObserverMethod observer, Object event)
+        private BeforeCompletion(ObserverMethod observer, Object event, EventMetadata metadata)
         {
-            super(observer, event);
+            super(observer, event, metadata);
         }
 
         @Override
@@ -131,9 +142,9 @@ public class TransactionalEventNotifier
 
     private final static class AfterCompletion extends AbstractSynchronization
     {
-        private AfterCompletion(ObserverMethod observer, Object event)
+        private AfterCompletion(ObserverMethod observer, Object event, EventMetadata metadata)
         {
-            super(observer, event);
+            super(observer, event, metadata);
         }
 
         @Override
@@ -145,9 +156,9 @@ public class TransactionalEventNotifier
 
     private final static class AfterCompletionSuccess extends AbstractSynchronization
     {
-        private AfterCompletionSuccess(ObserverMethod observer, Object event)
+        private AfterCompletionSuccess(ObserverMethod observer, Object event, EventMetadata metadata)
         {
-            super(observer, event);
+            super(observer, event, metadata);
         }
 
         @Override
@@ -162,9 +173,9 @@ public class TransactionalEventNotifier
 
     private final static class AfterCompletionFailure extends AbstractSynchronization
     {
-        private AfterCompletionFailure(ObserverMethod observer, Object event)
+        private AfterCompletionFailure(ObserverMethod observer, Object event, EventMetadata metadata)
         {
-            super(observer, event);
+            super(observer, event, metadata);
         }
 
         @Override

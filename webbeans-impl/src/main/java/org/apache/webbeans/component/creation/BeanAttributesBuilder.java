@@ -220,7 +220,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         //Add @Any support
         if(!hasAnyQualifier())
         {
-            qualifiers.add(new AnyLiteral());
+            qualifiers.add(AnyLiteral.INSTANCE);
         }
         
     }

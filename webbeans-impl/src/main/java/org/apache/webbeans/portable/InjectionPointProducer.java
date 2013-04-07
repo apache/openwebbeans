@@ -18,16 +18,14 @@
  */
 package org.apache.webbeans.portable;
 
-import java.util.Stack;
-
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.util.ClassUtil;
+
 public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
 {
-
-    //X TODO refactor. public static variables are utterly ugly
-    private static ThreadLocal<Stack<InjectionPoint>> localThreadlocalStack = new ThreadLocal<Stack<InjectionPoint>>();
     
     /**
      * {@inheritDoc}
@@ -35,53 +33,30 @@ public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
     @Override
     public InjectionPoint produce(CreationalContext<InjectionPoint> creationalContext)
     {
-        return getStackOfInjectionPoints().peek();
+        if (!(creationalContext instanceof CreationalContextImpl))
+        {
+            return null;
+        }
+        // the first injection point on the stack is of type InjectionPoint, so we need the second one
+        CreationalContextImpl<InjectionPoint> creationalContextImpl = (CreationalContextImpl<InjectionPoint>)creationalContext;
+        InjectionPoint first = creationalContextImpl.removeInjectionPoint();
+        if (!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(first.getType())))
+        {
+            throw new IllegalStateException("Inconsistent injection point stack");
+        }
+        try
+        {
+            return creationalContextImpl.getInjectionPoint();
+        }
+        finally
+        {
+            creationalContextImpl.putInjectionPoint(first);
+        }
     }
 
     @Override
     public void dispose(InjectionPoint ip)
     {
-        removeThreadLocal();
-    }
-
-    private static Stack<InjectionPoint> getStackOfInjectionPoints()
-    {
-        Stack<InjectionPoint> stackIP = localThreadlocalStack.get();
-        if (null == stackIP)
-        {
-            stackIP = new Stack<InjectionPoint>();
-        }
-        return stackIP;
-    }
-
-    public static boolean setThreadLocal(InjectionPoint ip)
-    {
-        Stack<InjectionPoint> stackIP = getStackOfInjectionPoints();
-        stackIP.push(ip);
-        localThreadlocalStack.set(stackIP);
-        return true;
-    }
-    
-    public static void unsetThreadLocal()
-    {
-        Stack<InjectionPoint> stackIP = getStackOfInjectionPoints();
-        if (!stackIP.isEmpty())
-        {
-            stackIP.pop();
-        }
-    }
-    
-    /**
-     * Removes the ThreadLocal from the ThreadMap to prevent memory leaks.
-     */
-    public static void removeThreadLocal()
-    {
-        getStackOfInjectionPoints().clear();
-        localThreadlocalStack.remove();
-    }
-    
-    public static boolean isStackEmpty()
-    {
-        return getStackOfInjectionPoints().isEmpty();
+        // nothing to do
     }
 }
