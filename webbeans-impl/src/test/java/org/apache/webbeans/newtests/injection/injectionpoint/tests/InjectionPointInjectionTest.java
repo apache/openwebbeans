@@ -30,7 +30,9 @@ import org.apache.webbeans.newtests.injection.injectionpoint.beans.ConstructorIn
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.FieldInjectionPointOwner;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.InjectionPointBeansOwner;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.InjectionPointObserver;
+import org.apache.webbeans.newtests.injection.injectionpoint.beans.InjectionPointOwnerProducer;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.MethodInjectionPointOwner;
+import org.apache.webbeans.newtests.injection.injectionpoint.beans.ProducerMethodInjectionPointOwner;
 import org.junit.Test;
 
 public class InjectionPointInjectionTest extends AbstractUnitTest {
@@ -44,6 +46,8 @@ public class InjectionPointInjectionTest extends AbstractUnitTest {
         beanClasses.add(MethodInjectionPointOwner.class);
         beanClasses.add(InjectionPointObserver.class);
         beanClasses.add(InjectionPointBeansOwner.class);
+        beanClasses.add(InjectionPointOwnerProducer.class);
+        beanClasses.add(ProducerMethodInjectionPointOwner.class);
         beanClasses.add(ConstructorInjectionPointOwner.SomeInnerClassWithInstructorInjectionPoint.class);
         startContainer(beanClasses, null);
 
@@ -58,10 +62,13 @@ public class InjectionPointInjectionTest extends AbstractUnitTest {
         assertThat(owner.getConstructorInjectionName(), is("constructorInjection"));
         assertThat(owner.getFieldInjectionName(), is("fieldInjection"));
         assertThat(owner.getMethodInjectionName(), is("methodInjection"));
+        assertThat(owner.getProducerMethodInjectionName(), is("producerMethodInjection"));
         assertThat(owner.getConstructorInjectionInstanceName(), is("constructorInjectionInstance"));
         assertThat(owner.getFieldInjectionInstanceName(), is("fieldInjectionInstance"));
         assertThat(owner.getMethodInjectionInstanceName(), is("methodInjectionInstance"));
+        assertThat(owner.getProducerMethodInjectionInstanceName(), is("producerMethodInjectionInstance"));
         assertThat(owner.getObserverInjectionName(), is("observerInjection"));
+        assertThat(owner.getParameterizedObserverInjectionName(), is("observeParameterizedInjectionPoint"));
 
         shutDownContainer();
     }

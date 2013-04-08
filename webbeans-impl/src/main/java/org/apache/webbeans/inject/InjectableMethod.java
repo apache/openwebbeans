@@ -32,7 +32,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
-import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -105,15 +104,10 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
                         if(parameter.getBaseType().equals(InjectionPoint.class))
                         {
                             BeanManager manager = getWebBeansContext().getBeanManagerImpl();
-                            Bean<?> injectionPointBean = manager.getBeans(InjectionPoint.class, DefaultLiteral.INSTANCE).iterator().next();
-                            Object reference = manager.getReference(injectionPointBean, InjectionPoint.class, manager.createCreationalContext(injectionPointBean));
-
-                            dependentParameters.put(injectionPointBean, reference);
+                            Object reference = manager.getInjectableReference(point, creationalContext);
                             list.add(reference);
-                            
                             injectionPoint = true;
                         }
-   
                     }
                     
                     if(!injectionPoint)

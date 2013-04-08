@@ -28,13 +28,19 @@ public class InjectionPointBeansOwner {
     @Inject
     private MethodInjectionPointOwner methodInjection;
     @Inject
+    private ProducerMethodInjectionPointOwner producerMethodInjection;
+    @Inject
     private Instance<ConstructorInjectionPointOwner> constructorInjectionInstance;
     @Inject
     private Instance<FieldInjectionPointOwner> fieldInjectionInstance;
     @Inject
     private Instance<MethodInjectionPointOwner> methodInjectionInstance;
     @Inject
+    private Instance<ProducerMethodInjectionPointOwner> producerMethodInjectionInstance;
+    @Inject
     private Event<StringBuilder> observerInjection;
+    @Inject
+    private Event<StringBuffer> parameterizedObserverInjection;
     
     public String getConstructorInjectionName() {
         return constructorInjection.getName();
@@ -48,6 +54,10 @@ public class InjectionPointBeansOwner {
         return methodInjection.getName();
     }
     
+    public String getProducerMethodInjectionName() {
+        return producerMethodInjection.getName();
+    }
+    
     public String getConstructorInjectionInstanceName() {
         return constructorInjectionInstance.get().getName();
     }
@@ -59,10 +69,20 @@ public class InjectionPointBeansOwner {
     public String getMethodInjectionInstanceName() {
         return methodInjectionInstance.get().getName();
     }
+    
+    public String getProducerMethodInjectionInstanceName() {
+        return producerMethodInjectionInstance.get().getName();
+    }
 
     public String getObserverInjectionName() {
         StringBuilder name = new StringBuilder();
         observerInjection.fire(name);
+        return name.toString();
+    }
+
+    public String getParameterizedObserverInjectionName() {
+        StringBuffer name = new StringBuffer();
+        parameterizedObserverInjection.fire(name);
         return name.toString();
     }
 }

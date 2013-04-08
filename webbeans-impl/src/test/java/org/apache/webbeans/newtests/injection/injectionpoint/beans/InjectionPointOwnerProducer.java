@@ -15,18 +15,15 @@
  */
 package org.apache.webbeans.newtests.injection.injectionpoint.beans;
 
-import javax.enterprise.event.Observes;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-public class InjectionPointObserver extends AbstractInjectionPointOwner {
+@ApplicationScoped
+public class InjectionPointOwnerProducer {
 
-    public void observeInjectionPoint(@Observes StringBuilder builder, InjectionPoint ip) {
-        injectionPoint = ip;
-        builder.append(getName());
-    }
-
-    public void observeParameterizedInjectionPoint(@Observes StringBuffer buffer, ProducerMethodInjectionPointOwner injectionPointOwner) {
-        injectionPoint = injectionPointOwner.injectionPoint;
-        buffer.append(getName());
+    @Produces
+    public ProducerMethodInjectionPointOwner produceInjectionPointOwner(InjectionPoint injectionPoint) {
+        return new ProducerMethodInjectionPointOwner(injectionPoint);
     }
 }
