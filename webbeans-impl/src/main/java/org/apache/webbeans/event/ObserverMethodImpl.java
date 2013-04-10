@@ -19,6 +19,7 @@
 package org.apache.webbeans.event;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -99,7 +100,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     private final TransactionPhase phase;
     
     /**Annotated method*/
-    private AnnotatedMethod<T> observerMethod;
+    private AnnotatedMethod<T> annotatedObserverMethod;
     
     private static class ObserverParams
     {
@@ -115,16 +116,16 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     /**
      * used if the qualifiers and event type are already known, e.g. from the XML.
      * @param bean
-     * @param observerMethod
+     * @param annotatedObserverMethod
      * @param ifExist
      * @param qualifiers
      * @param observedEventType
      */
-    public ObserverMethodImpl(AbstractOwbBean<?> bean, AnnotatedMethod<T> observerMethod, boolean ifExist,
+    public ObserverMethodImpl(AbstractOwbBean<?> bean, AnnotatedMethod<T> annotatedObserverMethod, boolean ifExist,
                                  Annotation[] qualifiers, Type observedEventType)
     {
         this.bean = bean;
-        this.observerMethod = observerMethod;
+        this.annotatedObserverMethod = annotatedObserverMethod;
         this.ifExist = ifExist;
         observedQualifiers = new HashSet<Annotation>(qualifiers.length);
         for (Annotation qualifier : qualifiers)
@@ -132,7 +133,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
             observedQualifiers.add(qualifier);
         }
         this.observedEventType = observedEventType;
-        phase = EventUtil.getObserverMethodTransactionType(observerMethod);
+        phase = EventUtil.getObserverMethodTransactionType(annotatedObserverMethod);
 
     }
 
@@ -178,16 +179,18 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
             {
                 args[i++] = param.instance;
             }
-            
+
+            Method observerMethod = annotatedObserverMethod.getJavaMember();
+
             //Static or not
-            if (observerMethod.isStatic())
+            if (Modifier.isStatic(observerMethod.getModifiers()))
             {
-                if (!observerMethod.getJavaMember().isAccessible())
+                if (!observerMethod.isAccessible())
                 {
-                    observerMethod.getJavaMember().setAccessible(true);
+                    observerMethod.setAccessible(true);
                 }
                 //Invoke Method
-                observerMethod.getJavaMember().invoke(null, args);
+                observerMethod.invoke(null, args);
             }
             else
             {
@@ -235,12 +238,12 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
 
                 if (object != null)
                 {
-                    if (!observerMethod.getJavaMember().isAccessible())
+                    if (!observerMethod.isAccessible())
                     {
-                        bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(observerMethod.getJavaMember(), true);
+                        bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(observerMethod, true);
                     }
 
-                    if (Modifier.isPrivate(observerMethod.getJavaMember().getModifiers()))
+                    if (Modifier.isPrivate(observerMethod.getModifiers()))
                     {
                         // since private methods cannot be intercepted, we have to unwrap anny possible proxy
                         if (object instanceof OwbNormalScopeProxy)
@@ -250,7 +253,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
                     }
 
                     //Invoke Method
-                    observerMethod.getJavaMember().invoke(object, args);
+                    observerMethod.invoke(object, args);
                 }
             }                        
         }
@@ -293,7 +296,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         List<ObserverParams> list = new ArrayList<ObserverParams>();
-        List<AnnotatedParameter<T>> parameters = observerMethod.getParameters();
+        List<AnnotatedParameter<T>> parameters = annotatedObserverMethod.getParameters();
         ObserverParams param = null;
         for(AnnotatedParameter<T> parameter : parameters)
         {
@@ -403,7 +406,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     
     public AnnotatedMethod<T> getObserverMethod()
     {
-        return observerMethod;
+        return annotatedObserverMethod;
     }
 
     protected WebBeansContext getWebBeansContext()
@@ -420,6 +423,6 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
      */
     public void setObserverMethod(AnnotatedMethod<T> m)
     {
-        observerMethod = m;
+        annotatedObserverMethod = m;
     }
 }
