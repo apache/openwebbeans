@@ -100,7 +100,7 @@ public abstract class AbstractInjectable<T>
         {
             if(injected != null && !Serializable.class.isAssignableFrom(injected.getClass()))
             {
-                throw new IllegalProductException("If a producer method or field of scope @Dependent returns an serializable object for injection " +
+                throw new IllegalProductException("A producer method or field of scope @Dependent returns an unserializable object for injection " +
                         "into an injection point "+ injectionPoint +" that requires a passivation capable dependency");
             }
         }
