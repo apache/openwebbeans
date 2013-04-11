@@ -90,10 +90,15 @@ public abstract class AbstractInjectable<T>
                     }
                 }
             }
-        }        
+        }
 
         //Gets injectable reference for injected bean
         injected = (T) beanManager.getInjectableReference(injectionPoint, creationalContext);
+
+        if (injected == null && beanManager.isNormalScope(injectedBean.getScope()))
+        {
+            throw new IllegalStateException("InjectableReference is 'null' for " + injectionPoint.toString());
+        }
 
         /*X TODO see spec issue CDI-140 */
         if(dependentProducer)
