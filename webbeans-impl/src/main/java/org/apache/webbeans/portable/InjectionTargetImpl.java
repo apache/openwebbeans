@@ -364,8 +364,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         }
         catch (Exception e)
         {
-            //noinspection ThrowableResultOfMethodCallIgnored,ThrowableResultOfMethodCallIgnored
-            ExceptionUtil.throwAsRuntimeException(e);
+            throw ExceptionUtil.throwAsRuntimeException(e);
         }
     }
 

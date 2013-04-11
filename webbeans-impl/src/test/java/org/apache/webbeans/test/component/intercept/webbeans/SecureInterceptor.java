@@ -41,7 +41,7 @@ public class SecureInterceptor
         }
         catch (Exception e)
         {
-            ExceptionUtil.throwAsRuntimeException(e);
+            throw ExceptionUtil.throwAsRuntimeException(e);
         }
     }
 

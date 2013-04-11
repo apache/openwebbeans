@@ -119,9 +119,8 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         }
         catch (Exception e)
         {
-            ExceptionUtil.throwAsRuntimeException(e);
+            throw ExceptionUtil.throwAsRuntimeException(e);
         }
-        return null;
     }
 
     /**
@@ -137,9 +136,8 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         }
         catch (Exception e)
         {
-            ExceptionUtil.throwAsRuntimeException(e);
+            throw ExceptionUtil.throwAsRuntimeException(e);
         }
-        return null;
     }
 
     /**

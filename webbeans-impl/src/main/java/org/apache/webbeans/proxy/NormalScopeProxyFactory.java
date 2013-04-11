@@ -88,7 +88,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             }
             catch (Exception e)
             {
-                ExceptionUtil.throwAsRuntimeException(e);
+                throw ExceptionUtil.throwAsRuntimeException(e);
             }
         }
 
@@ -108,9 +108,8 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         }
         catch (Exception e)
         {
-            ExceptionUtil.throwAsRuntimeException(e);
+            throw ExceptionUtil.throwAsRuntimeException(e);
         }
-        return null;
     }
 
     public <T> T createNormalScopeProxy(Bean<T> bean)
