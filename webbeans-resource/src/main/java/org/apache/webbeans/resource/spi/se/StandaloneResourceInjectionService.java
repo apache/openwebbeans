@@ -135,11 +135,16 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
                             ResourceReference<Object, ?> resourceRef = new ResourceReference(field.getDeclaringClass(), field.getName(), field.getType(), ann);
                             try
                             {
-                                if(!field.isAccessible())
+                                Object resourceToInject = getResourceReference(resourceRef);
+                                if (resourceToInject != null)
                                 {
-                                    webBeansContext.getSecurityService().doPrivilegedSetAccessible(field, true);
+                                    if(!field.isAccessible())
+                                    {
+                                        webBeansContext.getSecurityService().doPrivilegedSetAccessible(field, true);
+                                    }
+
+                                    field.set(managedBeanInstance, resourceToInject);
                                 }
-                                field.set(managedBeanInstance, getResourceReference(resourceRef));
 
                                 containsEeResource = Boolean.TRUE;
                             }
@@ -147,7 +152,6 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
                             {
                                 logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0025, e, field));
                                 throw new WebBeansException(MessageFormat.format(WebBeansLoggerFacade.getTokenString(OWBLogConst.ERROR_0025), field), e);
-
                             }
                         }
                     }
