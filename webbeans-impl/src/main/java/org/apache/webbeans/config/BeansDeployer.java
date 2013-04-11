@@ -21,6 +21,7 @@ package org.apache.webbeans.config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -83,7 +84,6 @@ import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
-import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
@@ -239,46 +239,62 @@ public class BeansDeployer
         
         if(beanEeProvider != null)
         {
-            addDefaultBean(beanManager, "org.apache.webbeans.ee.common.beans.PrincipalBean");
-            addDefaultBean(beanManager, "org.apache.webbeans.ee.beans.ValidatorBean");
-            addDefaultBean(beanManager, "org.apache.webbeans.ee.beans.ValidatorFactoryBean");
-            addDefaultBean(beanManager, "org.apache.webbeans.ee.beans.UserTransactionBean");
+            addDefaultBean(webBeansContext, "org.apache.webbeans.ee.common.beans.PrincipalBean");
+            addDefaultBean(webBeansContext, "org.apache.webbeans.ee.beans.ValidatorBean");
+            addDefaultBean(webBeansContext, "org.apache.webbeans.ee.beans.ValidatorFactoryBean");
+            addDefaultBean(webBeansContext, "org.apache.webbeans.ee.beans.UserTransactionBean");
         }
         else if(beanWebProvider != null)
         {
-            addDefaultBean(beanManager, "org.apache.webbeans.ee.common.beans.PrincipalBean");
+            addDefaultBean(webBeansContext, "org.apache.webbeans.ee.common.beans.PrincipalBean");
         }
             
     }
     
-    private void addDefaultBean(BeanManagerImpl manager,String className)
+    private void addDefaultBean(WebBeansContext ctx,String className)
     {
         Bean<?> bean = null;
         
         Class<?> beanClass = ClassUtil.getClassFromName(className);
         if(beanClass != null)
         {
-            bean  = (Bean)newInstance( beanClass);
+            bean  = (Bean)newInstance(ctx, beanClass);
         }
         
         if(bean != null)
         {
-            manager.addInternalBean(bean);
+            ctx.getBeanManagerImpl().addInternalBean(bean);
         }
     }
 
     /**
      * create a new instance of the class
      */
-    private Object newInstance(Class<?> clazz)
+    private Object newInstance(WebBeansContext wbc, Class<?> clazz)
     {
         try
         {
             if(System.getSecurityManager() != null)
             {
-                return webBeansContext.getSecurityService().doPrivilegedObjectCreate(clazz);
+                final Constructor<?> c = webBeansContext.getSecurityService().doPrivilegedGetConstructor(clazz, WebBeansContext.class);
+                if (c == null)
+                {
+                    return webBeansContext.getSecurityService().doPrivilegedObjectCreate(clazz);
+                }
+                return c.newInstance(wbc);
             }
 
+            if (clazz.getConstructors().length > 0)
+            {
+                try
+                {
+                    return clazz.getConstructor(new Class<?>[] { WebBeansContext.class }).newInstance(wbc);
+                }
+                catch (final Exception e)
+                {
+                    return clazz.newInstance();
+                }
+            }
             return clazz.newInstance();
 
         }
@@ -830,7 +846,6 @@ public class BeansDeployer
             ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, beanAttributes);
 
             InjectionTargetBean<T> bean;
-            GProcessInjectionTarget processInjectionTarget = null;
             if(WebBeansUtil.isDecorator(annotatedType))
             {
                 if (logger.isLoggable(Level.FINE))
