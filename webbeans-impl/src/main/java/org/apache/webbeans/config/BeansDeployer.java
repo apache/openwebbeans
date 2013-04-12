@@ -18,42 +18,13 @@
  */
 package org.apache.webbeans.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.net.URL;
-import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.enterprise.inject.Model;
-import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.Decorator;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
-
 import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.component.BeanAttributesImpl;
-import org.apache.webbeans.component.DecoratorBean;
-import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.CdiInterceptorBean;
+import org.apache.webbeans.component.DecoratorBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.InterceptedMarker;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.OwbBean;
@@ -95,6 +66,34 @@ import org.apache.webbeans.util.InjectionExceptionUtil;
 import org.apache.webbeans.util.WebBeansConstants;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
+
+import javax.enterprise.inject.Model;
+import javax.enterprise.inject.Specializes;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.net.URL;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Deploys the all beans that are defined in the {@link org.apache.webbeans.spi.ScannerService} at
@@ -598,17 +597,15 @@ public class BeansDeployer
             return;
         }
 
-        // Try class is Managed Bean
-        boolean isDefined = defineManagedBean((Class<Object>) implClass, (ProcessAnnotatedTypeImpl<Object>) processAnnotatedEvent);
-
-        // Try class is EJB bean
-        if (!isDefined && discoverEjb)
+        // EJBs can be defined so test them really before going for a ManagedBean
+        if (discoverEjb && EJBWebBeansConfigurator.isSessionBean(implClass, webBeansContext))
         {
-            if (EJBWebBeansConfigurator.isSessionBean(implClass, webBeansContext))
-            {
-                logger.log(Level.FINE, "Found Enterprise Bean with class name : [{0}]", implClass.getName());
-                defineEnterpriseWebBean((Class<Object>) implClass, (ProcessAnnotatedTypeImpl<Object>) processAnnotatedEvent);
-            }
+            logger.log(Level.FINE, "Found Enterprise Bean with class name : [{0}]", implClass.getName());
+            defineEnterpriseWebBean((Class<Object>) implClass, (ProcessAnnotatedTypeImpl<Object>) processAnnotatedEvent);
+        }
+        else
+        {
+            defineManagedBean((Class<Object>) implClass, (ProcessAnnotatedTypeImpl<Object>) processAnnotatedEvent);
         }
     }
     

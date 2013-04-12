@@ -394,6 +394,10 @@ public final class WebBeansUtil
                     return true;
                 }
             }
+            else
+            {
+                return ((OpenWebBeansEjbPlugin) plugin).isSessionBean(clazz);
+            }
         }
 
         return false;
