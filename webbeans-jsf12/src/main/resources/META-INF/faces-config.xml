@@ -24,7 +24,6 @@
 
 	<application>
 		<view-handler>org.apache.webbeans.jsf12.ConversationAwareViewHandler</view-handler>
-		<el-resolver>org.apache.webbeans.el10.EL10Resolver</el-resolver>
 	</application>
 
 	<lifecycle>
