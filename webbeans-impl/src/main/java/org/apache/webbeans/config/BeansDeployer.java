@@ -927,7 +927,10 @@ public class BeansDeployer
                     webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducer event observers for"
                             + " ProducerFields. Look at logs for further details");
 
-                    annotatedFields.put(producerField, null);
+                    annotatedFields.put(producerField,
+                            webBeansContext.getAnnotatedElementFactory().newAnnotatedField(
+                                producerField.getCreatorField(),
+                                webBeansContext.getAnnotatedElementFactory().newAnnotatedType(producerField.getBeanClass())));
                 }
 
                 Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap =

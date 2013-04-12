@@ -95,7 +95,7 @@ public class InterceptorResolutionService
         // pick up EJB-style interceptors from a class level
         List<Interceptor<?>> classLevelEjbInterceptors = new ArrayList<Interceptor<?>>();
 
-        collectEjbInterceptors(classLevelEjbInterceptors, annotatedType, false);
+        collectEjbInterceptors(classLevelEjbInterceptors, annotatedType, false, beanTypes);
 
         // pick up the decorators
         List<Decorator<?>> decorators = beanManager.resolveDecorators(beanTypes, AnnotationUtil.asArray(qualifiers));
@@ -264,7 +264,7 @@ public class InterceptorResolutionService
         }
     }
 
-    private <T> void collectEjbInterceptors(List<Interceptor<?>> ejbInterceptors, Annotated annotated, boolean unproxyable)
+    private <T> void collectEjbInterceptors(List<Interceptor<?>> ejbInterceptors, Annotated annotated, boolean unproxyable, Set<Type> types)
     {
         Interceptors interceptorsAnnot = annotated.getAnnotation(Interceptors.class);
         if (interceptorsAnnot != null)
@@ -274,8 +274,18 @@ public class InterceptorResolutionService
                 throw new WebBeansConfigurationException(annotated + " is not proxyable, but an Interceptor got defined on it!");
             }
 
+            if (types == null)
+            {
+                types = Collections.emptySet();
+            }
+
             for (Class interceptorClass : interceptorsAnnot.value())
             {
+                if (types.contains(interceptorClass)) // don't create another bean for it
+                {
+                    continue;
+                }
+
                 Interceptor ejbInterceptor = webBeansContext.getInterceptorsManager().getEjbInterceptorForClass(interceptorClass);
                 ejbInterceptors.add(ejbInterceptor);
             }
@@ -301,7 +311,7 @@ public class InterceptorResolutionService
             }
         }
 
-        collectEjbInterceptors(methodInterceptors, annotatedMethod, unproxyable);
+        collectEjbInterceptors(methodInterceptors, annotatedMethod, unproxyable, Collections.<Type>singleton(annotatedMethod.getJavaMember().getDeclaringClass()));
         allUsedEjbInterceptors.addAll(methodInterceptors);
 
         if (methodInterceptors.size() > 0)
