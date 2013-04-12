@@ -64,7 +64,6 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public void addBean(Bean<?> bean)
     {
         AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(bean.getBeanClass());
@@ -76,9 +75,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         if(bean instanceof Interceptor)
         {
             //Required for custom interceptors
-            ManagedBean managedBean =
-                webBeansContext.getWebBeansUtil().defineManagedBeanWithoutFireEvents(
-                    (AnnotatedType<?>) annotatedType);
+            webBeansContext.getWebBeansUtil().defineManagedBeanWithoutFireEvents((AnnotatedType<?>) annotatedType);
             
             Interceptor<?> interceptor =  (Interceptor<?>)bean;
             if(interceptor.getScope() != Dependent.class)
@@ -113,7 +110,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         else if(bean instanceof Decorator)
         {
             //Required for custom decorators
-            ManagedBean managedBean =
+            ManagedBean<?> managedBean =
                 webBeansContext.getWebBeansUtil().defineManagedBeanWithoutFireEvents(
                     (AnnotatedType<?>) annotatedType);
             if(managedBean.getScope() != Dependent.class)
@@ -141,7 +138,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
             }
 
 
-            webBeansContext.getDecoratorsManager().addDecorator((Decorator) bean);
+            webBeansContext.getDecoratorsManager().addDecorator((Decorator<?>) bean);
             webBeansContext.getDecoratorsManager().addCustomDecoratorClass(bean.getBeanClass());
         }
         else
@@ -175,6 +172,22 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         ProcessObserverMethod<?, ?> event = new GProcessObservableMethod(null,observerMethod);
         beanManager.fireEvent(event, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         beanManager.getNotificationManager().addObserver(observerMethod, observerMethod.getObservedType());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T> AnnotatedType<T> getAnnotatedType(Class<T> type, String id)
+    {
+        return (AnnotatedType<T>) beanManager.getAdditionalAnnotatedType(type, id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T> Iterable<AnnotatedType<T>> getAnnotatedTypes(Class<T> type)
+    {
+        return beanManager.getWebBeansContext().getAnnotatedElementFactory().getAnnotatedTypes(type);
     }
 
 }

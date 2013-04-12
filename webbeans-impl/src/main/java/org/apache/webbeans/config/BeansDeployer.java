@@ -85,6 +85,7 @@ import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -524,7 +525,7 @@ public class BeansDeployer
         if (classIndex != null)
         {
             AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
-            List<AnnotatedType<?>> additionalAnnotatedTypes = webBeansContext.getBeanManagerImpl()
+            Collection<AnnotatedType<?>> additionalAnnotatedTypes = webBeansContext.getBeanManagerImpl()
                                                                              .getAdditionalAnnotatedTypes();
 
             for(Class<?> implClass : classIndex)
@@ -568,7 +569,7 @@ public class BeansDeployer
     {
         BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
 
-        List<AnnotatedType<?>> annotatedTypes = beanManager.getAdditionalAnnotatedTypes();
+        Collection<AnnotatedType<?>> annotatedTypes = beanManager.getAdditionalAnnotatedTypes();
         
         for(AnnotatedType<?> type : annotatedTypes)
         {

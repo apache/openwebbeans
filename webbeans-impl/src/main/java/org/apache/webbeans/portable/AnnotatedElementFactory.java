@@ -43,13 +43,15 @@ import org.apache.webbeans.util.Asserts;
  */
 public final class AnnotatedElementFactory
 {
+    
+    private static final String OWB_DEFAULT_KEY = "OWB_DEFAULT_KEY";
 
     // Logger instance
     private final static Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedElementFactory.class);
 
     //Cache of the AnnotatedType
-    private ConcurrentMap<Class<?>, AnnotatedType<?>> annotatedTypeCache =
-        new ConcurrentHashMap<Class<?>, AnnotatedType<?>>();
+    private ConcurrentMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>> annotatedTypeCache =
+        new ConcurrentHashMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>>();
     
     //Cache of AnnotatedConstructor
     private ConcurrentMap<Constructor<?>, AnnotatedConstructor<?>> annotatedConstructorCache =
@@ -81,9 +83,20 @@ public final class AnnotatedElementFactory
      */
     public <X> AnnotatedType<X> getAnnotatedType(Class<X> annotatedClass)
     {
-        return (AnnotatedType<X>) annotatedTypeCache.get(annotatedClass);
+        return getAnnotatedTypeCache(annotatedClass).get(OWB_DEFAULT_KEY);
     }
 
+    /**
+     * Get all already registered AnnotatedTypes of the specified type. This will NOT create a new one!
+     * @param annotatedClass
+     * @param <X>
+     * @return AnnotatedType
+     */
+    public <X> Iterable<AnnotatedType<X>> getAnnotatedTypes(Class<X> annotatedClass)
+    {
+        return getAnnotatedTypeCache(annotatedClass).values();
+    }
+    
     /**
      * This method will get used to manually add AnnoatedTypes to our storage.
      * Those AnnotatedTypes are coming from Extensions and get registered e.g. via
@@ -96,9 +109,14 @@ public final class AnnotatedElementFactory
      */
     public <X> AnnotatedType<X> setAnnotatedType(AnnotatedType<X> annotatedType)
     {
-        return (AnnotatedType<X>) annotatedTypeCache.put(annotatedType.getJavaClass(), annotatedType);
+        return setAnnotatedType(annotatedType, OWB_DEFAULT_KEY);
     }
 
+    public <X> AnnotatedType<X> setAnnotatedType(AnnotatedType<X> annotatedType, String id)
+    {
+        ConcurrentMap<String, AnnotatedType<X>> annotatedTypes = getAnnotatedTypeCache(annotatedType.getJavaClass());
+        return (AnnotatedType<X>) annotatedTypes.put(id, annotatedType);
+    }
 
     /**
      * Creates and configures new annotated type.
@@ -107,11 +125,11 @@ public final class AnnotatedElementFactory
      * @param annotatedClass annotated class
      * @return new annotated type
      */
-    @SuppressWarnings("unchecked")
     public <X> AnnotatedType<X> newAnnotatedType(Class<X> annotatedClass)
     {
         Asserts.assertNotNull(annotatedClass, "annotatedClass is null");
-        AnnotatedType<X> annotatedType = (AnnotatedType<X>)annotatedTypeCache.get(annotatedClass);
+        ConcurrentMap<String, AnnotatedType<X>> annotatedTypes = getAnnotatedTypeCache(annotatedClass);
+        AnnotatedType<X> annotatedType = (AnnotatedType<X>)annotatedTypes.get(OWB_DEFAULT_KEY);
         if(annotatedType == null)
         {
             try
@@ -123,7 +141,7 @@ public final class AnnotatedElementFactory
                 }
                 annotatedType = new AnnotatedTypeImpl<X>(webBeansContext, annotatedClass, (AnnotatedTypeImpl<? super X>) supertype);
 
-                AnnotatedType<X> oldType = (AnnotatedType<X>)annotatedTypeCache.putIfAbsent(annotatedClass, annotatedType);
+                AnnotatedType<X> oldType = (AnnotatedType<X>)annotatedTypes.putIfAbsent(OWB_DEFAULT_KEY, annotatedType);
                 if(oldType != null)
                 {
                     annotatedType = oldType;
@@ -263,5 +281,20 @@ public final class AnnotatedElementFactory
         annotatedConstructorCache.clear();
         annotatedFieldCache.clear();
         annotatedMethodCache.clear();
+    }
+    
+    private <T> ConcurrentMap<String, AnnotatedType<T>> getAnnotatedTypeCache(Class<T> type)
+    {
+        ConcurrentMap<String, AnnotatedType<?>> annotatedTypes = annotatedTypeCache.get(type);
+        if (annotatedTypes == null)
+        {
+            annotatedTypes = new ConcurrentHashMap<String, AnnotatedType<?>>();
+            ConcurrentMap<String, AnnotatedType<?>> oldAnnotatedTypes = annotatedTypeCache.putIfAbsent(type, annotatedTypes);
+            if (oldAnnotatedTypes != null)
+            {
+                annotatedTypes = oldAnnotatedTypes;
+            }
+        }
+        return (ConcurrentMap<String, AnnotatedType<T>>)(ConcurrentMap<?, ?>)annotatedTypes;
     }
 }

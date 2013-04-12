@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -160,7 +161,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     private List<ExternalScope> additionalScopes =  new ArrayList<ExternalScope>();
 
-    private List<AnnotatedType<?>> additionalAnnotatedTypes = new ArrayList<AnnotatedType<?>>();
+    private Map<String, AnnotatedType<?>> additionalAnnotatedTypes = new HashMap<String, AnnotatedType<?>>();
 
 
     private ErrorStack errorStack = new ErrorStack();
@@ -208,6 +209,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         injectionResolver = new InjectionResolver(webBeansContext);
         notificationManager = new NotificationManager(webBeansContext);
         annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
+    }
+
+    public WebBeansContext getWebBeansContext()
+    {
+        return webBeansContext;
     }
 
     public <T> void putProducerForJavaEeComponent(Class<T> javaEeComponentClass, Producer<T> wrapper)
@@ -985,7 +991,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public void addAdditionalAnnotatedType(AnnotatedType<?> annotatedType)
     {
         webBeansContext.getAnnotatedElementFactory().setAnnotatedType(annotatedType);
-        additionalAnnotatedTypes.add(annotatedType);
+        additionalAnnotatedTypes.put(null, annotatedType);
+    }
+
+    public void addAdditionalAnnotatedType(AnnotatedType<?> annotatedType, String id)
+    {
+        webBeansContext.getAnnotatedElementFactory().setAnnotatedType(annotatedType);
+        additionalAnnotatedTypes.put(id, annotatedType);
     }
 
     public List<Class<? extends Annotation>> getAdditionalQualifiers()
@@ -1007,12 +1019,23 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return additionalScopes;
     }
 
-    public List<AnnotatedType<?>> getAdditionalAnnotatedTypes()
+    public Collection<AnnotatedType<?>> getAdditionalAnnotatedTypes()
     {
-        return additionalAnnotatedTypes;
+        return additionalAnnotatedTypes.values();
     }
 
-
+    public <T> AnnotatedType<T> getAdditionalAnnotatedType(Class<T> type, String id)
+    {
+        AnnotatedType<?> annotatedType = additionalAnnotatedTypes.get(id);
+        if (annotatedType.getJavaClass().equals(type))
+        {
+            return (AnnotatedType<T>) annotatedType;
+        }
+        else
+        {
+            return null;
+        }
+    }
 
     public void clear()
     {
