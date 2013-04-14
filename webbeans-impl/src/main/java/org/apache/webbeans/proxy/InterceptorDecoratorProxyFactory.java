@@ -175,7 +175,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
                                                       Method[] interceptedMethods, Method[] nonInterceptedMethods)
             throws ProxyGenerationException
     {
-        String proxyClassName = getUnusedProxyClassName(classLoader, classToProxy.getName() + "$OwbInterceptProxy");
+        String proxyClassName = getUnusedProxyClassName(classLoader, classToProxy.getName() + "$$OwbInterceptProxy");
 
 
         Class<T> clazz = createProxyClass(classLoader, proxyClassName, classToProxy, interceptedMethods, nonInterceptedMethods);

@@ -86,7 +86,7 @@ public class SubclassProxyFactory extends AbstractProxyFactory
 
     private <T> String getSubClassName(Class<T> classToProxy)
     {
-        return fixPreservedPackages(classToProxy.getName() + "$OwbSubClass");
+        return fixPreservedPackages(classToProxy.getName() + "$$OwbSubClass");
     }
 
     /**
