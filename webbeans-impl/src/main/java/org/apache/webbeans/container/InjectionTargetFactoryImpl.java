@@ -34,7 +34,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.Asserts;
 
-public class InjectionTargetFactoryImpl<T>
+public class InjectionTargetFactoryImpl<T> implements InjectionTargetFactory<T>
 {
 
     private AnnotatedType<T> annotatedType;

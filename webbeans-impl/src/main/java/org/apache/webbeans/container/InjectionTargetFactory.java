@@ -19,13 +19,13 @@
 package org.apache.webbeans.container;
 
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Producer;
+import javax.enterprise.inject.spi.InjectionTarget;
 
 /**
  * This is a preview to CDI 1.1
  * when we implement CDI 1.1 this interface can be removed
  */
-public interface ProducerFactory<X>
+public interface InjectionTargetFactory<T>
 {
-    public <T> Producer<T> createProducer(Bean<T> bean);
+    public InjectionTarget<T> createInjectionTarget(Bean<T> bean);
 }

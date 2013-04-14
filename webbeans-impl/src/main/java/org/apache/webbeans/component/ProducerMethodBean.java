@@ -54,7 +54,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     public <P> ProducerMethodBean(InjectionTargetBean<P> ownerComponent,
                                   BeanAttributesImpl<T> beanAttributes,
                                   Class<T> returnType,
-                                  MethodProducerFactory<T, P> producerFactory)
+                                  MethodProducerFactory<P> producerFactory)
     {
         super(ownerComponent, WebBeansType.PRODUCERMETHOD, beanAttributes, returnType, producerFactory);
     }

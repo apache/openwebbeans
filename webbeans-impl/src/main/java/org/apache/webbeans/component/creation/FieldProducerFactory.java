@@ -27,7 +27,7 @@ import org.apache.webbeans.container.ProducerFactory;
 import org.apache.webbeans.portable.ProducerFieldProducer;
 import org.apache.webbeans.util.Asserts;
 
-public class FieldProducerFactory<T, P> implements ProducerFactory<T>
+public class FieldProducerFactory<P> implements ProducerFactory<P>
 {
 
     private AnnotatedField<? super P> producerField;
@@ -44,7 +44,7 @@ public class FieldProducerFactory<T, P> implements ProducerFactory<T>
     }
 
     @Override
-    public Producer<T> createProducer(Bean<T> bean)
+    public <T> Producer<T> createProducer(Bean<T> bean)
     {
         Producer<T> producer = new ProducerFieldProducer<T, P>(parent, producerField, webBeansContext);
         return webBeansContext.getWebBeansUtil().fireProcessProducerEvent(producer, producerField);

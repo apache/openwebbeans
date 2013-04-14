@@ -51,7 +51,7 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
                                    WebBeansType webBeansType,
                                    BeanAttributesImpl<T> beanAttributes,
                                    Class<T> returnType,
-                                   ProducerFactory<T> producerFactory)
+                                   ProducerFactory<?> producerFactory)
     {
         super(ownerComponent.getWebBeansContext(), webBeansType, beanAttributes, ownerComponent.getBeanClass());
         this.ownerComponent = ownerComponent;

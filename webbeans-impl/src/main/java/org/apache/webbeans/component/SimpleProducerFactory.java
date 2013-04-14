@@ -26,19 +26,19 @@ import org.apache.webbeans.container.ProducerFactory;
 /**
  * @version $Rev: 1440403 $ $Date: 2013-01-30 14:27:15 +0100 (Mi, 30 Jan 2013) $
  */
-public class SimpleProducerFactory<T> implements ProducerFactory<T>
+public class SimpleProducerFactory<P> implements ProducerFactory<P>
 {
 
-    private Producer<T> producer;
+    private Producer<?> producer;
 
-    public SimpleProducerFactory(Producer<T> producer)
+    public SimpleProducerFactory(Producer<?> producer)
     {
         this.producer = producer;
     }
 
     @Override
-    public Producer<T> createProducer(Bean<T> bean)
+    public <T> Producer<T> createProducer(Bean<T> bean)
     {
-        return producer;
+        return (Producer<T>)producer;
     }
 }

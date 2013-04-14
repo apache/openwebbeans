@@ -26,21 +26,23 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 
-public class ExtensionProducer<T> extends InjectionTargetImpl<T>
+public class ExtensionProducer<R> extends AbstractProducer<R>
 {
 
-    public ExtensionProducer(AnnotatedType<T> annotatedType,
-                             Bean<T> owner,
-                             WebBeansContext webBeansContext)
+    private WebBeansContext webBeansContext;
+    public <T> ExtensionProducer(AnnotatedType<T> annotatedType,
+                                 Bean<T> owner,
+                                 WebBeansContext webBeansContext)
     {
-        super(annotatedType, webBeansContext.getInjectionPointFactory().buildInjectionPoints(owner, annotatedType), webBeansContext, null, null);
+        super(webBeansContext.getInjectionPointFactory().buildInjectionPoints(owner, annotatedType));
+        this.webBeansContext = webBeansContext; 
     }
 
     @Override
-    public T produce(CreationalContext<T> creationalContext)
+    public R produce(CreationalContext<R> creationalContext)
     {
         ExtensionLoader loader = webBeansContext.getExtensionLoader();
         
-        return loader.getBeanInstance((Bean<T>)((CreationalContextImpl<T>) creationalContext).getBean());
+        return loader.getBeanInstance((Bean<R>)((CreationalContextImpl<R>) creationalContext).getBean());
     }
 }

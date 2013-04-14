@@ -42,7 +42,7 @@ import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 
-public class MethodProducerFactory<T, P> implements ProducerFactory<T>
+public class MethodProducerFactory<P> implements ProducerFactory<P>
 {
 
     private AnnotatedMethod<? super P> producerMethod;
@@ -61,7 +61,7 @@ public class MethodProducerFactory<T, P> implements ProducerFactory<T>
     }
 
     @Override
-    public Producer<T> createProducer(Bean<T> bean)
+    public <T> Producer<T> createProducer(Bean<T> bean)
     {
         Producer<T> producer = new ProducerMethodProducer<T, P>(parent, producerMethod, disposalMethod, createInjectionPoints(bean), webBeansContext);
         return webBeansContext.getWebBeansUtil().fireProcessProducerEvent(producer, producerMethod);
@@ -173,7 +173,7 @@ public class MethodProducerFactory<T, P> implements ProducerFactory<T>
         }        
     }
 
-    protected Set<InjectionPoint> createInjectionPoints(Bean<T> bean)
+    protected Set<InjectionPoint> createInjectionPoints(Bean<?> bean)
     {
         Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>(webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, producerMethod));
         if (disposalMethod != null)

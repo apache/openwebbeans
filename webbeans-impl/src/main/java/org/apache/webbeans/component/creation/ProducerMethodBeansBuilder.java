@@ -98,7 +98,7 @@ public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>>
                 {
                     producerMethodBeanCreator.configureProducerSpecialization(producerMethodBean, (AnnotatedMethod<T>) annotatedMethod);
                 }
-                MethodProducerFactory<T, ?> producerFactory = new MethodProducerFactory(annotatedMethod, bean, webBeansContext);
+                MethodProducerFactory<?> producerFactory = new MethodProducerFactory(annotatedMethod, bean, webBeansContext);
                 producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
                 
                 webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,

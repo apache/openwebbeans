@@ -34,7 +34,7 @@ import org.apache.webbeans.portable.ExtensionProducer;
 public class ExtensionProducerFactory<T> implements ProducerFactory<T>
 {
 
-    private AnnotatedType<T> annotatedType;
+    private AnnotatedType<?> annotatedType;
     private WebBeansContext webBeansContext;
 
     public ExtensionProducerFactory(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
@@ -44,8 +44,8 @@ public class ExtensionProducerFactory<T> implements ProducerFactory<T>
     }
 
     @Override
-    public Producer<T> createProducer(Bean<T> bean)
+    public <P> Producer<P> createProducer(Bean<P> bean)
     {
-        return new ExtensionProducer<T>(annotatedType, bean, webBeansContext);
+        return new ExtensionProducer<P>((AnnotatedType<P>)annotatedType, bean, webBeansContext);
     }
 }

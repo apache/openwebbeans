@@ -108,7 +108,7 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
     {
         AnnotatedMethod<P> annotatedMethod = (AnnotatedMethod<P>) annotatedMember;
         ProducerMethodBean<T> producerMethodBean
-            = new ProducerMethodBean<T>(parent, beanAttributes, beanClass, new MethodProducerFactory<T, P>(annotatedMethod, parent, parent.getWebBeansContext()));
+            = new ProducerMethodBean<T>(parent, beanAttributes, beanClass, new MethodProducerFactory<P>(annotatedMethod, parent, parent.getWebBeansContext()));
         producerMethodBean.setSpecializedBean(specialized);
         return producerMethodBean;
     }
