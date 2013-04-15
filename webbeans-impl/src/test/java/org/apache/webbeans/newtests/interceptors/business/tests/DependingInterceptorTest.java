@@ -30,6 +30,7 @@ import junit.framework.Assert;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.beans.ApplicationScopedBean;
+import org.apache.webbeans.newtests.interceptors.beans.DependentScopedBean;
 import org.apache.webbeans.newtests.interceptors.beans.RequestScopedBean;
 import org.apache.webbeans.newtests.interceptors.common.TransactionInterceptor;
 import org.junit.Test;
@@ -49,7 +50,8 @@ public class DependingInterceptorTest extends AbstractUnitTest
         beanClasses.add(TransactionInterceptor.class);
         beanClasses.add(ApplicationScopedBean.class);
         beanClasses.add(RequestScopedBean.class);
-        
+        beanClasses.add(DependentScopedBean.class);
+
         TransactionInterceptor.count = 0;
         
         startContainer(beanClasses, beanXmls);       
@@ -74,7 +76,7 @@ public class DependingInterceptorTest extends AbstractUnitTest
         RequestScopedBean realInstance1 = beanInstance1.getInstance();
         
         Assert.assertTrue(TransactionInterceptor.ECHO);
-        Assert.assertEquals(1, TransactionInterceptor.count);
+        Assert.assertEquals(2, TransactionInterceptor.count);
 
         TransactionInterceptor.ECHO = false;
 
@@ -94,7 +96,7 @@ public class DependingInterceptorTest extends AbstractUnitTest
 
         Assert.assertTrue(TransactionInterceptor.ECHO);
 
-        Assert.assertEquals(2, TransactionInterceptor.count);
+        Assert.assertEquals(4, TransactionInterceptor.count);
         
         Assert.assertNotSame(realInstance1, realInstance2);
         Assert.assertEquals(realInstance1.getMyService().getJ(), realInstance2.getMyService().getJ());
@@ -112,7 +114,8 @@ public class DependingInterceptorTest extends AbstractUnitTest
             Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
             beanClasses.add(TransactionInterceptor.class);
             beanClasses.add(ApplicationScopedBean.class);
-            
+            beanClasses.add(DependentScopedBean.class);
+
             TransactionInterceptor.count = 0;
             TransactionInterceptor.interceptorCount = 0;
             

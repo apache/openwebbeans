@@ -51,7 +51,10 @@ public class DependentInterceptorTest extends AbstractUnitTest
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(DependentInterceptor.class);
         beanClasses.add(DependentScopedBean.class);
-        
+
+        DependentScopedBean.PRE_DESTROY = false;
+        DependentScopedBean.POST_CONSTRUCT = false;
+
         startContainer(beanClasses, beanXmls);        
         
         Set<Bean<?>> beans = getBeanManager().getBeans("org.apache.webbeans.newtests.interceptors.beans.DependentScopedBean");

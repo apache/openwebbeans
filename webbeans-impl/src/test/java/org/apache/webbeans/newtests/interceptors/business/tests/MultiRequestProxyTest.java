@@ -49,18 +49,17 @@ public class MultiRequestProxyTest extends AbstractUnitTest
 
         startContainer(beanClasses, beanXmls);
 
-        RequestScopedBean rb1 = getInstance("requestScopedBean");
-        Assert.assertNotNull(rb1);
-        Assert.assertNotNull(rb1.getInstance());
+        for (int i = 1; i < 100; i++)
+        {
+            RequestScopedBean rb1 = getInstance("requestScopedBean");
+            Assert.assertNotNull(rb1);
+            Assert.assertNotNull(rb1.getInstance());
 
-        getLifecycle().getContextService().endContext(RequestScoped.class, null);
+            getLifecycle().getContextService().endContext(RequestScoped.class, null);
 
-        // and now the 2nd request
-        getLifecycle().getContextService().startContext(RequestScoped.class, null);
-
-        RequestScopedBean rb2 = getInstance("requestScopedBean");
-        Assert.assertNotNull(rb2);
-        Assert.assertNotNull(rb2.getInstance());
+            // and now the 2nd request
+            getLifecycle().getContextService().startContext(RequestScoped.class, null);
+        }
 
         shutDownContainer();
         

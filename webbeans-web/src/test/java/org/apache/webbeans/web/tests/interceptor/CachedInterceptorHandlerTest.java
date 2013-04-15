@@ -22,6 +22,7 @@ import junit.framework.Assert;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.beans.ApplicationScopedBean;
+import org.apache.webbeans.newtests.interceptors.beans.DependentScopedBean;
 import org.apache.webbeans.newtests.interceptors.beans.RequestScopedBean;
 import org.apache.webbeans.newtests.interceptors.common.TransactionInterceptor;
 import org.apache.webbeans.web.tests.MockServletContext;
@@ -57,6 +58,7 @@ public class CachedInterceptorHandlerTest extends AbstractUnitTest
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(ApplicationScopedBean.class);
         beanClasses.add(RequestScopedBean.class);
+        beanClasses.add(DependentScopedBean.class);
 
         TransactionInterceptor.count = 0;
 

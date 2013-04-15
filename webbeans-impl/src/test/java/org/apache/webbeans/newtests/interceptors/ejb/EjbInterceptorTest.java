@@ -25,6 +25,7 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.beans.ApplicationScopedBean;
+import org.apache.webbeans.newtests.interceptors.beans.DependentScopedBean;
 import org.apache.webbeans.newtests.interceptors.beans.RequestScopedBean;
 import org.junit.Test;
 
@@ -39,6 +40,7 @@ public class EjbInterceptorTest extends AbstractUnitTest
         beanClasses.add(RequestScopedBean.class);
         beanClasses.add(ManagedBeanWithEjbInterceptor.class);
         beanClasses.add(ApplicationScopedBean.class);
+        beanClasses.add(DependentScopedBean.class);
         beanClasses.add(EjbInterceptor.class);
         
         startContainer(beanClasses, beanXmls);        
@@ -61,6 +63,7 @@ public class EjbInterceptorTest extends AbstractUnitTest
         beanClasses.add(RequestScopedBean.class);
         beanClasses.add(ManagedBeanWithMethodEjbInterceptor.class);
         beanClasses.add(ApplicationScopedBean.class);
+        beanClasses.add(DependentScopedBean.class);
         beanClasses.add(EjbInterceptor.class);
 
         startContainer(beanClasses, beanXmls);

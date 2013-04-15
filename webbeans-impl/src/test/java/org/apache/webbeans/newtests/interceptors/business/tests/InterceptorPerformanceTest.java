@@ -23,6 +23,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.beans.ApplicationScopedBean;
+import org.apache.webbeans.newtests.interceptors.beans.DependentScopedBean;
 import org.apache.webbeans.newtests.interceptors.beans.RequestScopedBean;
 import org.apache.webbeans.newtests.interceptors.common.TransactionInterceptor;
 import org.junit.Test;
@@ -60,6 +61,7 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
         beanClasses.add(TransactionInterceptor.class);
         beanClasses.add(ApplicationScopedBean.class);
         beanClasses.add(RequestScopedBean.class);
+        beanClasses.add(DependentScopedBean.class);
 
         TransactionInterceptor.count = 0;
 
