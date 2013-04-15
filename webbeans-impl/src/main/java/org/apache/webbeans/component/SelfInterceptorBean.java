@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.InjectionTargetFactoryImpl;
 import org.apache.webbeans.exception.WebBeansException;
 
 /**
@@ -47,7 +48,8 @@ public class SelfInterceptorBean<T> extends InterceptorBean<T> implements Interc
                                Class<T> beanClass,
                                Map<InterceptionType, Method[]> interceptionMethods)
     {
-        super(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods);
+        super(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods,
+                new InjectionTargetFactoryImpl<T>(annotatedType, webBeansContext));
     }
 
     /**

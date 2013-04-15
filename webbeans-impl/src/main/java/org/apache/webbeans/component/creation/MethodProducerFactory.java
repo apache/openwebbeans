@@ -63,7 +63,13 @@ public class MethodProducerFactory<P> implements ProducerFactory<P>
     @Override
     public <T> Producer<T> createProducer(Bean<T> bean)
     {
-        Producer<T> producer = new ProducerMethodProducer<T, P>(parent, producerMethod, disposalMethod, createInjectionPoints(bean), webBeansContext);
+        Set<InjectionPoint> disposalIPs = null;
+        if (disposalMethod != null)
+        {
+            disposalIPs = new HashSet<InjectionPoint>(webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, disposalMethod));
+        }
+
+        Producer<T> producer = new ProducerMethodProducer<T, P>(parent, producerMethod, disposalMethod, createInjectionPoints(bean), disposalIPs, webBeansContext);
         return webBeansContext.getWebBeansUtil().fireProcessProducerEvent(producer, producerMethod);
     }
 
@@ -175,11 +181,6 @@ public class MethodProducerFactory<P> implements ProducerFactory<P>
 
     protected Set<InjectionPoint> createInjectionPoints(Bean<?> bean)
     {
-        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>(webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, producerMethod));
-        if (disposalMethod != null)
-        {
-            injectionPoints.addAll(webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, disposalMethod));
-        }
-        return injectionPoints;
+        return new HashSet<InjectionPoint>(webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, producerMethod));
     }
 }

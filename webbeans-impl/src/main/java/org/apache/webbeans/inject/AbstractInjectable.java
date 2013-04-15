@@ -130,6 +130,11 @@ public abstract class AbstractInjectable<T>
      */
     protected List<InjectionPoint> getInjectionPoints(Member member)
     {
+        return createInjectionPoints(owner, member);
+    }
+
+    protected static List<InjectionPoint> createInjectionPoints(Producer<?> owner, Member member)
+    {
         List<InjectionPoint> injectionPoints = new ArrayList<InjectionPoint>();
         for (InjectionPoint injectionPoint : owner.getInjectionPoints())
         {

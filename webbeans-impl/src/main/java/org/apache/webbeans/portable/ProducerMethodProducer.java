@@ -43,11 +43,13 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
     private WebBeansContext webBeansContext;
     private Method producerMethod;
     private Method disposalMethod;
+    private Set<InjectionPoint> disposalIPs;
 
     public ProducerMethodProducer(Bean<P> owner,
                                   AnnotatedMethod<? super P> producerMethod,
                                   AnnotatedMethod<? super P> disposerMethod,
                                   Set<InjectionPoint> points,
+                                  Set<InjectionPoint> disposalIPs,
                                   WebBeansContext webBeansContext)
     {
         super(points);
@@ -60,6 +62,7 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
         }
         this.owner = owner;
         this.webBeansContext = webBeansContext;
+        this.disposalIPs = disposalIPs;
 
         final OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
         if (ejbPlugin != null)
@@ -131,7 +134,7 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
                     parentInstance = (P)webBeansContext.getBeanManagerImpl().getReference(owner, owner.getBeanClass(), parentCreationalContext);
                 }
 
-                m = new InjectableMethod<T>(disposalMethod, parentInstance, this, (CreationalContextImpl<T>) parentCreationalContext);
+                m = new InjectableMethod<T>(disposalMethod, parentInstance, this, (CreationalContextImpl<T>) parentCreationalContext, disposalIPs);
                 m.setDisposable(true);
                 m.setProducerMethodInstance(instance);
 

@@ -21,8 +21,10 @@ package org.apache.webbeans.inject;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Disposes;
@@ -56,17 +58,25 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
     
     private Map<Bean<?>, Object> dependentParameters = new HashMap<Bean<?>, Object>();
 
+    private Set<InjectionPoint> injectionPoints;
+
+    public InjectableMethod(Method m, Object instance, Producer<T> owner, CreationalContextImpl<T> creationalContext)
+    {
+        this(m, instance, owner, creationalContext, new HashSet<InjectionPoint>(createInjectionPoints(owner, m)));
+    }
+
     /**
      * Constructs new instance.
      * 
      * @param m injectable method
      * @param instance component instance
      */
-    public InjectableMethod(Method m, Object instance, Producer<T> owner, CreationalContextImpl<T> creationalContext)
+    public InjectableMethod(Method m, Object instance, Producer<T> owner, CreationalContextImpl<T> creationalContext, Set<InjectionPoint> ips)
     {
         super(owner,creationalContext);
         method = m;
         this.ownerInstance = instance;
+        this.injectionPoints = ips;
     }
 
     /*
@@ -81,13 +91,12 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
             owner = NormalScopeProxyFactory.unwrapInstance(owner);
         }
 
-        List<InjectionPoint> injectedPoints = getInjectionPoints(method);
         List<Object> list = new ArrayList<Object>();
                 
         
-        for(int i=0;i<injectedPoints.size();i++)
+        for(int i=0;i<injectionPoints.size();i++)
         {
-            for(InjectionPoint point : injectedPoints)
+            for(InjectionPoint point : injectionPoints)
             {                
                 AnnotatedParameter<?> parameter = (AnnotatedParameter<?>)point.getAnnotated();
                 if (parameter.getPosition() == i)

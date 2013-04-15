@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.InjectionTargetFactoryImpl;
 import org.apache.webbeans.container.InterceptorInjectionTargetFactory;
 import org.apache.webbeans.util.ExceptionUtil;
 
@@ -54,18 +55,19 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
      */
     private Method aroundInvokeMethod = null;
 
-    public InterceptorBean(WebBeansContext webBeansContext, 
-                           AnnotatedType<T> annotatedType,
-                           BeanAttributesImpl<T> beanAttributes,
-                           Class<T> beanClass,
-                           Map<InterceptionType, Method[]> interceptionMethods)
+    protected InterceptorBean(WebBeansContext webBeansContext,
+                                  AnnotatedType<T> annotatedType,
+                                  BeanAttributesImpl<T> beanAttributes,
+                                  Class<T> beanClass,
+                                  Map<InterceptionType, Method[]> interceptionMethods,
+                                  InjectionTargetFactoryImpl<T> factory)
     {
         super(webBeansContext,
-              WebBeansType.INTERCEPTOR,
-              annotatedType,
-              beanAttributes,
-              beanClass,
-              new InterceptorInjectionTargetFactory<T>(annotatedType, webBeansContext));
+                WebBeansType.INTERCEPTOR,
+                annotatedType,
+                beanAttributes,
+                beanClass,
+                factory);
         this.interceptionMethods = Collections.unmodifiableMap(interceptionMethods);
 
         for (Method[] methods: interceptionMethods.values())
@@ -83,6 +85,16 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
         {
             aroundInvokeMethod = aroundInvokeMethods[0];
         }
+    }
+
+    public InterceptorBean(WebBeansContext webBeansContext, 
+                           AnnotatedType<T> annotatedType,
+                           BeanAttributesImpl<T> beanAttributes,
+                           Class<T> beanClass,
+                           Map<InterceptionType, Method[]> interceptionMethods)
+    {
+        this(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods,
+                new InterceptorInjectionTargetFactory<T>(annotatedType, webBeansContext));
     }
 
     /**
