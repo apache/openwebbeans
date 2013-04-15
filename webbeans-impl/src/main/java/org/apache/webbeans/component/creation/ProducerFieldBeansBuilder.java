@@ -77,7 +77,7 @@ public class ProducerFieldBeansBuilder<T, I extends InjectionTargetBean<T>>
         Set<AnnotatedField<? super T>> annotatedFields = annotatedType.getFields();        
         for(AnnotatedField<? super T> annotatedField: annotatedFields)
         {
-            if(annotatedField.isAnnotationPresent(Produces.class) && annotatedField.getDeclaringType().equals(annotatedType))
+            if(annotatedField.isAnnotationPresent(Produces.class) && annotatedField.getDeclaringType().getJavaClass().equals(annotatedType.getJavaClass()))
             {
                 Type genericType = annotatedField.getBaseType();
                 

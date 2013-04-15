@@ -73,7 +73,7 @@ public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>>
         
         for(AnnotatedMethod<? super T> annotatedMethod: annotatedMethods)
         {
-            if(annotatedMethod.isAnnotationPresent(Produces.class) && annotatedMethod.getDeclaringType().equals(annotatedType))
+            if(annotatedMethod.isAnnotationPresent(Produces.class) && annotatedMethod.getDeclaringType().getJavaClass().equals(annotatedType.getJavaClass()))
             {
                 checkProducerMethodForDeployment(annotatedMethod);
                 boolean specialize = false;
