@@ -33,11 +33,14 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
+import javax.inject.Provider;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
+import org.apache.webbeans.proxy.OwbNormalScopeProxy;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.InjectionExceptionUtil;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
@@ -66,7 +69,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     private WebBeansContext webBeansContext;
 
     private CreationalContextImpl<?> parentCreationalContext;
-
+    
     /**
      * Creates new instance.
      * 
@@ -279,6 +282,23 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         
         return instances.iterator();
     }
+
+    public void destroy(T instance)
+    {
+        if (instance instanceof OwbNormalScopeProxy)
+        {
+            OwbNormalScopeProxy proxy = (OwbNormalScopeProxy) instance;
+            Provider<T> provider = webBeansContext.getNormalScopeProxyFactory().getInstanceProvider(proxy);
+            NormalScopedBeanInterceptorHandler handler = (NormalScopedBeanInterceptorHandler)provider;
+            Bean<T> bean = (Bean<T>)handler.getBean();
+            CreationalContext<T> creationalContext = (CreationalContext<T>)parentCreationalContext;
+            bean.destroy(instance, creationalContext);
+        }
+        else
+        {
+            parentCreationalContext.destroyDependent(instance);
+        }
+    }
     
     private void writeObject(java.io.ObjectOutputStream op) throws IOException
     {
@@ -299,7 +319,6 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         injectionPoint = (InjectionPoint) inputStream.readObject();
     }
     
-
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
@@ -323,5 +342,4 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
 
         return builder.toString();
     }
-    
 }

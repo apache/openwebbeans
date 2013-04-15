@@ -23,6 +23,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -135,7 +136,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     {
         //No-action
     }
-        
+     
     /**
      * Adds given dependent instance to the map.
      * 
@@ -178,6 +179,29 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
                 }
             }
             return false;
+        }
+    }
+
+    public <X> void destroyDependent(X instance)
+    {
+        if (dependentObjects == null)
+        {
+            return;
+        }
+        synchronized (this)
+        {
+            for (Iterator<DependentCreationalContext<?>> i = dependentObjects.iterator(); i.hasNext();)
+            {
+                DependentCreationalContext<?> dependentContext = i.next();
+                if (dependentContext.getInstance() == instance)
+                {
+                    Contextual<X> dependentContextual = (Contextual<X>)dependentContext.getContextual();
+                    CreationalContext<X> creationalContext = (CreationalContext<X>)this;
+                    dependentContextual.destroy(instance, creationalContext);
+                    i.remove();
+                    break;
+                }
+            }
         }
     }
 

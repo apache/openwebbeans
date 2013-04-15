@@ -70,6 +70,11 @@ public class NormalScopedBeanInterceptorHandler implements Provider, Serializabl
         return getContextualInstance();
     }
 
+    public Bean<?> getBean()
+    {
+        return bean;
+    }
+    
     protected BeanManager getBeanManager()
     {
         return beanManager;
