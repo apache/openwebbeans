@@ -52,6 +52,11 @@ public class SelfInterceptorBean<T> extends InterceptorBean<T> implements Interc
                 new InjectionTargetFactoryImpl<T>(annotatedType, webBeansContext));
     }
 
+    public boolean isAroundInvoke()
+    {
+        return aroundInvokeMethod != null;
+    }
+
     /**
      * @return always an empty Set as this interceptor doesn't have any InterceptorBindings
      */

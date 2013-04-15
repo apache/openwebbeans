@@ -53,7 +53,7 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
     /**
      * This is for performance reasons
      */
-    private Method aroundInvokeMethod = null;
+    protected Method aroundInvokeMethod = null;
 
     protected InterceptorBean(WebBeansContext webBeansContext,
                                   AnnotatedType<T> annotatedType,

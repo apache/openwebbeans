@@ -116,6 +116,8 @@ public class InterceptorResolutionService
 
         List<Method> nonInterceptedMethods = new ArrayList<Method>();
 
+        SelfInterceptorBean<T> selfInterceptorBean = resolveSelfInterceptorBean(annotatedType);
+
         // iterate over all methods and build up the interceptor/decorator stack
         for (AnnotatedMethod annotatedMethod : interceptableAnnotatedMethods)
         {
@@ -127,7 +129,7 @@ public class InterceptorResolutionService
 
             calculateCdiMethodDecorators(methodInterceptorInfo, decorators, annotatedMethod);
 
-            if (methodInterceptorInfo.isEmpty())
+            if (methodInterceptorInfo.isEmpty() && (selfInterceptorBean == null || !selfInterceptorBean.isAroundInvoke()))
             {
                 nonInterceptedMethods.add(annotatedMethod.getJavaMember());
                 continue;
@@ -163,8 +165,6 @@ public class InterceptorResolutionService
 
         List<Interceptor<?>> cdiInterceptors = new ArrayList<Interceptor<?>>(allUsedCdiInterceptors);
         Collections.sort(cdiInterceptors, new InterceptorComparator(webBeansContext));
-
-        SelfInterceptorBean<T> selfInterceptorBean = resolveSelfInterceptorBean(annotatedType);
 
         if (Modifier.isFinal(annotatedType.getJavaClass().getModifiers()) &&
             (allUsedEjbInterceptors.size() > 0 || 
@@ -227,7 +227,7 @@ public class InterceptorResolutionService
             return null;
         }
 
-        return (SelfInterceptorBean<T>) sibb.getBean();
+        return sibb.getBean();
     }
 
     private void addLifecycleMethods(Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos,

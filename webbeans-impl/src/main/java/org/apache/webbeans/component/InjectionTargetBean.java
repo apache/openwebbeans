@@ -123,17 +123,11 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
 
                 if (mii.getEjbInterceptors() != null)
                 {
-                    for (Interceptor<?> i : mii.getEjbInterceptors())
-                    {
-                        activeInterceptors.add(i);
-                    }
+                    Collections.addAll(activeInterceptors, mii.getEjbInterceptors());
                 }
                 if (mii.getCdiInterceptors() != null)
                 {
-                    for (Interceptor<?> i : mii.getCdiInterceptors())
-                    {
-                        activeInterceptors.add(i);
-                    }
+                    Collections.addAll(activeInterceptors, mii.getCdiInterceptors());
                 }
                 if (interceptorInfo.getSelfInterceptorBean() != null)
                 {
