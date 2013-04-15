@@ -199,7 +199,9 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
 
         public int getCurrentInterceptorIdx()
         {
-            return currentInterceptorIdx;
+            // in proceed we +1 to handle index properly whatever the stack is but we need to -1 here to not skip
+            // index 0 when we have multiple interceptors
+            return currentInterceptorIdx - 1;
         }
 
         public InvocationContext getWrapped()

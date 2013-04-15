@@ -33,6 +33,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -129,7 +130,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>>
     {
         List<Class> classHierarchy = webBeansContext.getInterceptorUtil().getReverseClassHierarchy(annotatedType.getJavaClass());
 
-        AnnotatedMethod aroundInvokeMethod = null;
+        Collection<Method> aroundInvokeMethod = null;
         List<AnnotatedMethod> postConstructMethods = new ArrayList<AnnotatedMethod>();
         List<AnnotatedMethod> preDestroyMethods = new ArrayList<AnnotatedMethod>();
         List<AnnotatedMethod> aroundTimeoutMethods = new ArrayList<AnnotatedMethod>();
@@ -155,10 +156,20 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>>
                     {
                         if (aroundInvokeMethod != null)
                         {
-                            throw new WebBeansConfigurationException("only one AroundInvoke allowed per Interceptor");
+                            for (final Method ai : aroundInvokeMethod)
+                            {
+                                if (ai.getDeclaringClass() == m.getJavaMember().getDeclaringClass())
+                                {
+                                    throw new WebBeansConfigurationException("only one AroundInvoke allowed per Interceptor");
+                                }
+                            }
                         }
                         checkAroundInvokeConditions(m);
-                        aroundInvokeMethod = m;
+                        if (aroundInvokeMethod == null)
+                        {
+                            aroundInvokeMethod = new ArrayList<Method>();
+                        }
+                        aroundInvokeMethod.add(m.getJavaMember());
                     }
 
                     // PostConstruct
@@ -216,7 +227,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>>
         if (aroundInvokeMethod != null)
         {
             interceptorFound = true;
-            interceptionMethods.put(InterceptionType.AROUND_INVOKE, new Method[]{aroundInvokeMethod.getJavaMember()});
+            interceptionMethods.put(InterceptionType.AROUND_INVOKE, aroundInvokeMethod.toArray(new Method[aroundInvokeMethod.size()]));
         }
 
         if (postConstructMethods.size() > 0)
