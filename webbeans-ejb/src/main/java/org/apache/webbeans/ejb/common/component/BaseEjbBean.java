@@ -18,21 +18,21 @@
  */
 package org.apache.webbeans.ejb.common.component;
 
+import org.apache.webbeans.component.BeanAttributesImpl;
+import org.apache.webbeans.component.EnterpriseBeanMarker;
+import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.InjectionTargetFactoryImpl;
+import org.apache.webbeans.util.ClassUtil;
+
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.SessionBeanType;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.SessionBeanType;
-
-import org.apache.webbeans.component.BeanAttributesImpl;
-import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.component.EnterpriseBeanMarker;
-import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Defines bean contract for the session beans.
@@ -53,6 +53,18 @@ public abstract class BaseEjbBean<T> extends InjectionTargetBean<T> implements E
      * Creates a new instance of the session bean.
      * @param webBeansContext
      */
+    protected BaseEjbBean(WebBeansContext webBeansContext,
+                          SessionBeanType type,
+                          AnnotatedType<T> annotatedType,
+                          BeanAttributesImpl<T> beanAttributes,
+                          Class<T> beanClass,
+                          InjectionTargetFactoryImpl<T> factory)
+    {
+        super(webBeansContext, WebBeansType.ENTERPRISE, annotatedType, beanAttributes, beanClass, factory);
+        //type of the ejb
+        this.ejbType = type;
+    }
+
     protected BaseEjbBean(WebBeansContext webBeansContext,
                           SessionBeanType type,
                           AnnotatedType<T> annotatedType,
