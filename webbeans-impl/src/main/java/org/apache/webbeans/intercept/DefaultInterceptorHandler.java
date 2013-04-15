@@ -20,6 +20,7 @@ package org.apache.webbeans.intercept;
 
 import java.io.ObjectStreamException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -106,6 +107,10 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler
         try
         {
             List<Interceptor<?>> methodInterceptors = interceptors.get(method);
+            if (methodInterceptors == null)
+            {
+                methodInterceptors = Collections.emptyList();
+            }
 
             InterceptorInvocationContext<T> ctx
                 = new InterceptorInvocationContext<T>(delegate, InterceptionType.AROUND_INVOKE, methodInterceptors, instances, method, parameters);
