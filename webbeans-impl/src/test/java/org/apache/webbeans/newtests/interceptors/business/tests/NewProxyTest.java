@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -66,8 +65,10 @@ public class NewProxyTest extends AbstractUnitTest
         Bean bean = beanManager.resolve(beanManager.getBeans(RuntimeExceptionBindingTypeBean.class));
         CreationalContext creationalContext = beanManager.createCreationalContext(bean);
         
-        RuntimeExceptionBindingTypeBean target = (RuntimeExceptionBindingTypeBean) beanManager.getContext(RequestScoped.class).get(bean, creationalContext);
-        RuntimeExceptionsInterceptor interceptor = (RuntimeExceptionsInterceptor) beanManager.getReference(interceptorBean, RuntimeExceptionsInterceptor.class, creationalContext);
+        // we cannot use the container to create the proxy as it already proxies the internal instance
+        RuntimeExceptionBindingTypeBean target = new RuntimeExceptionBindingTypeBean();
+
+        RuntimeExceptionsInterceptor interceptor = (RuntimeExceptionsInterceptor) interceptorBean.create(creationalContext);
 
         Method[] interceptedMethods = {RuntimeExceptionBindingTypeBean.class.getMethod("business")};
         Map<Method, List<Interceptor<?>>> interceptors = new HashMap<Method, List<Interceptor<?>>>();

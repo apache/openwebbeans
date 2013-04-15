@@ -26,9 +26,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.xbean.asm.ClassWriter;
 import org.apache.xbean.asm.Label;
@@ -38,8 +42,6 @@ import org.apache.xbean.asm.Type;
 
 
 /**
- * WORK IN PROGRESS
- *
  * Generate a dynamic subclass which has exactly 1 delegation point instance
  * which get's set in the Constructor of the proxy.
  * Any non-intercepted or decorated method will get delegated natively,
@@ -50,6 +52,8 @@ import org.apache.xbean.asm.Type;
  */
 public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
 {
+    private final static Logger logger = WebBeansLoggerFacade.getLogger(InterceptorDecoratorProxyFactory.class);
+
 
     /** the name of the field which stores the proxied instance */
     public static final String FIELD_PROXIED_INSTANCE = "owbIntDecProxiedInstance";
@@ -75,6 +79,25 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
     public <T> T createProxyInstance(Class<? extends T> proxyClass, T instance, InterceptorHandler interceptorDecoratorStack)
             throws ProxyGenerationException
     {
+        Asserts.assertNotNull(instance);
+
+        if (instance instanceof OwbInterceptorProxy)
+        {
+            StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+            StringBuilder sb = new StringBuilder("Proxying of a PROXY detected! Proxy class: ");
+            sb.append(instance.getClass().getName()).append(" Stacktrace:\n");
+            for (StackTraceElement ste : stackTraceElements)
+            {
+                sb.append("\t").append(ste.getClassName()).append('.')
+                        .append(ste.getMethodName()).append('#')
+                        .append(ste.getLineNumber()).append('\n');
+            }
+
+            instance = unwrapInstance(instance);
+            sb.append("\nunwrapping the proxy to: " + instance.getClass().getName());
+            logger.log(Level.SEVERE, sb.toString());
+        }
+
         try
         {
             T proxy = unsafeNewInstance(proxyClass);

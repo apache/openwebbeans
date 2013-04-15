@@ -72,7 +72,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     protected final WebBeansContext webBeansContext;
 
     protected final AnnotatedType<T> annotatedType;
-    protected AnnotatedConstructor<T> constructor;
+    protected volatile AnnotatedConstructor<T> constructor;
 
     /**
      * If the InjectionTarget has a &#064;PostConstruct method, <code>null</code> if not.
