@@ -30,6 +30,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.inject.Inject;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
+import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.config.WebBeansContext;
@@ -73,7 +74,10 @@ public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>>
         
         for(AnnotatedMethod<? super T> annotatedMethod: annotatedMethods)
         {
-            if(annotatedMethod.isAnnotationPresent(Produces.class) && annotatedMethod.getDeclaringType().getJavaClass().equals(annotatedType.getJavaClass()))
+            boolean enterprise = EnterpriseBeanMarker.class.isInstance(bean);
+            if(annotatedMethod.isAnnotationPresent(Produces.class) &&
+                (annotatedMethod.getDeclaringType().getJavaClass().equals(annotatedType.getJavaClass())
+                || (enterprise && annotatedType.getJavaClass().isAssignableFrom(annotatedType.getJavaClass()))))
             {
                 checkProducerMethodForDeployment(annotatedMethod);
                 boolean specialize = false;

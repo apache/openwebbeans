@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.portable;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -28,6 +30,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.InjectableMethod;
+import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.Asserts;
 
 /**
@@ -38,8 +41,8 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
 
     private Bean<P> owner;
     private WebBeansContext webBeansContext;
-    private AnnotatedMethod<? super P> producerMethod;
-    private AnnotatedMethod<? super P> disposalMethod;
+    private Method producerMethod;
+    private Method disposalMethod;
 
     public ProducerMethodProducer(Bean<P> owner,
                                   AnnotatedMethod<? super P> producerMethod,
@@ -57,8 +60,24 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
         }
         this.owner = owner;
         this.webBeansContext = webBeansContext;
-        this.producerMethod = producerMethod;
-        this.disposalMethod = disposerMethod;
+
+        final OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
+        if (ejbPlugin != null)
+        {
+            this.producerMethod = ejbPlugin.resolveViewMethod(owner, producerMethod.getJavaMember());
+            if (disposerMethod != null)
+            {
+                this.disposalMethod = ejbPlugin.resolveViewMethod(owner, disposerMethod.getJavaMember());
+            }
+        }
+        else
+        {
+            this.producerMethod = producerMethod.getJavaMember();
+            if (disposerMethod != null)
+            {
+                this.disposalMethod = disposerMethod.getJavaMember();
+            }
+        }
     }
 
     public void specializeBy(Bean<P> bean)
@@ -76,12 +95,12 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
         {
             parentCreationalContext = webBeansContext.getBeanManagerImpl().createCreationalContext(owner);
 
-            if (!producerMethod.isStatic())
+            if (!Modifier.isStatic(producerMethod.getModifiers()))
             {
                 parentInstance = (P)webBeansContext.getBeanManagerImpl().getReference(owner, owner.getBeanClass(), parentCreationalContext);
             }
             
-            m = new InjectableMethod<T>(producerMethod.getJavaMember(), parentInstance, this, (CreationalContextImpl<T>) creationalContext);
+            m = new InjectableMethod<T>(producerMethod, parentInstance, this, (CreationalContextImpl<T>) creationalContext);
             
             return m.doInjection();
 
@@ -106,13 +125,13 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
             try
             {
                 parentCreationalContext = webBeansContext.getBeanManagerImpl().createCreationalContext(owner);
-                
-                if (!disposalMethod.isStatic())
+
+                if (!Modifier.isStatic(disposalMethod.getModifiers()))
                 {
                     parentInstance = (P)webBeansContext.getBeanManagerImpl().getReference(owner, owner.getBeanClass(), parentCreationalContext);
                 }
 
-                m = new InjectableMethod<T>(disposalMethod.getJavaMember(), parentInstance, this, (CreationalContextImpl<T>) parentCreationalContext);
+                m = new InjectableMethod<T>(disposalMethod, parentInstance, this, (CreationalContextImpl<T>) parentCreationalContext);
                 m.setDisposable(true);
                 m.setProducerMethodInstance(instance);
 

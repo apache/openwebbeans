@@ -696,7 +696,9 @@ public final class WebBeansUtil
 
                 if(!(candidate instanceof NewBean))
                 {
-                    if(candidate.getReturnType().equals(superClass))
+                    if(candidate.getReturnType().equals(superClass)
+                            || (EnterpriseBeanMarker.class.isInstance(candidate)
+                                && superClass.isAssignableFrom(candidate.getBeanClass())))
                     {
                         superBean = candidates;
                         break;
@@ -976,7 +978,7 @@ public final class WebBeansUtil
             }
 
             if (bean.getTypes().contains(clazz) ||
-                    (enterprise && bean.getBeanClass().equals(clazz)))
+                    (enterprise && clazz.isAssignableFrom(bean.getBeanClass())))
             {
                 if(annotate)
                 {
