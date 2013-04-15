@@ -25,11 +25,14 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
 
-public class ResourceProvider<T> implements Provider<T>
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+
+public class ResourceProvider<T> implements Provider<T>, Serializable
 {
     
     private ResourceReference<T, ?> resourceReference = null;
-    private WebBeansContext webBeansContext;
+    private transient WebBeansContext webBeansContext;
 
     public ResourceProvider(ResourceReference<T, ?> resourceReference, WebBeansContext webBeansContext)
     {
@@ -40,6 +43,11 @@ public class ResourceProvider<T> implements Provider<T>
     @Override
     public T get()
     {
+        if (webBeansContext == null)
+        {
+            webBeansContext = WebBeansContext.currentInstance();
+        }
+
         try
         {
             ResourceInjectionService resourceService = webBeansContext.getService(ResourceInjectionService.class);
@@ -49,5 +57,10 @@ public class ResourceProvider<T> implements Provider<T>
         {
             throw new WebBeansException(e);
         }
+    }
+
+    Object readResolve() throws ObjectStreamException
+    {
+        return get();
     }
 }

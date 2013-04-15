@@ -24,10 +24,13 @@ import javax.transaction.UserTransaction;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.TransactionService;
 
-public class UserTransactionProvider implements Provider<UserTransaction>
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+
+public class UserTransactionProvider implements Provider<UserTransaction>, Serializable
 {
 
-    private WebBeansContext webBeansContext;
+    private transient WebBeansContext webBeansContext;
     
     public UserTransactionProvider(WebBeansContext webBeansContext)
     {
@@ -37,11 +40,21 @@ public class UserTransactionProvider implements Provider<UserTransaction>
     @Override
     public UserTransaction get()
     {
+        if (webBeansContext == null)
+        {
+            webBeansContext = WebBeansContext.currentInstance();
+        }
+
         TransactionService transactionService = webBeansContext.getService(TransactionService.class);
         if(transactionService != null)
         {
             return transactionService.getUserTransaction();
         }
         return null;
+    }
+
+    Object readResolve() throws ObjectStreamException
+    {
+        return get();
     }
 }

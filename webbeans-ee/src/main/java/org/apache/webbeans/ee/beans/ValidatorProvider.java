@@ -24,10 +24,13 @@ import javax.validation.Validator;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.ValidatorService;
 
-public class ValidatorProvider implements Provider<Validator>
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+
+public class ValidatorProvider implements Provider<Validator>, Serializable
 {
 
-    private WebBeansContext webBeansContext;
+    private transient WebBeansContext webBeansContext;
     
     public ValidatorProvider(WebBeansContext webBeansContext)
     {
@@ -37,11 +40,21 @@ public class ValidatorProvider implements Provider<Validator>
     @Override
     public Validator get()
     {
+        if (webBeansContext == null)
+        {
+            webBeansContext = WebBeansContext.currentInstance();
+        }
+
         ValidatorService validatorService = webBeansContext.getService(ValidatorService.class);
         if(validatorService != null)
         {
             return validatorService.getDefaultValidator();
         }        
         return null;
+    }
+
+    Object readResolve() throws ObjectStreamException
+    {
+        return get();
     }
 }

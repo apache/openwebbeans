@@ -18,11 +18,12 @@
  */
 package org.apache.webbeans.spi.api;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 
-public class ResourceReference<X,T extends Annotation>
+public class ResourceReference<X,T extends Annotation> implements Serializable
 {
     private final T annotation;
     

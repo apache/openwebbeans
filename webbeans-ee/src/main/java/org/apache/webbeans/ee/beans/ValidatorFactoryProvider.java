@@ -24,10 +24,13 @@ import javax.validation.ValidatorFactory;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.ValidatorService;
 
-public class ValidatorFactoryProvider implements Provider<ValidatorFactory>
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+
+public class ValidatorFactoryProvider implements Provider<ValidatorFactory>, Serializable
 {
 
-    private WebBeansContext webBeansContext;
+    private transient WebBeansContext webBeansContext;
     
     public ValidatorFactoryProvider(WebBeansContext webBeansContext)
     {
@@ -37,11 +40,21 @@ public class ValidatorFactoryProvider implements Provider<ValidatorFactory>
     @Override
     public ValidatorFactory get()
     {
+        if (webBeansContext == null)
+        {
+            webBeansContext = WebBeansContext.currentInstance();
+        }
+
         ValidatorService validatorService = webBeansContext.getService(ValidatorService.class);
         if(validatorService != null)
         {
             return validatorService.getDefaultValidatorFactory();
         }        
         return null;
+    }
+
+    Object readResolve() throws ObjectStreamException
+    {
+        return get();
     }
 }

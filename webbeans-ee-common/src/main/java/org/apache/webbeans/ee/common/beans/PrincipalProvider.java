@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.ee.common.beans;
 
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.security.Principal;
 
 import javax.inject.Provider;
@@ -25,10 +27,10 @@ import javax.inject.Provider;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.SecurityService;
 
-public class PrincipalProvider implements Provider<Principal>
+public class PrincipalProvider implements Provider<Principal>, Serializable
 {
 
-    private WebBeansContext webBeansContext;
+    private transient WebBeansContext webBeansContext;
 
     public PrincipalProvider(WebBeansContext webBeansContext)
     {
@@ -38,6 +40,11 @@ public class PrincipalProvider implements Provider<Principal>
     @Override
     public Principal get()
     {
+        if (webBeansContext == null)
+        {
+            webBeansContext = WebBeansContext.currentInstance();
+        }
+
         SecurityService securityService = webBeansContext.getService(SecurityService.class);
         if(securityService == null)
         {
@@ -47,5 +54,10 @@ public class PrincipalProvider implements Provider<Principal>
         {
             return securityService.getCurrentPrincipal();
         }
+    }
+
+    Object readResolve() throws ObjectStreamException
+    {
+        return get();
     }
 }
