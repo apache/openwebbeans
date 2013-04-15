@@ -140,5 +140,5 @@ public class DependingInterceptorTest extends AbstractUnitTest
             app.getJ();
             Assert.assertEquals(1, TransactionInterceptor.interceptorCount);
             Assert.assertEquals(3, TransactionInterceptor.count);
-}
+    }
 }

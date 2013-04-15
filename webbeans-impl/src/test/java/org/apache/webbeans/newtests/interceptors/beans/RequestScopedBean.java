@@ -17,33 +17,48 @@
  
 package org.apache.webbeans.newtests.interceptors.beans;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 @RequestScoped
-public class RequestScopedBean {
+@Named
+public class RequestScopedBean
+{
 
     private int i=0;
     private @Inject ApplicationScopedBean myService;
 
+    @PostConstruct
+    public void init()
+    {
+        myService.getJ();
+    }
+
     /** we need this trick, since the injected beans itself are only proxies... */
-    public RequestScopedBean getInstance() {
+    public RequestScopedBean getInstance()
+    {
         return this;
     }
 
-    public int getI() {
+    public int getI()
+    {
         return i;
     }
 
-    public void setI(int i) {
+    public void setI(int i)
+    {
         this.i = i;
     }
 
-    public ApplicationScopedBean getMyService() {
+    public ApplicationScopedBean getMyService()
+    {
         return myService;
     }
 
-    public void setMyService(ApplicationScopedBean myService) {
+    public void setMyService(ApplicationScopedBean myService)
+    {
         this.myService = myService;
     }
 

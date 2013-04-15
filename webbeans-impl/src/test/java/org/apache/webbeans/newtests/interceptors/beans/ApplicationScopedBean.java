@@ -18,16 +18,22 @@
 package org.apache.webbeans.newtests.interceptors.beans;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
-@Transactional
+import org.junit.Assert;
+
 @ApplicationScoped
 public class ApplicationScopedBean {
 
     private int j;
 
+    private @Inject DependentScopedBean dependentScopedBean;
+
+    @Transactional
     public int getJ() {
+        Assert.assertNotNull(dependentScopedBean);
         return j;
     }
 
@@ -35,4 +41,8 @@ public class ApplicationScopedBean {
         this.j = j;
     }
 
+    public DependentScopedBean getDependentScopedBean()
+    {
+        return dependentScopedBean;
+    }
 }
