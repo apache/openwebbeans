@@ -432,9 +432,15 @@ public final class WebBeansUtil
         return false;
     }
 
-    public <T> NewManagedBean<T> createNewComponent(Class<T> type)
+    public <T> Bean<T> createNewComponent(Class<T> type)
     {
         Asserts.nullCheckForClass(type);
+
+        final OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
+        if (ejbPlugin != null && ejbPlugin.isNewSessionBean(type))
+        {
+            return ejbPlugin.defineNewSessionBean(type);
+        }
 
         AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
         BeanAttributesImpl<T> defaultBeanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();

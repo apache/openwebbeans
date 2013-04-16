@@ -510,7 +510,7 @@ public class InjectionResolver
         }
 
         // Look for qualifiers
-        resolvedComponents = findByQualifier(resolvedComponents, qualifiers);
+        resolvedComponents = findByQualifier(resolvedComponents, injectionPointType, qualifiers);
 
         // Ambigious resolution, check for specialization
         if (resolvedComponents.size() > 1)
@@ -720,7 +720,7 @@ public class InjectionResolver
      * @param annotations  qualifiers on injection point
      * @return filtered bean set according to the qualifiers
      */
-    private Set<Bean<?>> findByQualifier(Set<Bean<?>> remainingSet, Annotation... annotations)
+    private Set<Bean<?>> findByQualifier(Set<Bean<?>> remainingSet, Type type, Annotation... annotations)
     {
         Iterator<Bean<?>> it = remainingSet.iterator();
         Set<Bean<?>> result = new HashSet<Bean<?>>();
@@ -752,6 +752,11 @@ public class InjectionResolver
             {
                 result.add(component);
             }
+        }
+
+        if (result.isEmpty() && annotations.length == 1 && New.class.equals(annotations[0].annotationType()) && Class.class.isInstance(type))
+        { // happen in TCKs, shouldn't be the case in real apps
+            result.add(webBeansContext.getWebBeansUtil().createNewComponent(Class.class.cast(type)));
         }
 
         return result;

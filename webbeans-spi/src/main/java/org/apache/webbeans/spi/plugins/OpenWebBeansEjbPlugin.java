@@ -39,12 +39,22 @@ public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
     public boolean isSessionBean(Class<?> clazz);
 
     /**
+     * return true is clazz is an impl class or business interface of an EJB
+     *
+     * @param clazz class definition
+     * @return true is clazz denotes an EJB
+     */
+    public boolean isNewSessionBean(Class<?> clazz);
+
+    /**
      * Configures session bean and adds it into the container.
      * 
      * @param clazz session bean class
      * @param processAnnotateTypeEvent process annotated type event
      */
     public <T> Bean<T> defineSessionBean(Class<T> clazz, ProcessAnnotatedType<T> processAnnotateTypeEvent);
+
+    public <T> Bean<T> defineNewSessionBean(Class<T> clazz);
 
     /**
      * Returns true if given class is singleton session bean, false otherwise.
