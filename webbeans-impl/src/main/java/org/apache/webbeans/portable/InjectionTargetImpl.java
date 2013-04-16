@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.decorator.Delegate;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
@@ -204,7 +205,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             }
 
             T delegate = instance;
-            if (interceptorInfo.getDecorators() != null)
+            if (interceptorInfo.getDecorators() != null && !isDelegateInjection(creationalContext))
             {
                 List<Decorator<?>> decorators = interceptorInfo.getDecorators();
                 Map<Decorator<?>, Object> instances = new HashMap<Decorator<?>, Object>();
@@ -225,6 +226,26 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         }
 
         return instance;
+    }
+
+    protected boolean isDelegateInjection(final CreationalContext<?> cc)
+    {
+        if (CreationalContextImpl.class.isInstance(cc))
+        {
+            final InjectionPoint ip = CreationalContextImpl.class.cast(cc).getInjectionPoint();
+            if (ip == null)
+            {
+                return false;
+            }
+
+            final Member member = ip.getMember();
+            if (member != null
+                    && Field.class.isInstance(member) && Field.class.cast(member).getAnnotation(Delegate.class) != null)
+            {
+                return true;
+            }
+        }
+        return false;
     }
     
     protected T newInstance(CreationalContextImpl<T> creationalContext)
