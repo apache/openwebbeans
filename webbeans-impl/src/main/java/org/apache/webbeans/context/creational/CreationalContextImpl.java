@@ -158,7 +158,15 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
                 {
                     dependentObjects = new ArrayList<DependentCreationalContext<?>>();
                 }
-                dependentObjects.add(dependentCreational);
+
+                if (dependent == contextual)
+                {
+                    dependentObjects.add(0, dependentCreational);
+                }
+                else
+                {
+                    dependentObjects.add(dependentCreational);
+                }
             }
         }
     }
