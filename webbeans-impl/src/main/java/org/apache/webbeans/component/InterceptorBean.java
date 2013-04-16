@@ -144,7 +144,14 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
             else if (interceptorMethods.length == 1)
             {
                 // directly invoke the interceptor method with the given InvocationContext
-                return interceptorMethods[0].invoke(instance, invocationContext);
+                if (interceptorMethods[0].getParameterTypes().length == 1)
+                {
+                    return interceptorMethods[0].invoke(instance, invocationContext);
+                } // else it can be a @PostContruct void pc(); which shouldn't be called from here
+                else
+                {
+                    return invocationContext.proceed();
+                }
             }
             else
             {
