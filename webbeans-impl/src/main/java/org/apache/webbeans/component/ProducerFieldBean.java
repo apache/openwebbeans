@@ -23,7 +23,7 @@ import java.lang.reflect.Field;
 
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.container.ProducerFactory;
+import org.apache.webbeans.component.spi.ProducerFactory;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 

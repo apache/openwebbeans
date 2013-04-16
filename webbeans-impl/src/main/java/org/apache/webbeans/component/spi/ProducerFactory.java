@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.container;
+package org.apache.webbeans.component.spi;
 
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.Producer;
 
 /**
  * This is a preview to CDI 1.1
  * when we implement CDI 1.1 this interface can be removed
  */
-public interface InjectionTargetFactory<T>
+public interface ProducerFactory<X>
 {
-    public InjectionTarget<T> createInjectionTarget(Bean<T> bean);
+    public <T> Producer<T> createProducer(Bean<T> bean);
 }

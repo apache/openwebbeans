@@ -27,9 +27,10 @@ import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.Bean;
 
+import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.util.AnnotationUtil;
 
-public class BeanAttributesImpl<T>
+public class BeanAttributesImpl<T> implements BeanAttributes<T>
 {
     private final Set<Type> types;
     private final Set<Annotation> qualifiers;

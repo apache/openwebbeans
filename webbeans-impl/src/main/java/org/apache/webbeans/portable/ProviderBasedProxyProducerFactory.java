@@ -22,8 +22,8 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Producer;
 import javax.inject.Provider;
 
+import org.apache.webbeans.component.spi.ProducerFactory;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.ProducerFactory;
 import org.apache.webbeans.util.Asserts;
 
 public class ProviderBasedProxyProducerFactory<P> implements ProducerFactory<P>

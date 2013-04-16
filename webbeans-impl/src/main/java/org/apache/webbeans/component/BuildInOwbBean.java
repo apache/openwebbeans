@@ -25,8 +25,8 @@ import javax.enterprise.inject.spi.Producer;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.CollectionUtil;
 
+import org.apache.webbeans.component.spi.ProducerFactory;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.ProducerFactory;
 
 public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
 {

@@ -35,8 +35,8 @@ import javax.enterprise.inject.spi.Producer;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.webbeans.component.spi.ProducerFactory;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.ProducerFactory;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.util.AnnotationUtil;

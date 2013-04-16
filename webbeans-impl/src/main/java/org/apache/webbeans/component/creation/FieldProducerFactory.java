@@ -22,8 +22,8 @@ import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Producer;
 
+import org.apache.webbeans.component.spi.ProducerFactory;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.ProducerFactory;
 import org.apache.webbeans.portable.ProducerFieldProducer;
 import org.apache.webbeans.util.Asserts;
 
