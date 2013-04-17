@@ -134,6 +134,14 @@ public class InjectionPointFactory
         return new InjectionPointImpl(owner, annotField.getBaseType(), Arrays.asList(qualifierAnnots), annotField);
     }
 
+    public <X> InjectionPoint buildInjectionPoint(Bean<?> owner, AnnotatedParameter<X> parameter)
+    {
+        Asserts.assertNotNull(parameter, "parameter parameter can not be null");
+        Set<Annotation> anns = parameter.getAnnotations();
+        Annotation[] qualifierAnnots = webBeansContext.getAnnotationManager().getQualifierAnnotations(anns.toArray(new Annotation[anns.size()]));
+        return new InjectionPointImpl(owner, parameter.getBaseType(), Arrays.asList(qualifierAnnots), parameter);
+    }
+
     public <X> List<InjectionPoint> buildInjectionPoints(Bean<?> owner, AnnotatedCallable<X> callable)
     {
         List<InjectionPoint> lists = new ArrayList<InjectionPoint>();
@@ -152,10 +160,7 @@ public class InjectionPointFactory
             //@Observes is not injection point type for method parameters
             if (parameter.getAnnotation(Observes.class) == null)
             {
-                Set<Annotation> anns = parameter.getAnnotations();
-                Annotation[] qualifierAnnots = webBeansContext.getAnnotationManager().getQualifierAnnotations(anns.toArray(new Annotation[anns.size()]));
-                InjectionPoint point = new InjectionPointImpl(owner, parameter.getBaseType(), Arrays.asList(qualifierAnnots), parameter);
-                lists.add(point);
+                lists.add(buildInjectionPoint(owner, parameter));
             }
         }
     }

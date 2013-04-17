@@ -19,7 +19,11 @@
 package org.apache.webbeans.container;
 
 import java.lang.annotation.Annotation;
+
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -47,5 +51,15 @@ public abstract class AbstractBeanManager implements BeanManager
     public int getQualifierHashCode(Annotation annotation)
     {
         return AnnotationUtil.getCdiAnnotationHashCode(annotation);
+    }
+
+    public InjectionPoint createInjectionPoint(AnnotatedField<?> field)
+    {
+        return getWebBeansContext().getInjectionPointFactory().buildInjectionPoint(null, field);
+    }
+
+    public InjectionPoint createInjectionPoint(AnnotatedParameter<?> parameter)
+    {
+        return getWebBeansContext().getInjectionPointFactory().buildInjectionPoint(null, parameter);
     }
 }
