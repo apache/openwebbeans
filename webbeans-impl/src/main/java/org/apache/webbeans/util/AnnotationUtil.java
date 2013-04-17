@@ -310,6 +310,44 @@ public final class AnnotationUtil
     }
 
     /**
+     * Computes a hash code for the specified cdi annoation. cdi annotations may either be qualifiers or interceptor bindings.
+     *
+     * The hash code of CDI annotations consists of the hash code of the annotationType and all its
+     * method values, except those annotated with @Nonbinding.
+     *
+     * @param annotation
+     * @return 
+     */
+    public static int getCdiAnnotationHashCode(Annotation annotation)
+    {
+        Asserts.assertNotNull(annotation, "annotation argument can not be null");
+
+        int hashCode = 0;
+
+        Class<? extends Annotation> qualifierAnnotationType = annotation.annotationType();
+        if (qualifierAnnotationType != null)
+        {
+            hashCode = qualifierAnnotationType.hashCode();
+        }
+
+        // check the values of all qualifier-methods
+        // except those annotated with @Nonbinding
+        List<Method> bindingCdiAnnotationMethods
+                = getBindingCdiAnnotationMethods(qualifierAnnotationType);
+
+        for (Method method : bindingCdiAnnotationMethods)
+        {
+            Object value = callMethod(annotation, method);
+            if (value != null)
+            {
+                hashCode ^= value.hashCode();
+            }
+        }
+
+        return hashCode;
+    }
+
+    /**
      * Quecks if the two values are equal.
      *
      * @param value1

@@ -42,12 +42,15 @@ import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.BeanAttributesImpl;
+import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.container.AbstractBeanManager;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.util.WebBeansUtil;
 
-public class MockManager implements BeanManager
+public class MockManager extends AbstractBeanManager implements BeanManager
 {
     private BeanManagerImpl manager = null;
 
@@ -61,6 +64,10 @@ public class MockManager implements BeanManager
         manager.addBean(webBeansContext.getWebBeansUtil().getManagerBean());
     }
 
+    public WebBeansContext getWebBeansContext()
+    {
+        return manager.getWebBeansContext();
+    }
 
     public void clear()
     {
@@ -170,6 +177,11 @@ public class MockManager implements BeanManager
     public <T> CreationalContext<T> createCreationalContext(Contextual<T> contextual)
     {
         return this.manager.createCreationalContext(contextual);
+    }
+
+    public <T> BeanAttributesImpl<T> createBeanAttributes(AnnotatedType<T> type)
+    {
+        return BeanAttributesBuilder.forContext(manager.getWebBeansContext()).newBeanAttibutes(type).build();
     }
 
     @Override

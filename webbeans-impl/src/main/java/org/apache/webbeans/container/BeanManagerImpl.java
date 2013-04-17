@@ -45,8 +45,6 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Stereotype;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
@@ -108,7 +106,7 @@ import org.apache.webbeans.xml.WebBeansXMLConfigurator;
  * @see BeanManager 
  */
 @SuppressWarnings("unchecked")
-public class BeanManagerImpl implements BeanManager, Referenceable
+public class BeanManagerImpl extends AbstractBeanManager implements BeanManager, Referenceable
 {
     private static final long serialVersionUID = 2L;
 
@@ -147,13 +145,19 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**XML configurator instance*/
     private WebBeansXMLConfigurator xmlConfigurator = null;
     
-
     /**
      * This list contains additional qualifiers which got set via the
      * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addQualifier(Class)}
      * event function.
      */
     private List<Class<? extends Annotation>> additionalQualifiers = new ArrayList<Class<? extends Annotation>>();
+
+    /**
+     * This list contains additional interceptor bindings which got set via the
+     * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addInterceptorBinding(Class)}
+     * event function.
+     */
+    private List<Class<? extends Annotation>> additionalInterceptorBindings = new ArrayList<Class<? extends Annotation>>();
     
     /**
      * This list contains additional scopes which got set via the 
@@ -535,21 +539,21 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**
      * {@inheritDoc}
      */
-    public <T> BeanAttributesImpl<T> createBeanAttributes(AnnotatedMember<T> member)
-    {
-        if (member instanceof AnnotatedField)
-        {
-            return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)member).build();
-        }
-        else if (member instanceof AnnotatedMethod)
-        {
-            return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedMethod<T>)member).build();
-        }
-        else
-        {
-            throw new IllegalArgumentException("Unsupported member type " + member.getClass().getName());
-        }
-    }
+//    public <T> BeanAttributes<T> createBeanAttributes(AnnotatedMember<?> member)
+//    {
+//        if (member instanceof AnnotatedField)
+//        {
+//            return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)member).build();
+//        }
+//        else if (member instanceof AnnotatedMethod)
+//        {
+//            return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedMethod<T>)member).build();
+//        }
+//        else
+//        {
+//            throw new IllegalArgumentException("Unsupported member type " + member.getClass().getName());
+//        }
+//    }
 
     /**
      * {@inheritDoc}
@@ -988,6 +992,14 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
     }
 
+    public void addAdditionalInterceptorBindings(Class<? extends Annotation> interceptorBinding)
+    {
+        if (!additionalInterceptorBindings.contains(interceptorBinding))
+        {
+            additionalInterceptorBindings.add(interceptorBinding);
+        }
+    }
+
     public void addAdditionalAnnotatedType(AnnotatedType<?> annotatedType)
     {
         webBeansContext.getAnnotatedElementFactory().setAnnotatedType(annotatedType);
@@ -1062,5 +1074,4 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         return inUse;
     }
-
 }

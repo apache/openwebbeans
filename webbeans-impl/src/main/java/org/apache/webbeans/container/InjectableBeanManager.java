@@ -18,11 +18,11 @@
  */
 package org.apache.webbeans.container;
 
-import java.io.Serializable;
 import java.io.Externalizable;
+import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.io.IOException;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -43,6 +43,7 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 
+import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.config.WebBeansContext;
 
 /**
@@ -55,24 +56,29 @@ import org.apache.webbeans.config.WebBeansContext;
  * This class is Serializable and always resolves the current
  * instance of the central BeanManager automatically.
  */
-public class InjectableBeanManager implements BeanManager, Serializable, Externalizable 
+public class InjectableBeanManager extends AbstractBeanManager implements BeanManager, Serializable, Externalizable 
 {
 
     private static final long serialVersionUID = 1L;
     
-    private transient BeanManager bm;
+    private transient BeanManagerImpl bm;
 
     /**
      * Used by serialization.
      */
     public InjectableBeanManager()
     {
-        bm = WebBeansContext.getInstance().getBeanManagerImpl();
+        this(WebBeansContext.getInstance().getBeanManagerImpl());
     }
 
-    public InjectableBeanManager(BeanManager bm)
+    public InjectableBeanManager(BeanManagerImpl beanManager)
     {
-        this.bm = bm;
+        this.bm = beanManager;
+    }
+
+    public WebBeansContext getWebBeansContext()
+    {
+        return bm.getWebBeansContext();
     }
 
     public <T> AnnotatedType<T> createAnnotatedType(Class<T> type)
@@ -198,6 +204,11 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
     public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)
     {
         return bm.wrapExpressionFactory(expressionFactory);
+    }
+
+    public <X> BeanAttributes<X> createBeanAttributes(AnnotatedType<X> annotatedType)
+    {
+        return bm.createBeanAttributes(annotatedType);
     }
 
     public void writeExternal(ObjectOutput out) throws IOException 
