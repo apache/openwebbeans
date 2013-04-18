@@ -1061,7 +1061,9 @@ public final class ClassUtil
      */
     public static boolean isOverridden(Method subClassMethod, Method superClassMethod)
     {
-        if (subClassMethod.getName().equals(superClassMethod.getName()) && Arrays.equals(subClassMethod.getParameterTypes(), superClassMethod.getParameterTypes()))
+        if (isSuperClass(superClassMethod.getDeclaringClass(), subClassMethod.getDeclaringClass())
+                && subClassMethod.getName().equals(superClassMethod.getName())
+                && Arrays.equals(subClassMethod.getParameterTypes(), superClassMethod.getParameterTypes()))
         {
             int modifiers = superClassMethod.getModifiers();
             if(Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers))
@@ -1087,4 +1089,8 @@ public final class ClassUtil
         return false;
     }
     
+    private static boolean isSuperClass(Class<?> superClass, Class<?> subClass)
+    {
+        return superClass.isAssignableFrom(subClass) && !superClass.equals(subClass);
+    }
 }

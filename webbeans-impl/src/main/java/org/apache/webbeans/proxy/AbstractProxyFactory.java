@@ -275,7 +275,7 @@ public abstract class AbstractProxyFactory
 
         //X TODO how to deal with native functions?
         return (modifiers & (Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL | Modifier.NATIVE)) > 0 ||
-               "finalize".equals(delegatedMethod.getName());
+               "finalize".equals(delegatedMethod.getName()) || delegatedMethod.isBridge();
     }
 
     /**
