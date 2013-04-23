@@ -1061,6 +1061,13 @@ public final class ClassUtil
      */
     public static boolean isOverridden(Method subClassMethod, Method superClassMethod)
     {
+        //in this case it's a different method or a bridge-method - check esp. needed for OWB-828
+        if (!subClassMethod.getReturnType().equals(subClassMethod.getReturnType()) ||
+                !superClassMethod.getGenericReturnType().equals(subClassMethod.getGenericReturnType()))
+        {
+            return false;
+        }
+
         if (isSuperClass(superClassMethod.getDeclaringClass(), subClassMethod.getDeclaringClass())
                 && subClassMethod.getName().equals(superClassMethod.getName())
                 && Arrays.equals(subClassMethod.getParameterTypes(), superClassMethod.getParameterTypes()))
