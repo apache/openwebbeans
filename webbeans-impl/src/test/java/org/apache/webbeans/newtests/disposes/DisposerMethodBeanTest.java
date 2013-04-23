@@ -18,18 +18,21 @@
  */
 package org.apache.webbeans.newtests.disposes;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-
 import junit.framework.Assert;
-
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.disposes.beans.DisposeModel;
 import org.apache.webbeans.newtests.disposes.beans.DisposerMethodBean;
 import org.junit.Test;
+
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Disposes;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class DisposerMethodBeanTest extends AbstractUnitTest
 {
@@ -54,4 +57,40 @@ public class DisposerMethodBeanTest extends AbstractUnitTest
         shutDownContainer();
     }
 
+    @Test
+    public void multipleDisposes()
+    {
+        final Collection<String> beanXmls = new ArrayList<String>();
+
+        final Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(MultipleDispose.class);
+
+        startContainer(beanClasses, beanXmls); // we had a regression where we were not starting
+        shutDownContainer();
+    }
+
+    public static class MultipleDispose
+    {
+        @Produces
+        public InputStream is(final InjectionPoint ip)
+        {
+            return null;
+        }
+
+        @Produces
+        public URL url(final InjectionPoint ip)
+        {
+            return null;
+        }
+
+        public void dis(final @Disposes InputStream is)
+        {
+            // no-op
+        }
+
+        public void durl(final @Disposes URL url)
+        {
+            // no-op
+        }
+    }
 }

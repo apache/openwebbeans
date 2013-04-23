@@ -69,6 +69,12 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         return creatorMethod;
     }
 
+
+    public Method getDisposalMethod()
+    {
+        return disposalMethod;
+    }
+
     /**
      * Sets the method.
      * 

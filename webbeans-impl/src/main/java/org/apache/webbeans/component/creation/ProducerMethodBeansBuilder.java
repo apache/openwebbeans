@@ -18,17 +18,6 @@
  */
 package org.apache.webbeans.component.creation;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.inject.Inject;
-
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -37,7 +26,19 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
+
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Disposes;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.Specializes;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.inject.Inject;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Abstract implementation of {@link AbstractBeanBuilder}.
@@ -113,6 +114,31 @@ public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>>
                 
             }
             
+        }
+
+        // valid all @Disposes have a @Produces
+        for (final AnnotatedMethod<? super T> annotatedMethod : annotatedMethods)
+        {
+            for (final AnnotatedParameter<?> param : annotatedMethod.getParameters())
+            {
+                if (param.isAnnotationPresent(Disposes.class))
+                {
+                    boolean found = false;
+                    for (final ProducerMethodBean<?> producer : producerBeans)
+                    {
+                        if (ClassUtil.isAssignable(param.getBaseType(), producer.getCreatorMethod().getGenericReturnType()))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        throw new WebBeansConfigurationException("@Disposes without @Produces " + annotatedMethod.getJavaMember());
+                    }
+                    break;
+                }
+            }
         }
         
         return producerBeans;

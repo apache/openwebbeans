@@ -58,27 +58,30 @@ public class DecoratorHandler implements InterceptorHandler
     {
         BusinessMethodInterceptorInfo methodInterceptorInfo = interceptorInfo.getBusinessMethodsInfo().get(method);
         LinkedHashMap<Decorator<?>, Method> methodDecorators = methodInterceptorInfo.getMethodDecorators();
-        for (int i = index; i < decorators.size(); i++)
+        if (methodDecorators != null)
         {
-            Decorator<?> decorator = decorators.get(i);
-            Method decoratingMethod = methodDecorators.get(decorator);
-            if (decoratingMethod != null)
+            for (int i = index; i < decorators.size(); i++)
             {
-                try
+                Decorator<?> decorator = decorators.get(i);
+                Method decoratingMethod = methodDecorators.get(decorator);
+                if (decoratingMethod != null)
                 {
-                    if (!decoratingMethod.isAccessible())
+                    try
                     {
-                        decoratingMethod.setAccessible(true);
+                        if (!decoratingMethod.isAccessible())
+                        {
+                            decoratingMethod.setAccessible(true);
+                        }
+                        return decoratingMethod.invoke(instances.get(decorator), args);
                     }
-                    return decoratingMethod.invoke(instances.get(decorator), args);
-                }
-                catch (InvocationTargetException e)
-                {
-                    return ExceptionUtil.throwAsRuntimeException(e.getTargetException());
-                }
-                catch (Exception e)
-                {
-                    return ExceptionUtil.throwAsRuntimeException(e);
+                    catch (InvocationTargetException e)
+                    {
+                        return ExceptionUtil.throwAsRuntimeException(e.getTargetException());
+                    }
+                    catch (Exception e)
+                    {
+                        return ExceptionUtil.throwAsRuntimeException(e);
+                    }
                 }
             }
         }

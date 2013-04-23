@@ -41,6 +41,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
 
 public class MethodProducerFactory<P> implements ProducerFactory<P>
 {
@@ -97,6 +98,11 @@ public class MethodProducerFactory<P> implements ProducerFactory<P>
                 {
                     if (annotatedParameter.isAnnotationPresent(Disposes.class))
                     {
+                        if (!ClassUtil.isAssignable(annotatedParameter.getBaseType(), producerMethod.getBaseType()))
+                        {
+                            continue;
+                        }
+
                         Set<Annotation> producerQualifiersToCompare = producerQualifiers;
                         Set<Annotation> disposalQualifiers = webBeansContext.getAnnotationManager().getQualifierAnnotations(annotatedParameter.getAnnotations());
                         if (disposalQualifiers.size() == 1 && disposalQualifiers.iterator().next().annotationType().equals(Default.class))

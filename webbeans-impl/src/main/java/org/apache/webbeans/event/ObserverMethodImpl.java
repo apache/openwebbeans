@@ -24,6 +24,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,6 +56,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.OwbNormalScopeProxy;
+import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 
 /**
@@ -98,7 +100,9 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     
     /** the transaction phase */
     private final TransactionPhase phase;
-    
+
+    private final Method view;
+
     /**Annotated method*/
     private AnnotatedMethod<T> annotatedObserverMethod;
     
@@ -128,12 +132,19 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         this.annotatedObserverMethod = annotatedObserverMethod;
         this.ifExist = ifExist;
         observedQualifiers = new HashSet<Annotation>(qualifiers.length);
-        for (Annotation qualifier : qualifiers)
-        {
-            observedQualifiers.add(qualifier);
-        }
+        Collections.addAll(observedQualifiers, qualifiers);
         this.observedEventType = observedEventType;
         phase = EventUtil.getObserverMethodTransactionType(annotatedObserverMethod);
+
+        final OpenWebBeansEjbPlugin ejbPlugin = getWebBeansContext().getPluginLoader().getEjbPlugin();
+        if (ejbPlugin != null && ejbPlugin.isNewSessionBean(bean.getBeanClass()))
+        {
+            view = ejbPlugin.resolveViewMethod(bean , annotatedObserverMethod.getJavaMember());
+        }
+        else
+        {
+            view = annotatedObserverMethod.getJavaMember();
+        }
 
     }
 
@@ -180,17 +191,15 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
                 args[i++] = param.instance;
             }
 
-            Method observerMethod = annotatedObserverMethod.getJavaMember();
-
             //Static or not
-            if (Modifier.isStatic(observerMethod.getModifiers()))
+            if (Modifier.isStatic(view.getModifiers()))
             {
-                if (!observerMethod.isAccessible())
+                if (!view.isAccessible())
                 {
-                    observerMethod.setAccessible(true);
+                    view.setAccessible(true);
                 }
                 //Invoke Method
-                observerMethod.invoke(null, args);
+                view.invoke(null, args);
             }
             else
             {
@@ -238,12 +247,12 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
 
                 if (object != null)
                 {
-                    if (!observerMethod.isAccessible())
+                    if (!view.isAccessible())
                     {
-                        bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(observerMethod, true);
+                        bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(view, true);
                     }
 
-                    if (Modifier.isPrivate(observerMethod.getModifiers()))
+                    if (Modifier.isPrivate(view.getModifiers()))
                     {
                         // since private methods cannot be intercepted, we have to unwrap anny possible proxy
                         if (object instanceof OwbNormalScopeProxy)
@@ -253,7 +262,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
                     }
 
                     //Invoke Method
-                    observerMethod.invoke(object, args);
+                    view.invoke(object, args);
                 }
             }                        
         }
