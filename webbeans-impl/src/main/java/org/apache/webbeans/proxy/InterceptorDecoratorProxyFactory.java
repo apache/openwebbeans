@@ -19,16 +19,6 @@
 package org.apache.webbeans.proxy;
 
 
-import javax.enterprise.inject.spi.Bean;
-import java.io.ObjectStreamException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -39,6 +29,15 @@ import org.apache.xbean.asm.Label;
 import org.apache.xbean.asm.MethodVisitor;
 import org.apache.xbean.asm.Opcodes;
 import org.apache.xbean.asm.Type;
+
+import javax.enterprise.inject.spi.Bean;
+import java.io.ObjectStreamException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 
 /**
@@ -80,23 +79,6 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
             throws ProxyGenerationException
     {
         Asserts.assertNotNull(instance);
-
-        if (instance instanceof OwbInterceptorProxy)
-        {
-            StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-            StringBuilder sb = new StringBuilder("Proxying of a PROXY detected! Proxy class: ");
-            sb.append(instance.getClass().getName()).append(" Stacktrace:\n");
-            for (StackTraceElement ste : stackTraceElements)
-            {
-                sb.append("\t").append(ste.getClassName()).append('.')
-                        .append(ste.getMethodName()).append('#')
-                        .append(ste.getLineNumber()).append('\n');
-            }
-
-            instance = unwrapInstance(instance);
-            sb.append("\nunwrapping the proxy to: " + instance.getClass().getName());
-            logger.log(Level.SEVERE, sb.toString());
-        }
 
         try
         {
