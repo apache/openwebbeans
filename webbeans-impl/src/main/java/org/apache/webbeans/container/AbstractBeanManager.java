@@ -21,6 +21,7 @@ package org.apache.webbeans.container;
 import java.lang.annotation.Annotation;
 
 import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -28,8 +29,10 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.FieldProducerFactory;
 import org.apache.webbeans.component.creation.MethodProducerFactory;
+import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.component.spi.InjectionTargetFactory;
 import org.apache.webbeans.component.spi.ProducerFactory;
 import org.apache.webbeans.config.WebBeansContext;
@@ -58,6 +61,33 @@ public abstract class AbstractBeanManager implements BeanManager
     public int getQualifierHashCode(Annotation annotation)
     {
         return AnnotationUtil.getCdiAnnotationHashCode(annotation);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T> BeanAttributes<T> createBeanAttributes(AnnotatedType<T> type)
+    {
+        return BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes(type).build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public BeanAttributes<?> createBeanAttributes(AnnotatedMember<?> member)
+    {
+        if (member instanceof AnnotatedField)
+        {
+            return BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes((AnnotatedField<?>)member).build();
+        }
+        else if (member instanceof AnnotatedMethod)
+        {
+            return BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes((AnnotatedMethod<?>)member).build();
+        }
+        else
+        {
+            throw new IllegalArgumentException("Unsupported member type " + member.getClass().getName());
+        }
     }
 
     public InjectionPoint createInjectionPoint(AnnotatedField<?> field)

@@ -65,13 +65,11 @@ import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -527,33 +525,6 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         
         return annotatedType;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public <T> BeanAttributesImpl<T> createBeanAttributes(AnnotatedType<T> type)
-    {
-        return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(type).build();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-//    public <T> BeanAttributes<T> createBeanAttributes(AnnotatedMember<?> member)
-//    {
-//        if (member instanceof AnnotatedField)
-//        {
-//            return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)member).build();
-//        }
-//        else if (member instanceof AnnotatedMethod)
-//        {
-//            return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedMethod<T>)member).build();
-//        }
-//        else
-//        {
-//            throw new IllegalArgumentException("Unsupported member type " + member.getClass().getName());
-//        }
-//    }
 
     /**
      * {@inheritDoc}

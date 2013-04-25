@@ -43,7 +43,6 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 
-import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.config.WebBeansContext;
 
 /**
@@ -204,11 +203,6 @@ public class InjectableBeanManager extends AbstractBeanManager implements BeanMa
     public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)
     {
         return bm.wrapExpressionFactory(expressionFactory);
-    }
-
-    public <X> BeanAttributes<X> createBeanAttributes(AnnotatedType<X> annotatedType)
-    {
-        return bm.createBeanAttributes(annotatedType);
     }
 
     public void writeExternal(ObjectOutput out) throws IOException 
