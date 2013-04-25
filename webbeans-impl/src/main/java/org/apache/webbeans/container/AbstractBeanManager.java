@@ -21,10 +21,17 @@ package org.apache.webbeans.container;
 import java.lang.annotation.Annotation;
 
 import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.apache.webbeans.component.creation.FieldProducerFactory;
+import org.apache.webbeans.component.creation.MethodProducerFactory;
+import org.apache.webbeans.component.spi.InjectionTargetFactory;
+import org.apache.webbeans.component.spi.ProducerFactory;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.AnnotationUtil;
 
@@ -61,5 +68,20 @@ public abstract class AbstractBeanManager implements BeanManager
     public InjectionPoint createInjectionPoint(AnnotatedParameter<?> parameter)
     {
         return getWebBeansContext().getInjectionPointFactory().buildInjectionPoint(null, parameter);
+    }
+
+    public <X> ProducerFactory<X> getProducerFactory(AnnotatedField<? super X> field, Bean<X> bean)
+    {
+        return new FieldProducerFactory<X>(field, bean, getWebBeansContext());
+    }
+
+    public <X> ProducerFactory<X> getProducerFactory(AnnotatedMethod<? super X> method, Bean<X> bean)
+    {
+        return new MethodProducerFactory<X>(method, bean, getWebBeansContext());
+    }
+    
+    public <X> InjectionTargetFactory<X> getInjectionTargetFactory(AnnotatedType<X> type)
+    {
+        return new InjectionTargetFactoryImpl<X>(type, getWebBeansContext());
     }
 }
