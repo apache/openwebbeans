@@ -793,7 +793,6 @@
 
         </profile>
 
-
         <profile>
             <id>jsr330-tck</id>
             <modules>
@@ -805,6 +804,13 @@
             <id>doc</id>
             <modules>
                 <module>webbeans-doc</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>cdi-1.1</id>
+            <modules>
+                <module>webbeans-cdi11</module>
             </modules>
         </profile>
 
