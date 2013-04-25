@@ -90,4 +90,28 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
         webBeansContext.getStereoTypeManager().addStereoTypeModel(model);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void addAnnotatedType(AnnotatedType<?> annotatedType, String id)
+    {
+        beanManager.addAdditionalAnnotatedType(annotatedType, id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void addInterceptorBinding(AnnotatedType<? extends Annotation> annotatedType)
+    {
+        // TODO extract inherited types
+        webBeansContext.getInterceptorsManager().addInterceptorBindingType(annotatedType.getJavaClass());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void addQualifier(AnnotatedType<? extends Annotation> annotatedType)
+    {
+        beanManager.addAdditionalQualifier(annotatedType.getJavaClass());
+    }
 }

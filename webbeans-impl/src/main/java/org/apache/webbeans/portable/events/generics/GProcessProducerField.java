@@ -19,6 +19,7 @@
 package org.apache.webbeans.portable.events.generics;
 
 import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.portable.events.ProcessProducerFieldImpl;
@@ -27,9 +28,9 @@ import org.apache.webbeans.util.ClassUtil;
 @SuppressWarnings("unchecked")
 public class GProcessProducerField extends ProcessProducerFieldImpl implements GenericProducerObserverEvent
 {
-    public GProcessProducerField(ProducerFieldBean<?> bean,AnnotatedField<?> annotatedField)
+    public GProcessProducerField(ProducerFieldBean<?> bean, AnnotatedField<?> annotatedField, AnnotatedParameter<?> annotatedParameter)
     {
-        super(bean, annotatedField);
+        super(bean, annotatedField, annotatedParameter);
     }
 
     public Class<?> getBeanClass()

@@ -1274,7 +1274,7 @@ public final class WebBeansUtil
             ProducerFieldBean<?> bean = beanEntry.getKey();
             AnnotatedField<?> field = beanEntry.getValue();
 
-            GProcessProducerField processProducerFieldEvent = new GProcessProducerField(bean,field);
+            GProcessProducerField processProducerFieldEvent = new GProcessProducerField(bean, field, null);
 
             //Fire ProcessProducer
             webBeansContext.getBeanManagerImpl().fireEvent(processProducerFieldEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);

@@ -27,6 +27,7 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
@@ -113,5 +114,20 @@ public abstract class AbstractBeanManager implements BeanManager
     public <X> InjectionTargetFactory<X> getInjectionTargetFactory(AnnotatedType<X> type)
     {
         return new InjectionTargetFactoryImpl<X>(type, getWebBeansContext());
+    }
+
+    public <T> Bean<T> createBean(BeanAttributes<T> attributes, Class<T> type, InjectionTargetFactory<T> factory)
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public <T, X> Bean<T> createBean(BeanAttributes<T> attributes, Class<X> type, ProducerFactory<X> factory)
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public <T extends Extension> T getExtension(Class<T> type)
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

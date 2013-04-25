@@ -19,6 +19,7 @@
 package org.apache.webbeans.portable.events;
 
 import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.ProcessProducerField;
 
 import org.apache.webbeans.component.ProducerFieldBean;
@@ -33,13 +34,14 @@ import org.apache.webbeans.component.ProducerFieldBean;
  */
 public class ProcessProducerFieldImpl<X,T> extends ProcessBeanImpl<T> implements ProcessProducerField<X, T>
 {
-    /**Annotated field*/
     private final AnnotatedField<X> annotatedField;
+    private final AnnotatedParameter<X> annotatedParameter;
 
-    public ProcessProducerFieldImpl(ProducerFieldBean<T> bean, AnnotatedField<X> annotatedField)
+    public ProcessProducerFieldImpl(ProducerFieldBean<T> bean, AnnotatedField<X> annotatedField, AnnotatedParameter<X> annotatedParameter)
     {
         super(bean, annotatedField);
         this.annotatedField = annotatedField;
+        this.annotatedParameter = annotatedParameter;
     }
     
     /**
@@ -49,5 +51,12 @@ public class ProcessProducerFieldImpl<X,T> extends ProcessBeanImpl<T> implements
     {
         return annotatedField;
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    public AnnotatedParameter<X> getAnnotatedDisposedParameter()
+    {
+        return annotatedParameter;
+    }
 }
