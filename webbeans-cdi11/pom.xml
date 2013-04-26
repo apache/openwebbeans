@@ -24,11 +24,18 @@
         <artifactId>openwebbeans</artifactId>
         <version>1.2.0-SNAPSHOT</version>
     </parent>
+
     <artifactId>openwebbeans-cdi11</artifactId>
     <name>OpenWebBeans Core for CDI 1.1</name>
     <description>
         Apache OpenWebBeans Implementation core module implementing cdi 1.1
     </description>
+
+
+    <properties>
+        <cdi11-tck.version>1.1.0.Final</cdi11-tck.version>
+    </properties>
+
 
     <dependencies>
         <dependency>
@@ -42,12 +49,26 @@
             <artifactId>xbean-finder-shaded</artifactId>
         </dependency>
 
+<!--X TODO remove
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <version>1.1</version>
             <optional>true</optional>
         </dependency>
+-->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jcdi_1.1_spec</artifactId>
+            <optional>true</optional>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-annotation_1.2_spec</artifactId>
+            <version>1.0.MR2-SNAPSHOT</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
@@ -151,32 +172,27 @@
                     </replacements>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <configuration>
+                    <sources>
+                        <source>${project.build.directory}/generated-sources</source>
+                    </sources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>add-sources</id>
+                        <goals><goal>add-source</goal></goals>
+                        <phase>process-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
-    <reporting>
-        <plugins>
-            <!-- Apache plugins in alphabetical order -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.4</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>cim</report>
-                            <report>index</report>
-                            <report>issue-tracking</report>
-                            <report>mailing-list</report>
-                            <report>project-team</report>
-                            <report>scm</report>
-                            <report>summary</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-        </plugins>
-    </reporting>
 
     <profiles>
         <profile>
@@ -209,6 +225,69 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>tck11</id>
+
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.cdi.tck</groupId>
+                    <artifactId>cdi-tck-api</artifactId>
+                    <version>${cdi11-tck.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.cdi.tck</groupId>
+                    <artifactId>cdi-tck-impl</artifactId>
+                    <version>${cdi11-tck.version}</version>
+                    <scope>test</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.openwebbeans.arquillian</groupId>
+                    <artifactId>owb-arquillian-parent</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+
+
+                <dependency>
+                    <groupId>org.apache.xbean</groupId>
+                    <artifactId>xbean-finder-shaded</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.testng</groupId>
+                    <artifactId>testng</artifactId>
+                    <version>6.3</version>
+                    <scope>test</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.openwebbeans</groupId>
+                    <artifactId>openwebbeans-spi</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.openwebbeans</groupId>
+                    <artifactId>openwebbeans-impl</artifactId>
+                </dependency>
+
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludedGroups>javaee-full</excludedGroups>
+                            <suiteXmlFiles>
+                                <suiteXmlFile>standalone-suite.xml</suiteXmlFile>
+                            </suiteXmlFiles>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
