@@ -22,9 +22,9 @@ import javax.enterprise.inject.spi.Producer;
 import javax.jms.Destination;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.jms.JMSModel;
 
@@ -32,9 +32,9 @@ public class JmsBean<T> extends AbstractOwbBean<T> implements JmsBeanMarker
 {
     private JMSModel jmsModel = null;
     
-    JmsBean(WebBeansContext webBeansContext, JMSModel jmsModel, BeanAttributesImpl<T> beanAttributes)
+    JmsBean(WebBeansContext webBeansContext, JMSModel jmsModel, BeanAttributes<T> beanAttributes)
     {
-        super(webBeansContext, WebBeansType.JMS, beanAttributes, Destination.class);
+        super(webBeansContext, WebBeansType.JMS, beanAttributes, Destination.class, false);
         this.jmsModel = jmsModel;
     }
         

@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionTargetFactoryImpl;
 import org.apache.webbeans.container.InterceptorInjectionTargetFactory;
@@ -57,7 +58,7 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
 
     protected InterceptorBean(WebBeansContext webBeansContext,
                                   AnnotatedType<T> annotatedType,
-                                  BeanAttributesImpl<T> beanAttributes,
+                                  BeanAttributes<T> beanAttributes,
                                   Class<T> beanClass,
                                   Map<InterceptionType, Method[]> interceptionMethods,
                                   InjectionTargetFactoryImpl<T> factory)

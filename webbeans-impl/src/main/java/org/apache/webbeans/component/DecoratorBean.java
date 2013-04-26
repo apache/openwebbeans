@@ -24,6 +24,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
+import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.DecoratorInjectionTargetFactory;
 
@@ -51,7 +52,7 @@ public class DecoratorBean<T> extends InjectionTargetBean<T> implements Decorato
     public DecoratorBean(WebBeansContext webBeansContext,
                          WebBeansType webBeansType,
                          AnnotatedType<T> annotatedType,
-                         BeanAttributesImpl<T> beanAttributes,
+                         BeanAttributes<T> beanAttributes,
                          Class<T> beanClass)
     {
         super(webBeansContext, webBeansType, annotatedType, beanAttributes, beanClass, new DecoratorInjectionTargetFactory<T>(annotatedType, webBeansContext));

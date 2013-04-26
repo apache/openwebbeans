@@ -42,7 +42,8 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
         super(webBeansContext,
               WebBeansType.THIRDPARTY,
               new BeanAttributesImpl<T>(bean),
-              bean.getBeanClass());
+              bean.getBeanClass(),
+              bean.isNullable());
         
         this.bean = bean;
         

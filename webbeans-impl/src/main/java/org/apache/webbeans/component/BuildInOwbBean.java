@@ -35,7 +35,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
 
     protected BuildInOwbBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType, ProducerFactory<T> producerFactory)
     {
-        this(webBeansContext, webBeansType, new BeanAttributesImpl<T>(CollectionUtil.<Type>unmodifiableSet(returnType, Object.class)), returnType, producerFactory);
+        this(webBeansContext, webBeansType, new BeanAttributesImpl<T>(CollectionUtil.<Type>unmodifiableSet(returnType, Object.class)), returnType, false, producerFactory);
     }
     
     protected BuildInOwbBean(
@@ -43,9 +43,10 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
             WebBeansType webBeansType,
             BeanAttributesImpl<T> beanAttributes,
             Class<T> returnType,
+            boolean nullable,
             ProducerFactory<T> producerFactory)
     {
-        super(webBeansContext, webBeansType, beanAttributes, returnType);
+        super(webBeansContext, webBeansType, beanAttributes, returnType, nullable);
         Asserts.assertNotNull(producerFactory, "ProducerFactory may not be null");
         this.producer = producerFactory.createProducer(this);
     }

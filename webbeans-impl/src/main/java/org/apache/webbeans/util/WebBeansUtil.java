@@ -765,7 +765,7 @@ public final class WebBeansUtil
                     if (bean instanceof ProducerMethodBean)
                     {
                         ProducerMethodBean<?> producerBean = (ProducerMethodBean<?>)bean;
-                        if (producerBean.getParent() == superBean && producerBean.getProducer() instanceof ProducerMethodProducer)
+                        if (producerBean.getBeanClass() == superBean.getBeanClass() && producerBean.getProducer() instanceof ProducerMethodProducer)
                         {
                             ProducerMethodProducer<?, ?> producer = (ProducerMethodProducer<?, ?>) producerBean.getProducer();
                             producer.specializeBy((Bean) comp);

@@ -22,6 +22,7 @@ import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionTargetFactoryImpl;
 import org.apache.webbeans.util.ClassUtil;
@@ -56,7 +57,7 @@ public abstract class BaseEjbBean<T> extends InjectionTargetBean<T> implements E
     protected BaseEjbBean(WebBeansContext webBeansContext,
                           SessionBeanType type,
                           AnnotatedType<T> annotatedType,
-                          BeanAttributesImpl<T> beanAttributes,
+                          BeanAttributes<T> beanAttributes,
                           Class<T> beanClass,
                           InjectionTargetFactoryImpl<T> factory)
     {

@@ -54,13 +54,13 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
              bean.isAlternative());
     }
 
-    public BeanAttributesImpl(BeanAttributesImpl<T> beanAttributes)
+    public BeanAttributesImpl(BeanAttributes<T> beanAttributes, boolean nullable)
     {
         this(beanAttributes.getTypes(),
              beanAttributes.getQualifiers(),
              beanAttributes.getScope(),
              beanAttributes.getName(),
-             beanAttributes.isNullable(),
+             nullable,
              beanAttributes.getStereotypes(),
              beanAttributes.isAlternative());
     }

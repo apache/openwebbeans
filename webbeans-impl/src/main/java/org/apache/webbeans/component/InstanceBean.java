@@ -42,6 +42,7 @@ public class InstanceBean<T> extends BuildInOwbBean<Instance<T>>
                       new TypeLiteral<Provider<T>>() {}.getRawType(), 
                       Object.class)),
               new TypeLiteral<Instance<T>>(){}.getRawType(),
+              false,
               new SimpleProducerFactory<Instance<T>>(
                       new InstanceProducer<T>(new TypeLiteral<Instance<T>>(){}.getRawType(), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION, webBeansContext)));
     }

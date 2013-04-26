@@ -46,6 +46,7 @@ public class EventBean<T> extends BuildInOwbBean<Event<T>>
               WebBeansType.OBSERVABLE,
               new BeanAttributesImpl<Event<T>>(CollectionUtil.<Type>unmodifiableSet(new TypeLiteral<Event<T>>() {}.getRawType(), Object.class)),
               new TypeLiteral<Event<T>>(){}.getRawType(),
+              false,
               new SimpleProducerFactory<Event<T>>(new EventProducer<T>(webBeansContext)));
     }
     

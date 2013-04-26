@@ -56,7 +56,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                                   Class<T> returnType,
                                   MethodProducerFactory<P> producerFactory)
     {
-        super(ownerComponent, WebBeansType.PRODUCERMETHOD, beanAttributes, returnType, producerFactory);
+        super(ownerComponent.getBeanClass(), ownerComponent.getWebBeansContext(), WebBeansType.PRODUCERMETHOD, beanAttributes, returnType, producerFactory);
     }
 
     /**
@@ -96,7 +96,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         {
             throw new WebBeansConfigurationException("There are multiple disposal method for producer method " +
                     "component with name : " + getName() + " with implementation class " +
-                    getParent().getReturnType().getName() + " with disposal method name : " +
+                    getBeanClass().getName() + " with disposal method name : " +
                     disposalMethod.getName());
         }
         this.disposalMethod = disposalMethod;
@@ -136,7 +136,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                               " return type in the component implementation class : %s" +
                               " scope type must be @Dependent to create null instance";
         WebBeansUtil.checkNullInstance(instance, getScope(), errorMessage, creatorMethod.getName(),
-                ownerComponent.getReturnType().getName());
+                getBeanClass().getName());
     }
 
     /**
@@ -149,7 +149,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                               " with passivating scope @%s" +
                               " must be Serializable";
         getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(getScope(),
-                ClassUtil.isClassAssignable(Serializable.class, getReturnType()), errorMessage, creatorMethod.getName(), ownerComponent.getReturnType().getName(),
+                ClassUtil.isClassAssignable(Serializable.class, getReturnType()), errorMessage, creatorMethod.getName(), getBeanClass().getName(),
                 getScope().getName());
 
     }

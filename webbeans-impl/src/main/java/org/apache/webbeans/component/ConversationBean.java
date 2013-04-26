@@ -55,6 +55,7 @@ public class ConversationBean extends BuildInOwbBean<ConversationImpl> implement
                       Collections.<Class<? extends Annotation>>emptySet(),
                       false),
               ConversationImpl.class,
+              false,
               new SimpleProducerFactory<ConversationImpl>(
                       new ConversationProducer(webBeansContext.getAnnotatedElementFactory().newAnnotatedType(ConversationImpl.class), webBeansContext)));
         setEnabled(true);

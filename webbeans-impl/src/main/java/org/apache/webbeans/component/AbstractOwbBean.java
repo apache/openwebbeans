@@ -33,6 +33,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.Producer;
 
+import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -74,10 +75,11 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
 
     protected AbstractOwbBean(WebBeansContext webBeansContext,
                               WebBeansType webBeansType,
-                              BeanAttributesImpl<T> beanAttributes,
-                              Class<?> beanClass)
+                              BeanAttributes<T> beanAttributes,
+                              Class<?> beanClass,
+                              boolean nullable)
     {
-        super(beanAttributes);
+        super(beanAttributes, nullable);
         this.webBeansType = webBeansType;
         this.beanClass = beanClass;
         this.webBeansContext = webBeansContext;

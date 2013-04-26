@@ -25,7 +25,9 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.Producer;
 
+import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.component.spi.ProducerFactory;
+import org.apache.webbeans.config.WebBeansContext;
 
 
 /**
@@ -34,10 +36,8 @@ import org.apache.webbeans.component.spi.ProducerFactory;
  * @version $Rev$ $Date$
  * @param <T> bean type info
  */
-public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> implements IBeanHasParent<T>, PassivationCapable
+public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> implements PassivationCapable
 {
-    /** Owner of the producer field component */
-    protected InjectionTargetBean<?> ownerComponent;
     private Class<T> returnType;
     private Producer<T> producer;
 
@@ -47,14 +47,14 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
      * @param returnType bean type info
      * @param ownerComponent owner bean
      */
-    protected AbstractProducerBean(InjectionTargetBean<?> ownerComponent,
+    protected AbstractProducerBean(Class<?> ownerBeanClass,
+                                   WebBeansContext webBeansContext,
                                    WebBeansType webBeansType,
-                                   BeanAttributesImpl<T> beanAttributes,
+                                   BeanAttributes<T> beanAttributes,
                                    Class<T> returnType,
                                    ProducerFactory<?> producerFactory)
     {
-        super(ownerComponent.getWebBeansContext(), webBeansType, beanAttributes, ownerComponent.getBeanClass());
-        this.ownerComponent = ownerComponent;
+        super(webBeansContext, webBeansType, beanAttributes, ownerBeanClass, !returnType.isPrimitive());
         this.returnType = returnType;
         this.producer = producerFactory.createProducer(this);
     }
@@ -63,14 +63,6 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
     public Producer<T> getProducer()
     {
         return producer;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public InjectionTargetBean<?> getParent()
-    {
-        return ownerComponent;
     }
 
     @Override
@@ -100,21 +92,5 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
         }
         
         return false;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return super.hashCode() ^ ownerComponent.hashCode();
-    }
-
-    public boolean equals(Object object)
-    {
-        if (!super.equals(object))
-        {
-            return false;
-        }
-        AbstractProducerBean<?> other = (AbstractProducerBean<?>) object;
-        return ownerComponent.equals(other.ownerComponent);
     }
 }

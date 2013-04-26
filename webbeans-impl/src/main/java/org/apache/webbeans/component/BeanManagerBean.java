@@ -35,6 +35,7 @@ public class BeanManagerBean extends BuildInOwbBean<BeanManager>
               WebBeansType.MANAGER,
               new BeanAttributesImpl<BeanManager>(CollectionUtil.<Type>unmodifiableSet(BeanManager.class, Object.class), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION),
               BeanManager.class,
+              false,
               new SimpleProducerFactory<BeanManager>(new BeanManagerProducer(webBeansContext)));
     }
     

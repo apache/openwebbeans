@@ -32,7 +32,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * 
  * @param <T> Type of the field decleration
  */
-public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBeanHasParent<T>
+public class ProducerFieldBean<T> extends AbstractProducerBean<T>
 {
 
     /** Producer field that defines the component */
@@ -45,7 +45,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
      */
     public ProducerFieldBean(InjectionTargetBean<?> ownerComponent, BeanAttributesImpl<T> beanAttributes, Class<T> returnType, ProducerFactory<T> producerFactory)
     {
-        super(ownerComponent, WebBeansType.PRODUCERFIELD, beanAttributes, returnType, producerFactory);
+        super(ownerComponent.getBeanClass(), ownerComponent.getWebBeansContext(), WebBeansType.PRODUCERFIELD, beanAttributes, returnType, producerFactory);
     }
 
     /**
@@ -95,7 +95,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
                               " return type in the component implementation class : %s" +
                               " scope must be @Dependent to create null instance";
         WebBeansUtil.checkNullInstance(instance, getScope(), errorMessage, producerField.getName(),
-                ownerComponent.getReturnType().getName());
+                getBeanClass().getName());
     }
 
     /**
@@ -109,7 +109,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
                               " must be Serializable";
         getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(getScope(),
                 ClassUtil.isClassAssignable(Serializable.class, getReturnType()), errorMessage, producerField.getName(), 
-                ownerComponent.getReturnType().getName(), getScope().getName());
+                getBeanClass().getName(), getScope().getName());
     }
     
     @Override

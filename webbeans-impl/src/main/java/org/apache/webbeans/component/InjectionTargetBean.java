@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 
+import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionTargetFactoryImpl;
 
@@ -57,7 +58,7 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
     protected InjectionTargetBean(WebBeansContext webBeansContext,
             WebBeansType webBeansType,
             AnnotatedType<T> annotatedType,
-            BeanAttributesImpl<T> beanAttributes,
+            BeanAttributes<T> beanAttributes,
             Class<T> beanClass)
     {
         this(webBeansContext, webBeansType, annotatedType, beanAttributes, beanClass, new InjectionTargetFactoryImpl<T>(annotatedType, webBeansContext));
@@ -69,11 +70,11 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
     protected InjectionTargetBean(WebBeansContext webBeansContext,
                                   WebBeansType webBeansType,
                                   AnnotatedType<T> annotatedType,
-                                  BeanAttributesImpl<T> beanAttributes,
+                                  BeanAttributes<T> beanAttributes,
                                   Class<T> beanClass,
                                   InjectionTargetFactoryImpl<T> factory)
     {
-        super(webBeansContext, webBeansType, beanAttributes, beanClass);
+        super(webBeansContext, webBeansType, beanAttributes, beanClass, false);
         Asserts.assertNotNull(annotatedType, "AnnotatedType may not be null");
         this.annotatedType = annotatedType;
         this.injectionTarget = factory.createInjectionTarget(this);
