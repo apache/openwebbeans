@@ -558,6 +558,12 @@ public class InterceptorResolutionService
         Set<AnnotatedMethod> annotatedMethods = annotatedType.getMethods();
         for (Method interceptableMethod : interceptableMethods)
         {
+            //don't proxy bridge methods - see OWB-828
+            if (interceptableMethod.isBridge())
+            {
+                continue;
+            }
+
             for (AnnotatedMethod<?> annotatedMethod : annotatedMethods)
             {
                 if (annotatedMethod.getJavaMember().equals(interceptableMethod))
