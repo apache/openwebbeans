@@ -27,7 +27,7 @@ import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactio
  * A simple class which is class-level intercepted
  */
 @Transactional
-public class ClassInterceptedClass
+public class ClassInterceptedClass extends SomeBaseClass
 {
     private boolean defaultCtInvoked = false;
 
