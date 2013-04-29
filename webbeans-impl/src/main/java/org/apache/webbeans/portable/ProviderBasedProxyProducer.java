@@ -47,7 +47,8 @@ public class ProviderBasedProxyProducer<T> extends AbstractProducer<T>
         {
             NormalScopeProxyFactory proxyFactory = webBeansContext.getNormalScopeProxyFactory();
             ClassLoader loader = returnType.getClassLoader();
-            if (loader == null) {
+            if (loader == null)
+            {
                 loader = WebBeansUtil.getCurrentClassLoader();
             }
             Class<T> proxyClass = proxyFactory.createProxyClass(loader, returnType);
