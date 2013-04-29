@@ -129,6 +129,12 @@ public final class NotificationManager
 
         observersMethods = filterByQualifiers(observersMethods, metadata.getQualifiers());
 
+        //this check for the TCK is only needed if no observer was found
+        if (observersMethods.isEmpty())
+        {
+            EventUtil.checkQualifierImplementations(metadata.getQualifiers());
+        }
+
         return observersMethods;
     }
 
