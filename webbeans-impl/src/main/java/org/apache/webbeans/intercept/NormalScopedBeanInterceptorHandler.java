@@ -116,7 +116,7 @@ public class NormalScopedBeanInterceptorHandler implements Provider, Serializabl
      * }
      * </pre>
     */
-    Object readResolve() throws ObjectStreamException
+    protected Object readResolve() throws ObjectStreamException
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         this.beanManager = webBeansContext.getBeanManagerImpl();
