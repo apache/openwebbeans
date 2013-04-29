@@ -23,6 +23,7 @@ import javax.inject.Provider;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
+import org.apache.webbeans.util.WebBeansUtil;
 
 public class ProviderBasedProxyProducer<T> extends AbstractProducer<T>
 {
@@ -45,7 +46,11 @@ public class ProviderBasedProxyProducer<T> extends AbstractProducer<T>
         if (proxyInstance == null)
         {
             NormalScopeProxyFactory proxyFactory = webBeansContext.getNormalScopeProxyFactory();
-            Class<T> proxyClass = proxyFactory.createProxyClass(returnType.getClassLoader(), returnType);
+            ClassLoader loader = returnType.getClassLoader();
+            if (loader == null) {
+                loader = WebBeansUtil.getCurrentClassLoader();
+            }
+            Class<T> proxyClass = proxyFactory.createProxyClass(loader, returnType);
             proxyInstance = proxyFactory.createProxyInstance(proxyClass, provider);
         }
         return proxyInstance;
