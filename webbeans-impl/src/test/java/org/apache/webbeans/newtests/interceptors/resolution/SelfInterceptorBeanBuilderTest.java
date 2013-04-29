@@ -28,6 +28,7 @@ import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.SelfInterceptorBeanBuilder;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.resolution.interceptors.SelfInterceptedClass;
+import org.apache.webbeans.newtests.interceptors.resolution.interceptors.SelfInterceptionSubclass;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -55,6 +56,37 @@ public class SelfInterceptorBeanBuilderTest extends AbstractUnitTest
         InterceptorBean<SelfInterceptedClass> bean = ibb.getBean();
         Assert.assertNotNull(bean);
 
+        SelfInterceptedClass interceptedInstance = getInstance(SelfInterceptedClass.class);
+
+        SelfInterceptedClass.interceptionCount = 0;
+        interceptedInstance.someBusinessMethod();
+        Assert.assertEquals(42, interceptedInstance.getMeaningOfLife());
+        Assert.assertEquals(2, SelfInterceptedClass.interceptionCount);
+
+        shutDownContainer();
+    }
+
+    @Test
+    public void testDisablingByOverriding()
+    {
+        startContainer(SelfInterceptedClass.class, SelfInterceptionSubclass.class);
+
+        AnnotatedType<SelfInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(SelfInterceptedClass.class);
+
+        BeanAttributesImpl<SelfInterceptedClass> beanAttributes = BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes(annotatedType).build();
+
+        SelfInterceptorBeanBuilder<SelfInterceptedClass> ibb
+                = new SelfInterceptorBeanBuilder<SelfInterceptedClass>(getWebBeansContext(), annotatedType, beanAttributes);
+        ibb.defineSelfInterceptorRules();
+        InterceptorBean<SelfInterceptedClass> bean = ibb.getBean();
+        Assert.assertNotNull(bean);
+
+        SelfInterceptionSubclass interceptedInstance = getInstance(SelfInterceptionSubclass.class);
+
+        SelfInterceptedClass.interceptionCount = 0;
+        interceptedInstance.someBusinessMethod();
+        Assert.assertEquals(42, interceptedInstance.getMeaningOfLife());
+        Assert.assertEquals(0, SelfInterceptedClass.interceptionCount);
 
         shutDownContainer();
     }

@@ -61,7 +61,7 @@ public class ClassInterceptedClass
 
     public int getMeaningOfLife() throws NumberFormatException
     {
-        System.out.println("answering the question about life, the universe and everything!");
+        System.out.println("answeringowb-arquillian-parent the question about life, the universe and everything!");
         System.out.println("and being in " + this.getClass());
         return meaningOfLife;
     }

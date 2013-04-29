@@ -19,34 +19,24 @@
 package org.apache.webbeans.newtests.interceptors.resolution.interceptors;
 
 import javax.enterprise.context.RequestScoped;
-import javax.interceptor.AroundInvoke;
+import javax.enterprise.inject.Typed;
 import javax.interceptor.InvocationContext;
 
 /**
- * Sample bean which has an AroundInvoke interceptor on itself.
+ *
  */
 @RequestScoped
-public class SelfInterceptedClass
+@Typed(SelfInterceptionSubclass.class)
+public class SelfInterceptionSubclass extends SelfInterceptedClass
 {
-    public static int interceptionCount = 0;
-
-    private int meaningOfLife = 0;
-
-    public void someBusinessMethod()
-    {
-        meaningOfLife = 42;
-    }
-
-    public int getMeaningOfLife()
-    {
-        return meaningOfLife;
-    }
-
-    @AroundInvoke
+    /**
+     * This method overrides and thus disables the AroundInvoke method from the superclass.
+     * See Interceptors spec.
+     */
+    @Override
     protected Object interceptMe(InvocationContext ic) throws Exception
     {
-        interceptionCount++;
-        return ic.proceed();
+        // do nothing.
+        return null;
     }
 }
-
