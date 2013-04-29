@@ -25,7 +25,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
 import org.apache.webbeans.util.WebBeansUtil;
 
-public class ProviderBasedProxyProducer<T> extends AbstractProducer<T>
+public class ProviderBasedProducer<T> extends AbstractProducer<T>
 {
 
     private WebBeansContext webBeansContext;
@@ -34,7 +34,7 @@ public class ProviderBasedProxyProducer<T> extends AbstractProducer<T>
     private T proxyInstance;
     private boolean proxy;
 
-    public ProviderBasedProxyProducer(WebBeansContext webBeansContext, Class<T> returnType, Provider<T> provider, boolean proxy)
+    public ProviderBasedProducer(WebBeansContext webBeansContext, Class<T> returnType, Provider<T> provider, boolean proxy)
     {
         this.webBeansContext = webBeansContext;
         this.returnType = returnType;

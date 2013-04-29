@@ -24,8 +24,9 @@ import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.SimpleProducerFactory;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.portable.ProviderBasedProxyProducer;
+import org.apache.webbeans.portable.ProviderBasedProducer;
 
+//used by BeansDeployer (created via reflection)
 public class PrincipalBean extends BuildInOwbBean<Principal>
 {
 
@@ -34,7 +35,7 @@ public class PrincipalBean extends BuildInOwbBean<Principal>
         super(webBeansContext,
               WebBeansType.PRINCIPAL,
               Principal.class,
-              new SimpleProducerFactory<Principal>(new ProviderBasedProxyProducer<Principal>(webBeansContext, Principal.class, new PrincipalProvider(webBeansContext))));
+              new SimpleProducerFactory<Principal>(new ProviderBasedProducer<Principal>(webBeansContext, Principal.class, new PrincipalProvider(webBeansContext), true)));
     }
 
     @Override

@@ -24,8 +24,9 @@ import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.SimpleProducerFactory;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.portable.ProviderBasedProxyProducer;
+import org.apache.webbeans.portable.ProviderBasedProducer;
 
+//used by BeansDeployer (created via reflection)
 public class UserTransactionBean extends BuildInOwbBean<UserTransaction>
 {
 
@@ -35,7 +36,7 @@ public class UserTransactionBean extends BuildInOwbBean<UserTransaction>
               WebBeansType.USERTRANSACTION,
               UserTransaction.class,
               new SimpleProducerFactory<UserTransaction>(
-                      new ProviderBasedProxyProducer<UserTransaction>(webBeansContext, UserTransaction.class, new UserTransactionProvider(webBeansContext))));
+                      new ProviderBasedProducer<UserTransaction>(webBeansContext, UserTransaction.class, new UserTransactionProvider(webBeansContext), true)));
     }
 
     @Override

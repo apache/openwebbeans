@@ -20,7 +20,7 @@ package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
 
-import org.apache.webbeans.portable.ProviderBasedProxyProducerFactory;
+import org.apache.webbeans.portable.ProviderBasedProducerFactory;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
 
@@ -39,7 +39,7 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
         super(ownerComponent,
               beanAttributes,
               beanClass,
-              new ProviderBasedProxyProducerFactory<X>(Dependent.class.equals(beanAttributes.getScope()),
+              new ProviderBasedProducerFactory<X>(Dependent.class.equals(beanAttributes.getScope()),
                       new ResourceProvider<X>(resourceReference, ownerComponent.getWebBeansContext()),
                                                        beanClass,
                                                        ownerComponent.getWebBeansContext()));
