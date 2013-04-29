@@ -32,12 +32,14 @@ public class ProviderBasedProxyProducer<T> extends AbstractProducer<T>
     private Class<T> returnType;
     private Provider<T> provider;
     private T proxyInstance;
+    private boolean proxy;
 
-    public ProviderBasedProxyProducer(WebBeansContext webBeansContext, Class<T> returnType, Provider<T> provider)
+    public ProviderBasedProxyProducer(WebBeansContext webBeansContext, Class<T> returnType, Provider<T> provider, boolean proxy)
     {
         this.webBeansContext = webBeansContext;
         this.returnType = returnType;
         this.provider = provider;
+        this.proxy = proxy;
     }
 
     @Override
@@ -45,14 +47,21 @@ public class ProviderBasedProxyProducer<T> extends AbstractProducer<T>
     {
         if (proxyInstance == null)
         {
-            NormalScopeProxyFactory proxyFactory = webBeansContext.getNormalScopeProxyFactory();
-            ClassLoader loader = returnType.getClassLoader();
-            if (loader == null)
+            if (proxy)
             {
-                loader = WebBeansUtil.getCurrentClassLoader();
+                NormalScopeProxyFactory proxyFactory = webBeansContext.getNormalScopeProxyFactory();
+                ClassLoader loader = returnType.getClassLoader();
+                if (loader == null)
+                {
+                    loader = WebBeansUtil.getCurrentClassLoader();
+                }
+                Class<T> proxyClass = proxyFactory.createProxyClass(loader, returnType);
+                proxyInstance = proxyFactory.createProxyInstance(proxyClass, provider);
             }
-            Class<T> proxyClass = proxyFactory.createProxyClass(loader, returnType);
-            proxyInstance = proxyFactory.createProxyInstance(proxyClass, provider);
+            else
+            {
+                proxyInstance = provider.get();
+            }
         }
         return proxyInstance;
     }

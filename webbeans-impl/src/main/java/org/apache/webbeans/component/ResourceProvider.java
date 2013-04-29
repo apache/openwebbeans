@@ -18,13 +18,12 @@
  */
 package org.apache.webbeans.component;
 
-import javax.inject.Provider;
-
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
 
+import javax.inject.Provider;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 

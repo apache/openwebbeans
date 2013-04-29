@@ -32,8 +32,9 @@ public class ProviderBasedProxyProducerFactory<P> implements ProducerFactory<P>
     private Provider<?> provider;
     private Class<?> providerType;
     private WebBeansContext webBeansContext;
+    private boolean proxy;
     
-    public ProviderBasedProxyProducerFactory(Provider<?> provider, Class<?> providerType, WebBeansContext context)
+    public ProviderBasedProxyProducerFactory(boolean proxy, Provider<?> provider, Class<?> providerType, WebBeansContext context)
     {
         Asserts.assertNotNull(provider);
         Asserts.assertNotNull(providerType);
@@ -41,11 +42,12 @@ public class ProviderBasedProxyProducerFactory<P> implements ProducerFactory<P>
         this.provider = provider;
         this.providerType = providerType;
         this.webBeansContext = context;
+        this.proxy = proxy;
     }
 
     @Override
     public <T> Producer<T> createProducer(Bean<T> bean)
     {
-        return new ProviderBasedProxyProducer<T>(webBeansContext, (Class<T>)providerType, (Provider<T>)provider);
+        return new ProviderBasedProxyProducer<T>(webBeansContext, (Class<T>)providerType, (Provider<T>)provider, proxy);
     }
 }
