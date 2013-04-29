@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.newtests.AbstractUnitTest;
@@ -78,8 +77,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
 
         InterceptorResolutionService ir = new InterceptorResolutionService(getWebBeansContext());
         AnnotatedType<ClassInterceptedClass> annotatedType = getBeanManager().createAnnotatedType(ClassInterceptedClass.class);
-        Bean<ClassInterceptedClass> bean = (Bean<ClassInterceptedClass>) getBeanManager().resolve((Set<Bean<? extends ClassInterceptedClass>>)
-                getBeanManager().getBeans(ClassInterceptedClass.class));
+        Bean<ClassInterceptedClass> bean = (Bean<ClassInterceptedClass>) getBeanManager().resolve(getBeanManager().getBeans(ClassInterceptedClass.class));
 
         BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
         Assert.assertNotNull(interceptorInfo);
