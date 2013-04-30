@@ -91,6 +91,7 @@ public class WebBeansContext
     private final InterceptorResolutionService interceptorResolutionService = new InterceptorResolutionService(this);
     private final DeploymentValidationService deploymentValidationService = new DeploymentValidationService(this);
     private ScannerService scannerService;
+    private ContextsService contextsService;
 
     public WebBeansContext()
     {
@@ -340,7 +341,11 @@ public class WebBeansContext
 
     public ContextsService getContextsService()
     {
-        return getService(ContextsService.class);
+        if (contextsService == null)
+        {
+            contextsService = getService(ContextsService.class);
+        }
+        return contextsService;
     }
 
     public SecurityService getSecurityService()
