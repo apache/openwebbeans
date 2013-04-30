@@ -39,7 +39,7 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
         super(ownerComponent,
               beanAttributes,
               beanClass,
-              new ProviderBasedProducerFactory<X>(Dependent.class.equals(beanAttributes.getScope()),
+              new ProviderBasedProducerFactory<X>(!Dependent.class.equals(beanAttributes.getScope()),
                       new ResourceProvider<X>(resourceReference, ownerComponent.getWebBeansContext()),
                                                        beanClass,
                                                        ownerComponent.getWebBeansContext()));
