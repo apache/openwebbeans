@@ -52,6 +52,7 @@ public class SelfInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, Sel
         enabled = defineInterceptorMethods();
     }
 
+    @Override
     public boolean isInterceptorEnabled()
     {
         return enabled;

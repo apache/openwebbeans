@@ -557,6 +557,7 @@ public abstract class AbstractProxyFactory
         {
             unsafeClass = AccessController.doPrivileged(new PrivilegedAction<Class<?>>()
             {
+                @Override
                 public Class<?> run()
                 {
                     try
@@ -584,6 +585,7 @@ public abstract class AbstractProxyFactory
 
         Object unsafe = AccessController.doPrivileged(new PrivilegedAction<Object>()
         {
+            @Override
             public Object run()
             {
                 try
@@ -603,6 +605,7 @@ public abstract class AbstractProxyFactory
 
         this.unsafeAllocateInstance = AccessController.doPrivileged(new PrivilegedAction<Method>()
         {
+            @Override
             public Method run()
             {
                 try

@@ -47,6 +47,7 @@ public class ProducerComponentTest extends TestContext
         super(ProducerComponentTest.class.getSimpleName());
     }
 
+    @Override
     @Before
     public void init()
     {
@@ -56,6 +57,7 @@ public class ProducerComponentTest extends TestContext
     /**
      * From the container with servlet context
      */
+    @Override
     public void startTests(Object ctx)
     {
         testProducerDeployment1();

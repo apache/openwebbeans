@@ -51,11 +51,13 @@ public class FailOverFilter implements Filter
         failoverService = webBeansContext.getService(FailOverService.class);
     }
 
+    @Override
     public void destroy()
     {
         //do nothing
     }
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain) throws IOException, ServletException
     {
@@ -80,6 +82,7 @@ public class FailOverFilter implements Filter
         }
     }
 
+    @Override
     public void init(FilterConfig config) throws ServletException
     {
         //do nothing

@@ -39,6 +39,7 @@ public class LibraryComponentTest extends TestContext
         super(LibraryComponentTest.class.getSimpleName());
     }
 
+    @Override
     @Before
     public void init()
     {

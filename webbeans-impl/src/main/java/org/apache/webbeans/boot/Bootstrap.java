@@ -54,6 +54,7 @@ public class Bootstrap
         containerLifecycle.startApplication(properties);
         Runtime.getRuntime().addShutdownHook(new Thread(){
            
+            @Override
             public void run()
             {
                 latch.countDown();

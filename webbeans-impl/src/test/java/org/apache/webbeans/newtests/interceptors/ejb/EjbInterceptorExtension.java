@@ -41,6 +41,7 @@ public class EjbInterceptorExtension implements Extension
 
     public static class InterceptorsLit extends  AnnotationLiteral<Interceptors> implements Interceptors
     {
+        @Override
         public Class[] value()
         {
             return new Class[]{EjbInterceptor.class};

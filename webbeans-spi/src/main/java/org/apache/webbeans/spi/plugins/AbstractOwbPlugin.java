@@ -37,22 +37,26 @@ public abstract class AbstractOwbPlugin implements OpenWebBeansPlugin
     }
 
     /** {@inheritDoc} */
+    @Override
     public void isManagedBean(Class<?> clazz)
     {
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean supportsJavaEeComponentInjections(Class<?> targetClass)
     {        
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void shutDown()
     {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startUp()
     {
     }
@@ -60,6 +64,7 @@ public abstract class AbstractOwbPlugin implements OpenWebBeansPlugin
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean supportService(Class<?> serviceClass)
     {
         return false;
@@ -68,6 +73,7 @@ public abstract class AbstractOwbPlugin implements OpenWebBeansPlugin
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T> T getSupportedService(Class<T> serviceClass)
     {
         return null;

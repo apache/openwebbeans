@@ -44,6 +44,7 @@ public class DecoratorExceptionTest extends TestContext
         super(DecoratorExceptionTest.class.getName());
     }
 
+    @Override
     @Before
     public void init()
     {

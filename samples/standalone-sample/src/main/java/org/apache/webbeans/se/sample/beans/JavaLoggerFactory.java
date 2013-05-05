@@ -30,6 +30,7 @@ import org.apache.webbeans.se.sample.bindings.JavaLogger;
 public class JavaLoggerFactory implements LoggerFactory
 {
 
+    @Override
     public <T> T getLogger(Class<?> clazz, Class<T> type)
     {
         Object logger = Logger.getLogger(clazz.getName());

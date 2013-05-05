@@ -64,6 +64,7 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
         return instance;
     }
     
+    @Override
     public boolean isPassivationCapable()
     {
         return true;

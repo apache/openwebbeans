@@ -48,6 +48,7 @@ public  class ProcessBeanImpl<X> implements ProcessBean<X>
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addDefinitionError(Throwable t)
     {
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
@@ -56,6 +57,7 @@ public  class ProcessBeanImpl<X> implements ProcessBean<X>
     /**
      * {@inheritDoc}
      */
+    @Override
     public Annotated getAnnotated()
     {
         return annotated;
@@ -64,6 +66,7 @@ public  class ProcessBeanImpl<X> implements ProcessBean<X>
     /**
      * {@inheritDoc}
      */
+    @Override
     public Bean<X> getBean()
     {
         return bean;

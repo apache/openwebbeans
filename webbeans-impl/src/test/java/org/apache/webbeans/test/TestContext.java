@@ -138,6 +138,7 @@ public abstract class TestContext implements ITestContext
      * stereotypes. If you would like to override default initialization,
      * override these methods in your test classes.
      */
+    @Override
     public void init()
     {
         manager.clear();
@@ -474,6 +475,7 @@ public abstract class TestContext implements ITestContext
      * @see TestListener
      * @see ComponentResolutionByTypeTest
      */
+    @Override
     public void endTests(Object ctx)
     {
 
@@ -487,6 +489,7 @@ public abstract class TestContext implements ITestContext
      * @see TestListener
      * @see ComponentResolutionByTypeTest
      */
+    @Override
     public void startTests(Object ctx)
     {
     }     

@@ -52,6 +52,7 @@ public class AnnotatedFieldImpl<X> extends AbstractAnnotatedMember<X> implements
     /**
      * {@inheritDoc}
      */
+    @Override
     public Field getJavaMember()
     {
         return Field.class.cast(javaMember);

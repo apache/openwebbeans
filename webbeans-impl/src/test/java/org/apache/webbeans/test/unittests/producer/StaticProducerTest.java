@@ -36,6 +36,7 @@ public class StaticProducerTest extends TestContext
         super(StaticProducerTest.class.getName());
     }
 
+    @Override
     @Before
     public void init()
     {

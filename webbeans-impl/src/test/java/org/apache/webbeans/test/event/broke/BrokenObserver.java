@@ -31,6 +31,7 @@ import javax.enterprise.inject.spi.ObserverMethod;
 public class BrokenObserver implements ObserverMethod<BrokenEvent>
 {
 
+    @Override
     public void notify(BrokenEvent event)
     {
 

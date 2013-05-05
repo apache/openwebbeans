@@ -35,6 +35,7 @@ public class SpecializationComponentTest extends TestContext
         super(SpecializationComponentTest.class.getName());
     }
 
+    @Override
     @Before
     public void init()
     {

@@ -29,18 +29,22 @@ public class MultipleCallDecorator implements IOutputProvider {
     @Delegate
     IOutputProvider op;
 
+    @Override
     public String getOutput() {
         return null;
     }
 
+    @Override
     public String trace() {
         return op.trace() + op.toString() + op.hashCode() + op.trace();
     }
 
+    @Override
     public String otherMethod() {
         return null;
     }
 
+    @Override
     public String getDelayedOutput() throws InterruptedException {
         return null;
     }

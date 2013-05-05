@@ -47,6 +47,7 @@ public class DefaultAnnotation implements InvocationHandler, Annotation
         this.annotationClass = annotationClass;
     }
     
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
         if ("hashCode".equals(method.getName()))
@@ -69,6 +70,7 @@ public class DefaultAnnotation implements InvocationHandler, Annotation
         return method.getDefaultValue();
     }
 
+    @Override
     public Class<? extends Annotation> annotationType()
     {
         return annotationClass;

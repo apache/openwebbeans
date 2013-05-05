@@ -30,6 +30,7 @@ import java.io.Serializable;
 @Specializes
 public class SpecializedXyBean extends DefaultXyBean implements Serializable
 {
+    @Override
     public int getFoo()
     {
         return 42;

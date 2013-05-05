@@ -75,140 +75,168 @@ public class InjectableBeanManager extends AbstractBeanManager implements BeanMa
         this.bm = beanManager;
     }
 
+    @Override
     public WebBeansContext getWebBeansContext()
     {
         return bm.getWebBeansContext();
     }
 
+    @Override
     public <T> AnnotatedType<T> createAnnotatedType(Class<T> type)
     {
         return bm.createAnnotatedType(type);
     }
 
+    @Override
     public <T> CreationalContext<T> createCreationalContext(Contextual<T> contextual)
     {
         return bm.createCreationalContext(contextual);
     }
 
+    @Override
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
         return bm.createInjectionTarget(type);
     }
 
+    @Override
     public void fireEvent(Object event, Annotation... qualifiers)
     {
         bm.fireEvent(event, qualifiers);
     }
 
+    @Override
     public Set<Bean<?>> getBeans(String name)
     {
         return bm.getBeans(name);
     }
 
+    @Override
     public Set<Bean<?>> getBeans(Type beanType, Annotation... qualifiers)
     {
         return bm.getBeans(beanType, qualifiers);
     }
 
+    @Override
     public Context getContext(Class<? extends Annotation> scope)
     {
         return bm.getContext(scope);
     }
 
+    @Override
     public ELResolver getELResolver()
     {
         return bm.getELResolver();
     }
 
+    @Override
     public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> ctx)
     {
         return bm.getInjectableReference(injectionPoint, ctx);
     }
 
+    @Override
     public Set<Annotation> getInterceptorBindingDefinition(Class<? extends Annotation> qualifier)
     {
         return bm.getInterceptorBindingDefinition(qualifier);
     }
 
+    @Override
     public Bean<?> getPassivationCapableBean(String id)
     {
         return bm.getPassivationCapableBean(id);
     }
 
+    @Override
     public Object getReference(Bean<?> bean, Type beanType, CreationalContext<?> ctx)
     {
         return bm.getReference(bean, beanType, ctx);
     }
 
+    @Override
     public Set<Annotation> getStereotypeDefinition(Class<? extends Annotation> stereotype)
     {
         return bm.getStereotypeDefinition(stereotype);
     }
 
+    @Override
     public boolean isInterceptorBinding(Class<? extends Annotation> annotationType)
     {
         return bm.isInterceptorBinding(annotationType);
     }
 
+    @Override
     public boolean isNormalScope(Class<? extends Annotation> annotationType)
     {
         return bm.isNormalScope(annotationType);
     }
 
+    @Override
     public boolean isPassivatingScope(Class<? extends Annotation> annotationType)
     {
         return bm.isPassivatingScope(annotationType);
     }
 
+    @Override
     public boolean isQualifier(Class<? extends Annotation> annotationType)
     {
         return bm.isQualifier(annotationType);
     }
 
+    @Override
     public boolean isScope(Class<? extends Annotation> annotationType)
     {
         return bm.isScope(annotationType);
     }
 
+    @Override
     public boolean isStereotype(Class<? extends Annotation> annotationType)
     {
         return bm.isStereotype(annotationType);
     }
 
+    @Override
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
     {
         return bm.resolve(beans);
     }
 
+    @Override
     public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... qualifiers)
     {
         return bm.resolveDecorators(types, qualifiers);
     }
 
+    @Override
     public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
     {
         return bm.resolveInterceptors(type, interceptorBindings);
     }
 
+    @Override
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, Annotation... qualifiers)
     {
         return bm.resolveObserverMethods(event, qualifiers);
     }
 
+    @Override
     public void validate(InjectionPoint injectionPoint)
     {
         bm.validate(injectionPoint);
     }
 
+    @Override
     public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)
     {
         return bm.wrapExpressionFactory(expressionFactory);
     }
 
-    public void writeExternal(ObjectOutput out) throws IOException 
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException
     {    
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException,
             ClassNotFoundException 
     {

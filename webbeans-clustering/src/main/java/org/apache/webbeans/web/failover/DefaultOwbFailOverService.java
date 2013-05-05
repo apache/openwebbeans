@@ -111,6 +111,7 @@ public class DefaultOwbFailOverService implements FailOverService
         }
     }
 
+    @Override
     public void sessionIsIdle(HttpSession session)
     {
         if (session != null)
@@ -134,6 +135,7 @@ public class DefaultOwbFailOverService implements FailOverService
         passivation.set(null);
     }
 
+    @Override
     public void sessionIsInUse(HttpSession session)
     {
         if (session != null)
@@ -149,6 +151,7 @@ public class DefaultOwbFailOverService implements FailOverService
         }
     }
 
+    @Override
     public void sessionDidActivate(HttpSession session)
     {
         FailOverBag bag = (FailOverBag) session.getAttribute(FailOverBag.SESSION_ATTRIBUTE_NAME);
@@ -174,6 +177,7 @@ public class DefaultOwbFailOverService implements FailOverService
         }
     }
 
+    @Override
     public void sessionWillPassivate(HttpSession session)
     {
         sessionIsIdle(session);
@@ -307,6 +311,7 @@ public class DefaultOwbFailOverService implements FailOverService
      * resources. Here we delegate serialization/deserialization to the
      * application provided SerializationHandler.
      */
+    @Override
     public Object handleResource(Bean<?> bean, Object resourceObject, ObjectInput in, ObjectOutput out)
     {
         if (handler != null)
@@ -323,6 +328,7 @@ public class DefaultOwbFailOverService implements FailOverService
      * 
      * @return custom object input stream.
      */
+    @Override
     public ObjectInputStream getObjectInputStream(InputStream in) throws IOException
     {
         return new ObjectInputStream(in);
@@ -336,31 +342,37 @@ public class DefaultOwbFailOverService implements FailOverService
      *
      * @return custom object output stream.
      */
+    @Override
     public ObjectOutputStream getObjectOutputStream(OutputStream out) throws IOException
     {
         return new ObjectOutputStream(out);
     }
 
+    @Override
     public String getJvmId()
     {
         return JVM_ID;
     }
 
+    @Override
     public boolean isSupportFailOver()
     {
         return supportFailOver;
     }
 
+    @Override
     public void enableFailOverSupport(boolean supportFailOver)
     {
         this.supportFailOver = supportFailOver;
     }
 
+    @Override
     public boolean isSupportPassivation()
     {
         return supportPassivation;
     }
 
+    @Override
     public void enablePassivationSupport(boolean supportPassivation)
     {
         this.supportPassivation = supportPassivation;

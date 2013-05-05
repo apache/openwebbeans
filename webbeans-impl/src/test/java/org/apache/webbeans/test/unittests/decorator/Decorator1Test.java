@@ -52,6 +52,7 @@ public class Decorator1Test extends TestContext
         super(Decorator1Test.class.getName());
     }
 
+    @Override
     @Before
     public void init()
     {

@@ -44,6 +44,7 @@ public class Producer1ConsumerComponentTest extends TestContext
         super(Producer1ConsumerComponentTest.class.getSimpleName());
     }
 
+    @Override
     @Before
     public void init()
     {

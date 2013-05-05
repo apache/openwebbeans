@@ -39,6 +39,7 @@ public final class JNDIServiceEnterpriseImpl implements JNDIService
     /** 
      * {@inheritDoc}
      */
+    @Override
     public void bind(String name, Object object) throws WebBeansException
     {
         JNDIUtil.bind(name, object);
@@ -47,6 +48,7 @@ public final class JNDIServiceEnterpriseImpl implements JNDIService
     /** 
      * {@inheritDoc}
      */
+    @Override
     public void unbind(String name) throws WebBeansException
     {
         JNDIUtil.unbind(name);
@@ -60,6 +62,7 @@ public final class JNDIServiceEnterpriseImpl implements JNDIService
         return JNDIUtil.lookup(name, expectedClass);
     }
 
+    @Override
     public <T> T lookup(String name, Class<? extends T> expectedClass)
     {
         return getObject(name, expectedClass);

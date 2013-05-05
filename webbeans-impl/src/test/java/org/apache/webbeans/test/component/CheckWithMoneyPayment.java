@@ -26,6 +26,7 @@ import org.apache.webbeans.test.annotation.binding.Check;
 @Check(type = "MONEY")
 public class CheckWithMoneyPayment implements IPayment
 {
+    @Override
     public String pay()
     {
         return "MONEY";

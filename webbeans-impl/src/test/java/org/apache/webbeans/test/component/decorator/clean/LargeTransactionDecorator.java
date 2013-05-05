@@ -32,12 +32,14 @@ public class LargeTransactionDecorator implements Account
     BigDecimal depositeAmount = null;
     BigDecimal withDrawAmount = null;
 
+    @Override
     public void deposit(BigDecimal amount)
     {
         this.depositeAmount = amount;
 
     }
 
+    @Override
     public void withdraw(BigDecimal amount)
     {
         this.withDrawAmount = amount;

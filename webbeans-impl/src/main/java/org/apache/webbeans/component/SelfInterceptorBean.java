@@ -66,6 +66,7 @@ public class SelfInterceptorBean<T> extends InterceptorBean<T> implements Interc
         return Collections.emptySet();
     }
 
+    @Override
     public T create(CreationalContext<T> context)
     {
         throw new WebBeansException("You must not create an Interceptor instance of a self-intercepted bean!");

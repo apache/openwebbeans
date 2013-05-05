@@ -53,11 +53,13 @@ public class LifecycleInterceptorInvocationContext<T> implements InvocationConte
         this.lifecycleMethods = lifecycleMethods;
     }
 
+    @Override
     public T getTarget()
     {
         return target;
     }
 
+    @Override
     public Map<String, Object> getContextData()
     {
         return contextData;

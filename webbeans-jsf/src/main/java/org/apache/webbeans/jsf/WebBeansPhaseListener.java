@@ -53,6 +53,7 @@ public class WebBeansPhaseListener implements PhaseListener
     /**
      * {@inheritDoc}
      */
+    @Override
     public void afterPhase(PhaseEvent phaseEvent)
     {
         if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE) ||
@@ -90,6 +91,7 @@ public class WebBeansPhaseListener implements PhaseListener
     /**
      * {@inheritDoc}
      */
+    @Override
     public void beforePhase(PhaseEvent phaseEvent)
     {
         if (phaseEvent.getPhaseId().equals(PhaseId.RESTORE_VIEW) && isOwbApplication())
@@ -141,6 +143,7 @@ public class WebBeansPhaseListener implements PhaseListener
         }
     }
 
+    @Override
     public PhaseId getPhaseId()
     {
         return PhaseId.ANY_PHASE;

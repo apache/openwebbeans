@@ -33,6 +33,7 @@ public class PaymentDecorator implements IPayment
     @Delegate @Any @Check(type = "CHECK")
     IPayment delegate;
 
+    @Override
     public String pay()
     {
         return null;

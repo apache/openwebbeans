@@ -123,7 +123,7 @@ public class SerializationTest extends AbstractUnitTest
         for (Bean<?> bean : beans)
         {
             String id = null;
-            if((id = WebBeansUtil.isPassivationCapable(bean)) != null)
+            if((id = WebBeansUtil.getPassivationId(bean)) != null)
             {
                 bean = (Bean<?>) webBeansContext.getSerializableBeanVault().getSerializableBean(bean);
                 

@@ -213,6 +213,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
     }
 
+    @Override
     public WebBeansContext getWebBeansContext()
     {
         return webBeansContext;
@@ -280,6 +281,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
      * @throws ContextNotActiveException if no active context
      * @throws IllegalStateException if more than one active context
      */
+    @Override
     public Context getContext(Class<? extends Annotation> scopeType)
     {
         Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
@@ -413,6 +415,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     /**
      * {@inheritDoc}
      */
+    @Override
     public void fireEvent(Object event, Annotation... bindings)
     {       
         fireEvent(event, new EventMetadataImpl(event.getClass(), null, bindings));
@@ -437,6 +440,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
         webBeansContext.getAnnotationManager().checkDecoratorResolverParams(types, bindingTypes);
@@ -451,6 +455,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
     {
         webBeansContext.getAnnotationManager().checkInterceptorResolverParams(interceptorBindings);
@@ -497,6 +502,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
 
     }
 
+    @Override
     public Reference getReference() throws NamingException
     {
         return new Reference(BeanManagerImpl.class.getName(), new StringRefAddr("ManagerImpl", "ManagerImpl"), ManagerObjectFactory.class.getName(), null);
@@ -519,6 +525,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T> AnnotatedType<T> createAnnotatedType(Class<T> type)
     {
         AnnotatedType<T> annotatedType = annotatedElementFactory.newAnnotatedType(type);
@@ -529,6 +536,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T> CreationalContextImpl<T> createCreationalContext(Contextual<T> contextual)
     {
         if (contextual instanceof SerializableBean)
@@ -542,6 +550,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     /**
      * {@inheritDoc}
      */
+    @Override
     public Set<Bean<?>> getBeans(Type beanType, Annotation... bindings)
     {
         if(ClassUtil.isTypeVariable(beanType))
@@ -555,6 +564,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
 
     }
 
+    @Override
     public Set<Bean<?>> getBeans(String name)
     {        
         Asserts.assertNotNull(name, "name parameter can not be null");
@@ -562,6 +572,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         return injectionResolver.implResolveByName(name);
     }
 
+    @Override
     public ELResolver getELResolver()
     {
         ELAdaptor elAdaptor = webBeansContext.getService(ELAdaptor.class);
@@ -571,6 +582,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> ownerCreationalContext)
     {
         Asserts.assertNotNull(injectionPoint, "injectionPoint parameter can not be null");
@@ -626,6 +638,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     /**
      * {@inheritDoc}
      */
+    @Override
     public Set<Annotation> getInterceptorBindingDefinition(Class<? extends Annotation> binding)
     {
         Annotation[] annotations = binding.getDeclaredAnnotations();
@@ -639,6 +652,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         return set;
     }
 
+    @Override
     public Bean<?> getPassivationCapableBean(String id)
     {
         return passivationBeans.get(id);
@@ -647,6 +661,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object getReference(Bean<?> bean, Type beanType, CreationalContext<?> creationalContext)
     {
         Asserts.assertNotNull(bean, "bean parameter can not be null");
@@ -789,6 +804,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     }
 
     
+    @Override
     public Set<Annotation> getStereotypeDefinition(Class<? extends Annotation> stereotype)
     {
         Annotation[] annotations = stereotype.getDeclaredAnnotations();
@@ -802,16 +818,19 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         return set;
     }
 
+    @Override
     public boolean isQualifier(Class<? extends Annotation> annotationType)
     {
         return webBeansContext.getAnnotationManager().isQualifierAnnotation(annotationType);
     }
 
+    @Override
     public boolean isInterceptorBinding(Class<? extends Annotation> annotationType)
     {
         return webBeansContext.getAnnotationManager().isInterceptorBindingAnnotation(annotationType);
     }
 
+    @Override
     public boolean isScope(Class<? extends Annotation> annotationType)
     {
         if(AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), Scope.class) ||
@@ -831,6 +850,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         return false;
     }
     
+    @Override
     public boolean isNormalScope(Class<? extends Annotation> scopeType)
     {
         Boolean isNormal = isScopeTypeNormalCache.get(scopeType);
@@ -855,6 +875,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         return isNormal;
     }
     
+    @Override
     public boolean isPassivatingScope(Class<? extends Annotation> annotationType)
     {
         for(ExternalScope extScope : additionalScopes)
@@ -876,11 +897,13 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     }    
     
 
+    @Override
     public boolean isStereotype(Class<? extends Annotation> annotationType)
     {
         return AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), Stereotype.class);
     }
 
+    @Override
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
     {
         return injectionResolver.resolve(beans);
@@ -889,6 +912,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     /**
      * {@inheritDoc}
      */
+    @Override
     public void validate(InjectionPoint injectionPoint)
     {
         Bean<?> bean = injectionPoint.getBean();
@@ -918,6 +942,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
         InjectionTargetBean<T> bean = webBeansContext.getWebBeansUtil().defineManagedBean(type);
@@ -934,6 +959,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         return new InjectionTargetImpl<T>(bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext, postConstructMethods, preDestroyMethods);
     }
 
+    @Override
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, Annotation... qualifiers)
     {
         return resolveObserverMethods(event, new EventMetadataImpl(event.getClass(), null, qualifiers));
@@ -949,6 +975,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         return notificationManager.resolveObservers(event, metadata);
     }
 
+    @Override
     public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)
     {
         ELAdaptor elAdaptor = webBeansContext.getService(ELAdaptor.class);

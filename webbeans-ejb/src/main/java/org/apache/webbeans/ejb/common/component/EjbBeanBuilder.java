@@ -65,6 +65,7 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>>
     {
         return new AbstractEjbInjectionTarget<T>(annotatedType, points, webBeansContext)
         {
+            @Override
             public T produce(CreationalContext<T> creationalContext)
             {
                 return getInstance(creationalContext);

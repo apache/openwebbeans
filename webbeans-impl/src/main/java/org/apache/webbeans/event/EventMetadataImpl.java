@@ -61,16 +61,19 @@ public class EventMetadataImpl implements EventMetadata
         this.qualifiers = Collections.unmodifiableSet(completeQualifiers);
     }
 
+    @Override
     public Type getType()
     {
         return type;
     }
     
+    @Override
     public InjectionPoint getInjectionPoint()
     {
         return injectionPoint;
     }
 
+    @Override
     public Set<Annotation> getQualifiers()
     {
         return qualifiers;

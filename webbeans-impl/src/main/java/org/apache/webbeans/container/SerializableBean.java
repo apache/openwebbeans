@@ -69,61 +69,73 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
         this.bean = bean;
     }
 
+    @Override
     public Set<Type> getTypes()
     {
         return bean.getTypes();
     }
 
+    @Override
     public Set<Annotation> getQualifiers()
     {
         return bean.getQualifiers();
     }
 
+    @Override
     public Class<? extends Annotation> getScope()
     {
         return bean.getScope();
     }
 
+    @Override
     public String getName()
     {
         return bean.getName();
     }
 
+    @Override
     public boolean isNullable()
     {
         return bean.isNullable();
     }
 
+    @Override
     public Set<InjectionPoint> getInjectionPoints()
     {
         return bean.getInjectionPoints();
     }
 
+    @Override
     public Class<?> getBeanClass()
     {
         return bean.getBeanClass();
     }
 
+    @Override
     public Set<Class<? extends Annotation>> getStereotypes()
     {
         return bean.getStereotypes();
     }
 
+    @Override
     public boolean isAlternative()
     {
         return bean.isAlternative();
     }
 
+    @Override
     public T create(CreationalContext<T> tCreationalContext)
     {
         return bean.create(tCreationalContext);
     }
 
+    @Override
     public void destroy(T instance, CreationalContext<T> tCreationalContext)
     {
         bean.destroy(instance, tCreationalContext);
     }
 
+    @Override
     public String getId()
     {
         return ((OwbBean<?>) bean).getId();

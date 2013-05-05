@@ -45,6 +45,7 @@ public class TypedComponentTest extends TestContext
         super(TypedComponentTest.class.getSimpleName());
     }
 
+    @Override
     @Before
     public void init()
     {
@@ -62,6 +63,7 @@ public class TypedComponentTest extends TestContext
         Set<Bean<?>> beans= injectionResolver.implResolveByType(TypedComponentTest.class.getDeclaredField("s").getGenericType(), new Default()
         {
 
+            @Override
             public Class<? extends Annotation> annotationType()
             {
 

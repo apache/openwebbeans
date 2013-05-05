@@ -90,6 +90,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
      *
      * @return WebBeansContext this bean is associated with
      */
+    @Override
     public WebBeansContext getWebBeansContext()
     {
         return webBeansContext;
@@ -101,11 +102,10 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
         return beanClass;
     }
     
-    public abstract Producer<T> getProducer();
-    
     /**
      * {@inheritDoc}
      */
+    @Override
     public T create(CreationalContext<T> creationalContext)
     {
         try
@@ -158,6 +158,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
      * (non-Javadoc)
      * @param creationalContext the contextual instance has been created in
      */
+    @Override
     public void destroy(T instance, CreationalContext<T> creationalContext)
     {
         if (getScope().equals(Dependent.class)
@@ -192,6 +193,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
      *
      * {@inheritDoc}
      */
+    @Override
     public String getId()
     {
         if (!isEnabled() || getReturnType().equals(Object.class))
@@ -215,6 +217,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
         return passivatingId;
     }
 
+    @Override
     public boolean isPassivationCapable()
     {
         if (isPassivationCapable != null)
@@ -238,6 +241,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
      * 
      * @return web beans type
      */
+    @Override
     public WebBeansType getWebBeansType()
     {
         return webBeansType;
@@ -250,6 +254,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
      * @return type of the producer method
      * @see #getBeanClass()
      */
+    @Override
     public Class<T> getReturnType()
     {
         return (Class<T>) getBeanClass();
@@ -258,6 +263,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
     /**
      * {@inheritDoc}
      */    
+    @Override
     public Set<InjectionPoint> getInjectionPoints()
     {
         return getProducer().getInjectionPoints();
@@ -266,6 +272,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
     /**
      * {@inheritDoc}
      */    
+    @Override
     public void setSpecializedBean(boolean specialized)
     {
         specializedBean = specialized;
@@ -274,6 +281,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
@@ -282,6 +290,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
     /**
      * {@inheritDoc}
      */    
+    @Override
     public boolean isSpecializedBean()
     {
         return specializedBean;
@@ -290,6 +299,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
      /**
      * {@inheritDoc}
      */    
+    @Override
     public boolean isAlternative()
     {
         return webBeansContext.getAlternativesManager().isBeanHasAlternative(this);
@@ -298,6 +308,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isEnabled()
     {
         return enabled;
@@ -392,6 +403,7 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
         return logger;
     }
 
+    @Override
     public boolean isDependent()
     {
         return getScope().equals(Dependent.class);

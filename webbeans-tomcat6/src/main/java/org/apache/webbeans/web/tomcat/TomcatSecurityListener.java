@@ -34,6 +34,7 @@ public class TomcatSecurityListener implements ServletRequestListener
         
     }
     
+    @Override
     public void requestDestroyed(ServletRequestEvent event)
     {
         if(principal.get() != null)
@@ -42,6 +43,7 @@ public class TomcatSecurityListener implements ServletRequestListener
         }
     }
 
+    @Override
     public void requestInitialized(ServletRequestEvent event)
     {
         ServletRequest request = event.getServletRequest();

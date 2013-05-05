@@ -41,6 +41,7 @@ public class ProducerFieldComponentTest extends TestContext
         super(ProducerFieldComponentTest.class.getName());
     }
     
+    @Override
     @Before
     public void init()
     {

@@ -96,11 +96,13 @@ public class TransactionalEventNotifier
             this.metadata = metadata;
         }
 
+        @Override
         public void beforeCompletion()
         {
             // Do nothing
         }
 
+        @Override
         public void afterCompletion(int i)
         {
             //Do nothing

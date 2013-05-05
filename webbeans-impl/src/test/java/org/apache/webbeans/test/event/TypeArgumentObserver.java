@@ -40,6 +40,7 @@ public class TypeArgumentObserver implements ObserverMethod<TypeArgumentBaseEven
         this.qualifiers = anns;
     }
 
+    @Override
     public void notify(TypeArgumentBaseEvent event)
     {
         result = "ok";

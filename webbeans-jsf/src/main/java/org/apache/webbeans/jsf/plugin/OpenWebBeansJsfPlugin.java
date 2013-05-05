@@ -27,7 +27,8 @@ import org.apache.webbeans.util.ClassUtil;
 public class OpenWebBeansJsfPlugin extends AbstractOwbPlugin
 {
     /** {@inheritDoc} */
-    public void isManagedBean( Class<?> clazz ) throws WebBeansConfigurationException 
+    @Override
+    public void isManagedBean( Class<?> clazz ) throws WebBeansConfigurationException
     {
         if (ClassUtil.isClassAssignable(UIComponent.class, clazz))
         {

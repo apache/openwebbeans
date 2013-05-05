@@ -28,11 +28,13 @@ import org.jboss.jsr299.tck.spi.Beans;
 public class BeansImpl implements Beans
 {
 
+    @Override
     public boolean isProxy( Object instance )
     {
         return instance.getClass().getName().contains("$Owb");
     }
 
+    @Override
     public byte[] serialize(Object o) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -41,6 +43,7 @@ public class BeansImpl implements Beans
         return baos.toByteArray();
     }
 
+    @Override
     public Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);

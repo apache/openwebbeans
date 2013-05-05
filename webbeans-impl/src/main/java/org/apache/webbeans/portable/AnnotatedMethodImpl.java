@@ -52,6 +52,7 @@ class AnnotatedMethodImpl<X> extends AbstractAnnotatedCallable<X> implements Ann
     /**
      * {@inheritDoc}
      */
+    @Override
     public Method getJavaMember()
     {
         return Method.class.cast(javaMember);

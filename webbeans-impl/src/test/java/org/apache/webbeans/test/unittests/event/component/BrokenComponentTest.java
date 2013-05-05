@@ -37,6 +37,7 @@ public class BrokenComponentTest extends TestContext
         super(BrokenComponentTest.class.getName());
     }
 
+    @Override
     @Before
     public void init()
     {

@@ -82,6 +82,7 @@ public class WebBeansConfigurationFilter implements Filter
     /**
      * {@inheritDoc}
      */
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException
     {
         this.lifeCycle = webBeansContext.getService(ContainerLifecycle.class);
@@ -103,6 +104,7 @@ public class WebBeansConfigurationFilter implements Filter
     /**
      * {@inheritDoc}
      */
+    @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException
     {
@@ -205,6 +207,7 @@ public class WebBeansConfigurationFilter implements Filter
     /**
      * {@inheritDoc}
      */
+    @Override
     public void destroy()
     {
         this.lifeCycle.stopApplication(new ServletContextEvent(this.servletContext));

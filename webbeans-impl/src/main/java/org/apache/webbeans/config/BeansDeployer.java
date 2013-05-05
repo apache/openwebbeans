@@ -737,7 +737,7 @@ public class BeansDeployer
         }        
         else if(webBeansContext.getBeanManagerImpl().isPassivatingScope(beanObj.getScope()))
         {
-            if(WebBeansUtil.isPassivationCapable(beanObj) == null)
+            if(WebBeansUtil.getPassivationId(beanObj) == null)
             {
                 if(!(beanObj instanceof AbstractProducerBean))
                 {

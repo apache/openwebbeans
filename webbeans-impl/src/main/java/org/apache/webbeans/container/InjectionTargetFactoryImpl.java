@@ -49,6 +49,7 @@ public class InjectionTargetFactoryImpl<T> implements InjectionTargetFactory<T>
         this.webBeansContext = webBeansContext;
     }
 
+    @Override
     public InjectionTarget<T> createInjectionTarget(Bean<T> bean)
     {
         InjectionTarget<T> injectionTarget

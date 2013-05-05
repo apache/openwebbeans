@@ -27,6 +27,7 @@ import org.apache.webbeans.test.annotation.binding.Binding1;
 public class ServiceImpl1 implements IService
 {
 
+    @Override
     public String service()
     {
         return "ServiceImpl1";

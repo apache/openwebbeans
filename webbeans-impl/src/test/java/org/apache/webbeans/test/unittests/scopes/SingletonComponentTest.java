@@ -43,6 +43,7 @@ public class SingletonComponentTest extends TestContext
         super(SingletonComponentTest.class.getSimpleName());
     }
 
+    @Override
     @Before
     public void init()
     {

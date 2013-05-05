@@ -77,6 +77,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
         return webBeansContext;
     }
 
+    @Override
     public <X, T extends Annotation> X getResourceReference(ResourceReference<X, T> resourceReference)
     {
         if(resourceReference.supports(Resource.class))
@@ -107,6 +108,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
         return null;
     }
 
+    @Override
     public void injectJavaEEResources(Object managedBeanInstance)
     {
         Class currentClass = managedBeanInstance.getClass();
@@ -169,6 +171,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
         classContainsEEResources.put(managedBeanInstance.getClass(), containsEeResource);
     }
 
+    @Override
     public void clear()
     {
         processor.clear();       
@@ -177,6 +180,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
     /**
      * delegation of serialization behavior
      */
+    @Override
     public <T> void writeExternal(Bean<T> bean, T actualResource, ObjectOutput out) throws IOException
     {
         // try fail over service to serialize the resource object
@@ -207,6 +211,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
     /**
      * delegation of serialization behavior
      */
+    @Override
     public <T> T readExternal(Bean<T> bean, ObjectInput in) throws IOException,
             ClassNotFoundException
     {

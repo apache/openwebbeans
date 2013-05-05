@@ -20,6 +20,7 @@ package org.apache.webbeans.newtests.injection.named;
 
 public class AbstractNamedBean implements NamedInterface {
 
+    @Override
     public String getName() {
         return getClass().getSimpleName();
     }

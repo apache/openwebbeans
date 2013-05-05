@@ -31,6 +31,7 @@ public class Decorator2 implements IOutputProvider
     @Inject @Delegate @Default @Any @Named IOutputProvider op;
     @Inject @Default RequestStringBuilder rsb;
 
+    @Override
     public String getOutput()
     {
         rsb.addOutput("Decorator2\n");
@@ -38,11 +39,13 @@ public class Decorator2 implements IOutputProvider
     }
    
     // change biz method 
-    public String trace() 
+    @Override
+    public String trace()
     {
         return "Decorator2/trace," + op.otherMethod();
     }
 
+    @Override
     public String otherMethod()
     {
         return "Decorator2/otherMethod," + op.otherMethod();

@@ -49,6 +49,7 @@ public class ProcessObserverMethodImpl<T,X> implements ProcessObserverMethod<T, 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addDefinitionError(Throwable t)
     {
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
@@ -57,6 +58,7 @@ public class ProcessObserverMethodImpl<T,X> implements ProcessObserverMethod<T, 
     /**
      * {@inheritDoc}
      */
+    @Override
     public AnnotatedMethod<X> getAnnotatedMethod()
     {
         return annotatedMethod;
@@ -65,6 +67,7 @@ public class ProcessObserverMethodImpl<T,X> implements ProcessObserverMethod<T, 
     /**
      * {@inheritDoc}
      */
+    @Override
     public ObserverMethod<T> getObserverMethod()
     {
         return observerMethod;

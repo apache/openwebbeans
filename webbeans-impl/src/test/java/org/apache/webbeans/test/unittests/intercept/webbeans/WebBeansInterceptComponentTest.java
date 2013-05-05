@@ -43,6 +43,7 @@ public class WebBeansInterceptComponentTest extends TestContext
         super(WebBeansInterceptComponentTest.class.getName());
     }
 
+    @Override
     @Before
     public void init()
     {

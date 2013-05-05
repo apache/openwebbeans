@@ -44,6 +44,7 @@ public class ProcessManagedBeanImpl<X> extends ProcessBeanImpl<X> implements Pro
     /**
      * {@inheritDoc}
      */
+    @Override
     public AnnotatedType<X> getAnnotatedBeanClass()
     {
         return annotatedBeanClass;

@@ -132,6 +132,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      * 
      * @param incompleteInstance incomplete bean instance
      */
+    @Override
     public void push(T incompleteInstance)
     {
         //No-action
@@ -252,6 +253,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     /**
      * {@inheritDoc}
      */
+    @Override
     public void release()
     {
         removeAllDependents();
@@ -274,7 +276,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     {
         s.writeObject(dependentObjects);
 
-        String id = WebBeansUtil.isPassivationCapable(contextual);
+        String id = WebBeansUtil.getPassivationId(contextual);
         if (contextual != null && id != null)
         {
             s.writeObject(id);

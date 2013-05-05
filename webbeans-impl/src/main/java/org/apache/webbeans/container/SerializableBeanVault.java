@@ -55,7 +55,7 @@ public class SerializableBeanVault
             return bean;
         }
 
-        String id = WebBeansUtil.isPassivationCapable(bean);
+        String id = WebBeansUtil.getPassivationId(bean);
         
         if(id != null) 
         {

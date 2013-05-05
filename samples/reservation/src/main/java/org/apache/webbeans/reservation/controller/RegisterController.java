@@ -44,6 +44,7 @@ public class RegisterController implements IRegisterController
     /**
      * Register the user.
      */
+    @Override
     @Transactional
     public User registerUser(String userName, String password, String name, String surname , int age, boolean admin)
     {

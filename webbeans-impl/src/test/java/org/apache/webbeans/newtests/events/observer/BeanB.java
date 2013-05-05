@@ -36,6 +36,7 @@ public class BeanB extends Superclass implements Serializable
         testEvent.addInvocation(getBeanName());
     }
 
+    @Override
     protected void observeTestEvent(TestEvent testEvent)
     {
         testEvent.addInvocation(getBeanName());

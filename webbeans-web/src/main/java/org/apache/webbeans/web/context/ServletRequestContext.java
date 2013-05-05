@@ -57,6 +57,7 @@ public class ServletRequestContext extends RequestContext
         this.servletRequest = servletRequest;
     }
 
+    @Override
     public void destroy()
     {
         super.destroy();

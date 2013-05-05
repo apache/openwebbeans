@@ -26,6 +26,7 @@ import org.jboss.arquillian.container.spi.client.container.ContainerConfiguratio
  */
 public class OwbStandaloneConfiguration implements ContainerConfiguration
 {
+    @Override
     public void validate() throws ConfigurationException
     {
         // not needed right now

@@ -221,21 +221,25 @@ class TestQualifierAnnotationLiteral
 
     // annotation methods
 
+    @Override
     public String value()
     {
         return value;
     }
 
+    @Override
     public int number()
     {
         return number;
     }
 
+    @Override
     public float[] floatArray()
     {
         return floatArray;
     }
 
+    @Override
     public RetentionPolicy enumValue()
     {
         return enumValue;
@@ -335,11 +339,13 @@ class TestQualifierNonbindingAnnotationLiteral
         implements TestQualifierNonbinding
 {
 
+    @Override
     public String value()
     {
         return "default-value";
     }
 
+    @Override
     public int number()
     {
         return 4711;

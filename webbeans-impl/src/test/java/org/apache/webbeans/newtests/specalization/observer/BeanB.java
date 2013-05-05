@@ -29,6 +29,7 @@ public class BeanB extends BeanA
 {
     private static final long serialVersionUID = 821164664338581947L;
 
+    @Override
     protected void observeTestEvent(@Observes TestEvent testEvent)
     {
         testEvent.addInvocation(getBeanName());

@@ -31,6 +31,7 @@ public class GProcessManagedBean extends ProcessManagedBeanImpl implements Gener
         super(bean,annotated);
     }
 
+    @Override
     public Class<?> getBeanClassFor(Class<?> eventClass)
     {
         return getBean().getBeanClass();

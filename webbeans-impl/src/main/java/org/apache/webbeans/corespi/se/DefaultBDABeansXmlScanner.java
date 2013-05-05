@@ -79,6 +79,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
      * @return T - Interceptor class successfully stored; F - Interceptor class
      *         already exists and was not stored.
      */
+    @Override
     public boolean addInterceptor(Class<?> interceptorClass, String beansXMLFilePath)
     {
 
@@ -103,6 +104,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
      * @return a non-null set of Interceptors defined by the specified
      *         beansXMLFilePath
      */
+    @Override
     public Set<Class<?>> getInterceptors(String beansXMLFilePath)
     {
         Set<Class<?>> set;
@@ -125,6 +127,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
      * @return a non-null set of Decorators defined by the specified
      *         beansXMLFilePath
      */
+    @Override
     public Set<Class<?>> getDecorators(String beansXMLFilePath)
     {
         Set<Class<?>> set;
@@ -148,6 +151,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
      * @return T - Decorator class successfully stored; F - Decorator class
      *         already exists and was not stored.
      */
+    @Override
     public boolean addDecorator(Class<?> decoratorClass, String beansXMLFilePath)
     {
 
@@ -174,6 +178,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
      * @return T - Alternative class successfully stored; F - Alternative class
      *         already exists and was not stored.
      */
+    @Override
     public boolean addAlternative(Class<?> alternativeClass, String beansXMLFilePath)
     {
 
@@ -199,6 +204,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
      * @return T - Stereotype class successfully stored; F - Stereotype class
      *         already exists and was not stored.
      */
+    @Override
     public boolean addStereoType(Class<? extends Annotation> stereoTypeClass, String beansXMLFilePath)
     {
 
@@ -223,6 +229,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
      * @return a non-null set of Alternatives defined by the specified
      *         beansXMLFilePath
      */
+    @Override
     public Set<Class<?>> getAlternatives(String beansXMLFilePath)
     {
         Set<Class<?>> set;
@@ -245,6 +252,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
      * @return a non-null set of Stereotypes defined by the specified
      *         beansXMLFilePath
      */
+    @Override
     public Set<Class<? extends Annotation>> getStereotypes(String beansXMLFilePath)
     {
         Set<Class<? extends Annotation>> set;
@@ -267,11 +275,13 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
      * @return A String representing the file path to the beans.xml of the
      *         specified class's BDA
      */
+    @Override
     public String getBeansXml(Class<?> class1)
     {
         return jarBeanClasses.get(class1);
     }
 
+    @Override
     public void setBeansXml(Class<?> class1, String beansXmlFilePath)
     {
         jarBeanClasses.put(class1, beansXmlFilePath);

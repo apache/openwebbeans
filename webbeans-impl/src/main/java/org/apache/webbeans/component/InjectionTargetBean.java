@@ -81,6 +81,7 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
         setEnabled(true);
     }
 
+    @Override
     public InjectionTarget<T> getProducer()
     {
         return injectionTarget;

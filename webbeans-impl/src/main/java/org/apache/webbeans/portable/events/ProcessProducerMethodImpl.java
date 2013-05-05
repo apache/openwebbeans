@@ -50,6 +50,7 @@ public class ProcessProducerMethodImpl<X,T> extends ProcessBeanImpl<T> implement
     /**
      * {@inheritDoc}
      */
+    @Override
     public AnnotatedParameter<X> getAnnotatedDisposedParameter()
     {
         return annotatedDisposedParameter;
@@ -58,6 +59,7 @@ public class ProcessProducerMethodImpl<X,T> extends ProcessBeanImpl<T> implement
     /**
      * {@inheritDoc}
      */
+    @Override
     public AnnotatedMethod<X> getAnnotatedProducerMethod()
     {
         return annotatedProducerMethod;

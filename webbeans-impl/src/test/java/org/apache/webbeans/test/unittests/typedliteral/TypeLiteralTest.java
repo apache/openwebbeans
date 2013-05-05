@@ -43,6 +43,7 @@ public class TypeLiteralTest extends TestContext
         super(TypeLiteralTest.class.getName());
     }
     
+    @Override
     @Before
     public void init()
     {

@@ -35,6 +35,7 @@ public class DecoratorInjectionTargetFactory<T> extends InjectionTargetFactoryIm
         super(annotatedType, webBeansContext);
     }
 
+    @Override
     public InjectionTarget<T> createInjectionTarget(Bean<T> bean)
     {
         if (Modifier.isAbstract(getAnnotatedType().getJavaClass().getModifiers()))

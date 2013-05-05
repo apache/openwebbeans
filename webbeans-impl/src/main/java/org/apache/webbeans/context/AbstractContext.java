@@ -98,6 +98,7 @@ public abstract class AbstractContext implements Context, Serializable
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T get(Contextual<T> component)
     {
@@ -116,6 +117,7 @@ public abstract class AbstractContext implements Context, Serializable
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T> T get(Contextual<T> contextual, CreationalContext<T> creationalContext)
     {
         checkActive();
@@ -211,6 +213,7 @@ public abstract class AbstractContext implements Context, Serializable
      * 
      * @return active flag
      */
+    @Override
     public boolean isActive()
     {
         return active;
@@ -229,6 +232,7 @@ public abstract class AbstractContext implements Context, Serializable
     /**
      * {@inheritDoc}
      */
+    @Override
     public Class<? extends Annotation> getScope()
     {
 

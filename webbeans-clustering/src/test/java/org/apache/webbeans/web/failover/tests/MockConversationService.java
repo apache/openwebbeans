@@ -40,11 +40,13 @@ public class MockConversationService implements ConversationService
         this.conversationId = conversation.getId();
     }
 
+    @Override
     public String getConversationId()
     {
         return conversationId;
     }
 
+    @Override
     public String getConversationSessionId()
     {
         return sessionId;

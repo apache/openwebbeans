@@ -32,6 +32,7 @@ public abstract class Decorator3 implements IOutputProvider
     @Inject @Delegate @Default @Any @Named IOutputProvider op;
     @Inject @Default RequestStringBuilder rsb;
 
+    @Override
     public String getOutput()
     {
         rsb.addOutput("Decorator3\n");

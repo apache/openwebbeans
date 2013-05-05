@@ -75,6 +75,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     /**
      * {@inheritDoc}
      */
+    @Override
     public void contextInitialized(ServletContextEvent event)
     {
         this.lifeCycle = webBeansContext.getService(ContainerLifecycle.class);
@@ -97,6 +98,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     /**
      * {@inheritDoc}
      */
+    @Override
     public void contextDestroyed(ServletContextEvent event)
     {
         this.lifeCycle.stopApplication(event);
@@ -109,6 +111,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     /**
      * {@inheritDoc}
      */
+    @Override
     public void requestDestroyed(ServletRequestEvent event)
     {
         if (logger.isLoggable(Level.FINE))
@@ -140,6 +143,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     /**
      * {@inheritDoc}
      */
+    @Override
     public void requestInitialized(ServletRequestEvent event)
     {
         try
@@ -165,6 +169,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     /**
      * {@inheritDoc}
      */
+    @Override
     public void sessionCreated(HttpSessionEvent event)
     {
         try
@@ -186,6 +191,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     /**
      * {@inheritDoc}
      */
+    @Override
     public void sessionDestroyed(HttpSessionEvent event)
     {
         if (logger.isLoggable(Level.FINE))

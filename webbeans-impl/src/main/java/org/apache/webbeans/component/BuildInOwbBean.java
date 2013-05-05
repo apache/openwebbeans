@@ -51,6 +51,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
         this.producer = producerFactory.createProducer(this);
     }
     
+    @Override
     public Producer<T> getProducer()
     {
         return producer;

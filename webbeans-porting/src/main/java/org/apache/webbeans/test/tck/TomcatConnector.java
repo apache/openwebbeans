@@ -102,6 +102,7 @@ public class TomcatConnector extends AbstractContainerConnector implements Conta
       return "tomcat.log";
    }
 
+   @Override
    public boolean deploy(InputStream stream, String name) throws IOException
    {
       String deployUrl = getManagerUrl("deploy", "path=/" + getContextName(name), "update=true");
@@ -123,11 +124,13 @@ public class TomcatConnector extends AbstractContainerConnector implements Conta
       }
    }
 
+   @Override
    public DeploymentException getDeploymentException()
    {
       return deploymentException;
    }
 
+   @Override
    public void undeploy(String name) throws IOException
    {
       String deployUrl = getManagerUrl("undeploy", "path=/" + getContextName(name));

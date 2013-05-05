@@ -43,6 +43,7 @@ public class PaymentProcessorComponentTest extends TestContext
         super(PaymentProcessorComponentTest.class.getSimpleName());
     }
 
+    @Override
     @Before
     public void init()
     {

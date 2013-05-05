@@ -33,6 +33,7 @@ public class SampleDecorator<T extends Annotation> implements GenericInterface<T
     @Delegate
     private GenericInterface<T> delegate;
 
+    @Override
     public boolean isDecoratorCalled()
     {
         if (delegate.isDecoratorCalled())

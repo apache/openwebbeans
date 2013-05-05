@@ -24,11 +24,13 @@ import java.util.logging.Logger;
 
 public class JULLoggerFactory implements WebBeansLoggerFactory
 {
+    @Override
     public Logger getLogger(Class<?> clazz, Locale desiredLocale)
     {
         return Logger.getLogger(clazz.getName(), ResourceBundle.getBundle("openwebbeans/Messages", desiredLocale).toString());
     }
 
+    @Override
     public Logger getLogger(Class<?> clazz)
     {
         return Logger.getLogger(clazz.getName(),"openwebbeans/Messages");

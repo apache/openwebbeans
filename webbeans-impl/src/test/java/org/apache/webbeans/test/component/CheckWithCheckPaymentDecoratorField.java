@@ -27,6 +27,7 @@ import org.apache.webbeans.test.annotation.binding.Check;
 public class CheckWithCheckPaymentDecoratorField implements IPayment
 {
 
+    @Override
     public String pay()
     {
         return "CHECK";

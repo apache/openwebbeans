@@ -54,6 +54,7 @@ public class ObserversComponentTest extends TestContext
         super(ObserversComponentTest.class.getName());
     }
 
+    @Override
     @Before
     public void init()
     {
@@ -149,6 +150,7 @@ public class ObserversComponentTest extends TestContext
         class CheckLiteral extends AnnotationLiteral<Check> implements Check
         {
 
+            @Override
             public String type()
             {
                 return "CHECK";
@@ -209,6 +211,7 @@ public class ObserversComponentTest extends TestContext
         class RoleUser extends AnnotationLiteral<Role> implements Role
         {
 
+            @Override
             public String value()
             {
                 return "USER";
@@ -219,6 +222,7 @@ public class ObserversComponentTest extends TestContext
         class RoleAdmin extends AnnotationLiteral<Role> implements Role
         {
 
+            @Override
             public String value()
             {
                 return "ADMIN";

@@ -65,6 +65,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
         System.out.println("MSX TODO REMOVE ContextLifecycleListener invoked");
     }
 
+    @Override
     public void lifecycleEvent(LifecycleEvent event)
     {
         try
@@ -118,6 +119,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
         }        
     }
 
+    @Override
     public void containerEvent(ContainerEvent event)
     {
         StandardContext context = null;
@@ -287,6 +289,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
     }
 
 
+    @Override
     public void propertyChange(PropertyChangeEvent event)
     {
         if ("service".equals(event.getPropertyName()))
@@ -358,6 +361,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
             this.listener = listener;
         }
 
+        @Override
         public Object put(Object key, Object value)
         {
             Object oldValue = super.put(key, value);
@@ -366,6 +370,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
             return oldValue;
         }
 
+        @Override
         public Object remove(Object key)
         {
             Object value = super.remove(key);
@@ -399,6 +404,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
             this.flag = flag;
         }
 
+        @Override
         public Object run()
         {
             object.setAccessible(flag);
@@ -418,6 +424,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
             this.parameters = parameters;
         }
 
+        @Override
         public Object run()
         {
             try

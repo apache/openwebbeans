@@ -37,11 +37,13 @@ public class DefaultLoaderService implements LoaderService
 
     private static final boolean JAVA_6_AVAILABLE = isJava6();
 
+    @Override
     public <T> List<T> load(Class<T> serviceType)
     {
         return load(serviceType, WebBeansUtil.getCurrentClassLoader());
     }
 
+    @Override
     public <T> List<T> load(Class<T> serviceType, ClassLoader classLoader)
     {
         if(JAVA_6_AVAILABLE)

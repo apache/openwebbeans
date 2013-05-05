@@ -76,6 +76,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     /**
      * Fires event with given event object.
      */
+    @Override
     public void fire(T event)
     {
         webBeansContext.getBeanManagerImpl().fireEvent(event, new EventMetadataImpl(eventType, injectionPoint, injectedBindings));
@@ -101,6 +102,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     /**
      * {@inheritDoc}
      */
+    @Override
     public Event<T> select(Annotation... bindings)
     {
         Event<T> sub = new EventImpl<T>(getEventBindings(bindings), eventType, injectionPoint, webBeansContext);
@@ -111,6 +113,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     /**
      * {@inheritDoc}
      */
+    @Override
     public <U extends T> Event<U> select(Class<U> subtype, Annotation... bindings)
     {
         if(ClassUtil.isDefinitionContainsTypeVariables(subtype))
@@ -133,6 +136,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     /**
      * {@inheritDoc}
      */
+    @Override
     public <U extends T> Event<U> select(TypeLiteral<U> subtype, Annotation... bindings)
     {
         return select(subtype.getRawType(), bindings);

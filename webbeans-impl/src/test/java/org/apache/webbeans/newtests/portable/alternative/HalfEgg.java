@@ -29,6 +29,7 @@ import javax.inject.Named;
 @ApplicationScoped
 public class HalfEgg extends Egg
 {
+    @Override
     public int getSize()
     {
         return 21;

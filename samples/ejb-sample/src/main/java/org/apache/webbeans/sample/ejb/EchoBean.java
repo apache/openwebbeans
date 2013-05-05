@@ -27,6 +27,7 @@ import javax.enterprise.context.Dependent;
 @Dependent
 public class EchoBean implements Echo
 {
+    @Override
     @LogInterceptorBinding
     public String echo(String name)
     {

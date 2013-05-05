@@ -56,27 +56,33 @@ public class ReplaceInjectionTargetTest extends AbstractUnitTest
             this.injectionTarget = injectionTarget;
         }
 
+        @Override
         public void inject(IJBean instance, CreationalContext<IJBean> ctx) {
             injected = true;
             injectionTarget.inject(instance, ctx);
         }
 
+        @Override
         public void postConstruct(IJBean instance) {
             injectionTarget.postConstruct(instance);
         }
 
+        @Override
         public void preDestroy(IJBean instance) {
             injectionTarget.preDestroy(instance);
         }
 
+        @Override
         public IJBean produce(CreationalContext<IJBean> ijBeanCreationalContext) {
             return injectionTarget.produce(ijBeanCreationalContext);
         }
 
+        @Override
         public void dispose(IJBean instance) {
             injectionTarget.dispose(instance);
         }
 
+        @Override
         public Set<InjectionPoint> getInjectionPoints() {
             return injectionTarget.getInjectionPoints();
         }

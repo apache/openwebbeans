@@ -102,6 +102,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     /**
      * {@inheritDoc}
      */
+    @Override
     protected void afterStartApplication(final Object startupObject)
     {
         String strDelay = getWebBeansContext().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.CONVERSATION_PERIODIC_DELAY,"150000");
@@ -109,6 +110,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
 
         service = Executors.newScheduledThreadPool(1, new ThreadFactory()
         {            
+            @Override
             public Thread newThread(Runnable runable)
             {
               Thread t = new Thread(runable, "OwbConversationCleaner-"
@@ -144,6 +146,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
 
     }
 
+    @Override
     protected void beforeStartApplication(Object startupObject)
     {
         this.scannerService.init(startupObject);
@@ -153,6 +156,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     /**
      * {@inheritDoc}
      */
+    @Override
     protected void beforeStopApplication(Object stopObject)
     {
         if(service != null)
@@ -164,6 +168,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     /**
      * {@inheritDoc}
      */
+    @Override
     protected void afterStopApplication(Object stopObject)
     {
         ServletContext servletContext;
@@ -239,6 +244,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
 
         }
 
+        @Override
         public void run()
         {
             WebBeansContext.getInstance().getConversationManager().destroyWithRespectToTimout();

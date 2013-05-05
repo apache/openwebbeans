@@ -44,6 +44,7 @@ public class TypedInjectedComponentTest extends TestContext
         super(TypedInjectedComponentTest.class.getSimpleName());
     }
 
+    @Override
     @Before
     public void init()
     {

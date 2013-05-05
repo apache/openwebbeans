@@ -50,6 +50,7 @@ public class AnnotatedConstructorImpl<X> extends AbstractAnnotatedCallable<X> im
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Constructor<X> getJavaMember()
     {

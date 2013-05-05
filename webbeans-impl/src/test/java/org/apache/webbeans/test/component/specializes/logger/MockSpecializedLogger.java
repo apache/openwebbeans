@@ -34,6 +34,7 @@ public class MockSpecializedLogger extends SystemLogger
         this.message = errorMessage;
     }
 
+    @Override
     public String getMessage()
     {
         return this.message;

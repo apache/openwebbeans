@@ -21,6 +21,7 @@ package org.apache.webbeans.newtests.concepts.alternatives.common;
 public class SimpleBean implements SimpleInterface
 {
 
+    @Override
     public Class<?> getImplementationType()
     {
         return SimpleBean.class;

@@ -39,11 +39,13 @@ public class SimpleSecurityService implements SecurityService
     /**
      * @return always <code>null</code> in the default implementation
      */
+    @Override
     public Principal getCurrentPrincipal()
     {
         return null;
     }
 
+    @Override
     public <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes)
     {
         try
@@ -56,6 +58,7 @@ public class SimpleSecurityService implements SecurityService
         }
     }
 
+    @Override
     public <T> Constructor<T> doPrivilegedGetConstructor(Class<T> clazz, Class<?>... parameterTypes)
     {
         try
@@ -68,11 +71,13 @@ public class SimpleSecurityService implements SecurityService
         }
     }
 
+    @Override
     public <T> Constructor<?>[] doPrivilegedGetDeclaredConstructors(Class<T> clazz)
     {
         return clazz.getDeclaredConstructors();
     }
 
+    @Override
     public <T> Method doPrivilegedGetDeclaredMethod(Class<T> clazz, String name, Class<?>... parameterTypes)
     {
         try
@@ -85,11 +90,13 @@ public class SimpleSecurityService implements SecurityService
         }
     }
 
+    @Override
     public <T> Method[] doPrivilegedGetDeclaredMethods(Class<T> clazz)
     {
         return clazz.getDeclaredMethods();
     }
 
+    @Override
     public <T> Field doPrivilegedGetDeclaredField(Class<T> clazz, String name)
     {
         try
@@ -102,37 +109,44 @@ public class SimpleSecurityService implements SecurityService
         }
     }
 
+    @Override
     public <T> Field[] doPrivilegedGetDeclaredFields(Class<T> clazz)
     {
         return clazz.getDeclaredFields();
     }
 
+    @Override
     public void doPrivilegedSetAccessible(AccessibleObject obj, boolean flag)
     {
         obj.setAccessible(flag);
     }
 
+    @Override
     public boolean doPrivilegedIsAccessible(AccessibleObject obj)
     {
         return obj.isAccessible();
     }
 
+    @Override
     public <T> T doPrivilegedObjectCreate(Class<T> clazz)
     throws PrivilegedActionException, IllegalAccessException, InstantiationException
     {
         return clazz.newInstance();
     }
 
+    @Override
     public void doPrivilegedSetSystemProperty(String propertyName, String value)
     {
         System.setProperty(propertyName, value);
     }
 
+    @Override
     public String doPrivilegedGetSystemProperty(String propertyName, String defaultValue)
     {
         return System.getProperty(propertyName, defaultValue);
     }
 
+    @Override
     public Properties doPrivilegedGetSystemProperties()
     {
         return System.getProperties();

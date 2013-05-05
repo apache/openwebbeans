@@ -40,6 +40,7 @@ public class FailOverSessionActivationListener implements HttpSessionActivationL
 
     private static final long serialVersionUID = -5690043082210295824L;
 
+    @Override
     public void sessionWillPassivate(HttpSessionEvent event)
     {
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
@@ -52,6 +53,7 @@ public class FailOverSessionActivationListener implements HttpSessionActivationL
         }
     }
 
+    @Override
     public void sessionDidActivate(HttpSessionEvent event)
     {
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();

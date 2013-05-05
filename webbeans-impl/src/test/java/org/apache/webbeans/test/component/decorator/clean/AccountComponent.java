@@ -31,16 +31,19 @@ public class AccountComponent implements Account
     private BigDecimal amount;
     private BigDecimal balance;
 
+    @Override
     public void deposit(BigDecimal amount)
     {
 
     }
 
+    @Override
     public BigDecimal getBalance()
     {
         return this.balance;
     }
 
+    @Override
     public void withdraw(BigDecimal amount)
     {
 

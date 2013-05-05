@@ -51,6 +51,7 @@ public class NamedTests extends TestContext
         super(NamedTests.class.getName());
     }
     
+    @Override
     @Before
     public void init()
     {

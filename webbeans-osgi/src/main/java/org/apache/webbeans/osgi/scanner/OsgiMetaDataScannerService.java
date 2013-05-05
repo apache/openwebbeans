@@ -72,6 +72,7 @@ public class OsgiMetaDataScannerService implements ScannerService
     private Set<String> beanArchiveJarNames = new HashSet<String>();
     private Map<String, Set<String>> classAnnotations = new HashMap<String, Set<String>>();
 
+    @Override
     public void init(Object object)
     {
         if (object instanceof ServletContext)
@@ -80,6 +81,7 @@ public class OsgiMetaDataScannerService implements ScannerService
         }
     }
 
+    @Override
     public void release()
     {
         beanClasses = new HashSet<Class<?>>();
@@ -88,6 +90,7 @@ public class OsgiMetaDataScannerService implements ScannerService
         classAnnotations.clear();
     }
 
+    @Override
     public void scan() throws WebBeansDeploymentException
     {
         logger.info("Using OsgiMetaDataScannerService!");
@@ -124,22 +127,26 @@ public class OsgiMetaDataScannerService implements ScannerService
                                                 new ClassDiscoveryFilter()
          {
 
+            @Override
             public boolean directoryDiscoveryRequired(String directory)
             {
                 return true;
             }
 
+            @Override
             public boolean jarFileDiscoveryRequired(String jarUrl)
             {
                 boolean isValidBeanArchive = beanArchiveJarNames.contains(jarUrl);
                 return isValidBeanArchive;
             }
 
+            @Override
             public boolean packageDiscoveryRequired(String packageName)
             {
                 return true;
             }
 
+            @Override
             public boolean rangeDiscoveryRequired(DiscoveryRange discoveryRange)
             {
                 return discoveryRange.equals(DiscoveryRange.BUNDLE_CLASSPATH);
@@ -213,12 +220,14 @@ public class OsgiMetaDataScannerService implements ScannerService
         BundleResourceFinder.ResourceFinderCallback rfCallback = new BundleResourceFinder.ResourceFinderCallback()
         {
 
+            @Override
             public void foundInDirectory(Bundle bundle, String basePath, URL url) throws Exception
             {
                 logger.info("adding the following beans.xml URL: " + url);
                 beanXMLs.add(url);
             }
 
+            @Override
             public void foundInJar(Bundle bundle, String jarName, ZipEntry entry, InputStream in) throws Exception
             {
                 URL jarURL = bundle.getEntry(jarName);
@@ -255,11 +264,13 @@ public class OsgiMetaDataScannerService implements ScannerService
         }
     }
 
+    @Override
     public Set<URL> getBeanXmls()
     {
         return beanXMLs;
     }
 
+    @Override
     public Set<Class<?>> getBeanClasses()
     {
         return beanClasses;
@@ -270,11 +281,13 @@ public class OsgiMetaDataScannerService implements ScannerService
         return classAnnotations.get(className);
     }
 
+    @Override
     public BDABeansXmlScanner getBDABeansXmlScanner()
     {
         return null;
     }
 
+    @Override
     public boolean isBDABeansXmlScanningEnabled()
     {
         return false;

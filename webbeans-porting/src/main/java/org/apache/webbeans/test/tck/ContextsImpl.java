@@ -30,6 +30,7 @@ import org.jboss.jsr299.tck.spi.Contexts;
 public class ContextsImpl implements Contexts<AbstractContext>
 {
 
+    @Override
     public AbstractContext getRequestContext()
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
@@ -45,17 +46,20 @@ public class ContextsImpl implements Contexts<AbstractContext>
         return (AbstractContext) contextFactory.getStandardContext(RequestScoped.class);
     }
 
+    @Override
     public void setActive(AbstractContext context)
     {
         context.setActive(true);
         
     }
 
+    @Override
     public void setInactive(AbstractContext context)
     {
         context.setActive(false);
     }
 
+    @Override
     public AbstractContext getDependentContext()
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
@@ -64,6 +68,7 @@ public class ContextsImpl implements Contexts<AbstractContext>
         return (AbstractContext) contextFactory.getStandardContext(Dependent.class);
     }
 
+    @Override
     public void destroyContext(AbstractContext context)
     {
         context.destroy();

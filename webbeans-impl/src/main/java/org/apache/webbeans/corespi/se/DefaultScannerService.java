@@ -29,6 +29,7 @@ public class DefaultScannerService extends AbstractMetaDataDiscovery
         super();
     }
 
+    @Override
     protected void configure()
     {
         configureAnnotationDB();

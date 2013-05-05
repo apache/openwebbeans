@@ -44,6 +44,7 @@ public class WebBeansException extends RuntimeException
         cause = e;
     }
 
+    @Override
     public Throwable getCause()
     {
         return cause;

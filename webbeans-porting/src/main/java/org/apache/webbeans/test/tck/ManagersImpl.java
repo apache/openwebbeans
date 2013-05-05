@@ -33,6 +33,7 @@ public class ManagersImpl implements Managers
         beanManager = null;
     }
     
+    @Override
     public BeanManager getManager()
     {
         if(beanManager == null)

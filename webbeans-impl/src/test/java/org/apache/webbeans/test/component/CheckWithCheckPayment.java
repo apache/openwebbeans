@@ -30,6 +30,7 @@ public class CheckWithCheckPayment implements IPayment
 {
     private boolean value = false;
 
+    @Override
     public String pay()
     {
         return "CHECK";

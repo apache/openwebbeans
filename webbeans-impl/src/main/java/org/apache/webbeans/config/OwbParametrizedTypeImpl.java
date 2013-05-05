@@ -39,7 +39,7 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
     
     /**Actual type arguments*/
     private final List<Type> types = new ArrayList<Type>();
-    
+
     /**
      * New instance.
      * @param owner owner
@@ -51,6 +51,7 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
         rawType = raw;
     }
     
+    @Override
     public Type[] getActualTypeArguments()
     {
         return types.toArray(new Type[types.size()]);
@@ -61,11 +62,13 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
         types.add(type);
     }
 
+    @Override
     public Type getOwnerType()
     {
         return owner;
     }
 
+    @Override
     public Type getRawType()
     {
         return rawType;

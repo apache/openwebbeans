@@ -37,6 +37,7 @@ public class SecureAndTransactionalInterceptorTest extends TestContext
         super(SecureAndTransactionalInterceptorTest.class.getName());
     }
     
+    @Override
     @Before
     public void init()
     {

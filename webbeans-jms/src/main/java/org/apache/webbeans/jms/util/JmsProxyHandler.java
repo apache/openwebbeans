@@ -70,6 +70,7 @@ public class JmsProxyHandler implements InvocationHandler
         return invoke(instance, method, arguments);
     }
 
+    @Override
     public Object invoke(Object instance, Method method, Object[] arguments) throws Throwable
     {
         if(method.getName().equals("closeJMSObject"))

@@ -85,12 +85,14 @@ public class WebScannerService extends AbstractMetaDataDiscovery
         return finder;
     }
 
+    @Override
     public void init(Object context)
     {
         super.init(context);
         this.servletContext = (ServletContext) context;        
     }
     
+    @Override
     protected void configure()
     {
     }

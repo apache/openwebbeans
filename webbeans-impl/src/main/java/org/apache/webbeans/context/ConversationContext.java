@@ -56,6 +56,7 @@ public class ConversationContext extends AbstractContext implements Externalizab
         componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException,
             ClassNotFoundException 
     {
@@ -78,7 +79,8 @@ public class ConversationContext extends AbstractContext implements Externalizab
         }
     }
 
-    public void writeExternal(ObjectOutput out) throws IOException 
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException
     {
             out.writeObject(scopeType);
             Iterator<Contextual<?>> it = componentInstanceMap.keySet().iterator();
@@ -86,7 +88,7 @@ public class ConversationContext extends AbstractContext implements Externalizab
             while(it.hasNext()) 
             {
                 Contextual<?>contextual = it.next();
-                String id = WebBeansUtil.isPassivationCapable(contextual);
+                String id = WebBeansUtil.getPassivationId(contextual);
                 if (id == null) 
                 {
                     throw new NotSerializableException("cannot serialize " + contextual.toString());

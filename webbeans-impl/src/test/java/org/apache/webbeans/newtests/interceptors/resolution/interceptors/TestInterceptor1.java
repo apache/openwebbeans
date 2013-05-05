@@ -102,6 +102,7 @@ public class TestInterceptor1 extends TestInterceptorParent
      * overridden method -> only 1 interceptor
      * @param context
      */
+    @Override
     @AroundTimeout
     public Object aroundTimeout(InvocationContext context) throws Exception
     {

@@ -30,11 +30,13 @@ public class DelegateAttributeMustImplementAllDecoratedTypes implements IPayment
     @Delegate
     IPayment delegate;
 
+    @Override
     public String pay()
     {
         return null;
     }
 
+    @Override
     public String service()
     {
         return null;

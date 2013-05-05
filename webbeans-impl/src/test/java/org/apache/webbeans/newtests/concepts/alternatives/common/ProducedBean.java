@@ -29,16 +29,19 @@ public class ProducedBean implements IProducedBean
         this.producer = producer;
     }
 
+    @Override
     public String getID()
     {
         return str + "," + getProducerID() + "," + this;
     }
 
+    @Override
     public String getProducerID()
     {
         return producer.toString();
     }
 
+    @Override
     public String getProducerType()
     {
         return str;

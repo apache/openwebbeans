@@ -23,6 +23,7 @@ import javax.interceptor.InvocationContext;
 
 public class InterceptorWithSuperClass extends Interceptor1
 {
+    @Override
     @AroundInvoke
     public Object intercept(InvocationContext context) throws Exception
     {

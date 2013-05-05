@@ -64,6 +64,7 @@ public class InstanceWithTypedTest extends AbstractUnitTest
 
     public static class RealRunnable implements Runnable
     {
+        @Override
         public void run()
         {
             // no-op
@@ -73,6 +74,7 @@ public class InstanceWithTypedTest extends AbstractUnitTest
     @Typed({ TypedBean.class })
     public static class TypedBean<X> implements Runnable
     {
+        @Override
         public void run() {
             // no-op
         }

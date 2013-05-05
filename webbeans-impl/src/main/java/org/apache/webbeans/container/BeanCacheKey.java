@@ -321,6 +321,7 @@ public final class BeanCacheKey
     {
 
         // Notice: Sorting is a bit costly, but the use of this code is very rar.
+        @Override
         public int compare(Annotation annotation1, Annotation annotation2)
         {
             final Class<? extends Annotation> type1 = annotation1.annotationType();

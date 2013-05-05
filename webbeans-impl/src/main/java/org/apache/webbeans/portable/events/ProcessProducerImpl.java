@@ -49,6 +49,7 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addDefinitionError(Throwable t)
     {
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
@@ -57,6 +58,7 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     /**
      * {@inheritDoc}
      */
+    @Override
     public AnnotatedMember<X> getAnnotatedMember()
     {
         return annotateMember;
@@ -65,6 +67,7 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     /**
      * {@inheritDoc}
      */
+    @Override
     public Producer<T> getProducer()
     {
         return producer;
@@ -73,6 +76,7 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setProducer(Producer<T> producer)
     {
         this.producer = producer;

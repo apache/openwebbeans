@@ -84,6 +84,7 @@ public class FailOverBag implements Serializable, Externalizable
         return items.get(name);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
     {
@@ -110,6 +111,7 @@ public class FailOverBag implements Serializable, Externalizable
         ois.close();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException
     {
         out.writeBoolean(sessionInUse);

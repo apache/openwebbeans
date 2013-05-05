@@ -38,6 +38,7 @@ public class AnyBindingTest extends TestContext{
       super(AnyBindingTest.class.getName());
    }
 
+   @Override
    @Before
    public void init()
    {

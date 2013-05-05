@@ -61,6 +61,7 @@ public class RequestScopedBeanInterceptorHandler extends NormalScopedBeanInterce
     /**
      * {@inheritDoc}
      */
+    @Override
     protected Object getContextualInstance()
     {
         HashMap<Bean<?>, Object> beanMap = cachedInstances.get();

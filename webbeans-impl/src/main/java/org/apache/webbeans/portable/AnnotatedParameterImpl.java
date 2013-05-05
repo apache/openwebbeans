@@ -50,6 +50,7 @@ class AnnotatedParameterImpl<X> extends AbstractAnnotated implements AnnotatedPa
     /**
      * {@inheritDoc}
      */
+    @Override
     public AnnotatedCallable<X> getDeclaringCallable()
     {
         return declaringCallable;
@@ -58,6 +59,7 @@ class AnnotatedParameterImpl<X> extends AbstractAnnotated implements AnnotatedPa
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getPosition()
     {
         return position;

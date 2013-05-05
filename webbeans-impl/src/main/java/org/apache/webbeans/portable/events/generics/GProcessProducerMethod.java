@@ -33,11 +33,13 @@ public class GProcessProducerMethod extends ProcessProducerMethodImpl implements
         super(bean, annotatedMethod,dispose);
     }
 
+    @Override
     public Class<?> getBeanClass()
     {
         return getBean().getBeanClass();
     }
 
+    @Override
     public Class<?> getProducerOrObserverType()
     {
         return ClassUtil.getClazz(getAnnotatedProducerMethod().getBaseType());

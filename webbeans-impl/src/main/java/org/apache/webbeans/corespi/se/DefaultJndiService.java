@@ -41,6 +41,7 @@ public class DefaultJndiService implements JNDIService
     /** 
      * {@inheritDoc}
      */
+    @Override
     public void bind(String name, Object object) throws WebBeansException
     {
         jndiContent.put(name, object);
@@ -58,11 +59,13 @@ public class DefaultJndiService implements JNDIService
     /** 
      * {@inheritDoc}
      */
+    @Override
     public void unbind(String name) throws WebBeansException
     {
         jndiContent.remove(name);
     }
 
+    @Override
     public <T> T lookup(String name, Class<? extends T> expectedClass)
     {
         return getObject(name, expectedClass);

@@ -46,6 +46,7 @@ public class ScopeTypeExceptionComponentTest extends TestContext
         super(ScopeTypeExceptionComponentTest.class.getName());
     }
 
+    @Override
     @Before
     public void init()
     {

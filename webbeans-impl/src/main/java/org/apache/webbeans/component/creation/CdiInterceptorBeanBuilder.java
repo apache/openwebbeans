@@ -53,6 +53,7 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
         defineInterceptorBindings();
     }
 
+    @Override
     public boolean isInterceptorEnabled()
     {
         return webBeansContext.getInterceptorsManager().isInterceptorClassEnabled(annotatedType.getJavaClass());

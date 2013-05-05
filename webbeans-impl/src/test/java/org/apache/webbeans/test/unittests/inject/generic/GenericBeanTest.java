@@ -33,6 +33,7 @@ public class GenericBeanTest extends TestContext
         super(GenericBeanTest.class.getName());
     }
 
+    @Override
     @Before
     public void init()
     {

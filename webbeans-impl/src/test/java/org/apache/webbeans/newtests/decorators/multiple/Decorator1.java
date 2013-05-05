@@ -35,17 +35,20 @@ public class Decorator1 implements IOutputProvider
         System.out.println("decorator created!");
     }
 
+    @Override
     public String getOutput()
     {
         rsb.addOutput("Decorator1\n");
         return op.getOutput();
     }
 
-    public String trace() 
+    @Override
+    public String trace()
     {
         return "Decorator1/trace," + op.trace();
     }
-    public String otherMethod() 
+    @Override
+    public String otherMethod()
     {
         return "Decorator1/otherMethod," + op.otherMethod();
     }

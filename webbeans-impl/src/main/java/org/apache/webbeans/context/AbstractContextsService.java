@@ -28,37 +28,44 @@ import org.apache.webbeans.spi.ContextsService;
 public abstract class AbstractContextsService implements ContextsService
 {
 
+    @Override
     public void destroy(Object destroyObject)
     {
         //Default no-op
     }
 
+    @Override
     public void endContext(Class<? extends Annotation> scopeType, Object endParameters)
     {
         //Default no-op
     }
 
+    @Override
     public Context getCurrentContext(Class<? extends Annotation> scopeType)
     {
         
         return null;
     }
 
+    @Override
     public void init(Object initializeObject)
     {
         //Default no-op        
     }
 
+    @Override
     public void startContext(Class<? extends Annotation> scopeType, Object startParameter) throws ContextException
     {
         //Default no-op        
     }
 
+    @Override
     public boolean supportsContext(Class<? extends Annotation> scopeType)
     {        
         return false;
     }
     
+    @Override
     public void activateContext(Class<? extends Annotation> scopeType)
     {
         if(supportsContext(scopeType))
@@ -71,6 +78,7 @@ public abstract class AbstractContextsService implements ContextsService
         }
     }
     
+    @Override
     public void deActivateContext(Class<? extends Annotation> scopeType)
     {
         if(supportsContext(scopeType))

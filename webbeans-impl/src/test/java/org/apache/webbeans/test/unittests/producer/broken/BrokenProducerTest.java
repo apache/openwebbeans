@@ -37,6 +37,7 @@ public class BrokenProducerTest extends TestContext
         super(BrokenProducerTest.class.getName());
     }
 
+    @Override
     @Before
     public void init()
     {

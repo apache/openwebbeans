@@ -24,6 +24,7 @@ import javax.enterprise.inject.Alternative;
 public class AlternativeBean implements SimpleInterface
 {
 
+    @Override
     public Class<?> getImplementationType()
     {
         return AlternativeBean.class;

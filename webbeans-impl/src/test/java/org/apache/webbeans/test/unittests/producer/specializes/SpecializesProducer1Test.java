@@ -38,6 +38,7 @@ public class SpecializesProducer1Test extends TestContext
         super(SpecializesProducer1Test.class.getName());
     }
 
+    @Override
     @Before
     public void init()
     {

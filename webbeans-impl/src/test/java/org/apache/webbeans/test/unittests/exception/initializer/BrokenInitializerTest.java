@@ -34,6 +34,7 @@ public class BrokenInitializerTest extends TestContext
         super(BrokenInitializerTest.class.getName());
     }
     
+    @Override
     @Before
     public void init()
     {

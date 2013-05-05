@@ -39,6 +39,7 @@ public class InjectedComponentTest extends TestContext
         super(InjectedComponentTest.class.getSimpleName());
     }
 
+    @Override
     @Before
     public void init()
     {

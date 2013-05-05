@@ -34,6 +34,7 @@ public class InterceptorComparator<T> implements Comparator<Interceptor<T>>
         this.interceptorsManager = webBeansContext.getInterceptorsManager();
     }
 
+    @Override
     public int compare(Interceptor<T> o1, Interceptor<T> o2)
     {
 

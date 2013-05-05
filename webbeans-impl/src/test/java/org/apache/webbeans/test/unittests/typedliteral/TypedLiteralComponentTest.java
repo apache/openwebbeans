@@ -45,6 +45,7 @@ public class TypedLiteralComponentTest extends TestContext
         super(TypedLiteralComponentTest.class.getSimpleName());
     }
 
+    @Override
     @Before
     public void init()
     {

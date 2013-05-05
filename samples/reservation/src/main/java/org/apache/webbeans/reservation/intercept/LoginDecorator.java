@@ -39,6 +39,7 @@ public class LoginDecorator implements ILoginController
     /* (non-Javadoc)
      * @see org.apache.webbeans.reservation.controller.LoginController#checkLogin(java.lang.String, java.lang.String)
      */
+    @Override
     public User checkLogin(String userName, String password)
     {
         logger.info("Login process is started. Use tries to login with user name : " + userName );

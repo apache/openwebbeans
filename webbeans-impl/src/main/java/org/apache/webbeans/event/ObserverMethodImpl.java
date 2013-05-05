@@ -151,6 +151,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     /**
      * {@inheritDoc}
      */
+    @Override
     public void notify(T event)
     {
         notify(event, null);
@@ -159,6 +160,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("unchecked")
     public void notify(T event, EventMetadata metadata)
     {
@@ -377,6 +379,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
      * 
      * @return the bean
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Class<?> getBeanClass()
     {
@@ -387,7 +390,8 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     /** 
      * {@inheritDoc}
      */
-    public Set<Annotation> getObservedQualifiers() 
+    @Override
+    public Set<Annotation> getObservedQualifiers()
     {
         return observedQualifiers;
     }
@@ -395,7 +399,8 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     /** 
      * {@inheritDoc}
      */
-    public Type getObservedType() 
+    @Override
+    public Type getObservedType()
     {
         return observedEventType;
     }
@@ -403,11 +408,13 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     /** 
      * {@inheritDoc}
      */
-    public Reception getReception() 
+    @Override
+    public Reception getReception()
     {
         return ifExist ? Reception.IF_EXISTS : Reception.ALWAYS;
     }
 
+    @Override
     public TransactionPhase getTransactionPhase()
     {
         return phase;

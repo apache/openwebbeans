@@ -36,6 +36,7 @@ public class ShoppingCardInterceptorTest extends TestContext
         super(ShoppingCardInterceptorTest.class.getName());
     }
     
+    @Override
     @Before
     public void init()
     {

@@ -33,6 +33,7 @@ public class OwbCustomObjectInputStream extends ObjectInputStream
         this.classLoader = classLoader;
     }
     
+    @Override
     protected Class<?> resolveClass(ObjectStreamClass desc) throws ClassNotFoundException
     {
         return Class.forName(desc.getName(), false, classLoader);

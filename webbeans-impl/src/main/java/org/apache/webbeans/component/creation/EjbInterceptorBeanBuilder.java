@@ -49,6 +49,7 @@ public class EjbInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, EjbI
         defineInterceptorMethods();
     }
 
+    @Override
     public boolean isInterceptorEnabled()
     {
         return true;

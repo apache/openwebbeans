@@ -37,6 +37,7 @@ public class DecoratorComparator<T> implements Comparator<Decorator<T>>
         this.webBeansContext = webBeansContext;
     }
 
+    @Override
     public int compare(Decorator<T> o1, Decorator<T> o2)
     {
         if (o1.equals(o2))

@@ -30,6 +30,7 @@ public class OutputProvider implements IOutputProvider
     @Inject
     RequestStringBuilder rsb = null;
 
+    @Override
     @MyIntercept
     public String getOutput()
     {
@@ -37,7 +38,8 @@ public class OutputProvider implements IOutputProvider
         return rsb.toString();
     }
 
-    public String trace() { 
+    @Override
+    public String trace() {
         return "delegate/trace";
     }
 
@@ -47,6 +49,7 @@ public class OutputProvider implements IOutputProvider
     }
 
 
+    @Override
     @MyIntercept
     public String getDelayedOutput() throws InterruptedException
     {

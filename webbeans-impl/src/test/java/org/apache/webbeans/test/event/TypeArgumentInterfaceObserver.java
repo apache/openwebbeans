@@ -40,6 +40,7 @@ public class TypeArgumentInterfaceObserver implements ObserverMethod<ITypeArgume
         this.qualifiers = anns;
     }
 
+    @Override
     public void notify(ITypeArgumentEventInterface event)
     {
         this.result = "ok";

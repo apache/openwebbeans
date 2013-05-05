@@ -34,11 +34,13 @@ public class InterceptorInjectionTargetFactory<T> extends InjectionTargetFactory
         super(annotatedType, webBeansContext);
     }
 
+    @Override
     protected List<AnnotatedMethod<?>> getPostConstructMethods()
     {
         return Collections.<AnnotatedMethod<?>>emptyList();
     }
 
+    @Override
     protected List<AnnotatedMethod<?>> getPreDestroyMethods()
     {
         return Collections.<AnnotatedMethod<?>>emptyList();

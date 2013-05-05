@@ -33,11 +33,13 @@ public class GProcessProducerField extends ProcessProducerFieldImpl implements G
         super(bean, annotatedField, annotatedParameter);
     }
 
+    @Override
     public Class<?> getBeanClass()
     {
         return getBean().getBeanClass();
     }
 
+    @Override
     public Class<?> getProducerOrObserverType()
     {
         return ClassUtil.getClazz(getAnnotatedProducerField().getBaseType());

@@ -25,6 +25,7 @@ import org.jboss.arquillian.core.spi.LoadableExtension;
  */
 public class OwbArquillianExtension implements LoadableExtension
 {
+    @Override
     public void register(ExtensionBuilder builder)
     {
         builder.service(DeployableContainer.class, OwbStandaloneContainer.class)

@@ -107,6 +107,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
      *
      * @throws org.apache.webbeans.exception.WebBeansConfigurationException if any run time exception occurs
      */
+    @Override
     public void scan() throws WebBeansDeploymentException
     {
         try
@@ -120,6 +121,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         }
     }
 
+    @Override
     public void release()
     {
         finder = null;
@@ -171,6 +173,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
 
 
 
+    @Override
     public void init(Object object)
     {
         // set per BDA beans.xml flag here because setting it in constructor
@@ -202,6 +205,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     /* (non-Javadoc)
      * @see org.apache.webbeans.corespi.ScannerService#getBeanClasses()
      */
+    @Override
     public Set<Class<?>> getBeanClasses()
     {
         final Set<Class<?>> classSet = new HashSet<Class<?>>();
@@ -239,16 +243,19 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     /* (non-Javadoc)
     * @see org.apache.webbeans.corespi.ScannerService#getBeanXmls()
     */
+    @Override
     public Set<URL> getBeanXmls()
     {
         return Collections.unmodifiableSet(webBeansXmlLocations);
     }
 
+    @Override
     public BDABeansXmlScanner getBDABeansXmlScanner()
     {
         return bdaBeansXmlScanner;
     }
 
+    @Override
     public boolean isBDABeansXmlScanningEnabled()
     {
         return isBDAScannerEnabled;

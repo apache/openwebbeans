@@ -40,6 +40,7 @@ public class LoggedInObserver implements ObserverMethod<LoggedInEvent>
         this.qualifiers = anns; 
     }
 
+    @Override
     public void notify(LoggedInEvent event)
     {
         result = "ok";

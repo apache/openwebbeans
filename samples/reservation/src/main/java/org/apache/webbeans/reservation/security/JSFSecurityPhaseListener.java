@@ -33,6 +33,7 @@ public class JSFSecurityPhaseListener implements PhaseListener
 
     private static final long serialVersionUID = -1308051590485364148L;
     
+    @Override
     public void afterPhase(PhaseEvent event)
     {        
         FacesContext context = event.getFacesContext();
@@ -71,10 +72,12 @@ public class JSFSecurityPhaseListener implements PhaseListener
         
     }
 
+    @Override
     public void beforePhase(PhaseEvent event)
     {
     }
 
+    @Override
     public PhaseId getPhaseId()
     {
         return PhaseId.RESTORE_VIEW;

@@ -109,21 +109,25 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
         this.alternative = alternative;
     }
 
+    @Override
     public Set<Type> getTypes()
     {
         return types;
     }
 
+    @Override
     public Set<Annotation> getQualifiers()
     {
         return qualifiers;
     }
 
+    @Override
     public Class<? extends Annotation> getScope()
     {
         return scope;
     }
 
+    @Override
     public String getName()
     {
         return name;
@@ -134,11 +138,13 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
         return nullable;
     }
 
+    @Override
     public Set<Class<? extends Annotation>> getStereotypes()
     {
         return stereotypes;
     }
 
+    @Override
     public boolean isAlternative()
     {
         return alternative;

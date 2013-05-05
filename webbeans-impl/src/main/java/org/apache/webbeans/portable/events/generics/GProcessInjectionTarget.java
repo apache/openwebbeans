@@ -31,6 +31,7 @@ public class GProcessInjectionTarget extends ProcessInjectionTargetImpl implemen
         super(injectionTarget, annotatedType);
     }
 
+    @Override
     public Class<?> getBeanClassFor(Class<?> eventClass)
     {
         return getAnnotatedType().getJavaClass();

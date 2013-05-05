@@ -93,11 +93,13 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         return webBeansContext;
     }
 
+    @Override
     public BeanManager getBeanManager()
     {        
         return beanManager;
     }
     
+    @Override
     public void startApplication(Object startupObject)
     {
         // Initalize Application Context
@@ -135,6 +137,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         }
     }
 
+    @Override
     public void stopApplication(Object endObject)
     {
         logger.fine("OpenWebBeans Container is stopping.");
@@ -193,11 +196,13 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     /**
      * @return the contextsService
      */
+    @Override
     public ContextsService getContextService()
     {
         return contextsService;
     }
 
+    @Override
     public void initApplication(Properties properties)
     {
         afterInitApplication(properties);

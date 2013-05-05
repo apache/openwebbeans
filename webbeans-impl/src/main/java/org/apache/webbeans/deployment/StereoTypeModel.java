@@ -183,6 +183,7 @@ public class StereoTypeModel implements IStereoTypeModel
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getName()
     {
         return name;
@@ -191,6 +192,7 @@ public class StereoTypeModel implements IStereoTypeModel
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setName(String name)
     {
         this.name = name;
@@ -199,6 +201,7 @@ public class StereoTypeModel implements IStereoTypeModel
     /**
      * {@inheritDoc}
      */
+    @Override
     public Annotation getDefaultDeploymentType()
     {
         return defaultDeploymentType;
@@ -207,6 +210,7 @@ public class StereoTypeModel implements IStereoTypeModel
     /**
      * {@inheritDoc}
      */
+    @Override
     public Annotation getDefaultScopeType()
     {
         return defaultScopeType;
@@ -215,6 +219,7 @@ public class StereoTypeModel implements IStereoTypeModel
     /**
      * {@inheritDoc}
      */    
+    @Override
     public Set<Annotation> getInterceptorBindingTypes()
     {
         return interceptorBindingTypes;
@@ -223,6 +228,7 @@ public class StereoTypeModel implements IStereoTypeModel
     /**
      * {@inheritDoc}
      */    
+    @Override
     public Set<Annotation> getInheritedStereoTypes()
     {
         return inherits;

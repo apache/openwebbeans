@@ -24,6 +24,7 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class MyEntityServiceImpl extends AbstractCrudService<MyEntity> implements MyEntityService {
 
+    @Override
     public void specialMyEntityFunction(MyEntity e) {
         // do something very special ;)
     }

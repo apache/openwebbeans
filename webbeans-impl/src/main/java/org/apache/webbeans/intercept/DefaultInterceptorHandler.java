@@ -102,6 +102,7 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler
         return interceptors;
     }
 
+    @Override
     public Object invoke(Method method, Object[] parameters)
     {
         try

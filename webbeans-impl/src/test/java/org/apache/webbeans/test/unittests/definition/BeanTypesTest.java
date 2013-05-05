@@ -38,6 +38,7 @@ public class BeanTypesTest extends TestContext
         super(BeanTypesTest.class.getName());
     }
     
+    @Override
     @Before
     public void init()
     {

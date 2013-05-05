@@ -37,6 +37,7 @@ public class DefaultSingletonService implements SingletonService<WebBeansContext
      * Gets singleton instance for deployment.
      * @return signelton instance for this deployment
      */
+    @Override
     public WebBeansContext get(Object key)
     {
         assertClassLoaderKey(key);
@@ -75,6 +76,7 @@ public class DefaultSingletonService implements SingletonService<WebBeansContext
     /**
      * {@inheritDoc}
      */
+    @Override
     public void clear(Object classLoader)
     {
         assertClassLoaderKey(classLoader);

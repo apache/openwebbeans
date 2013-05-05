@@ -39,6 +39,7 @@ public class ScopeAdapterTest extends TestContext
         super(ScopeAdapterTest.class.getName());
     }
 
+    @Override
     @Before
     public void init()
     {

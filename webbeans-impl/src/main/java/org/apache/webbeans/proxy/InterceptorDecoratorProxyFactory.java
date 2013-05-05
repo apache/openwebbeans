@@ -212,6 +212,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         return OwbInterceptorProxy.class;
     }
 
+    @Override
     protected void createInstanceVariables(ClassWriter cw, Class<?> classToProxy, String classFileName)
     {
         // variable #1, the delegation point
@@ -256,6 +257,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
      * @param classFileName
      * @throws ProxyGenerationException
      */
+    @Override
     protected void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName)
             throws ProxyGenerationException
     {
@@ -292,6 +294,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
      *
      * @param noninterceptedMethods all methods which are neither intercepted nor decorated
      */
+    @Override
     protected void delegateNonInterceptedMethods(ClassLoader classLoader, ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] noninterceptedMethods)
     {
         for (Method delegatedMethod : noninterceptedMethods)
@@ -341,6 +344,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         }
     }
 
+    @Override
     protected void delegateInterceptedMethods(ClassLoader classLoader, ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, Method[] interceptedMethods)
             throws ProxyGenerationException
     {

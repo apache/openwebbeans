@@ -40,18 +40,21 @@ public class WebBeansErrorHandler implements ErrorHandler
 {
     private static Logger logger = WebBeansLoggerFacade.getLogger(WebBeansErrorHandler.class);
 
+    @Override
     public void error(SAXParseException exception) throws SAXException
     {
         logger.log(Level.SEVERE, exception.getMessage(), exception.getCause());
         throw new WebBeansException(exception);
     }
 
+    @Override
     public void fatalError(SAXParseException exception) throws SAXException
     {
         logger.log(Level.SEVERE, exception.getMessage(), exception.getCause());
         throw new WebBeansException(exception);
     }
 
+    @Override
     public void warning(SAXParseException exception) throws SAXException
     {
         logger.log(Level.WARNING, exception.getMessage(), exception.getCause());

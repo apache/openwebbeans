@@ -34,6 +34,7 @@ public class BeanA extends Superclass
         testEvent.addInvocation(getBeanName());
     }
 
+    @Override
     protected void observeTestEvent(@Observes TestEvent testEvent)
     {
         testEvent.addInvocation(getBeanName());

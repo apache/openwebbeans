@@ -57,6 +57,7 @@ public class ComponentResolutionByTypeTest extends TestContext
         super(CLAZZ_NAME);
     }
     
+    @Override
     @Before
     public void init()
     {

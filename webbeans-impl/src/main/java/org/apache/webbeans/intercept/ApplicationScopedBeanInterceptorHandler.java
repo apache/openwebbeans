@@ -53,6 +53,7 @@ public class ApplicationScopedBeanInterceptorHandler extends NormalScopedBeanInt
     /**
      * {@inheritDoc}
      */
+    @Override
     protected Object getContextualInstance()
     {
         if (cachedInstance == null) 

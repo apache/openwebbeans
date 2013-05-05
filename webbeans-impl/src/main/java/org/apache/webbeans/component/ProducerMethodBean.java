@@ -102,6 +102,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         this.disposalMethod = disposalMethod;
     }
 
+    @Override
     public String getId()
     {
         if (passivatingId == null)

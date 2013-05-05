@@ -54,16 +54,19 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
     private OwbArquillianSingletonService singletonService;
     private WebBeansContext webBeansContext;
 
+    @Override
     public Class<OwbStandaloneConfiguration> getConfigurationClass()
     {
         return OwbStandaloneConfiguration.class;
     }
 
+    @Override
     public ProtocolDescription getDefaultProtocol()
     {
         return new ProtocolDescription("Local");
     }
 
+    @Override
     public void setup(OwbStandaloneConfiguration owbStandaloneConfiguration)
     {
         LOG.fine("OpenWebBeans Arquillian setup started");
@@ -73,11 +76,13 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
 
     }
 
+    @Override
     public void start() throws LifecycleException
     {
         LOG.fine("OpenWebBeans Arquillian starting");
     }
 
+    @Override
     public ProtocolMetaData deploy(Archive<?> archive) throws DeploymentException
     {
         singletonService.initOwb();
@@ -99,6 +104,7 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
         return new ProtocolMetaData();
     }
 
+    @Override
     public void undeploy(Archive<?> archive) throws DeploymentException
     {
         LOG.fine("OpenWebBeans Arquillian undeploying");
@@ -114,17 +120,20 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
         }
     }
 
+    @Override
     public void stop() throws LifecycleException
     {
         LOG.fine("OpenWebBeans Arquillian stopping");
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void deploy(Descriptor descriptor) throws DeploymentException
     {
         throw new UnsupportedOperationException("Deployment of Descriptors is not supported in owb-arquillian-standalone!");
     }
 
+    @Override
     public void undeploy(Descriptor descriptor) throws DeploymentException
     {
         throw new UnsupportedOperationException("Deployment of Descriptors is not supported in owb-arquillian-standalone!");

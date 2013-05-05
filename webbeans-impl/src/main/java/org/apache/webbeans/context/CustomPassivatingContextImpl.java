@@ -40,11 +40,13 @@ public class CustomPassivatingContextImpl implements Context
         this.context = context;
     }
 
+    @Override
     public <T> T get(Contextual<T> contextual, CreationalContext<T> creationalContext)
     {
         return context.get(sbv.getSerializableBean(contextual), creationalContext);
     }
 
+    @Override
     public <T> T get(Contextual<T> contextual)
     {
         return context.get(sbv.getSerializableBean(contextual));

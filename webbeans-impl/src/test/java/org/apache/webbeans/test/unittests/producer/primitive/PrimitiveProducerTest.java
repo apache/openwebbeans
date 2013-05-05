@@ -34,6 +34,7 @@ public class PrimitiveProducerTest extends TestContext
         super(PrimitiveProducerTest.class.getName());
     }
 
+    @Override
     @Before
     public void init()
     {

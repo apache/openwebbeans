@@ -49,6 +49,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addAnnotatedType(AnnotatedType<?> type)
     {
         beanManager.addAdditionalAnnotatedType(type);
@@ -57,6 +58,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addQualifier(Class<? extends Annotation> qualifier)
     {
         beanManager.addAdditionalQualifier(qualifier);
@@ -66,6 +68,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addInterceptorBinding(Class<? extends Annotation> binding, Annotation... bindingDef)
     {
         webBeansContext.getInterceptorsManager().addInterceptorBindingType(binding, bindingDef);
@@ -74,6 +77,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addScope(Class<? extends Annotation> scope, boolean normal, boolean passivating)
     {
         ExternalScope additionalScope = new ExternalScope(scope, normal, passivating); 
@@ -83,6 +87,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addStereotype(Class<? extends Annotation> stereotype, Annotation... stereotypeDef)
     {
         webBeansContext.getAnnotationManager().checkStereoTypeClass(stereotype, stereotypeDef);

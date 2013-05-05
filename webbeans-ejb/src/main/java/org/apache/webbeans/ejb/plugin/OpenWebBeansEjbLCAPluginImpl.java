@@ -38,16 +38,19 @@ public class OpenWebBeansEjbLCAPluginImpl extends AbstractOwbPlugin implements O
         super();
     }
 
+    @Override
     public Class<? extends Annotation> getPrePassivateClass()
     {
         return PrePassivate.class;
     }
 
+    @Override
     public Class<? extends Annotation> getPostActivateClass()
     {
         return PostActivate.class;
     }
 
+    @Override
     public Class<? extends Annotation> getAroundTimeoutClass()
     {
         return AroundTimeout.class;

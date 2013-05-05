@@ -101,22 +101,26 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         }        
     }
     
+    @Override
     public Bean<?> getBean()
     {
         return ownerBean;
     }
 
+    @Override
     public Set<Annotation> getQualifiers()
     {
         
         return qualifierAnnotations;
     }
 
+    @Override
     public Member getMember()
     {
         return injectionMember;
     }
 
+    @Override
     public Type getType()
     {
         
@@ -124,16 +128,19 @@ class InjectionPointImpl implements InjectionPoint, Serializable
     }
 
     
+    @Override
     public Annotated getAnnotated()
     {
         return annotated;
     }
 
+    @Override
     public boolean isDelegate()
     {
         return delegate;
     }
 
+    @Override
     public boolean isTransient()
     {
         return transientt;
@@ -203,6 +210,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
             this.classLoader = classLoader;
         }
         
+        @Override
         protected Class<?> resolveClass(ObjectStreamClass desc) throws ClassNotFoundException
         {
             return Class.forName(desc.getName(), false, classLoader);

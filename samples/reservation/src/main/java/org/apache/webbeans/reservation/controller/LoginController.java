@@ -52,6 +52,7 @@ public class LoginController implements ILoginController
      * @param password user password
      * @return true if user exist else false
      */
+    @Override
     @Transactional
     public User checkLogin(String userName, String password)
     {

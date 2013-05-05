@@ -34,6 +34,7 @@ public  class ServiceDecorator implements IService
 
     private String delegateAttr = null;
 
+    @Override
     public String service()
     {
         this.delegateAttr = delegate.service();

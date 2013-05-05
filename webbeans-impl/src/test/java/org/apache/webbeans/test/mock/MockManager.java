@@ -64,6 +64,7 @@ public class MockManager extends AbstractBeanManager implements BeanManager
         manager.addBean(webBeansContext.getWebBeansUtil().getManagerBean());
     }
 
+    @Override
     public WebBeansContext getWebBeansContext()
     {
         return manager.getWebBeansContext();
@@ -110,12 +111,14 @@ public class MockManager extends AbstractBeanManager implements BeanManager
         return manager.addContext(context);
     }
 
+    @Override
     public void fireEvent(Object event, Annotation... bindings)
     {
         manager.fireEvent(event, bindings);
 
     }
 
+    @Override
     public Context getContext(Class<? extends Annotation> scopeType)
     {
         return manager.getContext(scopeType);
@@ -151,11 +154,13 @@ public class MockManager extends AbstractBeanManager implements BeanManager
         return manager.getBeans(apiType, bindingTypes);
     }
 
+    @Override
     public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
         return manager.resolveDecorators(types, bindingTypes);
     }
 
+    @Override
     public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
     {
         return manager.resolveInterceptors(type, interceptorBindings);
@@ -179,6 +184,7 @@ public class MockManager extends AbstractBeanManager implements BeanManager
         return this.manager.createCreationalContext(contextual);
     }
 
+    @Override
     public <T> BeanAttributesImpl<T> createBeanAttributes(AnnotatedType<T> type)
     {
         return BeanAttributesBuilder.forContext(manager.getWebBeansContext()).newBeanAttibutes(type).build();

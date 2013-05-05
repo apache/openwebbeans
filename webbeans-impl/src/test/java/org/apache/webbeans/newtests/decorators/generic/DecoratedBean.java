@@ -25,6 +25,7 @@ import javax.inject.Scope;
 public class DecoratedBean implements GenericInterface<Scope>
 {
 
+    @Override
     public boolean isDecoratorCalled()
     {
         return false;

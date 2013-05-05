@@ -32,6 +32,7 @@ public class DeckStereotyped implements DeckType
     protected ArrayList<String> intercepted_by = new ArrayList<String>();
     private int shuffled = 0, intercepted = 0;
 
+    @Override
     public String getName()
     {
         return this.getClass().getSimpleName();
@@ -47,18 +48,21 @@ public class DeckStereotyped implements DeckType
     /**
      * The method to be intercepted
      */
+    @Override
     @BindingMethodInterceptor
     public void shuffle()
     {
         shuffled++;
     }
 
+    @Override
     public void setIntercepted(String name)
     {
         intercepted++;
         intercepted_by.add(name);
     }
 
+    @Override
     public List<String> getInterceptors()
     {
         return intercepted_by;

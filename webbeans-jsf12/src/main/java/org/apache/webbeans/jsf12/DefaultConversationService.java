@@ -25,11 +25,13 @@ import org.apache.webbeans.spi.ConversationService;
 public class DefaultConversationService implements ConversationService
 {
 
+    @Override
     public String getConversationId()
     {
         return JSFUtil.getConversationId();
     }
 
+    @Override
     public String getConversationSessionId()
     {
         HttpSession session = JSFUtil.getSession();

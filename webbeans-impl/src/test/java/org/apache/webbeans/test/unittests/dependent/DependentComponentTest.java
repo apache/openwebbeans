@@ -39,6 +39,7 @@ public class DependentComponentTest extends TestContext
         super(DependentComponentTest.class.getName());
     }
 
+    @Override
     @Before
     public void init()
     {

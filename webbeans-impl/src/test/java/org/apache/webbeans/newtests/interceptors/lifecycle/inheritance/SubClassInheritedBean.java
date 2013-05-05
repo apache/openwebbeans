@@ -31,16 +31,19 @@ public class SubClassInheritedBean extends SubClassBean
         
     }
     
+    @Override
     public void business()
     {
         
     }
     
+    @Override
     public void postConstruct()
     {
         POST_CONSTRUCT = true;
     }
     
+    @Override
     public void preDestroy()
     {
         PRE_DESTOY = true;

@@ -31,6 +31,7 @@ public class MoreThanOneDelegateAttribute implements IPayment
     @Delegate
     IPayment payment2;
 
+    @Override
     public String pay()
     {
         // TODO Auto-generated method stub

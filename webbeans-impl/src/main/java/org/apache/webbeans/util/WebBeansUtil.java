@@ -605,6 +605,7 @@ public final class WebBeansUtil
 
         java.util.Collections.sort(beanList, new java.util.Comparator()
         {
+            @Override
             public int compare(Object o1, Object o2)
             {
                 AbstractOwbBean<?> b1 = (AbstractOwbBean<?>)o1;
@@ -651,7 +652,12 @@ public final class WebBeansUtil
      * must be higher than its super class related bean.
      * </p>
      *
+     * <p>from the spec:<br/>
+     * &quot;If Y has a name and X declares a name explicitly, using @Named,
+     * the container automatically detects the problem and treats it as a definition error.</p>
+     *
      * @param specializedClass specialized class
+     * @param beanClasses all Classes which are either &#064;Specializes or specialized.
      * @throws DefinitionException if name is defined
      * @throws InconsistentSpecializationException related with priority
      * @throws WebBeansConfigurationException any other exception
@@ -661,7 +667,7 @@ public final class WebBeansUtil
         Asserts.nullCheckForClass(specializedClass);
 
         Bean<?> superBean = null;
-        Bean<?> specialized = null;
+        Bean<?> specialized;
         Set<Bean<?>> resolvers = isConfiguredWebBeans(specializedClass, true);
         AlternativesManager altManager = webBeansContext.getAlternativesManager();
 
@@ -853,6 +859,7 @@ public final class WebBeansUtil
                 SortedListHelper<ProducerMethodBean>(new ArrayList<ProducerMethodBean>(),
                 new Comparator<ProducerMethodBean> ()
                 {
+                    @Override
                     public int compare(ProducerMethodBean e1, ProducerMethodBean e2)
                     {
                         if (e1.getBeanClass().isAssignableFrom(e2.getBeanClass()))
@@ -1499,7 +1506,7 @@ public final class WebBeansUtil
      * @param contextual the {@link Bean} to check
      * @return the uniqueId if it is {@link PassivationCapable} and enabled
      */
-    public static String isPassivationCapable(Contextual<?> contextual)
+    public static String getPassivationId(Contextual<?> contextual)
     {
         if(contextual instanceof Bean)
         {
@@ -1581,7 +1588,7 @@ public final class WebBeansUtil
         }
         else
         {
-            if(isPassivationCapable(bean) != null)
+            if(getPassivationId(bean) != null)
             {
                 return true;
             }

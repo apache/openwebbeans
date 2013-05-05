@@ -49,6 +49,7 @@ public class WebBeansConfigurationHttpSessionListener implements HttpSessionList
     /**
      * {@inheritDoc}
      */
+    @Override
     public void sessionCreated(HttpSessionEvent event)
     {
         try
@@ -70,6 +71,7 @@ public class WebBeansConfigurationHttpSessionListener implements HttpSessionList
     /**
      * {@inheritDoc}
      */
+    @Override
     public void sessionDestroyed(HttpSessionEvent event)
     {
         if (logger.isLoggable(Level.FINE))

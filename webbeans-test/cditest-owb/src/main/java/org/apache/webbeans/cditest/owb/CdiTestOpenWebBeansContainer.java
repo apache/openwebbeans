@@ -50,7 +50,8 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
     private MockServletContext  servletContext = null;
     private MockHttpSession     session = null;
 
-    public void bootContainer() throws Exception 
+    @Override
+    public void bootContainer() throws Exception
     {
         servletContext = new MockServletContext();
         session = new MockHttpSession();
@@ -58,7 +59,8 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         lifecycle.startApplication(new ServletContextEvent(servletContext));
     }
 
-    public void shutdownContainer() throws Exception 
+    @Override
+    public void shutdownContainer() throws Exception
     {
         if (lifecycle != null) 
         {
@@ -66,7 +68,8 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         }
     }
 
-    public void startContexts() throws Exception 
+    @Override
+    public void startContexts() throws Exception
     {
         logger.log(Level.FINE, "starting all OWB Contexts");
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
@@ -79,7 +82,8 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextsService.startContext(RequestScoped.class, null);
     }
 
-    public void startApplicationScope() throws Exception 
+    @Override
+    public void startApplicationScope() throws Exception
     {
         logger.log(Level.FINE, "starting the OWB ApplicationContext");
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
@@ -88,6 +92,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextsService.startContext(ApplicationScoped.class, servletContext);
     }
 
+    @Override
     public void startConversationScope() throws Exception
     {
         logger.log(Level.FINE, "starting the OWB ConversationContext");
@@ -97,12 +102,14 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextsService.startContext(ConversationScoped.class, null);
     }
 
-    public void startCustomScope(Class<? extends Annotation> scopeClass) throws Exception 
+    @Override
+    public void startCustomScope(Class<? extends Annotation> scopeClass) throws Exception
     {
         //X TODO
     }
 
-    public void startRequestScope() throws Exception 
+    @Override
+    public void startRequestScope() throws Exception
     {
         logger.log(Level.FINE, "starting the OWB RequestContext");
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
@@ -111,7 +118,8 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextsService.startContext(RequestScoped.class, null);
     }
 
-    public void startSessionScope() throws Exception 
+    @Override
+    public void startSessionScope() throws Exception
     {
         logger.log(Level.FINE, "starting the OWB SessionContext");
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
@@ -120,7 +128,8 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextsService.startContext(SessionScoped.class, session);
     }
 
-    public void stopContexts() throws Exception 
+    @Override
+    public void stopContexts() throws Exception
     {
         logger.log(Level.FINE, "stopping all OWB Contexts");
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
@@ -133,7 +142,8 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextsService.endContext(Singleton.class, null);
     }
 
-    public void stopApplicationScope() throws Exception 
+    @Override
+    public void stopApplicationScope() throws Exception
     {
         logger.log(Level.FINE, "stopping the OWB ApplicationContext");
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
@@ -141,7 +151,8 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextsService.endContext(ApplicationScoped.class, servletContext);
     }
 
-    public void stopConversationScope() throws Exception 
+    @Override
+    public void stopConversationScope() throws Exception
     {
         logger.log(Level.FINE, "stopping the OWB ConversationContext");
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
@@ -149,12 +160,14 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextsService.endContext(ConversationScoped.class, null);
     }
 
-    public void stopCustomScope(Class<? extends Annotation> scopeClass) throws Exception 
+    @Override
+    public void stopCustomScope(Class<? extends Annotation> scopeClass) throws Exception
     {
         //X TODO
     }
 
-    public void stopRequestScope() throws Exception 
+    @Override
+    public void stopRequestScope() throws Exception
     {
         logger.log(Level.FINE, "stopping the OWB RequestContext");
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
@@ -162,7 +175,8 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextsService.endContext(RequestScoped.class, null);
     }
 
-    public void stopSessionScope() throws Exception 
+    @Override
+    public void stopSessionScope() throws Exception
     {
         logger.log(Level.FINE, "stopping the OWB SessionContext");
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
@@ -171,11 +185,13 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         contextsService.endContext(SessionScoped.class, session);
     }
     
-    public  BeanManager getBeanManager() 
+    @Override
+    public  BeanManager getBeanManager()
     {
         return lifecycle.getBeanManager();
     }
 
+    @Override
     public <T> T getInstance(Class<T> type, Annotation... qualifiers)
     throws ResolutionException 
     {
@@ -187,6 +203,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         return instance;
     }
 
+    @Override
     public Object getInstance(String name)
     throws ResolutionException 
     {

@@ -70,6 +70,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
         // Lifecycle container
         this.lifeCycle = new StandaloneLifeCycle()
         {
+            @Override
             protected void afterInitApplication(Properties event)
             {
                 this.scannerService = discovery;
@@ -105,6 +106,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
             // Lifecycle container
             this.lifeCycle = new StandaloneLifeCycle()
             {
+                @Override
                 protected void afterInitApplication(Properties event)
                 {
                     this.scannerService = discovery;
@@ -136,16 +138,19 @@ public class StandaloneContainersImpl implements StandaloneContainers
         return true;
     }
 
+    @Override
     public void setup()
     {
 
     }
 
+    @Override
     public void cleanup()
     {
 
     }
 
+    @Override
     public void undeploy()
     {
         try
@@ -159,17 +164,20 @@ public class StandaloneContainersImpl implements StandaloneContainers
         }
     }
 
+    @Override
     public DeploymentException getDeploymentException()
     {
         return this.excpetion;
     }
 
+    @Override
     public void deploy(Collection<Class<?>> classes) throws DeploymentException
     {
         setUp(classes);
         deployInternal(classes);
     }
 
+    @Override
     public boolean deploy(Collection<Class<?>> classes, Collection<URL> xmls)
     {
         if (!setUp(classes))

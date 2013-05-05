@@ -80,12 +80,14 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
         return bean.getInjectionPoints();
     }
 
+    @Override
     public T create(CreationalContext<T> context)
     {
         
         return bean.create(context);
     }
 
+    @Override
     public void destroy(T instance, CreationalContext<T> context)
     {
         bean.destroy(instance,context);

@@ -29,6 +29,7 @@ import org.apache.webbeans.test.event.LoggedInEvent;
 public class BookShop extends Business implements Shop<Book>
 {
 
+    @Override
     public String shop()
     {
         return "shop";
