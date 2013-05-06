@@ -36,7 +36,7 @@ import org.apache.webbeans.config.WebBeansContext;
  * @version $Rev$ $Date$
  * @param <T> bean type info
  */
-public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> implements PassivationCapable
+public class AbstractProducerBean<T> extends AbstractOwbBean<T> implements PassivationCapable
 {
     private Class<T> returnType;
     private Producer<T> producer;
@@ -47,12 +47,12 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
      * @param returnType bean type info
      * @param ownerComponent owner bean
      */
-    protected AbstractProducerBean(Class<?> ownerBeanClass,
-                                   WebBeansContext webBeansContext,
-                                   WebBeansType webBeansType,
-                                   BeanAttributes<T> beanAttributes,
-                                   Class<T> returnType,
-                                   ProducerFactory<?> producerFactory)
+    public AbstractProducerBean(Class<?> ownerBeanClass,
+            WebBeansContext webBeansContext,
+            WebBeansType webBeansType,
+            BeanAttributes<T> beanAttributes,
+            Class<T> returnType,
+            ProducerFactory<?> producerFactory)
     {
         super(webBeansContext, webBeansType, beanAttributes, ownerBeanClass, !returnType.isPrimitive());
         this.returnType = returnType;

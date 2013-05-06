@@ -810,7 +810,7 @@ public final class WebBeansUtil
             ProducerMethodBean superBean = sortedProducerBeans.get(i - 1);
 
             // inherit name is super class has name
-            boolean isSuperHasName = configuredProducerSpecializedName(bean, bean.getCreatorMethod(), superMethod);
+            boolean isSuperHasName = isSuperMethodNamed(bean, bean.getCreatorMethod(), superMethod);
 
             // disable super bean if needed
             if (bean.getCreatorMethod().getAnnotation(Alternative.class) == null)
@@ -1025,9 +1025,9 @@ public final class WebBeansUtil
      * @param method specialized producer method
      * @param superMethod overriden super producer method
      */
-    public boolean configuredProducerSpecializedName(AbstractOwbBean<?> component, Method method, Method superMethod)
+    public boolean isSuperMethodNamed(AbstractOwbBean<?> component, Method method, Method superMethod)
     {
-        return webBeansContext.getAnnotationManager().configuredProducerSpecializedName(component, method, superMethod);
+        return webBeansContext.getAnnotationManager().isSuperMethodNamed(component, method, superMethod);
     }
 
     /**

@@ -26,7 +26,6 @@ import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ArrayUtil;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.Default;
@@ -752,7 +751,7 @@ public final class AnnotationManager
      * @param method specialized producer method
      * @param superMethod overriden super producer method
      */
-    public boolean configuredProducerSpecializedName(AbstractOwbBean<?> component,
+    public boolean isSuperMethodNamed(AbstractOwbBean<?> component,
                                                             Method method,
                                                             Method superMethod)
     {
@@ -760,20 +759,10 @@ public final class AnnotationManager
         Asserts.assertNotNull(method,"method parameter can not be null");
         Asserts.assertNotNull(superMethod,"superMethod parameter can not be null");
 
-        String name = null;
         boolean hasName = false;
         if(AnnotationUtil.hasMethodAnnotation(superMethod, Named.class))
         {
-            Named named =  superMethod.getAnnotation(Named.class);
             hasName = true;
-            if(!named.value().equals(""))
-            {
-                name = named.value();
-            }
-            else
-            {
-                name = WebBeansUtil.getProducerDefaultName(superMethod.getName());
-            }
         }
         else
         {
@@ -783,7 +772,6 @@ public final class AnnotationManager
                 if(ann.annotationType().isAnnotationPresent(Stereotype.class))
                 {
                     hasName = true;
-                    name = WebBeansUtil.getProducerDefaultName(superMethod.getName());
                     break;
                 }
             }
@@ -796,16 +784,9 @@ public final class AnnotationManager
                 throw new DefinitionException("Specialized method : " + method.getName() + " in class : "
                         + component.getReturnType().getName() + " may not define @Named annotation");
             }
-
-//            component.setName(name);
         }
 
         return hasName;
-//        else
-//        {
-//            component.setName(name);
-//        }
-
     }
 
     @SuppressWarnings("unchecked")

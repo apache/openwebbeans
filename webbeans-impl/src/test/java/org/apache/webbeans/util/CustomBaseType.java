@@ -18,10 +18,6 @@
  */
 package org.apache.webbeans.util;
 
-public class SpecificClass<T extends CustomType> implements GenericInterface<T> {
-
-    @Override
-    public T newInstance() {
-        return null;
-    }
+public abstract class CustomBaseType
+{
 }

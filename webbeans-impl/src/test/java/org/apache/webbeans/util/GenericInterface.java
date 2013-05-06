@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.util;
 
-public interface GenericInterface<T> {
+public interface GenericInterface<T extends CustomBaseType> {
 
     T newInstance();
 }

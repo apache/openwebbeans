@@ -29,6 +29,7 @@ import java.util.Map;
 import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.component.spi.BeanAttributes;
+import org.apache.webbeans.component.spi.InjectionTargetFactory;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionTargetFactoryImpl;
 
@@ -49,13 +50,14 @@ import org.apache.webbeans.util.Asserts;
  * @version $Rev$ $Date$
  * @param <T> bean class
  */
-public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
+public class InjectionTargetBean<T> extends AbstractOwbBean<T>
 {    
     /**Annotated type for bean*/
     private AnnotatedType<T> annotatedType;
     private InjectionTarget<T> injectionTarget;
 
-    protected InjectionTargetBean(WebBeansContext webBeansContext,
+    public InjectionTargetBean(
+            WebBeansContext webBeansContext,
             WebBeansType webBeansType,
             AnnotatedType<T> annotatedType,
             BeanAttributes<T> beanAttributes,
@@ -67,12 +69,12 @@ public abstract class InjectionTargetBean<T> extends AbstractOwbBean<T>
     /**
      * Initializes the InjectionTarget Bean part.
      */
-    protected InjectionTargetBean(WebBeansContext webBeansContext,
-                                  WebBeansType webBeansType,
-                                  AnnotatedType<T> annotatedType,
-                                  BeanAttributes<T> beanAttributes,
-                                  Class<T> beanClass,
-                                  InjectionTargetFactoryImpl<T> factory)
+    public InjectionTargetBean(WebBeansContext webBeansContext,
+            WebBeansType webBeansType,
+            AnnotatedType<T> annotatedType,
+            BeanAttributes<T> beanAttributes,
+            Class<T> beanClass,
+            InjectionTargetFactory<T> factory)
     {
         super(webBeansContext, webBeansType, beanAttributes, beanClass, false);
         Asserts.assertNotNull(annotatedType, "AnnotatedType may not be null");

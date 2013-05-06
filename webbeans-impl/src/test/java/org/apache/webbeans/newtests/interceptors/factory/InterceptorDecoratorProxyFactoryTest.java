@@ -28,6 +28,7 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +41,13 @@ import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.proxy.OwbInterceptorProxy;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.CustomBaseType;
+import org.apache.webbeans.util.CustomType;
+import org.apache.webbeans.util.ExtendedSpecificClass;
+import org.apache.webbeans.util.GenericInterface;
+import org.apache.webbeans.util.SpecificClass;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -51,7 +58,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
 {
 
     @Test
-    public void textSimpleProxyCreation() throws Exception
+    public void testSimpleProxyCreation() throws Exception
     {
         InterceptorDecoratorProxyFactory pf = new InterceptorDecoratorProxyFactory(new WebBeansContext());
 
@@ -63,72 +70,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         Method[] interceptedMethods = methods.toArray(new Method[methods.size()]);
         Method[] nonInterceptedMethods = null;
 
-        Bean dummyBean = new Bean() {
-            @Override
-            public Object create(CreationalContext context)
-            {
-                return null;
-            }
-
-            @Override
-            public Set<Type> getTypes()
-            {
-                return null;
-            }
-
-            @Override
-            public Set<Annotation> getQualifiers()
-            {
-                return null;
-            }
-
-            @Override
-            public Class<? extends Annotation> getScope()
-            {
-                return null;
-            }
-
-            @Override
-            public String getName()
-            {
-                return null;
-            }
-
-            @Override
-            public boolean isNullable()
-            {
-                return false;
-            }
-
-            @Override
-            public Set<InjectionPoint> getInjectionPoints()
-            {
-                return null;
-            }
-
-            @Override
-            public Class<?> getBeanClass()
-            {
-                return null;
-            }
-
-            @Override
-            public Set<Class<? extends Annotation>> getStereotypes()
-            {
-                return null;
-            }
-
-            @Override
-            public boolean isAlternative()
-            {
-                return false;
-            }
-
-            @Override
-            public void destroy(Object instance, CreationalContext context)
-            {
-            }
-        };
+        Bean dummyBean = new DummyBean();
 
         Class<ClassInterceptedClass> proxyClass = pf.createProxyClass(dummyBean, classLoader, ClassInterceptedClass.class, interceptedMethods, nonInterceptedMethods);
         Assert.assertNotNull(proxyClass);
@@ -153,6 +95,114 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         Assert.assertEquals(5, testInvocationHandler.invokedMethodNames.size());
     }
 
+    @Test
+    public void testGenericProxyGeneration()
+    {
+        InterceptorDecoratorProxyFactory pf = new InterceptorDecoratorProxyFactory(new WebBeansContext());
+
+        // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
+        ClassLoader classLoader = new URLClassLoader(new URL[0]);
+
+        List<Method> methods = ClassUtil.getNonPrivateMethods(ExtendedSpecificClass.class, true);
+        for (Iterator<Method> i = methods.iterator(); i.hasNext();)
+        {
+            if (i.next().isBridge())
+            {
+                i.remove();
+            }
+        }
+
+        Method[] interceptedMethods = methods.toArray(new Method[methods.size()]);
+        Method[] nonInterceptedMethods = null;
+
+        Bean dummyBean = new DummyBean();
+
+        Class<ExtendedSpecificClass> proxyClass = pf.createProxyClass(dummyBean, classLoader, ExtendedSpecificClass.class, interceptedMethods, nonInterceptedMethods);
+        Assert.assertNotNull(proxyClass);
+
+        ExtendedSpecificClass internalInstance = new ExtendedSpecificClass();
+        internalInstance.init();
+
+        TestInterceptorHandler testInvocationHandler = new TestInterceptorHandler(internalInstance);
+
+        ExtendedSpecificClass extendedSpecificProxyInstance = pf.createProxyInstance(proxyClass, internalInstance, testInvocationHandler);
+        SpecificClass<CustomType> specificProxyInstance = extendedSpecificProxyInstance;
+        GenericInterface<CustomBaseType> interfaceProxyInstance = extendedSpecificProxyInstance;
+        Assert.assertNotNull(extendedSpecificProxyInstance.newInstance());
+        Assert.assertNotNull(specificProxyInstance.newInstance());
+        Assert.assertNotNull(interfaceProxyInstance.newInstance());
+
+        Assert.assertTrue(extendedSpecificProxyInstance instanceof OwbInterceptorProxy);
+        Assert.assertNotNull(internalInstance.newInstance()); 
+    }
+
+    public static class DummyBean implements Bean {
+        @Override
+        public Object create(CreationalContext context)
+        {
+            return null;
+        }
+
+        @Override
+        public Set<Type> getTypes()
+        {
+            return null;
+        }
+
+        @Override
+        public Set<Annotation> getQualifiers()
+        {
+            return null;
+        }
+
+        @Override
+        public Class<? extends Annotation> getScope()
+        {
+            return null;
+        }
+
+        @Override
+        public String getName()
+        {
+            return null;
+        }
+
+        @Override
+        public boolean isNullable()
+        {
+            return false;
+        }
+
+        @Override
+        public Set<InjectionPoint> getInjectionPoints()
+        {
+            return null;
+        }
+
+        @Override
+        public Class<?> getBeanClass()
+        {
+            return null;
+        }
+
+        @Override
+        public Set<Class<? extends Annotation>> getStereotypes()
+        {
+            return null;
+        }
+
+        @Override
+        public boolean isAlternative()
+        {
+            return false;
+        }
+
+        @Override
+        public void destroy(Object instance, CreationalContext context)
+        {
+        }
+    }
+
     public static class TestInterceptorHandler implements InterceptorHandler
     {
         public List<String> invokedMethodNames = new ArrayList<String>();
@@ -167,6 +217,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         @Override
         public Object invoke(Method method, Object[] args)
         {
+            Assert.assertFalse(method.isBridge());
             if (!method.getName().equals("toString"))
             {
                 invokedMethodNames.add(method.getName());

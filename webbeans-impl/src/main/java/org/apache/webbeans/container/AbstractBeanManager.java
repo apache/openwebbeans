@@ -30,6 +30,8 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.FieldProducerFactory;
 import org.apache.webbeans.component.creation.MethodProducerFactory;
@@ -118,12 +120,19 @@ public abstract class AbstractBeanManager implements BeanManager
 
     public <T> Bean<T> createBean(BeanAttributes<T> attributes, Class<T> type, InjectionTargetFactory<T> factory)
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new InjectionTargetBean<T>(
+                getWebBeansContext(),
+                WebBeansType.THIRDPARTY,
+                getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(type),
+                attributes,
+                type,
+                factory);
     }
 
     public <T, X> Bean<T> createBean(BeanAttributes<T> attributes, Class<X> type, ProducerFactory<X> factory)
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return null;
+        //return new AbstractProducerBean<T>(type, getWebBeansContext(), WebBeansType.THIRDPARTY, attributes, returnType, factory);
     }
 
     public <T extends Extension> T getExtension(Class<T> type)
