@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.conversation;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -117,7 +116,30 @@ public class ConversationManager
         return map;
     }
     
-
+    /**
+     * Return all conversation/context associated with sessionid.
+     * 
+     * @param sessionId
+     * @return
+     */
+    public Map<Conversation, ConversationContext> getAndRemoveConversationMapWithSessionId(String sessionId) 
+    {
+        Asserts.assertNotNull(sessionId,"sessionId parameter can not be null");
+        Set<Conversation> set = conversations.keySet();
+        Iterator<Conversation> it = set.iterator();
+        ConversationImpl conv = null;
+        Map<Conversation, ConversationContext> map = new HashMap<Conversation, ConversationContext>();
+        while (it.hasNext())
+        {
+            conv = (ConversationImpl) it.next();
+            if (conv.getSessionId().equals(sessionId))
+            {
+                map.put(conv, conversations.remove(conv));
+            }
+        }
+        return map;
+    }
+    
     /**
      * Remove given conversation.
      * @param conversation conversation instance
@@ -173,6 +195,7 @@ public class ConversationManager
      * Destroy conversations with given session id.
      * @param sessionId session id
      */
+    @Deprecated
     public void destroyConversationContextWithSessionId(String sessionId)
     {
         Asserts.assertNotNull(sessionId, "sessionId parameter can not be null");
@@ -243,22 +266,9 @@ public class ConversationManager
             }
         }
     }
-
-    /**
-     * Destroys all conversations
-     */
-    public void destroyAllConversations()
+    
+    public Map<Conversation, ConversationContext> getAllConversationContexts()
     {
-        Collection<ConversationContext> collection = conversations.values();
-        if(collection != null && collection.size() > 0)
-        {
-            for (ConversationContext context : collection) 
-            {
-                context.destroy();
-            }            
-        }
-        
-        //Clear conversations
-        conversations.clear();
+        return this.conversations;
     }
 }

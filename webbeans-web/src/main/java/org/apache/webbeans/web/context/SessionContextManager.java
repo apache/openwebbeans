@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.web.context;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -73,34 +72,17 @@ public class SessionContextManager
     }
     
     /**
-     * Destroy session context with given id.
+     * Removes the {@link SessionContext} for the given id.
+     *
      * @param sessionId session id
      */
-    public void destroySessionContextWithSessionId(String sessionId)
+    public void removeSessionContextWithSessionId(String sessionId)
     {
-        SessionContext sessionContext = this.sessionContexts.remove(sessionId);
-        if(sessionContext != null)
-        {
-            sessionContext.destroy();
-        }
+        this.sessionContexts.remove(sessionId);
     }
     
-    /**
-     * Destroys all sessions.
-     */
-    public void destroyAllSessions()
+    public Map<String, SessionContext> getAllSessionContexts()
     {
-        //Destroy all contexts
-        Collection<SessionContext> allSessionContexts = this.sessionContexts.values();
-        if(allSessionContexts != null && allSessionContexts.size() > 0)
-        {
-            for(SessionContext sessionContext : allSessionContexts)
-            {
-                sessionContext.destroy();
-            }
-
-        //Clear map
-        allSessionContexts.clear();
-        }
+        return sessionContexts;
     }
 }

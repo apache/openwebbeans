@@ -20,7 +20,6 @@ package org.apache.webbeans.servlet;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContainerLifecycle;
@@ -29,6 +28,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.web.context.WebContextsService;
 import org.apache.webbeans.web.util.ServletCompatibilityUtil;
 
+import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.servlet.ServletContextEvent;
@@ -199,8 +199,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
             logger.log(Level.FINE, "Destroying a session with session id : [{0}]", event.getSession().getId());
         }
         this.lifeCycle.getContextService().endContext(SessionScoped.class, event.getSession());
-
-        ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
-        conversationManager.destroyConversationContextWithSessionId(event.getSession().getId());
+        this.lifeCycle.getContextService().endContext(ConversationScoped.class, event.getSession());
     }
 }
