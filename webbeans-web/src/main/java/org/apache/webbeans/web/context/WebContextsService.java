@@ -48,7 +48,9 @@ import javax.servlet.ServletRequestEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -221,6 +223,11 @@ public class WebContextsService extends AbstractContextsService
         }
         else if(supportsConversation && scopeType.equals(ConversationScoped.class))
         {
+            if (endParameters != null && endParameters instanceof HttpSession)
+            {
+                destoryAllConversationsForSession((HttpSession) endParameters);
+            }
+
             destroyConversationContext();
         }
         else if(scopeType.equals(Dependent.class))
@@ -481,6 +488,12 @@ public class WebContextsService extends AbstractContextsService
             //Get current session context
             SessionContext context = sessionContexts.get();
 
+            if (context == null)
+            {
+                initSessionContext(session);
+                context = sessionContexts.get();
+            }
+
             //Destroy context
             if (context != null)
             {
@@ -492,7 +505,7 @@ public class WebContextsService extends AbstractContextsService
             sessionContexts.remove();
 
             //Remove session from manager
-            sessionCtxManager.destroySessionContextWithSessionId(session.getId());
+            sessionCtxManager.removeSessionContextWithSessionId(session.getId());
         }
     }
 
@@ -564,10 +577,40 @@ public class WebContextsService extends AbstractContextsService
         }
         
         //destroyDependents all sessions
-        sessionCtxManager.destroyAllSessions();
+        Collection<SessionContext> allSessionContexts = sessionCtxManager.getAllSessionContexts().values();
+        if (allSessionContexts != null && allSessionContexts.size() > 0)
+        {
+            for (SessionContext sessionContext : allSessionContexts)
+            {
+                sessionContexts.set(sessionContext);
+                
+                sessionContext.destroy();
+
+                sessionContexts.set(null);
+                sessionContexts.remove();
+            }
+
+            //Clear map
+            allSessionContexts.clear();
+        }
         
         //destroyDependents all conversations
-        conversationManager.destroyAllConversations();
+        Collection<ConversationContext> allConversationContexts = conversationManager.getAllConversationContexts().values();
+        if (allConversationContexts != null && allConversationContexts.size() > 0)
+        {
+            for (ConversationContext conversationContext : allConversationContexts) 
+            {
+                conversationContexts.set(conversationContext);
+                
+                conversationContext.destroy();
+
+                conversationContexts.set(null);
+                conversationContexts.remove();
+            }
+
+            //Clear conversations
+            allConversationContexts.clear();
+        }
 
         //Also clear application and singleton context
         applicationContexts.set(null);
@@ -687,6 +730,27 @@ public class WebContextsService extends AbstractContextsService
         conversationContexts.remove();
     }
 
+    /**
+     * Workaround for OWB-841
+     *
+     * @param session The current {@link HttpSession}
+     */
+    private void destoryAllConversationsForSession(HttpSession session)
+    {
+        Map<Conversation, ConversationContext> conversations =
+                conversationManager.getAndRemoveConversationMapWithSessionId(session.getId());
+
+        for (Entry<Conversation, ConversationContext> entry : conversations.entrySet())
+        {
+            conversationContexts.set(entry.getValue());
+
+            entry.getValue().destroy();
+            
+            conversationContexts.set(null);
+            conversationContexts.remove();
+        }
+    }
+    
     /**
      * Get current request ctx.
      * @return request context
