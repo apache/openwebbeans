@@ -18,18 +18,25 @@
  */
 package org.apache.webbeans.portable;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.exception.WebBeansCreationException;
+import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.inject.InjectableConstructor;
+import org.apache.webbeans.inject.InjectableField;
+import org.apache.webbeans.inject.InjectableMethod;
+import org.apache.webbeans.intercept.DecoratorHandler;
+import org.apache.webbeans.intercept.DefaultInterceptorHandler;
+import org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
+import org.apache.webbeans.intercept.LifecycleInterceptorInvocationContext;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
+import org.apache.webbeans.proxy.InterceptorHandler;
+import org.apache.webbeans.proxy.OwbInterceptorProxy;
+import org.apache.webbeans.spi.ResourceInjectionService;
+import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ExceptionUtil;
 
 import javax.decorator.Delegate;
 import javax.enterprise.context.spi.CreationalContext;
@@ -47,25 +54,18 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.inject.Inject;
 import javax.interceptor.InvocationContext;
-
-import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.inject.InjectableConstructor;
-import org.apache.webbeans.inject.InjectableField;
-import org.apache.webbeans.inject.InjectableMethod;
-import org.apache.webbeans.intercept.DecoratorHandler;
-import org.apache.webbeans.intercept.DefaultInterceptorHandler;
-import org.apache.webbeans.intercept.LifecycleInterceptorInvocationContext;
-import org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
-import org.apache.webbeans.proxy.InterceptorHandler;
-import org.apache.webbeans.proxy.OwbInterceptorProxy;
-import org.apache.webbeans.spi.ResourceInjectionService;
-import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.ExceptionUtil;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class InjectionTargetImpl<T> extends AbstractProducer<T> implements InjectionTarget<T>
 {
@@ -447,7 +447,12 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             }
         }
 
-        return new AnnotatedConstructorImpl<T>(webBeansContext, getDefaultConstructor(), annotatedType);
+        final Constructor<T> defaultConstructor = getDefaultConstructor();
+        if (defaultConstructor == null)
+        {
+            throw new WebBeansCreationException("No default constructor for " + annotatedType.getJavaClass().getName());
+        }
+        return new AnnotatedConstructorImpl<T>(webBeansContext, defaultConstructor, annotatedType);
     }
 
     private Constructor<T> getDefaultConstructor()
