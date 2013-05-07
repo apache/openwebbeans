@@ -1,11 +1,12 @@
 -------------------------------
-Apache OpenWebBeans 1.1.8
+Apache OpenWebBeans 1.2.0
 -------------------------------
-Welcome! 
+Welcome!
+
 Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.1.8 release of Apache OpenWebBeans.
+This document is based on the 1.2.0 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -25,11 +26,12 @@ The projects WIKI page can be found at:
 https://cwiki.apache.org/confluence/display/OWB/Index
 
 
+
 --------------------------------
-OpenWebBeans 1.1.8 Release Features
+OpenWebBeans 1.2.0 Release Features
 --------------------------------
 
-- The 1.1.8 release supports the following features
+- The 1.2.0 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Session Beans Support (via Embeddable OpenEJB container in Tomcat)
@@ -74,6 +76,127 @@ of the Application. This is especially the case for <alternatives> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application. This behaviour will most likely also be the default behaviour
 in the CDI-1.1 JSR-346 specification.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.2.0
+-------------------------------------------
+
+Bug
+
+    [OWB-151] - @Dependent beans not interceptable
+    [OWB-187] - Interceptors with lifecycle and @AroundInvoke permitted to have bindingtypes containing method-level annotations
+    [OWB-306] - overrridden @AroundInvoke and lifecycle interceptors are still run
+    [OWB-392] - AbstractInjectable#dependentInstanceOfProducerMethods must not be static nor public
+    [OWB-423] - OpenWebBeansEjbInterceptor is LATE in establishing the request context for an EJB
+    [OWB-468] - Make BeansDeployer.deployFromClassPath(ScannerService) resilient to ClassNotFoundException and NoClassDefFoundError's
+    [OWB-497] - Don't break deployment if java can't read all the annotations
+    [OWB-513] - proxies should be inactive after a container shutdown
+    [OWB-549] - Security review needed for ClassUtil
+    [OWB-556] - bean with interceptor + @PreDestroy causes a NullPointerException
+    [OWB-568] - Decorater for generic Interfaces does not work
+    [OWB-569] - OpenWebBeans uses the Java Reflection API to discover program element types and annotations in addition to the AnnotatedType
+    [OWB-570] - Interceptors must support retry
+    [OWB-572] - OwbParametrizedTypeImpl s equals method is broken
+    [OWB-575] - ResourceProxyHandler.invoke should unwrap and throw the underlying cause of the InvocationTargetException
+    [OWB-665] - invocation order of @PostConstruct interceptors
+    [OWB-714] - EmptyStackException when accessing an instance that is created by a producer method that has an InjectionPoint as parameter.
+    [OWB-722] - @Typed not respected for beans using generics
+    [OWB-728] - AbstractProducer stores CreationalContext
+    [OWB-729] - review CreationalContext in Interceptor and Decorator creation
+    [OWB-730] - remove InjectionTargetWrapper
+    [OWB-733] - CLONE - ClassLoader leak in WebBeansUtil.isScopeTypeNormalCache
+    [OWB-739] - CLONE - Ambiguous producer methods and fields are not detected due to bug in AbstractProducerBean equals and hashCode
+    [OWB-740] - NPE while removing dependent beans
+    [OWB-748] - Implement CDI-132
+    [OWB-749] - Move Interceptor stuff to InterceptorManager
+    [OWB-750] - OWB annotationlitteral use instanceof to implement equals and not annotationType()
+    [OWB-754] - fix PassivationCapable detection
+    [OWB-759] - Decorator position not well managed if the decorator is abstract
+    [OWB-764] - constructor with multiple InjectionPoints cause Exception
+    [OWB-767] - DefaultBDABeansXmlScanner synchronizes without visibility guarantees
+    [OWB-768] - add support for proxying protected methods in NormalScopedProxyFactory
+    [OWB-769] - Serialisation support for our new InterceptorDecoratorProxies
+    [OWB-775] - error on shutdown doesn't cleanup WebBeansFinder map
+    [OWB-776] - private and protected producer methods do not properly de-reference the contextual instance
+    [OWB-777] - InjectableMethod must unwrap normalscoping proxies
+    [OWB-778] - InterceptorBean must unwrap InjectionTargetExceptions
+    [OWB-784] - WebContextsService bypasses spi contract of ContextsService
+    [OWB-788] - deployment error when a @Specializes bean is disabled via an Extension
+    [OWB-791] - only one generic is handled for injections of ManagedBeans
+    [OWB-793] - "Ambigious" typo
+    [OWB-794] - AbstractOwbBean#toString doesn't reflect ParameterizedTypes
+    [OWB-801] - null instance shouldn't be destroyed (copy)
+    [OWB-805] - CLONE - @Alternative is ignored when using the Provider interface.
+    [OWB-806] - CLONE - Overloaded EJB Observer methods fail to deploy
+    [OWB-807] - performance issue with owb-arquillian-standalone
+    [OWB-813] - CLONE - #annotationType() of javax.enterprise:cdi-api not compatible with AbstractAnnotationLiteral
+    [OWB-817] - the jsf module(s) are bound to a specific el version
+    [OWB-818] - StandaloneResourceInjectionService can lead to injection of 'null'
+    [OWB-822] - ejb should be tested first and not after having defined a managed bean
+    [OWB-823] - EJBs support ee injections
+    [OWB-824] - annotated field events should get the associated annotatedfield
+    [OWB-825] - don't fire the same PAT event for a bean intercepted by itself (ejb interceptor style)
+    [OWB-828] - broken proxies in case of bridge methods
+    [OWB-829] - generate our proxies with 2 $$
+    [OWB-831] - filtering producers by annotated type is too strict (java type should be enough) since it prevents extensions to add producers
+    [OWB-832] - ejb producers should use ejb view methods
+    [OWB-833] - disposal injection points shouldn't be listed in getInjectionPoints() method
+    [OWB-834] - self interceptors have lifecycle methods
+    [OWB-835] - even resource should be serializable
+    [OWB-836] - auto interception ignored when no other reason to proxy the class
+    [OWB-837] - lifecycle interceptors can't catch exceptions
+    [OWB-838] - putting bean dependent instances first in dependent objects
+    [OWB-839] - interceptor lifecycle methods (@postConstruct,...) should be ignored for method interceptors
+    [OWB-840] - don't create decorators if the asked instance if the delegate
+    [OWB-842] - lazy mode for @New on ejbs
+    [OWB-845] - @Disposes not validated
+    [OWB-848] - deserialization of normal-scoped proxies for PassivationCapable beans fails
+    [OWB-849] - org.apache.webbeans.portable.ProviderBasedProxyProducer uses the wrong classloader
+    [OWB-850] - all provider based producer can't be proxied -> handling dependent scope
+    [OWB-855] - NPE when no default constructor is found
+
+Improvement
+
+    [OWB-479] - detect loops in producer beans vs. producer method parameters at deployment time
+    [OWB-488] - move WebBeansConfigurationException messages to message bundles
+    [OWB-551] - Reduce static synchronized hashmap usage even further
+    [OWB-603] - Incorporate enhanced BeanArchive handling of the preliminary CDI-1.1 specification
+    [OWB-632] - re-visit WebBeansUtil#isPassivationCapable
+    [OWB-715] - Remove EL22 implementation from Core to Own Project
+    [OWB-717] - Remove Failover implementation from Web to Own Project
+    [OWB-727] - introduce a static INSTANCE for DefaultLiteral, AnyLiteral, etc
+    [OWB-735] - remove CreationalContextWrapper
+    [OWB-744] - change the name of all Bean<T> implementations to reflect this fact
+    [OWB-753] - remove lazy Bean initialisation
+    [OWB-765] - Implement BeanAttributes
+    [OWB-766] - Use CreationalContextImpl to pass info about InjectionPoint, Event, etc
+    [OWB-772] - typo in exception message wrt passivation capable dependencies
+    [OWB-779] - ScannerService using xbean
+    [OWB-797] - AnnotationManager checks the same annotations again
+    [OWB-819] - check injectable reference for normal-scoped beans
+    [OWB-852] - Improve getContextsService performance
+
+New Feature
+
+    [OWB-321] - Conversation beans could not be populated to non-faces request by a JSF redirect navigation rule
+    [OWB-495] - create a jetty integration plugin
+    [OWB-606] - create bundles for standard use cases like JSF-webapp, standalone, etc
+    [OWB-671] - Automatically register FailOverFilter if failover is activated
+    [OWB-710] - openwebbeans-arquillian container
+    [OWB-756] - implement BeanAttributes and ProcessBeanAttritubes
+    [OWB-830] - Implement Instance#destory
+
+Task
+
+    [OWB-692] - remove ContextsFactory
+    [OWB-726] - upgrade trunk (OWB-1.2.x) to target java 1.6
+    [OWB-781] - Remove all Javassist and Scannotation related parts from OWB
+
+Wish
+
+    [OWB-344] - implement Decorators and Interceptors as subclassing
+
 
 
 -------------------------------------------
