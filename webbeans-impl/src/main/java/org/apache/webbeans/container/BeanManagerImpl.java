@@ -71,6 +71,7 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.component.third.PassivationCapableThirdpartyBeanImpl;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -356,16 +357,24 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
      * @param newBean
      * @return
      */
-    public BeanManager addInternalBean(Bean<?> newBean)
+    public <T> BeanManager addInternalBean(Bean<T> newBean)
     {
         if(newBean instanceof AbstractOwbBean)
         {
-            addPassivationInfo((OwbBean)newBean);
+            addPassivationInfo((OwbBean<T>)newBean);
             deploymentBeans.add(newBean);
         }
         else
         {
-            ThirdpartyBeanImpl<?> bean = new ThirdpartyBeanImpl(webBeansContext, newBean);
+            ThirdpartyBeanImpl<?> bean;
+            if (!PassivationCapable.class.isInstance(newBean))
+            {
+                bean = new ThirdpartyBeanImpl<T>(webBeansContext, newBean);
+            }
+            else
+            {
+                bean = new PassivationCapableThirdpartyBeanImpl<T>(webBeansContext, newBean);
+            }
             addPassivationInfo(bean);
             deploymentBeans.add(bean);
         }
