@@ -326,6 +326,8 @@ public class DefaultOwbFailOverService implements FailOverService
      * Get object input stream. Note, the stream should support deserialize
      * javassist objects.
      * 
+     * @deprecated as we do not use Javassist anymore this is not needed anymore!
+     * 
      * @return custom object input stream.
      */
     @Override
