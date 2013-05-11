@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.portable;
 
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,14 +27,16 @@ import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanManager;
 
-import org.apache.webbeans.config.WebBeansContext;
-import org.junit.Ignore;
+import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class AnnotatedTypeImplTest
+    extends AbstractUnitTest
 {
     final int threads = 1000;
 
@@ -45,13 +48,48 @@ public class AnnotatedTypeImplTest
 
     final AtomicInteger exceptions = new AtomicInteger();
 
+    @Before
+    public void setup()
+    {
+        startContainer(new ArrayList<Class<?>>());
+    }
+
+    @Test
+    public void testCreateInjectionTarget()
+        throws Exception
+    {
+
+        final BeanManager beanManager = getBeanManager();
+        final AnnotatedType<Colors> annotatedType = beanManager.createAnnotatedType(Colors.class);
+
+        for (int i = 0; i < threads; i++)
+        {
+            new Runner(startingLine, startingPistol, exceptions, finishLine, annotatedType)
+            {
+                @Override
+                public void doit()
+                {
+                    beanManager.createInjectionTarget(annotatedType);
+                }
+            }.start();
+        }
+
+        assertTrue("Not all threads reported ready.", startingLine.await(30, TimeUnit.SECONDS));
+
+        startingPistol.countDown();
+
+        assertTrue("Not all threads finished.", finishLine.await(30, TimeUnit.SECONDS));
+
+        assertEquals(0, exceptions.get());
+    }
+
     @Test
     public void testGetFields()
         throws Exception
     {
 
-        final AnnotatedType<Colors> annotatedType =
-            new AnnotatedTypeImpl<Colors>(new WebBeansContext(), Colors.class, null);
+        final BeanManager beanManager = getBeanManager();
+        final AnnotatedType<Colors> annotatedType = beanManager.createAnnotatedType(Colors.class);
 
         for (int i = 0; i < threads; i++)
         {
@@ -62,6 +100,7 @@ public class AnnotatedTypeImplTest
                 {
                     for (AnnotatedField<? super Colors> field : annotatedType.getFields())
                     {
+
                     }
                 }
             }.start();
@@ -81,8 +120,8 @@ public class AnnotatedTypeImplTest
         throws Exception
     {
 
-        final AnnotatedType<Colors> annotatedType =
-            new AnnotatedTypeImpl<Colors>(new WebBeansContext(), Colors.class, null);
+        final BeanManager beanManager = getBeanManager();
+        final AnnotatedType<Colors> annotatedType = beanManager.createAnnotatedType(Colors.class);
 
         for (int i = 0; i < threads; i++)
         {
@@ -112,8 +151,8 @@ public class AnnotatedTypeImplTest
         throws Exception
     {
 
-        final AnnotatedType<Colors> annotatedType =
-            new AnnotatedTypeImpl<Colors>(new WebBeansContext(), Colors.class, null);
+        final BeanManager beanManager = getBeanManager();
+        final AnnotatedType<Colors> annotatedType = beanManager.createAnnotatedType(Colors.class);
 
         for (int i = 0; i < threads; i++)
         {
