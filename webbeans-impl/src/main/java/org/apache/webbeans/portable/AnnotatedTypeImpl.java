@@ -28,10 +28,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
@@ -61,33 +57,7 @@ class AnnotatedTypeImpl<X>
      */
     private final Class<X> annotatedClass;
 
-    /**
-     * Constructors
-     */
-    private Set<AnnotatedConstructor<X>> constructors = null;
-
-    /**
-     * Fields
-     */
-    private Set<AnnotatedField<? super X>> fields = null;
-
-    /**
-     * Methods
-     */
-    private Set<AnnotatedMethod<? super X>> methods = null;
-
-    private final AtomicBoolean notInitialized = new AtomicBoolean(true);
-
-    private final FutureTask initializer = new FutureTask(new Callable()
-    {
-        public Object call()
-            throws Exception
-        {
-            init();
-            return null;
-        }
-    });
-
+    private volatile State state;
 
     /**
      * Creates a new instance.
@@ -126,72 +96,6 @@ class AnnotatedTypeImpl<X>
         }
     }
 
-    private synchronized void init()
-    {
-        if (constructors == null)
-        {
-            constructors = new HashSet<AnnotatedConstructor<X>>();
-            fields = new HashSet<AnnotatedField<? super X>>();
-            methods = new HashSet<AnnotatedMethod<? super X>>();
-
-            Constructor<?>[] decCtxs =
-                getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructors(annotatedClass);
-
-            for (Constructor<?> ct : decCtxs)
-            {
-                if (!ct.isSynthetic())
-                {
-                    AnnotatedConstructor<X> ac =
-                        new AnnotatedConstructorImpl<X>(getWebBeansContext(), (Constructor<X>) ct, this);
-                    constructors.add(ac);
-                }
-            }
-            if (constructors.isEmpty())
-            {
-                // must be implicit default constructor
-                Constructor<X> constructor =
-                    getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructor(annotatedClass);
-                if (constructor != null)
-                {
-                    constructors.add(new AnnotatedConstructorImpl<X>(getWebBeansContext(), constructor, this));
-                }
-            }
-
-            Field[] decFields = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredFields(annotatedClass);
-            Method[] decMethods =
-                getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(annotatedClass);
-            for (Field f : decFields)
-            {
-                if (!f.isSynthetic())
-                {
-                    AnnotatedField<X> af = new AnnotatedFieldImpl<X>(getWebBeansContext(), f, this);
-                    fields.add(af);
-                }
-            }
-
-            for (Method m : decMethods)
-            {
-                if (!m.isSynthetic() && !m.isBridge())
-                {
-                    AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(getWebBeansContext(), m, this);
-                    methods.add(am);
-                }
-            }
-
-            if (supertype != null)
-            {
-                fields.addAll(supertype.getFields());
-                for (AnnotatedMethod<? super X> method : supertype.getMethods())
-                {
-                    if (!isOverridden(method))
-                    {
-                        methods.add(method);
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -209,43 +113,7 @@ class AnnotatedTypeImpl<X>
      */
     void addAnnotatedConstructor(AnnotatedConstructor<X> constructor)
     {
-        ensureInitialized();
-        constructors.add(constructor);
-    }
-
-    private void ensureInitialized()
-    {
-        try
-        {
-            if (notInitialized.get())
-            {
-                do
-                {
-                    // If this thread is the one to set the state to "notInitialized=false",
-                    // then this thread is also responsible for calling the initializer
-                    if (notInitialized.compareAndSet(true, false))
-                    {
-                        initializer.run();
-                    }
-
-                    // Try again.
-                }
-                while (notInitialized.get());
-            }
-
-            // This is the magic blocking call that protects our read access
-            // The 'get' call will not return until the initializer has finished running
-            initializer.get();
-        }
-        catch (InterruptedException e)
-        {
-            Thread.interrupted();
-            throw new IllegalStateException("Lazy Initialization of AnnotatedType failed.", e);
-        }
-        catch (ExecutionException e)
-        {
-            throw new IllegalStateException("Lazy Initialization of AnnotatedType failed.", e);
-        }
+        getState().constructors.add(constructor);
     }
 
     /**
@@ -255,8 +123,7 @@ class AnnotatedTypeImpl<X>
      */
     void addAnnotatedField(AnnotatedField<? super X> field)
     {
-        ensureInitialized();
-        fields.add(field);
+        getState().fields.add(field);
     }
 
     /**
@@ -266,8 +133,7 @@ class AnnotatedTypeImpl<X>
      */
     void addAnnotatedMethod(AnnotatedMethod<? super X> method)
     {
-        ensureInitialized();
-        methods.add(method);
+        getState().methods.add(method);
     }
 
     /**
@@ -276,8 +142,7 @@ class AnnotatedTypeImpl<X>
     @Override
     public Set<AnnotatedConstructor<X>> getConstructors()
     {
-        ensureInitialized();
-        return Collections.unmodifiableSet(constructors);
+        return Collections.unmodifiableSet(getState().constructors);
     }
 
     /**
@@ -286,8 +151,7 @@ class AnnotatedTypeImpl<X>
     @Override
     public Set<AnnotatedField<? super X>> getFields()
     {
-        ensureInitialized();
-        return Collections.unmodifiableSet(fields);
+        return Collections.unmodifiableSet(getState().fields);
     }
 
     /**
@@ -296,19 +160,121 @@ class AnnotatedTypeImpl<X>
     @Override
     public Set<AnnotatedMethod<? super X>> getMethods()
     {
-        ensureInitialized();
-        return Collections.unmodifiableSet(methods);
+        return Collections.unmodifiableSet(getState().methods);
     }
 
-    private boolean isOverridden(AnnotatedMethod<? super X> superclassMethod)
+    private State getState()
     {
-        for (AnnotatedMethod<? super X> subclassMethod : methods)
+        State result = state;
+        // Double check locking with standard optimization to avoid
+        // extra reads on the volatile field 'state'
+        if (result == null)
         {
-            if (ClassUtil.isOverridden(subclassMethod.getJavaMember(), superclassMethod.getJavaMember()))
+            synchronized (this)
             {
-                return true;
+                result = state;
+                if (result == null)
+                {
+                    result = new State();
+                    state = result;
+                }
             }
         }
-        return false;
+
+        return result;
+    }
+
+
+    private class State
+    {
+
+        /**
+         * Constructors
+         */
+        private final Set<AnnotatedConstructor<X>> constructors = new HashSet<AnnotatedConstructor<X>>();
+
+        /**
+         * Fields
+         */
+        private final Set<AnnotatedField<? super X>> fields = new HashSet<AnnotatedField<? super X>>();
+
+        /**
+         * Methods
+         */
+        private final Set<AnnotatedMethod<? super X>> methods = new HashSet<AnnotatedMethod<? super X>>();
+
+        private State()
+        {
+            Constructor<?>[] decCtxs =
+                getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructors(annotatedClass);
+
+            for (Constructor<?> ct : decCtxs)
+            {
+                if (!ct.isSynthetic())
+                {
+                    AnnotatedConstructor<X> ac =
+                        new AnnotatedConstructorImpl<X>(getWebBeansContext(), (Constructor<X>) ct,
+                                                        AnnotatedTypeImpl.this);
+                    constructors.add(ac);
+                }
+            }
+            if (constructors.isEmpty())
+            {
+                // must be implicit default constructor
+                Constructor<X> constructor =
+                    getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructor(annotatedClass);
+                if (constructor != null)
+                {
+                    constructors.add(
+                        new AnnotatedConstructorImpl<X>(getWebBeansContext(), constructor, AnnotatedTypeImpl.this));
+                }
+            }
+
+            Field[] decFields = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredFields(annotatedClass);
+            Method[] decMethods =
+                getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(annotatedClass);
+            for (Field f : decFields)
+            {
+                if (!f.isSynthetic())
+                {
+                    AnnotatedField<X> af = new AnnotatedFieldImpl<X>(getWebBeansContext(), f, AnnotatedTypeImpl.this);
+                    fields.add(af);
+                }
+            }
+
+            for (Method m : decMethods)
+            {
+                if (!m.isSynthetic() && !m.isBridge())
+                {
+                    AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(getWebBeansContext(), m, AnnotatedTypeImpl.this);
+                    methods.add(am);
+                }
+            }
+
+            if (supertype != null)
+            {
+                fields.addAll(supertype.getFields());
+                for (AnnotatedMethod<? super X> method : supertype.getMethods())
+                {
+                    if (!isOverridden(method))
+                    {
+                        methods.add(method);
+                    }
+                }
+            }
+
+        }
+
+        private boolean isOverridden(AnnotatedMethod<? super X> superclassMethod)
+        {
+            for (AnnotatedMethod<? super X> subclassMethod : methods)
+            {
+                if (ClassUtil.isOverridden(subclassMethod.getJavaMember(), superclassMethod.getJavaMember()))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

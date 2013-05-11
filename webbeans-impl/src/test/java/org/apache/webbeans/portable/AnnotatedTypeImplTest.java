@@ -78,7 +78,7 @@ public class AnnotatedTypeImplTest
 
         startingPistol.countDown();
 
-        assertTrue("Not all threads finished.", finishLine.await(30, TimeUnit.SECONDS));
+        assertTrue("Not all threads finished.", finishLine.await(1, TimeUnit.MINUTES));
 
         assertEquals(0, exceptions.get());
     }
