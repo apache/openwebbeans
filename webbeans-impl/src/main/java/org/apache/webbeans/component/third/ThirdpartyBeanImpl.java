@@ -24,7 +24,6 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.AbstractOwbBean;
@@ -100,21 +99,13 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
     @Override
     public String getId()
     {
-        if(bean instanceof PassivationCapable)
-        {
-            PassivationCapable pc = (PassivationCapable) bean;
-            return pc.getId();
-        }
-        
         return null;
     }
-    
-    
 
     @Override
     public boolean isPassivationCapable()
     {
-        return bean instanceof PassivationCapable;
+        return false;
     }
 
     @Override

@@ -525,8 +525,6 @@ public class BeansDeployer
         if (classIndex != null)
         {
             AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
-            Collection<AnnotatedType<?>> additionalAnnotatedTypes = webBeansContext.getBeanManagerImpl()
-                                                                             .getAdditionalAnnotatedTypes();
 
             for(Class<?> implClass : classIndex)
             {
@@ -537,14 +535,10 @@ public class BeansDeployer
                 {
                     deploySingleAnnotatedType(implClass, annotatedType);
 
-                    if (additionalAnnotatedTypes.contains(annotatedType))
-                    {
-                        // if the implClass already gets processed as part of the
-                        // standard BDA scanning, then we don't need to 'additionally'
-                        // deploy it anymore.
-                        additionalAnnotatedTypes.remove(annotatedType);
-                    }
-
+                    // if the implClass already gets processed as part of the
+                    // standard BDA scanning, then we don't need to 'additionally'
+                    // deploy it anymore.
+                    webBeansContext.getBeanManagerImpl().removeAdditionalAnnotatedType(annotatedType);
                 } 
                 else
                 {

@@ -30,7 +30,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.AbstractProducerBean;
-import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
@@ -84,7 +83,7 @@ public abstract class AbstractInjectable<T>
             {
                 if(injectedBean instanceof AbstractProducerBean)
                 {
-                    if((creationalContext.getBean() instanceof OwbBean) && ((OwbBean<?>) creationalContext.getBean()).isPassivationCapable())
+                    if((creationalContext.getBean() instanceof Bean) && beanManager.isPassivatingScope(((Bean<?>) creationalContext.getBean()).getScope()))
                     {
                         dependentProducer = true;   
                     }

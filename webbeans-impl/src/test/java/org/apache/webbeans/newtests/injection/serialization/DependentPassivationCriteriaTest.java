@@ -21,11 +21,17 @@ package org.apache.webbeans.newtests.injection.serialization;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.injection.serialization.beans.NonSerializableDependentBean;
+import org.apache.webbeans.newtests.injection.serialization.beans.ProducerWithNonSerializableResultBean;
+import org.apache.webbeans.newtests.injection.serialization.beans.SerializableDependentInjectionTarget;
 import org.apache.webbeans.newtests.injection.serialization.beans.SerializableInjectionTargetFailA;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import javax.enterprise.inject.spi.Bean;
+
+import junit.framework.Assert;
 
 /**
  * <p>This test performs a few tests to ensure correct handling of injecting
@@ -56,6 +62,29 @@ public class DependentPassivationCriteriaTest extends AbstractUnitTest
         try
         {
             startContainer(beanClasses, beanXmls);
+        }
+        finally {
+            shutDownContainer();
+        }
+    }
+
+    /**
+     * This test must not fail with a deployment exception nor with an IllegalProductException,
+     * since only dependent beans are involved.
+     */
+    @Test
+    public void testInjectNonSerializableDependentIntoSerializableDependent()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(ProducerWithNonSerializableResultBean.class);
+        beanClasses.add(SerializableDependentInjectionTarget.class);
+
+        try
+        {
+            startContainer(beanClasses, beanXmls);
+            SerializableDependentInjectionTarget serializableDependentInjectionTarget = getInstance(SerializableDependentInjectionTarget.class);
+            Assert.assertNotNull(serializableDependentInjectionTarget.getInjectedBean());
         }
         finally {
             shutDownContainer();

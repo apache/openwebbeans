@@ -44,7 +44,7 @@ import org.apache.webbeans.util.Asserts;
 public final class AnnotatedElementFactory
 {
     
-    private static final String OWB_DEFAULT_KEY = "OWB_DEFAULT_KEY";
+    public static final String OWB_DEFAULT_KEY = "OWB_DEFAULT_KEY";
 
     // Logger instance
     private final static Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedElementFactory.class);

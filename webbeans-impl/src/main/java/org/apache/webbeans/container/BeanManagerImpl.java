@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.annotation.PostConstruct;
@@ -70,6 +71,7 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.component.third.PassivationCapableThirdpartyBeanImpl;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -163,8 +165,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
      */
     private List<ExternalScope> additionalScopes =  new ArrayList<ExternalScope>();
 
-    private Map<String, AnnotatedType<?>> additionalAnnotatedTypes = new HashMap<String, AnnotatedType<?>>();
-
+    private ConcurrentMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>> additionalAnnotatedTypes = new ConcurrentHashMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>>();
 
     private ErrorStack errorStack = new ErrorStack();
     
@@ -172,7 +173,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
      * This map stores all beans along with their unique {@link javax.enterprise.inject.spi.PassivationCapable} id.
      * This is used as a reference for serialization.
      */
-    private ConcurrentHashMap<String, Bean<?>> passivationBeans = new ConcurrentHashMap<String, Bean<?>>(); 
+    private ConcurrentMap<String, Bean<?>> passivationBeans = new ConcurrentHashMap<String, Bean<?>>(); 
 
     /**InjectionTargets for Java EE component instances that supports injections*/
     private Map<Class<?>, Producer<?>> producersForJavaEeComponents =
@@ -356,16 +357,24 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
      * @param newBean
      * @return
      */
-    public BeanManager addInternalBean(Bean<?> newBean)
+    public <T> BeanManager addInternalBean(Bean<T> newBean)
     {
         if(newBean instanceof AbstractOwbBean)
         {
-            addPassivationInfo((OwbBean)newBean);
+            addPassivationInfo((OwbBean<T>)newBean);
             deploymentBeans.add(newBean);
         }
         else
         {
-            ThirdpartyBeanImpl<?> bean = new ThirdpartyBeanImpl(webBeansContext, newBean);
+            ThirdpartyBeanImpl<?> bean;
+            if (!PassivationCapable.class.isInstance(newBean))
+            {
+                bean = new ThirdpartyBeanImpl<T>(webBeansContext, newBean);
+            }
+            else
+            {
+                bean = new PassivationCapableThirdpartyBeanImpl<T>(webBeansContext, newBean);
+            }
             addPassivationInfo(bean);
             deploymentBeans.add(bean);
         }
@@ -1000,14 +1009,41 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
 
     public void addAdditionalAnnotatedType(AnnotatedType<?> annotatedType)
     {
-        webBeansContext.getAnnotatedElementFactory().setAnnotatedType(annotatedType);
-        additionalAnnotatedTypes.put(null, annotatedType);
+        addAdditionalAnnotatedType(annotatedType, AnnotatedElementFactory.OWB_DEFAULT_KEY);
     }
 
     public void addAdditionalAnnotatedType(AnnotatedType<?> annotatedType, String id)
     {
-        webBeansContext.getAnnotatedElementFactory().setAnnotatedType(annotatedType);
-        additionalAnnotatedTypes.put(id, annotatedType);
+        webBeansContext.getAnnotatedElementFactory().setAnnotatedType(annotatedType, id);
+        ConcurrentMap<String, AnnotatedType<?>> annotatedTypes = additionalAnnotatedTypes.get(annotatedType.getJavaClass());
+        if (annotatedTypes == null)
+        {
+            annotatedTypes = new ConcurrentHashMap<String, AnnotatedType<?>>();
+            ConcurrentMap<String, AnnotatedType<?>> oldAnnotatedTypes = additionalAnnotatedTypes.putIfAbsent(annotatedType.getJavaClass(), annotatedTypes);
+            if (oldAnnotatedTypes != null)
+            {
+                annotatedTypes = oldAnnotatedTypes;
+            }
+        }
+        annotatedTypes.put(id, annotatedType);
+    }
+
+    public void removeAdditionalAnnotatedType(AnnotatedType<?> annotatedType)
+    {
+        removeAdditionalAnnotatedType(annotatedType, AnnotatedElementFactory.OWB_DEFAULT_KEY);
+    }
+
+    public void removeAdditionalAnnotatedType(AnnotatedType<?> annotatedType, String id)
+    {
+        ConcurrentMap<String, AnnotatedType<?>> annotatedTypes = additionalAnnotatedTypes.get(annotatedType.getJavaClass());
+        if (annotatedTypes == null)
+        {
+            return;
+        }
+        if (annotatedType.equals(annotatedTypes.get(id)))
+        {
+            annotatedTypes.remove(id);
+        }
     }
 
     public List<Class<? extends Annotation>> getAdditionalQualifiers()
@@ -1031,20 +1067,22 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
 
     public Collection<AnnotatedType<?>> getAdditionalAnnotatedTypes()
     {
-        return additionalAnnotatedTypes.values();
+        Collection<AnnotatedType<?>> annotatedTypes = new ArrayList<AnnotatedType<?>>();
+        for (ConcurrentMap<String,AnnotatedType<?>> types: additionalAnnotatedTypes.values())
+        {
+            annotatedTypes.addAll(types.values());
+        }
+        return annotatedTypes;
     }
 
     public <T> AnnotatedType<T> getAdditionalAnnotatedType(Class<T> type, String id)
     {
-        AnnotatedType<?> annotatedType = additionalAnnotatedTypes.get(id);
-        if (annotatedType.getJavaClass().equals(type))
-        {
-            return (AnnotatedType<T>) annotatedType;
-        }
-        else
+        ConcurrentMap<String, AnnotatedType<?>> annotatedTypes = additionalAnnotatedTypes.get(type);
+        if (annotatedTypes == null)
         {
             return null;
         }
+        return (AnnotatedType<T>)annotatedTypes.get(id);
     }
 
     public void clear()

@@ -33,7 +33,7 @@ public abstract class EmptyAnnotationLiteral<T extends Annotation> extends Annot
 
     protected EmptyAnnotationLiteral()
     {
-        this.annotationType = getAnnotationType(getClass());
+        // Leave this constructor protected, because an EmptyAnnotationLiteral may never directly be instantiated
     }
 
     /**
@@ -43,6 +43,10 @@ public abstract class EmptyAnnotationLiteral<T extends Annotation> extends Annot
     @Override
     public Class<? extends Annotation> annotationType()
     {
+        if (annotationType == null)
+        {
+            annotationType = getAnnotationType(getClass());
+        }
         return annotationType;
     }
 

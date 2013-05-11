@@ -39,39 +39,37 @@ import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Implementation of the {@link AnnotatedType} interface.
- * 
- * @version $Rev$ $Date$
  *
  * @param <X> class type
+ * @version $Rev$ $Date$
  */
-class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
+class AnnotatedTypeImpl<X>
+    extends AbstractAnnotated
+    implements AnnotatedType<X>
 {
-    /**parent class*/
+    /**
+     * parent class
+     */
     private final AnnotatedType<? super X> supertype;
-    
-    /**Annotated class*/
+
+    /**
+     * Annotated class
+     */
     private final Class<X> annotatedClass;
-    
-    /**Constructors*/
-    private Set<AnnotatedConstructor<X>> constructors = null;
-    
-    /**Fields*/
-    private Set<AnnotatedField<? super X>> fields = null;
-    
-    /**Methods*/
-    private Set<AnnotatedMethod<? super X>> methods = null;
-    
+
+    private volatile State state;
+
     /**
      * Creates a new instance.
-     * 
+     *
      * @param annotatedClass class
      */
     AnnotatedTypeImpl(WebBeansContext webBeansContext, Class<X> annotatedClass, AnnotatedTypeImpl<? super X> supertype)
     {
         super(webBeansContext, annotatedClass);
         this.supertype = supertype;
-        this.annotatedClass = annotatedClass;     
-        
+        this.annotatedClass = annotatedClass;
+
         if (supertype == null)
         {
             setAnnotations(annotatedClass.getDeclaredAnnotations());
@@ -80,82 +78,21 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
         {
             Set<Class<? extends Annotation>> annotationTypes = new HashSet<Class<? extends Annotation>>();
             List<Annotation> annotations = new ArrayList<Annotation>();
-            for (Annotation annotation: annotatedClass.getDeclaredAnnotations())
+            for (Annotation annotation : annotatedClass.getDeclaredAnnotations())
             {
                 annotations.add(annotation);
                 annotationTypes.add(annotation.annotationType());
             }
-            for (Annotation annotation: supertype.getAnnotations())
+            for (Annotation annotation : supertype.getAnnotations())
             {
-                if (annotation.annotationType().isAnnotationPresent(Inherited.class) && !annotationTypes.contains(annotation.annotationType()))
+                if (annotation.annotationType().isAnnotationPresent(Inherited.class) &&
+                    !annotationTypes.contains(annotation.annotationType()))
                 {
                     annotations.add(annotation);
                     annotationTypes.add(annotation.annotationType());
                 }
             }
             setAnnotations(annotations.toArray(new Annotation[annotations.size()]));
-        }
-    }
-
-    private synchronized void init()
-    {
-        if (constructors == null)
-        {
-            constructors = new HashSet<AnnotatedConstructor<X>>();
-            fields = new HashSet<AnnotatedField<? super X>>();
-            methods = new HashSet<AnnotatedMethod<? super X>>();
-
-            Constructor<?>[] decCtxs = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructors(annotatedClass);
-
-            for(Constructor<?> ct : decCtxs)
-            {
-                if (!ct.isSynthetic())
-                {
-                    AnnotatedConstructor<X> ac = new AnnotatedConstructorImpl<X>(getWebBeansContext(), (Constructor<X>) ct,this);
-                    constructors.add(ac);
-                }
-            }
-            if (constructors.isEmpty())
-            {
-                // must be implicit default constructor
-                Constructor<X> constructor = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructor(annotatedClass);
-                if (constructor != null)
-                {
-                    constructors.add(new AnnotatedConstructorImpl<X>(getWebBeansContext(), constructor, this));
-                }
-            }
-
-            Field[] decFields = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredFields(annotatedClass);
-            Method[] decMethods = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(annotatedClass);
-            for(Field f : decFields)
-            {
-                if (!f.isSynthetic())
-                {
-                    AnnotatedField<X> af = new AnnotatedFieldImpl<X>(getWebBeansContext(), f, this);
-                    fields.add(af);
-                }
-            }
-
-            for(Method m : decMethods)
-            {
-                if (!m.isSynthetic() && !m.isBridge())
-                {
-                    AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(getWebBeansContext(), m,this);
-                    methods.add(am);
-                }
-            }
-
-            if (supertype != null)
-            {
-                fields.addAll(supertype.getFields());
-                for (AnnotatedMethod<? super X> method : supertype.getMethods())
-                {
-                    if (!isOverridden(method))
-                    {
-                        methods.add(method);
-                    }
-                }
-            }
         }
     }
 
@@ -171,97 +108,173 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
 
     /**
      * Adds new annotated constructor.
-     * 
+     *
      * @param constructor new constructor
      */
     void addAnnotatedConstructor(AnnotatedConstructor<X> constructor)
     {
-        if (constructors == null)
-        {
-            init();
-        }
-        constructors.add(constructor);
+        getState().constructors.add(constructor);
     }
-    
+
     /**
      * Adds new annotated field.
-     * 
+     *
      * @param field new field
      */
     void addAnnotatedField(AnnotatedField<? super X> field)
     {
-        if (constructors == null)
-        {
-            init();
-        }
-        fields.add(field);
+        getState().fields.add(field);
     }
 
     /**
      * Adds new annotated method.
-     * 
+     *
      * @param method new method
      */
     void addAnnotatedMethod(AnnotatedMethod<? super X> method)
     {
-        if (constructors == null)
-        {
-            init();
-        }
-        methods.add(method);
-    }    
-    
+        getState().methods.add(method);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public Set<AnnotatedConstructor<X>> getConstructors()
     {
-        if (constructors == null)
-        {
-            init();
-        }
-
-        return Collections.unmodifiableSet(constructors);
+        return Collections.unmodifiableSet(getState().constructors);
     }
 
     /**
      * {@inheritDoc}
-     */    
+     */
     @Override
     public Set<AnnotatedField<? super X>> getFields()
     {
-        if (constructors == null)
-        {
-            init();
-        }
-
-        return Collections.unmodifiableSet(fields);
+        return Collections.unmodifiableSet(getState().fields);
     }
 
     /**
      * {@inheritDoc}
-     */    
+     */
     @Override
     public Set<AnnotatedMethod<? super X>> getMethods()
     {
-        if (constructors == null)
-        {
-            init();
-        }
-
-        return Collections.unmodifiableSet(methods);
+        return Collections.unmodifiableSet(getState().methods);
     }
 
-    private boolean isOverridden(AnnotatedMethod<? super X> superclassMethod)
+    private State getState()
     {
-        for (AnnotatedMethod<? super X> subclassMethod : methods)
+        State result = state;
+        // Double check locking with standard optimization to avoid
+        // extra reads on the volatile field 'state'
+        if (result == null)
         {
-            if (ClassUtil.isOverridden(subclassMethod.getJavaMember(), superclassMethod.getJavaMember()))
+            synchronized (this)
             {
-                return true;
+                result = state;
+                if (result == null)
+                {
+                    result = new State();
+                    state = result;
+                }
             }
         }
-        return false;
+
+        return result;
+    }
+
+
+    private class State
+    {
+
+        /**
+         * Constructors
+         */
+        private final Set<AnnotatedConstructor<X>> constructors = new HashSet<AnnotatedConstructor<X>>();
+
+        /**
+         * Fields
+         */
+        private final Set<AnnotatedField<? super X>> fields = new HashSet<AnnotatedField<? super X>>();
+
+        /**
+         * Methods
+         */
+        private final Set<AnnotatedMethod<? super X>> methods = new HashSet<AnnotatedMethod<? super X>>();
+
+        private State()
+        {
+            Constructor<?>[] decCtxs =
+                getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructors(annotatedClass);
+
+            for (Constructor<?> ct : decCtxs)
+            {
+                if (!ct.isSynthetic())
+                {
+                    AnnotatedConstructor<X> ac =
+                        new AnnotatedConstructorImpl<X>(getWebBeansContext(), (Constructor<X>) ct,
+                                                        AnnotatedTypeImpl.this);
+                    constructors.add(ac);
+                }
+            }
+            if (constructors.isEmpty())
+            {
+                // must be implicit default constructor
+                Constructor<X> constructor =
+                    getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructor(annotatedClass);
+                if (constructor != null)
+                {
+                    constructors.add(
+                        new AnnotatedConstructorImpl<X>(getWebBeansContext(), constructor, AnnotatedTypeImpl.this));
+                }
+            }
+
+            Field[] decFields = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredFields(annotatedClass);
+            Method[] decMethods =
+                getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(annotatedClass);
+            for (Field f : decFields)
+            {
+                if (!f.isSynthetic())
+                {
+                    AnnotatedField<X> af = new AnnotatedFieldImpl<X>(getWebBeansContext(), f, AnnotatedTypeImpl.this);
+                    fields.add(af);
+                }
+            }
+
+            for (Method m : decMethods)
+            {
+                if (!m.isSynthetic() && !m.isBridge())
+                {
+                    AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(getWebBeansContext(), m, AnnotatedTypeImpl.this);
+                    methods.add(am);
+                }
+            }
+
+            if (supertype != null)
+            {
+                fields.addAll(supertype.getFields());
+                for (AnnotatedMethod<? super X> method : supertype.getMethods())
+                {
+                    if (!isOverridden(method))
+                    {
+                        methods.add(method);
+                    }
+                }
+            }
+
+        }
+
+        private boolean isOverridden(AnnotatedMethod<? super X> superclassMethod)
+        {
+            for (AnnotatedMethod<? super X> subclassMethod : methods)
+            {
+                if (ClassUtil.isOverridden(subclassMethod.getJavaMember(), superclassMethod.getJavaMember()))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
