@@ -22,7 +22,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -31,29 +33,39 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Rev$ $Date$
- */
 public class AnnotatedTypeImplTest
 {
+    final int threads = 1000;
+
+    final CountDownLatch startingLine = new CountDownLatch(threads);
+
+    final CountDownLatch startingPistol = new CountDownLatch(1);
+
+    final CountDownLatch finishLine = new CountDownLatch(threads);
+
+    final AtomicInteger exceptions = new AtomicInteger();
+
     @Test
-    @Ignore("OWB-858 - AnnotatedTypeImpl not thread safe")
-    public void test()
+    @Ignore
+    public void testGetFields()
         throws Exception
     {
 
         final AnnotatedType<Colors> annotatedType =
             new AnnotatedTypeImpl<Colors>(new WebBeansContext(), Colors.class, null);
 
-        int threads = 1000;
-        final CountDownLatch startingLine = new CountDownLatch(threads);
-        final CountDownLatch startingPistol = new CountDownLatch(1);
-        final CountDownLatch finishLine = new CountDownLatch(threads);
-        final AtomicInteger exceptions = new AtomicInteger();
-
         for (int i = 0; i < threads; i++)
         {
-            new Runner(startingLine, startingPistol, exceptions, finishLine, annotatedType).start();
+            new Runner(startingLine, startingPistol, exceptions, finishLine, annotatedType)
+            {
+                @Override
+                public void doit()
+                {
+                    for (AnnotatedField<? super Colors> field : annotatedType.getFields())
+                    {
+                    }
+                }
+            }.start();
         }
 
         assertTrue("Not all threads reported ready.", startingLine.await(30, TimeUnit.SECONDS));
@@ -65,9 +77,75 @@ public class AnnotatedTypeImplTest
         assertEquals(0, exceptions.get());
     }
 
-    private static class Runner
+    @Test
+    @Ignore
+    public void testGetMethods()
+        throws Exception
+    {
+
+        final AnnotatedType<Colors> annotatedType =
+            new AnnotatedTypeImpl<Colors>(new WebBeansContext(), Colors.class, null);
+
+        for (int i = 0; i < threads; i++)
+        {
+            new Runner(startingLine, startingPistol, exceptions, finishLine, annotatedType)
+            {
+                @Override
+                public void doit()
+                {
+                    for (AnnotatedMethod<? super Colors> field : annotatedType.getMethods())
+                    {
+                    }
+                }
+            }.start();
+        }
+
+        assertTrue("Not all threads reported ready.", startingLine.await(30, TimeUnit.SECONDS));
+
+        startingPistol.countDown();
+
+        assertTrue("Not all threads finished.", finishLine.await(30, TimeUnit.SECONDS));
+
+        assertEquals(0, exceptions.get());
+    }
+
+    @Test
+    @Ignore
+    public void testGetConstructors()
+        throws Exception
+    {
+
+        final AnnotatedType<Colors> annotatedType =
+            new AnnotatedTypeImpl<Colors>(new WebBeansContext(), Colors.class, null);
+
+        for (int i = 0; i < threads; i++)
+        {
+            new Runner(startingLine, startingPistol, exceptions, finishLine, annotatedType)
+            {
+                @Override
+                public void doit()
+                {
+                    for (AnnotatedConstructor<Colors> constructor : annotatedType.getConstructors())
+                    {
+
+                    }
+                }
+            }.start();
+        }
+
+        assertTrue("Not all threads reported ready.", startingLine.await(30, TimeUnit.SECONDS));
+
+        startingPistol.countDown();
+
+        assertTrue("Not all threads finished.", finishLine.await(30, TimeUnit.SECONDS));
+
+        assertEquals(0, exceptions.get());
+    }
+
+    private static abstract class Runner
         extends Thread
     {
+
         private final CountDownLatch startingLine;
 
         private final CountDownLatch startingPistol;
@@ -112,12 +190,7 @@ public class AnnotatedTypeImplTest
             }
         }
 
-        public void doit()
-        {
-            for (AnnotatedField<? super Colors> field : annotatedType.getFields())
-            {
-            }
-        }
+        public abstract void doit();
     }
 
     public static class Colors
@@ -337,6 +410,1072 @@ public class AnnotatedTypeImplTest
         private String white;
 
         private String yellow;
+
+
+        public Colors(String arg)
+        {
+        }
+
+        public Colors(String arg, String arg0)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84, String arg85)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84, String arg85, String arg86)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84, String arg85, String arg86, String arg87)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84, String arg85, String arg86, String arg87, String arg88)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84, String arg85, String arg86, String arg87, String arg88, String arg89)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84, String arg85, String arg86, String arg87, String arg88, String arg89,
+                      String arg90)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84, String arg85, String arg86, String arg87, String arg88, String arg89,
+                      String arg90, String arg91)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84, String arg85, String arg86, String arg87, String arg88, String arg89,
+                      String arg90, String arg91, String arg92)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84, String arg85, String arg86, String arg87, String arg88, String arg89,
+                      String arg90, String arg91, String arg92, String arg93)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84, String arg85, String arg86, String arg87, String arg88, String arg89,
+                      String arg90, String arg91, String arg92, String arg93, String arg94)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84, String arg85, String arg86, String arg87, String arg88, String arg89,
+                      String arg90, String arg91, String arg92, String arg93, String arg94, String arg95)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84, String arg85, String arg86, String arg87, String arg88, String arg89,
+                      String arg90, String arg91, String arg92, String arg93, String arg94, String arg95, String arg96)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84, String arg85, String arg86, String arg87, String arg88, String arg89,
+                      String arg90, String arg91, String arg92, String arg93, String arg94, String arg95, String arg96,
+                      String arg97)
+        {
+        }
+
+        public Colors(String arg, String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                      String arg6, String arg7, String arg8, String arg9, String arg10, String arg11, String arg12,
+                      String arg13, String arg14, String arg15, String arg16, String arg17, String arg18, String arg19,
+                      String arg20, String arg21, String arg22, String arg23, String arg24, String arg25, String arg26,
+                      String arg27, String arg28, String arg29, String arg30, String arg31, String arg32, String arg33,
+                      String arg34, String arg35, String arg36, String arg37, String arg38, String arg39, String arg40,
+                      String arg41, String arg42, String arg43, String arg44, String arg45, String arg46, String arg47,
+                      String arg48, String arg49, String arg50, String arg51, String arg52, String arg53, String arg54,
+                      String arg55, String arg56, String arg57, String arg58, String arg59, String arg60, String arg61,
+                      String arg62, String arg63, String arg64, String arg65, String arg66, String arg67, String arg68,
+                      String arg69, String arg70, String arg71, String arg72, String arg73, String arg74, String arg75,
+                      String arg76, String arg77, String arg78, String arg79, String arg80, String arg81, String arg82,
+                      String arg83, String arg84, String arg85, String arg86, String arg87, String arg88, String arg89,
+                      String arg90, String arg91, String arg92, String arg93, String arg94, String arg95, String arg96,
+                      String arg97, String arg98)
+        {
+        }
 
         public String getAlmond()
         {
