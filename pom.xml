@@ -29,7 +29,7 @@
     <artifactId>openwebbeans</artifactId>
     <name>Apache OpenWebBeans</name>
     <packaging>pom</packaging>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
 
     <url>openwebbeans.apache.org</url>
 
