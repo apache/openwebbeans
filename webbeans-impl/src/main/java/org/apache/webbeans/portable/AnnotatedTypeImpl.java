@@ -39,39 +39,50 @@ import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Implementation of the {@link AnnotatedType} interface.
- * 
- * @version $Rev$ $Date$
  *
  * @param <X> class type
+ * @version $Rev$ $Date$
  */
-class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
+class AnnotatedTypeImpl<X>
+    extends AbstractAnnotated
+    implements AnnotatedType<X>
 {
-    /**parent class*/
+    /**
+     * parent class
+     */
     private final AnnotatedType<? super X> supertype;
-    
-    /**Annotated class*/
+
+    /**
+     * Annotated class
+     */
     private final Class<X> annotatedClass;
-    
-    /**Constructors*/
+
+    /**
+     * Constructors
+     */
     private Set<AnnotatedConstructor<X>> constructors = null;
-    
-    /**Fields*/
+
+    /**
+     * Fields
+     */
     private Set<AnnotatedField<? super X>> fields = null;
-    
-    /**Methods*/
+
+    /**
+     * Methods
+     */
     private Set<AnnotatedMethod<? super X>> methods = null;
-    
+
     /**
      * Creates a new instance.
-     * 
+     *
      * @param annotatedClass class
      */
     AnnotatedTypeImpl(WebBeansContext webBeansContext, Class<X> annotatedClass, AnnotatedTypeImpl<? super X> supertype)
     {
         super(webBeansContext, annotatedClass);
         this.supertype = supertype;
-        this.annotatedClass = annotatedClass;     
-        
+        this.annotatedClass = annotatedClass;
+
         if (supertype == null)
         {
             setAnnotations(annotatedClass.getDeclaredAnnotations());
@@ -80,14 +91,15 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
         {
             Set<Class<? extends Annotation>> annotationTypes = new HashSet<Class<? extends Annotation>>();
             List<Annotation> annotations = new ArrayList<Annotation>();
-            for (Annotation annotation: annotatedClass.getDeclaredAnnotations())
+            for (Annotation annotation : annotatedClass.getDeclaredAnnotations())
             {
                 annotations.add(annotation);
                 annotationTypes.add(annotation.annotationType());
             }
-            for (Annotation annotation: supertype.getAnnotations())
+            for (Annotation annotation : supertype.getAnnotations())
             {
-                if (annotation.annotationType().isAnnotationPresent(Inherited.class) && !annotationTypes.contains(annotation.annotationType()))
+                if (annotation.annotationType().isAnnotationPresent(Inherited.class) &&
+                    !annotationTypes.contains(annotation.annotationType()))
                 {
                     annotations.add(annotation);
                     annotationTypes.add(annotation.annotationType());
@@ -105,20 +117,23 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
             fields = new HashSet<AnnotatedField<? super X>>();
             methods = new HashSet<AnnotatedMethod<? super X>>();
 
-            Constructor<?>[] decCtxs = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructors(annotatedClass);
+            Constructor<?>[] decCtxs =
+                getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructors(annotatedClass);
 
-            for(Constructor<?> ct : decCtxs)
+            for (Constructor<?> ct : decCtxs)
             {
                 if (!ct.isSynthetic())
                 {
-                    AnnotatedConstructor<X> ac = new AnnotatedConstructorImpl<X>(getWebBeansContext(), (Constructor<X>) ct,this);
+                    AnnotatedConstructor<X> ac =
+                        new AnnotatedConstructorImpl<X>(getWebBeansContext(), (Constructor<X>) ct, this);
                     constructors.add(ac);
                 }
             }
             if (constructors.isEmpty())
             {
                 // must be implicit default constructor
-                Constructor<X> constructor = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructor(annotatedClass);
+                Constructor<X> constructor =
+                    getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructor(annotatedClass);
                 if (constructor != null)
                 {
                     constructors.add(new AnnotatedConstructorImpl<X>(getWebBeansContext(), constructor, this));
@@ -126,8 +141,9 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
             }
 
             Field[] decFields = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredFields(annotatedClass);
-            Method[] decMethods = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(annotatedClass);
-            for(Field f : decFields)
+            Method[] decMethods =
+                getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(annotatedClass);
+            for (Field f : decFields)
             {
                 if (!f.isSynthetic())
                 {
@@ -136,11 +152,11 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
                 }
             }
 
-            for(Method m : decMethods)
+            for (Method m : decMethods)
             {
                 if (!m.isSynthetic() && !m.isBridge())
                 {
-                    AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(getWebBeansContext(), m,this);
+                    AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(getWebBeansContext(), m, this);
                     methods.add(am);
                 }
             }
@@ -171,7 +187,7 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
 
     /**
      * Adds new annotated constructor.
-     * 
+     *
      * @param constructor new constructor
      */
     void addAnnotatedConstructor(AnnotatedConstructor<X> constructor)
@@ -182,10 +198,10 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
         }
         constructors.add(constructor);
     }
-    
+
     /**
      * Adds new annotated field.
-     * 
+     *
      * @param field new field
      */
     void addAnnotatedField(AnnotatedField<? super X> field)
@@ -199,7 +215,7 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
 
     /**
      * Adds new annotated method.
-     * 
+     *
      * @param method new method
      */
     void addAnnotatedMethod(AnnotatedMethod<? super X> method)
@@ -209,8 +225,8 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
             init();
         }
         methods.add(method);
-    }    
-    
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -227,7 +243,7 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
 
     /**
      * {@inheritDoc}
-     */    
+     */
     @Override
     public Set<AnnotatedField<? super X>> getFields()
     {
@@ -241,7 +257,7 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
 
     /**
      * {@inheritDoc}
-     */    
+     */
     @Override
     public Set<AnnotatedMethod<? super X>> getMethods()
     {
