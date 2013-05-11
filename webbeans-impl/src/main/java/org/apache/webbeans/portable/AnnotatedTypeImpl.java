@@ -28,6 +28,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
@@ -71,6 +75,19 @@ class AnnotatedTypeImpl<X>
      * Methods
      */
     private Set<AnnotatedMethod<? super X>> methods = null;
+
+    private final AtomicBoolean notInitialized = new AtomicBoolean(true);
+
+    private final FutureTask initializer = new FutureTask(new Callable()
+    {
+        public Object call()
+            throws Exception
+        {
+            init();
+            return null;
+        }
+    });
+
 
     /**
      * Creates a new instance.
@@ -192,11 +209,43 @@ class AnnotatedTypeImpl<X>
      */
     void addAnnotatedConstructor(AnnotatedConstructor<X> constructor)
     {
-        if (constructors == null)
-        {
-            init();
-        }
+        ensureInitialized();
         constructors.add(constructor);
+    }
+
+    private void ensureInitialized()
+    {
+        try
+        {
+            if (notInitialized.get())
+            {
+                do
+                {
+                    // If this thread is the one to set the state to "notInitialized=false",
+                    // then this thread is also responsible for calling the initializer
+                    if (notInitialized.compareAndSet(true, false))
+                    {
+                        initializer.run();
+                    }
+
+                    // Try again.
+                }
+                while (notInitialized.get());
+            }
+
+            // This is the magic blocking call that protects our read access
+            // The 'get' call will not return until the initializer has finished running
+            initializer.get();
+        }
+        catch (InterruptedException e)
+        {
+            Thread.interrupted();
+            throw new IllegalStateException("Lazy Initialization of AnnotatedType failed.", e);
+        }
+        catch (ExecutionException e)
+        {
+            throw new IllegalStateException("Lazy Initialization of AnnotatedType failed.", e);
+        }
     }
 
     /**
@@ -206,10 +255,7 @@ class AnnotatedTypeImpl<X>
      */
     void addAnnotatedField(AnnotatedField<? super X> field)
     {
-        if (constructors == null)
-        {
-            init();
-        }
+        ensureInitialized();
         fields.add(field);
     }
 
@@ -220,10 +266,7 @@ class AnnotatedTypeImpl<X>
      */
     void addAnnotatedMethod(AnnotatedMethod<? super X> method)
     {
-        if (constructors == null)
-        {
-            init();
-        }
+        ensureInitialized();
         methods.add(method);
     }
 
@@ -233,11 +276,7 @@ class AnnotatedTypeImpl<X>
     @Override
     public Set<AnnotatedConstructor<X>> getConstructors()
     {
-        if (constructors == null)
-        {
-            init();
-        }
-
+        ensureInitialized();
         return Collections.unmodifiableSet(constructors);
     }
 
@@ -247,11 +286,7 @@ class AnnotatedTypeImpl<X>
     @Override
     public Set<AnnotatedField<? super X>> getFields()
     {
-        if (constructors == null)
-        {
-            init();
-        }
-
+        ensureInitialized();
         return Collections.unmodifiableSet(fields);
     }
 
@@ -261,11 +296,7 @@ class AnnotatedTypeImpl<X>
     @Override
     public Set<AnnotatedMethod<? super X>> getMethods()
     {
-        if (constructors == null)
-        {
-            init();
-        }
-
+        ensureInitialized();
         return Collections.unmodifiableSet(methods);
     }
 

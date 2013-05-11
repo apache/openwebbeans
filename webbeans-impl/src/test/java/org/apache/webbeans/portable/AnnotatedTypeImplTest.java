@@ -46,7 +46,6 @@ public class AnnotatedTypeImplTest
     final AtomicInteger exceptions = new AtomicInteger();
 
     @Test
-    @Ignore
     public void testGetFields()
         throws Exception
     {
@@ -78,7 +77,6 @@ public class AnnotatedTypeImplTest
     }
 
     @Test
-    @Ignore
     public void testGetMethods()
         throws Exception
     {
@@ -110,7 +108,6 @@ public class AnnotatedTypeImplTest
     }
 
     @Test
-    @Ignore
     public void testGetConstructors()
         throws Exception
     {
