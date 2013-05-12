@@ -105,44 +105,13 @@ class AnnotatedTypeImpl<X>
         return annotatedClass;
     }
 
-
-    /**
-     * Adds new annotated constructor.
-     *
-     * @param constructor new constructor
-     */
-    void addAnnotatedConstructor(AnnotatedConstructor<X> constructor)
-    {
-        getState().constructors.add(constructor);
-    }
-
-    /**
-     * Adds new annotated field.
-     *
-     * @param field new field
-     */
-    void addAnnotatedField(AnnotatedField<? super X> field)
-    {
-        getState().fields.add(field);
-    }
-
-    /**
-     * Adds new annotated method.
-     *
-     * @param method new method
-     */
-    void addAnnotatedMethod(AnnotatedMethod<? super X> method)
-    {
-        getState().methods.add(method);
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
     public Set<AnnotatedConstructor<X>> getConstructors()
     {
-        return Collections.unmodifiableSet(getState().constructors);
+        return getState().constructors;
     }
 
     /**
@@ -151,7 +120,7 @@ class AnnotatedTypeImpl<X>
     @Override
     public Set<AnnotatedField<? super X>> getFields()
     {
-        return Collections.unmodifiableSet(getState().fields);
+        return getState().fields;
     }
 
     /**
@@ -160,7 +129,7 @@ class AnnotatedTypeImpl<X>
     @Override
     public Set<AnnotatedMethod<? super X>> getMethods()
     {
-        return Collections.unmodifiableSet(getState().methods);
+        return getState().methods;
     }
 
     private State getState()
@@ -191,22 +160,30 @@ class AnnotatedTypeImpl<X>
         /**
          * Constructors
          */
-        private final Set<AnnotatedConstructor<X>> constructors = new HashSet<AnnotatedConstructor<X>>();
+        private final Set<AnnotatedConstructor<X>> constructors;
 
         /**
          * Fields
          */
-        private final Set<AnnotatedField<? super X>> fields = new HashSet<AnnotatedField<? super X>>();
+        private final Set<AnnotatedField<? super X>> fields;
 
         /**
          * Methods
          */
-        private final Set<AnnotatedMethod<? super X>> methods = new HashSet<AnnotatedMethod<? super X>>();
+        private final Set<AnnotatedMethod<? super X>> methods;
 
         private State()
         {
             Constructor<?>[] decCtxs =
                 getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructors(annotatedClass);
+
+            final Set<AnnotatedConstructor<X>> constructors = new HashSet<AnnotatedConstructor<X>>();
+            final Set<AnnotatedField<? super X>> fields = new HashSet<AnnotatedField<? super X>>();
+            final Set<AnnotatedMethod<? super X>> methods = new HashSet<AnnotatedMethod<? super X>>();
+
+            this.constructors = Collections.unmodifiableSet(constructors);
+            this.fields = Collections.unmodifiableSet(fields);
+            this.methods = Collections.unmodifiableSet(methods);
 
             for (Constructor<?> ct : decCtxs)
             {
