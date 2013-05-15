@@ -62,6 +62,7 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansJavaEEPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.InjectionExceptionUtil;
 import org.apache.webbeans.util.WebBeansConstants;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -140,7 +141,7 @@ public class BeansDeployer
      * 
      * @throws WebBeansDeploymentException if any deployment exception occurs
      */
-    public void deploy(ScannerService scanner)
+    public synchronized void deploy(ScannerService scanner)
     {
         try
         {
@@ -200,18 +201,19 @@ public class BeansDeployer
                 // do some cleanup after the deployment
                 scanner.release();
                 webBeansContext.getAnnotatedElementFactory().clear();
-
-                deployed = true;
             }
-
         }
         catch(Exception e)
         {
-//            logger.log(Level.SEVERE, e.getMessage(), e);
-            WebBeansUtil.throwRuntimeExceptions(e);
+            throw ExceptionUtil.throwAsRuntimeException(e);
+        }
+        finally
+        {
+            //if bootstrapping failed, it doesn't make sense to do it again
+            //esp. because #addInternalBean might have been called already and would cause an exception in the next run
+            deployed = true;
         }
     }
-
 
     /**
      * Configure Default Beans.
