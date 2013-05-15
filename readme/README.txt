@@ -161,6 +161,7 @@ Bug
     [OWB-857] - NullPointerException on passivation
     [OWB-858] - AnnotatedTypeImpl not thread safe
     [OWB-861] - Decorator building fails when decorator has inheritance
+    [OWB-862] - allow independent bootstrapping
 
 Improvement
 
