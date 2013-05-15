@@ -40,7 +40,6 @@ import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.interceptor.Interceptor;
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
@@ -126,7 +125,7 @@ public class BeansDeployer
      * 
      * @throws WebBeansDeploymentException if any deployment exception occurs
      */
-    public void deploy(ScannerService scanner)
+    public synchronized void deploy(ScannerService scanner)
     {
         try
         {
@@ -186,18 +185,20 @@ public class BeansDeployer
                 // do some cleanup after the deployment
                 scanner.release();
                 webBeansContext.getAnnotatedElementFactory().clear();
-
-                deployed = true;
             }
-
         }
         catch(Exception e)
         {
             logger.log(Level.SEVERE, e.getMessage(), e);
             WebBeansUtil.throwRuntimeExceptions(e);
         }
+        finally
+        {
+            //if bootstrapping failed, it doesn't make sense to do it again
+            //esp. because #addInternalBean might have been called already and would cause an exception in the next run
+            deployed = true;
+        }
     }
-
 
     /**
      * Configure Default Beans.
