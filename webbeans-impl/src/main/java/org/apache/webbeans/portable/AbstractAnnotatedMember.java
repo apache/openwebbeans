@@ -18,17 +18,11 @@
  */
 package org.apache.webbeans.portable;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
-import javax.enterprise.inject.spi.AnnotatedConstructor;
-import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMember;
-import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -52,34 +46,15 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
     AbstractAnnotatedMember(WebBeansContext webBeansContext, Type baseType, Member javaMember, AnnotatedType<X> declaringType)
     {
         super(webBeansContext, baseType);
-        
+
+        if (declaringType == null)
+        {
+            throw new IllegalArgumentException("declaringType cannot be null");
+        }
+
         this.javaMember = javaMember;
-        
-        if(declaringType == null)
-        {
-            this.declaringType = (AnnotatedType<X>) getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(this.javaMember.getDeclaringClass());
-            
-            AnnotatedTypeImpl<X> impl = (AnnotatedTypeImpl<X>)this.declaringType;
-            
-            if(this.javaMember instanceof Constructor)
-            {
-                impl.addAnnotatedConstructor((AnnotatedConstructor<X>)this);
-            }
-            
-            else if(this.javaMember instanceof Method)
-            {
-                impl.addAnnotatedMethod((AnnotatedMethod<X>)this);
-            }
-            
-            else if(this.javaMember instanceof Field)
-            {
-                impl.addAnnotatedField((AnnotatedField<X>)this);
-            }                
-        }
-        else
-        {
-            this.declaringType = declaringType;
-        }
+        this.declaringType = declaringType;
+
     }
    /**
      * {@inheritDoc}

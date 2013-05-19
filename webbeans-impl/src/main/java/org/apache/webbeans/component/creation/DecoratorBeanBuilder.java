@@ -165,35 +165,46 @@ public class DecoratorBeanBuilder<T>
 
     private void defineDecoratedTypes()
     {
-        Class<T> beanClass = annotatedType.getJavaClass();
-
-        // determine a safe Type for for a later BeanManager.getReference(...)
-        if (ClassUtil.isDefinitionContainsTypeVariables(beanClass))
-        {
-            OwbParametrizedTypeImpl pt = new OwbParametrizedTypeImpl(beanClass.getDeclaringClass(),beanClass);
-            TypeVariable<?>[] tvs = beanClass.getTypeParameters();
-            for(TypeVariable<?> tv : tvs)
-            {
-                pt.addTypeArgument(tv);
-            }
-            decoratedTypes.remove(pt);
-            //X TODO generic support setDecoratorGenericType(pt);
-        }
-        else
-        {
-            decoratedTypes.remove(beanClass);
-            //X TODO generic support setDecoratorGenericType(beanClass);
-        }
-
-        /* drop any non-interface bean types */
-        Type superClass = beanClass.getGenericSuperclass();
-        while (superClass != Object.class)
-        {
-            decoratedTypes.remove(superClass);
-            superClass = superClass.getClass().getGenericSuperclass();
-        }
+        // remove them first to avoid to loop over them
         decoratedTypes.remove(Object.class);
         decoratedTypes.remove(java.io.Serializable.class); /* 8.1 */
+
+        Type beanClass = annotatedType.getJavaClass();
+        do
+        {
+            final Class<?> clazz = ClassUtil.getClass(beanClass);
+            final Type toRemove;
+            if (ClassUtil.isDefinitionContainsTypeVariables(beanClass))
+            {
+                final OwbParametrizedTypeImpl pt = new OwbParametrizedTypeImpl(clazz.getDeclaringClass(), clazz);
+                final TypeVariable<?>[] tvs = clazz.getTypeParameters();
+                for(TypeVariable<?> tv : tvs)
+                {
+                    pt.addTypeArgument(tv);
+                }
+                toRemove = pt;
+                //X TODO generic support setDecoratorGenericType(pt);
+            }
+            else
+            {
+                toRemove = beanClass;
+                //X TODO generic support setDecoratorGenericType(beanClass);
+            }
+
+            final Iterator<Type> iterator = decoratedTypes.iterator();
+            while (iterator.hasNext())
+            {
+                final Type next = iterator.next();
+
+                // if raw class is the same and is assignable (generics handling)
+                if (ClassUtil.getClass(next) == clazz && ClassUtil.isAssignable(toRemove, next))
+                {
+                    iterator.remove();
+                }
+            }
+
+            beanClass = clazz.getGenericSuperclass();
+        } while (beanClass != Object.class);
 
 
         for (Iterator<Type> i = decoratedTypes.iterator(); i.hasNext(); )

@@ -127,6 +127,8 @@ Bug
     [OWB-793] - "Ambigious" typo
     [OWB-794] - AbstractOwbBean#toString doesn't reflect ParameterizedTypes
     [OWB-801] - null instance shouldn't be destroyed (copy)
+    [OWB-802] - #annotationType() of javax.enterprise:cdi-api not compatible with AbstractAnnotationLiteral
+    [OWB-803] - Forever loop when abstract decorator does not implement invoked method
     [OWB-805] - CLONE - @Alternative is ignored when using the Provider interface.
     [OWB-806] - CLONE - Overloaded EJB Observer methods fail to deploy
     [OWB-807] - performance issue with owb-arquillian-standalone
@@ -155,6 +157,11 @@ Bug
     [OWB-849] - org.apache.webbeans.portable.ProviderBasedProxyProducer uses the wrong classloader
     [OWB-850] - all provider based producer can't be proxied -> handling dependent scope
     [OWB-855] - NPE when no default constructor is found
+    [OWB-856] - Currently in OpenWebBeans one can add exactly one AnnotatedType
+    [OWB-857] - NullPointerException on passivation
+    [OWB-858] - AnnotatedTypeImpl not thread safe
+    [OWB-861] - Decorator building fails when decorator has inheritance
+    [OWB-862] - allow independent bootstrapping
 
 Improvement
 
@@ -192,6 +199,7 @@ Task
     [OWB-692] - remove ContextsFactory
     [OWB-726] - upgrade trunk (OWB-1.2.x) to target java 1.6
     [OWB-781] - Remove all Javassist and Scannotation related parts from OWB
+    [OWB-859] - Remove checkstyle double-checked locking rule
 
 Wish
 
