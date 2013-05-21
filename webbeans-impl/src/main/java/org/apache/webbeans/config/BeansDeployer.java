@@ -46,6 +46,7 @@ import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -594,18 +595,38 @@ public class BeansDeployer
             return;
         }
 
+        Class beanClass = processAnnotatedEvent.getAnnotatedType().getJavaClass();
+
         // EJBs can be defined so test them really before going for a ManagedBean
         if (discoverEjb && EJBWebBeansConfigurator.isSessionBean(implClass, webBeansContext))
         {
             logger.log(Level.FINE, "Found Enterprise Bean with class name : [{0}]", implClass.getName());
             defineEnterpriseWebBean((Class<Object>) implClass, (ProcessAnnotatedTypeImpl<Object>) processAnnotatedEvent);
         }
-        else
+        else if((ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(processAnnotatedEvent.getAnnotatedType())) &&
+                isValidManagedBean(beanClass))
         {
-            defineManagedBean((Class<Object>) implClass, (ProcessAnnotatedTypeImpl<Object>) processAnnotatedEvent);
+            defineManagedBean(processAnnotatedEvent);
         }
     }
-    
+
+    private boolean isValidManagedBean(Class beanClass)
+    {
+        try
+        {
+            webBeansContext.getWebBeansUtil().checkManagedBean(beanClass);
+        }
+        catch (DefinitionException e)
+        {
+            logger.info("skipped deployment of: " + beanClass.getName() + " reason: " + e.getMessage());
+            logger.log(Level.FINER, "skipped deployment of: " + beanClass.getName() + " details: ", e);
+            return false;
+        }
+        //we are not allowed to catch possible exceptions thrown by the following method
+        webBeansContext.getWebBeansUtil().checkManagedBeanCondition(beanClass);
+        return true;
+    }
+
     /**
      * Discovers and deploys alternatives, interceptors and decorators from XML.
      * 
@@ -796,10 +817,8 @@ public class BeansDeployer
     /**
      * Defines and configures managed bean.
      * @param <T> type info
-     * @param clazz bean class
-     * @return true if given class is configured as a managed bean
      */
-    protected <T> boolean defineManagedBean(Class<T> clazz, ProcessAnnotatedTypeImpl<T> processAnnotatedEvent)
+    protected <T> void defineManagedBean(ProcessAnnotatedTypeImpl<T> processAnnotatedEvent)
     {   
         //Bean manager
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
@@ -809,12 +828,13 @@ public class BeansDeployer
                                 
         //Fires ProcessInjectionTarget event for Java EE components instances
         //That supports injections but not managed beans
-        ProcessInjectionTargetImpl<T> processInjectionTargetEvent = null;
-        if(webBeansContext.getWebBeansUtil().supportsJavaEeComponentInjections(clazz))
+        ProcessInjectionTargetImpl<T> processInjectionTargetEvent;
+        Class beanClass = processAnnotatedEvent.getAnnotatedType().getJavaClass();
+        if(webBeansContext.getWebBeansUtil().supportsJavaEeComponentInjections(beanClass))
         {
             //Fires ProcessInjectionTarget
             processInjectionTargetEvent =
-                webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEventForJavaEeComponents(clazz);
+                webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEventForJavaEeComponents(beanClass);
             webBeansContext.getWebBeansUtil().inspectErrorStack(
                 "There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
 
@@ -822,24 +842,18 @@ public class BeansDeployer
             if(processInjectionTargetEvent.isSet())
             {
                 //Adding injection target
-                manager.putProducerForJavaEeComponent(clazz, processInjectionTargetEvent.getInjectionTarget());
+                manager.putProducerForJavaEeComponent(beanClass, processInjectionTargetEvent.getInjectionTarget());
             }
             
             //Checks that not contains @Inject InjectionPoint
-            webBeansContext.getAnnotationManager().checkInjectionPointForInjectInjectionPoint(clazz);
+            webBeansContext.getAnnotationManager().checkInjectionPointForInjectInjectionPoint(beanClass);
         }
-        
-        //Check for whether this class is candidate for Managed Bean
-        if (webBeansContext.getWebBeansUtil().isManagedBean(clazz))
+
         {
-            //Check conditions
-            webBeansContext.getWebBeansUtil().checkManagedBeanCondition(clazz);
-            
             BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
 
             ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, beanAttributes);
 
-            InjectionTargetBean<T> bean;
             if(WebBeansUtil.isDecorator(annotatedType))
             {
                 if (logger.isLoggable(Level.FINE))
@@ -852,11 +866,6 @@ public class BeansDeployer
                     dbb.defineDecoratorRules();
                     DecoratorBean<T> decorator = dbb.getBean();
                     webBeansContext.getDecoratorsManager().addDecorator(decorator);
-                    bean = decorator;
-                }
-                else
-                {
-                    bean = null;
                 }
             }
             else if(WebBeansUtil.isCdiInterceptor(annotatedType))
@@ -872,22 +881,16 @@ public class BeansDeployer
                     ibb.defineCdiInterceptorRules();
                     CdiInterceptorBean<T> interceptor = ibb.getBean();
                     webBeansContext.getInterceptorsManager().addCdiInterceptor(interceptor);
-                    bean = interceptor;
-                }
-                else
-                {
-                    bean = null;
                 }
             }
             else
             {
-            
-                bean = managedBeanCreator.getBean();
+                InjectionTargetBean<T> bean = managedBeanCreator.getBean();
 
                 if (webBeansContext.getDecoratorsManager().containsCustomDecoratorClass(annotatedType.getJavaClass()) ||
                     webBeansContext.getInterceptorsManager().containsCustomInterceptorClass(annotatedType.getJavaClass()))
                 {
-                    return false;
+                    return; //TODO discuss this case (it was ignored before)
                 }
                 
                 if (logger.isLoggable(Level.FINE))
@@ -979,14 +982,7 @@ public class BeansDeployer
                     }
                 }
             }
-            return true;
         }
-        else
-        {
-            //Not a managed bean
-            return false;
-        }
-                                
     }
     
     /**

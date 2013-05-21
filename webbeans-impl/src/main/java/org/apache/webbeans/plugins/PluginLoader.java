@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansJavaEEPlugin;
@@ -100,9 +101,9 @@ public class PluginLoader
     
     public static void throwsException(Exception e) throws WebBeansConfigurationException
     {
-        if(e instanceof WebBeansConfigurationException)
+        if(e instanceof DefinitionException)
         {
-            throw (WebBeansConfigurationException)e;
+            throw (DefinitionException)e;
         }
         else
         {
