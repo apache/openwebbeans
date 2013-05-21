@@ -123,9 +123,20 @@ public class InjectionExceptionUtils
 
     private static void addBeanInfo(Set<Bean<?>> beans, ViolationMessageBuilder violationMessage)
     {
+        String sourcePath;
         for(Bean<?> currentBean : beans)
         {
-            violationMessage.addLine(currentBean.toString());
+            try
+            {
+                Class beanClass = currentBean.getBeanClass();
+                sourcePath = beanClass.getResource(beanClass.getSimpleName() + ".class").toExternalForm();
+            }
+            catch (RuntimeException e)
+            {
+                sourcePath = "unknown path";
+            }
+
+            violationMessage.addLine(currentBean.toString() + " from " + sourcePath);
         }
     }
 
