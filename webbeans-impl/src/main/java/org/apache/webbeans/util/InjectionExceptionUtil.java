@@ -28,8 +28,6 @@ import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.UnproxyableResolutionException;
 import java.util.Set;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 
 public class InjectionExceptionUtil
 {
@@ -44,21 +42,6 @@ public class InjectionExceptionUtil
                 newViolation("WebBeans with api type with normal scope must be proxiable to inject.")
                         .addLine(violationMessage.toString())
                         .toString());
-    }
-
-    public static void throwUnsatisfiedResolutionException(Type type, Method producerMethod, Annotation... qualifiers)
-    {
-        ViolationMessageBuilder violationMessage = newViolation(createProducerMethodMessage(producerMethod));
-
-        violationMessage.append(" in class: ", ClassUtil.getClass(type).getName());
-        violationMessage.addLine(createQualifierMessage(qualifiers));
-
-        throw new UnsatisfiedResolutionException(violationMessage.toString());
-    }
-
-    private static String createProducerMethodMessage(Method producerMethod)
-    {
-        return "Producer method component of the disposal method : " + producerMethod.getName() + "is not found";
     }
 
     public static void throwUnsatisfiedResolutionException(
@@ -123,9 +106,20 @@ public class InjectionExceptionUtil
 
     private static void addBeanInfo(Set<Bean<?>> beans, ViolationMessageBuilder violationMessage)
     {
+        String sourcePath;
         for(Bean<?> currentBean : beans)
         {
-            violationMessage.addLine(currentBean.toString());
+            try
+            {
+                Class beanClass = currentBean.getBeanClass();
+                sourcePath = beanClass.getResource(beanClass.getSimpleName() + ".class").toExternalForm();
+            }
+            catch (RuntimeException e)
+            {
+                sourcePath = "unknown path";
+            }
+
+            violationMessage.addLine(currentBean.toString() + " from " + sourcePath);
         }
     }
 
