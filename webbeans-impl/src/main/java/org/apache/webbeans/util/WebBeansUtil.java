@@ -276,12 +276,6 @@ public final class WebBeansUtil
                                                      + clazz.getName() + " can not be non-static inner class");
         }
 
-        if (!isConstructorOk(clazz))
-        {
-            throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName()
-                                                     + " must define at least one Constructor");
-        }
-
         if(Extension.class.isAssignableFrom(clazz))
         {
             throw new WebBeansConfigurationException("Bean implementation class can not implement "

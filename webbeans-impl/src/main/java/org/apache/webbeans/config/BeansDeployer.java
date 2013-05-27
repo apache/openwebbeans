@@ -69,6 +69,7 @@ import org.apache.webbeans.util.WebBeansConstants;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
+import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedField;
@@ -604,27 +605,58 @@ public class BeansDeployer
             defineEnterpriseWebBean((Class<Object>) implClass, (ProcessAnnotatedTypeImpl<Object>) processAnnotatedEvent);
         }
         else if((ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(processAnnotatedEvent.getAnnotatedType())) &&
-                isValidManagedBean(beanClass))
+                isValidManagedBean(processAnnotatedEvent.getAnnotatedType()))
         {
             defineManagedBean(processAnnotatedEvent);
         }
     }
 
-    private boolean isValidManagedBean(Class beanClass)
+    private boolean isValidManagedBean(final AnnotatedType<?> type)
     {
+        final Class<?> beanClass = type.getJavaClass();
+        final WebBeansUtil webBeansUtil = webBeansContext.getWebBeansUtil();
+
+        // done separately to be able to swallow the logging when not relevant and avoid to pollute logs
+        if (!webBeansUtil.isConstructorOk(beanClass))
+        {
+            if (isNormalScoped(type))
+            {
+                logger.info("Bean implementation class : " + beanClass.getName() + " must define at least one Constructor");
+            } // else not an issue
+            return false;
+        }
+
         try
         {
-            webBeansContext.getWebBeansUtil().checkManagedBean(beanClass);
+            webBeansUtil.checkManagedBean(beanClass);
         }
-        catch (DefinitionException e)
+        catch (final DefinitionException e)
         {
             logger.info("skipped deployment of: " + beanClass.getName() + " reason: " + e.getMessage());
             logger.log(Level.FINER, "skipped deployment of: " + beanClass.getName() + " details: ", e);
             return false;
         }
         //we are not allowed to catch possible exceptions thrown by the following method
-        webBeansContext.getWebBeansUtil().checkManagedBeanCondition(beanClass);
+        webBeansUtil.checkManagedBeanCondition(beanClass);
         return true;
+    }
+
+    private static boolean isNormalScoped(final AnnotatedType<?> type)
+    {
+        final Set<Annotation> annotations = type.getAnnotations();
+        if (annotations != null)
+        {
+            for (final Annotation a : annotations)
+            {
+                if (AnnotationUtil.hasMetaAnnotation(a.annotationType().getAnnotations(), NormalScope.class)
+                        || AnnotationUtil.hasAnnotation(a.annotationType().getAnnotations(), NormalScope.class))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
