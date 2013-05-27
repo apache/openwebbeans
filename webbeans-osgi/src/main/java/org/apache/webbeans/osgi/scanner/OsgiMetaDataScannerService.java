@@ -221,14 +221,15 @@ public class OsgiMetaDataScannerService implements ScannerService
         {
 
             @Override
-            public void foundInDirectory(Bundle bundle, String basePath, URL url) throws Exception
+            public boolean foundInDirectory(Bundle bundle, String basePath, URL url) throws Exception
             {
                 logger.info("adding the following beans.xml URL: " + url);
                 beanXMLs.add(url);
+                return true;
             }
 
             @Override
-            public void foundInJar(Bundle bundle, String jarName, ZipEntry entry, InputStream in) throws Exception
+            public boolean foundInJar(Bundle bundle, String jarName, ZipEntry entry, InputStream in) throws Exception
             {
                 URL jarURL = bundle.getEntry(jarName);
 
@@ -236,6 +237,7 @@ public class OsgiMetaDataScannerService implements ScannerService
 
                 beanXMLs.add(jarURL);
                 beanArchiveJarNames.add(jarName);
+                return true;
             }
 
         };
