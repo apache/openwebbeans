@@ -34,8 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
 import javax.enterprise.context.ContextNotActiveException;
@@ -46,7 +44,6 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Stereotype;
-import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -67,7 +64,6 @@ import javax.naming.StringRefAddr;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
-import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
@@ -84,7 +80,6 @@ import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
@@ -954,18 +949,8 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     @Override
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
-        InjectionTargetBean<T> bean = webBeansContext.getWebBeansUtil().defineManagedBean(type);
-
-        if (bean == null)
-        {
-            throw new DefinitionException("Could not create InjectionTargetBean for type " + type.getJavaClass());
-        }
-        List<AnnotatedMethod<?>> postConstructMethods
-            = webBeansContext.getInterceptorUtil().getLifecycleMethods(bean.getAnnotatedType(), PostConstruct.class, true);
-        List<AnnotatedMethod<?>> preDestroyMethods
-            = webBeansContext.getInterceptorUtil().getLifecycleMethods(bean.getAnnotatedType(), PreDestroy.class, false);
-
-        return new InjectionTargetImpl<T>(bean.getAnnotatedType(), bean.getInjectionPoints(), webBeansContext, postConstructMethods, preDestroyMethods);
+        InjectionTargetFactoryImpl<T> factory = new InjectionTargetFactoryImpl<T>(type, webBeansContext);
+        return factory.createInjectionTarget();
     }
 
     @Override

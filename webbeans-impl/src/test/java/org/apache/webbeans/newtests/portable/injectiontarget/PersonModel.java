@@ -18,7 +18,19 @@
  */
 package org.apache.webbeans.newtests.portable.injectiontarget;
 
+import javax.enterprise.event.Observes;
+
 public class PersonModel
 {
+    private static int eventCount;
+    
+    public static int getEventCount()
+    {
+        return eventCount;
+    }
 
+    public void observe(@Observes String event)
+    {
+        eventCount++;
+    }
 }

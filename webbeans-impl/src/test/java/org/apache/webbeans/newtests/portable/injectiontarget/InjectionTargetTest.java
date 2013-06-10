@@ -53,12 +53,16 @@ public class InjectionTargetTest extends AbstractUnitTest
     public void testInjectionTarget()
     {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.add(PersonModel.class);
         startContainer(classes);
         
         InjectionTarget<PersonModel> model = getBeanManager().createInjectionTarget(getBeanManager().createAnnotatedType(PersonModel.class));
         PersonModel person = model.produce(getBeanManager().createCreationalContext(new InjectionTargetTest.MyContextual<PersonModel>()));
         Assert.assertNotNull(person);
-        
+
+        // check that createInjectionTarget did not deploy a second observer method
+        getBeanManager().fireEvent("test");
+        Assert.assertEquals(1, PersonModel.getEventCount());
         shutDownContainer();
         
     }
