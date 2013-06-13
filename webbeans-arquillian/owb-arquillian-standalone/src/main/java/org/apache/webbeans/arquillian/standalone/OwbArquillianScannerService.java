@@ -134,7 +134,7 @@ public class OwbArquillianScannerService implements ScannerService
         URL metainfBeansXmlUrl = getBeanXmlUrl(archive, WEB_INF_CLASS_FOLDER + "META-INF/beans.xml");
         if (metainfBeansXmlUrl != null)
         {
-            beansXmls.add(webBeansXmlUrl);
+            beansXmls.add(metainfBeansXmlUrl);
         }
 
         if (metainfBeansXmlUrl != null || webBeansXmlUrl != null)

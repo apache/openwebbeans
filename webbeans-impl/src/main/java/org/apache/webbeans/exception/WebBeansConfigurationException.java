@@ -32,11 +32,6 @@ public class WebBeansConfigurationException extends DefinitionException
 
     private static final long serialVersionUID = 1863095663133791175L;
 
-    public WebBeansConfigurationException()
-    {
-        super();
-    }
-
     public WebBeansConfigurationException(String message)
     {
         super(message);

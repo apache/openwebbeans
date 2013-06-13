@@ -24,11 +24,6 @@ public class DuplicateDefinitionException extends DefinitionException
 {
     private static final long serialVersionUID = 2312285271502063304L;
 
-    public DuplicateDefinitionException()
-    {
-        super();
-    }
-
     public DuplicateDefinitionException(String message)
     {
         super(message);

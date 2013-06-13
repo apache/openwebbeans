@@ -303,18 +303,18 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         if(injectionMember instanceof Constructor)
         {
             Constructor<?> constructor = (Constructor<?>) injectionMember;
-            buffer.append("Constructor Injection Point, constructor name :  " + constructor.getName() + ", Bean Owner : ["+ ownerBean.toString() + "]");
+            buffer.append("Constructor Injection Point, constructor name :  ").append(constructor.getName()).append(", Bean Owner : [").append(ownerBean).append("]");
         }
         else if(injectionMember instanceof Method)
         {
             Method method = (Method) injectionMember;
-            buffer.append("Method Injection Point, method name :  " + method.getName() + ", Bean Owner : ["+ ownerBean.toString() + "]");
+            buffer.append("Method Injection Point, method name :  ").append(method.getName()).append(", Bean Owner : [").append(ownerBean).append("]");
             
         }
         else if(injectionMember instanceof Field)
         {
             Field field = (Field) injectionMember;
-            buffer.append("Field Injection Point, field name :  " + field.getName() + ", Bean Owner : ["+ ownerBean.toString() + "]");            
+            buffer.append("Field Injection Point, field name :  ").append(field.getName()).append(", Bean Owner : [").append(ownerBean).append("]");            
         }
         
         return buffer.toString();

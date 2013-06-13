@@ -36,7 +36,9 @@
                 <exclude name="ri-broken" />
                 <exclude name="jboss-as-broken" />
                 <exclude name="broken" />
-                <exclude name="integration"i/>
+                <exclude name="integration" />
+                <exclude name="integration" />
+                <exclude name="javaee-full" />
             </run>
         </groups>
 

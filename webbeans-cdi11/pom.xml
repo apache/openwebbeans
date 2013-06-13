@@ -50,27 +50,34 @@
             <artifactId>xbean-finder-shaded</artifactId>
         </dependency>
 
-<!--X TODO remove
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <version>1.1</version>
-            <optional>true</optional>
+            <scope>provided</scope>
         </dependency>
--->
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jcdi_1.1_spec</artifactId>
-            <optional>true</optional>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+<!--         <dependency> -->
+<!--             <groupId>org.apache.geronimo.specs</groupId> -->
+<!--             <artifactId>geronimo-jcdi_1.1_spec</artifactId> -->
+<!--             <optional>true</optional> -->
+<!--             <version>1.0-SNAPSHOT</version> -->
+<!--         </dependency> -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-annotation_1.2_spec</artifactId>
             <version>1.0.MR2-SNAPSHOT</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-ejb_3.2_spec</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-servlet_3.0_spec</artifactId>
+            <version>1.0</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-atinject_1.0_spec</artifactId>
@@ -170,6 +177,14 @@
                             <token>import org.apache.webbeans.component.spi.InjectionTargetFactory</token>
                             <value>import javax.enterprise.inject.spi.InjectionTargetFactory</value>
                         </replacement>         
+                        <replacement>
+                            <token>import org.apache.webbeans.exception.inject.DefinitionException</token>
+                            <value>import javax.enterprise.inject.spi.DefinitionException</value>
+                        </replacement>         
+                        <replacement>
+                            <token>import org.apache.webbeans.exception.inject.DeploymentException</token>
+                            <value>import javax.enterprise.inject.spi.DeploymentException</value>
+                        </replacement>         
                     </replacements>
                 </configuration>
             </plugin>
@@ -240,17 +255,54 @@
                     <artifactId>cdi-tck-api</artifactId>
                     <version>${cdi11-tck.version}</version>
                     <scope>test</scope>
+                    <exclusions>
+<!--                         <exclusion> -->
+<!--                             <groupId>javax.enterprise</groupId> -->
+<!--                             <artifactId>cdi-api</artifactId> -->
+<!--                         </exclusion> -->
+<!--                         <exclusion> -->
+<!--                             <groupId>javax.el</groupId> -->
+<!--                             <artifactId>el-api</artifactId> -->
+<!--                         </exclusion> -->
+                    </exclusions>
                 </dependency>
                 <dependency>
                     <groupId>org.jboss.cdi.tck</groupId>
                     <artifactId>cdi-tck-impl</artifactId>
                     <version>${cdi11-tck.version}</version>
                     <scope>test</scope>
+                    <exclusions>
+<!--                         <exclusion> -->
+<!--                             <groupId>javax.enterprise</groupId> -->
+<!--                             <artifactId>cdi-api</artifactId> -->
+<!--                         </exclusion> -->
+                        <exclusion>
+                            <groupId>javax.faces</groupId>
+                            <artifactId>jsf-api</artifactId>
+                        </exclusion>
+<!--                         <exclusion> -->
+<!--                             <groupId>javax.servlet</groupId> -->
+<!--                             <artifactId>javax.servlet-api</artifactId> -->
+<!--                         </exclusion> -->
+<!--                         <exclusion> -->
+<!--                             <groupId>javax.servlet.jsp</groupId> -->
+<!--                             <artifactId>jsp-api</artifactId> -->
+<!--                         </exclusion> -->
+<!--                         <exclusion> -->
+<!--                             <groupId>javax.transaction</groupId> -->
+<!--                             <artifactId>jta</artifactId> -->
+<!--                         </exclusion> -->
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.myfaces.core</groupId>
+                    <artifactId>myfaces-api</artifactId>
+                    <version>2.1.11</version>
                 </dependency>
 
                 <dependency>
                     <groupId>org.apache.openwebbeans.arquillian</groupId>
-                    <artifactId>owb-arquillian-parent</artifactId>
+                    <artifactId>owb-arquillian-standalone</artifactId>
                     <version>${project.version}</version>
                 </dependency>
 
@@ -271,10 +323,6 @@
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>openwebbeans-spi</artifactId>
                 </dependency>
-                <dependency>
-                    <groupId>org.apache.openwebbeans</groupId>
-                    <artifactId>openwebbeans-impl</artifactId>
-                </dependency>
 
             </dependencies>
 
@@ -289,6 +337,32 @@
                                 <suiteXmlFile>standalone-suite.xml</suiteXmlFile>
                             </suiteXmlFiles>
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-tck</id>
+                                <phase>generate-test-sources</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+
+                                        <!-- OWB Porting Package -->
+                                        <artifactItem>
+                                            <groupId>org.apache.openwebbeans</groupId>
+                                            <artifactId>openwebbeans-porting</artifactId>
+                                            <overWrite>true</overWrite>
+                                            <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
+                                        </artifactItem>
+
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
