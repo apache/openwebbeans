@@ -18,14 +18,9 @@
  */
 package org.apache.webbeans.exception.inject;
 
-public class InconsistentSpecializationException extends DeploymentException
+public class InconsistentSpecializationException extends DefinitionException
 {
     private static final long serialVersionUID = 5398575103682514128L;
-
-    public InconsistentSpecializationException()
-    {
-        super();
-    }
 
     public InconsistentSpecializationException(String message)
     {

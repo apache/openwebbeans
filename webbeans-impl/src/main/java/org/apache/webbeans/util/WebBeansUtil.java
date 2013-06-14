@@ -75,16 +75,16 @@ import javax.inject.Named;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.NewLiteral;
-import org.apache.webbeans.component.BeanAttributesImpl;
-import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractProducerBean;
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.BeanManagerBean;
 import org.apache.webbeans.component.ConversationBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.component.InjectionPointBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
@@ -104,6 +104,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
@@ -651,8 +652,7 @@ public final class WebBeansUtil
                         continue;
                     }
 
-                    if (((AbstractOwbBean<?>)sp).getReturnType().
-                            isAssignableFrom(((AbstractOwbBean<?>)specialized).getReturnType()))
+                    if (sp.getTypes().size() > specialized.getTypes().size() && sp.getTypes().containsAll(specialized.getTypes()))
                     {
                         specialized = sp;
                     }
@@ -681,6 +681,24 @@ public final class WebBeansUtil
 
             if (superBean != null)
             {
+                for (Class<?> beanClass: beanClasses)
+                {
+                    if (beanClass.equals(specializedClass))
+                    {
+                        continue;
+                    }
+                    if (beanClass.getSuperclass().equals(superClass))
+                    {
+                        InconsistentSpecializationException exception = new InconsistentSpecializationException(superClass.getName()
+                                + " is @Specialized by two classes: " + beanClass.getName() + " and " + specializedClass.getName());
+                        throw new WebBeansDeploymentException(exception);
+                    }
+                }
+                if (!specialized.getTypes().containsAll(superBean.getTypes()))
+                {
+                    throw new DefinitionException("@Specialized Class : " + specializedClass.getName()
+                            + " must have all bean types of its super class");
+                }
                 webBeansContext.getBeanManagerImpl().getNotificationManager().disableOverriddenObservers(superClass);
 
                 // Recursively configure super class first if super class is also a special bean.
@@ -713,7 +731,7 @@ public final class WebBeansUtil
                 //Check types of the beans
                 if(comp.getClass() != superBean.getClass())
                 {
-                    throw new DefinitionException("@Specialized Class : " + specializedClass.getName()
+                    throw new InconsistentSpecializationException("@Specialized Class : " + specializedClass.getName()
                             + " and its super class may be the same type of bean,i.e, ManagedBean, SessionBean etc.");
                 }
 
@@ -721,7 +739,7 @@ public final class WebBeansUtil
                 {
                     if (!superBean.getName().equals(comp.getName()))
                     {
-                        throw new DefinitionException("@Specialized Class : " + specializedClass.getName()
+                        throw new InconsistentSpecializationException("@Specialized Class : " + specializedClass.getName()
                                 + " may not explicitly declare a bean name");
                     }
 
@@ -742,7 +760,7 @@ public final class WebBeansUtil
             }
             else
             {
-                throw new InconsistentSpecializationException("WebBean component class : " + specializedClass.getName()
+                throw new DefinitionException("WebBean component class : " + specializedClass.getName()
                         + " is not enabled for specialized by the " + specializedClass + " class");
             }
         }

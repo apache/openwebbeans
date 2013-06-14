@@ -47,6 +47,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.exception.inject.DefinitionException;
+import org.apache.webbeans.exception.inject.DeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -188,7 +189,7 @@ public class BeansDeployer
                 deployAdditionalAnnotatedTypes();
 
                 //Check Specialization
-                checkSpecializations(scanner);
+                processSpecializations(scanner);
                 
                 //Fire Event
                 fireAfterBeanDiscoveryEvent();
@@ -719,7 +720,7 @@ public class BeansDeployer
      * Checks specialization.
      * @param scanner scanner instance
      */
-    protected void checkSpecializations(ScannerService scanner)
+    protected void processSpecializations(ScannerService scanner)
     {
         logger.fine("Checking Specialization constraints has started.");
         
@@ -746,7 +747,10 @@ public class BeansDeployer
                         }
                         if (superClassList.contains(superClass))
                         {
-                            throw new InconsistentSpecializationException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0005) + superClass.getName());
+                            // since CDI 1.1 we have to wrap this in a DeploymentException
+                            InconsistentSpecializationException exception
+                                = new InconsistentSpecializationException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0005) + superClass.getName());
+                            throw new WebBeansDeploymentException(exception);
                         }
                         superClassList.add(superClass);
                         specialClassList.add(specialClass);
@@ -759,7 +763,15 @@ public class BeansDeployer
             //configure specialized producer beans.
             webBeansContext.getWebBeansUtil().configureProducerMethodSpecializations();
         }
-        catch(Exception e)
+        catch (DefinitionException e)
+        {
+            throw e;
+        }
+        catch (DeploymentException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
         {
             throw new WebBeansDeploymentException(e);
         }
