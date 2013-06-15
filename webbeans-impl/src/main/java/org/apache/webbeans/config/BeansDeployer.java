@@ -74,6 +74,7 @@ import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Specializes;
+import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -214,6 +215,11 @@ public class BeansDeployer
         }
         catch (AmbiguousResolutionException e)
         {
+            throw new DeploymentException(e);
+        }
+        catch (UnproxyableResolutionException e)
+        {
+            // the tck expects a DeploymentException, but it really should be a DefinitionException, see i.e. https://issues.jboss.org/browse/CDITCK-346
             throw new DeploymentException(e);
         }
         catch (WebBeansConfigurationException e)
