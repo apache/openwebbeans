@@ -26,7 +26,54 @@
 
         <packages>
             <package name="org.jboss.cdi.tck.tests.*">
-                <exclude name="org.jboss.cdi.tck.tests.*.broken.*" />
+                <!-- the following tests are excluded because we just have not yet implemented this features -->
+                <exclude name="org.jboss.cdi.tck.tests.inheritance.specialization.producer.method.broken.twobeans" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.definition.broken.interceptor" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.definition.broken.inject" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.definition.broken.decorator" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.definition.broken.enterprise.nonstatic" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.producer.method.broken.interceptor" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.producer.method.broken.decorator" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.disposal.method.definition.broken.interceptor" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.disposal.method.definition.broken.validation.ambiguous" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.disposal.method.definition.broken.validation.unsatisfied" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.disposal.method.definition.broken.decorator" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.simple.definition.broken.field" />
+                <exclude name="org.jboss.cdi.tck.tests.event.metadata.broken.initializer" />
+                <exclude name="org.jboss.cdi.tck.tests.event.broken.raw" />
+                <exclude name="org.jboss.cdi.tck.tests.event.observer.broken.validation.ambiguous" />
+                <exclude name="org.jboss.cdi.tck.tests.event.observer.broken.validation.unsatisfied" />
+                <exclude name="org.jboss.cdi.tck.tests.interceptors.definition.broken.observer" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.*" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.observer.broken.exception" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.observer.broken.definitionError" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.annotated.broken.processAnnotatedObserverThrowsException" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.annotated.delivery.broken" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.producer.broken.injectionTargetError" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.producer.broken.processing" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.broken.exception.validation" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.broken.exception.discovery" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.broken.addDefinitionError" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.broken.addDeploymentProblem" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.atd.broken" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.bbd.broken.normalScope" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.bbd.broken.exception" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.bbd.broken.passivatingScope" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.broken" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.broken.invalid" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.broken.passivation" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.processInjectionPoint.broken" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.container.event.broken.processBeanObserverRegistersException" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.container.event.broken.processBeanObserverThrowsException" />
+                <exclude name="org.jboss.cdi.tck.tests.lookup.byname.broken.injectionPointWithNamed2" />
+                <exclude name="org.jboss.cdi.tck.tests.lookup.injectionpoint.broken.disposer" />
+                <exclude name="org.jboss.cdi.tck.tests.decorators.definition.broken.observer" />
+                <exclude name="org.jboss.cdi.tck.tests.decorators.definition.broken.nodecoratedtypes" />
+                <exclude name="org.jboss.cdi.tck.tests.decorators.definition.broken.invalidAbstractMethodOnDecorator" />
+                <exclude name="org.jboss.cdi.tck.tests.decorators.definition.broken.notAllDecoratedTypesImplemented.parameterized" />
+                <exclude name="org.jboss.cdi.tck.tests.lookup.byname.ambiguous.broken" />
+                <exclude name="org.jboss.cdi.tck.tests.lookup.dynamic.broken.raw" />
+                <exclude name="org.jboss.cdi.tck.tests.deployment.exclude" />
                 <exclude name="org.jboss.cdi.tck.tests.inheritance.generics" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.simple.lifecycle.unproxyable" />
@@ -66,7 +113,15 @@
                 <exclude name="org.jboss.cdi.tck.tests.alternative.selection.stereotype" />
                 <exclude name="org.jboss.cdi.tck.tests.vetoed" />
                 <exclude name="org.jboss.cdi.tck.tests.vetoed.enterprise" />
-                </package>
+                
+                <!-- The following tests are broken and tck issues exist for it -->
+                
+                <!-- https://issues.jboss.org/browse/CDITCK-280 -->
+<!--                 <exclude name="org.jboss.cdi.tck.tests.context.passivating.broken.producer.field" />  -->
+
+                <!-- https://issues.jboss.org/browse/CDITCK-346 -->
+<!--                 <exclude name="org.jboss.cdi.tck.tests.context.passivating.broken.producer.method" /> -->
+            </package>
         </packages>
     </test>
 
