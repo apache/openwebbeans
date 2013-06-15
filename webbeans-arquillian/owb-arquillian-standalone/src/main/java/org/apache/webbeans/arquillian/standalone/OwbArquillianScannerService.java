@@ -33,7 +33,11 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.Node;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ArchiveAsset;
+import org.jboss.shrinkwrap.api.asset.Asset;
+import org.jboss.shrinkwrap.api.asset.FileAsset;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
@@ -149,9 +153,22 @@ public class OwbArquillianScannerService implements ScannerService
         Map<ArchivePath, Node> jars = archive.getContent(Filters.include("/WEB-INF/lib/.*\\.jar"));
         for (Map.Entry<ArchivePath, Node> jarEntry : jars.entrySet())
         {
-            ArchiveAsset archiveAsset = (ArchiveAsset) jarEntry.getValue().getAsset();
-            JavaArchive jarArchive = (JavaArchive) archiveAsset.getArchive();
-            scanJarArchive(jarArchive);
+            Asset asset = jarEntry.getValue().getAsset();
+            if (asset instanceof FileAsset)
+            {
+                FileAsset fileAsset = (FileAsset) asset;
+                if (fileAsset.getSource().getName().endsWith(".jar"))
+                {
+                    Archive<?> fileArchive = ShrinkWrap.createFromZipFile(JavaArchive.class, fileAsset.getSource());
+                    asset = new ArchiveAsset(fileArchive, ZipExporter.class);
+                }
+            }
+            if (asset instanceof ArchiveAsset)
+            {
+                ArchiveAsset archiveAsset = (ArchiveAsset) asset;
+                JavaArchive jarArchive = (JavaArchive) archiveAsset.getArchive();
+                scanJarArchive(jarArchive);
+            }
         }
 
     }

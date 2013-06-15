@@ -59,7 +59,14 @@ public class OwbLifecycleHandler
 
     public void beforeMethod(@Observes Before event)
     {
-        ContextsService service = lifecycle.get().getContextService();
+        ContainerLifecycle lc = lifecycle.get();
+        if (lc == null)
+        {
+            // this may happen if there was a DeploymentError during CDI boot
+            return;
+        }
+
+        ContextsService service = lc.getContextService();
 
         service.startContext(RequestScoped.class, null);
         service.startContext(SessionScoped.class, null);
