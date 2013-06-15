@@ -71,8 +71,10 @@ import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Specializes;
+import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -206,7 +208,19 @@ public class BeansDeployer
                 webBeansContext.getAnnotatedElementFactory().clear();
             }
         }
-        catch(Exception e)
+        catch (UnsatisfiedResolutionException e)
+        {
+            throw new DeploymentException(e);
+        }
+        catch (AmbiguousResolutionException e)
+        {
+            throw new DeploymentException(e);
+        }
+        catch (WebBeansConfigurationException e)
+        {
+            throw new DeploymentException(e);
+        }
+        catch (Exception e)
         {
             throw ExceptionUtil.throwAsRuntimeException(e);
         }

@@ -20,6 +20,7 @@ package org.apache.webbeans.util;
 
 import org.apache.webbeans.config.BeanTypeSetResolver;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -979,24 +980,61 @@ public final class ClassUtil
      */
     public static Class<?> getClazz(Type type)
     {
-        Class<?> raw = null;
-        
         if(type instanceof ParameterizedType)
         {
             ParameterizedType pt = (ParameterizedType)type;
-            raw = (Class<?>)pt.getRawType();                
+            return (Class<?>)pt.getRawType();                
         }
         else if(type instanceof Class)
         {
-            raw = (Class<?>)type;
+            return (Class<?>)type;
         }
         else if(type instanceof GenericArrayType)
         {
             GenericArrayType arrayType = (GenericArrayType)type;
-            raw = getClazz(arrayType.getGenericComponentType());
+            return getClazz(arrayType.getGenericComponentType());
         }
-        
-        return raw;
+        else if (type instanceof WildcardType)
+        {
+            WildcardType wildcardType = (WildcardType)type;
+            Type[] bounds = wildcardType.getUpperBounds();
+            if (bounds.length > 1)
+            {
+                throw new DefinitionException("Illegal use of wild card type with more than one upper bound: " + wildcardType);
+            }
+            else if (bounds.length == 0)
+            {
+                return Object.class;
+            }
+            else
+            {
+                return getClass(bounds[0]);
+            }
+        }
+        else if (type instanceof TypeVariable)
+        {
+            TypeVariable<?> typeVariable = (TypeVariable<?>)type;
+            if (typeVariable.getBounds().length > 1)
+            {
+                throw new DefinitionException("Illegal use of type variable with more than one bound: " + typeVariable);
+            }
+            else
+            {
+                Type[] bounds = typeVariable.getBounds();
+                if (bounds.length == 0)
+                {
+                    return Object.class;
+                }
+                else
+                {
+                    return getClass(bounds[0]);
+                }
+            }
+        }
+        else
+        {
+            throw new DefinitionException("Unsupported type " + type);
+        }
     }
 
     /**
