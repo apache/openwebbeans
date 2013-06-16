@@ -27,7 +27,7 @@ import org.apache.webbeans.portable.BeanManagerProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
 
-public class BeanManagerBean extends BuildInOwbBean<BeanManager>
+public class BeanManagerBean extends BuiltInOwbBean<BeanManager>
 {
     public BeanManagerBean(WebBeansContext webBeansContext)
     {

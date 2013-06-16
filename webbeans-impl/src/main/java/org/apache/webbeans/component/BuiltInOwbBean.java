@@ -28,17 +28,17 @@ import org.apache.webbeans.util.CollectionUtil;
 import org.apache.webbeans.component.spi.ProducerFactory;
 import org.apache.webbeans.config.WebBeansContext;
 
-public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
+public abstract class BuiltInOwbBean<T> extends AbstractOwbBean<T>
 {
 
     private Producer<T> producer;
 
-    protected BuildInOwbBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType, ProducerFactory<T> producerFactory)
+    protected BuiltInOwbBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType, ProducerFactory<T> producerFactory)
     {
         this(webBeansContext, webBeansType, new BeanAttributesImpl<T>(CollectionUtil.<Type>unmodifiableSet(returnType, Object.class)), returnType, false, producerFactory);
     }
     
-    protected BuildInOwbBean(
+    protected BuiltInOwbBean(
             WebBeansContext webBeansContext,
             WebBeansType webBeansType,
             BeanAttributesImpl<T> beanAttributes,

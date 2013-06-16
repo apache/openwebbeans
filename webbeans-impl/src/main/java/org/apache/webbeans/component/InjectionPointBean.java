@@ -26,7 +26,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.InjectionPointProducer;
 import org.apache.webbeans.util.CollectionUtil;
 
-public class InjectionPointBean extends BuildInOwbBean<InjectionPoint>
+public class InjectionPointBean extends BuiltInOwbBean<InjectionPoint>
 {
     public InjectionPointBean(WebBeansContext webBeansContext)
     {

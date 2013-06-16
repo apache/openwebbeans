@@ -32,7 +32,7 @@ import org.apache.webbeans.util.CollectionUtil;
  * 
  * @version $Rev$ $Date$
  */
-public class EventBean<T> extends BuildInOwbBean<Event<T>>
+public class EventBean<T> extends BuiltInOwbBean<Event<T>>
 {
 
     /**

@@ -36,7 +36,7 @@ import org.apache.webbeans.util.CollectionUtil;
  * @version $Rev$ $Date$
  *
  */
-public class ConversationBean extends BuildInOwbBean<ConversationImpl> implements InterceptedMarker
+public class ConversationBean extends BuiltInOwbBean<ConversationImpl> implements InterceptedMarker
 {
     /**
      * Default constructor.

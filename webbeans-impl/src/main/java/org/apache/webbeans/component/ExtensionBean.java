@@ -30,7 +30,7 @@ import org.apache.webbeans.util.AnnotationUtil;
  *
  * @param <T> type info
  */
-public class ExtensionBean<T> extends BuildInOwbBean<T>
+public class ExtensionBean<T> extends BuiltInOwbBean<T>
 {
     /**
      * Creates a new extesion bean.

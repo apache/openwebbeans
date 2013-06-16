@@ -29,7 +29,7 @@ import org.apache.webbeans.portable.InstanceProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
 
-public class InstanceBean<T> extends BuildInOwbBean<Instance<T>>
+public class InstanceBean<T> extends BuiltInOwbBean<Instance<T>>
 {
     
     @SuppressWarnings("serial")

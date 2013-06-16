@@ -20,14 +20,14 @@ package org.apache.webbeans.ee.beans;
 
 import javax.validation.ValidatorFactory;
 
-import org.apache.webbeans.component.BuildInOwbBean;
+import org.apache.webbeans.component.BuiltInOwbBean;
 import org.apache.webbeans.component.SimpleProducerFactory;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.ProviderBasedProducer;
 
 //used by BeansDeployer (created via reflection)
-public class ValidatorFactoryBean extends BuildInOwbBean<ValidatorFactory>
+public class ValidatorFactoryBean extends BuiltInOwbBean<ValidatorFactory>
 {
 
     public ValidatorFactoryBean(WebBeansContext webBeansContext)
