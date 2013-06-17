@@ -39,6 +39,7 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ExceptionUtil;
 
 import javax.decorator.Delegate;
+import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
@@ -177,10 +178,12 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public T produce(CreationalContext<T> creationalContext)
     {
-        T instance = newInstance((CreationalContextImpl<T>) creationalContext);
+        CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>) creationalContext;
+        T instance = newInstance(creationalContextImpl);
 
         if (proxyClass != null)
         {
+            Contextual<T> oldContextual = creationalContextImpl.getContextual();
             // apply interceptorInfo
             InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
 
@@ -189,12 +192,14 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             // create EJB-style interceptors
             for (Interceptor interceptorBean : interceptorInfo.getEjbInterceptors())
             {
+                creationalContextImpl.putContextual(interceptorBean);
                 interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContext));
             }
 
             // create CDI-style interceptors
             for (Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
             {
+                creationalContextImpl.putContextual(interceptorBean);
                 interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContext));
             }
 
@@ -209,10 +214,10 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             {
                 List<Decorator<?>> decorators = interceptorInfo.getDecorators();
                 Map<Decorator<?>, Object> instances = new HashMap<Decorator<?>, Object>();
-                CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>)creationalContext;
                 for (int i = decorators.size(); i > 0; i--)
                 {
-                    Decorator<?> decorator = decorators.get(i - 1);
+                    Decorator decorator = decorators.get(i - 1);
+                    creationalContextImpl.putContextual(decorator);
                     creationalContextImpl.putDelegate(delegate);
                     Object decoratorInstance = decorator.create((CreationalContext) creationalContext);
                     instances.put(decorator, decoratorInstance);
@@ -223,6 +228,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
 
             T proxyInstance = pf.createProxyInstance(proxyClass, instance, interceptorHandler);
             instance = proxyInstance;
+            creationalContextImpl.putContextual(oldContextual);
         }
 
         return instance;

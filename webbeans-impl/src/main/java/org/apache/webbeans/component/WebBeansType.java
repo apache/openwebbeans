@@ -69,5 +69,6 @@ public enum WebBeansType
     USERTRANSACTION,
     PRINCIPAL,
     VALIDATIONFACT,
-    VALIDATION
+    VALIDATION,
+    METADATA
 }

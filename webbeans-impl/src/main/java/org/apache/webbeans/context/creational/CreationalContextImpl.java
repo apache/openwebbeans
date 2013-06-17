@@ -60,7 +60,14 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      */
     private List<DependentCreationalContext<?>> dependentObjects = null;
 
-    /**Contextual bean*/
+    /**
+     * Contains the currently created bean
+     */
+    private Bean<T> bean = null;
+    
+    /**
+     * Contains the currently created contextual, may be a bean, interceptor or decorator 
+     */
     private Contextual<T> contextual = null;
 
     private WebBeansContext webBeansContext;
@@ -76,6 +83,10 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      */
     CreationalContextImpl(Contextual<T> contextual, WebBeansContext webBeansContext)
     {
+        if (contextual instanceof Bean)
+        {
+            this.bean = (Bean<T>)contextual;
+        }
         this.contextual = contextual;
         this.webBeansContext = webBeansContext;
     }
@@ -160,7 +171,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
                     dependentObjects = new ArrayList<DependentCreationalContext<?>>();
                 }
 
-                if (dependent == contextual)
+                if (dependent == bean)
                 {
                     dependentObjects.add(0, dependentCreational);
                 }
@@ -242,7 +253,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
                     
                 if (maxRemoval == 0)
                 {
-                    throw new WebBeansException("infinite loop detected while destroying bean " + contextual);
+                    throw new WebBeansException("infinite loop detected while destroying bean " + bean);
                 }
             }
         }
@@ -259,13 +270,28 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         removeAllDependents();
     }
     
-    /**
-     * Gets owner bean.
-     * @return bean
-     */
-    public Contextual<T> getBean()
+    public Bean<T> getBean()
+    {
+        return bean;
+    }
+
+    public Bean<T> putBean(Bean<T> newBean)
+    {
+        Bean<T> oldBean = bean;
+        bean = newBean;
+        return oldBean;
+    }
+    
+    public Contextual<T> getContextual()
     {
         return contextual;
+    }
+
+    public Contextual<T> putContextual(Contextual<T> newContextual)
+    {
+        Contextual<T> oldContextual = contextual;
+        contextual = newContextual;
+        return oldContextual;
     }
 
     /**
@@ -276,8 +302,8 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     {
         s.writeObject(dependentObjects);
 
-        String id = WebBeansUtil.getPassivationId(contextual);
-        if (contextual != null && id != null)
+        String id = WebBeansUtil.getPassivationId(bean);
+        if (bean != null && id != null)
         {
             s.writeObject(id);
         }
@@ -301,7 +327,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         String id = (String) s.readObject();
         if (id != null)
         {
-            contextual = (Contextual<T>) webBeansContext.getBeanManagerImpl().getPassivationCapableBean(id);
+            bean = (Bean<T>) webBeansContext.getBeanManagerImpl().getPassivationCapableBean(id);
         }
 
     }
@@ -312,15 +338,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 
         final StringBuilder sb = new StringBuilder("CreationalContext{name=");
 
-        if (contextual instanceof Bean)
-        {
-            Bean bean = (Bean) contextual;
-            sb.append(bean.getBeanClass().getSimpleName());
-        }
-        else
-        {
-            sb.append("unknown");
-        }
+        sb.append(bean.getBeanClass().getSimpleName());
 
         return sb.append("}").toString();
     }

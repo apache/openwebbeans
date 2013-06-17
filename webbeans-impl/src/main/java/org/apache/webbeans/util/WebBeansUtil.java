@@ -79,13 +79,17 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.BeanManagerBean;
+import org.apache.webbeans.component.BeanMetadataBean;
 import org.apache.webbeans.component.ConversationBean;
+import org.apache.webbeans.component.DecoratorMetadataBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.InstanceBean;
+import org.apache.webbeans.component.InterceptedOrDecoratedBeanMetadataBean;
+import org.apache.webbeans.component.InterceptorMetadataBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.NewManagedBean;
@@ -479,6 +483,41 @@ public final class WebBeansUtil
         return new EventBean<T>(webBeansContext);
     }
 
+    /**
+     * Creates a new bean metadata bean.
+     * @return new  bean
+     */
+    public <T> BeanMetadataBean<T> getBeanMetadataBean()
+    {
+        return new BeanMetadataBean<T>(webBeansContext);
+    }
+
+    /**
+     * Creates a new interceptor metadata bean.
+     * @return new bean
+     */
+    public <T> InterceptorMetadataBean<T> getInterceptorMetadataBean()
+    {
+        return new InterceptorMetadataBean<T>(webBeansContext);
+    }
+
+    /**
+     * Creates a new decorator metadata bean.
+     * @return new bean
+     */
+    public <T> DecoratorMetadataBean<T> getDecoratorMetadataBean()
+    {
+        return new DecoratorMetadataBean<T>(webBeansContext);
+    }
+
+    /**
+     * Creates a new metadata bean.
+     * @return new bean
+     */
+    public <T> InterceptedOrDecoratedBeanMetadataBean<T> getInterceptedOrDecoratedBeanMetadataBean()
+    {
+        return new InterceptedOrDecoratedBeanMetadataBean<T>(webBeansContext);
+    }
 
     /**
      * Returns new conversation bean instance.

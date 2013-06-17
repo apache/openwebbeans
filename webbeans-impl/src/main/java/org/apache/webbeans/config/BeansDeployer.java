@@ -258,6 +258,12 @@ public class BeansDeployer
         //Register Event Bean
         beanManager.addInternalBean(webBeansUtil.getEventBean());
         
+        //Register Metadata Beans
+        beanManager.addInternalBean(webBeansUtil.getBeanMetadataBean());
+        beanManager.addInternalBean(webBeansUtil.getInterceptorMetadataBean());
+        beanManager.addInternalBean(webBeansUtil.getDecoratorMetadataBean());
+        beanManager.addInternalBean(webBeansUtil.getInterceptedOrDecoratedBeanMetadataBean());
+        
         //REgister Provider Beans
         OpenWebBeansJavaEEPlugin beanEeProvider = webBeansContext.getPluginLoader().getJavaEEPlugin();
         OpenWebBeansWebPlugin beanWebProvider = webBeansContext.getPluginLoader().getWebPlugin();

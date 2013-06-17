@@ -23,6 +23,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Provider;
 import java.lang.reflect.GenericArrayType;
@@ -505,10 +506,18 @@ public final class ClassUtil
             final Class<?> clazzReqType = (Class<?>)ptReq.getRawType();
             final Type genericSuperClass = clazzBeanType.getGenericSuperclass();
 
-            if(Provider.class.isAssignableFrom(clazzReqType) ||
+            if (Provider.class.isAssignableFrom(clazzReqType) ||
                     Event.class.isAssignableFrom(clazzReqType))
             {
-                if(isClassAssignable(clazzReqType, clazzBeanType))
+                if (isClassAssignable(clazzReqType, clazzBeanType))
+                {
+                    return true;
+                }
+            }
+            else if (Bean.class.isAssignableFrom(clazzReqType))
+            {
+                // May be Bean, Interceptor or Decorator and thus must match directly
+                if (clazzReqType.equals(clazzBeanType))
                 {
                     return true;
                 }

@@ -39,12 +39,17 @@
                 <exclude name="org.jboss.cdi.tck.tests.implementation.disposal.method.definition.broken.validation.unsatisfied" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.disposal.method.definition.broken.decorator" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.simple.definition.broken.field" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.broken.injection" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.broken.injection.decorated" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.broken.injection.intercepted" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.broken.typeparam.interceptor" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.broken.typeparam" />
+                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.broken.typeparam.decorator" />
                 <exclude name="org.jboss.cdi.tck.tests.event.metadata.broken.initializer" />
                 <exclude name="org.jboss.cdi.tck.tests.event.broken.raw" />
                 <exclude name="org.jboss.cdi.tck.tests.event.observer.broken.validation.ambiguous" />
                 <exclude name="org.jboss.cdi.tck.tests.event.observer.broken.validation.unsatisfied" />
                 <exclude name="org.jboss.cdi.tck.tests.interceptors.definition.broken.observer" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.*" />
                 <exclude name="org.jboss.cdi.tck.tests.extensions.observer.broken.exception" />
                 <exclude name="org.jboss.cdi.tck.tests.extensions.observer.broken.definitionError" />
                 <exclude name="org.jboss.cdi.tck.tests.extensions.annotated.broken.processAnnotatedObserverThrowsException" />
@@ -75,7 +80,6 @@
                 <exclude name="org.jboss.cdi.tck.tests.lookup.dynamic.broken.raw" />
                 <exclude name="org.jboss.cdi.tck.tests.deployment.exclude" />
                 <exclude name="org.jboss.cdi.tck.tests.inheritance.generics" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.simple.lifecycle.unproxyable" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.definition" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.lifecycle" />
@@ -116,6 +120,7 @@
                 
                 <!-- The following tests are broken and tck issues exist for it -->
                 
+                <!-- We currently implement the wrong behavior -->
                 <!-- https://issues.jboss.org/browse/CDITCK-280 -->
 <!--                 <exclude name="org.jboss.cdi.tck.tests.context.passivating.broken.producer.field" />  -->
 

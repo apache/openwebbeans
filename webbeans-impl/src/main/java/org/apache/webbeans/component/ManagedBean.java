@@ -18,10 +18,13 @@
  */
 package org.apache.webbeans.component;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 
 /**
  * Managed bean implementation of the {@link javax.enterprise.inject.spi.Bean}.
@@ -37,5 +40,23 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
                        Class<T> beanClass)
     {
         super(webBeansContext, webBeansType, annotated, beanAttributes, beanClass);
+    }
+
+    public T create(CreationalContext<T> creationalContext)
+    {
+        if (!(creationalContext instanceof CreationalContextImpl))
+        {
+            creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(creationalContext, this);
+        }
+        CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>)creationalContext;
+        Bean<T> oldBean = creationalContextImpl.putBean(this);
+        try
+        {
+            return super.create(creationalContext);
+        }
+        finally
+        {
+            creationalContextImpl.putBean(oldBean);
+        }
     }
 }
