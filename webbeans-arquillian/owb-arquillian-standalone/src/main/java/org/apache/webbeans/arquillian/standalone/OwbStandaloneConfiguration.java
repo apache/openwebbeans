@@ -26,9 +26,25 @@ import org.jboss.arquillian.container.spi.client.container.ContainerConfiguratio
  */
 public class OwbStandaloneConfiguration implements ContainerConfiguration
 {
+    /**
+     * used to skip classpath resources which are not in the archive,
+     * can be useful when a resource should appear a single time in an app
+     */
+    private boolean useOnlyArchiveResources = false;
+
     @Override
     public void validate() throws ConfigurationException
     {
         // not needed right now
+    }
+
+    public boolean isUseOnlyArchiveResources()
+    {
+        return useOnlyArchiveResources;
+    }
+
+    public void setUseOnlyArchiveResources(final boolean useOnlyArchiveResources)
+    {
+        this.useOnlyArchiveResources = useOnlyArchiveResources;
     }
 }

@@ -56,6 +56,7 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
     private WebBeansContext webBeansContext;
 
     private final ThreadLocal<ClassLoader> originalLoader = new ThreadLocal<ClassLoader>();
+    private boolean useOnlyArchiveResources;
 
     @Override
     public Class<OwbStandaloneConfiguration> getConfigurationClass()
@@ -76,6 +77,8 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
 
         singletonService = new OwbArquillianSingletonService();
         WebBeansFinder.setSingletonService(singletonService);
+
+        useOnlyArchiveResources = owbStandaloneConfiguration.isUseOnlyArchiveResources();
 
     }
 
@@ -113,7 +116,7 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
 
         final ClassLoader parentLoader = Thread.currentThread().getContextClassLoader();
         originalLoader.set(parentLoader);
-        Thread.currentThread().setContextClassLoader(new OwbSWClassLoader(parentLoader, archive));
+        Thread.currentThread().setContextClassLoader(new OwbSWClassLoader(parentLoader, archive, useOnlyArchiveResources));
 
         return new ProtocolMetaData();
     }

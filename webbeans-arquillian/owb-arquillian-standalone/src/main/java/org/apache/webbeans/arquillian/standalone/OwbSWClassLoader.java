@@ -35,16 +35,23 @@ import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 public class OwbSWClassLoader extends URLClassLoader implements Closeable
 {
     private final List<InputStream> openedStreams = new ArrayList<InputStream>();
     private final String prefix;
+    private final boolean useOnlyArchiveResources;
+    private final Archive<?> archive;
 
-    public OwbSWClassLoader(final ClassLoader parent, final Archive<?> archive)
+    public OwbSWClassLoader(final ClassLoader parent, final Archive<?> archive, final boolean useOnlyArchiveResources)
     {
         super(new URL[0], parent);
+
+        this.useOnlyArchiveResources = useOnlyArchiveResources;
+        this.archive = archive;
 
         if (WebArchive.class.isInstance(archive))
         {
@@ -56,64 +63,81 @@ public class OwbSWClassLoader extends URLClassLoader implements Closeable
         }
 
         try
-        {
-            addURL(new URL(null, "archive:" + archive.getName() + "/", new URLStreamHandler()
-            {
-                @Override
-                protected URLConnection openConnection(final URL u) throws IOException
-                {
-                    return new URLConnection(u)
-                    {
-                        @Override
-                        public void connect() throws IOException
-                        {
-                            // no-op
-                        }
-
-                        @Override
-                        public InputStream getInputStream() throws IOException
-                        {
-                            final ArchivePath path = convertToArchivePath(u);
-                            Node node = archive.get(prefix + path.get());
-                            if (node == null && !prefix.isEmpty())
-                            { // WEB-INF/lib/x.jar!*
-                                node = archive.get(path);
-                            }
-
-                            // SHRINKWRAP-308
-                            if (node == null)
-                            {
-                                throw new FileNotFoundException("Requested path: " + path + " does not exist in " + archive.toString());
-                            }
-
-                            final Asset asset = node.getAsset();
-                            if (asset == null)
-                            {
-                                return null;
-                            }
-
-                            final InputStream input = asset.openStream();
-                            synchronized (this)
-                            {
-                                openedStreams.add(input);
-                            }
-                            return input;
-
-                        }
-
-                        private ArchivePath convertToArchivePath(final URL url)
-                        {
-                            return ArchivePaths.create(url.getPath().replace(archive.getName(), ""));
-                        }
-                    };
-                }
-            }));
+        { // add it to find classes if used this way
+            addURL(new URL(null, "archive:" + archive.getName() + "/", new ArchiveStreamHandler()));
         }
         catch (final MalformedURLException e)
         {
             throw new RuntimeException("Could not create URL for archive: " + archive.getName(), e);
         }
     }
+
+    @Override
+    public URL findResource(final String name)
+    {
+        final Node node = findNode(name);
+        if (node != null)
+        {
+            try
+            {
+                return new URL(null, "archive:" + archive.getName() + "/" + name, new ArchiveStreamHandler());
+            }
+            catch (final MalformedURLException e)
+            {
+                // no-op: let reuse parent method
+            }
+        }
+        if (useOnlyArchiveResources)
+        {
+            return null;
+        }
+        return super.findResource(name);
+    }
+
+    @Override
+    public Enumeration<URL> findResources(final String name) throws IOException
+    {
+        final Node node = findNode(name);
+        if (node != null)
+        {
+            return Collections.enumeration(Collections.singleton(new URL(null, "archive:" + archive.getName() + "/" + name, new ArchiveStreamHandler())));
+        }
+        if (useOnlyArchiveResources)
+        {
+            return Collections.emptyEnumeration();
+        }
+
+        return super.findResources(name);
+    }
+
+    private Node findNode(final String name)
+    {
+        ArchivePath path = ArchivePaths.create(path(prefix, name));
+        Node node = archive.get(path);
+        if (node == null)
+        {
+            path = ArchivePaths.create(name);
+            node = archive.get(path);
+
+
+        }
+        return node;
+    }
+
+    private String path(final String... parts)
+    {
+        final StringBuilder builder = new StringBuilder(parts[0]);
+        for (int i = 1; i < parts.length; i++)
+        {
+            if (!parts[i - 1].endsWith("/") && !parts[i].startsWith("/"))
+            {
+                builder.append("/");
+            }
+            builder.append(parts[i]);
+        }
+        return builder.toString();
+    }
+
 
     public void close() throws IOException
     {
@@ -131,6 +155,58 @@ public class OwbSWClassLoader extends URLClassLoader implements Closeable
                 }
             }
             openedStreams.clear();
+        }
+    }
+
+    protected class ArchiveStreamHandler extends URLStreamHandler
+    {
+        @Override
+        protected URLConnection openConnection(final URL u) throws IOException
+        {
+            return new URLConnection(u)
+            {
+                @Override
+                public void connect() throws IOException
+                {
+                    // no-op
+                }
+
+                @Override
+                public InputStream getInputStream() throws IOException
+                {
+                    final ArchivePath path = convertToArchivePath(u);
+                    Node node = archive.get(prefix + path.get());
+                    if (node == null && !prefix.isEmpty())
+                    { // WEB-INF/lib/x.jar!*
+                        node = archive.get(path);
+                    }
+
+                    // SHRINKWRAP-308
+                    if (node == null)
+                    {
+                        throw new FileNotFoundException("Requested path: " + path + " does not exist in " + archive.toString());
+                    }
+
+                    final Asset asset = node.getAsset();
+                    if (asset == null)
+                    {
+                        return null;
+                    }
+
+                    final InputStream input = asset.openStream();
+                    synchronized (this)
+                    {
+                        openedStreams.add(input);
+                    }
+                    return input;
+
+                }
+
+                private ArchivePath convertToArchivePath(final URL url)
+                {
+                    return ArchivePaths.create(url.getPath().replace(archive.getName(), ""));
+                }
+            };
         }
     }
 }
