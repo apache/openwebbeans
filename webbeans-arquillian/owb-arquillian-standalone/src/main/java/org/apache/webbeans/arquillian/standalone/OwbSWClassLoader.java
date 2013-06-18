@@ -73,6 +73,34 @@ public class OwbSWClassLoader extends URLClassLoader implements Closeable
     }
 
     @Override
+    public URL getResource(final String name)
+    {
+        if (useOnlyArchiveResources)
+        {
+            final URL url = findResource(name);
+            if (url != null)
+            {
+                return url;
+            } // else user probably used the fact the test is embedded
+        }
+        return super.getResource(name);
+    }
+
+    @Override
+    public Enumeration<URL> getResources(final String name) throws IOException
+    {
+        if (useOnlyArchiveResources)
+        {
+            final Enumeration<URL> urls = findResources(name);
+            if (urls.hasMoreElements())
+            {
+                return urls;
+            } // else user probably used the fact the test is embedded
+        }
+        return super.getResources(name);
+    }
+
+    @Override
     public URL findResource(final String name)
     {
         final Node node = findNode(name);
