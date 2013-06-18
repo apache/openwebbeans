@@ -35,6 +35,7 @@ import org.jboss.arquillian.container.spi.context.annotation.DeploymentScoped;
 import org.jboss.arquillian.core.api.InstanceProducer;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.classloader.ShrinkWrapClassLoader;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 
 /**
@@ -54,6 +55,8 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
 
     private OwbArquillianSingletonService singletonService;
     private WebBeansContext webBeansContext;
+
+    private final ThreadLocal<ClassLoader> originalLoader = new ThreadLocal<ClassLoader>();
 
     @Override
     public Class<OwbStandaloneConfiguration> getConfigurationClass()
@@ -109,6 +112,10 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
             throw new DeploymentException(e.getMessage(), e);
         }
 
+        final ClassLoader parentLoader = Thread.currentThread().getContextClassLoader();
+        originalLoader.set(parentLoader);
+        Thread.currentThread().setContextClassLoader(new ShrinkWrapClassLoader(parentLoader, archive));
+
         return new ProtocolMetaData();
     }
 
@@ -126,6 +133,9 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
 
             lifecycle.stopApplication(null);
         }
+
+        Thread.currentThread().setContextClassLoader(originalLoader.get());
+        originalLoader.remove();
     }
 
     @Override
