@@ -18,10 +18,6 @@
  */
 package org.apache.webbeans.arquillian.standalone;
 
-import javax.enterprise.inject.spi.BeanManager;
-
-import java.util.logging.Logger;
-
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
@@ -35,8 +31,11 @@ import org.jboss.arquillian.container.spi.context.annotation.DeploymentScoped;
 import org.jboss.arquillian.core.api.InstanceProducer;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.classloader.ShrinkWrapClassLoader;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
+
+import javax.enterprise.inject.spi.BeanManager;
+import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  */
@@ -114,7 +113,7 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
 
         final ClassLoader parentLoader = Thread.currentThread().getContextClassLoader();
         originalLoader.set(parentLoader);
-        Thread.currentThread().setContextClassLoader(new ShrinkWrapClassLoader(parentLoader, archive));
+        Thread.currentThread().setContextClassLoader(new OwbSWClassLoader(parentLoader, archive));
 
         return new ProtocolMetaData();
     }
@@ -134,6 +133,18 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
             lifecycle.stopApplication(null);
         }
 
+        final ClassLoader current = Thread.currentThread().getContextClassLoader();
+        if (OwbSWClassLoader.class.isInstance(current))
+        { // should be the case
+            try
+            {
+                OwbSWClassLoader.class.cast(current).close();
+            }
+            catch (final IOException e)
+            {
+                // no-op
+            }
+        }
         Thread.currentThread().setContextClassLoader(originalLoader.get());
         originalLoader.remove();
     }
