@@ -51,7 +51,7 @@ public class DeploymentValidationService
     }
 
     /**
-     * Checks the unproxiable condition.
+     * Checks the unproxyable condition.
      * @throws org.apache.webbeans.exception.WebBeansConfigurationException if bean is not proxied by the container
      */
     public void validateProxyable(OwbBean<?> bean)
