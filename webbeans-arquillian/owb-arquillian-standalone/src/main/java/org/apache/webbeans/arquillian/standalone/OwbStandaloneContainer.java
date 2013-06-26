@@ -105,6 +105,10 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
         OwbArquillianScannerService dummyScannerService = (OwbArquillianScannerService) webBeansContext.getScannerService();
         dummyScannerService.setArchive(archive);
 
+        final ClassLoader parentLoader = Thread.currentThread().getContextClassLoader();
+        originalLoader.set(parentLoader);
+        Thread.currentThread().setContextClassLoader(new OwbSWClassLoader(parentLoader, archive, useOnlyArchiveResources));
+
         try
         {
             lifecycle.startApplication(null);
@@ -113,10 +117,6 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
         {
             throw new DeploymentException(e.getMessage(), e);
         }
-
-        final ClassLoader parentLoader = Thread.currentThread().getContextClassLoader();
-        originalLoader.set(parentLoader);
-        Thread.currentThread().setContextClassLoader(new OwbSWClassLoader(parentLoader, archive, useOnlyArchiveResources));
 
         return new ProtocolMetaData();
     }
