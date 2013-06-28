@@ -35,6 +35,7 @@ import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -45,12 +46,14 @@ public class OwbSWClassLoader extends URLClassLoader implements Closeable
     private final String prefix;
     private final boolean useOnlyArchiveResources;
     private final Archive<?> archive;
+    private final Collection<String> useOnlyArchiveResourcesExcludes;
 
-    public OwbSWClassLoader(final ClassLoader parent, final Archive<?> archive, final boolean useOnlyArchiveResources)
+    public OwbSWClassLoader(final ClassLoader parent, final Archive<?> archive, final boolean useOnlyArchiveResources, final Collection<String> useOnlyArchiveResourcesExcludes)
     {
         super(new URL[0], parent);
 
         this.useOnlyArchiveResources = useOnlyArchiveResources;
+        this.useOnlyArchiveResourcesExcludes = useOnlyArchiveResourcesExcludes;
         this.archive = archive;
 
         if (WebArchive.class.isInstance(archive))
@@ -92,7 +95,13 @@ public class OwbSWClassLoader extends URLClassLoader implements Closeable
         if (useOnlyArchiveResources)
         {
             final Enumeration<URL> urls = findResources(name);
-            if (urls.hasMoreElements())
+            if (useOnlyArchiveResourcesExcludes.contains(name))
+            {
+                final Collection<URL> returnValue = new ArrayList<URL>(Collections.list(urls));
+                returnValue.addAll(Collections.list(super.getResources(name)));
+                return Collections.enumeration(returnValue);
+            }
+            else if (urls.hasMoreElements())
             {
                 return urls;
             } // else user probably used the fact the test is embedded

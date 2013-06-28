@@ -31,6 +31,7 @@ public class OwbStandaloneConfiguration implements ContainerConfiguration
      * can be useful when a resource should appear a single time in an app
      */
     private boolean useOnlyArchiveResources = false;
+    private String useOnlyArchiveResourcesExcludes = null;
 
     @Override
     public void validate() throws ConfigurationException
@@ -46,5 +47,15 @@ public class OwbStandaloneConfiguration implements ContainerConfiguration
     public void setUseOnlyArchiveResources(final boolean useOnlyArchiveResources)
     {
         this.useOnlyArchiveResources = useOnlyArchiveResources;
+    }
+
+    public String getUseOnlyArchiveResourcesExcludes()
+    {
+        return useOnlyArchiveResourcesExcludes;
+    }
+
+    public void setUseOnlyArchiveResourcesExcludes(final String useOnlyArchiveResourcesExcludes)
+    {
+        this.useOnlyArchiveResourcesExcludes = useOnlyArchiveResourcesExcludes;
     }
 }

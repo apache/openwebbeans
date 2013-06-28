@@ -35,6 +35,9 @@ import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 
 import javax.enterprise.inject.spi.BeanManager;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 /**
@@ -57,6 +60,7 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
 
     private final ThreadLocal<ClassLoader> originalLoader = new ThreadLocal<ClassLoader>();
     private boolean useOnlyArchiveResources;
+    private Collection<String> useOnlyArchiveResourcesExcludes = new ArrayList<String>();
 
     @Override
     public Class<OwbStandaloneConfiguration> getConfigurationClass()
@@ -79,6 +83,10 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
         WebBeansFinder.setSingletonService(singletonService);
 
         useOnlyArchiveResources = owbStandaloneConfiguration.isUseOnlyArchiveResources();
+        if (useOnlyArchiveResources && owbStandaloneConfiguration.getUseOnlyArchiveResourcesExcludes() != null)
+        {
+            useOnlyArchiveResourcesExcludes = Arrays.asList(owbStandaloneConfiguration.getUseOnlyArchiveResourcesExcludes().split(","));
+        }
 
     }
 
@@ -107,7 +115,7 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
 
         final ClassLoader parentLoader = Thread.currentThread().getContextClassLoader();
         originalLoader.set(parentLoader);
-        Thread.currentThread().setContextClassLoader(new OwbSWClassLoader(parentLoader, archive, useOnlyArchiveResources));
+        Thread.currentThread().setContextClassLoader(new OwbSWClassLoader(parentLoader, archive, useOnlyArchiveResources, useOnlyArchiveResourcesExcludes));
 
         try
         {
