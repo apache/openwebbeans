@@ -139,7 +139,7 @@ public final class AnnotatedElementFactory
                 {
                     supertype = newAnnotatedType(annotatedClass.getSuperclass());
                 }
-                annotatedType = new AnnotatedTypeImpl<X>(webBeansContext, annotatedClass, (AnnotatedTypeImpl<? super X>) supertype);
+                annotatedType = new AnnotatedTypeImpl<X>(webBeansContext, annotatedClass, supertype);
 
                 AnnotatedType<X> oldType = (AnnotatedType<X>)annotatedTypes.putIfAbsent(OWB_DEFAULT_KEY, annotatedType);
                 if(oldType != null)

@@ -64,7 +64,7 @@ class AnnotatedTypeImpl<X>
      *
      * @param annotatedClass class
      */
-    AnnotatedTypeImpl(WebBeansContext webBeansContext, Class<X> annotatedClass, AnnotatedTypeImpl<? super X> supertype)
+    AnnotatedTypeImpl(WebBeansContext webBeansContext, Class<X> annotatedClass, AnnotatedType<? super X> supertype)
     {
         super(webBeansContext, annotatedClass);
         this.supertype = supertype;
