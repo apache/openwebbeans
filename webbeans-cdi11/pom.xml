@@ -188,10 +188,6 @@
                             <token>import org.apache.webbeans.annotation.Decorated</token>
                             <value>import javax.enterprise.inject.Decorated</value>
                         </replacement>
-                        <replacement>
-                            <token>public class InconsistentSpecializationException extends DefinitionException</token>
-                            <value>public class InconsistentSpecializationException extends javax.enterprise.inject.spi.DefinitionException</value>
-                        </replacement>
                     </replacements>
                 </configuration>
             </plugin>
