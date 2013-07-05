@@ -42,6 +42,22 @@ import java.util.List;
 
 public class OwbSWClassLoader extends URLClassLoader implements Closeable
 {
+    // Collections.emptyEnumeration only exists in java7++
+    private final static Enumeration EMPTY_ENUMERATION = new Enumeration()
+    {
+        @Override
+        public boolean hasMoreElements()
+        {
+            return false;
+        }
+
+        @Override
+        public Object nextElement()
+        {
+            return null;
+        }
+    };
+
     private final List<InputStream> openedStreams = new ArrayList<InputStream>();
     private final String prefix;
     private final boolean useOnlyArchiveResources;
@@ -141,7 +157,7 @@ public class OwbSWClassLoader extends URLClassLoader implements Closeable
         }
         if (useOnlyArchiveResources)
         {
-            return Collections.emptyEnumeration();
+            return EMPTY_ENUMERATION;
         }
 
         return super.findResources(name);
