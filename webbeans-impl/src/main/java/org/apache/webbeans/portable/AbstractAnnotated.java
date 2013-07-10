@@ -32,6 +32,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.GenericsUtil;
 
 /**
  * Abstract implementation of the {@link Annotated} contract.
@@ -52,7 +53,7 @@ abstract class AbstractAnnotated implements Annotated
     private final WebBeansContext webBeansContext;
     
     /**
-     * Createa a new annotated element.
+     * Creates a new annotated element.
      *
      * @param webBeansContext our WebBeansContext
      * @param baseType annotated element type
@@ -142,18 +143,19 @@ abstract class AbstractAnnotated implements Annotated
     {
         if (typeClosures == null)
         {
-            initTypeClosures();
+            initTypeClosure();
         }
         return typeClosures;
     }
 
-    private synchronized void initTypeClosures()
+    protected abstract Class<?> getOwningClass();
+    protected abstract Class<?> getDeclaringClass();
+
+    private synchronized void initTypeClosure()
     {
         if (typeClosures == null)
         {
-            typeClosures = new HashSet<Type>();
-            typeClosures.add(Object.class);
-            ClassUtil.setTypeHierarchy(typeClosures, baseType);
+            typeClosures = GenericsUtil.getTypeClosure(baseType, getOwningClass(), getDeclaringClass());
             Set<String> ignoredInterfaces = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
             for (Iterator<Type> i = typeClosures.iterator(); i.hasNext(); )
             {

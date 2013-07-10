@@ -18,14 +18,6 @@
  */
 package org.apache.webbeans.util;
 
-import org.apache.webbeans.config.BeanTypeSetResolver;
-import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.exception.inject.DefinitionException;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Provider;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -40,6 +32,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.enterprise.inject.spi.InjectionPoint;
+
+import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 
 /**
  * Utility classes with respect to the class operations.
@@ -124,21 +121,24 @@ public final class ClassUtil
         return clazz.isMemberClass();
     }
 
-    public static Class<?>  getPrimitiveWrapper(Class<?> clazz)
+    public static boolean isSame(Type type1, Type type2)
+    {
+        if ((type1 instanceof Class) && ((Class<?>)type1).isPrimitive())
+        {
+            type1 = PRIMITIVE_TO_WRAPPERS_MAP.get(type1);
+        }
+        if ((type2 instanceof Class) && ((Class<?>)type2).isPrimitive())
+        {
+            type2 = PRIMITIVE_TO_WRAPPERS_MAP.get(type2);
+        }
+        return type1 == type2;
+    }
+
+    public static Class<?> getPrimitiveWrapper(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
         
         return PRIMITIVE_TO_WRAPPERS_MAP.get(clazz);
-
-    }
-
-    public static Class<?> identityOrGetPrimitiveWrapper(Class<?> clazz)
-    {
-        if (clazz.isPrimitive())
-        {
-            return getPrimitiveWrapper(clazz);
-        }
-        return clazz;
 
     }
 
@@ -326,7 +326,6 @@ public final class ClassUtil
         return getObjectMethodNames().contains(methodName);
     }
 
-
     /**
      * Returns true if type is an instance of <code>ParameterizedType</code>
      * else otherwise.
@@ -423,131 +422,6 @@ public final class ClassUtil
         Integer modifier = clazz.getModifiers();
 
         return !Modifier.isAbstract(modifier) && !Modifier.isInterface(modifier);
-    }
-
-    /**
-     * See specification 5.2.3.
-     * @param beanType bean type
-     * @param requiredType required type
-     * @return true if assignable
-     */
-    public static boolean isAssignable(Type beanType, Type requiredType)
-    {
-        Asserts.assertNotNull(beanType, "beanType parameter can not be null");
-        Asserts.assertNotNull(requiredType, "requiredType parameter can not be null");
-        
-        //Bean and required types are ParametrizedType
-        if (beanType instanceof ParameterizedType && requiredType instanceof ParameterizedType)
-        {
-            return isAssignableForParametrized((ParameterizedType) beanType, (ParameterizedType) requiredType);
-        }
-        //Both type is class type
-        else if (beanType instanceof Class && requiredType instanceof Class)
-        {
-            Class<?> clzBeanType = (Class<?>)beanType;
-            Class<?> clzReqType = (Class<?>)requiredType;
-            
-            if(clzBeanType.isPrimitive())
-            {
-                clzBeanType = getPrimitiveWrapper(clzBeanType);
-            }
-            
-            if(clzReqType.isPrimitive())
-            {
-                clzReqType = getPrimitiveWrapper(clzReqType);
-            }
-            
-            return clzReqType.equals(clzBeanType);
-        }
-        //Bean type is Parametrized and required type is class type
-        else if(beanType instanceof ParameterizedType && requiredType instanceof Class)
-        {
-            boolean ok = true;
-            ParameterizedType ptBean = (ParameterizedType)beanType;
-            Class<?> clazzBeanType = identityOrGetPrimitiveWrapper((Class<?>)ptBean.getRawType());
-            Class<?> clazzReqType = identityOrGetPrimitiveWrapper((Class<?>)requiredType);
-            if(clazzBeanType.equals(clazzReqType))
-            {
-                Type[]  beanTypeArgs = ptBean.getActualTypeArguments();               
-                for(Type actual : beanTypeArgs)
-                {
-                    if(!ClassUtil.isUnboundedTypeVariable(actual))
-                    {
-                        if(actual instanceof Class)
-                        {
-                            Class<?> clazz = (Class<?>)actual;
-                            if(!clazz.equals(Object.class))
-                            {
-                                ok = false;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            ok = false;
-                            break;
-                        }
-                    }
-                }                
-            }
-            else
-            {
-                ok = false;
-            }
-            
-            
-            return ok;
-        }
-        //Bean type is class and required type is parametrized
-        else if(beanType instanceof Class && requiredType instanceof ParameterizedType)
-        {
-            final Class<?> clazzBeanType = (Class<?>)beanType;
-            final ParameterizedType ptReq = (ParameterizedType)requiredType;
-            final Class<?> clazzReqType = (Class<?>)ptReq.getRawType();
-            final Type genericSuperClass = clazzBeanType.getGenericSuperclass();
-
-            if (Provider.class.isAssignableFrom(clazzReqType) ||
-                    Event.class.isAssignableFrom(clazzReqType))
-            {
-                if (isClassAssignable(clazzReqType, clazzBeanType))
-                {
-                    return true;
-                }
-            }
-            else if (Bean.class.isAssignableFrom(clazzReqType))
-            {
-                // May be Bean, Interceptor or Decorator and thus must match directly
-                if (clazzReqType.equals(clazzBeanType))
-                {
-                    return true;
-                }
-            }
-            else if (genericSuperClass instanceof ParameterizedType)
-            {
-                final Type[] params = ((ParameterizedType) genericSuperClass).getActualTypeArguments();
-                final Type[] requiredParams = ((ParameterizedType) requiredType).getActualTypeArguments();
-                if (params.length != requiredParams.length)
-                {
-                    return false;
-                }
-
-                for (int i = 0; i < params.length; i++)
-                {
-                    if (!isAssignable(params[i], requiredParams[i]))
-                    {
-                        return false;
-                    }
-                }
-
-                return isClassAssignable(clazzReqType, clazzBeanType);
-            }
-
-            return false;
-        }
-        else
-        {
-            return false;
-        }
     }
 
     /**
@@ -718,7 +592,13 @@ public final class ClassUtil
                     ok++;
                 }
             }
-
+            else if (requiredTypeArg instanceof ParameterizedType && beanTypeArg instanceof TypeVariable)
+            {
+                if (checkRequiredTypeIsParameterizedAndBeanTypeIsVariable(beanTypeArg, requiredTypeArg))
+                {
+                    ok++;
+                }
+            }
             //Both type is actual type
             else if((beanTypeArg instanceof Class) && (requiredTypeArg instanceof Class))
             {
@@ -874,6 +754,7 @@ public final class ClassUtil
         Class<?> clazzRequiredType = (Class<?>)requiredTypeArg;
         
         TypeVariable<?> tvBeanTypeArg = (TypeVariable<?>)beanTypeArg;
+        //TODO respect other bounds
         Type tvBound = tvBeanTypeArg.getBounds()[0];
         
         if(tvBound instanceof Class)
@@ -890,6 +771,13 @@ public final class ClassUtil
         }
         
         return true;
+    }
+
+    public static boolean checkRequiredTypeIsParameterizedAndBeanTypeIsVariable(Type beanTypeArg, Type requiredTypeArg)
+    {
+        ParameterizedType requiredType = (ParameterizedType)requiredTypeArg;
+        //TODO respect parameters of required type
+        return checkRequiredTypeIsClassAndBeanTypeIsVariable(beanTypeArg, requiredType.getRawType());
     }
     
     public static boolean checkRequiredTypeIsTypeVariableAndBeanTypeIsClass(Type beanTypeArg, Type requiredTypeArg)
@@ -970,16 +858,6 @@ public final class ClassUtil
         {
             return new Type[0];
         }
-    }
-
-
-    public static Set<Type> setTypeHierarchy(Set<Type> set, Type clazz)
-    {
-        BeanTypeSetResolver resolver = new BeanTypeSetResolver(clazz);
-        resolver.startConfiguration();
-        set.addAll(resolver.getHierarchy());
-        
-        return set;
     }
 
     /**

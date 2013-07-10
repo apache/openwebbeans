@@ -75,4 +75,16 @@ class AnnotatedParameterImpl<X> extends AbstractAnnotated implements AnnotatedPa
         
         return builder.toString();
     }
+
+    @Override
+    protected Class<?> getOwningClass()
+    {
+        return declaringCallable.getDeclaringType().getJavaClass();
+    }
+
+    @Override
+    protected Class<?> getDeclaringClass()
+    {
+        return declaringCallable.getJavaMember().getDeclaringClass();
+    }
 }

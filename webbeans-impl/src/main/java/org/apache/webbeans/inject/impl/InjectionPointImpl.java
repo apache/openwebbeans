@@ -71,15 +71,15 @@ class InjectionPointImpl implements InjectionPoint, Serializable
     
     private boolean delegate;
     
-    InjectionPointImpl(Bean<?> ownerBean, Type type, Collection<Annotation> qualifiers, AnnotatedField<?> annotatedField)
+    InjectionPointImpl(Bean<?> ownerBean, Collection<Annotation> qualifiers, AnnotatedField<?> annotatedField)
     {
-        this(ownerBean, type, qualifiers, annotatedField,
+        this(ownerBean, annotatedField.getBaseType(), qualifiers, annotatedField,
                 annotatedField.getJavaMember(), annotatedField.isAnnotationPresent(Delegate.class), Modifier.isTransient(annotatedField.getJavaMember().getModifiers()));
     }
     
-    InjectionPointImpl(Bean<?> ownerBean, Type type, Collection<Annotation> qualifiers, AnnotatedParameter<?> parameter)
+    InjectionPointImpl(Bean<?> ownerBean, Collection<Annotation> qualifiers, AnnotatedParameter<?> parameter)
     {
-        this(ownerBean, type, qualifiers, parameter, parameter.getDeclaringCallable().getJavaMember(), parameter.isAnnotationPresent(Delegate.class), false);
+        this(ownerBean, parameter.getBaseType(), qualifiers, parameter, parameter.getDeclaringCallable().getJavaMember(), parameter.isAnnotationPresent(Delegate.class), false);
     }
     
     private InjectionPointImpl(Bean<?> ownerBean, Type type, Collection<Annotation> qualifiers, Annotated annotated, Member member, boolean delegate, boolean isTransient)

@@ -19,6 +19,7 @@
 package org.apache.webbeans.portable;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.util.GenericsUtil;
 
 import java.lang.reflect.Field;
 
@@ -43,7 +44,7 @@ public class AnnotatedFieldImpl<X> extends AbstractAnnotatedMember<X> implements
      */
     AnnotatedFieldImpl(WebBeansContext webBeansContext, Field javaMember, AnnotatedType<X> declaringType)
     {
-        super(webBeansContext, javaMember.getGenericType(), javaMember,declaringType);
+        super(webBeansContext, GenericsUtil.resolveType(declaringType.getJavaClass(), javaMember), javaMember,declaringType);
         
         setAnnotations(javaMember.getDeclaredAnnotations());
     }

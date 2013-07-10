@@ -20,9 +20,7 @@ package org.apache.webbeans.config;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Custom parametrized type implementation.
@@ -38,30 +36,26 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
     private final Type rawType;
     
     /**Actual type arguments*/
-    private final List<Type> types = new ArrayList<Type>();
+    private final Type[] types;
 
     /**
      * New instance.
      * @param owner owner
      * @param raw raw
      */
-    public OwbParametrizedTypeImpl(Type owner, Type raw)
+    public OwbParametrizedTypeImpl(Type owner, Type raw, Type... types)
     {
         this.owner = owner;
-        rawType = raw;
+        this.rawType = raw;
+        this.types = types;
     }
     
     @Override
     public Type[] getActualTypeArguments()
     {
-        return types.toArray(new Type[types.size()]);
+        return types.clone();
     }
     
-    public void addTypeArgument(Type type)
-    {
-        types.add(type);
-    }
-
     @Override
     public Type getOwnerType()
     {
@@ -82,12 +76,7 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
     @Override
     public int hashCode()
     {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + Arrays.hashCode(getActualTypeArguments());
-        result = prime * result + ((owner == null) ? 0 : owner.hashCode());
-        result = prime * result + ((rawType == null) ? 0 : rawType.hashCode());
-        return result;
+       return Arrays.hashCode(types) ^ (owner == null ? 0 : owner.hashCode()) ^ (rawType == null ? 0 : rawType.hashCode());
     }
 
     /* (non-Javadoc)
@@ -96,47 +85,24 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
     @Override
     public boolean equals(Object obj)
     {
-        if (this == obj)
-        {
-            return true;
-        }
-        if (obj == null)
-        {
-            return false;
-        }
-        if (getClass() != obj.getClass())
-        {
-            return false;
-        }
-        OwbParametrizedTypeImpl other = (OwbParametrizedTypeImpl) obj;
-        if (!Arrays.equals(getActualTypeArguments(), other.getActualTypeArguments()))
-        {
-            return false;
-        }
-        if (owner == null)
-        {
-            if (other.owner != null)
-            {
-                return false;
-            }
-        }
-        else if (!owner.equals(other.owner))
-        {
-            return false;
-        }
-        if (rawType == null)
-        {
-            if (other.rawType != null)
-            {
-                return false;
-            }
-        }
-        else if (!rawType.equals(other.rawType))
-        {
-            return false;
-        }
-        
-        return true;
+       if (this == obj)
+       {
+          return true;
+       }
+       else if (obj instanceof ParameterizedType)
+       {
+          ParameterizedType that = (ParameterizedType) obj;
+          Type thatOwnerType = that.getOwnerType();
+          Type thatRawType = that.getRawType();
+          return (owner == null ? thatOwnerType == null : owner.equals(thatOwnerType))
+                  && (rawType == null ? thatRawType == null : rawType.equals(thatRawType))
+                  && Arrays.equals(types, that.getActualTypeArguments());
+       }
+       else
+       {
+          return false;
+       }
+       
     }
 
     public String toString()

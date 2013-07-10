@@ -42,7 +42,6 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
     /**Member type*/
     protected final Member javaMember;
     
-    @SuppressWarnings("unchecked")
     AbstractAnnotatedMember(WebBeansContext webBeansContext, Type baseType, Member javaMember, AnnotatedType<X> declaringType)
     {
         super(webBeansContext, baseType);
@@ -81,6 +80,18 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
     public boolean isStatic()
     {
         return Modifier.isStatic(javaMember.getModifiers());
+    }
+
+    @Override
+    protected Class<?> getOwningClass()
+    {
+        return declaringType.getJavaClass();
+    }
+
+    @Override
+    protected Class<?> getDeclaringClass()
+    {
+        return javaMember.getDeclaringClass();
     }
 
     public String toString()

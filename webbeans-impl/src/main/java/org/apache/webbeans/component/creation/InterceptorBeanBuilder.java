@@ -317,11 +317,11 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>>
         {
             if (clazz == null)
             {
-                clazz = annotatedMethod.getDeclaringType().getJavaClass();
+                clazz = annotatedMethod.getJavaMember().getDeclaringClass();
             }
 
             // check for same class -> Exception
-            if (alreadyDefined.getDeclaringType().getJavaClass() ==  clazz)
+            if (alreadyDefined.getJavaMember().getDeclaringClass() == clazz)
             {
                 throw new WebBeansConfigurationException("Only one Interceptor of a certain type is allowed per class, but multiple found in class "
                         + annotatedMethod.getDeclaringType().getJavaClass().getName()

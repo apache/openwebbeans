@@ -19,12 +19,11 @@
 package org.apache.webbeans.test.unittests.clazz;
 
 import java.lang.reflect.Type;
-import java.util.HashSet;
 import java.util.Set;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.GenericsUtil;
 import org.junit.Test;
 
 public class ClazzTest
@@ -32,19 +31,16 @@ public class ClazzTest
     @Test
     public void testStudent()
     {
-        Set<Type> set = new HashSet<Type>();
-        ClassUtil.setTypeHierarchy(set, Student.class);
+        Set<Type> set = GenericsUtil.getTypeClosure(Student.class, Student.class, Student.class);
 
         Assert.assertEquals(5, set.size());
 
     }
 
     @Test
-    public void testSutdent2()
+    public void testStudent2()
     {
-        Set<Type> set = new HashSet<Type>();
-
-        ClassUtil.setTypeHierarchy(set, Student2.class);
+        Set<Type> set = GenericsUtil.getTypeClosure(Student2.class, Student2.class, Student2.class);
 
         Assert.assertEquals(4, set.size());
 

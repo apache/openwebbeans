@@ -16,24 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.jsf.plugin;
+package org.apache.webbeans.newtests.injection.generics;
 
-import javax.faces.component.UIComponent;
 
-import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
+public class BazSubclass extends Baz<String> {
 
-public class OpenWebBeansJsfPlugin extends AbstractOwbPlugin
-{
-    /** {@inheritDoc} */
-    @Override
-    public void isManagedBean( Class<?> clazz ) throws WebBeansConfigurationException
+    public BazSubclass(String string)
     {
-        if (UIComponent.class.isAssignableFrom(clazz))
-        {
-            throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() 
-                                                     + " can not implement JSF UIComponent");
-        }
     }
-    
 }

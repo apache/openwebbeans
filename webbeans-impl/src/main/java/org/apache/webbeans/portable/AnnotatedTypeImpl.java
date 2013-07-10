@@ -132,6 +132,18 @@ class AnnotatedTypeImpl<X>
         return getState().methods;
     }
 
+    @Override
+    protected Class<?> getOwningClass()
+    {
+        return getJavaClass();
+    }
+
+    @Override
+    protected Class<?> getDeclaringClass()
+    {
+        return getJavaClass();
+    }
+
     private State getState()
     {
         State result = state;
@@ -152,7 +164,6 @@ class AnnotatedTypeImpl<X>
 
         return result;
     }
-
 
     private class State
     {
@@ -230,12 +241,15 @@ class AnnotatedTypeImpl<X>
 
             if (supertype != null)
             {
-                fields.addAll(supertype.getFields());
+                for (AnnotatedField<? super X> field: supertype.getFields())
+                {
+                    fields.add(new AnnotatedFieldImpl<X>(getWebBeansContext(), field.getJavaMember(), AnnotatedTypeImpl.this));
+                }
                 for (AnnotatedMethod<? super X> method : supertype.getMethods())
                 {
                     if (!isOverridden(method))
                     {
-                        methods.add(method);
+                        methods.add(new AnnotatedMethodImpl<X>(getWebBeansContext(), method.getJavaMember(), AnnotatedTypeImpl.this));
                     }
                 }
             }

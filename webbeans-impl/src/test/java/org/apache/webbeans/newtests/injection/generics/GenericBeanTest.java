@@ -16,44 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.test.unittests.inject.generic;
+package org.apache.webbeans.newtests.injection.generics;
 
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.inject.generic.GenericComponent;
 import org.apache.webbeans.test.component.inject.generic.GenericComponentInjector;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-public class GenericBeanTest extends TestContext
+public class GenericBeanTest extends AbstractUnitTest
 {
-    public GenericBeanTest()
-    {
-        super(GenericBeanTest.class.getName());
-    }
-
-    @Override
-    @Before
-    public void init()
-    {
-        super.init();
-    }
     
     @Test
-    @SuppressWarnings("unchecked")
     public void testGenericBeanInjection()
     {
-        defineManagedBean(GenericComponent.class);
-        AbstractOwbBean<GenericComponentInjector> bean2 = defineManagedBean(GenericComponentInjector.class);
+        startContainer(GenericComponent.class, GenericComponentInjector.class);
         
-        GenericComponentInjector<?> instance = getManager().getInstance(bean2);
+        GenericComponentInjector<?> instance = getInstance(GenericComponentInjector.class);
         Assert.assertNotNull(instance.getInjection1());
         Assert.assertNotNull(instance.getInjection2());
         Assert.assertNotNull(instance.getInjection3());
         Assert.assertNotNull(instance.getInjection4());
-        
-        
-        
     }
 }

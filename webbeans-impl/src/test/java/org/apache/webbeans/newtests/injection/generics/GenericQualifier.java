@@ -16,24 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.jsf.plugin;
+package org.apache.webbeans.newtests.injection.generics;
 
-import javax.faces.component.UIComponent;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-public class OpenWebBeansJsfPlugin extends AbstractOwbPlugin
-{
-    /** {@inheritDoc} */
-    @Override
-    public void isManagedBean( Class<?> clazz ) throws WebBeansConfigurationException
-    {
-        if (UIComponent.class.isAssignableFrom(clazz))
-        {
-            throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() 
-                                                     + " can not implement JSF UIComponent");
-        }
-    }
-    
+import javax.inject.Qualifier;
+
+@Target({ TYPE, METHOD, PARAMETER, FIELD })
+@Retention(RUNTIME)
+@Qualifier
+public @interface GenericQualifier {
 }

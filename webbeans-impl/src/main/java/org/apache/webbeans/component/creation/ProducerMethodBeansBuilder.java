@@ -26,7 +26,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.GenericsUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.enterprise.event.Observes;
@@ -77,7 +77,7 @@ public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>>
         {
             boolean enterprise = EnterpriseBeanMarker.class.isInstance(bean);
             if(annotatedMethod.isAnnotationPresent(Produces.class) &&
-                (annotatedMethod.getDeclaringType().getJavaClass().equals(annotatedType.getJavaClass())
+                (annotatedMethod.getJavaMember().getDeclaringClass().equals(annotatedType.getJavaClass())
                 || (enterprise && annotatedType.getJavaClass().isAssignableFrom(annotatedType.getJavaClass()))))
             {
                 checkProducerMethodForDeployment(annotatedMethod);
@@ -126,7 +126,7 @@ public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>>
                     boolean found = false;
                     for (final ProducerMethodBean<?> producer : producerBeans)
                     {
-                        if (ClassUtil.isAssignable(param.getBaseType(), producer.getCreatorMethod().getGenericReturnType()))
+                        if (GenericsUtil.satisfiesDependency(producer.getCreatorMethod().getGenericReturnType(), param.getBaseType()))
                         {
                             found = true;
                             break;

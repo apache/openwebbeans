@@ -29,11 +29,12 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
+
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -46,13 +47,12 @@ import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.DecoratorBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-
+import org.apache.webbeans.util.GenericsUtil;
 
 /**
  * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
@@ -165,57 +165,15 @@ public class DecoratorBeanBuilder<T>
 
     private void defineDecoratedTypes()
     {
-        // remove them first to avoid to loop over them
-        decoratedTypes.remove(Object.class);
-        decoratedTypes.remove(java.io.Serializable.class); /* 8.1 */
-
-        Type beanClass = annotatedType.getJavaClass();
-        do
-        {
-            final Class<?> clazz = ClassUtil.getClass(beanClass);
-            final Type toRemove;
-            if (ClassUtil.isDefinitionContainsTypeVariables(beanClass))
-            {
-                final OwbParametrizedTypeImpl pt = new OwbParametrizedTypeImpl(clazz.getDeclaringClass(), clazz);
-                final TypeVariable<?>[] tvs = clazz.getTypeParameters();
-                for(TypeVariable<?> tv : tvs)
-                {
-                    pt.addTypeArgument(tv);
-                }
-                toRemove = pt;
-                //X TODO generic support setDecoratorGenericType(pt);
-            }
-            else
-            {
-                toRemove = beanClass;
-                //X TODO generic support setDecoratorGenericType(beanClass);
-            }
-
-            final Iterator<Type> iterator = decoratedTypes.iterator();
-            while (iterator.hasNext())
-            {
-                final Type next = iterator.next();
-
-                // if raw class is the same and is assignable (generics handling)
-                if (ClassUtil.getClass(next) == clazz && ClassUtil.isAssignable(toRemove, next))
-                {
-                    iterator.remove();
-                }
-            }
-
-            beanClass = clazz.getGenericSuperclass();
-        } while (beanClass != Object.class);
-
-
+        decoratedTypes.remove(Serializable.class); /* 8.1 */
         for (Iterator<Type> i = decoratedTypes.iterator(); i.hasNext(); )
         {
             Type t = i.next();
-            if (t instanceof Class<?> && ignoredDecoratorInterfaces.contains(((Class) t).getName()))
+            if (!ClassUtil.getClass(t).isInterface() || (t instanceof Class<?> && ignoredDecoratorInterfaces.contains(((Class) t).getName())))
             {
                 i.remove();
             }
         }
-
     }
 
     private void defineDelegate(Set<InjectionPoint> injectionPoints)
@@ -258,7 +216,7 @@ public class DecoratorBeanBuilder<T>
             }
         }
 
-        delegateType = ipFound.getType();
+        delegateType = GenericsUtil.resolveType(ipFound.getType(), annotatedType.getJavaClass(), ipFound.getMember());
         delegateQualifiers = ipFound.getQualifiers();
 
         for (Type decType : decoratedTypes)

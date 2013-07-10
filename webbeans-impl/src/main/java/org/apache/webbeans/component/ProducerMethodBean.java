@@ -25,7 +25,6 @@ import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.creation.MethodProducerFactory;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -150,7 +149,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                               " with passivating scope @%s" +
                               " must be Serializable";
         getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(getScope(),
-                ClassUtil.isClassAssignable(Serializable.class, getReturnType()), errorMessage, creatorMethod.getName(), getBeanClass().getName(),
+                getReturnType() instanceof Serializable, errorMessage, creatorMethod.getName(), getBeanClass().getName(),
                 getScope().getName());
 
     }

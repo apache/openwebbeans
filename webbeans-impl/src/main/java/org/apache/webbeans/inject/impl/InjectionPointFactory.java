@@ -21,7 +21,6 @@ package org.apache.webbeans.inject.impl;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -131,7 +130,7 @@ public class InjectionPointFactory
             }
         }
 
-        return new InjectionPointImpl(owner, annotField.getBaseType(), Arrays.asList(qualifierAnnots), annotField);
+        return new InjectionPointImpl(owner, Arrays.asList(qualifierAnnots), annotField);
     }
 
     public <X> InjectionPoint buildInjectionPoint(Bean<?> owner, AnnotatedParameter<X> parameter)
@@ -139,7 +138,7 @@ public class InjectionPointFactory
         Asserts.assertNotNull(parameter, "parameter parameter can not be null");
         Set<Annotation> anns = parameter.getAnnotations();
         Annotation[] qualifierAnnots = webBeansContext.getAnnotationManager().getQualifierAnnotations(anns.toArray(new Annotation[anns.size()]));
-        return new InjectionPointImpl(owner, parameter.getBaseType(), Arrays.asList(qualifierAnnots), parameter);
+        return new InjectionPointImpl(owner, Arrays.asList(qualifierAnnots), parameter);
     }
 
     public <X> List<InjectionPoint> buildInjectionPoints(Bean<?> owner, AnnotatedCallable<X> callable)
@@ -165,9 +164,9 @@ public class InjectionPointFactory
         }
     }
 
-    public static InjectionPoint getPartialInjectionPoint(Bean<?> owner,Type type, AnnotatedParameter<?> parameter, Annotation...bindings)
+    public static InjectionPoint getPartialInjectionPoint(Bean<?> owner, AnnotatedParameter<?> parameter, Annotation...bindings)
     {
-        return new InjectionPointImpl(owner, type, Arrays.asList(bindings), parameter);
+        return new InjectionPointImpl(owner, Arrays.asList(bindings), parameter);
     }
 
     private void validateInitializerConstructor(AnnotatedConstructor<?> constructor)

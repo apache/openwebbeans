@@ -19,6 +19,7 @@
 package org.apache.webbeans.portable;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.util.GenericsUtil;
 
 import java.lang.reflect.Constructor;
 
@@ -43,7 +44,7 @@ public class AnnotatedConstructorImpl<X> extends AbstractAnnotatedCallable<X> im
     {        
         super(webBeansContext, javaMember.getDeclaringClass(), javaMember, declaringType);
         setAnnotations(javaMember.getDeclaredAnnotations());
-        setAnnotatedParameters(javaMember.getGenericParameterTypes(), javaMember.getParameterAnnotations());
+        setAnnotatedParameters(GenericsUtil.resolveParameterTypes(declaringType.getJavaClass(), javaMember), javaMember.getParameterAnnotations());
     }
     
     

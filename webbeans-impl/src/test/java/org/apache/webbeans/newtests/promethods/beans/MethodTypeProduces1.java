@@ -24,7 +24,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
-public class MethodTypeProduces1<T>
+public class MethodTypeProduces1<T extends String>
 {
     @Produces @Dependent @Named("ProMethodParameterized3") 
     ArrayList<T> methodPT3() 

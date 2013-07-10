@@ -24,7 +24,6 @@ import java.lang.reflect.Field;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.spi.ProducerFactory;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -108,7 +107,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T>
                               " with passivating scope @%s" +
                               " must be Serializable";
         getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(getScope(),
-                ClassUtil.isClassAssignable(Serializable.class, getReturnType()), errorMessage, producerField.getName(), 
+                getReturnType() instanceof Serializable, errorMessage, producerField.getName(), 
                 getBeanClass().getName(), getScope().getName());
     }
     

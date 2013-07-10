@@ -19,6 +19,7 @@
 package org.apache.webbeans.portable;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.util.GenericsUtil;
 
 import java.lang.reflect.Method;
 
@@ -41,11 +42,11 @@ class AnnotatedMethodImpl<X> extends AbstractAnnotatedCallable<X> implements Ann
      * @param declaringType declaring type
      * @param javaMember method
      */
-    AnnotatedMethodImpl(WebBeansContext webBeansContext, Method javaMember,AnnotatedType<X> declaringType)
+    AnnotatedMethodImpl(WebBeansContext webBeansContext, Method javaMember, AnnotatedType<X> declaringType)
     {        
-        super(webBeansContext, javaMember.getGenericReturnType(), javaMember,declaringType);
+        super(webBeansContext, GenericsUtil.resolveReturnType(declaringType.getJavaClass(), javaMember), javaMember,declaringType);
         setAnnotations(javaMember.getDeclaredAnnotations());
-        setAnnotatedParameters(javaMember.getGenericParameterTypes(), javaMember.getParameterAnnotations());
+        setAnnotatedParameters(GenericsUtil.resolveParameterTypes(declaringType.getJavaClass(), javaMember), javaMember.getParameterAnnotations());
     }
     
     

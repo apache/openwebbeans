@@ -25,6 +25,7 @@ import org.apache.webbeans.test.component.inject.parametrized.Dao;
 import org.apache.webbeans.test.component.inject.parametrized.UserDao;
 import org.apache.webbeans.test.component.inject.parametrized.WithTypeVariable;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.GenericsUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -46,10 +47,10 @@ public class GenericClassTest extends TestContext
             Field check22Bound = Dao.class.getField("check22WithBound");
             Field check4 = WithTypeVariable.class.getField("check4");
             
-            Assert.assertFalse(ClassUtil.isAssignable(t.getGenericType() , raw.getGenericType()));
-            Assert.assertTrue(ClassUtil.isAssignable(t.getGenericType() , check4.getGenericType()));
-            Assert.assertTrue(ClassUtil.isAssignable(t.getGenericType() , check22.getGenericType()));
-            Assert.assertTrue(ClassUtil.isAssignable(t.getGenericType() , check22Bound.getGenericType()));
+            Assert.assertFalse(GenericsUtil.satisfiesDependency(raw.getGenericType(), t.getGenericType()));
+            Assert.assertTrue(GenericsUtil.satisfiesDependency(check4.getGenericType(), t.getGenericType()));
+            Assert.assertTrue(GenericsUtil.satisfiesDependency(check22.getGenericType(), t.getGenericType()));
+            Assert.assertTrue(GenericsUtil.satisfiesDependency(check22Bound.getGenericType(), t.getGenericType()));
             
         }catch(Exception e)
         {
@@ -68,9 +69,9 @@ public class GenericClassTest extends TestContext
             Field f3 = UserDao.class.getField("field3");
             Field f4 = UserDao.class.getField("field4");
             
-            Assert.assertTrue(ClassUtil.isAssignable(f1.getGenericType() , f2.getGenericType()));
-            Assert.assertTrue(ClassUtil.isAssignable(f1.getGenericType() , f3.getGenericType()));
-            Assert.assertTrue(ClassUtil.isAssignable(f1.getGenericType() , f4.getGenericType()));
+            Assert.assertTrue(GenericsUtil.satisfiesDependency(f2.getGenericType(), f1.getGenericType()));
+            Assert.assertTrue(GenericsUtil.satisfiesDependency(f3.getGenericType(), f1.getGenericType()));
+            Assert.assertTrue(GenericsUtil.satisfiesDependency(f4.getGenericType(), f1.getGenericType()));
             
         }catch(Exception e)
         {

@@ -67,7 +67,7 @@ public class AbstractProducerBean<T> extends AbstractOwbBean<T> implements Passi
 
     @Override
     public Class<T> getReturnType()
-    {
+    { 
         return returnType;
     }
 

@@ -35,6 +35,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.GenericsUtil;
 
 public class DecoratorsManager
 {
@@ -176,6 +177,7 @@ public class DecoratorsManager
 
     private boolean isDecoratorMatch(Decorator<?> decorator, Set<Type> apiTypes, Set<Annotation> annotations)
     {
+        // 8.3.1
         if (!apiTypesMatchDelegateType(decorator, apiTypes))
         {
             return false;
@@ -218,7 +220,7 @@ public class DecoratorsManager
         boolean ok = false;
         for (Type apiType : apiTypes)
         {
-            if (DecoratorResolverRules.compareType(decorator.getDelegateType(), apiType))
+            if (GenericsUtil.satisfiesDependency(decorator.getDelegateType(), apiType))
             {
                 ok = true;
                 break;

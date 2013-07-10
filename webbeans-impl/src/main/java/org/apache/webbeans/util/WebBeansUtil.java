@@ -1058,16 +1058,7 @@ public final class WebBeansUtil
     {
         Type type = injectionPoint.getType();
 
-        Class<?> candidateClazz = null;
-        if(type instanceof Class)
-        {
-            candidateClazz = (Class<?>)type;
-        }
-        else if(type instanceof ParameterizedType)
-        {
-            ParameterizedType pt = (ParameterizedType)type;
-            candidateClazz = (Class<?>)pt.getRawType();
-        }
+        Class<?> candidateClazz = ClassUtil.getClass(type);
 
         if(!candidateClazz.isAssignableFrom(Instance.class))
         {

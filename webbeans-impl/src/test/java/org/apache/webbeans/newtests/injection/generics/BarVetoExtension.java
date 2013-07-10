@@ -16,24 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.jsf.plugin;
+package org.apache.webbeans.newtests.injection.generics;
 
-import javax.faces.component.UIComponent;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
 
-import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
-
-public class OpenWebBeansJsfPlugin extends AbstractOwbPlugin
-{
-    /** {@inheritDoc} */
-    @Override
-    public void isManagedBean( Class<?> clazz ) throws WebBeansConfigurationException
+public class BarVetoExtension implements Extension {
+    
+    public void vetoBar(@Observes ProcessAnnotatedType<?> annotatedTypeEvent)
     {
-        if (UIComponent.class.isAssignableFrom(clazz))
+        if (annotatedTypeEvent.getAnnotatedType().getJavaClass().equals(Bar.class))
         {
-            throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() 
-                                                     + " can not implement JSF UIComponent");
+            annotatedTypeEvent.veto();
         }
     }
-    
 }

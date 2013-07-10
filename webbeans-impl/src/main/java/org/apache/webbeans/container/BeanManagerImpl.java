@@ -86,6 +86,7 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.GenericsUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
@@ -688,7 +689,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         //Check type if bean type is given
         if(beanType != null)
         {
-            if(!isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean) && !ClassUtil.isAssignable(bean.getBeanClass(), beanType))
+            if(!isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean) && !GenericsUtil.satisfiesDependency(beanType, bean.getBeanClass()))
             {
                 throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
             }
@@ -747,7 +748,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         {
             Type beanApiType = itBeanApiTypes.next();
 
-            if(ClassUtil.isAssignable(beanApiType, givenType))
+            if(GenericsUtil.satisfiesDependency(givenType, beanApiType))
             {
                 return true;
             }

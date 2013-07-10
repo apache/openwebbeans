@@ -324,7 +324,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
                     annotationManager.getQualifierAnnotations(AnnotationUtil.
                             asArray(parameter.getAnnotations()));
 
-                InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(bean, parameter.getBaseType(), parameter, bindingTypes);
+                InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(bean, parameter, bindingTypes);
 
                 //Get observer parameter instance
                 @SuppressWarnings("unchecked")
