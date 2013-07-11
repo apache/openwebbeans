@@ -20,6 +20,7 @@ package org.apache.webbeans.newtests.portable.events.extensions;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBean;
 
 import org.apache.webbeans.newtests.concepts.alternatives.common.Pencil;
@@ -28,6 +29,11 @@ public class NotAppleExtnsion implements Extension
 {
     public static boolean CALLED = false;
     
+    public void observeProcessAnnotatedType(@Observes ProcessAnnotatedType<? super Pencil> event)
+    {
+        CALLED = true;
+    } 
+
     public void observeProcessBean(@Observes ProcessBean<Pencil> event)
     {
         CALLED = true;

@@ -358,7 +358,12 @@ public final class GenericsUtil
         }
         else if (type instanceof WildcardType)
         {
-            Type[] resolvedTypes = resolveTypes(((WildcardType) type).getUpperBounds(), resolver);
+            WildcardType wildcardType = (WildcardType) type;
+            if (wildcardType.getLowerBounds().length > 0)
+            {
+                return type;
+            }
+            Type[] resolvedTypes = resolveTypes(wildcardType.getUpperBounds(), resolver);
             return resolveType(getMostSpecificType(getRawTypes(resolvedTypes, resolver), resolvedTypes), resolver);
         }
         else if (type instanceof GenericArrayType)
