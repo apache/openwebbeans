@@ -145,6 +145,7 @@
 
         <packages>
             <package name="org.jboss.jsr299.tck.tests.*"></package>
+            <package name="org.jboss.jsr299.tck.interceptors.tests.*"/>
         </packages>
     </test>
 
