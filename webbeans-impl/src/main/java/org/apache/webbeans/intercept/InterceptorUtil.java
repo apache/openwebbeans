@@ -69,7 +69,7 @@ public final class InterceptorUtil
         {
             for (AnnotatedMethod<?> annotatedMethod : annotatedType.getMethods())
             {
-                if (annotatedMethod.getDeclaringType().getJavaClass() != clazz)
+                if (annotatedMethod.getJavaMember().getDeclaringClass() != clazz)
                 {
                     continue;
                 }

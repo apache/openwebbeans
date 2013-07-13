@@ -262,8 +262,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>>
 
     private void checkAroundInvokeConditions(AnnotatedMethod method)
     {
-        AnnotatedType annotatedType = method.getDeclaringType();
-
         List<AnnotatedParameter<T>> parameters = method.getParameters();
         List<Class<?>> clazzParameters = new ArrayList<Class<?>>();
         for(AnnotatedParameter<T> parameter : parameters)
@@ -324,7 +322,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>>
             if (alreadyDefined.getJavaMember().getDeclaringClass() == clazz)
             {
                 throw new WebBeansConfigurationException("Only one Interceptor of a certain type is allowed per class, but multiple found in class "
-                        + annotatedMethod.getDeclaringType().getJavaClass().getName()
+                        + annotatedMethod.getJavaMember().getDeclaringClass().getName()
                         + " methods: " + annotatedMethod.getJavaMember().toString()
                         + " and " + alreadyDefined.getJavaMember().toString());
             }
