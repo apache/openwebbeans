@@ -148,7 +148,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>>
 
             for (AnnotatedMethod m : methods)
             {
-                if (clazz == m.getDeclaringType().getJavaClass())
+                if (clazz == m.getJavaMember().getDeclaringClass())
                 {
 
                     // we only take methods from this very class and not sub- or superclasses
