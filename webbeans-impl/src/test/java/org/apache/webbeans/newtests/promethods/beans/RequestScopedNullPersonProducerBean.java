@@ -16,9 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.newtests.promethods.common;
+package org.apache.webbeans.newtests.promethods.beans;
 
-public class Person
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Produces;
+import javax.inject.Named;
+
+import org.apache.webbeans.newtests.promethods.common.Person;
+
+public class RequestScopedNullPersonProducerBean
 {
-
+    
+    @Produces @Named("nullPerson") @RequestScoped
+    public Person nullProducer()
+    {
+        return null;
+    }
 }

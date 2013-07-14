@@ -23,12 +23,15 @@ import java.util.Collection;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.newtests.promethods.beans.SessionScopedPersonProducerBean;
+import org.apache.webbeans.newtests.promethods.beans.RequestScopedNullPersonProducerBean;
 import org.apache.webbeans.newtests.promethods.beans.PersonProducerBean;
 import org.apache.webbeans.newtests.promethods.common.Person;
 import org.junit.Test;
@@ -92,5 +95,49 @@ public class PersonProducerTest extends AbstractUnitTest
         Assert.assertNull(reference);
         
         shutDownContainer();
+    }
+    
+    @Test
+    public void testSessionScopedNullPersonProducer()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Person.class);
+        beanClasses.add(SessionScopedPersonProducerBean.class);
+        
+        startContainer(beanClasses, beanXmls);  
+        
+        try
+        {
+            getInstance("person").toString();
+            Assert.fail("expected IllegalProductException");
+        }
+        catch (IllegalProductException e)
+        {
+            //expected
+        }
+    }
+    
+    @Test
+    public void testRequestScopedNullPersonProducer()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Person.class);
+        beanClasses.add(RequestScopedNullPersonProducerBean.class);
+        
+        startContainer(beanClasses, beanXmls);  
+        
+        try
+        {
+            getInstance("nullPerson").toString();
+            Assert.fail("expected IllegalProductException");
+        }
+        catch (IllegalProductException e)
+        {
+            //expected
+        }
     }
 }

@@ -18,13 +18,11 @@
  */
 package org.apache.webbeans.component;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.spi.ProducerFactory;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Defines the producer field component implementation.
@@ -56,8 +54,8 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T>
         T instance = null;
         
         instance = super.create(creationalContext);
-        checkNullInstance(instance);
-        checkScopeType();
+        checkNullInstance(instance, producerField.getName());
+        checkScopeType(producerField.getName());
 
         return instance;
 
@@ -83,34 +81,6 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T>
         producerField = field;
     }
 
-    /**
-     * Check null instance.
-     * 
-     * @param instance bean instance
-     */
-    protected void checkNullInstance(Object instance)
-    {
-        String errorMessage = "WebBeans producer field : %s" +
-                              " return type in the component implementation class : %s" +
-                              " scope must be @Dependent to create null instance";
-        WebBeansUtil.checkNullInstance(instance, getScope(), errorMessage, producerField.getName(),
-                getBeanClass().getName());
-    }
-
-    /**
-     * Check scope type passivation controls.
-     */
-    protected void checkScopeType()
-    {
-        String errorMessage = "WebBeans producer method : %s" + 
-                              " return type in the component implementation class : %s" +
-                              " with passivating scope @%s" +
-                              " must be Serializable";
-        getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(getScope(),
-                getReturnType() instanceof Serializable, errorMessage, producerField.getName(), 
-                getBeanClass().getName(), getScope().getName());
-    }
-    
     @Override
     public boolean isPassivationCapable()
     {

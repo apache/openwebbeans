@@ -28,6 +28,7 @@ import javax.enterprise.inject.spi.Producer;
 import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.component.spi.ProducerFactory;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.util.WebBeansUtil;
 
 
 /**
@@ -77,6 +78,35 @@ public class AbstractProducerBean<T> extends AbstractOwbBean<T> implements Passi
     public void dispose(T instance, CreationalContext<T> creationalContext)
     {
         // Do nothing
+    }
+    
+    /**
+     * Check null control.
+     * 
+     * @param instance bean instance
+     */
+    protected void checkNullInstance(Object instance, String producerName)
+    {
+        String errorMessage = "WebBeans producer : %s" +
+                              " return type in the component implementation class : %s" +
+                              " scope type must be @Dependent to create null instance";
+        WebBeansUtil.checkNullInstance(instance, getScope(), errorMessage, producerName,
+                getBeanClass().getName());
+    }
+
+    /**
+     * Check passivation check.
+     */
+    protected void checkScopeType(String producerName)
+    {
+        String errorMessage = "WebBeans producer : %s" +
+                              " return type in the component implementation class : %s" +
+                              " with passivating scope @%s" +
+                              " must be Serializable";
+        getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(getScope(),
+                Serializable.class.isAssignableFrom(getReturnType()), errorMessage, producerName, getBeanClass().getName(),
+                getScope().getName());
+
     }
 
     protected boolean isPassivationCapable(Class<?> returnType, Integer modifiers)

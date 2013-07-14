@@ -18,14 +18,12 @@
  */
 package org.apache.webbeans.component;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.creation.MethodProducerFactory;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Concrete implementation of the {@link AbstractOwbBean}.
@@ -118,40 +116,11 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     {
         T instance = super.create(creationalContext);
         // Check null instance
-        checkNullInstance(instance);
+        checkNullInstance(instance, creatorMethod.getName());
 
         // Check scope type
-        checkScopeType();
+        checkScopeType(creatorMethod.getName());
         return instance;
-    }
-    
-    /**
-     * Check null control.
-     * 
-     * @param instance bean instance
-     */
-    protected void checkNullInstance(Object instance)
-    {
-        String errorMessage = "WebBeans producer method : %s" +
-                              " return type in the component implementation class : %s" +
-                              " scope type must be @Dependent to create null instance";
-        WebBeansUtil.checkNullInstance(instance, getScope(), errorMessage, creatorMethod.getName(),
-                getBeanClass().getName());
-    }
-
-    /**
-     * Check passivation check.
-     */
-    protected void checkScopeType()
-    {
-        String errorMessage = "WebBeans producer method : %s" +
-                              " return type in the component implementation class : %s" +
-                              " with passivating scope @%s" +
-                              " must be Serializable";
-        getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(getScope(),
-                getReturnType() instanceof Serializable, errorMessage, creatorMethod.getName(), getBeanClass().getName(),
-                getScope().getName());
-
     }
 
     @Override

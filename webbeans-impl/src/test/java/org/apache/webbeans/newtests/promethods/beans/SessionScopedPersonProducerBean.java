@@ -16,9 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.newtests.promethods.common;
+package org.apache.webbeans.newtests.promethods.beans;
 
-public class Person
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.Produces;
+import javax.inject.Named;
+
+import org.apache.webbeans.newtests.promethods.common.Person;
+
+public class SessionScopedPersonProducerBean
 {
-
+    
+    @Produces @Named("person") @SessionScoped
+    public Person producer()
+    {
+        return new Person();
+    }
 }
