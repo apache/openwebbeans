@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.plugins;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -77,7 +78,15 @@ public class PluginLoader
             {
                 if (logger.isLoggable(Level.INFO))
                 {
-                    logger.log(Level.INFO, OWBLogConst.INFO_0004, plugin.getClass().getSimpleName());
+                    final Class<? extends OpenWebBeansPlugin> pluginClass = plugin.getClass();
+                    if (!Proxy.isProxyClass(pluginClass))
+                    {
+                        logger.log(Level.INFO, OWBLogConst.INFO_0004, pluginClass.getSimpleName());
+                    }
+                    else
+                    {
+                        logger.log(Level.INFO, OWBLogConst.INFO_0004, plugin.toString());
+                    }
                 }
                 try
                 {
