@@ -39,7 +39,6 @@ import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.FileAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /**
  *
@@ -86,13 +85,14 @@ public class OwbArquillianScannerService implements ScannerService
             return;
         }
 
-        if (archive instanceof JavaArchive)
+        final String archiveName = archive.getName();
+        if (archiveName.endsWith(".jar"))
         {
-            scanJarArchive((JavaArchive) archive);
+            scanJarArchive(archive);
         }
-        else if (archive instanceof WebArchive)
+        else if (archiveName.endsWith(".war"))
         {
-            scanWebArchive((WebArchive) archive);
+            scanWebArchive(archive);
         }
         else
         {
@@ -127,7 +127,7 @@ public class OwbArquillianScannerService implements ScannerService
 
     // --------- private implementation -----------
 
-    private void scanWebArchive(WebArchive archive)
+    private void scanWebArchive(final Archive<?> archive)
     {
         URL webBeansXmlUrl = getBeanXmlUrl(archive, "WEB-INF/beans.xml");
         if (webBeansXmlUrl != null)
@@ -173,7 +173,7 @@ public class OwbArquillianScannerService implements ScannerService
 
     }
 
-    private void scanJarArchive(JavaArchive archive)
+    private void scanJarArchive(final Archive<?> archive)
     {
         URL beansXmlUrl = getBeanXmlUrl(archive, "META-INF/beans.xml");
 
