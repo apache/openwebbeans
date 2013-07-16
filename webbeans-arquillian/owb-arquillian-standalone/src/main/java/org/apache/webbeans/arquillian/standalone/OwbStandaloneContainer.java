@@ -79,7 +79,7 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
     {
         LOG.fine("OpenWebBeans Arquillian setup started");
 
-        singletonService = new OwbArquillianSingletonService();
+        singletonService = new OwbArquillianSingletonService(owbStandaloneConfiguration.properties());
         WebBeansFinder.setSingletonService(singletonService);
 
         useOnlyArchiveResources = owbStandaloneConfiguration.isUseOnlyArchiveResources();

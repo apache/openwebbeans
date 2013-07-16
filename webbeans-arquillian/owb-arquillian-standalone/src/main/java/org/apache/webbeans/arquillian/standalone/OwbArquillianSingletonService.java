@@ -34,14 +34,22 @@ import org.apache.webbeans.spi.SingletonService;
 public class OwbArquillianSingletonService implements SingletonService<WebBeansContext>
 {
 
+    private final Properties initialConfig;
+
     private WebBeansContext webBeansContext;
 
-    public OwbArquillianSingletonService()
+    public OwbArquillianSingletonService(final Properties props)
     {
-        initOwb();
+        initialConfig = props;
+        initOwb(props);
     }
 
     public synchronized void initOwb()
+    {
+        initOwb(initialConfig);
+    }
+
+    public synchronized void initOwb(final Properties initialConfig)
     {
         ScannerService dummyScannerService = new OwbArquillianScannerService();
 
@@ -50,8 +58,6 @@ public class OwbArquillianSingletonService implements SingletonService<WebBeansC
 
         // this is needed because of a dirty hack in the OpenWebBeansConfiguration
         initialServices.put(SecurityService.class, new SimpleSecurityService());
-
-        Properties initialConfig = new Properties();
 
         webBeansContext = new WebBeansContext(initialServices, initialConfig);
         webBeansContext.getOpenWebBeansConfiguration().parseConfiguration();

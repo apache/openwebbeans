@@ -21,6 +21,10 @@ package org.apache.webbeans.arquillian.standalone;
 import org.jboss.arquillian.container.spi.ConfigurationException;
 import org.jboss.arquillian.container.spi.client.container.ContainerConfiguration;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  * Validate if the Owb Container is correctly configured
  */
@@ -32,6 +36,11 @@ public class OwbStandaloneConfiguration implements ContainerConfiguration
      */
     private boolean useOnlyArchiveResources = false;
     private String useOnlyArchiveResourcesExcludes = null;
+
+    /**
+     * config
+     */
+    private String properties = null;
 
     @Override
     public void validate() throws ConfigurationException
@@ -57,5 +66,36 @@ public class OwbStandaloneConfiguration implements ContainerConfiguration
     public void setUseOnlyArchiveResourcesExcludes(final String useOnlyArchiveResourcesExcludes)
     {
         this.useOnlyArchiveResourcesExcludes = useOnlyArchiveResourcesExcludes;
+    }
+
+    public String getProperties()
+    {
+        return properties;
+    }
+
+    public void setProperties(final String properties)
+    {
+        this.properties = properties;
+    }
+
+    public Properties properties()
+    {
+        final Properties instance = new Properties();
+        if (properties == null)
+        {
+            return instance;
+        }
+
+        final ByteArrayInputStream bais = new ByteArrayInputStream(properties.getBytes());
+        try
+        {
+            instance.load(bais);
+        }
+        catch (final IOException e)
+        {
+            // no-op
+        }
+
+        return instance;
     }
 }
