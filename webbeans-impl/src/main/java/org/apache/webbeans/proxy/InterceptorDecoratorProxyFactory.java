@@ -32,7 +32,6 @@ import org.apache.xbean.asm4.Type;
 
 import javax.enterprise.inject.spi.Bean;
 import java.io.ObjectStreamException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -261,32 +260,25 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
     protected void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName)
             throws ProxyGenerationException
     {
-        try
-        {
-            Constructor superDefaultCt = classToProxy.getDeclaredConstructor(null);
+        // was: final String descriptor = Type.getConstructorDescriptor(classToProxy.getDeclaredConstructor());
+        // but we need to get a default constructor even if the bean uses constructor injection
+        final MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+        mv.visitCode();
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, classFileName, "<init>", "()V");
 
-            final String descriptor = Type.getConstructorDescriptor(superDefaultCt);
-            final MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
-            mv.visitCode();
-            mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, classFileName, "<init>", descriptor);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitInsn(Opcodes.ACONST_NULL);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy));
 
-            mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitInsn(Opcodes.ACONST_NULL);
-            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy));
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitInsn(Opcodes.ACONST_NULL);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_INTERCEPTOR_HANDLER, Type.getDescriptor(InterceptorHandler.class));
 
-            mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitInsn(Opcodes.ACONST_NULL);
-            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_INTERCEPTOR_HANDLER, Type.getDescriptor(InterceptorHandler.class));
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
 
-            mv.visitInsn(Opcodes.RETURN);
-            mv.visitMaxs(-1, -1);
-            mv.visitEnd();
-        }
-        catch (NoSuchMethodException e)
-        {
-            throw new ProxyGenerationException(e);
-        }
     }
 
     /**
