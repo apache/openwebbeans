@@ -25,13 +25,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestLifeCycle;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
 import org.apache.webbeans.spi.ContainerLifecycle;
@@ -84,6 +87,11 @@ public abstract class AbstractUnitTest
     
     protected void startContainer(Collection<Class<?>> beanClasses, Collection<String> beanXmls)
     {
+        startContainer(beanClasses, beanXmls, false);
+    }
+
+    protected void startContainer(Collection<Class<?>> beanClasses, Collection<String> beanXmls, boolean inject)
+    {
         WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
         //Creates a new container
         testLifecycle = new OpenWebBeansTestLifeCycle();
@@ -129,7 +137,18 @@ public abstract class AbstractUnitTest
         {
             throw new WebBeansConfigurationException(e);
         }
-        
+
+        if (inject)
+        {
+            try
+            {
+                OWBInjector.inject(getBeanManager(), this, null);
+            }
+            catch (Exception e)
+            {
+                throw new WebBeansConfigurationException(e);
+            }
+        }
     }
 
     protected ContainerLifecycle getLifecycle()
@@ -139,7 +158,7 @@ public abstract class AbstractUnitTest
     
     protected void shutDownContainer()
     {
-        //Shwtdown application
+        //Shutdown application
         if(this.testLifecycle != null)
         {
             this.testLifecycle.stopApplication(null);
