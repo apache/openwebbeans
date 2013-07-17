@@ -41,6 +41,7 @@ import org.apache.webbeans.component.creation.EjbInterceptorBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.intercept.annotation.Priority;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 
@@ -156,6 +157,20 @@ public class InterceptorsManager
             throw new IllegalArgumentException(target.getName() + " is not an enabled interceptor!");
         }
 
+        final Priority p1 = src.getAnnotation(Priority.class);
+        final Priority p2 = target.getAnnotation(Priority.class);
+        if (p1 != null && p2 != null)
+        {
+            return p1.value() - p2.value();
+        }
+        if (p1 == null && p2 != null)
+        {
+            return -1;
+        }
+        if (p1 != null)
+        {
+            return 1;
+        }
 
         if (srcIndex == targetIndex)
         {

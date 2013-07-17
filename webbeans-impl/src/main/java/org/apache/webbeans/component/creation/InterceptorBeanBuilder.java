@@ -43,7 +43,7 @@ import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.intercept.AroundConstruct;
+import org.apache.webbeans.intercept.annotation.AroundConstruct;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;

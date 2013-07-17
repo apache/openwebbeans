@@ -197,8 +197,12 @@
                             <value>import javax.enterprise.inject.Decorated</value>
                         </replacement>
                         <replacement>
-                            <token>import org.apache.webbeans.intercept.AroundConstruct</token>
+                            <token>import org.apache.webbeans.intercept.annotation.AroundConstruct</token>
                             <value>import javax.interceptor.AroundConstruct</value>
+                        </replacement>
+                        <replacement>
+                            <token>import org.apache.webbeans.intercept.annotation.Priority</token>
+                            <value>import javax.annotation.Priority</value>
                         </replacement>
                     </replacements>
                 </configuration>

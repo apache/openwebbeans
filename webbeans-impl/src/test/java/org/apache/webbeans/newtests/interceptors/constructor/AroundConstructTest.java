@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.newtests.interceptors.constructor;
 
-import org.apache.webbeans.intercept.AroundConstruct;
+import org.apache.webbeans.intercept.annotation.AroundConstruct;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Ignore;
 import org.junit.Test;
