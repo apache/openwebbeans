@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -33,6 +34,7 @@ import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionTargetFactoryImpl;
 import org.apache.webbeans.container.InterceptorInjectionTargetFactory;
+import org.apache.webbeans.util.CDI11s;
 import org.apache.webbeans.util.ExceptionUtil;
 
 /**
@@ -55,12 +57,14 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
      * This is for performance reasons
      */
     protected Method aroundInvokeMethod = null;
+    protected Method aroundConstructMethod = null;
 
     protected InterceptorBean(WebBeansContext webBeansContext,
                                   AnnotatedType<T> annotatedType,
                                   BeanAttributes<T> beanAttributes,
                                   Class<T> beanClass,
                                   Map<InterceptionType, Method[]> interceptionMethods,
+                                  Method aroundConstruct,
                                   InjectionTargetFactoryImpl<T> factory)
     {
         super(webBeansContext,
@@ -81,6 +85,13 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
                 }
             }
         }
+
+        this.aroundConstructMethod = aroundConstruct;
+        if (aroundConstructMethod != null && !aroundConstructMethod.isAccessible())
+        {
+            aroundConstructMethod.setAccessible(true);
+        }
+
         Method[] aroundInvokeMethods = interceptionMethods.get(InterceptionType.AROUND_INVOKE);
         if (aroundInvokeMethods != null && aroundInvokeMethods.length == 1)
         {
@@ -92,9 +103,10 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
                            AnnotatedType<T> annotatedType,
                            BeanAttributesImpl<T> beanAttributes,
                            Class<T> beanClass,
-                           Map<InterceptionType, Method[]> interceptionMethods)
+                           Map<InterceptionType, Method[]> interceptionMethods,
+                           Method aroundConstructMethod)
     {
-        this(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods,
+        this(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods, aroundConstructMethod,
                 new InterceptorInjectionTargetFactory<T>(annotatedType, webBeansContext));
     }
 
@@ -121,7 +133,7 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
     @Override
     public boolean intercepts(InterceptionType interceptionType)
     {
-        return interceptionMethods.containsKey(interceptionType);
+        return interceptionMethods.containsKey(interceptionType) || (interceptionType.equals(CDI11s.AROUND_CONSTRUCT) && aroundConstructMethod != null);
     }
 
     @Override
@@ -129,6 +141,11 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
     {
         try
         {
+            if (interceptionType.equals(CDI11s.AROUND_CONSTRUCT) && aroundConstructMethod != null)
+            {
+                return aroundConstructMethod.invoke(instance, invocationContext);
+            }
+
             if (InterceptionType.AROUND_INVOKE == interceptionType && aroundInvokeMethod != null)
             {
                 return aroundInvokeMethod.invoke(instance, invocationContext);
@@ -271,6 +288,12 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
         public void setParameters(Object[] parameters)
         {
             wrapped.setParameters(parameters);
+        }
+
+        // @Override
+        public Constructor getConstructor()
+        {
+            return null;
         }
     }
 

@@ -83,9 +83,17 @@
             <artifactId>openwebbeans-spi</artifactId>
         </dependency>
 
+        <!--
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-interceptor_1.1_spec</artifactId>
+            <optional>true</optional>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.jboss.spec.javax.interceptor</groupId>
+            <artifactId>jboss-interceptors-api_1.2_spec</artifactId>
+            <version>1.0.0.Alpha1</version>
             <optional>true</optional>
         </dependency>
 
@@ -187,6 +195,10 @@
                         <replacement>
                             <token>import org.apache.webbeans.annotation.Decorated</token>
                             <value>import javax.enterprise.inject.Decorated</value>
+                        </replacement>
+                        <replacement>
+                            <token>import org.apache.webbeans.intercept.AroundConstruct</token>
+                            <value>import javax.interceptor.AroundConstruct</value>
                         </replacement>
                     </replacements>
                 </configuration>

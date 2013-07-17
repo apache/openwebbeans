@@ -46,9 +46,10 @@ public class SelfInterceptorBean<T> extends InterceptorBean<T> implements Interc
                                AnnotatedType<T> annotatedType,
                                BeanAttributesImpl<T> beanAttributes,
                                Class<T> beanClass,
-                               Map<InterceptionType, Method[]> interceptionMethods)
+                               Map<InterceptionType, Method[]> interceptionMethods,
+                               Method aroundConstruct)
     {
-        super(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods,
+        super(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods, aroundConstruct,
                 new InjectionTargetFactoryImpl<T>(annotatedType, webBeansContext));
     }
 

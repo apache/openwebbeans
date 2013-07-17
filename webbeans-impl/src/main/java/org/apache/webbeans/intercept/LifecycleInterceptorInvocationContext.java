@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.InvocationContext;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -136,6 +137,12 @@ public class LifecycleInterceptorInvocationContext<T> implements InvocationConte
 
     @Override
     public Object getTimer()
+    {
+        return null;
+    }
+
+    // @Override
+    public Constructor getConstructor()
     {
         return null;
     }

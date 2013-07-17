@@ -18,6 +18,20 @@
  */
 package org.apache.webbeans.intercept;
 
+import org.apache.webbeans.annotation.AnnotationManager;
+import org.apache.webbeans.component.BeanAttributesImpl;
+import org.apache.webbeans.component.SelfInterceptorBean;
+import org.apache.webbeans.component.creation.BeanAttributesBuilder;
+import org.apache.webbeans.component.creation.SelfInterceptorBeanBuilder;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.CDI11s;
+import org.apache.webbeans.util.ClassUtil;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.Annotated;
@@ -46,18 +60,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.component.BeanAttributesImpl;
-import org.apache.webbeans.component.SelfInterceptorBean;
-import org.apache.webbeans.component.creation.BeanAttributesBuilder;
-import org.apache.webbeans.component.creation.SelfInterceptorBeanBuilder;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Class to calculate interceptor resolution information.
@@ -205,11 +207,15 @@ public class InterceptorResolutionService
     {
         if (classInterceptorBindings.size() > 0)
         {
-            allUsedCdiInterceptors.addAll(
-                    webBeansContext.getBeanManagerImpl().resolveInterceptors(InterceptionType.POST_CONSTRUCT, AnnotationUtil.asArray(classInterceptorBindings)));
+            final Annotation[] interceptorBindings = AnnotationUtil.asArray(classInterceptorBindings);
+            final BeanManagerImpl beanManagerImpl = webBeansContext.getBeanManagerImpl();
 
-            allUsedCdiInterceptors.addAll(
-                    webBeansContext.getBeanManagerImpl().resolveInterceptors(InterceptionType.PRE_DESTROY, AnnotationUtil.asArray(classInterceptorBindings)));
+            allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.POST_CONSTRUCT, interceptorBindings));
+            allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.PRE_DESTROY, interceptorBindings));
+            if (CDI11s.AROUND_CONSTRUCT != null)
+            {
+                allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(CDI11s.AROUND_CONSTRUCT, interceptorBindings));
+            }
         }
     }
 

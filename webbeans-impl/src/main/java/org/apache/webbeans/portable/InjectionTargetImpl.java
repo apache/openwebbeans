@@ -28,6 +28,7 @@ import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.intercept.DecoratorHandler;
 import org.apache.webbeans.intercept.DefaultInterceptorHandler;
+import org.apache.webbeans.intercept.InterceptorInvocationContext;
 import org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
 import org.apache.webbeans.intercept.LifecycleInterceptorInvocationContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -36,6 +37,7 @@ import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.proxy.OwbInterceptorProxy;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.CDI11s;
 import org.apache.webbeans.util.ExceptionUtil;
 
 import javax.decorator.Delegate;
@@ -104,6 +106,8 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
      */
     private List<Interceptor<?>> preDestroyInterceptors;
 
+    private List<Interceptor<?>> aroundConstructInterceptors;
+
     /**
      * static information about Interceptors and Decorators of that bean
      */
@@ -151,13 +155,15 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     }
 
     public void setInterceptorInfo(BeanInterceptorInfo interceptorInfo, Class<? extends T> proxyClass, Map<Method, List<Interceptor<?>>> methodInterceptors,
-                                   List<Interceptor<?>> postConstructInterceptors, List<Interceptor<?>> preDestroyInterceptors, String beanPassivationId)
+                                   List<Interceptor<?>> postConstructInterceptors, List<Interceptor<?>> preDestroyInterceptors, List<Interceptor<?>> aroundConstruct,
+                                   String beanPassivationId)
     {
         this.interceptorInfo = interceptorInfo;
         this.proxyClass = proxyClass;
         this.methodInterceptors = methodInterceptors;
         this.postConstructInterceptors = postConstructInterceptors;
         this.preDestroyInterceptors = preDestroyInterceptors;
+        this.aroundConstructInterceptors = aroundConstruct;
         this.beanPassivationId = beanPassivationId;
     }
 
@@ -178,30 +184,61 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public T produce(CreationalContext<T> creationalContext)
     {
-        CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>) creationalContext;
-        T instance = newInstance(creationalContextImpl);
+        final CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>) creationalContext;
+        final Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<Interceptor<?>, Object>();
+        final Contextual<T> oldContextual = creationalContextImpl.getContextual();
+        final boolean hasAroundConstruct = aroundConstructInterceptors != null && !aroundConstructInterceptors.isEmpty();
 
-        if (proxyClass != null)
+        if (proxyClass != null || hasAroundConstruct)
         {
-            Contextual<T> oldContextual = creationalContextImpl.getContextual();
             // apply interceptorInfo
-            InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
-
-            Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<Interceptor<?>, Object>();
 
             // create EJB-style interceptors
-            for (Interceptor interceptorBean : interceptorInfo.getEjbInterceptors())
+            for (final Interceptor interceptorBean : interceptorInfo.getEjbInterceptors())
             {
                 creationalContextImpl.putContextual(interceptorBean);
                 interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContext));
             }
 
             // create CDI-style interceptors
-            for (Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
+            for (final Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
             {
                 creationalContextImpl.putContextual(interceptorBean);
                 interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContext));
             }
+        }
+
+        T instance;
+        if (hasAroundConstruct)
+        {
+            try
+            {
+                final Constructor<T> cons = getConstructor().getJavaMember();
+                final InjectableConstructor<T> injectableConstructor = new InjectableConstructor<T>(cons, this, creationalContextImpl);
+                new InterceptorInvocationContext<T>(null, CDI11s.AROUND_CONSTRUCT, aroundConstructInterceptors, interceptorInstances,
+                                                    cons, injectableConstructor.createParameters())
+                {
+                    @Override
+                    protected Object realProceed() throws Exception
+                    {
+                        return injectableConstructor.doInjection();
+                    }
+                }.proceed();
+                instance = injectableConstructor.getInstance();
+            }
+            catch (final Exception e) // CDI 1.0
+            {
+                throw ExceptionUtil.throwAsRuntimeException(e);
+            }
+        }
+        else
+        {
+            instance = newInstance(creationalContextImpl);
+        }
+
+        if (proxyClass != null)
+        {
+            InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
 
             // register the bean itself for self-interception
             if (interceptorInfo.getSelfInterceptorBean() != null)

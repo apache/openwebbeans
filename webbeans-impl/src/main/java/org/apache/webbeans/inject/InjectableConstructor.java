@@ -42,6 +42,9 @@ public class InjectableConstructor<T> extends AbstractInjectable<T>
     /** Injectable constructor instance */
     protected Constructor<T> con;
 
+    private Object[] params = null;
+    private T instance;
+
     /**
      * Sets the constructor.
      * 
@@ -59,12 +62,37 @@ public class InjectableConstructor<T> extends AbstractInjectable<T>
      */
     public T doInjection()
     {
-        T instance;
-        
-        List<InjectionPoint> injectedPoints = getInjectionPoints(con);
-        List<Object> list = new ArrayList<Object>();
-                
-        
+        try
+        {
+            if(!con.isAccessible())
+            {
+                getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(con, true);
+            }
+            
+            instance = con.newInstance(createParameters());
+            return instance;
+        }
+        catch (Exception e)
+        {
+            throw new WebBeansException(e);
+        }
+    }
+
+    public T getInstance()
+    {
+        return instance;
+    }
+
+    public Object[] createParameters()
+    {
+        if (params != null)
+        {
+            return params;
+        }
+
+        final List<Object> list = new ArrayList<Object>();
+        final List<InjectionPoint> injectedPoints = getInjectionPoints(con);
+
         for(int i=0;i<injectedPoints.size();i++)
         {
             for(InjectionPoint point : injectedPoints)
@@ -82,22 +110,7 @@ public class InjectableConstructor<T> extends AbstractInjectable<T>
                 }
             }
         }
-
-        try
-        {
-            if(!con.isAccessible())
-            {
-                getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(con, true);
-            }
-            
-            instance = con.newInstance(list.toArray());
-
-        }
-        catch (Exception e)
-        {
-            throw new WebBeansException(e);
-        }
-
-        return instance;
+        params = list.toArray(new Object[list.size()]);
+        return params;
     }
 }

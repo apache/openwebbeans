@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.intercept;
 
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -31,19 +33,19 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
 {
 
     private T target;
-    private Method method;
+    private AccessibleObject member;
     private Object[] parameters;
     private Map<String, Object> contextData;
     private Object timer;
 
-    public AbstractInvocationContext(T target, Method method, Object[] parameters)
+    public AbstractInvocationContext(T target, AccessibleObject member, Object[] parameters)
     {
         this.target = target;
-        this.method = method;
+        this.member = member;
         this.parameters = parameters;
-        if (!method.isAccessible())
+        if (!member.isAccessible())
         {
-            method.setAccessible(true);
+            member.setAccessible(true);
         }
     }
 
@@ -62,7 +64,11 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
     @Override
     public Method getMethod()
     {
-        return method;
+        if (Method.class.isInstance(member))
+        {
+            return Method.class.cast(member);
+        }
+        return null;
     }
 
     @Override
@@ -98,12 +104,27 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
     {
         try
         {
-            return method.invoke(target, parameters);
+            final Method m = getMethod();
+            if (m != null)
+            {
+                return m.invoke(target, parameters);
+            }
+            return getConstructor().newInstance(parameters);
         }
-        catch (InvocationTargetException ite)
+        catch (final InvocationTargetException ite)
         {
             // unpack the reflection Exception
             throw ExceptionUtil.throwAsRuntimeException(ite.getCause());
         }
+    }
+
+    // @Override
+    public Constructor getConstructor()
+    {
+        if (Constructor.class.isInstance(member))
+        {
+            return Constructor.class.cast(member);
+        }
+        return null;
     }
 }

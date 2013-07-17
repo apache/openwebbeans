@@ -43,6 +43,7 @@ import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.intercept.AroundConstruct;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -62,7 +63,8 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>>
     private final Class<? extends Annotation> postActivateClass;
 
     private Map<InterceptionType, Method[]> interceptionMethods;
-    
+    private Method interceptionConstructor = null;
+
     protected InterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {
         Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
@@ -150,6 +152,14 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>>
             {
                 if (clazz == m.getJavaMember().getDeclaringClass())
                 {
+                    if (m.getAnnotation(AroundConstruct.class) != null)
+                    {
+                        if (interceptionConstructor != null)
+                        {
+                            throw new WebBeansConfigurationException("only one AroundConstruct allowed per Interceptor");
+                        }
+                        interceptionConstructor = m.getJavaMember();
+                    }
 
                     // we only take methods from this very class and not sub- or superclasses
                     if (m.getAnnotation(AroundInvoke.class) != null)
@@ -331,10 +341,11 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>>
 
     protected abstract B createBean(Class<T> beanClass,
                                     boolean enabled,
-                                    Map<InterceptionType, Method[]> interceptionMethods);
+                                    Map<InterceptionType, Method[]> interceptionMethods,
+                                    Method aroundConstruct);
 
     public B getBean()
     {
-        return createBean(annotatedType.getJavaClass(), isInterceptorEnabled(), interceptionMethods);
+        return createBean(annotatedType.getJavaClass(), isInterceptorEnabled(), interceptionMethods, interceptionConstructor);
     }
 }

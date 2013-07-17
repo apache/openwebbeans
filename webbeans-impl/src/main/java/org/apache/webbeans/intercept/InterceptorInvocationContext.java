@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.intercept;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.AccessibleObject;
 import java.util.List;
 import java.util.Map;
 
@@ -31,12 +31,14 @@ import javax.enterprise.inject.spi.Interceptor;
 public class InterceptorInvocationContext<T> extends AbstractInvocationContext<T>
 {
 
-    private InterceptionType type;
-    private List<Interceptor<?>> interceptors;
-    private Map<Interceptor<?>, ?> instances;
-    private int index = 0;
+    protected InterceptionType type;
+    protected List<Interceptor<?>> interceptors;
+    protected Map<Interceptor<?>, ?> instances;
+    protected int index = 0;
     
-    public InterceptorInvocationContext(T target, InterceptionType type, List<Interceptor<?>> interceptors, Map<Interceptor<?>, ?> instances, Method method, Object[] parameters)
+    public InterceptorInvocationContext(T target, InterceptionType type,
+                                        List<Interceptor<?>> interceptors, Map<Interceptor<?>, ?> instances,
+                                        AccessibleObject method, Object[] parameters)
     {
         super(target, method, parameters);
         this.type = type;
@@ -61,7 +63,12 @@ public class InterceptorInvocationContext<T> extends AbstractInvocationContext<T
         }
         else
         {
-            return super.proceed();
+            return realProceed();
         }
+    }
+
+    protected Object realProceed() throws Exception
+    {
+        return super.proceed();
     }
 }

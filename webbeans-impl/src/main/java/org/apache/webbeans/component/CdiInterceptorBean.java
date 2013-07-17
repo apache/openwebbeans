@@ -46,9 +46,10 @@ public class CdiInterceptorBean<T> extends InterceptorBean<T>
                               Class<T> beanClass,
                               Set<Annotation> interceptorBindings,
                               boolean enabled,
-                              Map<InterceptionType, Method[]> interceptionMethods)
+                              Map<InterceptionType, Method[]> interceptionMethods,
+                              Method aroundConstruct)
     {
-        super(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods);
+        super(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods, aroundConstruct);
         this.interceptorBindings = interceptorBindings;
     }
 

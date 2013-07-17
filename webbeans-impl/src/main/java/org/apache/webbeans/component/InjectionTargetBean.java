@@ -42,6 +42,7 @@ import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.CDI11s;
 
 
 /**
@@ -158,6 +159,16 @@ public class InjectionTargetBean<T> extends AbstractOwbBean<T>
             List<Interceptor<?>> preDestroyInterceptors
                     = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.PRE_DESTROY);
 
+            final List<Interceptor<?>> aroundConstruct;
+            if (CDI11s.AROUND_CONSTRUCT != null)
+            {
+                aroundConstruct = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), CDI11s.AROUND_CONSTRUCT);
+            }
+            else
+            {
+                aroundConstruct = new ArrayList<Interceptor<?>>();
+            }
+
             Class<? extends T> proxyClass = null;
             if (methodInterceptors.size() > 0 || postConstructInterceptors.size() > 0 || preDestroyInterceptors.size() > 0)
             {
@@ -175,8 +186,7 @@ public class InjectionTargetBean<T> extends AbstractOwbBean<T>
 
             }
 
-            injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors, postConstructInterceptors, preDestroyInterceptors, getId());
-
+            injectionTarget.setInterceptorInfo(interceptorInfo, proxyClass, methodInterceptors, postConstructInterceptors, preDestroyInterceptors, aroundConstruct, getId());
         }
 
     }
