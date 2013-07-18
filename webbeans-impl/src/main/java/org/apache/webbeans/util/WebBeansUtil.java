@@ -708,9 +708,7 @@ public final class WebBeansUtil
 
                 if(!(candidate instanceof NewBean))
                 {
-                    if(candidate.getReturnType().equals(superClass)
-                            || (EnterpriseBeanMarker.class.isInstance(candidate)
-                                && superClass.isAssignableFrom(candidate.getBeanClass())))
+                    if(candidate.getReturnType().equals(superClass))
                     {
                         superBean = candidates;
                         break;
@@ -1002,14 +1000,8 @@ public final class WebBeansUtil
         {
             AbstractOwbBean<?> bean = (AbstractOwbBean<?>)it.next();
 
-            boolean enterprise = false;
-            if(bean instanceof EnterpriseBeanMarker)
-            {
-                enterprise = true;
-            }
-
-            if (bean.getTypes().contains(clazz) ||
-                    (enterprise && clazz.isAssignableFrom(bean.getBeanClass())))
+            if (bean.getTypes().contains(clazz)
+                || (EnterpriseBeanMarker.class.isInstance(bean) && bean.getBeanClass().isAssignableFrom(clazz)))
             {
                 if(annotate)
                 {
