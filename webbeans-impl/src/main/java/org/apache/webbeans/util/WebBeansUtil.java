@@ -18,61 +18,6 @@
  */
 package org.apache.webbeans.util;
 
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.decorator.Decorator;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.IllegalProductException;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.AfterDeploymentValidation;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMember;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.BeforeShutdown;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.PassivationCapable;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.inject.spi.ProcessBean;
-import javax.enterprise.inject.spi.ProcessInjectionTarget;
-import javax.enterprise.inject.spi.ProcessManagedBean;
-import javax.enterprise.inject.spi.ProcessObserverMethod;
-import javax.enterprise.inject.spi.ProcessProducer;
-import javax.enterprise.inject.spi.ProcessProducerField;
-import javax.enterprise.inject.spi.ProcessProducerMethod;
-import javax.enterprise.inject.spi.ProcessSessionBean;
-import javax.enterprise.inject.spi.Producer;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.NewLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
@@ -126,6 +71,61 @@ import org.apache.webbeans.portable.events.generics.GProcessProducerMethod;
 import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
+
+import javax.decorator.Decorator;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.spi.Contextual;
+import javax.enterprise.inject.Alternative;
+import javax.enterprise.inject.IllegalProductException;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.Specializes;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.AfterDeploymentValidation;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMember;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import javax.enterprise.inject.spi.BeforeShutdown;
+import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.PassivationCapable;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.ProcessBean;
+import javax.enterprise.inject.spi.ProcessInjectionTarget;
+import javax.enterprise.inject.spi.ProcessManagedBean;
+import javax.enterprise.inject.spi.ProcessObserverMethod;
+import javax.enterprise.inject.spi.ProcessProducer;
+import javax.enterprise.inject.spi.ProcessProducerField;
+import javax.enterprise.inject.spi.ProcessProducerMethod;
+import javax.enterprise.inject.spi.ProcessSessionBean;
+import javax.enterprise.inject.spi.Producer;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Contains some utility methods used in the all project.
@@ -782,15 +782,39 @@ public final class WebBeansUtil
 
                 }
                 comp.setSpecializedBean(true);
+
+                final Map<Class<?>, ProducerMethodBean<?>> parentProducers = new HashMap<Class<?>, ProducerMethodBean<?>>();
+                final Map<Class<?>, ProducerMethodBean<?>> beanProducers = new HashMap<Class<?>, ProducerMethodBean<?>>();
                 for (Bean<?> bean: webBeansContext.getBeanManagerImpl().getComponents())
                 {
                     if (bean instanceof ProducerMethodBean)
                     {
-                        ProducerMethodBean<?> producerBean = (ProducerMethodBean<?>)bean;
+                        final ProducerMethodBean<?> producerBean = (ProducerMethodBean<?>)bean;
+                        final Class<?> returnType = producerBean.getReturnType();
                         if (producerBean.getBeanClass() == superBean.getBeanClass() && producerBean.getProducer() instanceof ProducerMethodProducer)
                         {
-                            ProducerMethodProducer<?, ?> producer = (ProducerMethodProducer<?, ?>) producerBean.getProducer();
+                            final ProducerMethodProducer<?, ?> producer = (ProducerMethodProducer<?, ?>) producerBean.getProducer();
                             producer.specializeBy((Bean) comp);
+
+                            if (beanProducers.keySet().contains(returnType))
+                            {
+                                beanProducers.get(returnType).setSpecializedBean(true);
+                            }
+                            else
+                            {
+                                parentProducers.put(returnType, producerBean);
+                            }
+                        }
+                        else if (specializedClass == bean.getBeanClass())
+                        {
+                            if (parentProducers.keySet().contains(returnType))
+                            {
+                                producerBean.setSpecializedBean(true);
+                            }
+                            else
+                            {
+                                beanProducers.put(returnType, producerBean);
+                            }
                         }
                     }
                 }
