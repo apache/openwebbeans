@@ -102,8 +102,6 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     @SuppressWarnings("unchecked")
     public T get()
     {
-        T instance;
-
         Annotation[] anns = new Annotation[qualifierAnnotations.size()];
         anns = qualifierAnnotations.toArray(anns);
 
@@ -136,14 +134,12 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         ((CreationalContextImpl<?>)creationalContext).putInjectionPoint(injectionPoint);
         try
         {
-            instance = (T) beanManager.getReference(bean, null, creationalContext);
+            return (T) beanManager.getReference(bean, injectionClazz, creationalContext);
         }
         finally
         {
             ((CreationalContextImpl<?>)creationalContext).removeInjectionPoint();
         }
-
-        return instance;
     }
 
     /**
