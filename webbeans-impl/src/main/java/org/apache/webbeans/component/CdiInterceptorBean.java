@@ -20,6 +20,7 @@ package org.apache.webbeans.component;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InterceptionType;
+import javax.enterprise.inject.spi.PassivationCapable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -35,7 +36,7 @@ import org.apache.webbeans.config.WebBeansContext;
  * This is Interceptors which got defined using
  * &#064;{@link javax.interceptor.InterceptorBinding}.</p>
  */
-public class CdiInterceptorBean<T> extends InterceptorBean<T>
+public class CdiInterceptorBean<T> extends InterceptorBean<T> implements PassivationCapable
 {
     
     private Set<Annotation> interceptorBindings;

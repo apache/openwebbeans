@@ -18,22 +18,29 @@
  */
 package org.apache.webbeans.intercept;
 
-import java.io.ObjectStreamException;
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.proxy.InterceptorHandler;
+import org.apache.webbeans.util.ExceptionUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.ObjectStreamException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.proxy.InterceptorHandler;
-import org.apache.webbeans.util.ExceptionUtil;
-
-public class DefaultInterceptorHandler<T> implements InterceptorHandler
+public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externalizable
 {
     /**
      * The native contextual instance target instance.
@@ -80,6 +87,11 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler
         this.instances = instances;
         this.interceptors = interceptors;
         this.beanPassivationId = beanPassivationId;
+    }
+
+    public DefaultInterceptorHandler()
+    {
+        // no-op: for serialization
     }
 
     public T getTarget()
@@ -141,11 +153,118 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler
     @SuppressWarnings("unused")
     Object readResolve() throws ObjectStreamException
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        BeanManager beanManager = webBeansContext.getBeanManagerImpl();
-        Bean<?> bean = beanManager.getPassivationCapableBean(beanPassivationId);
+        final WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        final BeanManager beanManager = webBeansContext.getBeanManagerImpl();
+        final Bean<T> bean = (Bean<T>) beanManager.getPassivationCapableBean(beanPassivationId);
 
-        return webBeansContext.getInterceptorDecoratorProxyFactory().getCachedProxyClass(bean);
+        return webBeansContext.getInterceptorDecoratorProxyFactory().createProxyInstance(
+            webBeansContext.getInterceptorDecoratorProxyFactory().getCachedProxyClass(bean),
+            target,
+            this
+        );
     }
 
+    @Override
+    public void writeExternal(final ObjectOutput out) throws IOException
+    {
+        out.writeObject(target);
+
+        final boolean noDecorator = target == delegate;
+        out.writeBoolean(noDecorator);
+        if (!noDecorator)
+        {
+            out.writeObject(delegate);
+        }
+
+        out.writeInt(instances.size());
+        for (final Map.Entry<Interceptor<?>, ?> entry : instances.entrySet())
+        {
+            final Interceptor<?> key = entry.getKey();
+            serializeInterceptor(out, key);
+            out.writeObject(entry.getValue());
+        }
+
+        out.writeInt(interceptors.size());
+        for (final Map.Entry<Method, List<Interceptor<?>>> entry : interceptors.entrySet())
+        {
+            final Method key = entry.getKey();
+            out.writeObject(key.getDeclaringClass());
+            out.writeUTF(key.getName());
+            out.writeObject(key.getParameterTypes());
+
+            final List<Interceptor<?>> value = entry.getValue();
+            out.writeInt(value.size());
+            for (final Interceptor<?> i : value)
+            {
+                serializeInterceptor(out, i);
+            }
+        }
+
+        out.writeUTF(beanPassivationId);
+    }
+
+    @Override
+    public void readExternal(final ObjectInput in) throws IOException, ClassNotFoundException
+    {
+        target = (T) in.readObject();
+        if (in.readBoolean())
+        {
+            delegate = target;
+        }
+        else
+        {
+            delegate = (T) in.readObject();
+        }
+
+        final int instancesSize = in.readInt();
+        final WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        final BeanManager beanManager = webBeansContext.getBeanManagerImpl();
+
+        final Map<Interceptor<?>, Object> tmpInstances = new HashMap<Interceptor<?>, Object>();
+        for (int i = 0; i < instancesSize; i++)
+        {
+            final Interceptor<?> bean = (Interceptor<?>) beanManager.getPassivationCapableBean(in.readUTF());
+            final Object value = in.readObject();
+            tmpInstances.put(bean, value);
+        }
+        instances = tmpInstances;
+
+        final int interceptorsSize = in.readInt();
+        interceptors = new HashMap<Method, List<Interceptor<?>>>(interceptorsSize);
+        for (int i = 0; i < interceptorsSize; i++)
+        {
+            final Class<?> declaringClass = (Class<?>) in.readObject();
+            final String name = in.readUTF();
+            final Class<?>[] parameters = (Class<?>[]) in.readObject();
+            final Method method;
+            try
+            {
+                method = declaringClass.getDeclaredMethod(name, parameters);
+            }
+            catch (final NoSuchMethodException e)
+            {
+                throw new NotSerializableException(target.getClass().getName());
+            }
+
+            final int interceptorListSize = in.readInt();
+            final List<Interceptor<?>> interceptorList = new ArrayList<Interceptor<?>>(interceptorListSize);
+            for (int j = 0; j < interceptorListSize; j++)
+            {
+                interceptorList.add((Interceptor<?>) beanManager.getPassivationCapableBean(in.readUTF()));
+            }
+            interceptors.put(method, interceptorList);
+        }
+
+        beanPassivationId = in.readUTF();
+    }
+
+    private static void serializeInterceptor(final ObjectOutput out, final Interceptor<?> key) throws IOException
+    {
+        final String id = WebBeansUtil.getPassivationId(key);
+        if (id == null)
+        {
+            throw new NotSerializableException(key + " is not serializable");
+        }
+        out.writeUTF(id);
+    }
 }
