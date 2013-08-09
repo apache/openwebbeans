@@ -18,17 +18,23 @@
  */
 package org.apache.webbeans.web.lifecycle.test;
 
-import java.util.Enumeration;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
+import java.util.Enumeration;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unchecked")
 public class MockHttpSession implements HttpSession
 {
-    private static AtomicInteger id = new AtomicInteger(0);
+    private static final AtomicInteger ID = new AtomicInteger(0);
+
+    private final String id;
+
+    public MockHttpSession()
+    {
+        id = Integer.toString(ID.incrementAndGet());
+    }
 
     @Override
     public Object getAttribute(String arg0)
@@ -54,7 +60,7 @@ public class MockHttpSession implements HttpSession
     @Override
     public String getId()
     {
-        return Integer.toString(id.getAndIncrement());
+        return id;
     }
 
     @Override
