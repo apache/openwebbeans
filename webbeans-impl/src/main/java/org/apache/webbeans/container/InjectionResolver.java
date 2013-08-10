@@ -162,7 +162,19 @@ public class InjectionResolver
         Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
         qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
 
-        Set<Bean<?>> beanSet = implResolveByType(type, injectionPoint.getBean().getBeanClass(), qualifiers);
+        // OWB-890 some 3rd party InjectionPoints return null in getBean();
+        Class<?> injectionPointClass = Object.class; // the fallback
+        Bean injectionPointBean = injectionPoint.getBean();
+        if (injectionPointBean != null)
+        {
+            injectionPointClass = injectionPointBean.getBeanClass();
+        }
+        if (injectionPointClass == null && type instanceof Class)
+        {
+            injectionPointClass = (Class) type;
+        }
+
+        Set<Bean<?>> beanSet = implResolveByType(type, injectionPointClass, qualifiers);
 
         if (beanSet.isEmpty())
         {
