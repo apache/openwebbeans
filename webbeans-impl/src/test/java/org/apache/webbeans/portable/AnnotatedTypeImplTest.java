@@ -38,13 +38,13 @@ import static org.junit.Assert.assertTrue;
 public class AnnotatedTypeImplTest
     extends AbstractUnitTest
 {
-    final int threads = 1000;
+    final int NUM_THREADS = 500;
 
-    final CountDownLatch startingLine = new CountDownLatch(threads);
+    final CountDownLatch startingLine = new CountDownLatch(NUM_THREADS);
 
     final CountDownLatch startingPistol = new CountDownLatch(1);
 
-    final CountDownLatch finishLine = new CountDownLatch(threads);
+    final CountDownLatch finishLine = new CountDownLatch(NUM_THREADS);
 
     final AtomicInteger exceptions = new AtomicInteger();
 
@@ -62,7 +62,7 @@ public class AnnotatedTypeImplTest
         final BeanManager beanManager = getBeanManager();
         final AnnotatedType<Colors> annotatedType = beanManager.createAnnotatedType(Colors.class);
 
-        for (int i = 0; i < threads; i++)
+        for (int i = 0; i < NUM_THREADS; i++)
         {
             new Runner(startingLine, startingPistol, exceptions, finishLine, annotatedType)
             {
@@ -91,7 +91,7 @@ public class AnnotatedTypeImplTest
         final BeanManager beanManager = getBeanManager();
         final AnnotatedType<Colors> annotatedType = beanManager.createAnnotatedType(Colors.class);
 
-        for (int i = 0; i < threads; i++)
+        for (int i = 0; i < NUM_THREADS; i++)
         {
             new Runner(startingLine, startingPistol, exceptions, finishLine, annotatedType)
             {
@@ -123,7 +123,7 @@ public class AnnotatedTypeImplTest
         final BeanManager beanManager = getBeanManager();
         final AnnotatedType<Colors> annotatedType = beanManager.createAnnotatedType(Colors.class);
 
-        for (int i = 0; i < threads; i++)
+        for (int i = 0; i < NUM_THREADS; i++)
         {
             new Runner(startingLine, startingPistol, exceptions, finishLine, annotatedType)
             {
@@ -154,7 +154,7 @@ public class AnnotatedTypeImplTest
         final BeanManager beanManager = getBeanManager();
         final AnnotatedType<Colors> annotatedType = beanManager.createAnnotatedType(Colors.class);
 
-        for (int i = 0; i < threads; i++)
+        for (int i = 0; i < NUM_THREADS; i++)
         {
             new Runner(startingLine, startingPistol, exceptions, finishLine, annotatedType)
             {
