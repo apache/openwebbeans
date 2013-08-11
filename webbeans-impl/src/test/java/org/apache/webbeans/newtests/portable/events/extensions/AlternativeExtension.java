@@ -25,14 +25,37 @@ import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.util.AnnotationLiteral;
 
 import org.apache.webbeans.newtests.portable.alternative.HalfEgg;
+import org.apache.webbeans.newtests.portable.alternative.WoodEgg;
+
+import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class AlternativeExtension implements Extension
 {
-    public void observeProcessAnnotatedType(@Observes ProcessAnnotatedType<HalfEgg> pat)
+    public void observeProcessAnnotatedTypeHalfEgg(@Observes ProcessAnnotatedType<HalfEgg> pat)
     {
         // this just works with OWB and assumes a mutable annotation Set.
         pat.getAnnotatedType().getAnnotations().add(new AnnotationLiteral<Alternative>() {});
         pat.setAnnotatedType(pat.getAnnotatedType());
-    } 
+    }
+
+    public void observeProcessAnnotatedTypeWoodEgg(@Observes ProcessAnnotatedType<WoodEgg> pat)
+    {
+        // this just works with OWB and assumes a mutable annotation Set.
+        Set<Annotation> newAnnotations = new HashSet<Annotation>();
+        for (Annotation ann : pat.getAnnotatedType().getAnnotations())
+        {
+            if (!Alternative.class.isAssignableFrom(ann.annotationType()))
+            {
+                 newAnnotations.add(ann);
+            }
+        }
+
+        pat.getAnnotatedType().getAnnotations().clear();
+        pat.getAnnotatedType().getAnnotations().addAll(newAnnotations);
+
+        pat.setAnnotatedType(pat.getAnnotatedType());
+    }
 }

@@ -32,6 +32,7 @@ import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.portable.alternative.Egg;
 import org.apache.webbeans.newtests.portable.alternative.HalfEgg;
+import org.apache.webbeans.newtests.portable.alternative.WoodEgg;
 import org.apache.webbeans.newtests.portable.events.extensions.AlternativeExtension;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScopeExtension;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScoped;
@@ -121,18 +122,31 @@ public class ExtensionTest extends AbstractUnitTest
     @Test
     public void testAlternativeExtenson()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
-        classes.add(Egg.class);
-        classes.add(HalfEgg.class);
         addExtension(new AlternativeExtension());
-        startContainer(classes);
+        startContainer(Egg.class, HalfEgg.class);
 
         Egg egg = getInstance(Egg.class);
         Assert.assertTrue(egg instanceof Egg);
+        Assert.assertFalse(egg instanceof HalfEgg);
         Set<Bean<?>> beans = getBeanManager().getBeans(HalfEgg.class);
         Assert.assertTrue(beans == null || beans.size() == 0);
 
         shutDownContainer();
+    }
+
+    /**
+     * Test the dynamic removal of an &#064;Alternative annotation
+     * via ProcessAnnotatedType.
+     */
+    @Test
+    public void testRemoveAlternativeExtension()
+    {
+        addExtension(new AlternativeExtension());
+        startContainer(Egg.class, WoodEgg.class);
+
+        Set<Bean<?>> beans = getBeanManager().getBeans(Egg.class);
+        Assert.assertTrue(beans != null && beans.size() == 2);
+
     }
 
 }

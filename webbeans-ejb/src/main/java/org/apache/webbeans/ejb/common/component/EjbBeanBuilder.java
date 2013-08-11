@@ -75,7 +75,7 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>>
     
     protected final E createBean(Class<T> beanClass)
     {
-        return createBean(beanClass, webBeansContext.getWebBeansUtil().isBeanEnabled(annotatedType, annotatedType.getJavaClass(), beanAttributes.getStereotypes()));
+        return createBean(beanClass, webBeansContext.getWebBeansUtil().isBeanEnabled(annotatedType, beanAttributes.getStereotypes()));
     }
     
     protected abstract E createBean(Class<T> beanClass, boolean beanEnabled);
