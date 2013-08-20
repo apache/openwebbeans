@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
+import java.lang.reflect.Proxy;
 
 public class OwbCustomObjectInputStream extends ObjectInputStream
 {
@@ -39,4 +40,22 @@ public class OwbCustomObjectInputStream extends ObjectInputStream
         return Class.forName(desc.getName(), false, classLoader);
     }
 
+    @Override
+    protected Class resolveProxyClass(String[] interfaces) throws IOException, ClassNotFoundException
+    {
+        final Class[] cinterfaces = new Class[interfaces.length];
+        for (int i = 0; i < interfaces.length; i++)
+        {
+            cinterfaces[i] = Class.forName(interfaces[i], false, classLoader);
+        }
+
+        try
+        {
+            return Proxy.getProxyClass(classLoader, cinterfaces);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new ClassNotFoundException(null, e);
+        }
+    }
 }
