@@ -98,7 +98,7 @@ public class MethodProducerFactory<P> implements ProducerFactory<P>
                 {
                     if (annotatedParameter.isAnnotationPresent(Disposes.class))
                     {
-                        if (!GenericsUtil.satisfiesDependency(producerMethod.getBaseType(), annotatedParameter.getBaseType()))
+                        if (!GenericsUtil.satisfiesDependency(false, producerMethod.getBaseType(), annotatedParameter.getBaseType()))
                         {
                             continue;
                         }

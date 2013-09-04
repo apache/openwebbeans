@@ -178,7 +178,7 @@ public class InjectionResolver
             injectionPointClass = (Class) type;
         }
 
-        Set<Bean<?>> beanSet = implResolveByType(type, injectionPointClass, qualifiers);
+        Set<Bean<?>> beanSet = implResolveByType(injectionPoint.isDelegate(), type, injectionPointClass, qualifiers);
 
         if (beanSet.isEmpty())
         {
@@ -237,12 +237,7 @@ public class InjectionResolver
             qualifiers = AnyLiteral.ARRAY;
         }
 
-        Class injectionPointClass = null;
-        if (injectionPoint.getBean() != null)
-        {
-            injectionPointClass = injectionPoint.getBean().getBeanClass();
-        }
-        Set<Bean<?>> beanSet = implResolveByType(type, clazz, qualifiers);
+        Set<Bean<?>> beanSet = implResolveByType(injectionPoint.isDelegate(), type, clazz, qualifiers);
 
         if (beanSet.isEmpty())
         {
@@ -271,7 +266,7 @@ public class InjectionResolver
         {
             newType = newQualifier.value();
         }
-        Set<Bean<?>> beans = implResolveByType(newType, injectionPoint.getBean().getBeanClass(), AnyLiteral.INSTANCE);
+        Set<Bean<?>> beans = implResolveByType(injectionPoint.isDelegate(), newType, injectionPoint.getBean().getBeanClass(), AnyLiteral.INSTANCE);
         if (beans.isEmpty())
         {
             beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(newType));
@@ -430,13 +425,14 @@ public class InjectionResolver
     /**
      * Resolution by type.
      *
+     * @param isDelegate whether the InjectionPoint is for a {@link javax.decorator.Delegate}
      * @param injectionPointType injection point api type
      * @param qualifiers         qualifiers of the injection point
      * @return set of resolved beans
      */
-    public Set<Bean<?>> implResolveByType(Type injectionPointType, Annotation... qualifiers)
+    public Set<Bean<?>> implResolveByType(boolean isDelegate, Type injectionPointType, Annotation... qualifiers)
     {
-        return implResolveByType(injectionPointType, null, qualifiers);
+        return implResolveByType(isDelegate, injectionPointType, null, qualifiers);
     }
 
     private String getBDABeansXMLPath(Class<?> injectionPointBeanClass)
@@ -454,11 +450,13 @@ public class InjectionResolver
     /**
      * Resolution by type.
      *
+     * @param isDelegate whether the InjectionPoint is for a {@link javax.decorator.Delegate}
      * @param injectionPointType injection point api type
      * @param qualifiers         qualifiers of the injection point
      * @return set of resolved beans
      */
-    public Set<Bean<?>> implResolveByType(Type injectionPointType, Class<?> injectionPointClass, Annotation... qualifiers)
+    public Set<Bean<?>> implResolveByType(boolean isDelegate, Type injectionPointType,
+                                          Class<?> injectionPointClass, Annotation... qualifiers)
     {
         ScannerService scannerService = webBeansContext.getScannerService();
         String bdaBeansXMLFilePath = null;
@@ -519,7 +517,7 @@ public class InjectionResolver
                 for (Type componentApiType : component.getTypes())
                 {
 
-                    if (GenericsUtil.satisfiesDependency(injectionPointType, componentApiType))
+                    if (GenericsUtil.satisfiesDependency(isDelegate, injectionPointType, componentApiType))
                     {
                         resolvedComponents.add(component);
                         break;

@@ -220,7 +220,7 @@ public class DecoratorsManager
         boolean ok = false;
         for (Type apiType : apiTypes)
         {
-            if (GenericsUtil.satisfiesDependency(decorator.getDelegateType(), apiType))
+            if (GenericsUtil.satisfiesDependency(true, decorator.getDelegateType(), apiType))
             {
                 ok = true;
                 break;

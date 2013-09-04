@@ -123,7 +123,7 @@ public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>>
                     boolean found = false;
                     for (final ProducerMethodBean<?> producer : producerBeans)
                     {
-                        if (GenericsUtil.satisfiesDependency(producer.getCreatorMethod().getGenericReturnType(), param.getBaseType()))
+                        if (GenericsUtil.satisfiesDependency(false, producer.getCreatorMethod().getGenericReturnType(), param.getBaseType()))
                         {
                             found = true;
                             break;

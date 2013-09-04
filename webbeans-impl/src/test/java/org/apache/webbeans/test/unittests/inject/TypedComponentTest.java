@@ -60,7 +60,7 @@ public class TypedComponentTest extends TestContext
 
         InjectionResolver injectionResolver = WebBeansContext.getInstance().getBeanManagerImpl().getInjectionResolver();
 
-        Set<Bean<?>> beans= injectionResolver.implResolveByType(TypedComponentTest.class.getDeclaredField("s").getGenericType(), new Default()
+        Set<Bean<?>> beans= injectionResolver.implResolveByType(false, TypedComponentTest.class.getDeclaredField("s").getGenericType(), new Default()
         {
 
             @Override

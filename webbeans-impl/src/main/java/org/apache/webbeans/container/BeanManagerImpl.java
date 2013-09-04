@@ -150,7 +150,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
 
     /**
      * This list contains additional interceptor bindings which got set via the
-     * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addInterceptorBinding(Class)}
+     * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addInterceptorBinding(Class, java.lang.annotation.Annotation...)}
      * event function.
      */
     private List<Class<? extends Annotation>> additionalInterceptorBindings = new ArrayList<Class<? extends Annotation>>();
@@ -565,7 +565,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
 
         webBeansContext.getAnnotationManager().checkQualifierConditions(bindings);
 
-        return injectionResolver.implResolveByType(beanType, bindings);
+        return injectionResolver.implResolveByType(false, beanType, bindings);
 
     }
 
@@ -689,7 +689,8 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         //Check type if bean type is given
         if(beanType != null)
         {
-            if(!isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean) && !GenericsUtil.satisfiesDependency(beanType, bean.getBeanClass()))
+            if(!isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean) &&
+               !GenericsUtil.satisfiesDependency(false, beanType, bean.getBeanClass()))
             {
                 throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
             }
@@ -748,7 +749,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         {
             Type beanApiType = itBeanApiTypes.next();
 
-            if(GenericsUtil.satisfiesDependency(givenType, beanApiType))
+            if(GenericsUtil.satisfiesDependency(false, givenType, beanApiType))
             {
                 return true;
             }

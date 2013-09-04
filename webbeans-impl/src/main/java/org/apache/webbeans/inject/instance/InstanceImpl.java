@@ -161,7 +161,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         {
             injectionPointClass = injectionPointBean.getBeanClass();
         }
-        Set<Bean<?>> beans = resolver.implResolveByType(injectionClazz, injectionPointClass, anns);
+        Set<Bean<?>> beans = resolver.implResolveByType(false, injectionClazz, injectionPointClass, anns);
         return resolver.resolveAll(beans);
     }
     
