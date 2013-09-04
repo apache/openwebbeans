@@ -28,7 +28,7 @@ import javax.inject.Inject;
 public class Bar<A, B> {
 
     @Inject
-    @GenericQualifier
+    //X @GenericQualifier
     private Baz<A> baz;
 
     @Inject
@@ -37,6 +37,7 @@ public class Bar<A, B> {
 
     @Inject
     private Baz<List<B>> bBazList;
+
     private A[] aArray;
     private Baz<A> aBazEvent;
     private A aObserverInjectionPoint;

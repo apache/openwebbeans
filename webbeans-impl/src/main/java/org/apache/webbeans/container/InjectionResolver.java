@@ -19,8 +19,11 @@
 package org.apache.webbeans.container;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -43,6 +46,7 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
@@ -478,6 +482,8 @@ public class InjectionResolver
             }
         }
 
+        validateInjectionPointType(injectionPointType);
+
         BeanCacheKey cacheKey = new BeanCacheKey(injectionPointType, bdaBeansXMLFilePath, qualifiers);
 
         Set<Bean<?>> resolvedComponents = resolvedBeansByType.get(cacheKey);
@@ -539,6 +545,27 @@ public class InjectionResolver
         }
 
         return resolvedComponents;
+    }
+
+
+    /**
+     * Verify that we have a legal Type at the injection point.
+     * CDI can basically only handle Class and ParameterizedType injection points atm.
+     * @throws DefinitionException on TypeVariable, WildcardType and GenericArrayType
+     * @throws IllegalArgumentException if the type is not yet supported by the spec.
+     */
+    private void validateInjectionPointType(Type injectionPointType)
+    {
+        if (injectionPointType instanceof TypeVariable || injectionPointType instanceof WildcardType || injectionPointType instanceof GenericArrayType)
+        {
+            throw new DefinitionException("Injection point cannot define Type Variable " + injectionPointType);
+        }
+
+        if (!(injectionPointType instanceof Class) &&
+            !(injectionPointType instanceof ParameterizedType))
+        {
+            throw new IllegalArgumentException("Unsupported type " + injectionPointType.getClass());
+        }
     }
 
     /**

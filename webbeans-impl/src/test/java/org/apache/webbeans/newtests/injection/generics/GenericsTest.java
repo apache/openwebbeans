@@ -36,20 +36,23 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
+
 public class GenericsTest extends AbstractUnitTest
 {
 
-    @Before
-    public void startContainer()
+    @Test
+    public void testBaz()
     {
-        addExtension(new BarVetoExtension());
-        startContainer(Foo.class, Bar.class, Baz.class, BazSubclass.class, GenericFactory.class);
+
     }
 
     @Test
+    @Ignore("TODO not yet working!")
     public void injectionPoint() throws Exception
     {
+        addExtension(new BarVetoExtension());
+        startContainer(Foo.class, Bar.class, Baz.class, BazSubclass.class, GenericFactory.class, GenericQualifier.class);
+
         Bean<Foo> fooBean = getBean(Foo.class);
         Set<InjectionPoint> injectionPoints = fooBean.getInjectionPoints();
 
@@ -81,8 +84,12 @@ public class GenericsTest extends AbstractUnitTest
     }
 
     @Test
+    @Ignore("TODO not yet working!")
     public void testInjected() throws Exception
     {
+        addExtension(new BarVetoExtension());
+        startContainer(Foo.class, Bar.class, Baz.class, BazSubclass.class, GenericFactory.class, GenericQualifier.class);
+
         Foo foo = getInstance(Foo.class);
         assertNotNull(foo);
         assertNotNull(foo.getBaz());
@@ -91,8 +98,12 @@ public class GenericsTest extends AbstractUnitTest
     }
 
     @Test
+    @Ignore("TODO not yet working!")
     public void observerResolution() throws Exception
     {
+        addExtension(new BarVetoExtension());
+        startContainer(Foo.class, Bar.class, Baz.class, BazSubclass.class, GenericFactory.class);
+
         Set<ObserverMethod<? super BazSubclass>> observerMethods = getBeanManager().resolveObserverMethods(new BazSubclass(null));
         assertEquals(observerMethods.size(), 1);
         ObserverMethod<? super Class<BazSubclass>> observerMethod = (ObserverMethod<? super Class<BazSubclass>>)observerMethods.iterator().next();
@@ -101,8 +112,12 @@ public class GenericsTest extends AbstractUnitTest
     }
 
     @Test
+    @Ignore("TODO not yet working!")
     public void testObserver() throws Exception
     {
+        addExtension(new BarVetoExtension());
+        startContainer(Foo.class, Bar.class, Baz.class, BazSubclass.class, GenericFactory.class);
+
         Foo foo = getInstance(Foo.class);
         assertNotNull(foo);
         getBeanManager().fireEvent(new BazSubclass(null));

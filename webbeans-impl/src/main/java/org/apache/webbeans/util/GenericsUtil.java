@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.webbeans.config.OwbParametrizedTypeImpl;
-import org.apache.webbeans.exception.inject.DefinitionException;
 
 /**
  * Utility classes for generic type operations.
@@ -43,11 +42,6 @@ public final class GenericsUtil
 {
     public static boolean satisfiesDependency(Type injectionPointType, Type beanType)
     {
-        validate(injectionPointType);
-        if (injectionPointType instanceof TypeVariable || injectionPointType instanceof WildcardType || injectionPointType instanceof GenericArrayType)
-        {
-            throw new DefinitionException("Injection point cannot define Type Variable " + injectionPointType);
-        }
         if (beanType instanceof TypeVariable || beanType instanceof WildcardType || beanType instanceof GenericArrayType)
         {
             return isAssignableFrom(injectionPointType, beanType);
@@ -57,8 +51,13 @@ public final class GenericsUtil
             Type injectionPointRawType = injectionPointType instanceof ParameterizedType? ((ParameterizedType)injectionPointType).getRawType(): injectionPointType;
             Type beanRawType = beanType instanceof ParameterizedType? ((ParameterizedType)beanType).getRawType(): beanType;
             
-            return ClassUtil.isSame(injectionPointRawType, beanRawType)? isAssignableFrom(injectionPointType, beanType): false;
+            if  (ClassUtil.isSame(injectionPointRawType, beanRawType))
+            {
+                return isAssignableFrom(injectionPointType, beanType);
+            }
         }
+
+        return false;
     }
 
     /**
@@ -255,7 +254,23 @@ public final class GenericsUtil
         Type[] beanTypeArguments = beanType.getActualTypeArguments();
         for (int i = 0; i < injectionPointTypeArguments.length; i++)
         {
-            if (!isAssignableFrom(injectionPointTypeArguments[i], beanTypeArguments[i]))
+            Type injectionPointTypeArgument = injectionPointTypeArguments[i];
+            Type beanTypeArgument = beanTypeArguments[i];
+
+            // for this special case it's actually an 'assignable to', thus we swap the params, see CDI-389
+            if (injectionPointTypeArgument instanceof Class &&
+                beanTypeArgument instanceof TypeVariable)
+            {
+                for (Type upperBound: ((TypeVariable) beanTypeArgument).getBounds())
+                {
+                    if (!isAssignableFrom(upperBound, injectionPointTypeArgument))
+                    {
+                        return false;
+                    }
+                }
+
+            }
+            else if (!isAssignableFrom(injectionPointTypeArgument, beanTypeArgument))
             {
                 return false;
             }
@@ -494,19 +509,6 @@ public final class GenericsUtil
             }
         }
         return classTypes.toArray(new Class[classTypes.size()]);
-    }
-
-    private static Type validate(Type type)
-    {
-        if (!(type instanceof Class)
-                && !(type instanceof ParameterizedType)
-                && !(type instanceof TypeVariable)
-                && !(type instanceof GenericArrayType)
-                && !(type instanceof WildcardType))
-        {
-            throw new IllegalArgumentException("Unsupported type " + type.getClass());
-        }
-        return type;
     }
 
     /**

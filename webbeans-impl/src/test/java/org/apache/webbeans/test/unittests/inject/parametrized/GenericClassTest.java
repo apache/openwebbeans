@@ -19,7 +19,13 @@
 package org.apache.webbeans.test.unittests.inject.parametrized;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
+import org.apache.webbeans.newtests.injection.generics.zoo.Horse;
+import org.apache.webbeans.newtests.injection.generics.zoo.HorseStable;
+import org.apache.webbeans.newtests.injection.generics.zoo.Pig;
+import org.apache.webbeans.newtests.injection.generics.zoo.PigStable;
+import org.apache.webbeans.newtests.injection.generics.zoo.Stable;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.inject.parametrized.Dao;
 import org.apache.webbeans.test.component.inject.parametrized.UserDao;
@@ -69,7 +75,7 @@ public class GenericClassTest extends TestContext
             Field f3 = UserDao.class.getField("field3");
             Field f4 = UserDao.class.getField("field4");
             
-            Assert.assertTrue(GenericsUtil.satisfiesDependency(f2.getGenericType(), f1.getGenericType()));
+
             Assert.assertTrue(GenericsUtil.satisfiesDependency(f3.getGenericType(), f1.getGenericType()));
             Assert.assertTrue(GenericsUtil.satisfiesDependency(f4.getGenericType(), f1.getGenericType()));
             
@@ -79,5 +85,43 @@ public class GenericClassTest extends TestContext
             fail("testGenericClasses");
         }
     }
-    
+
+    @Test
+    public void testStable() throws Exception
+    {
+        Type parameterizedPigStableType = this.getClass().getDeclaredField("parameterizedPigStable").getGenericType();
+        Type parameterizedHorseStableType = this.getClass().getDeclaredField("parameterizedHorseStable").getGenericType();
+        Assert.assertNotNull(parameterizedPigStableType);
+        Assert.assertNotNull(parameterizedHorseStableType);
+
+        Type pigStableType = this.getClass().getDeclaredField("pigStable").getType().getGenericSuperclass();
+        Type horseStableType = this.getClass().getDeclaredField("horseStable").getType().getGenericSuperclass();
+
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(horseStableType, parameterizedHorseStableType));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(parameterizedPigStableType, pigStableType));
+    }
+    // fields for {@link #testStable}
+    private Stable<Horse> parameterizedHorseStable;
+    private Stable<Pig> parameterizedPigStable;
+    private HorseStable horseStable;
+    private PigStable pigStable;
+
+
+    @Test
+    public void testGenericProducerType() throws Exception
+    {
+        Type parameterizedPigStableType = this.getClass().getDeclaredField("parameterizedPigStable").getGenericType();
+        Type parameterizedHorseStableType = this.getClass().getDeclaredField("parameterizedHorseStable").getGenericType();
+        Type stableProducerMethodType = this.getClass().getDeclaredMethod("stableProducer").getGenericReturnType();
+
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(parameterizedPigStableType, stableProducerMethodType));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(parameterizedHorseStableType, stableProducerMethodType));
+
+    }
+    // method and field for {@link #testGenericProducerType}
+    private <T> Stable<T> stableProducer()
+    {
+        return null;
+    }
+
 }
