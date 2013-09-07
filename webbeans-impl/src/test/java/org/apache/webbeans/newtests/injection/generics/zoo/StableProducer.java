@@ -26,7 +26,7 @@ import java.lang.reflect.ParameterizedType;
 /**
  * A stable for horses, pigs, etc
  */
-public class StableProducer extends Stable<Horse>
+public class StableProducer
 {
     @Produces
     @Dependent
@@ -34,15 +34,18 @@ public class StableProducer extends Stable<Horse>
     {
         Class petClass = (Class) ((ParameterizedType) injectionPoint.getType()).getActualTypeArguments()[0];
 
+        Stable stable = null;
         if (Horse.class.equals(petClass))
         {
-            return (Stable<PET>) new HorseStable();
+            stable = (Stable<PET>) new HorseStable();
+            stable.setPet(new Horse());
         }
         if (Pig.class.equals(petClass))
         {
-            return (Stable<PET>) new PigStable();
+            stable = new PigStable();
+            stable.setPet(new Pig());
         }
 
-        return null;
+        return stable;
     }
 }

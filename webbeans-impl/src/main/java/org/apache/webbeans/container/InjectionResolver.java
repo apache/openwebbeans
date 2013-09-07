@@ -83,7 +83,7 @@ public class InjectionResolver
     /**
      * This Map contains all resolved beans via it's type and qualifiers.
      * If a bean have resolved as not existing, the entry will contain <code>null</code> as value.
-     * The Long key is a hashCode, see {@link BeanCacheKey#BeanCacheKey(Type, String, Annotation...)}
+     * The Long key is a hashCode, see {@link BeanCacheKey#BeanCacheKey(boolean, Type, String, Annotation...)}
      */
     private Map<BeanCacheKey, Set<Bean<?>>> resolvedBeansByType = new ConcurrentHashMap<BeanCacheKey, Set<Bean<?>>>();
 

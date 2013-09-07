@@ -539,7 +539,8 @@ public final class GenericsUtil
         {
             if (declarations.size() < 2)
             {
-                return getRawType(variable.getBounds(), this);
+                return variable;
+                //X TODO better handling needed: return getRawType(variable.getBounds(), this);
             }
             int hierarchyIndex = declarations.size() - 1;
             TypeVariableDeclaration typeVariableImplementation = declarations.get(hierarchyIndex);

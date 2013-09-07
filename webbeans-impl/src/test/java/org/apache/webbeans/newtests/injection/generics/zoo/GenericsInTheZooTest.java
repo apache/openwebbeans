@@ -62,7 +62,7 @@ public class GenericsInTheZooTest extends AbstractUnitTest
         }
     }
 
-    //X TODO enable again @Test
+    @Test
     public void testGenericProducer() throws Exception
     {
         // create the stables via a single producer method
