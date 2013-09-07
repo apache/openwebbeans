@@ -34,18 +34,11 @@ public class GenericsInTheZooTest extends AbstractUnitTest
     @Test
     public void testSpecificAnimalStable() throws Exception
     {
+        // create the stables via explicit subclasses;
         startContainer(Animal.class, Stable.class, Horse.class, Pig.class, HorseStable.class, PigStable.class,
                        MySpecificAnimalStables.class);
 
-        MySpecificAnimalStables stables = getInstance(MySpecificAnimalStables.class);
-        Assert.assertNotNull(stables);
-        Assert.assertNotNull(stables.getHorseStable());
-        Assert.assertNotNull(stables.getHorseStable());
-        Assert.assertEquals("horse", stables.getHorseStable().getPet().getName());
-
-        Assert.assertNotNull(stables.getPigStable());
-        Assert.assertNotNull(stables.getPigStable());
-        Assert.assertEquals("pig", stables.getPigStable().getPet().getName());
+        verifyAnimalStables();
     }
 
     @Dependent
@@ -68,4 +61,28 @@ public class GenericsInTheZooTest extends AbstractUnitTest
             return pigStable;
         }
     }
+
+    @Test
+    public void testGenericProducer() throws Exception
+    {
+        // create the stables via a single producer method
+        startContainer(Stable.class, StableProducer.class, MySpecificAnimalStables.class);
+
+        verifyAnimalStables();
+    }
+
+
+    private void verifyAnimalStables()
+    {
+        MySpecificAnimalStables stables = getInstance(MySpecificAnimalStables.class);
+        Assert.assertNotNull(stables);
+        Assert.assertNotNull(stables.getHorseStable());
+        Assert.assertNotNull(stables.getHorseStable());
+        Assert.assertEquals("horse", stables.getHorseStable().getPet().getName());
+
+        Assert.assertNotNull(stables.getPigStable());
+        Assert.assertNotNull(stables.getPigStable());
+        Assert.assertEquals("pig", stables.getPigStable().getPet().getName());
+    }
+
 }
