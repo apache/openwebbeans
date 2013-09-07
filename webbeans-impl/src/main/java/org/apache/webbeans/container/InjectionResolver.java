@@ -134,13 +134,13 @@ public class InjectionResolver
     }
 
     /**
-     * Check that bean exist in the deployment for given
+     * Check that a valid enabled bean exists in the deployment for the given
      * injection point definition.
      *
      * @param injectionPoint injection point
-     * @throws WebBeansConfigurationException If bean is not avialable in the current deployment for given injection
+     * @throws WebBeansConfigurationException If bean is not available in the current deployment for given injection
      */
-    public void checkInjectionPoints(InjectionPoint injectionPoint)
+    public void checkInjectionPoint(InjectionPoint injectionPoint)
     {
         WebBeansUtil.checkInjectionPointNamedQualifier(injectionPoint);
 
@@ -482,7 +482,7 @@ public class InjectionResolver
 
         validateInjectionPointType(injectionPointType);
 
-        BeanCacheKey cacheKey = new BeanCacheKey(injectionPointType, bdaBeansXMLFilePath, qualifiers);
+        BeanCacheKey cacheKey = new BeanCacheKey(isDelegate, injectionPointType, bdaBeansXMLFilePath, qualifiers);
 
         Set<Bean<?>> resolvedComponents = resolvedBeansByType.get(cacheKey);
         if (resolvedComponents != null)

@@ -18,12 +18,10 @@
  */
 package org.apache.webbeans.newtests.injection.generics.zoo;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
 /**
  * A stable for horses, pigs, etc

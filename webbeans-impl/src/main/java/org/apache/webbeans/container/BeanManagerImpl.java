@@ -941,7 +941,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         }
         else
         {
-            injectionResolver.checkInjectionPoints(injectionPoint);
+            injectionResolver.checkInjectionPoint(injectionPoint);
         }        
     }
 

@@ -30,6 +30,7 @@ import java.util.Comparator;
 
 public final class BeanCacheKey
 {
+    private final boolean isDelegate;
     private final Type type;
     private final String path;
     private final Annotation qualifier;
@@ -37,8 +38,9 @@ public final class BeanCacheKey
     private final int hashCode;
     private static final Comparator<Annotation> ANNOTATION_COMPARATOR = new AnnotationComparator();
 
-    public BeanCacheKey( Type type, String path, Annotation... qualifiers )
+    public BeanCacheKey(boolean isDelegate, Type type, String path, Annotation... qualifiers)
     {
+        this.isDelegate = isDelegate;
         this.type = type;
         this.path = path;
         final int length = qualifiers != null ? qualifiers.length : 0;
@@ -79,6 +81,10 @@ public final class BeanCacheKey
 
         BeanCacheKey cacheKey = (BeanCacheKey) o;
 
+        if (!isDelegate == cacheKey.isDelegate)
+        {
+            return false;
+        }
         if (!type.equals(cacheKey.type))
         {
             return false;
@@ -154,7 +160,8 @@ public final class BeanCacheKey
      */
     private int computeHashCode()
     {
-        int computedHashCode = 31 * getTypeHashCode(type) + (path != null ? path.hashCode() : 0);
+        int computedHashCode = 31 * getTypeHashCode(type) + (path != null ? path.hashCode() : 0)
+                               + (isDelegate ? 29 : 0);
         if (qualifier != null)
         {
             computedHashCode = 31 * computedHashCode + getQualifierHashCode(qualifier);
@@ -310,7 +317,7 @@ public final class BeanCacheKey
     public String toString()
     {
         return "BeanCacheKey{" + "type=" + type + ", path='" + path + '\''
-                + ", qualifiers="
+                + ", delegate=" + isDelegate + ", qualifiers="
                 + (qualifiers == null ? qualifier : Arrays.asList(qualifiers)) + ", hashCode=" + hashCode + '}';
     }
 
