@@ -908,13 +908,6 @@ public class BeansDeployer
             webBeansContext.getWebBeansUtil().inspectErrorStack(
                 "There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
 
-            //Sets custom InjectionTarget instance
-            if(processInjectionTargetEvent.isSet())
-            {
-                //Adding injection target
-                manager.putProducerForJavaEeComponent(beanClass, processInjectionTargetEvent.getInjectionTarget());
-            }
-            
             //Checks that not contains @Inject InjectionPoint
             webBeansContext.getAnnotationManager().checkInjectionPointForInjectInjectionPoint(beanClass);
         }

@@ -18,15 +18,15 @@
  */
 package org.apache.webbeans.portable.events.generics;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.InjectionTarget;
-
+import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
+
+import javax.enterprise.inject.spi.AnnotatedType;
 
 @SuppressWarnings("unchecked")
 public class GProcessInjectionTarget extends ProcessInjectionTargetImpl implements GenericBeanEvent
 {
-    public GProcessInjectionTarget(InjectionTarget<?> injectionTarget,AnnotatedType<?> annotatedType)
+    public GProcessInjectionTarget(InjectionTargetImpl<?> injectionTarget,AnnotatedType<?> annotatedType)
     {
         super(injectionTarget, annotatedType);
     }

@@ -58,6 +58,7 @@ import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
@@ -91,7 +92,6 @@ import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
@@ -1213,9 +1213,9 @@ public final class WebBeansUtil
      * @param <T> bean type
      * @return event
      */
-    public <T> ProcessInjectionTarget<T> fireProcessInjectionTargetEvent(InjectionTarget<T> injectionTarget, AnnotatedType<T> annotatedType)
+    public <T> GProcessInjectionTarget fireProcessInjectionTargetEvent(InjectionTargetImpl<T> injectionTarget, AnnotatedType<T> annotatedType)
     {
-        GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget, annotatedType);
+        final GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget, annotatedType);
         return fireProcessInjectionTargetEvent(processInjectionTargetEvent);
     }
 
@@ -1223,7 +1223,6 @@ public final class WebBeansUtil
     {
         //Fires ProcessInjectionTarget
         webBeansContext.getBeanManagerImpl().fireEvent(processInjectionTargetEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-
         return processInjectionTargetEvent;
     }
 
@@ -1234,9 +1233,9 @@ public final class WebBeansUtil
      */
     public <T> GProcessInjectionTarget fireProcessInjectionTargetEventForJavaEeComponents(Class<T> componentClass)
     {
-        AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(componentClass);
-        InjectionTarget<T> injectionTarget = webBeansContext.getBeanManagerImpl().createInjectionTarget(annotatedType);
-        GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget,annotatedType);
+        final AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(componentClass);
+        final InjectionTargetImpl<T> injectionTarget = InjectionTargetImpl.class.cast(webBeansContext.getBeanManagerImpl().createInjectionTarget(annotatedType));
+        final GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget,annotatedType);
 
         //Fires ProcessInjectionTarget
         return fireProcessInjectionTargetEvent(processInjectionTargetEvent);

@@ -18,13 +18,11 @@
  */
 package org.apache.webbeans.component;
 
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.webbeans.component.spi.BeanAttributes;
+import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
@@ -32,12 +30,13 @@ import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.Producer;
-
-import org.apache.webbeans.component.spi.BeanAttributes;
-import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Abstract implementation of the {@link OwbBean} contract. 
@@ -115,11 +114,11 @@ public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implement
                 creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(creationalContext, this);
             }
 
-            Producer<T> producer = getProducer();
-            T instance = producer.produce(creationalContext);
+            final Producer<T> producer = getProducer();
+            final T instance = producer.produce(creationalContext);
             if (producer instanceof InjectionTarget)
             {
-                InjectionTarget<T> injectionTarget = (InjectionTarget<T>)producer;
+                final InjectionTarget<T> injectionTarget = (InjectionTarget<T>)producer;
                 injectionTarget.inject(instance, creationalContext);
                 injectionTarget.postConstruct(instance);
             }

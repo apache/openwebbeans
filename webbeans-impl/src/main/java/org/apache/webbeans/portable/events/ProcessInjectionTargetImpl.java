@@ -18,11 +18,12 @@
  */
 package org.apache.webbeans.portable.events;
 
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.InjectionTargetImpl;
+
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
-
-import org.apache.webbeans.config.WebBeansContext;
 
 /**
  * Implementation of the {@link ProcessInjectionTarget}.
@@ -37,8 +38,8 @@ public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
     private final AnnotatedType<X> annotatedType;
     
     /**Injection target that is used by container to inject dependencies*/
-    private InjectionTarget<X> injectionTarget = null;
-    
+    private InjectionTargetImpl<X> injectionTarget = null;
+
     /**Injection target is set or not*/
     private boolean set = false;
     
@@ -47,12 +48,12 @@ public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
      * 
      * @param injectionTarget injection target
      */
-    public ProcessInjectionTargetImpl(InjectionTarget<X> injectionTarget, AnnotatedType<X> annotatedType)
+    public ProcessInjectionTargetImpl(InjectionTargetImpl<X> injectionTarget, AnnotatedType<X> annotatedType)
     {
         this.injectionTarget = injectionTarget;
         this.annotatedType = annotatedType;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -74,6 +75,11 @@ public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
     @Override
     public InjectionTarget<X> getInjectionTarget()
     {
+        return injectionTarget.simpleInstance();
+    }
+
+    public InjectionTarget<X> getCompleteInjectionTarget()
+    {
         return injectionTarget;
     }
 
@@ -83,7 +89,7 @@ public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
     @Override
     public void setInjectionTarget(InjectionTarget<X> injectionTarget)
     {
-        this.injectionTarget = injectionTarget;
+        this.injectionTarget.setDelegate(injectionTarget); // wrap it to keep interceptors info
         set = true;
     }
 

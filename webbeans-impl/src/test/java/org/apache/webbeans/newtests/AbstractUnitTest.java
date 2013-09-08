@@ -18,19 +18,6 @@
  */
 package org.apache.webbeans.newtests;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.InjectionTarget;
-
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -39,10 +26,19 @@ import org.apache.webbeans.lifecycle.test.OpenWebBeansTestLifeCycle;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.util.WebBeansUtil;
-
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.After;
+
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.Extension;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 
 public abstract class AbstractUnitTest
@@ -90,8 +86,11 @@ public abstract class AbstractUnitTest
         startContainer(beanClasses, beanXmls, false);
     }
 
-    protected void startContainer(Collection<Class<?>> beanClasses, Collection<String> beanXmls, boolean inject)
+    protected void startContainer(Collection<Class<?>> rawBeanClasses, Collection<String> beanXmls, boolean inject)
     {
+        final Collection<Class<?>> beanClasses = new ArrayList<Class<?>>(); // ensure it is updatable
+        beanClasses.addAll(rawBeanClasses);
+
         WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
         //Creates a new container
         testLifecycle = new OpenWebBeansTestLifeCycle();

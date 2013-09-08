@@ -135,6 +135,8 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
      * List of all Interceptors per Method.
      */
     private Map<Method, List<Interceptor<?>>> methodInterceptors = null;
+    private InjectionTarget<T> delegate = null;
+    private final boolean noProxy; // Mark this injection target usable as a delegate ni a custom InjectionTarget
 
 
     public InjectionTargetImpl(AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext,
@@ -147,6 +149,17 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         this.webBeansContext = webBeansContext;
         this.postConstructMethods = postConstructMethods;
         this.preDestroyMethods = preDestroyMethods;
+        this.noProxy = false;
+    }
+
+    public InjectionTargetImpl(final InjectionTargetImpl<T> delegate)
+    {
+        super(delegate.getInjectionPoints());
+        this.noProxy = true;
+        this.annotatedType = delegate.annotatedType;
+        this.webBeansContext = delegate.webBeansContext;
+        this.postConstructMethods = delegate.postConstructMethods;
+        this.preDestroyMethods = delegate.preDestroyMethods;
     }
 
     public BeanInterceptorInfo getInterceptorInfo()
@@ -185,6 +198,11 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     public T produce(CreationalContext<T> creationalContext)
     {
         final CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>) creationalContext;
+        if (noProxy)
+        {
+            return newInstance(creationalContextImpl);
+        }
+
         final Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<Interceptor<?>, Object>();
         final Contextual<T> oldContextual = creationalContextImpl.getContextual();
         final boolean hasAroundConstruct = aroundConstructInterceptors != null && !aroundConstructInterceptors.isEmpty();
@@ -221,6 +239,10 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                     @Override
                     protected Object realProceed() throws Exception
                     {
+                        if (delegate != null)
+                        {
+                            return delegate.produce(creationalContextImpl);
+                        }
                         return injectableConstructor.doInjection();
                     }
                 }.proceed();
@@ -233,7 +255,14 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         }
         else
         {
-            instance = newInstance(creationalContextImpl);
+            if (delegate != null)
+            {
+                instance = delegate.produce(creationalContextImpl);
+            }
+            else
+            {
+                instance = newInstance(creationalContextImpl);
+            }
         }
 
         if (proxyClass != null)
@@ -299,13 +328,23 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void dispose(T instance)
     {
+        if (delegate != null)
+        {
+            delegate.dispose(instance);
+        }
     }
 
     @Override
     public void inject(T instance, CreationalContext<T> context)
     {
-
-        inject(instance.getClass(), unwrapProxyInstance(instance), (CreationalContextImpl<T>) context);
+        if (delegate == null)
+        {
+            inject(instance.getClass(), unwrapProxyInstance(instance), (CreationalContextImpl<T>) context);
+        }
+        else
+        {
+            delegate.inject(instance, context);
+        }
     }
 
 
@@ -401,6 +440,12 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void postConstruct(final T instance)
     {
+        if (delegate != null)
+        {
+            delegate.postConstruct(instance);
+            return; // TODO: sure?
+        }
+
         Map<Interceptor<?>, ?> interceptorInstances = null;
         T internalInstance = instance;
 
@@ -435,6 +480,12 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void preDestroy(T instance)
     {
+        if (delegate != null)
+        {
+            delegate.preDestroy(instance);
+            return; // TODO: sure?
+        }
+
         Map<Interceptor<?>, ?> interceptorInstances = null;
         T internalInstance = instance;
 
@@ -546,5 +597,15 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             }
         }
         return false;
+    }
+
+    public void setDelegate(final InjectionTarget<T> delegate)
+    {
+        this.delegate = delegate;
+    }
+
+    public InjectionTarget<T> simpleInstance()
+    {
+        return new InjectionTargetImpl<T>(this);
     }
 }

@@ -18,9 +18,10 @@
  */
 package org.apache.webbeans.container;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.apache.webbeans.component.spi.InjectionTargetFactory;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.util.Asserts;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -29,11 +30,9 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
-
-import org.apache.webbeans.component.spi.InjectionTargetFactory;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.portable.InjectionTargetImpl;
-import org.apache.webbeans.util.Asserts;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class InjectionTargetFactoryImpl<T> implements InjectionTargetFactory<T>
 {
@@ -57,9 +56,9 @@ public class InjectionTargetFactoryImpl<T> implements InjectionTargetFactory<T>
     @Override
     public InjectionTarget<T> createInjectionTarget(Bean<T> bean)
     {
-        InjectionTarget<T> injectionTarget
+        final InjectionTargetImpl<T> injectionTarget
             = new InjectionTargetImpl<T>(annotatedType, createInjectionPoints(bean), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
-        return webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, annotatedType).getInjectionTarget();
+        return webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, annotatedType).getCompleteInjectionTarget();
     }
 
     protected Set<InjectionPoint> createInjectionPoints(Bean<T> bean)
