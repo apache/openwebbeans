@@ -179,7 +179,7 @@ public abstract class AbstractUnitTest
     @SuppressWarnings("unchecked")
     protected <T> Bean<T> getBean(Class<T> type, Annotation... qualifiers)
     {
-        Set<Bean<?>> beans = getBeanManager().getBeans(type, qualifiers);
+        Set beans = getBeanManager().getBeans(type, qualifiers);
         return (Bean<T>) getBeanManager().resolve(beans);
     }
 

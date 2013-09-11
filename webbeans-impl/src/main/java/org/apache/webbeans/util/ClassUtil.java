@@ -241,12 +241,17 @@ public final class ClassUtil
      * The returned Map contains the methods divided by the methodName as key in the map
      * following all the methods with the same methodName in a List.
      *
+     * There is some special rule for package-private methods. Any non-visible
+     * package-private method will get skipped and treated similarly to private methods.
+     *
      * Note: we filter out the {@link Object#finalize()} method as users must not deal with it
      */
-    public static List<Method> getNonPrivateMethods(Class<?> clazz, boolean noFinalMethods)
+    public static List<Method> getNonPrivateMethods(Class<?> rootClazz, boolean noFinalMethods)
     {
         Map<String, List<Method>> methodMap = new HashMap<String, List<Method>>();
         List<Method> allMethods = new ArrayList<Method>(10);
+
+        Class<?> clazz = rootClazz;
 
         while (clazz != null)
         {
@@ -267,6 +272,18 @@ public final class ClassUtil
                 {
                     // we do not proxy finalize()
                     continue;
+                }
+
+                // check for package-private methods from a different package
+                if (!Modifier.isPublic(modifiers) && !Modifier.isProtected(modifiers))
+                {
+                    // private already got handled above, so we only had to check for not public nor protected
+                    // we cannot see those methods if they are not in the same package as the rootClazz
+                    if (!clazz.getPackage().getName().equals(rootClazz.getPackage().getName()))
+                    {
+                        continue;
+                    }
+
                 }
 
                 List<Method> methods = methodMap.get(method.getName());
@@ -825,7 +842,7 @@ public final class ClassUtil
 
     /**
      * Learn whether the specified class is defined with type parameters.
-     * @param clazz to check
+     * @param type to check
      * @return true if there are type parameters
      * @since 1.1.1
      */
@@ -996,7 +1013,7 @@ public final class ClassUtil
                 return false;
             }
             
-            if(!Modifier.isProtected(modifiers) && !Modifier.isPublic(modifiers))                 
+            if(!Modifier.isProtected(modifiers) && !Modifier.isPublic(modifiers))
             {
                 Class<?> superClass = superClassMethod.getDeclaringClass();
                 Class<?> subClass = subClassMethod.getDeclaringClass();

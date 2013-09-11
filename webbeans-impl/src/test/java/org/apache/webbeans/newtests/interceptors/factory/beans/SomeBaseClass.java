@@ -18,14 +18,23 @@
  */
 package org.apache.webbeans.newtests.interceptors.factory.beans;
 
+import javax.enterprise.context.RequestScoped;
+
 /**
- *
+ * Test class for our proxy bytecode generator logic.
  */
+@RequestScoped
 public class SomeBaseClass
 {
 
     protected String withAProtectedMethod()
     {
-        return "protedtMe";
+        return "protectMe";
     }
+
+    int packagePrivateMethod()
+    {
+        return 42;
+    }
+
 }

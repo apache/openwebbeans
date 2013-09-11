@@ -47,5 +47,9 @@ public class ProtectedUsageBean
         return meaningOfLife;
     }
 
+    int packagePrivateMethod()
+    {
+        return 84;
+    }
 
 }

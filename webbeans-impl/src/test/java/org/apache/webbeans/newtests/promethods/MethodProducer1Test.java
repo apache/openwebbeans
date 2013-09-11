@@ -67,6 +67,11 @@ public class MethodProducer1Test extends AbstractUnitTest
         Assert.assertNotNull(reference);
         
         Assert.assertTrue(reference instanceof InjectorofMethod1Bean);
+
+
+        ArrayList<String> value = ((InjectorofMethod1Bean) reference).getPt3();
+        Assert.assertNotNull(value);
+
         
         shutDownContainer();
     }

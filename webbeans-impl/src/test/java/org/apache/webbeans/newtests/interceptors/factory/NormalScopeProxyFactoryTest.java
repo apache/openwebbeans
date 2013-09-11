@@ -25,6 +25,8 @@ import java.net.URLClassLoader;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
+import org.apache.webbeans.newtests.interceptors.factory.beans.SomeBaseClass;
+import org.apache.webbeans.newtests.interceptors.factory.SubPackageInterceptedClass;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -121,5 +123,18 @@ public class NormalScopeProxyFactoryTest extends AbstractUnitTest
 
             return instance;
         }
+    }
+
+    @Test
+    public void testContainerBoot() throws Exception
+    {
+        startContainer(ClassInterceptedClass.class, SomeBaseClass.class, SubPackageInterceptedClass.class);
+        ClassInterceptedClass instance = getInstance(ClassInterceptedClass.class);
+        Assert.assertNotNull(instance);
+        instance.getFloat();
+
+        SubPackageInterceptedClass subPackageInstance = getInstance(SubPackageInterceptedClass.class);
+        Assert.assertNotNull(subPackageInstance);
+        instance.getFloat();
     }
 }

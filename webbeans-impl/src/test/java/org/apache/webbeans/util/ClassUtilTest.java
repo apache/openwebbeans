@@ -38,6 +38,21 @@ public class ClassUtilTest {
     }
 
     @Test
+    public void testGetAllNonPrivateMethods_packagePrivate()
+    {
+        List<Method> nonPrivateMethods = ClassUtil.getNonPrivateMethods(MyOtherPackageSubClass.class, false);
+
+        for (Method m : nonPrivateMethods)
+        {
+            if (MySuperClass.class.equals(m.getDeclaringClass()) &&
+                "packageMethod".equals(m.getName()))
+            {
+                Assert.fail("invisible package private method must not get listed");
+            }
+        }
+    }
+
+    @Test
     public void testIsOverridden() throws Exception
     {
         Assert.assertTrue(isOverridden(MySubClass.class, "publicMethod"));

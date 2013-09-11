@@ -16,20 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.newtests.interceptors.factory.beans;
+package org.apache.webbeans.newtests.interceptors.factory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
 
+import org.apache.webbeans.newtests.interceptors.factory.beans.SomeBaseClass;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
 /**
  * A simple class which is class-level intercepted
+ * but is in a different package than it's parent class.
+ * This is mainly for testing proxying of package-private methods.
  */
 @Transactional
 @RequestScoped
-public class ClassInterceptedClass extends SomeBaseClass
+public class SubPackageInterceptedClass extends SomeBaseClass
 {
     private boolean defaultCtInvoked = false;
 
@@ -37,7 +40,7 @@ public class ClassInterceptedClass extends SomeBaseClass
     private float f;
     private char c;
 
-    public ClassInterceptedClass()
+    public SubPackageInterceptedClass()
     {
         defaultCtInvoked = true;
     }
@@ -78,7 +81,7 @@ public class ClassInterceptedClass extends SomeBaseClass
         return f;
     }
 
-    public ClassInterceptedClass getSelf()
+    public SubPackageInterceptedClass getSelf()
     {
         return this;
     }
