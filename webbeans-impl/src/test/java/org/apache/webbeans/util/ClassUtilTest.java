@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.webbeans.util.differentPackage.MyOtherPackageSubClass;
 import org.junit.Test;
 
 import junit.framework.Assert;
@@ -35,4 +36,27 @@ public class ClassUtilTest {
         nonPrivateMethods.removeAll(Arrays.asList(Object.class.getDeclaredMethods()));
         Assert.assertEquals(SpecificClass.class.getDeclaredMethods().length, nonPrivateMethods.size());
     }
+
+    @Test
+    public void testIsOverridden() throws Exception
+    {
+        Assert.assertTrue(isOverridden(MySubClass.class, "publicMethod"));
+        Assert.assertTrue(isOverridden(MySubClass.class, "protectedMethod"));
+
+        Assert.assertTrue(isOverridden(MySubClass.class, "packageMethod"));
+        Assert.assertFalse(isOverridden(MyOtherPackageSubClass.class, "packageMethod"));
+
+        Assert.assertFalse(isOverridden(MySubClass.class, "privateMethod"));
+        Assert.assertFalse(isOverridden(MyOtherPackageSubClass.class, "privateMethod"));
+    }
+
+    private boolean isOverridden(Class subClass, String methodName) throws Exception
+    {
+        Method superClassMethod = MySuperClass.class.getDeclaredMethod(methodName);
+        Method subClassMethod   = subClass.getDeclaredMethod(methodName);
+
+        return ClassUtil.isOverridden(subClassMethod, superClassMethod);
+    }
+
 }
+
