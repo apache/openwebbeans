@@ -149,17 +149,17 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         this.webBeansContext = webBeansContext;
         this.postConstructMethods = postConstructMethods;
         this.preDestroyMethods = preDestroyMethods;
-        this.noProxy = false;
+        noProxy = false;
     }
 
     public InjectionTargetImpl(final InjectionTargetImpl<T> delegate)
     {
         super(delegate.getInjectionPoints());
-        this.noProxy = true;
-        this.annotatedType = delegate.annotatedType;
-        this.webBeansContext = delegate.webBeansContext;
-        this.postConstructMethods = delegate.postConstructMethods;
-        this.preDestroyMethods = delegate.preDestroyMethods;
+        noProxy = true;
+        annotatedType = delegate.annotatedType;
+        webBeansContext = delegate.webBeansContext;
+        postConstructMethods = delegate.postConstructMethods;
+        preDestroyMethods = delegate.preDestroyMethods;
     }
 
     public BeanInterceptorInfo getInterceptorInfo()
@@ -176,7 +176,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         this.methodInterceptors = methodInterceptors;
         this.postConstructInterceptors = postConstructInterceptors;
         this.preDestroyInterceptors = preDestroyInterceptors;
-        this.aroundConstructInterceptors = aroundConstruct;
+        aroundConstructInterceptors = aroundConstruct;
         this.beanPassivationId = beanPassivationId;
     }
 

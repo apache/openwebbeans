@@ -34,7 +34,7 @@ public class ExtensionBeanBuilder<T>
         Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
         Asserts.assertNotNull(type, "type may not be null");
         this.webBeansContext = webBeansContext;
-        this.annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
+        annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
     }
 
     public AnnotatedType<T> getAnnotatedType()

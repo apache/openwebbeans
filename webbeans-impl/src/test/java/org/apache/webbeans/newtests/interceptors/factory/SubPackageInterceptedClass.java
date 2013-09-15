@@ -34,7 +34,6 @@ import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactio
 @RequestScoped
 public class SubPackageInterceptedClass extends SomeBaseClass
 {
-    private boolean defaultCtInvoked = false;
 
     private int meaningOfLife;
     private float f;
@@ -42,7 +41,6 @@ public class SubPackageInterceptedClass extends SomeBaseClass
 
     public SubPackageInterceptedClass()
     {
-        defaultCtInvoked = true;
     }
 
     @PostConstruct

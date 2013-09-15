@@ -86,7 +86,7 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
             }
         }
 
-        this.aroundConstructMethod = aroundConstruct;
+        aroundConstructMethod = aroundConstruct;
         if (aroundConstructMethod != null && !aroundConstructMethod.isAccessible())
         {
             aroundConstructMethod.setAccessible(true);
@@ -231,7 +231,7 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
             this.interceptor = interceptor;
             this.interceptionType = interceptionType;
             this.instance = instance;
-            this.currentInterceptorIdx = 0; // we start with method 0
+            currentInterceptorIdx = 0; // we start with method 0
         }
 
         public int getCurrentInterceptorIdx()

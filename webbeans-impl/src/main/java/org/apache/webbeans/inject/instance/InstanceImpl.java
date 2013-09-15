@@ -84,7 +84,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     {
         this.injectionClazz = injectionClazz;
         this.injectionPoint = injectionPoint;
-        this.parentCreationalContext = creationalContext;
+        parentCreationalContext = creationalContext;
 
         for (Annotation ann : annotations)
         {
@@ -154,15 +154,14 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
 
         InjectionResolver injectionResolver = webBeansContext.getBeanManagerImpl().getInjectionResolver();
 
-        InjectionResolver resolver = injectionResolver;
         Bean<?> injectionPointBean = injectionPoint.getBean();
         Class<?> injectionPointClass = null;
         if (injectionPointBean != null)
         {
             injectionPointClass = injectionPointBean.getBeanClass();
         }
-        Set<Bean<?>> beans = resolver.implResolveByType(false, injectionClazz, injectionPointClass, anns);
-        return resolver.resolveAll(beans);
+        Set<Bean<?>> beans = injectionResolver.implResolveByType(false, injectionClazz, injectionPointClass, anns);
+        return injectionResolver.resolveAll(beans);
     }
     
     /**
@@ -194,9 +193,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     public Instance<T> select(Annotation... qualifiers)
     {
         Annotation[] newQualifiersArray = getAdditionalQualifiers(qualifiers);
-        InstanceImpl<T> newInstance = new InstanceImpl<T>(injectionClazz, injectionPoint, webBeansContext, parentCreationalContext, newQualifiersArray);
-
-        return newInstance;
+        return new InstanceImpl<T>(injectionClazz, injectionPoint, webBeansContext, parentCreationalContext, newQualifiersArray);
     }
 
     /**
@@ -246,9 +243,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         
         Annotation[] newQualifiers = getAdditionalQualifiers(qualifiers);
         
-        InstanceImpl<U> newInstance = new InstanceImpl<U>(sub, injectionPoint, webBeansContext, parentCreationalContext, newQualifiers);
-                    
-        return newInstance;
+        return new InstanceImpl<U>(sub, injectionPoint, webBeansContext, parentCreationalContext, newQualifiers);
     }
 
     /**

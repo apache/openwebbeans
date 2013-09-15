@@ -48,7 +48,7 @@ public class ProducerFieldProducer<T, P> extends AbstractProducer<T>
         Asserts.assertNotNull(producerField, "field may not be null");
         Asserts.assertNotNull(context, "WebBeansContext may not be null");
         this.owner = owner;
-        this.webBeansContext = context;
+        webBeansContext = context;
         this.producerField = producerField;
     }
 

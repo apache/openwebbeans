@@ -53,9 +53,6 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     /**Deploy discovered beans*/
     private final BeansDeployer deployer;
 
-    /**XML discovery. */
-    private final WebBeansXMLConfigurator xmlDeployer;
-    
     /**Using for lookup operations*/
     private final JNDIService jndiService;
     
@@ -79,8 +76,10 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
 
         this.webBeansContext = webBeansContext;
         beanManager = this.webBeansContext.getBeanManagerImpl();
-        xmlDeployer = new WebBeansXMLConfigurator();
+
+        WebBeansXMLConfigurator xmlDeployer = new WebBeansXMLConfigurator();
         deployer = new BeansDeployer(xmlDeployer, this.webBeansContext);
+
         jndiService = this.webBeansContext.getService(JNDIService.class);
         beanManager.setXMLConfigurator(xmlDeployer);
         scannerService = this.webBeansContext.getScannerService();

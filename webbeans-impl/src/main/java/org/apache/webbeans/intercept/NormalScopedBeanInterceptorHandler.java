@@ -119,8 +119,8 @@ public class NormalScopedBeanInterceptorHandler implements Provider, Serializabl
     protected Object readResolve() throws ObjectStreamException
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        this.beanManager = webBeansContext.getBeanManagerImpl();
-        this.bean = beanManager.getPassivationCapableBean(beanPassivationId);
+        beanManager = webBeansContext.getBeanManagerImpl();
+        bean = beanManager.getPassivationCapableBean(beanPassivationId);
 
         return webBeansContext.getNormalScopeProxyFactory().createNormalScopeProxy(bean);
     }

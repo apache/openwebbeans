@@ -46,7 +46,7 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
     public OwbParametrizedTypeImpl(Type owner, Type raw, Type... types)
     {
         this.owner = owner;
-        this.rawType = raw;
+        rawType = raw;
         this.types = types;
     }
     

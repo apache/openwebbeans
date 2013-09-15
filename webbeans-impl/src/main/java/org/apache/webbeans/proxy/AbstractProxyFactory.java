@@ -603,7 +603,7 @@ public abstract class AbstractProxyFactory
 
         this.unsafe = unsafe;
 
-        this.unsafeAllocateInstance = AccessController.doPrivileged(new PrivilegedAction<Method>()
+        unsafeAllocateInstance = AccessController.doPrivileged(new PrivilegedAction<Method>()
         {
             @Override
             public Method run()

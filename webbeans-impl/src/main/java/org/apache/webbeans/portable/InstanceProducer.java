@@ -74,7 +74,7 @@ public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
             else
             {
                 qualifiers = this.qualifiers;
-                type = this.returnType;
+                type = returnType;
             }
 
             Instance<T> instance = new InstanceImpl<T>(type, injectionPoint, webBeansContext, creationalContextImpl, qualifiers.toArray(new Annotation[qualifiers.size()]));

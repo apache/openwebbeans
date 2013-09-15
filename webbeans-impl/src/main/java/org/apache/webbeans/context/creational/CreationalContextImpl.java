@@ -85,7 +85,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     {
         if (contextual instanceof Bean)
         {
-            this.bean = (Bean<T>)contextual;
+            bean = (Bean<T>)contextual;
         }
         this.contextual = contextual;
         this.webBeansContext = webBeansContext;
@@ -98,7 +98,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 
     public T getDelegate()
     {
-        return this.delegate;
+        return delegate;
     }
 
     /**

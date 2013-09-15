@@ -46,7 +46,7 @@ public class AbstractProducerBean<T> extends AbstractOwbBean<T> implements Passi
      * Create a new instance.
      * 
      * @param returnType bean type info
-     * @param ownerComponent owner bean
+     * @param ownerBeanClass class which contains this producer method or field
      */
     public AbstractProducerBean(Class<?> ownerBeanClass,
             WebBeansContext webBeansContext,
@@ -57,7 +57,7 @@ public class AbstractProducerBean<T> extends AbstractOwbBean<T> implements Passi
     {
         super(webBeansContext, webBeansType, beanAttributes, ownerBeanClass, !returnType.isPrimitive());
         this.returnType = returnType;
-        this.producer = producerFactory.createProducer(this);
+        producer = producerFactory.createProducer(this);
     }
 
     @Override

@@ -851,7 +851,7 @@ public final class ClassUtil
         Class<?> clazz = ClassUtil.getClass(type);
         Asserts.nullCheckForClass(clazz);
         
-        return (clazz.getTypeParameters().length > 0) ? true : false;
+        return clazz.getTypeParameters().length > 0;
     }
 
     /**

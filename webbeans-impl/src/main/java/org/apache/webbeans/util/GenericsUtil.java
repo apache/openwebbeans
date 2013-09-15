@@ -522,7 +522,7 @@ public final class GenericsUtil
 
         private TypeVariableResolver(List<TypeVariableDeclaration> implementation)
         {
-            this.declarations = implementation;
+            declarations = implementation;
         }
 
         public TypeVariableResolver(Class<?> subclass, Class<?> declaringClass)

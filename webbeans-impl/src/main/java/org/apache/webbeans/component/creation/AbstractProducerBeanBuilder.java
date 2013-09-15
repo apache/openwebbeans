@@ -39,7 +39,7 @@ public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?
         Asserts.assertNotNull(annotated, "annotated may not be null");
         Asserts.assertNotNull(beanAttributes, "beanAttributes may not be null");
         this.parent = parent;
-        this.annotatedMember = annotated;
+        annotatedMember = annotated;
         this.beanAttributes = beanAttributes;
     }
 

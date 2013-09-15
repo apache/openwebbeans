@@ -46,17 +46,17 @@ public final class BeanCacheKey
         final int length = qualifiers != null ? qualifiers.length : 0;
         if (length == 0)
         {
-            this.qualifier = null;
+            qualifier = null;
             this.qualifiers = null;
         }
         else if (length == 1)
         {
-            this.qualifier = qualifiers[0];
+            qualifier = qualifiers[0];
             this.qualifiers = null;
         }
         else
         {
-            this.qualifier = null;
+            qualifier = null;
             // to save array creations, we only create an array, if we have more than one annotation
             this.qualifiers = new Annotation[length];
             System.arraycopy(qualifiers, 0, this.qualifiers, 0, length);

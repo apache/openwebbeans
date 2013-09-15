@@ -269,6 +269,6 @@ public class ConversationManager
     
     public Map<Conversation, ConversationContext> getAllConversationContexts()
     {
-        return this.conversations;
+        return conversations;
     }
 }

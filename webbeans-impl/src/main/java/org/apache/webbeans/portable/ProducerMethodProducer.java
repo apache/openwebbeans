@@ -70,7 +70,7 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
             this.producerMethod = ejbPlugin.resolveViewMethod(owner, producerMethod.getJavaMember());
             if (disposerMethod != null)
             {
-                this.disposalMethod = ejbPlugin.resolveViewMethod(owner, disposerMethod.getJavaMember());
+                disposalMethod = ejbPlugin.resolveViewMethod(owner, disposerMethod.getJavaMember());
             }
         }
         else
@@ -78,7 +78,7 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
             this.producerMethod = producerMethod.getJavaMember();
             if (disposerMethod != null)
             {
-                this.disposalMethod = disposerMethod.getJavaMember();
+                disposalMethod = disposerMethod.getJavaMember();
             }
         }
     }

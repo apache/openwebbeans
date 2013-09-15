@@ -41,7 +41,7 @@ public class ProviderBasedProducerFactory<P> implements ProducerFactory<P>
         Asserts.assertNotNull(context);
         this.provider = provider;
         this.providerType = providerType;
-        this.webBeansContext = context;
+        webBeansContext = context;
         this.proxy = proxy;
     }
 

@@ -80,7 +80,7 @@ public class InjectionTargetBean<T> extends AbstractOwbBean<T>
         super(webBeansContext, webBeansType, beanAttributes, beanClass, false);
         Asserts.assertNotNull(annotatedType, "AnnotatedType may not be null");
         this.annotatedType = annotatedType;
-        this.injectionTarget = factory.createInjectionTarget(this);
+        injectionTarget = factory.createInjectionTarget(this);
         setEnabled(true);
     }
 

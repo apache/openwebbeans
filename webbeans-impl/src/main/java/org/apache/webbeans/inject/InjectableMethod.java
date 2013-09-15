@@ -75,8 +75,8 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
     {
         super(owner,creationalContext);
         method = m;
-        this.ownerInstance = instance;
-        this.injectionPoints = ips;
+        ownerInstance = instance;
+        injectionPoints = ips;
     }
 
     /*

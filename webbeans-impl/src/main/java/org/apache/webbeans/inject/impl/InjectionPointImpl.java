@@ -89,12 +89,12 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         Asserts.assertNotNull(annotated, "annotated may not be null");
         Asserts.assertNotNull(member, "member may not be null");
         this.ownerBean = ownerBean;
-        this.injectionType = type;
-        this.qualifierAnnotations = Collections.unmodifiableSet(new HashSet<Annotation>(qualifiers));
+        injectionType = type;
+        qualifierAnnotations = Collections.unmodifiableSet(new HashSet<Annotation>(qualifiers));
         this.annotated = annotated;
-        this.injectionMember = member;
+        injectionMember = member;
         this.delegate = delegate;
-        this.transientt = isTransient;
+        transientt = isTransient;
         if(!WebBeansUtil.checkObtainsInjectionPointConditions(this))
         {
             EventUtil.checkObservableInjectionPointConditions(this);

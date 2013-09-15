@@ -72,7 +72,7 @@ public class InjectableBeanManager extends AbstractBeanManager implements BeanMa
 
     public InjectableBeanManager(BeanManagerImpl beanManager)
     {
-        this.bm = beanManager;
+        bm = beanManager;
     }
 
     @Override
