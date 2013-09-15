@@ -35,7 +35,6 @@ import org.apache.webbeans.newtests.decorators.multiple.Decorator4;
 import org.apache.webbeans.newtests.decorators.multiple.IOutputProvider;
 import org.apache.webbeans.newtests.decorators.multiple.OutputProvider;
 import org.apache.webbeans.newtests.decorators.multiple.RequestStringBuilder;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class AbstractDecoratorTest extends AbstractUnitTest

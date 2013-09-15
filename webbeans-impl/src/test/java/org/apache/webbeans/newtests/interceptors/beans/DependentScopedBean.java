@@ -20,7 +20,6 @@ package org.apache.webbeans.newtests.interceptors.beans;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 
 import org.apache.webbeans.newtests.interceptors.annotation.DependentInterceptorBindingType;

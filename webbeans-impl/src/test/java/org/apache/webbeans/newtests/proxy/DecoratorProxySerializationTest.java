@@ -24,8 +24,6 @@ import org.junit.Test;
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 import javax.inject.Inject;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
 import java.io.Serializable;
 import java.util.ArrayList;
 

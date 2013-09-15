@@ -47,7 +47,6 @@ import org.apache.webbeans.util.ExtendedSpecificClass;
 import org.apache.webbeans.util.GenericInterface;
 import org.apache.webbeans.util.SpecificClass;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 

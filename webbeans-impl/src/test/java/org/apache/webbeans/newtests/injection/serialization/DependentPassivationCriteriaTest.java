@@ -29,8 +29,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.inject.spi.Bean;
-
 import junit.framework.Assert;
 
 /**
