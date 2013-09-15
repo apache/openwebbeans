@@ -83,12 +83,6 @@ public class DecoratorExceptionTest extends TestContext
     }
 
     @Test
-    public void testApplyToSimpleWebBeanFinal()
-    {
-        // TODO test is incomplete!
-    }
-
-    @Test
     public void testApplyToSimpleWebBeanFinalMethodsDecoratorImplements()
     {
         try
