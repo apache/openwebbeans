@@ -32,7 +32,6 @@ import org.junit.Test;
 public class NamedProducerTest extends AbstractUnitTest
 {
 
-    @Ignore
     @Test
     public void testNamedProducer()
     {

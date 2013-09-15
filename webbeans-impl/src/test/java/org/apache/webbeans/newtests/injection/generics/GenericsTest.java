@@ -39,12 +39,6 @@ public class GenericsTest extends AbstractUnitTest
 {
 
     @Test
-    public void testBaz()
-    {
-
-    }
-
-    @Test
     @Ignore("TODO not yet working!")
     public void injectionPoint() throws Exception
     {
