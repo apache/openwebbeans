@@ -53,7 +53,6 @@ public class TypeArgumentInterfaceObserver implements ObserverMethod<ITypeArgume
 
     @Override
     public Class<?> getBeanClass() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -64,19 +63,16 @@ public class TypeArgumentInterfaceObserver implements ObserverMethod<ITypeArgume
 
     @Override
     public Type getObservedType() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Reception getReception() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public TransactionPhase getTransactionPhase() {
-        // TODO Auto-generated method stub
         return null;
     }
 

@@ -54,7 +54,6 @@ public class TypeArgumentObserver implements ObserverMethod<TypeArgumentBaseEven
 
     @Override
     public Class<?> getBeanClass() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -65,19 +64,16 @@ public class TypeArgumentObserver implements ObserverMethod<TypeArgumentBaseEven
 
     @Override
     public Type getObservedType() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Reception getReception() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public TransactionPhase getTransactionPhase() {
-        // TODO Auto-generated method stub
         return null;
     }
 }

@@ -64,7 +64,6 @@ public class LargeTransactionDecorator implements Account
     @Override
     public BigDecimal getBalance()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 

@@ -63,21 +63,18 @@ public class AddBeanExtension implements Extension
             @Override
             public Set<InjectionPoint> getInjectionPoints()
             {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public String getName()
             {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public Set<Annotation> getQualifiers()
             {
-                // TODO Auto-generated method stub
                 return null;
             }
 
@@ -90,28 +87,24 @@ public class AddBeanExtension implements Extension
             @Override
             public Set<Class<? extends Annotation>> getStereotypes()
             {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public Set<Type> getTypes()
             {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public boolean isAlternative()
             {
-                // TODO Auto-generated method stub
                 return false;
             }
 
             @Override
             public boolean isNullable()
             {
-                // TODO Auto-generated method stub
                 return false;
             }
 
@@ -124,8 +117,6 @@ public class AddBeanExtension implements Extension
             @Override
             public void destroy(MyBean instance, CreationalContext<MyBean> context)
             {
-                // TODO Auto-generated method stub
-                
             }
             
         });

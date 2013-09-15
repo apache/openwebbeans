@@ -39,31 +39,26 @@ public class BrokenObserver implements ObserverMethod<BrokenEvent>
 
     @Override
     public Class<?> getBeanClass() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Set<Annotation> getObservedQualifiers() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Type getObservedType() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Reception getReception() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public TransactionPhase getTransactionPhase() {
-        // TODO Auto-generated method stub
         return null;
     }
 
