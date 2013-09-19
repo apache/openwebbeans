@@ -564,7 +564,15 @@ public final class GenericsUtil
             if (genericClass instanceof ParameterizedType)
             {
                 ParameterizedType classType = (ParameterizedType)genericClass;
-                return resolveType(classType.getActualTypeArguments()[typeIndex], remove());
+                final Type[] actualTypeArguments = classType.getActualTypeArguments();
+                if (actualTypeArguments.length > typeIndex)
+                {
+                    return resolveType(actualTypeArguments[typeIndex], remove());
+                }
+                else
+                {
+                    return Object.class;
+                }
             }
             else
             {
