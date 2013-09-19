@@ -79,7 +79,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public void fire(T event)
     {
-        webBeansContext.getBeanManagerImpl().fireEvent(event, new EventMetadataImpl(eventType, injectionPoint, injectedBindings));
+        webBeansContext.getBeanManagerImpl().fireEvent(event, new EventMetadataImpl(eventType, injectionPoint, injectedBindings), false);
     }
 
     /**

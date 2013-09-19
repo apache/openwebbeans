@@ -38,6 +38,7 @@ import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScopeExt
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScoped;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScopedBean;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalUnserializableTestScopedBean;
+import org.apache.webbeans.newtests.portable.scopeextension.broken.CdiBeanWithLifecycleObserver;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.junit.Test;
 
@@ -58,10 +59,8 @@ public class ExtensionTest extends AbstractUnitTest
     @Test
     public void testScopeExtension()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
-        classes.add(ExternalTestScopedBean.class);
         addExtension(new ExternalTestScopeExtension());
-        startContainer(classes);
+        startContainer(ExternalTestScopedBean.class);
 
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         webBeansContext.getContextFactory().initApplicationContext(null);
@@ -83,7 +82,21 @@ public class ExtensionTest extends AbstractUnitTest
         webBeansContext.getContextFactory().destroyApplicationContext(null);
 
         shutDownContainer();
-        
+    }
+
+    @Test
+    public void testLifecycleObservingInStandardCdiBeans() throws Exception
+    {
+        CdiBeanWithLifecycleObserver.beforeBeanDiscoveryCalled = false;
+        CdiBeanWithLifecycleObserver.afterBeanDiscoveryCalled = false;
+
+        startContainer(CdiBeanWithLifecycleObserver.class);
+
+        CdiBeanWithLifecycleObserver instance = getInstance(CdiBeanWithLifecycleObserver.class);
+        Assert.assertNotNull(instance);
+
+        Assert.assertFalse(CdiBeanWithLifecycleObserver.beforeBeanDiscoveryCalled);
+        Assert.assertFalse(CdiBeanWithLifecycleObserver.afterBeanDiscoveryCalled);
     }
     
     /**

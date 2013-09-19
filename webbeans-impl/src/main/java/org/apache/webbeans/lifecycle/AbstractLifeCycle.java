@@ -150,7 +150,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             contextsService.startContext(ApplicationScoped.class, endObject);
             
             //Fire shut down
-            beanManager.fireEvent(new BeforeShutdownImpl());
+            beanManager.fireLifecycleEvent(new BeforeShutdownImpl());
             
             //Destroys context
             contextsService.destroy(endObject);

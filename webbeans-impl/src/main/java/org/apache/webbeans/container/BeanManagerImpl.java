@@ -423,17 +423,27 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     @Override
     public void fireEvent(Object event, Annotation... bindings)
     {       
-        fireEvent(event, new EventMetadataImpl(event.getClass(), null, bindings));
+        fireEvent(event, new EventMetadataImpl(event.getClass(), null, bindings), false);
     }
 
-    public void fireEvent(Object event, EventMetadata metadata)
-    {                
+    /**
+     * Like {@link #fireEvent(Object, java.lang.annotation.Annotation...)} but intended for
+     * internal CDI Container lifecycle events. The difference is that those
+     * events must only be delivered to CDI Extensions and not to normal beans.
+     */
+    public void fireLifecycleEvent(Object event, Annotation... bindings)
+    {
+        fireEvent(event, new EventMetadataImpl(event.getClass(), null, bindings), true);
+    }
+
+    public void fireEvent(Object event, EventMetadata metadata, boolean isLifecycleEvent)
+    {
         if (ClassUtil.isDefinitionContainsTypeVariables(event.getClass()))
         {
             throw new IllegalArgumentException("Event class : " + event.getClass().getName() + " can not be defined as generic type");
         }
 
-        notificationManager.fireEvent(event, metadata);
+        notificationManager.fireEvent(event, metadata, isLifecycleEvent);
     }
 
     public Set<Bean<?>> getComponents()

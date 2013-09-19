@@ -80,7 +80,6 @@ import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
@@ -348,8 +347,8 @@ public class BeansDeployer
      */
     private void fireBeforeBeanDiscoveryEvent()
     {
-        BeanManager manager = webBeansContext.getBeanManagerImpl();
-        manager.fireEvent(new BeforeBeanDiscoveryImpl(webBeansContext));
+        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
+        manager.fireLifecycleEvent(new BeforeBeanDiscoveryImpl(webBeansContext));
     }
     
     /**
@@ -358,7 +357,7 @@ public class BeansDeployer
     private void fireAfterBeanDiscoveryEvent()
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        manager.fireEvent(new AfterBeanDiscoveryImpl(webBeansContext));
+        manager.fireLifecycleEvent(new AfterBeanDiscoveryImpl(webBeansContext));
 
         webBeansContext.getWebBeansUtil().inspectErrorStack(
             "There are errors that are added by AfterBeanDiscovery event observers. Look at logs for further details");
@@ -370,7 +369,7 @@ public class BeansDeployer
     private void fireAfterDeploymentValidationEvent()
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        manager.fireEvent(new AfterDeploymentValidationImpl(manager));
+        manager.fireLifecycleEvent(new AfterDeploymentValidationImpl(manager));
 
         webBeansContext.getWebBeansUtil().inspectErrorStack(
             "There are errors that are added by AfterDeploymentValidation event observers. Look at logs for further details");
