@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.arquillian.standalone;
+package org.apache.webbeans.util;
 
 import java.net.URL;
 import java.util.Collection;
@@ -28,9 +28,6 @@ import java.util.Set;
 /**
  * A {@link java.util.Set} which only takes the externalForm
  * as key instead the very expensive hashCode.
- * This is a copy of the impl from openwebbeans-impl since
- * this Arquillian adaptor also runs with older OWB versions
- * which do not yet have this class.
  */
 public class UrlSet implements Set<URL>
 {

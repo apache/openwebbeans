@@ -29,6 +29,7 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.UrlSet;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.xbean.finder.AnnotationFinder;
 
@@ -51,7 +52,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     public static final String META_INF_BEANS_XML = "META-INF/beans.xml";
 
     /** Location of the beans.xml files. */
-    private final Set<URL> webBeansXmlLocations = new HashSet<URL>();
+    private final UrlSet webBeansXmlLocations = new UrlSet();
 
     //private Map<String, InputStream> EJB_XML_LOCATIONS = new HashMap<String, InputStream>();
 

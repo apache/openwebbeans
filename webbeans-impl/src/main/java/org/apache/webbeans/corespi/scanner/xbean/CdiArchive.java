@@ -45,7 +45,12 @@ import java.util.Set;
  */
 public class CdiArchive implements Archive
 {
-    private final Map<URL, Collection<String>> map = new HashMap<URL, Collection<String>>();
+    /**
+     * key: URL#toExternalForm of the scanned classpath entry
+     * value: small data container with URL and class names
+     */
+    private final Map<String, FoundClasses> classesByUrl = new HashMap<String, FoundClasses>();
+
     private final Set<String> classes = new HashSet<String>();
     private final Archive delegate;
 
@@ -65,7 +70,7 @@ public class CdiArchive implements Archive
                     return true;
                 }
             });
-            map.put(url, classes);
+            classesByUrl.put(url.toExternalForm(), new FoundClasses(url, classes));
             archives.add(archive);
         }
 
@@ -90,9 +95,9 @@ public class CdiArchive implements Archive
         return classes;
     }
 
-    public Map<URL, Collection<String>> classesByUrl()
+    public Map<String, FoundClasses> classesByUrl()
     {
-        return map;
+        return classesByUrl;
     }
 
     @Override
@@ -111,5 +116,27 @@ public class CdiArchive implements Archive
     public Iterator<Entry> iterator()
     {
         return delegate.iterator();
+    }
+
+    public final class FoundClasses
+    {
+        private URL url;
+        private Collection<String> classNames;
+
+        public FoundClasses(URL url, Collection<String> classNames)
+        {
+            this.url = url;
+            this.classNames = classNames;
+        }
+
+        public URL getUrl()
+        {
+            return url;
+        }
+
+        public Collection<String> getClassNames()
+        {
+            return classNames;
+        }
     }
 }

@@ -23,6 +23,7 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 
+import org.apache.webbeans.util.UrlSet;
 import org.apache.xbean.finder.BundleAssignableClassFinder;
 import org.apache.xbean.osgi.bundle.util.BundleClassFinder;
 import org.apache.xbean.osgi.bundle.util.BundleResourceFinder;
@@ -66,7 +67,7 @@ public class OsgiMetaDataScannerService implements ScannerService
     private Set<Class<?>> beanClasses = new HashSet<Class<?>>();
 
     /** the paths of all META-INF/beans.xml files */
-    private Set<URL> beanXMLs = new HashSet<URL>();
+    private UrlSet beanXMLs = new UrlSet();
 
     /**contains all the JARs we found with valid beans.xml in it */
     private Set<String> beanArchiveJarNames = new HashSet<String>();
@@ -85,7 +86,7 @@ public class OsgiMetaDataScannerService implements ScannerService
     public void release()
     {
         beanClasses = new HashSet<Class<?>>();
-        beanXMLs = new HashSet<URL>();
+        beanXMLs = new UrlSet();
         beanArchiveJarNames = new HashSet<String>();
         classAnnotations.clear();
     }

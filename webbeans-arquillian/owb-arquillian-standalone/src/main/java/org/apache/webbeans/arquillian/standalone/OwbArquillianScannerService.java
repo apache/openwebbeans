@@ -51,7 +51,7 @@ public class OwbArquillianScannerService implements ScannerService
     private boolean beansXmlBdaScanningEnabled;
     private Archive archive;
 
-    private Set<URL> beansXmls = new UrlSet();
+    private UrlSet beansXmls = new UrlSet();
     private Set<Class<?>> beanClasses = new HashSet<Class<?>>();
 
 
@@ -285,7 +285,7 @@ public class OwbArquillianScannerService implements ScannerService
     {
         archive = null;
 
-        beansXmls = new HashSet<URL>();
+        beansXmls = new UrlSet();
         beanClasses = new HashSet<Class<?>>();
     }
 }
