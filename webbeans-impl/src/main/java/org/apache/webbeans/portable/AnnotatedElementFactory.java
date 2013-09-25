@@ -129,7 +129,7 @@ public final class AnnotatedElementFactory
     {
         Asserts.assertNotNull(annotatedClass, "annotatedClass is null");
         ConcurrentMap<String, AnnotatedType<X>> annotatedTypes = getAnnotatedTypeCache(annotatedClass);
-        AnnotatedType<X> annotatedType = (AnnotatedType<X>)annotatedTypes.get(OWB_DEFAULT_KEY);
+        AnnotatedType<X> annotatedType = annotatedTypes.get(OWB_DEFAULT_KEY);
         if(annotatedType == null)
         {
             try
@@ -141,7 +141,7 @@ public final class AnnotatedElementFactory
                 }
                 annotatedType = new AnnotatedTypeImpl<X>(webBeansContext, annotatedClass, supertype);
 
-                AnnotatedType<X> oldType = (AnnotatedType<X>)annotatedTypes.putIfAbsent(OWB_DEFAULT_KEY, annotatedType);
+                AnnotatedType<X> oldType = annotatedTypes.putIfAbsent(OWB_DEFAULT_KEY, annotatedType);
                 if(oldType != null)
                 {
                     annotatedType = oldType;
