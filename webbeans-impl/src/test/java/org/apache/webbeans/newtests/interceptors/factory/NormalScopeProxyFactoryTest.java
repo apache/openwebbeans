@@ -18,24 +18,152 @@
  */
 package org.apache.webbeans.newtests.interceptors.factory;
 
-import javax.inject.Provider;
-import java.net.URL;
-import java.net.URLClassLoader;
-
+import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
 import org.apache.webbeans.newtests.interceptors.factory.beans.SomeBaseClass;
-import org.apache.webbeans.newtests.interceptors.factory.SubPackageInterceptedClass;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
 import org.junit.Assert;
 import org.junit.Test;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Producer;
+import javax.inject.Provider;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Set;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Test for the {@link NormalScopeProxyFactory}
  */
 public class NormalScopeProxyFactoryTest extends AbstractUnitTest
 {
+    @Test
+    public void noBeanClassProxy()
+    {
+        final WebBeansContext webBeansContext = new WebBeansContext();
+        final NormalScopeProxyFactory pf = new NormalScopeProxyFactory(webBeansContext);
+        final Object proxy = pf.createNormalScopeProxy(new OwbBean<Provider>() {
+            @Override
+            public Set<Type> getTypes() {
+                return null;
+            }
+
+            @Override
+            public Set<Annotation> getQualifiers() {
+                return null;
+            }
+
+            @Override
+            public Class<? extends Annotation> getScope() {
+                return ApplicationScoped.class;
+            }
+
+            @Override
+            public String getName() {
+                return null;
+            }
+
+            @Override
+            public boolean isNullable() {
+                return false;
+            }
+
+            @Override
+            public Set<InjectionPoint> getInjectionPoints() {
+                return null;
+            }
+
+            @Override
+            public Class<?> getBeanClass() {
+                return null; // this is what we test
+            }
+
+            @Override
+            public Set<Class<? extends Annotation>> getStereotypes() {
+                return null;
+            }
+
+            @Override
+            public boolean isAlternative() {
+                return false;
+            }
+
+            @Override
+            public Provider create(final CreationalContext<Provider> context) {
+                return null;
+            }
+
+            @Override
+            public void destroy(final Provider instance, final CreationalContext<Provider> context) {
+
+            }
+
+            @Override
+            public Producer<Provider> getProducer() {
+                return null;
+            }
+
+            @Override
+            public WebBeansType getWebBeansType() {
+                return null;
+            }
+
+            @Override
+            public Class<Provider> getReturnType() {
+                return Provider.class;
+            }
+
+            @Override
+            public void setSpecializedBean(boolean specialized) {
+
+            }
+
+            @Override
+            public boolean isSpecializedBean() {
+                return false;
+            }
+
+            @Override
+            public void setEnabled(boolean enabled) {
+
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public boolean isPassivationCapable() {
+                return false;
+            }
+
+            @Override
+            public boolean isDependent() {
+                return false;
+            }
+
+            @Override
+            public WebBeansContext getWebBeansContext() {
+                return null;
+            }
+        });
+        assertNotNull(proxy);
+    }
 
     @Test
     public void textSimpleProxyCreation() throws Exception
