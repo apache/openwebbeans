@@ -38,6 +38,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.ExceptionUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.xbean.asm4.ClassWriter;
 import org.apache.xbean.asm4.MethodVisitor;
 import org.apache.xbean.asm4.Opcodes;
@@ -114,7 +115,19 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
 
     public <T> T createNormalScopeProxy(Bean<T> bean)
     {
-        ClassLoader classLoader = bean.getBeanClass().getClassLoader();
+        final ClassLoader classLoader;
+        if (bean.getBeanClass() != null)
+        {
+            classLoader = bean.getBeanClass().getClassLoader();
+        }
+        else if (OwbBean.class.isInstance(bean) && OwbBean.class.cast(bean).getReturnType() != null)
+        {
+            classLoader = OwbBean.class.cast(bean).getReturnType().getClassLoader();
+        }
+        else
+        {
+            classLoader = WebBeansUtil.getCurrentClassLoader();
+        }
 
         Class<T> classToProxy;
         if (bean instanceof OwbBean)
