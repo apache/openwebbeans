@@ -658,7 +658,7 @@ public class BeansDeployer
         }
         catch (final DefinitionException e)
         {
-            logger.info("skipped deployment of: " + beanClass.getName() + " reason: " + e.getMessage());
+            logger.log(Level.FINE, "skipped deployment of: " + beanClass.getName() + " reason: " + e.getMessage());
             logger.log(Level.FINER, "skipped deployment of: " + beanClass.getName() + " details: ", e);
             return false;
         }
