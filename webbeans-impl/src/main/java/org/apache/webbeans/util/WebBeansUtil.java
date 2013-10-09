@@ -277,27 +277,14 @@ public final class WebBeansUtil
 
         if (!Modifier.isStatic(modifier) && ClassUtil.isInnerClazz(clazz))
         {
-            throw new WebBeansConfigurationException("Bean implementation class : "
-                                                     + clazz.getName() + " can not be non-static inner class");
+            throw new WebBeansConfigurationException("Skipping CDI bean detection for non-static inner class: "
+                                                     + clazz.getName() );
         }
 
         if(Extension.class.isAssignableFrom(clazz))
         {
-            throw new WebBeansConfigurationException("Bean implementation class can not implement "
-                                                     + "javax.enterprise.inject.spi.Extension.!");
-        }
-
-        Class<?>[] interfaces = clazz.getInterfaces();
-        if(interfaces != null && interfaces.length > 0)
-        {
-            for(Class<?> intr : interfaces)
-            {
-                if(intr.getName().equals("javax.ejb.EnterpriseBean"))
-                {
-                    throw new WebBeansConfigurationException("Bean implementation class can not implement "
-                                                             + "javax.ejb.EnterpriseBean");
-                }
-            }
+            throw new WebBeansConfigurationException("Skipping CDI bean detection for CDI Extension class"
+                                                     + clazz.getName());
         }
 
         // and finally call all checks which are defined in plugins like JSF, JPA, etc

@@ -20,7 +20,7 @@ package org.apache.webbeans.spi.plugins;
 
 
 /**
- * Abstract imlpementation of the {@link OpenWebBeansPlugin} interface
+ * Abstract implementation of the {@link OpenWebBeansPlugin} interface
  * contract.
  * 
  *  <p>
