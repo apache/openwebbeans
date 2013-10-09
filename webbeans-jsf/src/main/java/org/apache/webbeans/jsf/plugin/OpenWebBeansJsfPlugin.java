@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.jsf.plugin;
 
-import javax.faces.component.UIComponent;
-
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
 
@@ -29,11 +27,6 @@ public class OpenWebBeansJsfPlugin extends AbstractOwbPlugin
     @Override
     public void isManagedBean( Class<?> clazz ) throws WebBeansConfigurationException
     {
-        if (UIComponent.class.isAssignableFrom(clazz))
-        {
-            throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() 
-                                                     + " can not implement JSF UIComponent");
-        }
     }
     
 }
