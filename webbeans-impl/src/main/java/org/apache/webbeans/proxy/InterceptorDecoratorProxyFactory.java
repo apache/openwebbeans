@@ -296,6 +296,14 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
                 continue;
             }
 
+            final int modifiers = delegatedMethod.getModifiers();
+            if (Modifier.isProtected(modifiers)
+                && !delegatedMethod.getDeclaringClass().getPackage().getName()
+                .equals(classToProxy.getPackage().getName()))
+            {
+                continue;
+            }
+
             String methodDescriptor = Type.getMethodDescriptor(delegatedMethod);
 
             //X TODO handle generic exception types?
@@ -306,7 +314,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
                 exceptionTypeNames[i] = Type.getType(exceptionTypes[i]).getInternalName();
             }
 
-            int targetModifiers = delegatedMethod.getModifiers() & (Modifier.PROTECTED | Modifier.PUBLIC);
+            int targetModifiers = modifiers & (Modifier.PROTECTED | Modifier.PUBLIC);
 
             MethodVisitor mv = cw.visitMethod(targetModifiers, delegatedMethod.getName(), methodDescriptor, null, exceptionTypeNames);
 
