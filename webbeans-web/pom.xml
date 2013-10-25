@@ -28,13 +28,6 @@
     <description>Apache OpenWebBeans Java EE Web and Serlvet plugin</description>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.apache.myfaces.core</groupId>
-            <artifactId>myfaces-api</artifactId>
-            <optional>true</optional>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-el_2.2_spec</artifactId>

@@ -21,10 +21,6 @@ package org.apache.webbeans.newtests.decorators.tests;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.util.AnnotationLiteral;
-
 import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
@@ -63,22 +59,31 @@ public class AbstractDecoratorTest extends AbstractUnitTest
 
         startContainer(classes, xmls);
 
-        Bean<?> bean = getBeanManager().getBeans(OutputProvider.class, new AnnotationLiteral<Default>()
-        {
-        }).iterator().next();
-        Object instance = getBeanManager().getReference(bean, OutputProvider.class, getBeanManager().createCreationalContext(bean));
-
-        OutputProvider outputProvider = (OutputProvider) instance;
-
+        OutputProvider outputProvider = getInstance(OutputProvider.class);
         Assert.assertTrue(outputProvider != null);
 
         String result = outputProvider.getOutput();
-        System.out.println(result);
         // Verify that the Decorators were called in order, and in a stack, including the Abstract Decorator 3
         Assert.assertTrue(result.equalsIgnoreCase("Decorator1\nDecorator2\nDecorator3\nOutputProvider\n"));
         
         String hijackedStack = outputProvider.trace();
         // Verify that the a method change in Decorator2 from trace->otherMethod results in the right stack
         Assert.assertEquals("Decorator1/trace,Decorator2/trace,delegate/otherMethod", hijackedStack);   
+    }
+
+    @Test
+    public void testPureAbstractDecorator() throws Exception
+    {
+        addDecorator(Decorator3.class);
+        startContainer(Decorator3.class, IOutputProvider.class, OutputProvider.class, RequestStringBuilder.class);
+
+        OutputProvider outputProvider = getInstance(OutputProvider.class);
+        Assert.assertTrue(outputProvider != null);
+
+        String result = outputProvider.getOutput();
+        Assert.assertEquals("Decorator3\nOutputProvider\n", result);
+
+        String trace = outputProvider.trace();
+        Assert.assertEquals("delegate/trace", trace);
     }
 }

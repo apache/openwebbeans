@@ -22,6 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
 
+import org.apache.webbeans.newtests.proxy.beans.DummyBean;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
 /**
@@ -101,6 +102,12 @@ public class ClassInterceptedClass extends SomeBaseClass
     int packagePrivateMethod()
     {
         return 84;
+    }
+
+
+    public DummyBean.SomeInnerClass getValueHolder() throws DummyBean.SomeInnerException
+    {
+        return new DummyBean.SomeInnerClass("hello");
     }
 
 }

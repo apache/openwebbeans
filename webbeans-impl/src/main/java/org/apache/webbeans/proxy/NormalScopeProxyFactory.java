@@ -503,7 +503,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
      * if targetMethod is protected. Please see Java LangSpec 6.6.2 about the complex
      * rules for calling 'protected' methods.
      *
-     * @see #generateDelegationMethod(org.apache.xbean.asm.ClassWriter, java.lang.reflect.Method, int, Class, String)
+     * @see #generateDelegationMethod(org.apache.xbean.asm4.ClassWriter, java.lang.reflect.Method, int, Class, String)
      */
     @SuppressWarnings("unused")
     public static Object delegateProtectedMethod(Method method, Object instance, Object[] params)

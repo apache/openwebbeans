@@ -519,7 +519,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
                 mv.visitVarInsn(Opcodes.ALOAD, length);
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/reflect/InvocationTargetException", "getCause",
                         "()Ljava/lang/Throwable;");
-                mv.visitTypeInsn(Opcodes.CHECKCAST, exceptionType.getCanonicalName().replace('.', '/'));
+                mv.visitTypeInsn(Opcodes.CHECKCAST, getCastType(exceptionType));
                 mv.visitInsn(Opcodes.ATHROW);
                 mv.visitLabel(l6);
 

@@ -18,17 +18,40 @@
  */
 package org.apache.webbeans.newtests.proxy.beans;
 
-
-import javax.enterprise.context.ApplicationScoped;
-
 /**
- * To test the proxy for application scoped beans.
+ * This class just exists as container for some inner classes.
  */
-@ApplicationScoped
-public class ApplicationBean
-{
-    public DummyBean.SomeInnerClass getValueHolder() throws DummyBean.SomeInnerException
+public class DummyBean {
+    public static class SomeInnerClass
     {
-        return new DummyBean.SomeInnerClass("hola");
+        private String val;
+
+        public SomeInnerClass(String val) {
+            this.val = val;
+        }
+
+        public String getVal()
+        {
+            return val;
+        }
+    }
+
+    public static class SomeInnerException extends Exception
+    {
+        public SomeInnerException() {
+            super();
+        }
+
+        public SomeInnerException(String message) {
+            super(message);
+        }
+
+        public SomeInnerException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public SomeInnerException(Throwable cause) {
+            super(cause);
+        }
     }
 }
