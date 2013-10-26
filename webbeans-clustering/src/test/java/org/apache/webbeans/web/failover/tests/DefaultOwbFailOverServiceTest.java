@@ -48,7 +48,6 @@ import org.apache.webbeans.web.failover.FailOverSessionActivationListener;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class DefaultOwbFailOverServiceTest extends AbstractUnitTest
@@ -234,7 +233,6 @@ public class DefaultOwbFailOverServiceTest extends AbstractUnitTest
      * 
      * @throws Exception When store/restore the session context fails.
      */
-    @Ignore // TODO fix serialization!!! XXX
     @Test
     public void restoreConversationContexts() throws Exception
     {
