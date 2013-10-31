@@ -18,13 +18,18 @@
  */
 package org.apache.webbeans.intercept;
 
+import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.SelfInterceptorBean;
+import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import java.io.Externalizable;
@@ -42,6 +47,8 @@ import java.util.Map;
 
 public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externalizable
 {
+    private static final String SELF_KEY = "SELF_INTERCEPTOR";
+
     /**
      * The native contextual instance target instance.
      * This is the unproxies and undecorated instance.
@@ -180,8 +187,10 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
         for (final Map.Entry<Interceptor<?>, ?> entry : instances.entrySet())
         {
             final Interceptor<?> key = entry.getKey();
-            serializeInterceptor(out, key);
-            out.writeObject(entry.getValue());
+            if (serializeInterceptor(out, key))
+            {
+                out.writeObject(entry.getValue());
+            }
         }
 
         out.writeInt(interceptors.size());
@@ -223,9 +232,16 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
         final Map<Interceptor<?>, Object> tmpInstances = new HashMap<Interceptor<?>, Object>();
         for (int i = 0; i < instancesSize; i++)
         {
-            final Interceptor<?> bean = (Interceptor<?>) beanManager.getPassivationCapableBean(in.readUTF());
-            final Object value = in.readObject();
-            tmpInstances.put(bean, value);
+            final Interceptor<?> interceptor = readInterceptor(in.readUTF(), beanManager);
+            if (!SelfInterceptorBean.class.isInstance(interceptor))
+            {
+                final Object value = in.readObject();
+                tmpInstances.put(interceptor, value);
+            }
+            else
+            {
+                tmpInstances.put(interceptor, target);
+            }
         }
         instances = tmpInstances;
 
@@ -250,7 +266,7 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
             final List<Interceptor<?>> interceptorList = new ArrayList<Interceptor<?>>(interceptorListSize);
             for (int j = 0; j < interceptorListSize; j++)
             {
-                interceptorList.add((Interceptor<?>) beanManager.getPassivationCapableBean(in.readUTF()));
+                interceptorList.add(readInterceptor(in.readUTF(), beanManager));
             }
             interceptors.put(method, interceptorList);
         }
@@ -258,13 +274,52 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
         beanPassivationId = in.readUTF();
     }
 
-    private static void serializeInterceptor(final ObjectOutput out, final Interceptor<?> key) throws IOException
+    /**
+     * @return false if the interceptor value can be ignored
+     */
+    private static boolean serializeInterceptor(final ObjectOutput out, final Interceptor<?> key) throws IOException
     {
+        if (SelfInterceptorBean.class.isInstance(key))
+        {
+            final String beanName = WebBeansUtil.getPassivationId(key)
+                .replace(WebBeansType.INTERCEPTOR.name(), WebBeansType.MANAGED.name());
+            out.writeUTF(SELF_KEY + beanName);
+            return false;
+        }
+
         final String id = WebBeansUtil.getPassivationId(key);
         if (id == null)
         {
             throw new NotSerializableException(key + " is not serializable");
         }
         out.writeUTF(id);
+        return true;
+    }
+
+    private static Interceptor<?> readInterceptor(final String id, final BeanManager beanManager) throws IOException
+    {
+        if (id.startsWith(SELF_KEY))
+        {
+            final Bean<?> bean = beanManager.getPassivationCapableBean(id.substring(SELF_KEY.length()));
+            if (InjectionTargetBean.class.isInstance(bean))
+            {
+                final InjectionTarget<?> it = InjectionTargetBean.class.cast(bean).getInjectionTarget();
+                if (InjectionTargetImpl.class.isInstance(it))
+                {
+                    final InterceptorResolutionService.BeanInterceptorInfo info = InjectionTargetImpl.class.cast(it)
+                                                                                                .getInterceptorInfo();
+                    return info.getSelfInterceptorBean();
+                }
+                else
+                {
+                    throw new NotSerializableException("Can't find self interceptor");
+                }
+            }
+            else
+            {
+                throw new NotSerializableException("Can't find self interceptor");
+            }
+        }
+        return (Interceptor<?>) beanManager.getPassivationCapableBean(id);
     }
 }

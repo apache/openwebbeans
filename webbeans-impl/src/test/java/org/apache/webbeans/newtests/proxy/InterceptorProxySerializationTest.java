@@ -21,6 +21,7 @@ package org.apache.webbeans.newtests.proxy;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Test;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
@@ -32,6 +33,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.apache.webbeans.newtests.util.Serializations.deserialize;
 import static org.apache.webbeans.newtests.util.Serializations.serialize;
@@ -43,11 +45,14 @@ public class InterceptorProxySerializationTest extends AbstractUnitTest
     @Inject
     private Intercepted client;
 
+    @Inject
+    private AutoIntercepted auto;
+
     @Test
     public void testProxyMappingConfig() throws Exception
     {
         addInterceptor(IBInterceptor.class);
-        startContainer(new ArrayList<Class<?>>() {{ add(Intercepted.class); }}, null, true);
+        startContainer(Arrays.<Class<?>>asList(Intercepted.class, AutoIntercepted.class), null, true);
 
         try
         {
@@ -60,6 +65,35 @@ public class InterceptorProxySerializationTest extends AbstractUnitTest
             final Intercepted deserializeState = Intercepted.class.cast(deserialize(serialize(client)));
             assertTrue(deserializeState.isCalled());
             assertTrue(deserializeState.isInterceptorCalled());
+        }
+        finally
+        {
+            shutDownContainer();
+        }
+    }
+
+    @Test
+    public void testSerializableEvenIfAutoIntercepted() throws Exception
+    {
+        addInterceptor(IBInterceptor.class);
+        startContainer(Arrays.<Class<?>>asList(Intercepted.class, AutoIntercepted.class), null, true);
+
+        try
+        {
+            AutoIntercepted.called = false;
+            auto.touch();
+            assertTrue(AutoIntercepted.called);
+
+            final AutoIntercepted deserializeInit = AutoIntercepted.class.cast(deserialize(serialize(auto)));
+
+            AutoIntercepted.called = false;
+            auto.touch();
+            assertTrue(AutoIntercepted.called);
+
+            final AutoIntercepted deserializeState = AutoIntercepted.class.cast(deserialize(serialize(deserializeInit)));
+            AutoIntercepted.called = false;
+            auto.touch();
+            assertTrue(AutoIntercepted.called);
         }
         finally
         {
@@ -116,5 +150,19 @@ public class InterceptorProxySerializationTest extends AbstractUnitTest
         {
             return false;
         }
+    }
+
+    @IB
+    public static class AutoIntercepted implements Serializable
+    {
+        public static boolean called = false;
+
+        @AroundInvoke
+        public Object auto(final InvocationContext ic)  throws Exception {
+            called = true;
+            return ic.proceed();
+        }
+
+        public void touch() {}
     }
 }
