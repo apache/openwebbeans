@@ -358,7 +358,7 @@ public class WebContextsService extends AbstractContextsService
                 //Init thread local application context
                 initApplicationContext(event.getServletContext());
                 
-                //Init thread local sigleton context
+                //Init thread local singleton context
                 initSingletonContext(event.getServletContext());
             }            
         }
@@ -367,7 +367,7 @@ public class WebContextsService extends AbstractContextsService
                 //Init thread local application context
                 initApplicationContext(null);
 
-                //Init thread local sigleton context
+                //Init thread local singleton context
                 initSingletonContext(null);
         }
     }
