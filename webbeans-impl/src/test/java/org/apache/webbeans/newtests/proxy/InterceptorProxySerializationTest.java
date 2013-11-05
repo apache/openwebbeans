@@ -22,6 +22,7 @@ import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Test;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
@@ -52,7 +53,7 @@ public class InterceptorProxySerializationTest extends AbstractUnitTest
     public void testProxyMappingConfig() throws Exception
     {
         addInterceptor(IBInterceptor.class);
-        startContainer(Arrays.<Class<?>>asList(Intercepted.class, AutoIntercepted.class), null, true);
+        startContainer(Arrays.<Class<?>>asList(Intercepted.class, AutoIntercepted.class, InjectMeInInterceptor.class), null, true);
 
         try
         {
@@ -76,7 +77,7 @@ public class InterceptorProxySerializationTest extends AbstractUnitTest
     public void testSerializableEvenIfAutoIntercepted() throws Exception
     {
         addInterceptor(IBInterceptor.class);
-        startContainer(Arrays.<Class<?>>asList(Intercepted.class, AutoIntercepted.class), null, true);
+        startContainer(Arrays.<Class<?>>asList(Intercepted.class, AutoIntercepted.class, InjectMeInInterceptor.class), null, true);
 
         try
         {
@@ -85,14 +86,13 @@ public class InterceptorProxySerializationTest extends AbstractUnitTest
             assertTrue(AutoIntercepted.called);
 
             final AutoIntercepted deserializeInit = AutoIntercepted.class.cast(deserialize(serialize(auto)));
-
             AutoIntercepted.called = false;
-            auto.touch();
+            deserializeInit.touch();
             assertTrue(AutoIntercepted.called);
 
             final AutoIntercepted deserializeState = AutoIntercepted.class.cast(deserialize(serialize(deserializeInit)));
             AutoIntercepted.called = false;
-            auto.touch();
+            deserializeState.touch();
             assertTrue(AutoIntercepted.called);
         }
         finally
@@ -108,14 +108,23 @@ public class InterceptorProxySerializationTest extends AbstractUnitTest
     {
     }
 
+    public static class InjectMeInInterceptor implements Serializable {
+        public void touch() {}
+    }
+
     @Interceptor @IB
     public static class IBInterceptor implements Serializable
     {
         private boolean called = false; // just here to represent a state in the serialization
 
+        @Inject
+        private InjectMeInInterceptor injected;
+
         @AroundInvoke
         public Object intercept(final InvocationContext ctx) throws Exception
         {
+            injected.touch(); // will throw NPE if wrongly serialized
+
             final String name = ctx.getMethod().getName();
 
             if (name.equals("isInterceptorCalled"))
