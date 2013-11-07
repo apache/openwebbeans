@@ -530,11 +530,14 @@ public class InjectionResolver
         resolvedComponents = findByQualifier(resolvedComponents, injectionPointType, qualifiers);
 
         // Ambigious resolution, check for specialization
+        /*
+        // super beans are deactivated so it is useless
         if (resolvedComponents.size() > 1)
         {
             //Look for specialization
             resolvedComponents = findBySpecialization(resolvedComponents);
         }
+        */
 
         resolvedBeansByType.put(cacheKey, resolvedComponents);
         if (logger.isLoggable(Level.FINE))
@@ -690,7 +693,11 @@ public class InjectionResolver
 
         if(set.size() > 1)
         {
-            throwAmbiguousResolutionException(set);
+            set = findBySpecialization(set);
+            if(set.size() > 1)
+            {
+                throwAmbiguousResolutionException(set);
+            }
         }
 
         return (Bean<? extends X>)set.iterator().next();
@@ -716,10 +723,13 @@ public class InjectionResolver
             return Collections.emptySet();
         }
 
+        /*
+        // specialized bean are disabled so no need to refilter
         if(set.size() > 1)
         {
             set = findBySpecialization(set);
         }
+        */
 
         return set;
     }
