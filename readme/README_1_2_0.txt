@@ -1,12 +1,12 @@
 -------------------------------
-Apache OpenWebBeans 1.2.1
+Apache OpenWebBeans 1.2.0
 -------------------------------
 Welcome!
 
 Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.2.1 release of Apache OpenWebBeans.
+This document is based on the 1.2.0 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -28,10 +28,10 @@ https://cwiki.apache.org/confluence/display/OWB/Index
 
 
 --------------------------------
-OpenWebBeans 1.2.1 Release Features
+OpenWebBeans 1.2.0 Release Features
 --------------------------------
 
-- The 1.2.1 release supports the following features
+- The 1.2.0 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Session Beans Support (via Embeddable OpenEJB container in Tomcat)
@@ -76,25 +76,6 @@ of the Application. This is especially the case for <alternatives> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application. This behaviour will most likely also be the default behaviour
 in the CDI-1.1 JSR-346 specification.
-
-
--------------------------------------------
-Release Notes - OpenWebBeans - Version 1.2.1
--------------------------------------------
-
-Bug
-
-
-Improvement
-
-
-New Feature
-
-
-Task
-
-
-Wish
 
 
 -------------------------------------------
