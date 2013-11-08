@@ -84,18 +84,69 @@ Release Notes - OpenWebBeans - Version 1.2.1
 
 Bug
 
+    [OWB-626] - Conversation Scope isn't accessible after RENDER_RESPONSE phase
+    [OWB-642] - Method WebBeansUtil.configureProducerMethodSpecializations is unreliable
+    [OWB-654] - manual lookups of beans with generics fail
+    [OWB-675] - Alternative resolving does not take Qualifiers into consideration
+    [OWB-679] - StereoTypeManager is completely unused -> remove or fix.
+    [OWB-745] - Fixes usage of java.lang.Class and java.lang.reflect.Method
+    [OWB-774] - missing deployment hints
+    [OWB-812] - study how to resolve the classloader to create a proxy
+    [OWB-870] - @Observer event is being received twice
+    [OWB-872] - Listening to AfterBeanDiscovery suppresses @Decorator registration as a side effect
+    [OWB-874] - AfterBeanDiscovery event should not be fired if there is no extension module registered
+    [OWB-876] - basic handling of virtual resources in arquillian adapter
+    [OWB-877] - no need to cast parent type in AnnotatedTypeImpl
+    [OWB-878] - OpenWebBeans does not correctly handle generics
+    [OWB-881] - interception of bean using constructor injection is not supported
+    [OWB-885] - ProducerMethodBeansBuilder ejb handling is too linked to openejb
+    [OWB-886] - @Specializes appears to be broken
+    [OWB-887] - Ambigious resolution with this two producers: Map<X,Y> and Map<X,Z>
+    [OWB-888] - Provider to an EJB does not work
+    [OWB-889] - intercepted/decorated beans are not serializable even if the whole stack is
+    [OWB-890] - InjectionResolver#checkInjectionPoints throw NPE for some 3rd party beans
+    [OWB-891] - dynamically removing @Alternative does not work
+    [OWB-893] - OpenWebBeans 1.2.1 fails when injecting generic value holder
+    [OWB-895] - BeforeBeanDiscovery.addAnnotatedType() calls does not work as expected when owb jars are deployed outside WEB-INF/lib folder
+    [OWB-896] - Delegate InjectionPoints need different bean resolving rules
+    [OWB-897] - Interceptors do not work on processed injection targets
+    [OWB-898] - ClassFormatError in ASM engine
+    [OWB-901] - missing type erasure handling for ParameterizedType
+    [OWB-902] - NPE when Bean#getBeanClass is null
+    [OWB-904] - VerifyError on Interceptor usage
+    [OWB-905] - Remove @Ingored from DefaultOwbFailOverTest#restoreConversationContexts
+    [OWB-908] - Proxy creation fails if a method throws an Exception which is an inner class
+    [OWB-909] - ConversationBean needs to implement PassivationCapable
+    [OWB-911] - SelfInterceptorBean not serialized correctly in DefaultInterceptorHandler
 
+Documentation
+    
+	[OWB-783] - No documentation available in the project webpage
+	
 Improvement
 
+    [OWB-652] - Introduce HierarchicBeanManager
+    [OWB-762] - improve error message for "duplicated" configs
+    [OWB-763] - move our remaining tests from TestContext to AbstractUnitTest
+    [OWB-786] - available implementations of SecurityService need an improved error-handling
+    [OWB-820] - cleanup of el resolvers
+    [OWB-821] - reduce the number of string creations
+    [OWB-880] - OpenWebBeans Arquillian Container rely on bad Archive instance assumptions
 
 New Feature
 
+    [OWB-814] - Implement CDI-268
+    [OWB-879] - allow to configure owb properties in owb arquillian adapter
+    [OWB-882] - AbstractUnitTest should support to inject bean instances in test class
+    [OWB-883] - basic @AroundConstruct implementation
+    [OWB-884] - basic @Priority support
 
 Task
 
-
-Wish
-
+    [OWB-782] - Create AnnotatedTypeService SPI interface
+    [OWB-854] - cleanup of jdk 1.5 specific parts
+    [OWB-866] - use xbean asm4 shade
+    [OWB-867] - a class without a "CDI" constructor is not always an issue so log it with info level only when mandatory to not pollute logs
 
 -------------------------------------------
 Release Notes - OpenWebBeans - Version 1.2.0
