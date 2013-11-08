@@ -26,10 +26,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>openwebbeans-cdi11</artifactId>
-    <name>OpenWebBeans Core for CDI 1.1</name>
+    <artifactId>openwebbeans-cdi11-preview</artifactId>
+    <name>OpenWebBeans Core for CDI 1.1 (preview)</name>
     <description>
-        Apache OpenWebBeans Implementation core module implementing cdi 1.1
+        Apache OpenWebBeans Implementation core module implementing cdi 1.1 (preview)
     </description>
 
 

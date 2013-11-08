@@ -493,6 +493,7 @@
         <module>webbeans-porting</module>
         <module>webbeans-test</module>
         <module>webbeans-arquillian</module>
+        <module>webbeans-cdi11</module>
         <module>samples</module>
         <module>webbeans-tck</module>
         <module>distribution</module>
