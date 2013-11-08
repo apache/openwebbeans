@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.openwebbeans.arquillian</groupId>
         <artifactId>owb-arquillian-parent</artifactId>
-        <version>1.2.1-SNAPSHOT</version>
+        <version>1.2.1</version>
     </parent>
     <artifactId>owb-arquillian-standalone</artifactId>
     <packaging>jar</packaging>
