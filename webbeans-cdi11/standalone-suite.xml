@@ -79,12 +79,12 @@
                 <exclude name="org.jboss.cdi.tck.tests.lookup.byname.ambiguous.broken" />
                 <exclude name="org.jboss.cdi.tck.tests.lookup.dynamic.broken.raw" />
                 <exclude name="org.jboss.cdi.tck.tests.deployment.exclude" />
-                <exclude name="org.jboss.cdi.tck.tests.inheritance.generics" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.simple.lifecycle.unproxyable" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.definition" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.lifecycle" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.disposal.method.definition.inheritance" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.disposal.method.definition" />
+                <exclude name="org.jboss.cdi.tck.tests.inheritance.generics" />
                 <exclude name="org.jboss.cdi.tck.tests.interceptors.definition.custom" />
                 <exclude name="org.jboss.cdi.tck.tests.interceptors.definition.interceptorNotListedInBeansXml" />
                 <exclude name="org.jboss.cdi.tck.tests.definition.stereotype.interceptor" />
@@ -95,7 +95,9 @@
                 <exclude name="org.jboss.cdi.tck.tests.extensions.registration" />
                 <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.builtin" />
                 <exclude name="org.jboss.cdi.tck.tests.extensions.beanManager.bean" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.beanManager.injectionPoint" />
                 <exclude name="org.jboss.cdi.tck.tests.extensions.beanManager.producer" />
+                <exclude name="org.jboss.cdi.tck.tests.extensions.beanManager.bootstrap.unavailable.methods" />
                 <exclude name="org.jboss.cdi.tck.tests.extensions.alternative.metadata.annotated" />
                 <exclude name="org.jboss.cdi.tck.tests.extensions.alternative.metadata" />
                 <exclude name="org.jboss.cdi.tck.tests.lookup.typesafe.resolution.interceptor" />
@@ -114,6 +116,8 @@
                 <exclude name="org.jboss.cdi.tck.tests.context.passivating.transientreference" />
                 <exclude name="org.jboss.cdi.tck.tests.decorators.builtin.event.complex" />
                 <exclude name="org.jboss.cdi.tck.tests.decorators.custom" />
+                <exclude name="org.jboss.cdi.tck.tests.decorators.custom.broken.nodelegateinjectionpoint" />
+                <exclude name="org.jboss.cdi.tck.tests.decorators.custom.broken.toomanydelegateinjectionpoints" />
                 <exclude name="org.jboss.cdi.tck.tests.alternative.selection.stereotype" />
                 <exclude name="org.jboss.cdi.tck.tests.vetoed" />
                 <exclude name="org.jboss.cdi.tck.tests.vetoed.enterprise" />

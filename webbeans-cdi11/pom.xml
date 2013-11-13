@@ -115,6 +115,36 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jboss.cdi.tck</groupId>
+            <artifactId>cdi-tck-impl</artifactId>
+            <version>${cdi11-tck.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.enterprise</groupId>
+                    <artifactId>cdi-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.faces</groupId>
+                    <artifactId>jsf-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet.jsp</groupId>
+                    <artifactId>jsp-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.transaction</groupId>
+                    <artifactId>jta</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -311,34 +341,6 @@
                         <exclusion>
                             <groupId>javax.el</groupId>
                             <artifactId>el-api</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>org.jboss.cdi.tck</groupId>
-                    <artifactId>cdi-tck-impl</artifactId>
-                    <version>${cdi11-tck.version}</version>
-                    <scope>test</scope>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>javax.enterprise</groupId>
-                            <artifactId>cdi-api</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>javax.faces</groupId>
-                            <artifactId>jsf-api</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>javax.servlet</groupId>
-                            <artifactId>javax.servlet-api</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>javax.servlet.jsp</groupId>
-                            <artifactId>jsp-api</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>javax.transaction</groupId>
-                            <artifactId>jta</artifactId>
                         </exclusion>
                     </exclusions>
                 </dependency>
