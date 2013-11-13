@@ -44,6 +44,7 @@ public class NewManagedBean<T> extends ManagedBean<T> implements NewBean<T>
                           Set<InjectionPoint> injectionPoints)
     {
         super(webBeansContext, webBeansType, annotatedType, beanAttributes, beanClass);
+        defineBeanInterceptorStack();
     }
 
     /**
