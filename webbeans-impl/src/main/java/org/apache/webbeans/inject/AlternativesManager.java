@@ -56,8 +56,7 @@ public class AlternativesManager
                 if(AnnotationUtil.hasClassAnnotation(stereo, Alternative.class))
                 {
                     boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());
-                    if(isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addStereoType(stereo, fileName) ||
-                            (!isBDAScanningEnabled && stereoAlternatives.contains(stereo)) )
+                    if(isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addStereoType(stereo, fileName))
                     {
                         throw new WebBeansConfigurationException("Given alternative class : " + alternative.getName() + " is already added as @Alternative" );
                     }
@@ -84,8 +83,7 @@ public class AlternativesManager
         if(AnnotationUtil.hasClassAnnotation(alternative, Alternative.class))
         {
             boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());
-            if((isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addAlternative(alternative, fileName)) ||
-                    (!isBDAScanningEnabled && alternatives.contains(alternative)))
+            if((isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addAlternative(alternative, fileName)))
             {
                 throw new WebBeansConfigurationException("Given class : " + alternative.getName() + " is already added as @Alternative" );
             }

@@ -24,7 +24,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeBean;
 import org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeOnClassAndProducerMethodBean;
 import org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeOnClassOnlyBean;
 import org.apache.webbeans.newtests.concepts.alternatives.common.DefaultBeanProducerWithoutDisposes;
@@ -68,6 +70,47 @@ public class AlternativeBeanResolvingTest extends AbstractUnitTest
         Set<Bean<?>> beans = getBeanManager().getBeans(Object.class, new AnnotationLiteral<Pen>(){});
         Assert.assertNotNull(beans);
         Assert.assertEquals(2, beans.size());
+    }
+
+
+    /**
+     * Having the same alternative enabled multiple times in the same beans.xml
+     * This must abort with a deployment error.
+     */
+    @Test(expected = WebBeansConfigurationException.class)
+    public void testMultipleAlternativeInSameFile()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "MultipleAlternativesInSameFile_broken"));
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Pen.class);
+        beanClasses.add(Pencil.class);
+        beanClasses.add(PencilProducerBean.class);
+        beanClasses.add(DefaultBeanProducerWithoutDisposes.class);
+        beanClasses.add(AlternativeOnClassAndProducerMethodBean.class);
+        beanClasses.add(YetAnotherPencil.class);
+
+        startContainer(beanClasses, beanXmls, true);
+    }
+
+
+    @Test
+    public void testMultipleAlternativeInDifferentFiles()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "simpleAlternative"));
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "simpleAlternative_2"));
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(AlternativeBean.class);
+
+        startContainer(beanClasses, beanXmls, true);
+
+        AlternativeBean alternativeBean = getInstance(AlternativeBean.class);
+        Assert.assertNotNull(alternativeBean);
+        Assert.assertEquals(AlternativeBean.class, alternativeBean.getImplementationType());
+
     }
 
 }

@@ -374,12 +374,18 @@ public final class WebBeansXMLConfigurator
     /**
      * Configures enablements of the decorators.
      *
-     * @param alternativesElement decorators element
+     * @param alternativesElement alternatives element
      */
     private void configureAlternativesElement(Element alternativesElement,String fileName,ScannerService scanner)
     {
         Node node;
         Element child;
+
+        // the alternatives in this beans.xml
+        // this gets used to detect multiple definitions of the
+        // same alternative in one beans.xml file.
+        Set<String> alternativesInFile = new HashSet<String>();
+
         NodeList ns = alternativesElement.getChildNodes();
         for (int i = 0; i < ns.getLength(); i++)
         {
@@ -389,6 +395,14 @@ public final class WebBeansXMLConfigurator
                 continue;
             }
             child = (Element) node;
+            String alternativeName = child.getTextContent().trim();
+
+            if (alternativesInFile.contains(alternativeName))
+            {
+                throw new WebBeansConfigurationException("Given alternative : " + alternativeName
+                                                         + " is already added as @Alternative" );
+            }
+            alternativesInFile.add(alternativeName);
 
             if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_STEREOTYPE) ||
                 getName(child).equals(WebBeansConstants.WEB_BEANS_XML_OWB_SPECIFIC_STEREOTYPE))
