@@ -337,6 +337,9 @@ public final class WebBeansXMLConfigurator
         Node node;
         Element child;
         NodeList ns = decoratorsElement.getChildNodes();
+
+        Set<Class> decoratorsInFile = new HashSet<Class>();
+
         for (int i = 0; i < ns.getLength(); i++)
         {
             node = ns.item(i);
@@ -357,14 +360,15 @@ public final class WebBeansXMLConfigurator
             else
             {
                 boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());
-                if ((isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addDecorator(clazz, fileName))||
-                        (!isBDAScanningEnabled && manager.isDecoratorEnabled(clazz)))
+                if ((isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addDecorator(clazz, fileName)) ||
+                    decoratorsInFile.contains(clazz))
                 {
                     throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Decorator class : " +
                                                              child.getTextContent().trim() + " is already defined");
                 }
 
                 manager.addEnabledDecorator(clazz);
+                decoratorsInFile.add(clazz);
             }
 
         }

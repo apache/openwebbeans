@@ -18,11 +18,9 @@ specific language governing permissions and limitations
 under the License.
 -->
 <beans>
-    <interceptors>
-        <class>org.apache.webbeans.newtests.decorators.multiple.OutputInterceptor</class>
-    </interceptors>
     <decorators>
+        <!-- the same decorator defined twice in the same file must lead to a deployment exception -->
         <class>org.apache.webbeans.newtests.decorators.multiple.Decorator1</class>
-        <class>org.apache.webbeans.newtests.decorators.multiple.Decorator2</class>
+        <class>org.apache.webbeans.newtests.decorators.multiple.Decorator1</class>
     </decorators>
 </beans>
