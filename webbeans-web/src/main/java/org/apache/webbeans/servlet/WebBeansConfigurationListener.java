@@ -31,6 +31,7 @@ import org.apache.webbeans.web.util.ServletCompatibilityUtil;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.spi.Context;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestEvent;
@@ -211,7 +212,9 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
 
     private boolean ensureRequestScope()
     {
-        if (!this.lifeCycle.getContextService().getCurrentContext(RequestScoped.class).isActive())
+        Context context = this.lifeCycle.getContextService().getCurrentContext(RequestScoped.class);
+        
+        if (context == null || !context.isActive())
         {
             requestInitialized(null);
             return true;
