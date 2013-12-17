@@ -206,6 +206,7 @@ under the License.
                 <include>org.apache.openwebbeans:openwebbeans-ee</include>
                 <include>org.apache.openwebbeans:openwebbeans-ee-common</include>
                 <include>org.apache.openwebbeans:openwebbeans-el10</include>
+		<include>org.apache.openwebbeans:openwebbeans-el22</include>
                 <include>org.apache.openwebbeans:openwebbeans-resource</include>
                 <include>org.apache.openwebbeans:openwebbeans-osgi</include>
                 <include>org.apache.openwebbeans:openwebbeans-web</include>
