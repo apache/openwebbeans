@@ -72,5 +72,7 @@ public class InterceptBridgeMethodTest extends AbstractUnitTest
         // value was set
         Assert.assertEquals(TestInterceptor1.invocationCount, 2);
         Assert.assertEquals(instance.getValue(), "test2");
+        
+        shutDownContainer();
     }
 }
