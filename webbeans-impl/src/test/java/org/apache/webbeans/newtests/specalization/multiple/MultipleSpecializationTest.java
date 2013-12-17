@@ -21,11 +21,16 @@ package org.apache.webbeans.newtests.specalization.multiple;
 import java.util.ArrayList;
 import java.util.Collection;
 import junit.framework.Assert;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Test;
 
 public class MultipleSpecializationTest extends AbstractUnitTest
 {
+    /**
+     * Tests that multiple specialization must be possible
+     */
     //@Test
     public void testMultipleSpecialization()
     {
@@ -36,9 +41,36 @@ public class MultipleSpecializationTest extends AbstractUnitTest
 
         startContainer(beanClasses, null);
 
-        BeanA bean = getInstance(BeanA.class);
+        BeanA beanA = getInstance(BeanA.class);
+        Assert.assertEquals(BeanC.class, beanA.getBeanClass());
 
-        Assert.assertEquals(BeanC.class, bean.getBeanClass());
+        beanA = getInstance("beanA");
+        Assert.assertEquals(BeanC.class, beanA.getBeanClass());
+
+        shutDownContainer();
+    }
+    
+    /**
+     * Tests that a specialization must not have a @Named annotation
+     */
+    //@Test
+    public void testFailMultipleSpecializationWithNamed()
+    {
+        try
+        {
+            Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+            beanClasses.add(BeanA.class);
+            beanClasses.add(BeanB.class);
+            beanClasses.add(BeanC.class);
+            beanClasses.add(BeanD.class);
+
+            startContainer(beanClasses, null);
+        }
+        catch (Exception e)
+        {
+            Assert.assertEquals(WebBeansConfigurationException.class.getName(), e.getClass().getName());
+            Assert.assertEquals(InconsistentSpecializationException.class.getName(), e.getCause().getClass().getName());
+        }
 
         shutDownContainer();
     }
