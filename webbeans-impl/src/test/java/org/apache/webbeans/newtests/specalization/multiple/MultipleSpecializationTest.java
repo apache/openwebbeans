@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import junit.framework.Assert;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Test;
@@ -31,7 +32,7 @@ public class MultipleSpecializationTest extends AbstractUnitTest
     /**
      * Tests that multiple specialization must be possible
      */
-    //@Test
+    @Test
     public void testMultipleSpecialization()
     {
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
@@ -53,9 +54,11 @@ public class MultipleSpecializationTest extends AbstractUnitTest
     /**
      * Tests that a specialization must not have a @Named annotation
      */
-    //@Test
+    @Test
     public void testFailMultipleSpecializationWithNamed()
     {
+        Exception occuredException = null;
+        
         try
         {
             Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
@@ -68,10 +71,13 @@ public class MultipleSpecializationTest extends AbstractUnitTest
         }
         catch (Exception e)
         {
-            Assert.assertEquals(WebBeansConfigurationException.class.getName(), e.getClass().getName());
-            Assert.assertEquals(InconsistentSpecializationException.class.getName(), e.getCause().getClass().getName());
+            occuredException = e;
         }
 
+        Assert.assertNotNull(occuredException);
+        Assert.assertEquals(WebBeansConfigurationException.class.getName(), occuredException.getClass().getName());
+        Assert.assertEquals(DefinitionException.class.getName(), occuredException.getCause().getClass().getName());
+        
         shutDownContainer();
     }
 }

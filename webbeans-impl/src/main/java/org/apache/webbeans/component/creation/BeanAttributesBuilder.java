@@ -511,8 +511,15 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         {
             if (getAnnotated().isAnnotationPresent(Specializes.class))
             {
-                AnnotatedType<? super C> superAnnotated = getSuperAnnotated();
-                defineName(superAnnotated, WebBeansUtil.getManagedBeanDefaultName(superAnnotated.getJavaClass().getSimpleName()));
+                Class<? super C> classToSpecialize = getAnnotated().getJavaClass().getSuperclass();
+                
+                while (classToSpecialize.isAnnotationPresent(Specializes.class))
+                {
+                    classToSpecialize = classToSpecialize.getSuperclass();
+                }
+
+                AnnotatedType<? super C> annotatedToSpecialize = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(classToSpecialize);
+                defineName(annotatedToSpecialize, WebBeansUtil.getManagedBeanDefaultName(classToSpecialize.getSimpleName()));
             }
             if (name == null)
             {
