@@ -169,6 +169,14 @@ public class InjectionPointFactory
         return new InjectionPointImpl(owner, Arrays.asList(bindings), parameter);
     }
 
+    /**
+     * This method gets used for InjectionPoints needed during programmatic lookup.
+     */
+    public static InjectionPoint getVirtualInjectionPoint(Bean<?> bean)
+    {
+        return new InjectionPointImpl(bean.getBeanClass(), bean.getQualifiers());
+    }
+
     private void validateInitializerConstructor(AnnotatedConstructor<?> constructor)
     {
         for (AnnotatedParameter<?> parameter: constructor.getParameters())

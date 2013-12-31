@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.newtests.instance;
 
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Test;
 
@@ -45,9 +46,27 @@ public class InstanceWithTypedTest extends AbstractUnitTest
         InstanceHolder instance = getInstance(InstanceHolder.class);
 
         assertNotNull(instance);
-        assertNotNull(instance.bean());
+        assertNotNull(instance.getBean());
 
         shutDownContainer();
+    }
+
+    @Test
+    public void testDynamicInstanceResolving() {
+        startContainer(RealRunnable.class, TypedBean.class, InstanceHolder.class);
+
+        InstanceHolder ih = getInstance(InstanceHolder.class);
+        assertNotNull(ih);
+        assertNotNull(ih.getBean());
+
+        // now try to trigger the resolving programmatically
+        Instance<Runnable> instance = ih.getInstance();
+        Runnable r1 = instance.select(DefaultLiteral.INSTANCE).get();
+        assertNotNull(r1);
+
+        Instance<Runnable> instance2 = ih.getDefaultRunnableInstance();
+        Runnable r2 = instance2.select(DefaultLiteral.INSTANCE).get();
+        assertNotNull(r2);
     }
 
     public static class InstanceHolder
@@ -56,9 +75,22 @@ public class InstanceWithTypedTest extends AbstractUnitTest
         @Any
         private Instance<Runnable> bean;
 
-        public Runnable bean()
+        @Inject
+        private Instance<Runnable> defaultRunnableInstance;
+
+        public Runnable getBean()
         {
             return bean.get();
+        }
+
+        public Instance<Runnable> getInstance()
+        {
+            return bean;
+        }
+
+        public Instance<Runnable> getDefaultRunnableInstance()
+        {
+            return defaultRunnableInstance;
         }
     }
 

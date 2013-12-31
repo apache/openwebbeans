@@ -205,18 +205,14 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     private Annotation[] getAdditionalQualifiers(Annotation[] qualifiers)
     {
         webBeansContext.getAnnotationManager().checkQualifierConditions(qualifiers);
+
         Set<Annotation> newQualifiers = new HashSet<Annotation>(qualifierAnnotations);
 
         if (qualifiers != null && qualifiers.length > 0)
         {
-            for (Annotation annot : qualifiers)
+            for (int i = 0; i < qualifiers.length; i++)
             {
-                if (newQualifiers.contains(annot))
-                {
-                    throw new IllegalArgumentException("Duplicate Qualifier Exception, " + toString());
-                }
-
-                newQualifiers.add(annot);
+                newQualifiers.add(qualifiers[i]);
             }
         }
 

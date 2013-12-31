@@ -81,13 +81,20 @@ class InjectionPointImpl implements InjectionPoint, Serializable
     {
         this(ownerBean, parameter.getBaseType(), qualifiers, parameter, parameter.getDeclaringCallable().getJavaMember(), parameter.isAnnotationPresent(Delegate.class), false);
     }
+
+    /**
+     * This constructor is used to create a 'virtual' InjectionPoint.
+     * This is needed if an InjectionPoint was needed during a programmatic lookup.
+     */
+    InjectionPointImpl(Type type, Collection<Annotation> qualifiers)
+    {
+        this(null, type, qualifiers, null, null, false, false);
+    }
     
     private InjectionPointImpl(Bean<?> ownerBean, Type type, Collection<Annotation> qualifiers, Annotated annotated, Member member, boolean delegate, boolean isTransient)
     {
         Asserts.assertNotNull(type, "required type may not be null");
         Asserts.assertNotNull(qualifiers, "qualifiers may not be null");
-        Asserts.assertNotNull(annotated, "annotated may not be null");
-        Asserts.assertNotNull(member, "member may not be null");
         this.ownerBean = ownerBean;
         injectionType = type;
         qualifierAnnotations = Collections.unmodifiableSet(new HashSet<Annotation>(qualifiers));

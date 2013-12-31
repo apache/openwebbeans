@@ -23,22 +23,31 @@ public class InjectionPointBeansOwner {
 
     @Inject
     private ConstructorInjectionPointOwner constructorInjection;
+
     @Inject
     private FieldInjectionPointOwner fieldInjection;
+
     @Inject
     private MethodInjectionPointOwner methodInjection;
+
     @Inject
     private ProducerMethodInjectionPointOwner producerMethodInjection;
+
     @Inject
     private Instance<ConstructorInjectionPointOwner> constructorInjectionInstance;
+
     @Inject
     private Instance<FieldInjectionPointOwner> fieldInjectionInstance;
+
     @Inject
     private Instance<MethodInjectionPointOwner> methodInjectionInstance;
+
     @Inject
     private Instance<ProducerMethodInjectionPointOwner> producerMethodInjectionInstance;
+
     @Inject
     private Event<StringBuilder> observerInjection;
+
     @Inject
     private Event<StringBuffer> parameterizedObserverInjection;
     

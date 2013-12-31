@@ -17,11 +17,17 @@ package org.apache.webbeans.newtests.injection.injectionpoint.beans;
 
 import javax.enterprise.inject.spi.InjectionPoint;
 
-public abstract class AbstractInjectionPointOwner {
-
+public abstract class AbstractInjectionPointOwner
+{
     protected InjectionPoint injectionPoint;
     
-    public String getName() {
+    public String getName()
+    {
         return injectionPoint.getMember().getName();
+    }
+
+    public InjectionPoint getInjectionPoint()
+    {
+        return injectionPoint;
     }
 }

@@ -15,21 +15,29 @@
  */
 package org.apache.webbeans.newtests.injection.injectionpoint.tests;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.newtests.injection.injectionpoint.beans.AbstractInjectionPointOwner;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.ConstructorInjectionPointOwner;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.FieldInjectionPointOwner;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.InjectionPointBeansOwner;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.InjectionPointObserver;
+import org.apache.webbeans.newtests.injection.injectionpoint.beans.InjectionPointOwnerInstance;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.InjectionPointOwnerProducer;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.MethodInjectionPointOwner;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.ProducerMethodInjectionPointOwner;
@@ -82,4 +90,38 @@ public class InjectionPointInjectionTest extends AbstractUnitTest {
         assertThat(pipo, is(notNullValue()));
         assertThat(pipo.getName(), is("pimp"));
     }
+
+    @Test
+    public void testDynamicResolvingInjectionPoint()
+    {
+        startContainer(InjectionPointOwnerProducer.class, ProducerMethodInjectionPointOwner.class, AbstractInjectionPointOwner.class);
+
+        ProducerMethodInjectionPointOwner producedInstance = getInstance(ProducerMethodInjectionPointOwner.class);
+        assertThat(producedInstance, notNullValue());
+        InjectionPoint ip = producedInstance.getInjectionPoint();
+        assertThat(ip, notNullValue());
+        assertThat(ip.getAnnotated(), nullValue());
+    }
+
+
+    @Test
+    public void testDynamicResolvingInstanceInjectionPoint()
+    {
+        startContainer(InjectionPointOwnerInstance.class, InjectionPointOwnerProducer.class,
+                       ProducerMethodInjectionPointOwner.class, AbstractInjectionPointOwner.class,
+                       MethodInjectionPointOwner.class);
+
+        InjectionPointOwnerInstance producedInstanceOwner = getInstance(InjectionPointOwnerInstance.class);
+        assertThat(producedInstanceOwner, notNullValue());
+
+        MethodInjectionPointOwner ipOwner = producedInstanceOwner.getIpOwnerInstance().select(new DefaultLiteral()).get();
+        assertThat(ipOwner, notNullValue());
+
+        InjectionPoint ip = ipOwner.getInjectionPoint();
+        assertNotNull(ip);
+        assertNotNull(ip.getAnnotated());
+        assertThat(ip.getAnnotated(), instanceOf(AnnotatedField.class));
+    }
+
+
 }
