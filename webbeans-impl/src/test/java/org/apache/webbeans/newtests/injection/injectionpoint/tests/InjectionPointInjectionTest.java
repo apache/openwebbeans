@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -40,6 +41,7 @@ import org.apache.webbeans.newtests.injection.injectionpoint.beans.InjectionPoin
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.InjectionPointOwnerInstance;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.InjectionPointOwnerProducer;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.MethodInjectionPointOwner;
+import org.apache.webbeans.newtests.injection.injectionpoint.beans.ProducerInjectionPointInstanceOwner;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.ProducerMethodInjectionPointOwner;
 import org.junit.Test;
 
@@ -99,8 +101,7 @@ public class InjectionPointInjectionTest extends AbstractUnitTest {
         ProducerMethodInjectionPointOwner producedInstance = getInstance(ProducerMethodInjectionPointOwner.class);
         assertThat(producedInstance, notNullValue());
         InjectionPoint ip = producedInstance.getInjectionPoint();
-        assertThat(ip, notNullValue());
-        assertThat(ip.getAnnotated(), nullValue());
+        assertThat(ip, nullValue());
     }
 
 
@@ -109,7 +110,7 @@ public class InjectionPointInjectionTest extends AbstractUnitTest {
     {
         startContainer(InjectionPointOwnerInstance.class, InjectionPointOwnerProducer.class,
                        ProducerMethodInjectionPointOwner.class, AbstractInjectionPointOwner.class,
-                       MethodInjectionPointOwner.class);
+                       MethodInjectionPointOwner.class, ProducerInjectionPointInstanceOwner.class);
 
         InjectionPointOwnerInstance producedInstanceOwner = getInstance(InjectionPointOwnerInstance.class);
         assertThat(producedInstanceOwner, notNullValue());
@@ -121,6 +122,15 @@ public class InjectionPointInjectionTest extends AbstractUnitTest {
         assertNotNull(ip);
         assertNotNull(ip.getAnnotated());
         assertThat(ip.getAnnotated(), instanceOf(AnnotatedField.class));
+
+
+        ProducerInjectionPointInstanceOwner pipo = getInstance(ProducerInjectionPointInstanceOwner.class);
+        assertNotNull(pipo);
+        Instance<ProducerMethodInjectionPointOwner> ipOwnerInstance = pipo.getIpOwnerInstance();
+        assertNotNull(ipOwnerInstance);
+        ProducerMethodInjectionPointOwner pmp = ipOwnerInstance.select(DefaultLiteral.INSTANCE).get();
+        assertNotNull(pmp);
+        assertNotNull(pmp.getInjectionPoint());
     }
 
 

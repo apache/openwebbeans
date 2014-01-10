@@ -15,9 +15,11 @@
  */
 package org.apache.webbeans.newtests.injection.injectionpoint.beans;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
+@Dependent
 public class MethodInjectionPointOwner extends AbstractInjectionPointOwner {
 
     @Inject

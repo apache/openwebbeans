@@ -48,6 +48,9 @@ public class MultipleSpecializationTest extends AbstractUnitTest
         beanA = getInstance("beanA");
         Assert.assertEquals(BeanC.class, beanA.getBeanClass());
 
+        BeanB beanB = getInstance(BeanB.class);
+        Assert.assertEquals(BeanC.class, beanB.getBeanClass());
+
         shutDownContainer();
     }
     

@@ -22,7 +22,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.util.ClassUtil;
 
 public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
@@ -47,16 +46,7 @@ public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
         }
         try
         {
-            InjectionPoint injectionPoint = creationalContextImpl.getInjectionPoint();
-
-            if (injectionPoint == null)
-            {
-                // create a 'virtual' Injection Point.
-                // This is required since CDI-1.1 and is being used in case of programmatic lookups
-                injectionPoint = InjectionPointFactory.getVirtualInjectionPoint(((CreationalContextImpl<InjectionPoint>) creationalContext).getBean());
-            }
-
-            return injectionPoint;
+            return creationalContextImpl.getInjectionPoint();
         }
         finally
         {
