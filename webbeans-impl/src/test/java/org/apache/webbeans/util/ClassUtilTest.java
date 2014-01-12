@@ -34,7 +34,9 @@ public class ClassUtilTest {
     {
         List<Method> nonPrivateMethods = ClassUtil.getNonPrivateMethods(SpecificClass.class, false);
         nonPrivateMethods.removeAll(Arrays.asList(Object.class.getDeclaredMethods()));
-        Assert.assertEquals(SpecificClass.class.getDeclaredMethods().length, nonPrivateMethods.size());
+
+        // getDeclaredMethods also contains the bridge method, so it's really only 1
+        Assert.assertEquals(1, nonPrivateMethods.size());
     }
 
     @Test

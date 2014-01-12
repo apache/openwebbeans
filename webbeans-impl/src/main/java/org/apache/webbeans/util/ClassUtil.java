@@ -237,6 +237,8 @@ public final class ClassUtil
     /**
      * collect all non-private, non-static and non-abstract methods from the given class.
      * This method removes any overloaded methods from the list automatically.
+     * We also do skip bridge methods as they exist for and are handled solely
+     * by the JVM itself.
      *
      * The returned Map contains the methods divided by the methodName as key in the map
      * following all the methods with the same methodName in a List.
@@ -244,19 +246,25 @@ public final class ClassUtil
      * There is some special rule for package-private methods. Any non-visible
      * package-private method will get skipped and treated similarly to private methods.
      *
-     * Note: we filter out the {@link Object#finalize()} method as users must not deal with it
+     * Note: we filter out the {@link Object#finalize()} method as users must not deal with it.
      */
-    public static List<Method> getNonPrivateMethods(Class<?> rootClazz, boolean noFinalMethods)
+    public static List<Method> getNonPrivateMethods(Class<?> topClass, boolean noFinalMethods)
     {
         Map<String, List<Method>> methodMap = new HashMap<String, List<Method>>();
         List<Method> allMethods = new ArrayList<Method>(10);
 
-        Class<?> clazz = rootClazz;
+        Class<?> clazz = topClass;
 
         while (clazz != null)
         {
             for (Method method : clazz.getDeclaredMethods())
             {
+                if (method.isBridge())
+                {
+                    // we have no interest in generics bridge methods
+                    continue;
+                }
+
                 final int modifiers = method.getModifiers();
 
                 if (Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers))
@@ -279,7 +287,7 @@ public final class ClassUtil
                 {
                     // private already got handled above, so we only had to check for not public nor protected
                     // we cannot see those methods if they are not in the same package as the rootClazz
-                    if (!clazz.getPackage().getName().equals(rootClazz.getPackage().getName()))
+                    if (!clazz.getPackage().getName().equals(topClass.getPackage().getName()))
                     {
                         continue;
                     }
