@@ -189,12 +189,12 @@ public class SerializationTest extends AbstractUnitTest
         Assert.assertTrue(ssb2.getApp().getI() == 4711);
     }
 
-    private byte[] serializeBean(Bean<?> bean) throws IOException
+    public static byte[] serializeBean(Bean<?> bean) throws IOException
     {
         return serializeObject(bean);
     }
     
-    private byte[] serializeObject(Object o) throws IOException
+    public static byte[] serializeObject(Object o) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -202,12 +202,12 @@ public class SerializationTest extends AbstractUnitTest
         return baos.toByteArray();
     }
 
-    private Bean<?> deSerializeBean(byte[] serial) throws IOException, ClassNotFoundException
+    public static Bean<?> deSerializeBean(byte[] serial) throws IOException, ClassNotFoundException
     {
         return (Bean<?>) deSerializeObject(serial);
     }
     
-    private Object deSerializeObject(byte[] serial) throws IOException, ClassNotFoundException
+    public static Object deSerializeObject(byte[] serial) throws IOException, ClassNotFoundException
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(serial);
         ObjectInputStream ois = new ObjectInputStream(bais);

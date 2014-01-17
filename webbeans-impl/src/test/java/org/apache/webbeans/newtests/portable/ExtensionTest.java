@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.PassivationCapable;
 
 import junit.framework.Assert;
 
@@ -30,10 +31,12 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.newtests.contexts.SerializationTest;
 import org.apache.webbeans.newtests.portable.alternative.Egg;
 import org.apache.webbeans.newtests.portable.alternative.HalfEgg;
 import org.apache.webbeans.newtests.portable.alternative.WoodEgg;
 import org.apache.webbeans.newtests.portable.events.extensions.AlternativeExtension;
+import org.apache.webbeans.newtests.portable.scopeextension.BeanWithExtensionInjected;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScopeExtension;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScoped;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScopedBean;
@@ -159,6 +162,30 @@ public class ExtensionTest extends AbstractUnitTest
 
         Set<Bean<?>> beans = getBeanManager().getBeans(Egg.class);
         Assert.assertTrue(beans != null && beans.size() == 2);
+
+    }
+
+    @Test
+    public void testInjectedExtensionSerialisation() throws Exception
+    {
+        addExtension(new ExternalTestScopeExtension());
+        startContainer(BeanWithExtensionInjected.class);
+
+        BeanWithExtensionInjected instance = getInstance(BeanWithExtensionInjected.class);
+        Assert.assertNotNull(instance);
+        Assert.assertNotNull(instance.getExtension());
+
+        Bean<ExternalTestScopeExtension> extensionBean = getBean(ExternalTestScopeExtension.class);
+        Assert.assertNotNull(extensionBean);
+        Assert.assertTrue(extensionBean instanceof PassivationCapable);
+        Assert.assertNotNull(((PassivationCapable) extensionBean).getId());
+
+        byte[] ba = SerializationTest.serializeObject(instance);
+        Assert.assertNotNull(ba);
+        BeanWithExtensionInjected serializedInstance
+                = (BeanWithExtensionInjected) SerializationTest.deSerializeObject(ba);
+        Assert.assertNotNull(serializedInstance);
+        Assert.assertNotNull(serializedInstance.getExtension());
 
     }
 

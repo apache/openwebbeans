@@ -29,6 +29,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.Producer;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -46,7 +47,9 @@ import java.util.logging.Logger;
  * @see javax.enterprise.inject.spi.Bean
  * 
  */
-public abstract class AbstractOwbBean<T> extends BeanAttributesImpl<T> implements OwbBean<T>
+public abstract class AbstractOwbBean<T>
+        extends BeanAttributesImpl<T>
+        implements OwbBean<T>, PassivationCapable
 {
     /**Logger instance*/
     protected Logger logger = null;
