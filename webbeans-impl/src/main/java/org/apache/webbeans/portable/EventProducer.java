@@ -21,10 +21,11 @@ package org.apache.webbeans.portable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Map;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -45,7 +46,7 @@ public class EventProducer<T> extends AbstractProducer<Event<T>>
      * {@inheritDoc}
      */
     @Override
-    public Event<T> produce(CreationalContext<Event<T>> creationalContext)
+    protected Event<T> produce(Map<Interceptor<?>, ?> interceptors, CreationalContextImpl<Event<T>> creationalContext)
     {
         Event<T> instance = null;
         InjectionPoint injectionPoint = null;

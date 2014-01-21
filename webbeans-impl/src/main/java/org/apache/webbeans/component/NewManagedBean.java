@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.AbstractProducer;
 
 /**
  * Component definition with {@link javax.enterprise.inject.New} binding annotation.
@@ -44,7 +45,11 @@ public class NewManagedBean<T> extends ManagedBean<T> implements NewBean<T>
                           Set<InjectionPoint> injectionPoints)
     {
         super(webBeansContext, webBeansType, annotatedType, beanAttributes, beanClass);
-        defineBeanInterceptorStack();
+        if (getProducer() instanceof AbstractProducer)
+        {
+            AbstractProducer<T> producer = (AbstractProducer<T>)getProducer();
+            producer.defineInterceptorStack(this, annotatedType, webBeansContext);
+        }
     }
 
     /**

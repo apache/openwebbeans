@@ -58,7 +58,7 @@ public class InjectionTargetFactoryImpl<T> implements InjectionTargetFactory<T>
     {
         final InjectionTargetImpl<T> injectionTarget
             = new InjectionTargetImpl<T>(annotatedType, createInjectionPoints(bean), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
-        return webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, annotatedType).getCompleteInjectionTarget();
+        return webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, annotatedType).getInjectionTarget();
     }
 
     protected Set<InjectionPoint> createInjectionPoints(Bean<T> bean)

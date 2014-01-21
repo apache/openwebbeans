@@ -21,11 +21,12 @@ package org.apache.webbeans.portable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.Set;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.config.WebBeansContext;
@@ -46,12 +47,12 @@ public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
     }
 
     @Override
-    public Instance<T> produce(CreationalContext<Instance<T>> creationalContext)
+    protected Instance<T> produce(Map<Interceptor<?>, ?> interceptors, CreationalContextImpl<Instance<T>> creationalContext)
     {
+        CreationalContextImpl<Instance<T>> creationalContextImpl = null;
         try
         {
             InjectionPoint injectionPoint = null;
-            CreationalContextImpl<Instance<T>> creationalContextImpl = null;
             if (creationalContext instanceof CreationalContextImpl)
             {
                 creationalContextImpl = (CreationalContextImpl<Instance<T>>)creationalContext;
@@ -77,15 +78,13 @@ public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
                 type = returnType;
             }
 
-            Instance<T> instance = new InstanceImpl<T>(type, injectionPoint, webBeansContext, creationalContextImpl, qualifiers.toArray(new Annotation[qualifiers.size()]));
-            
-            return instance;
+            return new InstanceImpl<T>(type, injectionPoint, webBeansContext, creationalContextImpl, qualifiers.toArray(new Annotation[qualifiers.size()]));
         }
         finally
         {
-            if (creationalContext instanceof CreationalContextImpl)
+            if (creationalContextImpl != null)
             {
-                ((CreationalContextImpl<Instance<T>>)creationalContext).removeInjectionPoint();
+                creationalContextImpl.removeInjectionPoint();
             }
         }
     }

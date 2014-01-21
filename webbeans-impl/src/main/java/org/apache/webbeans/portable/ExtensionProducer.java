@@ -18,9 +18,11 @@
  */
 package org.apache.webbeans.portable;
 
-import javax.enterprise.context.spi.CreationalContext;
+import java.util.Map;
+
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -39,7 +41,7 @@ public class ExtensionProducer<R> extends AbstractProducer<R>
     }
 
     @Override
-    public R produce(CreationalContext<R> creationalContext)
+    protected R produce(Map<Interceptor<?>, ?> interceptors, CreationalContextImpl<R> creationalContext)
     {
         ExtensionLoader loader = webBeansContext.getExtensionLoader();
         

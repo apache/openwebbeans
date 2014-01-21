@@ -22,7 +22,7 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
 import org.apache.webbeans.intercept.InterceptorResolutionService.BusinessMethodInterceptorInfo;
-import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -188,12 +188,12 @@ public class DecoratorHandler implements InterceptorHandler, Externalizable
 
         passivationId = in.readUTF();
         final Bean<?> bean = beanManager.getPassivationCapableBean(passivationId);
-        if (OwbBean.class.isInstance(bean))
+        if (bean instanceof OwbBean)
         {
-            final Producer injectionTarget = OwbBean.class.cast(bean).getProducer();
-            if (InjectionTargetImpl.class.isInstance(injectionTarget))
+            final Producer<?> producer = ((OwbBean<?>)bean).getProducer();
+            if (producer instanceof AbstractProducer)
             {
-                interceptorInfo = InjectionTargetImpl.class.cast(injectionTarget).getInterceptorInfo();
+                interceptorInfo = ((AbstractProducer<?>)producer).getInterceptorInfo();
             }
             else
             {

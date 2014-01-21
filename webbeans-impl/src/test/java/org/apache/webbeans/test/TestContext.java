@@ -57,6 +57,7 @@ import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeIsnotInterface;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeMustImplementAllDecoratedTypes;
@@ -281,9 +282,10 @@ public abstract class TestContext implements ITestContext
         bean = define(clazz, WebBeansType.MANAGED, webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
         if (bean != null)
         {
-            if (bean instanceof InjectionTargetBean)
+            if (bean.getProducer() instanceof AbstractProducer)
             {
-                ((InjectionTargetBean) bean).defineBeanInterceptorStack();
+                AbstractProducer<T> producer = (AbstractProducer<T>)bean.getProducer();
+                producer.defineInterceptorStack(bean, bean.getAnnotatedType(), webBeansContext);
             }
 
             getComponents().add((AbstractOwbBean<?>) bean);

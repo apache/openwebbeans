@@ -18,8 +18,10 @@
  */
 package org.apache.webbeans.portable;
 
-import javax.enterprise.context.spi.CreationalContext;
+import java.util.Map;
+
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.ClassUtil;
@@ -31,7 +33,7 @@ public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
      * {@inheritDoc}
      */
     @Override
-    public InjectionPoint produce(CreationalContext<InjectionPoint> creationalContext)
+    protected InjectionPoint produce(Map<Interceptor<?>, ?> interceptors, CreationalContextImpl<InjectionPoint> creationalContext)
     {
         if (!(creationalContext instanceof CreationalContextImpl))
         {

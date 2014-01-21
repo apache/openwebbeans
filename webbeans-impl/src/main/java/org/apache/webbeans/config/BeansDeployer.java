@@ -25,7 +25,6 @@ import org.apache.webbeans.component.CdiInterceptorBean;
 import org.apache.webbeans.component.DecoratorBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.component.InterceptedMarker;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerFieldBean;
@@ -50,6 +49,7 @@ import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.DeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
@@ -82,6 +82,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import java.io.IOException;
@@ -427,7 +428,7 @@ public class BeansDeployer
      * 
      * @param beans deployed beans
      */
-    private void validate(Set<Bean<?>> beans)
+    private <T> void validate(Set<Bean<?>> beans)
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         
@@ -448,10 +449,23 @@ public class BeansDeployer
                     beanNames.push(beanName);
                 }
                 
-                
-                if (bean instanceof InjectionTargetBean && bean instanceof InterceptedMarker)
+                if (bean instanceof OwbBean && !(bean instanceof Interceptor) && !(bean instanceof Decorator))
                 {
-                    ((InjectionTargetBean<Object>) bean).defineBeanInterceptorStack();
+                    OwbBean<T> owbBean = (OwbBean<T>)bean;
+                    if (owbBean.getProducer() instanceof AbstractProducer)
+                    {
+                        AbstractProducer<T> producer = (AbstractProducer<T>)owbBean.getProducer();
+                        AnnotatedType<T> annotatedType;
+                        if (owbBean instanceof InjectionTargetBean)
+                        {
+                            annotatedType = ((InjectionTargetBean<T>)owbBean).getAnnotatedType();
+                        }
+                        else
+                        {
+                            annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(owbBean.getReturnType());
+                        }
+                        producer.defineInterceptorStack(owbBean, annotatedType, webBeansContext);
+                    }
                 }
                 
                 //Check passivation scope

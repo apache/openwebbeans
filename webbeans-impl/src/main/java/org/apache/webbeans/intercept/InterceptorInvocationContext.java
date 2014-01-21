@@ -63,12 +63,7 @@ public class InterceptorInvocationContext<T> extends AbstractInvocationContext<T
         }
         else
         {
-            return realProceed();
+            return super.proceed();
         }
-    }
-
-    protected Object realProceed() throws Exception
-    {
-        return super.proceed();
     }
 }

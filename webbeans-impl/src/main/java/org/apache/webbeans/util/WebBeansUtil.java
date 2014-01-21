@@ -58,6 +58,7 @@ import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
@@ -1551,9 +1552,10 @@ public final class WebBeansUtil
         new ProducerFieldBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerFields(managedBean);
         new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, managedBean.getAnnotatedType()).defineObserverMethods(managedBean);
 
-        if (managedBean instanceof InjectionTargetBean)
+        if (managedBean.getProducer() instanceof AbstractProducer)
         {
-            ((InjectionTargetBean) managedBean).defineBeanInterceptorStack();
+            AbstractProducer<T> producer = (AbstractProducer<T>)managedBean.getProducer();
+            producer.defineInterceptorStack(managedBean, managedBean.getAnnotatedType(), webBeansContext);
         }
 
         return managedBean;
@@ -1657,9 +1659,10 @@ public final class WebBeansUtil
         new ProducerFieldBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerFields(managedBean);
         new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, managedBean.getAnnotatedType()).defineObserverMethods(managedBean);
 
-        if (managedBean instanceof InjectionTargetBean)
+        if (managedBean.getProducer() instanceof AbstractProducer)
         {
-            ((InjectionTargetBean) managedBean).defineBeanInterceptorStack();
+            AbstractProducer<T> producer = (AbstractProducer<T>)managedBean.getProducer();
+            producer.defineInterceptorStack(managedBean, managedBean.getAnnotatedType(), webBeansContext);
         }
         return managedBean;
     }

@@ -21,15 +21,18 @@ package org.apache.webbeans.portable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
+import java.util.Map;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -53,7 +56,7 @@ public class ProducerFieldProducer<T, P> extends AbstractProducer<T>
     }
 
     @Override
-    public T produce(CreationalContext<T> creationalContext)
+    protected T produce(Map<Interceptor<?>, ?> interceptors, CreationalContextImpl<T> creationalContext)
     {
         T instance = null;
         P parentInstance = null;

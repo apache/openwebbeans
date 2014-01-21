@@ -18,8 +18,10 @@
  */
 package org.apache.webbeans.portable;
 
+import java.util.Map;
+
 import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 
@@ -27,7 +29,7 @@ public class MetadataProducer<T> extends AbstractProducer<Contextual<T>>
 {
 
     @Override
-    public Contextual<T> produce(CreationalContext<Contextual<T>> creationalContext)
+    protected Contextual<T> produce(Map<Interceptor<?>, ?> interceptors, CreationalContextImpl<Contextual<T>> creationalContext)
     {
         if (!(creationalContext instanceof CreationalContextImpl))
         {

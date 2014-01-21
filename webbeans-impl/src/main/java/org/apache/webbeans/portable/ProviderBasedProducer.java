@@ -18,10 +18,13 @@
  */
 package org.apache.webbeans.portable;
 
-import javax.enterprise.context.spi.CreationalContext;
+import java.util.Map;
+
+import javax.enterprise.inject.spi.Interceptor;
 import javax.inject.Provider;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -43,7 +46,7 @@ public class ProviderBasedProducer<T> extends AbstractProducer<T>
     }
 
     @Override
-    public T produce(CreationalContext<T> creationalContext)
+    protected T produce(Map<Interceptor<?>, ?> interceptors, CreationalContextImpl<T> creationalContext)
     {
         if (proxyInstance == null)
         {

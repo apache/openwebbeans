@@ -18,11 +18,14 @@
  */
 package org.apache.webbeans.portable;
 
-import javax.enterprise.context.spi.CreationalContext;
+import java.util.Map;
+
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectableBeanManager;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 
 public class BeanManagerProducer extends AbstractProducer<BeanManager>
 {
@@ -36,7 +39,7 @@ public class BeanManagerProducer extends AbstractProducer<BeanManager>
     }
 
     @Override
-    public BeanManager produce(CreationalContext<BeanManager> creationalContext)
+    protected BeanManager produce(Map<Interceptor<?>, ?> interceptors, CreationalContextImpl<BeanManager> creationalContext)
     {
         if (manager == null)
         {
