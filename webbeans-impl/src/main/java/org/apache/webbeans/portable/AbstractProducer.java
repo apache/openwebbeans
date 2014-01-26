@@ -181,7 +181,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
 
         T instance = produce(interceptorInstances, creationalContextImpl);
 
-        if (interceptorInfo != null)
+        if (hasInterceptorInfo())
         {
             // register the bean itself for self-interception
             if (interceptorInfo.getSelfInterceptorBean() != null)
@@ -234,6 +234,11 @@ public abstract class AbstractProducer<T> implements Producer<T>
     protected boolean needsProxy()
     {
         return methodInterceptors.size() != 0;
+    }
+
+    protected boolean hasInterceptorInfo()
+    {
+        return interceptorInfo != null && proxyClass != null;
     }
 
     protected boolean isDelegateInjection(final CreationalContextImpl<?> cc)
