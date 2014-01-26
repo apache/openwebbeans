@@ -22,7 +22,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Producer;
 
-import org.apache.webbeans.component.spi.ProducerFactory;
+import javax.enterprise.inject.spi.ProducerFactory;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.ExtensionProducer;
 

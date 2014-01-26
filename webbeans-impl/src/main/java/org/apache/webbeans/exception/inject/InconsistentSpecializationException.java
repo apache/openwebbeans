@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.exception.inject;
 
+import javax.enterprise.inject.spi.DefinitionException;
+
 public class InconsistentSpecializationException extends DefinitionException
 {
     private static final long serialVersionUID = 5398575103682514128L;

@@ -77,7 +77,7 @@ import org.apache.webbeans.event.EventMetadataImpl;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
-import org.apache.webbeans.exception.inject.DefinitionException;
+import javax.enterprise.inject.spi.DefinitionException;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;

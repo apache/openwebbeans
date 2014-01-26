@@ -25,7 +25,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import org.apache.webbeans.component.spi.BeanAttributes;
+import javax.enterprise.inject.spi.BeanAttributes;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.DecoratorInjectionTargetFactory;
 

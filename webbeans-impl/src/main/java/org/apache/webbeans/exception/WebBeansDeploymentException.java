@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.exception;
 
-import org.apache.webbeans.exception.inject.DeploymentException;
+import javax.enterprise.inject.spi.DeploymentException;
 
 /**
  * Exception that is thrown by the web beans container at the deployment time.

@@ -26,8 +26,8 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.enterprise.util.TypeLiteral;
 
-import org.apache.webbeans.annotation.Decorated;
-import org.apache.webbeans.annotation.Intercepted;
+import javax.enterprise.inject.Decorated;
+import javax.enterprise.inject.Intercepted;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.BeanMetadataProducer;
 import org.apache.webbeans.util.CollectionUtil;

@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.component.spi.ProducerFactory;
+import javax.enterprise.inject.spi.ProducerFactory;
 
 /**
  * Defines the producer field component implementation.

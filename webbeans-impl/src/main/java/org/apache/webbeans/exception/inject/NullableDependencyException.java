@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.exception.inject;
 
+import javax.enterprise.inject.spi.DeploymentException;
+
 public class NullableDependencyException extends DeploymentException
 {
     private static final long serialVersionUID = -2226577224929251465L;

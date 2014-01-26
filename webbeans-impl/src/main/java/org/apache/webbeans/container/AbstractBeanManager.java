@@ -35,9 +35,9 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.FieldProducerFactory;
 import org.apache.webbeans.component.creation.MethodProducerFactory;
-import org.apache.webbeans.component.spi.BeanAttributes;
-import org.apache.webbeans.component.spi.InjectionTargetFactory;
-import org.apache.webbeans.component.spi.ProducerFactory;
+import javax.enterprise.inject.spi.BeanAttributes;
+import javax.enterprise.inject.spi.InjectionTargetFactory;
+import javax.enterprise.inject.spi.ProducerFactory;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.AnnotationUtil;
 

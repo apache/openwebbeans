@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.container;
 
-import org.apache.webbeans.component.spi.InjectionTargetFactory;
+import javax.enterprise.inject.spi.InjectionTargetFactory;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.Asserts;

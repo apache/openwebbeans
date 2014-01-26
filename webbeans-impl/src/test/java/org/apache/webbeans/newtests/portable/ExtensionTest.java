@@ -29,7 +29,7 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.exception.inject.DefinitionException;
+import javax.enterprise.inject.spi.DefinitionException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.contexts.SerializationTest;
 import org.apache.webbeans.newtests.portable.alternative.Egg;

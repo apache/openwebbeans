@@ -18,13 +18,13 @@
  */
 package org.apache.webbeans.jms.component;
 
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.Producer;
 import javax.jms.Destination;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.jms.JMSModel;
 

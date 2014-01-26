@@ -27,7 +27,7 @@ import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.component.spi.BeanAttributes;
+import javax.enterprise.inject.spi.BeanAttributes;
 import org.apache.webbeans.util.AnnotationUtil;
 
 public class BeanAttributesImpl<T> implements BeanAttributes<T>

@@ -26,7 +26,7 @@ import javax.enterprise.inject.AmbiguousResolutionException;
 import junit.framework.Assert;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.exception.inject.DeploymentException;
+import javax.enterprise.inject.spi.DeploymentException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Test;
 

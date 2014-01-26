@@ -36,7 +36,7 @@ import java.util.Set;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.exception.inject.DefinitionException;
+import javax.enterprise.inject.spi.DefinitionException;
 
 /**
  * Utility classes with respect to the class operations.

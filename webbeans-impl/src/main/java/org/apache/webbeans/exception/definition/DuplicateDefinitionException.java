@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.exception.definition;
 
-import org.apache.webbeans.exception.inject.DefinitionException;
+import javax.enterprise.inject.spi.DefinitionException;
 
 public class DuplicateDefinitionException extends DefinitionException
 {
