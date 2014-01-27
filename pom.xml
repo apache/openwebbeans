@@ -491,7 +491,6 @@
         <module>webbeans-jee5-ejb-resource</module>
         <module>webbeans-osgi</module>
         <module>webbeans-porting</module>
-        <module>webbeans-test</module>
         <module>webbeans-arquillian</module>
         <module>samples</module>
         <module>webbeans-tck</module>
