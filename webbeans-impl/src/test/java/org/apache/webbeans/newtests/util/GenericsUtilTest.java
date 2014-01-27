@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.util;
+package org.apache.webbeans.newtests.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -25,6 +25,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
+import org.apache.webbeans.util.GenericsUtil;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class GenericsUtilTest {
@@ -32,7 +34,7 @@ public class GenericsUtilTest {
     @Test
     public void resolveType() throws NoSuchFieldException {
         Field field = AbstractObject.class.getDeclaredField("field");
-        assertEquals(Object.class, GenericsUtil.resolveType(SimpleObject.class, field));
+        Assert.assertEquals(Object.class, GenericsUtil.resolveType(SimpleObject.class, field));
         assertEquals(String.class, GenericsUtil.resolveType(StringObject.class, field));
 
         Type t = GenericsUtil.resolveType(GenericObject.class, field);

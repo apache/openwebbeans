@@ -18,49 +18,29 @@
  */
 package org.apache.webbeans.test.unittests.inject.alternative;
 
-import java.io.InputStream;
-
-import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.inject.alternative.AlternativeComponent;
 import org.apache.webbeans.test.component.inject.alternative.AlternativeInjector;
 import org.apache.webbeans.test.component.inject.alternative.IAlternative;
 import org.apache.webbeans.test.component.inject.alternative.NotAlternativeComponent;
-import org.apache.webbeans.xml.WebBeansXMLConfigurator;
-import org.junit.Before;
 import org.junit.Test;
 
-public class AlternativeTest extends TestContext
+public class AlternativeTest extends AbstractUnitTest
 {
-    public AlternativeTest()
-    {
-        super(AlternativeTest.class.getName());
-    }
-    
-    @Before
-    public void setUp()
-    {
-        super.init();
-    }
-    
+
     @Test
     public void testInjectAlternative()
     {
-        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/alternative/alternatives.xml");
-        Assert.assertNotNull(stream);
+        startContainer("org/apache/webbeans/test/xml/alternative/alternatives.xml",
+                       AlternativeComponent.class,
+                       NotAlternativeComponent.class,
+                       AlternativeInjector.class);
 
-        WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
-        configurator.configureSpecSpecific(stream, "alternative.xml");
-        
-        defineManagedBean(AlternativeComponent.class);
-        defineManagedBean(NotAlternativeComponent.class);
-        
-        Bean<AlternativeInjector> injector = defineManagedBean(AlternativeInjector.class);
-        AlternativeInjector instance = (AlternativeInjector) getManager().getReference(injector, AlternativeInjector.class, getManager().createCreationalContext(injector));
+        AlternativeInjector instance = getInstance(AlternativeInjector.class);
         
         Assert.assertNotNull(instance);
         
@@ -75,13 +55,10 @@ public class AlternativeTest extends TestContext
     @Test
     public void testInjectNotAlternative()
     {
-        WebBeansContext.getInstance().getAlternativesManager().clear();
+
+        startContainer(AlternativeComponent.class, NotAlternativeComponent.class, AlternativeInjector.class);
         
-        defineManagedBean(AlternativeComponent.class);
-        defineManagedBean(NotAlternativeComponent.class);
-        
-        Bean<AlternativeInjector> injector = defineManagedBean(AlternativeInjector.class);
-        AlternativeInjector instance = (AlternativeInjector) getManager().getReference(injector, AlternativeInjector.class, getManager().createCreationalContext(injector));
+        AlternativeInjector instance = getInstance(AlternativeInjector.class);
         
         Assert.assertNotNull(instance);
         

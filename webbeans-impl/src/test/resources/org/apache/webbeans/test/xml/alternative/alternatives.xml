@@ -18,7 +18,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 <beans>
-	<alternatives>
-		<class>org.apache.webbeans.test.component.inject.alternative.AlternativeComponent</class>
-	</alternatives>
+    <alternatives>
+        <class>org.apache.webbeans.test.component.inject.alternative.AlternativeComponent</class>
+    </alternatives>
 </beans>

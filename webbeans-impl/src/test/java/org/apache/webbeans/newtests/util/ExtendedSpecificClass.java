@@ -16,8 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.util;
+package org.apache.webbeans.newtests.util;
 
-public class ExtendedCustomType extends CustomType
-{
+public class ExtendedSpecificClass extends SpecificClass {
+
+    private ExtendedCustomType customType;
+
+    public void init()
+    {
+        customType = new ExtendedCustomType();
+    }
+
+    @Override
+    public ExtendedCustomType newInstance()
+    {
+        return customType;
+    }
 }

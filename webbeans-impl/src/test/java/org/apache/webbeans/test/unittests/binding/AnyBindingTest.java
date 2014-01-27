@@ -22,47 +22,37 @@ package org.apache.webbeans.test.unittests.binding;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.annotation.AnyLiteral;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.binding.AnyBindingComponent;
 import org.apache.webbeans.test.component.binding.DefaultAnyBinding;
 import org.apache.webbeans.test.component.binding.NonAnyBindingComponent;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-public class AnyBindingTest extends TestContext{
+import javax.enterprise.inject.spi.Bean;
 
-   public AnyBindingTest()
-   {
-      super(AnyBindingTest.class.getName());
-   }
+public class AnyBindingTest extends AbstractUnitTest {
 
-   @Override
-   @Before
-   public void init()
-   {
-   }
+    @Test
+    public void testAny()
+    {
+        startContainer(AnyBindingComponent.class, NonAnyBindingComponent.class, DefaultAnyBinding.class);
 
-   @Test
-   public void testAny()
-   {
-      AbstractOwbBean<AnyBindingComponent> comp1 = defineManagedBean(AnyBindingComponent.class);
-      Set<Annotation> qualifiers = comp1.getQualifiers();
+        Bean<AnyBindingComponent> comp1 = getBean(AnyBindingComponent.class, AnyLiteral.INSTANCE);
+        Set<Annotation> qualifiers = comp1.getQualifiers();
 
-      Assert.assertEquals(2, qualifiers.size());
+        Assert.assertEquals(2, qualifiers.size());
 
-      AbstractOwbBean<NonAnyBindingComponent> comp2 = defineManagedBean(NonAnyBindingComponent.class);
-      qualifiers = comp2.getQualifiers();
+        Bean<NonAnyBindingComponent> comp2 = getBean(NonAnyBindingComponent.class, AnyLiteral.INSTANCE);
+        qualifiers = comp2.getQualifiers();
 
-      Assert.assertEquals(4, qualifiers.size());
+        Assert.assertEquals(4, qualifiers.size());
 
 
-      AbstractOwbBean<DefaultAnyBinding> comp3 = defineManagedBean(DefaultAnyBinding.class);
-      qualifiers = comp3.getQualifiers();
+        Bean<DefaultAnyBinding> comp3 = getBean(DefaultAnyBinding.class, AnyLiteral.INSTANCE);
+        qualifiers = comp3.getQualifiers();
 
-      Assert.assertEquals(2, qualifiers.size());
-
-
-   }
+        Assert.assertEquals(2, qualifiers.size());
+    }
 }

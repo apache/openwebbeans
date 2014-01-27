@@ -41,11 +41,11 @@ import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.proxy.OwbInterceptorProxy;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.CustomBaseType;
-import org.apache.webbeans.util.CustomType;
-import org.apache.webbeans.util.ExtendedSpecificClass;
-import org.apache.webbeans.util.GenericInterface;
-import org.apache.webbeans.util.SpecificClass;
+import org.apache.webbeans.newtests.util.CustomBaseType;
+import org.apache.webbeans.newtests.util.CustomType;
+import org.apache.webbeans.newtests.util.ExtendedSpecificClass;
+import org.apache.webbeans.newtests.util.GenericInterface;
+import org.apache.webbeans.newtests.util.SpecificClass;
 import org.junit.Assert;
 import org.junit.Test;
 

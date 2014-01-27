@@ -76,6 +76,13 @@ public abstract class AbstractUnitTest
         startContainer(new ArrayList<Class<?>>(Arrays.asList(beanClasses)), null);
     }
 
+    protected void startContainer(String beansXml, Class<?>... beanClasses)
+    {
+        List<String> beansXmls = new ArrayList<String>(1);
+        beansXmls.add(getXmlUrl(beansXml));
+        startContainer(new ArrayList<Class<?>>(Arrays.asList(beanClasses)), beansXmls);
+    }
+
     protected void startContainer(Collection<Class<?>> beanClasses)
     {
         startContainer(beanClasses, null);
@@ -207,18 +214,31 @@ public abstract class AbstractUnitTest
     }
 
 
-
+    /**
+     * @param packageName package of the beans.xml file
+     * @param fileName name of the beans xml file, without '.xml'
+     * @return the absolute beans.xml URL
+     */
     protected String getXmlPath(String packageName, String fileName)
     {
         StringBuilder prefix = new StringBuilder(packageName.replace('.', '/'));
         prefix.append("/");
         prefix.append(fileName);
         prefix.append(".xml");
-        
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        return loader.getResource(prefix.toString()).toExternalForm();
+
+        return getXmlUrl(prefix.toString());
     }
-    
+
+    /**
+     * @param fileName the resource path of the beans.xml to parse
+     * @return the URL of the beans.xml.
+     */
+    protected String getXmlUrl(String fileName)
+    {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        return loader.getResource(fileName).toExternalForm();
+    }
+
     /**
      * Add a CDI Extension which should get used in the test case.
      * Use this function instead of defining test Extensions via the usual

@@ -16,13 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.util;
+package org.apache.webbeans.newtests.util;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.webbeans.util.differentPackage.MyOtherPackageSubClass;
+import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.newtests.util.differentPackage.MyOtherPackageSubClass;
 import org.junit.Test;
 
 import junit.framework.Assert;

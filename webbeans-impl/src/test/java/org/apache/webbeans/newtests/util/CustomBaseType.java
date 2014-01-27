@@ -16,30 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.util;
+package org.apache.webbeans.newtests.util;
 
-/**
-*
-*/
-public class MySubClass extends MySuperClass
+public abstract class CustomBaseType
 {
-    public void publicMethod()
-    {
-        // do nothing
-    }
-
-    protected void protectedMethod()
-    {
-        // do nothing
-    }
-
-    void packageMethod()
-    {
-        // do nothing
-    }
-
-    private void privateMethod()
-    {
-        // do nothing
-    }
 }

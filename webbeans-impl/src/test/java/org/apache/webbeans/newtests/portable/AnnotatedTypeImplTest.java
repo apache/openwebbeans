@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.portable;
+package org.apache.webbeans.newtests.portable;
 
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;

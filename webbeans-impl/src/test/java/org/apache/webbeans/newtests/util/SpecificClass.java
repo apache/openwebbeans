@@ -16,8 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.util;
+package org.apache.webbeans.newtests.util;
 
-public abstract class CustomBaseType
-{
+public class SpecificClass<T extends CustomType> implements GenericInterface<T> {
+
+    @Override
+    public T newInstance() {
+        return null;
+    }
 }

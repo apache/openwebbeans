@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.util;
+package org.apache.webbeans.newtests.util;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,6 +25,7 @@ import javax.enterprise.inject.IllegalProductException;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Test;
 
 

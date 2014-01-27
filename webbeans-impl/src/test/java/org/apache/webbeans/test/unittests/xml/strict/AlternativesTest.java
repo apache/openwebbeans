@@ -27,30 +27,22 @@ import junit.framework.Assert;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.AlternativesManager;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.xml.strict.Alternative1;
 import org.apache.webbeans.test.xml.strict.Alternative2;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.junit.Test;
 
-public class AlternativesTest extends TestContext
+public class AlternativesTest extends AbstractUnitTest
 {
-    public AlternativesTest()
-    {
-        super(AlternativesTest.class.getName());
-    }
 
     @Test
     public void testAlternativeCorrect()
     {
-        Bean<Alternative1> alternative1 = defineManagedBean(Alternative1.class);
-        Bean<Alternative2> alternative2 = defineManagedBean(Alternative2.class);        
-        
-        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_correct.xml");
-        Assert.assertNotNull(stream);
+        startContainer("org/apache/webbeans/test/xml/strict/alternatives_correct.xml", Alternative1.class, Alternative2.class);
 
-        WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
-        configurator.configureSpecSpecific(stream, "alternatives_correct.xml");
+        Bean<Alternative1> alternative1 = getBean(Alternative1.class);
+        Bean<Alternative2> alternative2 = getBean(Alternative2.class);
 
         AlternativesManager manager = WebBeansContext.getInstance().getAlternativesManager();
         

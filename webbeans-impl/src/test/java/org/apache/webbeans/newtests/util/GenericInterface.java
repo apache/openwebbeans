@@ -16,30 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.util;
+package org.apache.webbeans.newtests.util;
 
-/**
-*
-*/
-public class MySuperClass
-{
-    public void publicMethod()
-    {
-        // do nothing
-    }
+public interface GenericInterface<T extends CustomBaseType> {
 
-    protected void protectedMethod()
-    {
-        // do nothing
-    }
-
-    void packageMethod()
-    {
-        // do nothing
-    }
-
-    private void privateMethod()
-    {
-        // do nothing
-    }
+    T newInstance();
 }

@@ -20,30 +20,19 @@ package org.apache.webbeans.test.unittests.event.component;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent1;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent2;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent3;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent4;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent5;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent6;
-import org.junit.Before;
 import org.junit.Test;
 
-public class BrokenComponentTest extends TestContext
+import javax.enterprise.inject.spi.DefinitionException;
+
+public class BrokenComponentTest extends AbstractUnitTest
 {
-    public BrokenComponentTest()
-    {
-        super(BrokenComponentTest.class.getName());
-    }
-
-    @Override
-    @Before
-    public void init()
-    {
-        super.init();
-    }
-
     @Test
     public void test1()
     {
@@ -51,7 +40,7 @@ public class BrokenComponentTest extends TestContext
 
         try
         {
-            defineManagedBean(BrokenObserverComponent1.class);
+            startContainer(BrokenObserverComponent1.class);
 
         }
         catch (Exception e)
@@ -59,103 +48,78 @@ public class BrokenComponentTest extends TestContext
             System.out.println(e.getMessage());
             exc = e;
         }
-
-        Assert.assertNull(exc);
     }
 
     @Test
     public void test2()
     {
-        Exception exc = null;
-
         try
         {
-            defineManagedBean(BrokenObserverComponent2.class);
-
+            startContainer(BrokenObserverComponent2.class);
+            Assert.fail("DefinitionException expected");
         }
-        catch (Exception e)
+        catch (DefinitionException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            return; // all ok
         }
-
-        Assert.assertNotNull(exc);
     }
 
     @Test
     public void test3()
     {
-        Exception exc = null;
-
         try
         {
-            defineManagedBean(BrokenObserverComponent3.class);
+            startContainer(BrokenObserverComponent3.class);
+            Assert.fail("DefinitionException expected");
 
         }
-        catch (Exception e)
+        catch (DefinitionException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            return; // all ok
         }
-
-        Assert.assertNotNull(exc);
     }
 
     @Test
     public void test4()
     {
-        Exception exc = null;
-
         try
         {
-            defineManagedBean(BrokenObserverComponent4.class);
+            startContainer(BrokenObserverComponent4.class);
+            Assert.fail("DefinitionException expected");
 
         }
-        catch (Exception e)
+        catch (DefinitionException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            return; // all ok
         }
-
-        Assert.assertNotNull(exc);
     }
 
     @Test
     public void test5()
     {
-        Exception exc = null;
-
         try
         {
-            defineManagedBean(BrokenObserverComponent5.class);
-
+            startContainer(BrokenObserverComponent5.class);
+            Assert.fail("DefinitionException expected");
         }
-        catch (Exception e)
+        catch (DefinitionException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            return; // all ok
         }
-
-        Assert.assertNotNull(exc);
     }
 
     @Test
     public void test6()
     {
-        Exception exc = null;
-
         try
         {
-            defineManagedBean(BrokenObserverComponent6.class);
-
+            startContainer(BrokenObserverComponent6.class);
+            Assert.fail("DefinitionException expected");
         }
-        catch (Exception e)
+        catch (DefinitionException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            return; // all ok
         }
-
-        Assert.assertNotNull(exc);
     }
 
 }

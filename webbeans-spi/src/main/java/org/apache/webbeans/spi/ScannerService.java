@@ -37,8 +37,8 @@ import java.util.Set;
 public interface ScannerService
 {
     /**
-     * Any initializtion action that is
-     * required by the implementors. 
+     * Any initialisation action that is
+     * required by the implementation.
      * @param object initialization object
      */
     public void init(Object object);
