@@ -25,7 +25,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.AbstractContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.RequestContext;
-import org.jboss.jsr299.tck.spi.Contexts;
+import org.jboss.cdi.tck.spi.Contexts;
 
 public class ContextsImpl implements Contexts<AbstractContext>
 {

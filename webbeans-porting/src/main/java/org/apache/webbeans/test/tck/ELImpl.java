@@ -30,12 +30,13 @@ import javax.el.ListELResolver;
 import javax.el.MapELResolver;
 import javax.el.ResourceBundleELResolver;
 import javax.el.VariableMapper;
+import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.el.ExpressionFactoryImpl;
 import org.apache.el.lang.FunctionMapperImpl;
 import org.apache.el.lang.VariableMapperImpl;
 import org.apache.webbeans.el22.WrappedExpressionFactory;
-import org.jboss.jsr299.tck.spi.EL;
+import org.jboss.cdi.tck.spi.EL;
 
 public class ELImpl implements EL
 {
@@ -83,9 +84,9 @@ public class ELImpl implements EL
     
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T evaluateMethodExpression(String expression, Class<T> expectedType, Class<?>[] expectedParamTypes, Object[] expectedParams)
+    public <T> T evaluateMethodExpression(BeanManager beanManager, String expression, Class<T> expectedType, Class<?>[] expectedParamTypes, Object[] expectedParams)
     {   
-        ELContext context = createELContext();        
+        ELContext context = createELContext(beanManager);        
         Object object = EXPRESSION_FACTORY.createMethodExpression(context, expression, expectedType, expectedParamTypes).invoke(context, expectedParams);
         
         return (T)object;
@@ -93,16 +94,15 @@ public class ELImpl implements EL
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T evaluateValueExpression(String expression, Class<T> expectedType)
+    public <T> T evaluateValueExpression(BeanManager beanManager, String expression, Class<T> expectedType)
     {
-        ELContext context = createELContext();        
+        ELContext context = createELContext(beanManager);        
         Object object = EXPRESSION_FACTORY.createValueExpression(context, expression, expectedType).getValue(context);
         
         return (T)object;
     }
 
-    @Override
-    public ELContext createELContext()
+    public ELContext createELContext(BeanManager beanManager)
     {   
         ELContext context = new ELContextImpl();
 
