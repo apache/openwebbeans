@@ -29,8 +29,8 @@ public class LargeTransactionDecorator implements Account
 {
     @Inject @Delegate Account account;
 
-    BigDecimal depositeAmount = null;
-    BigDecimal withDrawAmount = null;
+    public static BigDecimal depositeAmount = null;
+    public static BigDecimal withDrawAmount = null;
 
     @Override
     public void deposit(BigDecimal amount)

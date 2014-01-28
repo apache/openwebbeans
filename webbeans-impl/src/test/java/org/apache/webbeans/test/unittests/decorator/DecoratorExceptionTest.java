@@ -26,7 +26,7 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.annotation.binding.DummyAnnotationLiteral;
 import org.apache.webbeans.test.component.CheckWithCheckPaymentDecoratorField;
 import org.apache.webbeans.test.component.IPayment;
@@ -34,37 +34,25 @@ import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeIsno
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeMustImplementAllDecoratedTypes;
 import org.apache.webbeans.test.component.decorator.broken.MoreThanOneDelegateAttribute;
 import org.apache.webbeans.test.component.decorator.broken.PaymentDecorator;
-import org.junit.Before;
 import org.junit.Test;
 
-public class DecoratorExceptionTest extends TestContext
+import javax.enterprise.inject.spi.DefinitionException;
+
+public class DecoratorExceptionTest extends AbstractUnitTest
 {
-    public DecoratorExceptionTest()
-    {
-        super(DecoratorExceptionTest.class.getName());
-    }
-
-    @Override
-    @Before
-    public void init()
-    {
-        super.init();
-    }
-
-
     @Test
     public void testDelegateAttributeIsnotInterface()
     {
         try
         {
-            defineDecorator(DelegateAttributeIsnotInterface.class);
+            addDecorator(DelegateAttributeIsnotInterface.class);
+            startContainer();
+            Assert.fail("DefinitionException expected");
         }
-        catch (Exception e)
+        catch (DefinitionException e)
         {
-            System.out.println("got expected exception: " + e.getMessage());
-            return; // all ok!
+            return; // all ok
         }
-        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -72,14 +60,14 @@ public class DecoratorExceptionTest extends TestContext
     {
         try
         {
-            defineDecorator(MoreThanOneDelegateAttribute.class);
+            addDecorator(MoreThanOneDelegateAttribute.class);
+            startContainer();
+            Assert.fail("DefinitionException expected");
         }
-        catch (Exception e)
+        catch (DefinitionException e)
         {
-            System.out.println("got expected exception: " + e.getMessage());
-            return; // all ok!
+            return; // all ok
         }
-        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -87,15 +75,14 @@ public class DecoratorExceptionTest extends TestContext
     {
         try
         {
-            defineDecorator(PaymentDecorator.class);
-            defineManagedBean(CheckWithCheckPaymentDecoratorField.class);
+            addDecorator(PaymentDecorator.class);
+            startContainer(CheckWithCheckPaymentDecoratorField.class);
+            Assert.fail("DefinitionException expected");
         }
-        catch (Exception e)
+        catch (DefinitionException e)
         {
-            System.out.println("got expected exception: " + e.getMessage());
-            return; // all ok!
+            return; // all ok
         }
-        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -103,14 +90,14 @@ public class DecoratorExceptionTest extends TestContext
     {
         try
         {
-            defineDecorator(DelegateAttributeMustImplementAllDecoratedTypes.class);
+            addDecorator(DelegateAttributeMustImplementAllDecoratedTypes.class);
+            startContainer();
+            Assert.fail("DefinitionException expected");
         }
-        catch (Exception e)
+        catch (DefinitionException e)
         {
-            System.out.println("got expected exception: " + e.getMessage());
-            return; // all ok!
+            return; // all ok
         }
-        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -118,7 +105,7 @@ public class DecoratorExceptionTest extends TestContext
     {
         try
         {
-
+            startContainer(IPayment.class);
             Set<Type> api = new HashSet<Type>();
             api.add(IPayment.class);
 
@@ -126,14 +113,13 @@ public class DecoratorExceptionTest extends TestContext
             anns[0] = new DummyAnnotationLiteral();
             anns[1] = new DummyAnnotationLiteral();
 
-            getManager().resolveDecorators(api, anns);
+            getBeanManager().resolveDecorators(api, anns);
+            Assert.fail("IllegalArgumentException expected");
         }
-        catch (Exception e)
+        catch (IllegalArgumentException e)
         {
-            System.out.println("got expected exception: " + e.getMessage());
-            return; // all ok!
+            return; // all ok
         }
-        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -141,21 +127,20 @@ public class DecoratorExceptionTest extends TestContext
     {
         try
         {
-
+            startContainer(IPayment.class);
             Set<Type> api = new HashSet<Type>();
             api.add(IPayment.class);
 
             Annotation[] anns = new Annotation[2];
             anns[0] = new RequestedScopeLiteral();
 
-            getManager().resolveDecorators(api, anns);
+            getBeanManager().resolveDecorators(api, anns);
+            Assert.fail("IllegalArgumentException expected");
         }
-        catch (Exception e)
+        catch (IllegalArgumentException e)
         {
-            System.out.println("got expected exception: " + e.getMessage());
-            return; // all ok!
+            return; // all ok
         }
-        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -163,20 +148,19 @@ public class DecoratorExceptionTest extends TestContext
     {
         try
         {
-
+            startContainer();
             Set<Type> api = new HashSet<Type>();
 
             Annotation[] anns = new Annotation[2];
             anns[0] = new DummyAnnotationLiteral();
 
-            getManager().resolveDecorators(api, anns);
+            getBeanManager().resolveDecorators(api, anns);
+            Assert.fail("IllegalArgumentException expected");
         }
-        catch (Exception e)
+        catch (IllegalArgumentException e)
         {
-            System.out.println("got expected exception: " + e.getMessage());
-            return; // all ok!
+            return; // all ok
         }
-        Assert.fail("expecting an exception!");
     }
 
 }

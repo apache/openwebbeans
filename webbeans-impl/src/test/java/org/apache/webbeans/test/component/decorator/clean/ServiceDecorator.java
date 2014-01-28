@@ -32,7 +32,7 @@ public  class ServiceDecorator implements IService
 {
     @Inject @Delegate @Binding1 IService delegate;
 
-    private String delegateAttr = null;
+    public static String delegateAttr = null;
 
     @Override
     public String service()

@@ -25,18 +25,14 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.util.ClassUtil;
 import org.junit.Test;
 
-public class ClassTest extends TestContext
+public class ClassTest extends AbstractUnitTest
 {
     public Map<String, ?> map = null;
-    
-    public ClassTest()
-    {
-        super(ClassTest.class.getName());
-    }
+
 
     @Test
     public void testTypeVariableTest()
