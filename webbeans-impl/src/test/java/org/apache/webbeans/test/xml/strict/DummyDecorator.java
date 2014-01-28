@@ -18,10 +18,21 @@
  */
 package org.apache.webbeans.test.xml.strict;
 
+import org.apache.webbeans.test.component.IPayment;
+
 import javax.decorator.Decorator;
+import javax.decorator.Delegate;
+import javax.inject.Inject;
 
 @Decorator
-public class DummyDecorator
+public class DummyDecorator implements IPayment
 {
+    @Inject
+    @Delegate
+    private IPayment delegate;
 
+    @Override
+    public String pay() {
+        return delegate.pay();
+    }
 }

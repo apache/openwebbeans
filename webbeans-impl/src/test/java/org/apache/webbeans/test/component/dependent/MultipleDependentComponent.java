@@ -25,23 +25,22 @@ import javax.inject.Inject;
 @RequestScoped
 public class MultipleDependentComponent
 {
-    @Inject @Default DependentComponent dependent1;
+    @Inject
+    @Default
+    private DependentComponent dependent1;
     
-    @Inject @Default DependentComponent dependent2;
+    @Inject
+    @Default
+    private DependentComponent dependent2;
 
-    public MultipleDependentComponent()
-    {
-        
-    }
-    
     public DependentComponent get1()
     {
-        return this.dependent1;
+        return dependent1;
     }
     
     public DependentComponent get2()
     {
-        return this.dependent2;
+        return dependent2;
     }
     
 }

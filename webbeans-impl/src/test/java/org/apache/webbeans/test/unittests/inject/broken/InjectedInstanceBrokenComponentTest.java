@@ -18,101 +18,39 @@
  */
 package org.apache.webbeans.test.unittests.inject.broken;
 
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.inject.broken.InstanceInjectedBrokenComponent1;
-import org.apache.webbeans.test.component.inject.broken.InstanceInjectedBrokenComponent2;
+import org.apache.webbeans.test.component.inject.broken.InstanceInjectedWorkingComponent;
 import org.apache.webbeans.test.component.inject.broken.InstanceInjectedBrokenComponent3;
 import org.apache.webbeans.test.component.inject.broken.InstanceInjectedBrokenComponent4;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-public class InjectedInstanceBrokenComponentTest extends TestContext
-{
-    public InjectedInstanceBrokenComponentTest()
-    {
-        super(InjectedInstanceBrokenComponentTest.class.getName());
-    }
+import javax.enterprise.inject.spi.DefinitionException;
 
-    @Override
-    @Before
-    public void init()
-    {
-        super.init();     
-        
-    }
-    
-    @Test
+public class InjectedInstanceBrokenComponentTest extends AbstractUnitTest
+{
+    @Test(expected = DefinitionException.class)
     public void testInjectedInstanceBrokenComponent1()
     {
-        Exception e = null;
-        
-        try
-        {
-            defineManagedBean(InstanceInjectedBrokenComponent1.class);
-            
-        }catch(Exception e1)
-        {
-            e = e1;
-            System.out.println(e.getMessage());
-        }
-        
-        Assert.assertNotNull(e);
-    }
-    
-    @Test
-    public void testInjectedInstanceBrokenComponent2()
-    {
-        Exception e = null;
-        
-        try
-        {
-            defineManagedBean(InstanceInjectedBrokenComponent2.class);
-            
-        }catch(Exception e1)
-        {
-            e = e1;
-            System.out.println(e.getMessage());
-        }
-        
-        Assert.assertNull(e);
+        startContainer(InstanceInjectedBrokenComponent1.class);
     }
 
     @Test
+    public void testInjectedInstanceWorkingComponent()
+    {
+        startContainer(InstanceInjectedWorkingComponent.class);
+    }
+
+    @Test(expected = DefinitionException.class)
     public void testInjectedInstanceBrokenComponent3()
     {
-        Exception e = null;
-        
-        try
-        {
-            defineManagedBean(InstanceInjectedBrokenComponent3.class);
-            
-        }catch(Exception e1)
-        {
-            e = e1;
-            System.out.println(e.getMessage());
-        }
-        
-        Assert.assertNotNull(e);
+        startContainer(InstanceInjectedBrokenComponent3.class);
     }
 
-    @Test
+    @Test(expected = DefinitionException.class)
     public void testInjectedInstanceBrokenComponent4()
     {
-        Exception e = null;
-        
-        try
-        {
-            defineManagedBean(InstanceInjectedBrokenComponent4.class);
-            
-        }
-        catch(Exception e1)
-        {
-            e = e1;
-            System.out.println(e.getMessage());
-        }
-        
-        Assert.assertNotNull(e);
+        startContainer(InstanceInjectedBrokenComponent4.class);
     }
 
 }

@@ -18,63 +18,88 @@
  */
 package org.apache.webbeans.test.unittests.inject;
 
-import java.util.List;
-
-import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.annotation.binding.AnnotationWithBindingMember;
+import org.apache.webbeans.test.annotation.binding.AnnotationWithNonBindingMember;
 import org.apache.webbeans.test.component.BindingComponent;
 import org.apache.webbeans.test.component.NonBindingComponent;
-import org.junit.Before;
 import org.junit.Test;
 
-public class InjectedComponentWithMemberTest extends TestContext
+import javax.enterprise.util.AnnotationLiteral;
+
+public class InjectedComponentWithMemberTest extends AbstractUnitTest
 {
-    BeanManager container = null;
-
-    public InjectedComponentWithMemberTest()
-    {
-        super(InjectedComponentWithMemberTest.class.getSimpleName());
-    }
-
-    @Override
-    @Before
-    public void init()
-    {
-        super.init();
-        this.container = WebBeansContext.getInstance().getBeanManagerImpl();
-    }
-
     @Test
     public void testTypedComponent() throws Throwable
     {
-        clear();
-        defineManagedBean(BindingComponent.class);
-        defineManagedBean(NonBindingComponent.class);
-        List<AbstractOwbBean<?>> comps = getComponents();
+        startContainer(BindingComponent.class, NonBindingComponent.class);
 
-        Object session = getSession();
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initSessionContext(session);
+        Assert.assertNotNull(getBean(BindingComponent.class, new AnnotationWithBindingMemberLiteral("B", 3)));
+        Assert.assertNull(getBean(BindingComponent.class, new AnnotationWithBindingMemberLiteral("B", 7)));
+        Assert.assertNull(getBean(BindingComponent.class, new AnnotationWithBindingMemberLiteral("X", 3)));
+        Assert.assertNull(getBean(BindingComponent.class, new AnnotationWithBindingMemberLiteral("X", 7)));
 
-        Assert.assertEquals(2, comps.size());
+        NonBindingComponent nbcomp = getInstance(NonBindingComponent.class, new AnnotationWithNonBindingMemberLiteral("B", "x", "y"));
+        NonBindingComponent nbcomp2 = getInstance(NonBindingComponent.class, new AnnotationWithNonBindingMemberLiteral("B", "1", "2"));
+        Assert.assertEquals(nbcomp.self(), nbcomp2.self());
 
-        getManager().getInstance(comps.get(0));
-        Object object = getManager().getInstance(comps.get(1));
-
-        Assert.assertTrue(object instanceof NonBindingComponent);
-
-        NonBindingComponent comp = (NonBindingComponent) object;
-        BindingComponent bc = comp.getComponent();
-
+        BindingComponent bc = nbcomp.getComponent();
         Assert.assertTrue(bc != null);
 
-        contextFactory.destroySessionContext(session);
+        BindingComponent bindingComponent = getInstance(BindingComponent.class, new AnnotationWithBindingMemberLiteral("B", 3));
+        Assert.assertEquals(bindingComponent.self(), bc.self());
+    }
+
+    public class AnnotationWithBindingMemberLiteral extends AnnotationLiteral<AnnotationWithBindingMember> implements AnnotationWithBindingMember
+    {
+        private final String value;
+        private final int number;
+
+        public AnnotationWithBindingMemberLiteral(String value, int number) {
+            this.value = value;
+            this.number = number;
+        }
+
+        @Override
+        public String value() {
+            return value;
+        }
+
+        @Override
+        public int number() {
+            return number;
+        }
+    }
+
+    public class AnnotationWithNonBindingMemberLiteral extends AnnotationLiteral<AnnotationWithNonBindingMember> implements AnnotationWithNonBindingMember
+    {
+        private final String value;
+        private final String arg1;
+        private final String arg2;
+
+        public AnnotationWithNonBindingMemberLiteral(String value, String arg1, String arg2) {
+            this.value = value;
+            this.arg1 = arg1;
+            this.arg2 = arg2;
+        }
+
+        @Override
+        public String value() {
+            return value;
+        }
+
+        @Override
+        public String arg1() {
+            return arg1;
+        }
+
+        @Override
+        public String arg2() {
+            return arg2;
+        }
     }
 
 }

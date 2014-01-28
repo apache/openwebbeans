@@ -19,11 +19,14 @@
 package org.apache.webbeans.test.unittests.event.exception;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
 
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.util.AnnotationLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.event.LoggedInEvent;
@@ -34,17 +37,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 @SuppressWarnings("unchecked")
-public class EventExceptionTest extends TestContext
+public class EventExceptionTest extends AbstractUnitTest
 {
-    public EventExceptionTest()
-    {
-        super(EventExceptionTest.class.getName());
-    }
-
     @Test
     public void testAddObserverGenericType()
     {
-        Exception exc = null;
+        startContainer();
 
         try
         {
@@ -53,24 +51,19 @@ public class EventExceptionTest extends TestContext
             {
             };
 
-
-            getManager().fireEvent(new BrokenEvent(), anns);
-
+            getBeanManager().fireEvent(new BrokenEvent(), anns);
+            Assert.fail("IllegalArgumentException expected");
         }
-        catch (Exception e)
+        catch (IllegalArgumentException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            return; // all ok
         }
-
-        Assert.assertNotNull(exc);
     }
 
     @Test
     public void testFireEventGenericType()
     {
-        Exception exc = null;
-
+        startContainer();
         try
         {
             Annotation[] anns = new Annotation[1];
@@ -78,21 +71,19 @@ public class EventExceptionTest extends TestContext
             {
             };
 
-            getManager().fireEvent(new BrokenEvent(), anns);
-            Assert.fail();
-
+            getBeanManager().fireEvent(new BrokenEvent(), anns);
+            Assert.fail("IllegalArgumentException expected");
         }
-        catch (Exception e)
+        catch (IllegalArgumentException e)
         {
-            // this is an expected exception!
+            return; // all ok
         }
     }
 
     @Test
     public void testAddObserverDuplicateBinding()
     {
-        Exception exc = null;
-
+        startContainer();
         try
         {
             Annotation[] anns = new Annotation[2];
@@ -106,48 +97,36 @@ public class EventExceptionTest extends TestContext
             LoggedInObserver observer = new LoggedInObserver(ArrayUtil.asSet(anns));
             WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, LoggedInEvent.class);
 
-            getManager().fireEvent(new LoggedInEvent(), anns);
+            getBeanManager().fireEvent(new LoggedInEvent(), anns);
 
             Assert.assertEquals("ok", observer.getResult());
 
+            Assert.fail("IllegalArgumentException expected");
         }
-        catch (Exception e)
+        catch (IllegalArgumentException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            return; // all ok
         }
-
-        Assert.assertNotNull(exc);
-
     }
 
     @Test
     public void testAddObserverIllegalArgument()
     {
-        Exception exc = null;
-
+        startContainer();
         try
         {
-            Annotation[] anns = new Annotation[2];
-            anns[0] = new AnnotationLiteral<NormalScope>()
+            Annotation[] anns = new Annotation[1];
+            anns[0] = new AnnotationLiteral<Documented>()
             {
             };
             
             LoggedInObserver observer = new LoggedInObserver(ArrayUtil.asSet(anns));
             WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, LoggedInEvent.class);
-
-            getManager().fireEvent(new LoggedInEvent(), anns);
-
-            Assert.assertEquals("ok", observer.getResult());
-
+            Assert.fail("IllegalArgumentException expected");
         }
-        catch (Exception e)
+        catch (IllegalArgumentException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            return; // all ok
         }
-
-        Assert.assertNotNull(exc);
-
     }
 }

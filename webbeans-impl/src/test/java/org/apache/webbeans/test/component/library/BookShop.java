@@ -28,6 +28,7 @@ import org.apache.webbeans.test.event.LoggedInEvent;
 @RequestScoped
 public class BookShop extends Business implements Shop<Book>
 {
+    private boolean interceptorCalled = false;
 
     @Override
     public String shop()
@@ -46,4 +47,7 @@ public class BookShop extends Business implements Shop<Book>
         // this is purely for checking if the Extension mechanism works
     }
 
+    public boolean isInterceptorCalled() {
+        return interceptorCalled;
+    }
 }

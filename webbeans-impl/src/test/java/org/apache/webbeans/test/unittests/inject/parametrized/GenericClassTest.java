@@ -26,7 +26,6 @@ import org.apache.webbeans.newtests.injection.generics.zoo.HorseStable;
 import org.apache.webbeans.newtests.injection.generics.zoo.Pig;
 import org.apache.webbeans.newtests.injection.generics.zoo.PigStable;
 import org.apache.webbeans.newtests.injection.generics.zoo.Stable;
-import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.inject.parametrized.Dao;
 import org.apache.webbeans.test.component.inject.parametrized.UserDao;
 import org.apache.webbeans.test.component.inject.parametrized.WithTypeVariable;
@@ -34,55 +33,34 @@ import org.apache.webbeans.util.GenericsUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class GenericClassTest extends TestContext
+public class GenericClassTest
 {
-    public GenericClassTest()
-    {
-        super(GenericClassTest.class.getName());
-    }
-
     @Test
-    public void testGenericClasses()
+    public void testGenericClasses() throws Exception
     {
-        try
-        {
-            Field t = Dao.class.getField("t");
-            Field raw = Dao.class.getField("raw");
-            Field check22 = Dao.class.getField("check22");
-            Field check22Bound = Dao.class.getField("check22WithBound");
-            Field check4 = WithTypeVariable.class.getField("check4");
-            
-            Assert.assertFalse(GenericsUtil.satisfiesDependency(false, raw.getGenericType(), t.getGenericType()));
-            Assert.assertTrue(GenericsUtil.satisfiesDependency(false, check4.getGenericType(), t.getGenericType()));
-            Assert.assertTrue(GenericsUtil.satisfiesDependency(false, check22.getGenericType(), t.getGenericType()));
-            Assert.assertTrue(GenericsUtil.satisfiesDependency(false, check22Bound.getGenericType(), t.getGenericType()));
-            
-        }catch(Exception e)
-        {
-            e.printStackTrace();
-            fail("testGenericClasses");
-        }
+        Field t = Dao.class.getField("t");
+        Field raw = Dao.class.getField("raw");
+        Field check22 = Dao.class.getField("check22");
+        Field check22Bound = Dao.class.getField("check22WithBound");
+        Field check4 = WithTypeVariable.class.getField("check4");
+
+        Assert.assertFalse(GenericsUtil.satisfiesDependency(false, raw.getGenericType(), t.getGenericType()));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, check4.getGenericType(), t.getGenericType()));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, check22.getGenericType(), t.getGenericType()));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, check22Bound.getGenericType(), t.getGenericType()));
     }
     
     @Test
-    public void testGenericClasses2()
+    public void testGenericClasses2() throws Exception
     {
-        try
-        {
-            Field f1 = UserDao.class.getField("field1");
-            Field f2 = UserDao.class.getField("field2");
-            Field f3 = UserDao.class.getField("field3");
-            Field f4 = UserDao.class.getField("field4");
-            
+        Field f1 = UserDao.class.getField("field1");
+        Field f2 = UserDao.class.getField("field2");
+        Field f3 = UserDao.class.getField("field3");
+        Field f4 = UserDao.class.getField("field4");
 
-            Assert.assertTrue(GenericsUtil.satisfiesDependency(false, f3.getGenericType(), f1.getGenericType()));
-            Assert.assertTrue(GenericsUtil.satisfiesDependency(false, f4.getGenericType(), f1.getGenericType()));
-            
-        }catch(Exception e)
-        {
-            e.printStackTrace();
-            fail("testGenericClasses");
-        }
+
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, f3.getGenericType(), f1.getGenericType()));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, f4.getGenericType(), f1.getGenericType()));
     }
 
     @Test
@@ -115,7 +93,6 @@ public class GenericClassTest extends TestContext
 
         Assert.assertTrue(GenericsUtil.satisfiesDependency(false, parameterizedPigStableType, stableProducerMethodType));
         Assert.assertTrue(GenericsUtil.satisfiesDependency(false, parameterizedHorseStableType, stableProducerMethodType));
-
     }
     // method and field for {@link #testGenericProducerType}
     private <T> Stable<T> stableProducer()

@@ -24,6 +24,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.event.ITypeArgumentEventInterface;
@@ -37,16 +38,12 @@ import org.apache.webbeans.util.ArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class EventTest extends TestContext
+public class EventTest extends AbstractUnitTest
 {
-    public EventTest()
-    {
-        super(EventTest.class.getName());
-    }
-
     @Test
     public void testObserverWithClazz()
     {
+        startContainer();
         Annotation[] anns = new Annotation[1];
         anns[0] = new AnnotationLiteral<Binding1>()
         {
@@ -55,7 +52,7 @@ public class EventTest extends TestContext
         LoggedInObserver observer = new LoggedInObserver(ArrayUtil.asSet(anns));
         WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, LoggedInEvent.class);
 
-        getManager().fireEvent(new LoggedInEvent(), anns);
+        getBeanManager().fireEvent(new LoggedInEvent(), anns);
 
         Assert.assertEquals("ok", observer.getResult());
     }
@@ -63,6 +60,7 @@ public class EventTest extends TestContext
     @Test
     public void testObserverWithClazzAndTypeArguments()
     {
+        startContainer();
         Annotation[] anns = new Annotation[1];
         anns[0] = new AnnotationLiteral<Binding1>()
         {
@@ -75,7 +73,7 @@ public class EventTest extends TestContext
 
         WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, tl);
 
-        getManager().fireEvent(new TypeArgumentEvent(), anns);
+        getBeanManager().fireEvent(new TypeArgumentEvent(), anns);
 
         Assert.assertEquals("ok", observer.getResult());
     }
@@ -83,6 +81,7 @@ public class EventTest extends TestContext
     @Test
     public void testObserverWithInterface()
     {
+        startContainer();
         Annotation[] anns = new Annotation[1];
         anns[0] = new AnnotationLiteral<Binding1>()
         {
@@ -91,9 +90,8 @@ public class EventTest extends TestContext
         TypeArgumentInterfaceObserver observer = new TypeArgumentInterfaceObserver(ArrayUtil.asSet(anns));
         WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, ITypeArgumentEventInterface.class);
 
-        getManager().fireEvent(new TypeArgumentEvent(), anns);
+        getBeanManager().fireEvent(new TypeArgumentEvent(), anns);
         Assert.assertEquals("ok", observer.getResult());
-
     }
 
 }

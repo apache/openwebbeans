@@ -30,11 +30,18 @@ import org.apache.webbeans.test.annotation.binding.AnnotationWithNonBindingMembe
 @SessionScoped
 public class NonBindingComponent implements Serializable
 {
-    private @Inject @AnnotationWithBindingMember(number = 3, value = "B") BindingComponent comp;
+    @Inject
+    @AnnotationWithBindingMember(number = 3, value = "B")
+    private BindingComponent comp;
 
     public BindingComponent getComponent()
     {
         return comp;
+    }
+
+    public NonBindingComponent self()
+    {
+        return this;
     }
 
 }

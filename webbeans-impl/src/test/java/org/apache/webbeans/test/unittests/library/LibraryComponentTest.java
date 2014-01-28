@@ -18,57 +18,37 @@
  */
 package org.apache.webbeans.test.unittests.library;
 
-import java.util.List;
-
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.library.Book;
 import org.apache.webbeans.test.component.library.BookShop;
 import org.apache.webbeans.test.component.library.Shop;
-import org.junit.Before;
 import org.junit.Test;
 
-public class LibraryComponentTest extends TestContext
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
+public class LibraryComponentTest extends AbstractUnitTest
 {
-    public LibraryComponentTest()
-    {
-        super(LibraryComponentTest.class.getSimpleName());
-    }
-
-    @Override
-    @Before
-    public void init()
-    {
-        super.init();
-    }
-
     @Test
     public void testTypedComponent() throws Throwable
     {
-        clear();
+        startContainer(BookShop.class, BeanHolder.class);
 
-        defineManagedBean(BookShop.class);
-        List<AbstractOwbBean<?>> comps = getComponents();
+        BeanHolder beanHolder = getInstance(BeanHolder.class);
+        Assert.assertEquals("shop", beanHolder.getBookShop().shop());
+    }
 
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
 
-        Assert.assertEquals(1, comps.size());
+    @Dependent
+    public static class BeanHolder
+    {
+        private @Inject Shop<Book> bookShop;
 
-        AbstractOwbBean<?> obj = comps.get(0);
-
-        Object instance = getManager().getInstance(obj);
-        Assert.assertTrue(instance instanceof Shop);
-
-        @SuppressWarnings("unchecked")
-        Shop<Book> shop = (Shop<Book>) instance;
-        shop.shop();
-
-        contextFactory.destroyRequestContext(null);
+        public Shop<Book> getBookShop() {
+            return bookShop;
+        }
     }
 
 }

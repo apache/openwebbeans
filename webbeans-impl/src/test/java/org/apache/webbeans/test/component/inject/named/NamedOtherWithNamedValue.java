@@ -24,10 +24,17 @@ import javax.inject.Named;
 import org.apache.webbeans.test.component.IPayment;
 
 public class NamedOtherWithNamedValue
-{    
+{
+    private IPayment payment;
+
     @Inject
     public NamedOtherWithNamedValue(@Named("value") IPayment payment)
     {
-        
+        this.payment = payment;
+    }
+
+    public IPayment getPayment()
+    {
+        return payment;
     }
 }

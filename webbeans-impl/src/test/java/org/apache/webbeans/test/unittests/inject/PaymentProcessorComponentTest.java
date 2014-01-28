@@ -18,61 +18,22 @@
  */
 package org.apache.webbeans.test.unittests.inject;
 
-import java.util.List;
-
-import javax.enterprise.inject.spi.BeanManager;
-
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
 import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
-import org.junit.Before;
 import org.junit.Test;
 
-public class PaymentProcessorComponentTest extends TestContext
+public class PaymentProcessorComponentTest extends AbstractUnitTest
 {
-    BeanManager container = null;
-
-    public PaymentProcessorComponentTest()
-    {
-        super(PaymentProcessorComponentTest.class.getSimpleName());
-    }
-
-    @Override
-    @Before
-    public void init()
-    {
-        super.init();
-    }
-
     @Test
     public void testTypedComponent() throws Throwable
     {
-        clear();
-
-        defineManagedBean(CheckWithCheckPayment.class);
-        defineManagedBean(CheckWithMoneyPayment.class);
-        defineManagedBean(PaymentProcessorComponent.class);
-
-        List<AbstractOwbBean<?>> comps = getComponents();
-
-        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
-
-        Assert.assertEquals(3, comps.size());
-
-        getManager().getInstance(comps.get(0));
-        getManager().getInstance(comps.get(1));
-
-        Object object = getManager().getInstance(comps.get(2));
-        Assert.assertNotNull(object);
-        Assert.assertTrue(object instanceof PaymentProcessorComponent);
-
-        PaymentProcessorComponent uc = (PaymentProcessorComponent) object;
+        startContainer(CheckWithCheckPayment.class, CheckWithMoneyPayment.class, PaymentProcessorComponent.class);
+        PaymentProcessorComponent uc = getInstance(PaymentProcessorComponent.class);
         IPayment p = uc.getPaymentCheck();
 
         Assert.assertTrue(p instanceof CheckWithCheckPayment);
@@ -83,8 +44,6 @@ public class PaymentProcessorComponentTest extends TestContext
         Assert.assertTrue(p instanceof CheckWithMoneyPayment);
 
         Assert.assertEquals("MONEY", p.pay());
-
-        WebBeansContext.getInstance().getContextFactory().destroyRequestContext(null);
     }
 
 }

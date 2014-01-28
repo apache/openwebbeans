@@ -34,6 +34,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -191,6 +192,11 @@ public abstract class AbstractUnitTest
     }
 
     protected <T> T getInstance(Class<T> type, Annotation... qualifiers)
+    {
+        return getInstance((Type) type, qualifiers);
+    }
+
+    protected <T> T getInstance(Type type, Annotation... qualifiers)
     {
         Set<Bean<?>> beans = getBeanManager().getBeans(type, qualifiers);
         Assert.assertNotNull(beans);

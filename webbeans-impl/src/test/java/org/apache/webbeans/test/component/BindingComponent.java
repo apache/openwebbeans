@@ -28,4 +28,8 @@ import org.apache.webbeans.test.annotation.binding.AnnotationWithBindingMember;
 @SessionScoped
 public class BindingComponent implements Serializable
 {
+    public BindingComponent self()
+    {
+        return this;
+    }
 }

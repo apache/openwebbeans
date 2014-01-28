@@ -30,12 +30,12 @@ import org.apache.webbeans.test.component.PaymentProcessorComponent;
 public class ProducerFieldDefinitionComponent
 {
     @Produces @RequestScoped @Synchronous PaymentProcessorComponent paymentProcessor;
-    
+
     public ProducerFieldDefinitionComponent()
     {
-        
+
     }
-    
+
     @Inject
     public ProducerFieldDefinitionComponent(@Default PaymentProcessorComponent paymentProcessor)
     {
@@ -44,6 +44,6 @@ public class ProducerFieldDefinitionComponent
     
     public boolean isExist()
     {
-        return paymentProcessor != null ? true : false;
+        return paymentProcessor != null;
     }
 }

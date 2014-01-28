@@ -16,26 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.test.unittests.inject;
+package org.apache.webbeans.test.component.inject.broken;
 
 
-import junit.framework.Assert;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.test.component.service.InjectedComponent;
-import org.apache.webbeans.test.component.service.ServiceImpl1;
-import org.junit.Test;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 
-public class InjectedComponentTest extends AbstractUnitTest
+import org.apache.webbeans.test.component.ITypeLiteralComponent;
+
+public class InstanceInjectedWorkingComponent
 {
-    @Test
-    public void testTypedComponent() throws Throwable
-    {
-        startContainer(InjectedComponent.class, ServiceImpl1.class);
-
-        InjectedComponent component = getInstance(InjectedComponent.class);
-
-        Assert.assertNotNull(component);
-    }
-
+    @Inject @Any Instance<ITypeLiteralComponent<?>> instance;
 }

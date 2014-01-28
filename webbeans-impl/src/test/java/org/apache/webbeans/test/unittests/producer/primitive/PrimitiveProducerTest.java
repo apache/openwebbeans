@@ -20,39 +20,21 @@ package org.apache.webbeans.test.unittests.producer.primitive;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.producer.primitive.PrimitiveConsumer;
 import org.apache.webbeans.test.component.producer.primitive.PrimitiveProducer;
-import org.junit.Before;
 import org.junit.Test;
 
-public class PrimitiveProducerTest extends TestContext
+public class PrimitiveProducerTest extends AbstractUnitTest
 {
-    public PrimitiveProducerTest()
-    {
-        super(PrimitiveProducerTest.class.getName());
-    }
-
-    @Override
-    @Before
-    public void init()
-    {
-    }
-    
-    
     @Test
     public void testPrimitiveProducer()
     {
-        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
-
-        defineManagedBean(PrimitiveProducer.class);
-        defineManagedBean(PrimitiveConsumer.class);
+        startContainer(PrimitiveProducer.class, PrimitiveConsumer.class);
         
-        PrimitiveConsumer consumer = (PrimitiveConsumer) getInstanceByName("primitiveConsumer");
+        PrimitiveConsumer consumer = getInstance("primitiveConsumer");
         
         Assert.assertEquals(56.7f, consumer.getSalary());
-        
     }
 }
 

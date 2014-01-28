@@ -39,7 +39,6 @@ import javax.interceptor.Interceptor;
 import junit.framework.Assert;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
@@ -51,13 +50,8 @@ import org.apache.webbeans.test.xml.annot.BindingType1;
 import org.apache.webbeans.test.xml.annot.BindingType2;
 import org.junit.Test;
 
-public class PortableTests extends TestContext
+public class PortableTests
 {
-    public PortableTests()
-    {
-        super(PortableTests.class.getName());
-    }
-
     @Test
     public void testAnnotatedType()
     {

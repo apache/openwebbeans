@@ -16,26 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.test.unittests.inject;
+package org.apache.webbeans.test.component.inject.named;
 
+import org.apache.webbeans.test.component.IPayment;
 
-import junit.framework.Assert;
+import javax.enterprise.context.Dependent;
+import javax.inject.Named;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.test.component.service.InjectedComponent;
-import org.apache.webbeans.test.component.service.ServiceImpl1;
-import org.junit.Test;
-
-public class InjectedComponentTest extends AbstractUnitTest
-{
-    @Test
-    public void testTypedComponent() throws Throwable
-    {
-        startContainer(InjectedComponent.class, ServiceImpl1.class);
-
-        InjectedComponent component = getInstance(InjectedComponent.class);
-
-        Assert.assertNotNull(component);
+@Dependent
+@Named("paymentProcessor")
+public class NamedPayment_PaymentProcessor implements IPayment {
+    @Override
+    public String pay() {
+        return "paymentProcessor-named";
     }
-
 }

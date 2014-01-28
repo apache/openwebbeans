@@ -23,19 +23,14 @@ import java.io.InputStream;
 import junit.framework.Assert;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.xml.strict.DummyDecorator;
 import org.apache.webbeans.test.xml.strict.DummyInterceptor;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.junit.Test;
 
-public class XMLSpecStrictTest extends TestContext
+public class XMLSpecStrictTest extends AbstractUnitTest
 {
-    public XMLSpecStrictTest()
-    {
-        super(XMLSpecStrictTest.class.getName());
-    }
-
     @Test
     public void testXMLSpecStrictDecorators()
     {

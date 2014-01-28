@@ -40,13 +40,11 @@ public class ClassTest extends AbstractUnitTest
         boolean result = ClassUtil.isDefinitionContainsTypeVariables(Map.class);
         
         Assert.assertEquals(true, result);
-        
     }
     
     @Test
     public void testCheckParameterizedType() throws Exception
     {
-        
         Field field = ClassTest.class.getField("map");
         
         Type type = field.getGenericType();
@@ -57,7 +55,5 @@ public class ClassTest extends AbstractUnitTest
             
             Assert.assertFalse(result);
         }
-        
-        
     }
 }
