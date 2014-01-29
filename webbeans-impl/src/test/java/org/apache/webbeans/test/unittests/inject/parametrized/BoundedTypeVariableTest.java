@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.inject.parametrized.BoundedTypeVariableComponent;
 import org.apache.webbeans.util.ClassUtil;
 import org.junit.Assert;

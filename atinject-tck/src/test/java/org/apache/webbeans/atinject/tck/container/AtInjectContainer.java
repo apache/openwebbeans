@@ -20,7 +20,7 @@ package org.apache.webbeans.atinject.tck.container;
 
 import junit.framework.Test;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.atinject.tck.specific.SpecificProducer;
 import org.atinject.tck.Tck;
 import org.atinject.tck.auto.Car;

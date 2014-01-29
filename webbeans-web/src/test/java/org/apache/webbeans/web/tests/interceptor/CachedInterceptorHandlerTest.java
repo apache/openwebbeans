@@ -20,11 +20,11 @@ package org.apache.webbeans.web.tests.interceptor;
 
 import junit.framework.Assert;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.newtests.interceptors.beans.ApplicationScopedBean;
-import org.apache.webbeans.newtests.interceptors.beans.DependentScopedBean;
-import org.apache.webbeans.newtests.interceptors.beans.RequestScopedBean;
-import org.apache.webbeans.newtests.interceptors.common.TransactionInterceptor;
+import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.test.interceptors.beans.ApplicationScopedBean;
+import org.apache.webbeans.test.interceptors.beans.DependentScopedBean;
+import org.apache.webbeans.test.interceptors.beans.RequestScopedBean;
+import org.apache.webbeans.test.interceptors.common.TransactionInterceptor;
 import org.apache.webbeans.web.lifecycle.test.MockServletContext;
 import org.apache.webbeans.web.tests.MockServletRequest;
 import org.junit.Test;

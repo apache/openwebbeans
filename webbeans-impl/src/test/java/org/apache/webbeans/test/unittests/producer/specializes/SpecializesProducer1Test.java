@@ -22,7 +22,7 @@ import java.lang.annotation.Annotation;
 
 import javax.enterprise.util.AnnotationLiteral;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.component.producer.specializes.SpecializesProducer1;

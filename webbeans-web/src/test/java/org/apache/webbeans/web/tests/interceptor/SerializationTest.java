@@ -20,7 +20,7 @@ package org.apache.webbeans.web.tests.interceptor;
 
 
 import junit.framework.Assert;
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.web.lifecycle.test.MockServletContext;
 import org.apache.webbeans.web.tests.MockServletRequest;
 import org.junit.Test;

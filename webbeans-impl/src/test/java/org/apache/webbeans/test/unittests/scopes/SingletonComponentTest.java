@@ -20,7 +20,7 @@ package org.apache.webbeans.test.unittests.scopes;
 
 
 import junit.framework.Assert;
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.Singleton;
 import org.apache.webbeans.test.component.service.ITyped2;
 import org.apache.webbeans.test.component.service.Typed2;

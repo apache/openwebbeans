@@ -27,7 +27,7 @@ import junit.framework.Assert;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.service.ITyped;
 import org.apache.webbeans.test.component.service.TypedComponent;
 import org.junit.Test;

@@ -20,7 +20,7 @@ package org.apache.webbeans.test.unittests.event.component;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent1;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent2;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent3;

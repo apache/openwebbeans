@@ -30,7 +30,7 @@ import javax.enterprise.inject.spi.Decorator;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding1Literal;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;

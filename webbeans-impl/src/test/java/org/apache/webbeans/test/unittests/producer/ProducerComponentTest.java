@@ -24,7 +24,7 @@ import javax.enterprise.util.TypeLiteral;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.producer.ParametrizedModel1;
 import org.apache.webbeans.test.component.producer.ParametrizedModel2;
 import org.apache.webbeans.test.component.producer.ParametrizedProducer;

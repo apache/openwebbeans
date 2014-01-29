@@ -22,7 +22,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
 public class ManagerResolutionTest extends AbstractUnitTest

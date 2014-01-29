@@ -20,7 +20,7 @@ package org.apache.webbeans.test.unittests.binding;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.binding.BindingWithNonBindingAnnotationTypeComponent;
 import org.apache.webbeans.test.component.binding.BindingWithNonBindingArrayTypeComponent;
 import org.junit.Test;

@@ -26,7 +26,7 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.exception.*;
 import org.apache.webbeans.test.component.intercept.NoArgConstructorInterceptorComponent;
 import org.junit.Test;

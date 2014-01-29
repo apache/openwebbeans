@@ -23,7 +23,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.AnyLiteral;
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.annotation.binding.Check;
 import org.apache.webbeans.test.annotation.binding.NotAny;
 import org.apache.webbeans.test.annotation.binding.Role;

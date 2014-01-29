@@ -21,7 +21,7 @@ package org.apache.webbeans.test.unittests.intercept.webbeans;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureAndTransactionalComponent;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureAndTransactionalInterceptor;
 import org.junit.Test;

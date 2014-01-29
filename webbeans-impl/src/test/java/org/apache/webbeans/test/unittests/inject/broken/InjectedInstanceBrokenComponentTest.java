@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.inject.broken;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.inject.broken.InstanceInjectedBrokenComponent1;
 import org.apache.webbeans.test.component.inject.broken.InstanceInjectedWorkingComponent;
 import org.apache.webbeans.test.component.inject.broken.InstanceInjectedBrokenComponent3;

@@ -27,7 +27,7 @@ import junit.framework.Assert;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.AlternativesManager;
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.xml.strict.Alternative1;
 import org.apache.webbeans.test.xml.strict.Alternative2;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;

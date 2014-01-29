@@ -22,7 +22,7 @@ package org.apache.webbeans.test.unittests.inject.alternative;
 import junit.framework.Assert;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.inject.alternative.AlternativeComponent;
 import org.apache.webbeans.test.component.inject.alternative.AlternativeInjector;
 import org.apache.webbeans.test.component.inject.alternative.IAlternative;

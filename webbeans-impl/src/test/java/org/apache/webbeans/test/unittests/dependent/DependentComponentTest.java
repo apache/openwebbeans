@@ -20,7 +20,7 @@ package org.apache.webbeans.test.unittests.dependent;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.dependent.DependentComponent;
 import org.apache.webbeans.test.component.dependent.DependentOwnerComponent;
 import org.apache.webbeans.test.component.dependent.circular.DependentA;

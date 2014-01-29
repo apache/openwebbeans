@@ -21,7 +21,7 @@ package org.apache.webbeans.test.unittests.inject;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.ContaintsCurrentComponent;
 import org.apache.webbeans.test.component.CurrentBindingComponent;
 import org.apache.webbeans.test.component.service.ITyped2;

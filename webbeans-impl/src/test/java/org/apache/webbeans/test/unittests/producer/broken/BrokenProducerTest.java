@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.producer.broken;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponent1;
 import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponent2;
 import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponent3;

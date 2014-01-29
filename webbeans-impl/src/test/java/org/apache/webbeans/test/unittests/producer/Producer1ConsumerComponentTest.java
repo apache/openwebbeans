@@ -20,7 +20,7 @@ package org.apache.webbeans.test.unittests.producer;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.producer.Producer1;
 import org.apache.webbeans.test.component.service.IService;
 import org.apache.webbeans.test.component.service.Producer1ConsumerComponent;

@@ -24,7 +24,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithBindingMember;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithNonBindingMember;
 import org.apache.webbeans.test.component.BindingComponent;

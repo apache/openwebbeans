@@ -21,7 +21,7 @@ package org.apache.webbeans.test.unittests.disposal;
 import javax.enterprise.context.RequestScoped;
 import java.util.List;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.disposal.Disposal1;
 import org.junit.Assert;
 import org.junit.Test;

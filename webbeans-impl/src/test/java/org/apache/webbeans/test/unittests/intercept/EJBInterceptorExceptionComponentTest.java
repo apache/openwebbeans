@@ -21,7 +21,7 @@ package org.apache.webbeans.test.unittests.intercept;
 import junit.framework.Assert;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.intercept.MultpleInterceptor;
 import org.junit.Test;
 

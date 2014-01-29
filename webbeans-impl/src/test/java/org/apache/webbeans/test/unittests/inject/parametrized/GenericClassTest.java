@@ -21,11 +21,11 @@ package org.apache.webbeans.test.unittests.inject.parametrized;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
-import org.apache.webbeans.newtests.injection.generics.zoo.Horse;
-import org.apache.webbeans.newtests.injection.generics.zoo.HorseStable;
-import org.apache.webbeans.newtests.injection.generics.zoo.Pig;
-import org.apache.webbeans.newtests.injection.generics.zoo.PigStable;
-import org.apache.webbeans.newtests.injection.generics.zoo.Stable;
+import org.apache.webbeans.test.injection.generics.zoo.Horse;
+import org.apache.webbeans.test.injection.generics.zoo.HorseStable;
+import org.apache.webbeans.test.injection.generics.zoo.Pig;
+import org.apache.webbeans.test.injection.generics.zoo.PigStable;
+import org.apache.webbeans.test.injection.generics.zoo.Stable;
 import org.apache.webbeans.test.component.inject.parametrized.Dao;
 import org.apache.webbeans.test.component.inject.parametrized.UserDao;
 import org.apache.webbeans.test.component.inject.parametrized.WithTypeVariable;

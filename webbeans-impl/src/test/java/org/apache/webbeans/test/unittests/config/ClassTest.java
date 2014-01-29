@@ -25,7 +25,7 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.util.ClassUtil;
 import org.junit.Test;
 

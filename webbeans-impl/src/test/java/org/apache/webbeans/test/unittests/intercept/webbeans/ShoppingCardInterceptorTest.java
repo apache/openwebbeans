@@ -20,7 +20,7 @@ package org.apache.webbeans.test.unittests.intercept.webbeans;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.intercept.webbeans.ShoppingCard;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
 import org.junit.Test;

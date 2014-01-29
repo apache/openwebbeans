@@ -26,7 +26,7 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.annotation.binding.DummyAnnotationLiteral;
 import org.apache.webbeans.test.component.CheckWithCheckPaymentDecoratorField;
 import org.apache.webbeans.test.component.IPayment;

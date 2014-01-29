@@ -24,7 +24,7 @@ import java.lang.annotation.Documented;
 import javax.enterprise.util.AnnotationLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.event.LoggedInEvent;
 import org.apache.webbeans.test.event.LoggedInObserver;

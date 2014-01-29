@@ -20,7 +20,7 @@ package org.apache.webbeans.test.unittests.library;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.library.Book;
 import org.apache.webbeans.test.component.library.BookShop;
 import org.apache.webbeans.test.component.library.Shop;

@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.producer;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.producer.StaticProducer1;
 import org.junit.Assert;
 import org.junit.Test;

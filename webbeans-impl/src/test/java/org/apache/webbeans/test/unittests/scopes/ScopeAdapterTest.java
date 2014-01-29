@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.scopes;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.producer.ScopeAdaptorComponent;
 import org.apache.webbeans.test.component.producer.ScopeAdaptorInjectorComponent;

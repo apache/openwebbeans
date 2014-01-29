@@ -20,7 +20,7 @@ package org.apache.webbeans.test.unittests.specializes.logger;
 
 
 import junit.framework.Assert;
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.specializes.logger.ISomeLogger;
 import org.apache.webbeans.test.component.specializes.logger.MockNotSpecializedLogger;
 import org.apache.webbeans.test.component.specializes.logger.MockSpecializedLogger;

@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.specializes;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.annotation.binding.Asynchronous;
 import org.apache.webbeans.test.component.specializes.AsynhrounousSpecalizesService;
 import org.apache.webbeans.test.component.specializes.SpecializesServiceInjectorComponent;
