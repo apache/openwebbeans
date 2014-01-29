@@ -28,67 +28,33 @@ import javax.enterprise.util.TypeLiteral;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.ITypeLiteralComponent;
 import org.apache.webbeans.test.component.InjectedTypeLiteralComponent;
 import org.apache.webbeans.test.component.TypeLiteralComponent;
-import org.junit.Before;
 import org.junit.Test;
 
-public class TypedLiteralComponentTest extends TestContext
+public class TypedLiteralComponentTest extends AbstractUnitTest
 {
-    public TypedLiteralComponentTest()
-    {
-        super(TypedLiteralComponentTest.class.getSimpleName());
-    }
-
-    @Override
-    @Before
-    public void init()
-    {
-        super.init();
-    }
-
     @Test
     public void testTypedComponent() throws Throwable
     {
-        clear();
+        startContainer(TypeLiteralComponent.class, InjectedTypeLiteralComponent.class);
 
-        defineManagedBean(TypeLiteralComponent.class);
-        defineManagedBean(InjectedTypeLiteralComponent.class);
-        List<AbstractOwbBean<?>> comps = getComponents();
-
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-
-        Assert.assertEquals(2, comps.size());
-
-        TypeLiteralComponent userComponent = (TypeLiteralComponent) getManager().getInstance(comps.get(0));
-        InjectedTypeLiteralComponent tc = (InjectedTypeLiteralComponent) getManager().getInstance(comps.get(1));
+        TypeLiteralComponent userComponent = getInstance(TypeLiteralComponent.class);
+        InjectedTypeLiteralComponent tc = getInstance(InjectedTypeLiteralComponent.class);
 
         Assert.assertNotNull(tc.getComponent());
         Assert.assertNotNull(userComponent);
 
         Assert.assertTrue(tc.getComponent() instanceof TypeLiteralComponent);
-
-        contextFactory.destroyRequestContext(null);
     }
 
     @Test
     public void testTypedLiteralComponent() throws Throwable
     {
-        clear();
-
-        defineManagedBean(TypeLiteralComponent.class);
-        List<AbstractOwbBean<?>> comps = getComponents();
-
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-
-        Assert.assertEquals(1, comps.size());
+        startContainer(TypeLiteralComponent.class);
 
         TypeLiteral<ITypeLiteralComponent<List<String>>> tl = new TypeLiteral<ITypeLiteralComponent<List<String>>>()
         {
@@ -102,8 +68,6 @@ public class TypedLiteralComponentTest extends TestContext
 
         Bean<?> s = WebBeansContext.getInstance().getBeanManagerImpl().getBeans(tl.getType(), anns).iterator().next();
         Assert.assertNotNull(s);
-
-        contextFactory.destroyRequestContext(null);
     }
 
 }

@@ -20,12 +20,14 @@ package org.apache.webbeans.test.component.literals;
 
 import java.lang.annotation.Annotation;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named("literalBean")
+@Dependent
 public class InstanceTypeLiteralBean
 {
     public static interface IOrder<T>{}

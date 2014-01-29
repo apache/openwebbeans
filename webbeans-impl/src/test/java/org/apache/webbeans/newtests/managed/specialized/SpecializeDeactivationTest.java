@@ -22,7 +22,6 @@ import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;

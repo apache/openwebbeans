@@ -18,48 +18,21 @@
  */
 package org.apache.webbeans.test.unittests.intercept.webbeans;
 
-import javax.enterprise.inject.spi.Bean;
-
 import junit.framework.Assert;
 
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.intercept.webbeans.ShoppingCard;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
-import org.junit.Before;
 import org.junit.Test;
 
-public class ShoppingCardInterceptorTest extends TestContext
+public class ShoppingCardInterceptorTest extends AbstractUnitTest
 {
-    public ShoppingCardInterceptorTest()
-    {
-        super(ShoppingCardInterceptorTest.class.getName());
-    }
-    
-    @Override
-    @Before
-    public void init()
-    {
-        initDefaultStereoTypes();
-        initializeInterceptorType(TransactionalInterceptor.class);
-        
-        super.init();
-        
-    }
-
     @Test
     public void testTransactionalInterceptor()
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        webBeansContext.getContextFactory().initSessionContext(null);
-
-        // Interceptors must explicitly get enabled via XML. We fake this:
-        webBeansContext.getInterceptorsManager().addEnabledInterceptorClass(TransactionalInterceptor.class);
-        
-        defineInterceptor(TransactionalInterceptor.class);
-        
-        Bean<ShoppingCard> bean = defineManagedBean(ShoppingCard.class);
-        ShoppingCard card = getManager().getInstance(bean);
+        addInterceptor(TransactionalInterceptor.class);
+        startContainer(TransactionalInterceptor.class, ShoppingCard.class);
+        ShoppingCard card = getInstance(ShoppingCard.class);
         
         card.placeOrder();
         
@@ -68,7 +41,5 @@ public class ShoppingCardInterceptorTest extends TestContext
         card.placeOrder2();
         
         Assert.assertFalse(ShoppingCard.getCALLED());
-
-        webBeansContext.getContextFactory().destroySessionContext(null);
     }
 }

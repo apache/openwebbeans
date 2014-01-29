@@ -21,13 +21,10 @@ package org.apache.webbeans.test.unittests.event.exception;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 
-import javax.enterprise.context.NormalScope;
-import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.util.AnnotationLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.event.LoggedInEvent;
 import org.apache.webbeans.test.event.LoggedInObserver;

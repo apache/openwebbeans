@@ -18,63 +18,22 @@
  */
 package org.apache.webbeans.test.unittests.scopes;
 
-import java.util.List;
-
-import junit.framework.Assert;
-
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.producer.ScopeAdaptorComponent;
 import org.apache.webbeans.test.component.producer.ScopeAdaptorInjectorComponent;
-import org.junit.Before;
 import org.junit.Test;
 
-public class ScopeAdapterTest extends TestContext
+public class ScopeAdapterTest extends AbstractUnitTest
 {
-    public ScopeAdapterTest()
-    {
-        super(ScopeAdapterTest.class.getName());
-    }
-
-    @Override
-    @Before
-    public void init()
-    {
-        super.init();
-
-    }
-
     @Test
     public void testDependent()
     {
-        clear();
-
-        defineManagedBean(CheckWithCheckPayment.class);
-        defineManagedBean(ScopeAdaptorComponent.class);
-        defineManagedBean(ScopeAdaptorInjectorComponent.class);
-
-        Object session = getSession();
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-        contextFactory.initSessionContext(session);
-        contextFactory.initApplicationContext(null);
-
-        List<AbstractOwbBean<?>> comps = getComponents();
-
-        Assert.assertEquals(4, getDeployedComponents());
-
-        getManager().getInstance(comps.get(0));
-        getManager().getInstance(comps.get(1));
-        getInstanceByName("scope");
-        getManager().getInstance(comps.get(2));
-
-        contextFactory.destroyApplicationContext(null);
-        contextFactory.destroySessionContext(session);
-        contextFactory.destroyRequestContext(null);
-
+        startContainer(CheckWithCheckPayment.class, ScopeAdaptorComponent.class, ScopeAdaptorInjectorComponent.class);
+        getInstance("checkWithCheckPayment");
+        getInstance(ScopeAdaptorComponent.class);
+        getInstance("scope");
+        getInstance(ScopeAdaptorInjectorComponent.class);
     }
 
 }

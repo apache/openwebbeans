@@ -18,62 +18,22 @@
  */
 package org.apache.webbeans.test.unittests.scopes;
 
-import java.util.List;
-
-import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
-
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.Singleton;
 import org.apache.webbeans.test.component.service.ITyped2;
 import org.apache.webbeans.test.component.service.Typed2;
-import org.junit.Before;
 import org.junit.Test;
 
-public class SingletonComponentTest extends TestContext
+public class SingletonComponentTest extends AbstractUnitTest
 {
-    BeanManager container = null;
-
-    public SingletonComponentTest()
-    {
-        super(SingletonComponentTest.class.getSimpleName());
-    }
-
-    @Override
-    @Before
-    public void init()
-    {
-        super.init();
-        this.container = WebBeansContext.getInstance().getBeanManagerImpl();
-    }
-
-    @SuppressWarnings("unchecked")
     @Test
     public void testTypedComponent() throws Throwable
     {
-        clear();
+        startContainer(Typed2.class, Singleton.class);
 
-        defineManagedBean(Typed2.class);
-        defineManagedBean(Singleton.class);
-        List<AbstractOwbBean<?>> comps = getComponents();
-
-        Object session = getSession();
-
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initSessionContext(session);
-
-        Assert.assertEquals(2, comps.size());
-
-        getManager().getInstance(comps.get(0));
-        Object object = getManager().getInstance(comps.get(1));
-
-        Assert.assertTrue(object instanceof Singleton);
-
-        Singleton single = (Singleton) object;
+        Singleton single = getInstance("singletonInstance");
 
         Assert.assertEquals("debug", single.logDebug());
         Assert.assertEquals("info", single.logInfoo());
@@ -81,8 +41,6 @@ public class SingletonComponentTest extends TestContext
         ITyped2 t = single.getType();
 
         Assert.assertNotNull(t);
-
-        contextFactory.destroySessionContext(session);
     }
 
 }

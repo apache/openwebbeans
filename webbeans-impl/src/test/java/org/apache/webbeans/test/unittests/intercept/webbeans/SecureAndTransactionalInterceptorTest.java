@@ -18,50 +18,29 @@
  */
 package org.apache.webbeans.test.unittests.intercept.webbeans;
 
-import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureAndTransactionalComponent;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureAndTransactionalInterceptor;
-import org.junit.Before;
 import org.junit.Test;
 
-public class SecureAndTransactionalInterceptorTest extends TestContext
+public class SecureAndTransactionalInterceptorTest extends AbstractUnitTest
 {
-    public SecureAndTransactionalInterceptorTest()
-    {
-        super(SecureAndTransactionalInterceptorTest.class.getName());
-    }
-    
-    @Override
-    @Before
-    public void init()
-    {
-        initDefaultStereoTypes();
-        initializeInterceptorType(SecureAndTransactionalInterceptor.class);
-    }
 
     @Test
     public void testSecureAndTransactionalInterceptor()
     {
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initSessionContext(null);
-        defineInterceptor(SecureAndTransactionalInterceptor.class);
-        
-        Bean<SecureAndTransactionalComponent> bean = defineManagedBean(SecureAndTransactionalComponent.class);
-        SecureAndTransactionalComponent payment = getManager().getInstance(bean);
+        addInterceptor(SecureAndTransactionalInterceptor.class);
+        startContainer(SecureAndTransactionalInterceptor.class, SecureAndTransactionalComponent.class);
+
+        SecureAndTransactionalComponent payment = getInstance(SecureAndTransactionalComponent.class);
         
         Assert.assertFalse(SecureAndTransactionalComponent.getCALL());
         
         payment.pay();
         
         Assert.assertTrue(SecureAndTransactionalComponent.getCALL());
-
-
-        contextFactory.destroySessionContext(null);
     }
 }

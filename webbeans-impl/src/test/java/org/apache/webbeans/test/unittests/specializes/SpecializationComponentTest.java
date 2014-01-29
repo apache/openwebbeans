@@ -18,43 +18,27 @@
  */
 package org.apache.webbeans.test.unittests.specializes;
 
-import javax.enterprise.inject.spi.Bean;
-
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.test.annotation.binding.Asynchronous;
 import org.apache.webbeans.test.component.specializes.AsynhrounousSpecalizesService;
 import org.apache.webbeans.test.component.specializes.SpecializesServiceInjectorComponent;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-public class SpecializationComponentTest extends TestContext
-{
-    public SpecializationComponentTest()
-    {
-        super(SpecializationComponentTest.class.getName());
-    }
+import javax.enterprise.util.AnnotationLiteral;
 
-    @Override
-    @Before
-    public void init()
-    {
-    }
-    
+public class SpecializationComponentTest extends AbstractUnitTest
+{
     @Test
     public void testMockService()
     {
-        clear();
-
-        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
-
-        Bean<AsynhrounousSpecalizesService> bean2 = defineManagedBean(AsynhrounousSpecalizesService.class);
-        Bean<SpecializesServiceInjectorComponent> bean3 = defineManagedBean(SpecializesServiceInjectorComponent.class);
+        startContainer(AsynhrounousSpecalizesService.class, SpecializesServiceInjectorComponent.class);
         
-        AsynhrounousSpecalizesService instanceOther = getManager().getInstance(bean2);
-        
+        AsynhrounousSpecalizesService instanceOther
+                = getInstance(AsynhrounousSpecalizesService.class, new AnnotationLiteral<Asynchronous>() {});
         Assert.assertNotNull(instanceOther);
-        
-        SpecializesServiceInjectorComponent instance = getManager().getInstance(bean3);
+
+        SpecializesServiceInjectorComponent instance = getInstance(SpecializesServiceInjectorComponent.class);
+        Assert.assertNotNull(instance);
     }
 }

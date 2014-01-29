@@ -23,7 +23,7 @@ import java.util.Collection;
 import junit.framework.Assert;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import javax.enterprise.inject.spi.DefinitionException;
-import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
+
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Test;
 

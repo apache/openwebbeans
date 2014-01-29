@@ -18,103 +18,43 @@
  */
 package org.apache.webbeans.test.unittests.intercept.webbeans;
 
-import java.util.List;
-
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor2;
 import org.apache.webbeans.test.component.intercept.webbeans.WInterceptorComponent;
 import org.apache.webbeans.test.component.intercept.webbeans.WMetaInterceptorComponent;
-import org.junit.Before;
 import org.junit.Test;
 
-public class WebBeansInterceptComponentTest extends TestContext
+public class WebBeansInterceptComponentTest extends AbstractUnitTest
 {
-    boolean init = false;
-
-    public WebBeansInterceptComponentTest()
-    {
-        super(WebBeansInterceptComponentTest.class.getName());
-    }
-
-    @Override
-    @Before
-    public void init()
-    {
-        super.init();
-        initializeInterceptorType(TransactionalInterceptor2.class);
-        initializeInterceptorType(ActionInterceptor.class);
-    }
-
     @Test
     public void testInterceptedComponent()
     {
-        WebBeansConfigurationException exc = null;
-
-        try
-        {
-            defineInterceptor(TransactionalInterceptor2.class);
-            defineManagedBean(WInterceptorComponent.class);
-
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            System.out.println(e.getMessage());
-            exc = e;
-
-        }
-
-        Assert.assertNull(exc);
+        addInterceptor(TransactionalInterceptor2.class);
+        startContainer(TransactionalInterceptor2.class, WInterceptorComponent.class);
     }
 
     @Test
     public void testInterceptorCalls()
     {
-        getComponents().clear();
+        addInterceptor(TransactionalInterceptor2.class);
+        startContainer(TransactionalInterceptor2.class, WInterceptorComponent.class);
 
-        defineInterceptor(TransactionalInterceptor2.class);
-        defineManagedBean(WInterceptorComponent.class);
-
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-        List<AbstractOwbBean<?>> comps = getComponents();
-
-        Object object = getManager().getInstance(comps.get(0));
-
-        Assert.assertTrue(object instanceof WInterceptorComponent);
-
-        WInterceptorComponent comp = (WInterceptorComponent) object;
+        WInterceptorComponent comp = getInstance(WInterceptorComponent.class);;
         int s = comp.hello();
 
         Assert.assertEquals(5, s);
-
-        contextFactory.destroyRequestContext(null);
     }
 
     @Test
     public void testMetaInterceptorCalls()
     {
-        getComponents().clear();
-
-        defineInterceptor(TransactionalInterceptor2.class);
-        defineInterceptor(ActionInterceptor.class);
-        defineManagedBean(WMetaInterceptorComponent.class);
-
-        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
-        contextFactory.initRequestContext(null);
-        List<AbstractOwbBean<?>> comps = getComponents();
-
-        Object object = getManager().getInstance(comps.get(0));
-
-        Assert.assertTrue(object instanceof WMetaInterceptorComponent);
-
-        WMetaInterceptorComponent comp = (WMetaInterceptorComponent) object;
+        addInterceptor(TransactionalInterceptor2.class);
+        addInterceptor(ActionInterceptor.class);
+        startContainer(TransactionalInterceptor2.class, ActionInterceptor.class, WMetaInterceptorComponent.class);
+        WMetaInterceptorComponent comp = getInstance(WMetaInterceptorComponent.class);
         int s = comp.hello();
 
         Assert.assertEquals(5, s);
@@ -122,8 +62,5 @@ public class WebBeansInterceptComponentTest extends TestContext
         s = comp.hello2();
 
         Assert.assertEquals(10, s);
-
-        contextFactory.destroyRequestContext(null);
     }
-
 }

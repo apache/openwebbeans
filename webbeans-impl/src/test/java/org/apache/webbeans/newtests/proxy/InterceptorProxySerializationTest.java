@@ -21,8 +21,6 @@ package org.apache.webbeans.newtests.proxy;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Test;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
@@ -33,7 +31,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.apache.webbeans.newtests.util.Serializations.deserialize;

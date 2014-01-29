@@ -22,34 +22,18 @@ import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.TypeLiteral;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean.IntegerOrder;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean.StringOrder;
-import org.junit.Before;
 import org.junit.Test;
 
-@SuppressWarnings("unchecked")
-public class TypeLiteralTest extends TestContext
+public class TypeLiteralTest extends AbstractUnitTest
 {
-    public TypeLiteralTest()
-    {
-        super(TypeLiteralTest.class.getName());
-    }
-    
-    @Override
-    @Before
-    public void init()
-    {
-        super.init();
-    }
-
     public static class Literal1 extends TypeLiteral<Map<String, String>>
     {
         
@@ -69,18 +53,9 @@ public class TypeLiteralTest extends TestContext
     @Test
     public void testTypeLiteralInInstance()
     {
-        clear();
-
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        webBeansContext.getBeanManagerImpl().addInternalBean(webBeansContext.getWebBeansUtil().getInstanceBean());
+        startContainer(StringOrder.class, IntegerOrder.class, InstanceTypeLiteralBean.class);
         
-        defineManagedBean(StringOrder.class);
-        defineManagedBean(IntegerOrder.class);
-        Bean<InstanceTypeLiteralBean> bean =  defineManagedBean(InstanceTypeLiteralBean.class);
-        
-        Object object = getManager().getReference(bean, InstanceTypeLiteralBean.class,getManager().createCreationalContext(bean) );        
-        Assert.assertTrue(object instanceof InstanceTypeLiteralBean);
-        InstanceTypeLiteralBean beaninstance = (InstanceTypeLiteralBean)object;
+        InstanceTypeLiteralBean beaninstance = getInstance(InstanceTypeLiteralBean.class);
         Object produce = beaninstance.produce(0);
         Assert.assertTrue(produce instanceof Instance);
         

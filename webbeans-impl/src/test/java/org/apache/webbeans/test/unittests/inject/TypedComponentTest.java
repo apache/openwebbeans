@@ -18,59 +18,34 @@
  */
 package org.apache.webbeans.test.unittests.inject;
 
-import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.service.ITyped;
 import org.apache.webbeans.test.component.service.TypedComponent;
-import org.junit.Before;
 import org.junit.Test;
 
-public class TypedComponentTest extends TestContext
+public class TypedComponentTest extends AbstractUnitTest
 {
-    BeanManager container = null;
-    ITyped<String> s = null;
-
-    public TypedComponentTest()
-    {
-        super(TypedComponentTest.class.getSimpleName());
-    }
-
-    @Override
-    @Before
-    public void init()
-    {
-        super.init();
-    }
+    private ITyped<String> s = null;
 
     @Test
     public void testTypedComponent() throws Throwable
     {
-        clear();
-        defineManagedBean(TypedComponent.class);
+        startContainer(TypedComponent.class);
 
         InjectionResolver injectionResolver = WebBeansContext.getInstance().getBeanManagerImpl().getInjectionResolver();
 
-        Set<Bean<?>> beans= injectionResolver.implResolveByType(false, TypedComponentTest.class.getDeclaredField("s").getGenericType(), new Default()
-        {
-
-            @Override
-            public Class<? extends Annotation> annotationType()
-            {
-
-                return Default.class;
-            }
-
-        });
+        Set<Bean<?>> beans
+                = injectionResolver.implResolveByType(false, TypedComponentTest.class.getDeclaredField("s").getGenericType(),
+                                                      DefaultLiteral.INSTANCE);
 
         Assert.assertTrue(beans.size() == 1 ? true : false);
     }

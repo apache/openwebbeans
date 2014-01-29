@@ -22,35 +22,20 @@ import java.lang.annotation.Annotation;
 
 import javax.enterprise.util.AnnotationLiteral;
 
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.component.producer.specializes.SpecializesProducer1;
 import org.apache.webbeans.test.component.producer.specializes.superclazz.SpecializesProducer1SuperClazz;
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.Test;
 
-public class SpecializesProducer1Test extends TestContext
+public class SpecializesProducer1Test extends AbstractUnitTest
 {
-
-    public SpecializesProducer1Test()
-    {
-        super(SpecializesProducer1Test.class.getName());
-    }
-
-    @Override
-    @Before
-    public void init()
-    {
-    }
-
     @Test
     public void testSpecializedProducer1()
     {
-        clear();
-
-        defineManagedBean(SpecializesProducer1SuperClazz.class);
-        defineManagedBean(SpecializesProducer1.class);
+        startContainer(SpecializesProducer1SuperClazz.class, SpecializesProducer1.class);
 
         Annotation binding1 = new AnnotationLiteral<Binding1>()
         {
@@ -59,10 +44,7 @@ public class SpecializesProducer1Test extends TestContext
         {
         };
 
-        Object number = getManager().getInstanceByType(int.class, new Annotation[] { binding1, binding2 });
-        //This test is not valid since specialize configuration requires
-        //all producers at deployment step in container. See:
-        //org.apache.webbeans.newtests.producer.specializes.SpecializesProducer1Test
-        //Assert.assertEquals(10000, number);
+        Object number = getInstance(int.class, new Annotation[] { binding1, binding2 });
+        Assert.assertEquals(10000, number);
     }
 }
