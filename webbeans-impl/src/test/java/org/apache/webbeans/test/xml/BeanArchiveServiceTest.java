@@ -113,6 +113,38 @@ public class BeanArchiveServiceTest
         Assert.assertTrue(bai.getInterceptors().isEmpty());
     }
 
+    @Test
+    public void testExclude() throws Exception
+    {
+        BeanArchiveInformation bai = scanBeansXml("cdi11_exclude.xml");
+        Assert.assertEquals(BeanDiscoveryMode.ALL, bai.getBeanDiscoveryMode());
+        Assert.assertTrue(bai.getAlternativeClasses().isEmpty());
+        Assert.assertTrue(bai.getAlternativeStereotypes().isEmpty());
+        Assert.assertTrue(bai.getDecorators().isEmpty());
+        Assert.assertTrue(bai.getInterceptors().isEmpty());
+
+        Assert.assertFalse(bai.isClassExcluded("some.other.package"));
+        Assert.assertFalse(bai.isClassExcluded("some.other.Class"));
+
+        Assert.assertFalse(bai.isPackageExcluded("org.apache.webbeans"));
+        Assert.assertFalse(bai.isPackageExcluded("org.apache.webbeans.test"));
+        Assert.assertFalse(bai.isPackageExcluded("org.apache.webbeans.test.singlepackage"));
+        Assert.assertFalse(bai.isPackageExcluded("org.apache.webbeans.test.singlepackage.otherpackage"));
+
+        Assert.assertTrue(bai.isPackageExcluded("org.apache.webbeans.test.subpackage"));
+        Assert.assertTrue(bai.isPackageExcluded("org.apache.webbeans.test.subpackage.other"));
+
+        Assert.assertFalse(bai.isClassExcluded("org.apache.webbeans.test.SomeClass"));
+        Assert.assertFalse(bai.isClassExcluded("org.apache.webbeans.test.otherpackage.OtherClass"));
+
+        Assert.assertTrue(bai.isClassExcluded("org.apache.webbeans.test.singlepackage.SomeClass"));
+        Assert.assertTrue(bai.isClassExcluded("org.apache.webbeans.test.singlepackage.OtherClass"));
+        Assert.assertFalse(bai.isClassExcluded("org.apache.webbeans.test.singlepackage.otherpackage.OtherClass"));
+
+        Assert.assertTrue(bai.isClassExcluded("org.apache.webbeans.test.subpackage.SomeClass"));
+        Assert.assertTrue(bai.isClassExcluded("org.apache.webbeans.test.subpackage.OtherClass"));
+        Assert.assertTrue(bai.isClassExcluded("org.apache.webbeans.test.subpackage.otherpackage.OtherClass"));
+    }
 
 
 

@@ -213,16 +213,16 @@ public final class WebBeansXMLConfigurator
             child = (Element) node;
 
             /* <Interceptors> element decleration */
-            if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_INTERCEPTORS_ELEMENT))
+            if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_INTERCEPTORS_ELEMENT))
             {
                 configureInterceptorsElement(child,fileName,scanner);
             }
             /* <Decorators> element decleration */
-            else if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_DECORATORS_ELEMENT))
+            else if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_DECORATORS_ELEMENT))
             {
                 configureDecoratorsElement(child,fileName,scanner);
             }
-            else if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_ALTERNATIVES_ELEMENT))
+            else if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_ALTERNATIVES_ELEMENT))
             {
                 configureAlternativesElement(child,fileName,scanner);
             }
@@ -408,11 +408,11 @@ public final class WebBeansXMLConfigurator
             }
             alternativesInFile.add(alternativeName);
 
-            if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_STEREOTYPE))
+            if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_STEREOTYPE))
             {
                 addAlternative(child, true,fileName,scanner);
             }
-            else if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_CLASS))
+            else if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_CLASS))
             {
                 addAlternative(child, false,fileName,scanner);
             }

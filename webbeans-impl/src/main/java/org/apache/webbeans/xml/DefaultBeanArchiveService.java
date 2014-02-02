@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +36,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BeanArchiveService;
+import org.apache.webbeans.util.UrlSet;
 import org.apache.webbeans.util.WebBeansConstants;
 import org.w3c.dom.Element;
 
@@ -50,6 +52,8 @@ public class DefaultBeanArchiveService implements BeanArchiveService
      */
     private Map<String, BeanArchiveInformation> beanArchiveInformations = new HashMap<String, BeanArchiveInformation>();
 
+    private UrlSet registeredBeanArchives = new UrlSet();
+
 
     @Override
     public BeanArchiveInformation getBeanArchiveInformation(URL beansXmlUrl)
@@ -61,9 +65,16 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         {
             bdaInfo = readBeansXml(beansXmlUrl, beansXmlLocation);
             beanArchiveInformations.put(beansXmlLocation, bdaInfo);
+            registeredBeanArchives.add(beansXmlUrl);
         }
 
         return bdaInfo;
+    }
+
+    @Override
+    public Set<URL> getRegisteredBeanArchives()
+    {
+        return registeredBeanArchives;
     }
 
     /**
@@ -135,8 +146,10 @@ public class DefaultBeanArchiveService implements BeanArchiveService
                     throw new WebBeansConfigurationException("beans.xml must have a <beans> root element, but has: " + webBeansRoot.getLocalName());
                 }
 
-                String version = webBeansRoot.getAttribute("version");
-                bdaInfo.setVersion((version != null && version.length() > 0) ? version : null);
+                bdaInfo.setVersion(getTrimmedAttribute(webBeansRoot, "version"));
+
+                String beanDiscoveryMode = getTrimmedAttribute(webBeansRoot, "bean-discovery-mode");
+                bdaInfo.setBeanDiscoveryMode(beanDiscoveryMode != null ? BeanDiscoveryMode.valueOf(beanDiscoveryMode.toUpperCase()) : null);
 
                 readBeanChildren(bdaInfo, webBeansRoot);
             }
@@ -171,29 +184,23 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         {
             Element child = elit.next();
 
-            if (WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_BEAN_DISCOVERY_MODE_ELEMENT.equalsIgnoreCase(child.getLocalName()))
-            {
-                fillScanMode(bdaInfo, child);
-            }
-            else if (WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_DECORATORS_ELEMENT.equalsIgnoreCase(child.getLocalName()))
+            if (WebBeansConstants.WEB_BEANS_XML_DECORATORS_ELEMENT.equalsIgnoreCase(child.getLocalName()))
             {
                 fillDecorators(bdaInfo, child);
             }
-            else if (WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_INTERCEPTORS_ELEMENT.equalsIgnoreCase(child.getLocalName()))
+            else if (WebBeansConstants.WEB_BEANS_XML_INTERCEPTORS_ELEMENT.equalsIgnoreCase(child.getLocalName()))
             {
                 fillInterceptors(bdaInfo, child);
             }
-            else if (WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_ALTERNATIVES_ELEMENT.equalsIgnoreCase(child.getLocalName()))
+            else if (WebBeansConstants.WEB_BEANS_XML_ALTERNATIVES_ELEMENT.equalsIgnoreCase(child.getLocalName()))
             {
                 fillAlternatives(bdaInfo, child);
             }
+            else if (WebBeansConstants.WEB_BEANS_XML_SCAN_ELEMENT.equalsIgnoreCase(child.getLocalName()))
+            {
+                fillExcludes(bdaInfo, child);
+            }
         }
-    }
-
-    protected void fillScanMode(DefaultBeanArchiveInformation bdaInfo, Element beanDiscoveryModeElement)
-    {
-        String scanMode = beanDiscoveryModeElement.getTextContent().trim();
-        bdaInfo.setBeanDiscoveryMode(BeanDiscoveryMode.valueOf(scanMode.toUpperCase()));
     }
 
     private void fillDecorators(DefaultBeanArchiveInformation bdaInfo, Element decoratorsElement)
@@ -202,7 +209,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         while (elit.hasNext())
         {
             Element child = elit.next();
-            if (WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_CLASS.equalsIgnoreCase(child.getLocalName()))
+            if (WebBeansConstants.WEB_BEANS_XML_CLASS.equalsIgnoreCase(child.getLocalName()))
             {
                 String clazz = child.getTextContent().trim();
                 if (clazz.isEmpty())
@@ -220,7 +227,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         while (elit.hasNext())
         {
             Element child = elit.next();
-            if (WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_CLASS.equalsIgnoreCase(child.getLocalName()))
+            if (WebBeansConstants.WEB_BEANS_XML_CLASS.equalsIgnoreCase(child.getLocalName()))
             {
                 String clazz = child.getTextContent().trim();
                 if (clazz.isEmpty())
@@ -238,7 +245,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         while (elit.hasNext())
         {
             Element child = elit.next();
-            if (WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_CLASS.equalsIgnoreCase(child.getLocalName()))
+            if (WebBeansConstants.WEB_BEANS_XML_CLASS.equalsIgnoreCase(child.getLocalName()))
             {
                 String clazz = child.getTextContent().trim();
                 if (clazz.isEmpty())
@@ -247,7 +254,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
                 }
                 bdaInfo.getAlternativeClasses().add(clazz);
             }
-            if (WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_STEREOTYPE.equalsIgnoreCase(child.getLocalName()))
+            if (WebBeansConstants.WEB_BEANS_XML_STEREOTYPE.equalsIgnoreCase(child.getLocalName()))
             {
                 String stereotype = child.getTextContent().trim();
                 if (stereotype.isEmpty())
@@ -259,6 +266,37 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         }
     }
 
+
+    private void fillExcludes(DefaultBeanArchiveInformation bdaInfo, Element scanElement)
+    {
+        ElementIterator elit = new ElementIterator(scanElement);
+        while (elit.hasNext())
+        {
+            Element child = elit.next();
+            if (WebBeansConstants.WEB_BEANS_XML_EXCLUDE.equalsIgnoreCase(child.getLocalName()))
+            {
+                String name = getTrimmedAttribute(child, "name");
+                if (name != null)
+                {
+                    if (name.endsWith(".*"))
+                    {
+                        // package exclude without sub-packages
+                        bdaInfo.addClassExclude(name.substring(0, name.length() - 2));
+                    }
+                    else if (name.endsWith(".**"))
+                    {
+                        // package exclude WITH sub-packages
+                        bdaInfo.addPackageExclude(name.substring(0, name.length() - 3));
+                    }
+                    else
+                    {
+                        // a simple Class
+                        bdaInfo.addClassExclude(name);
+                    }
+                }
+            }
+        }
+    }
 
     @Override
     public void release()
@@ -274,7 +312,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
      * @return root element of the document
      * @throws org.apache.webbeans.exception.WebBeansException if any runtime exception occurs
      */
-    private Element getBeansRootElement(InputStream xmlStream) throws WebBeansException
+    protected Element getBeansRootElement(InputStream xmlStream) throws WebBeansException
     {
         try
         {
@@ -298,5 +336,23 @@ public class DefaultBeanArchiveService implements BeanArchiveService
             throw new WebBeansException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0013), e);
         }
     }
+
+    /**
+     * @return the trimmed attribute value, or <code>null</code> if the attribute does not exist or the attribute is empty
+     */
+    protected String getTrimmedAttribute(Element element, String attributeName)
+    {
+        String val = element.getAttribute(attributeName);
+        if (val != null)
+        {
+            val = val.trim();
+            if (!val.isEmpty())
+            {
+                return val;
+            }
+        }
+        return null;
+    }
+
 
 }

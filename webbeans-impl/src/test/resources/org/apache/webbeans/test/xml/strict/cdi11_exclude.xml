@@ -17,5 +17,15 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<beans version="1.1"> <!-- this file has no bean-discovery-mode, thus we need to fail with version=1.1 -->
+<beans>
+    <scan>
+        <!-- a single class exclude-->
+        <exclude name="org.apache.webbeans.test.ExcludedClass"/>
+
+        <!-- exclude all classes of a single package, without excluding subpackages -->
+        <exclude name="org.apache.webbeans.test.singlepackage.*"/>
+
+        <!-- exclude all classes of a single package, and also exclude all subpackages -->
+        <exclude name="org.apache.webbeans.test.subpackage.**"/>
+    </scan>
 </beans>

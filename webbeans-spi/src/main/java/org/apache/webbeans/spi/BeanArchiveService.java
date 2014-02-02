@@ -20,6 +20,7 @@ package org.apache.webbeans.spi;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This Service returns information about scanned beans.xml files.
@@ -76,12 +77,14 @@ public interface BeanArchiveService
         BeanDiscoveryMode getBeanDiscoveryMode();
 
         /**
-         * If a package is excluded, then you do not need to recurse into it.
-         *
-         * @param classOrPath either a class name or a package name.
-         * @return whether the given path is excluded or not
+         * @return whether the given class is excluded from scanning or not
          */
-        boolean isExcluded(String classOrPath);
+        boolean isClassExcluded(String clazz);
+
+        /**
+         * @return whether the given package is excluded from scanning or not
+         */
+        boolean isPackageExcluded(String packageName);
 
         /**
          * @return the class name of the Interceptors defined in the beans.xml
@@ -119,6 +122,15 @@ public interface BeanArchiveService
      */
     BeanArchiveInformation getBeanArchiveInformation(URL beanArchiveUrl);
 
+
+    /**
+     * This method is useful to later on know which JARs and ClassPath entries
+     * did get scanned.
+     * Please note that we use a special UrlSet internally which only holds
+     * the externalForm as key and thus does no DNS resolving via the URL.
+     * @return a Set of all registered Bean Archives.
+     */
+    Set<URL> getRegisteredBeanArchives();
 
     /**
      * Release the gathered information to free up memory.

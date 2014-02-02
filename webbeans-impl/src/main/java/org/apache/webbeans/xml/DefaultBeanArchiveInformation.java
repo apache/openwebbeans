@@ -33,6 +33,13 @@ public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArc
     private List<String> alternativeClasses = new ArrayList<String>();
     private List<String> alternativeStereotypes = new ArrayList<String>();
 
+    /** Either an excluded class or an excluded .* path */
+    private List<String> excludedClasses = null;
+
+    /** Exclude all subpackages (exclude= .**) */
+    private List<String> excludedPackages = null;
+
+
 
     @Override
     public BeanDiscoveryMode getBeanDiscoveryMode()
@@ -41,9 +48,54 @@ public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArc
     }
 
     @Override
-    public boolean isExcluded(String classOrPath)
+    public boolean isClassExcluded(String clazz)
     {
-        return false; //X TODO
+        boolean isExcluded = isPackageExcluded(clazz);
+
+        if  (!isExcluded && excludedClasses != null)
+        {
+            for (String excludedClass : excludedClasses)
+            {
+                if (clazz.startsWith(excludedClass))
+                {
+                    if (clazz.length() > excludedClass.length())
+                    {
+                        int lastDotPosition = clazz.lastIndexOf('.');
+                        if (lastDotPosition > excludedClass.length())
+                        {
+                            continue;
+                        }
+                    }
+                    isExcluded = true;
+                    break;
+                }
+            }
+        }
+
+        return isExcluded;
+    }
+
+    @Override
+    public boolean isPackageExcluded(String packageName)
+    {
+        if (excludedPackages != null)
+        {
+            for (String excludedPackage : excludedPackages)
+            {
+                /*X TODO
+                 * For 'org.apache.foo.**'
+                 * the spec currently also excludes the package
+                 * 'org.apache.foobar'
+                 * Currently trying to clarify this.
+                 */
+                if (packageName.startsWith(excludedPackage))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -97,13 +149,23 @@ public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArc
         this.decorators = decorators;
     }
 
-    public void setAlternativeClasses(List<String> alternativeClasses)
+    public void addClassExclude(String classOrPath)
     {
-        this.alternativeClasses = alternativeClasses;
+        if (excludedClasses == null)
+        {
+            excludedClasses = new ArrayList<String>();
+        }
+
+        excludedClasses.add(classOrPath);
     }
 
-    public void setAlternativeStereotypes(List<String> alternativeStereotypes)
+    public void addPackageExclude(String packageName)
     {
-        this.alternativeStereotypes = alternativeStereotypes;
+        if (excludedPackages == null)
+        {
+            excludedPackages = new ArrayList<String>();
+        }
+
+        excludedPackages.add(packageName);
     }
 }

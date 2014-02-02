@@ -38,16 +38,15 @@ public final class WebBeansConstants
                                                                          "javax.persistence.PersistenceUnit",
                                                                          "javax.persistence.PersistenceContext"};
     
-    public static final String WEB_BEANS_XML_SPEC_SPECIFIC_INTERCEPTORS_ELEMENT = "interceptors";
-    
-    public static final String WEB_BEANS_XML_SPEC_SPECIFIC_DECORATORS_ELEMENT = "decorators";
-    
+    public static final String WEB_BEANS_XML_INTERCEPTORS_ELEMENT = "interceptors";
+    public static final String WEB_BEANS_XML_DECORATORS_ELEMENT = "decorators";
+    public static final String WEB_BEANS_XML_ALTERNATIVES_ELEMENT = "alternatives";
+    public static final String WEB_BEANS_XML_SCAN_ELEMENT = "scan";
 
-    public static final String WEB_BEANS_XML_SPEC_SPECIFIC_BEAN_DISCOVERY_MODE_ELEMENT = "bean-discovery-mode";
-    public static final String WEB_BEANS_XML_SPEC_SPECIFIC_ALTERNATIVES_ELEMENT = "alternatives";
-    public static final String WEB_BEANS_XML_SPEC_SPECIFIC_CLASS = "class";
-    public static final String WEB_BEANS_XML_SPEC_SPECIFIC_STEREOTYPE = "stereotype";
-    
+    public static final String WEB_BEANS_XML_CLASS = "class";
+    public static final String WEB_BEANS_XML_STEREOTYPE = "stereotype";
+    public static final String WEB_BEANS_XML_EXCLUDE = "exclude";
+
     /**JNDI name of the {@link javax.enterprise.inject.spi.BeanManager} instance*/
     public static final String WEB_BEANS_MANAGER_JNDI_NAME = "java:comp/BeanManager";
 
