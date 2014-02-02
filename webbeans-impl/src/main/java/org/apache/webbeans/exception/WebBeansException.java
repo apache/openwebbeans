@@ -18,9 +18,6 @@
  */
 package org.apache.webbeans.exception;
 
-/**
- * @author Administrator
- */
 public class WebBeansException extends RuntimeException
 {
 

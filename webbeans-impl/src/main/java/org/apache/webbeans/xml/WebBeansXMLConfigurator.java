@@ -222,7 +222,7 @@ public final class WebBeansXMLConfigurator
             {
                 configureDecoratorsElement(child,fileName,scanner);
             }
-            else if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_ALTERNATIVES))
+            else if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_ALTERNATIVES_ELEMENT))
             {
                 configureAlternativesElement(child,fileName,scanner);
             }
@@ -408,13 +408,11 @@ public final class WebBeansXMLConfigurator
             }
             alternativesInFile.add(alternativeName);
 
-            if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_STEREOTYPE) ||
-                getName(child).equals(WebBeansConstants.WEB_BEANS_XML_OWB_SPECIFIC_STEREOTYPE))
+            if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_STEREOTYPE))
             {
                 addAlternative(child, true,fileName,scanner);
             }
-            else if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_CLASS)
-                     || getName(child).equals(WebBeansConstants.WEB_BEANS_XML_OWB_SPECIFIC_CLASS))
+            else if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_CLASS))
             {
                 addAlternative(child, false,fileName,scanner);
             }
