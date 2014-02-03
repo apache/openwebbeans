@@ -24,8 +24,10 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -256,7 +258,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     public Iterator<T> iterator()
     {
         Set<Bean<?>> beans = resolveBeans();
-        Set<T> instances = new HashSet<T>();
+        List<T> instances = new ArrayList<T>();
         for(Bean<?> bean : beans)
         {
             T instance = (T) webBeansContext.getBeanManagerImpl().getReference(bean,null, parentCreationalContext);
