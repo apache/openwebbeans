@@ -112,7 +112,8 @@ import java.util.logging.Logger;
 public class BeansDeployer
 {
     //Logger instance
-    private final static Logger logger = WebBeansLoggerFacade.getLogger(BeansDeployer.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(BeansDeployer.class);
+    public static final String JAVAX_ENTERPRISE_PACKAGE = "javax.enterprise.";
 
     /**Deployment is started or not*/
     protected boolean deployed = false;
@@ -443,6 +444,12 @@ public class BeansDeployer
                     continue;
                 }
 
+                //don't validate the cdi-api
+                if (bean.getBeanClass().getName().startsWith(JAVAX_ENTERPRISE_PACKAGE))
+                {
+                    continue;
+                }
+
                 String beanName = bean.getName();
                 if(beanName != null)
                 {
@@ -505,7 +512,7 @@ public class BeansDeployer
         }
         
     }
-    
+
     private void validateBeanNames(Stack<String> beanNames)
     {
         if(beanNames.size() > 0)
