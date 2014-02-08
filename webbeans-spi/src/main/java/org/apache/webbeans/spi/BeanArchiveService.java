@@ -88,25 +88,25 @@ public interface BeanArchiveService
 
         /**
          * @return the class name of the Interceptors defined in the beans.xml
-         *          in a &lt;interceptors&gt;&lt;class&gt; section.
+         *          in a &lt;interceptors&gt;&lt;class&gt; section or an empty List.
          */
         List<String> getInterceptors();
 
         /**
          * @return the class name of Decorators defined in this beans.xml
-         *          in a &lt;decorators&gt;&lt;class&gt; section.
+         *          in a &lt;decorators&gt;&lt;class&gt; section or an empty List.
          */
         List<String> getDecorators();
 
         /**
          * @return the class name of the Alternatives defined in this beans.xml
-         *          in a &lt;alternatives&gt;&lt;class&gt; section.
+         *          in a &lt;alternatives&gt;&lt;class&gt; section or an empty List.
          */
         List<String> getAlternativeClasses();
 
         /**
          * @return the class name of the Alternatives defined in this beans.xml
-         *          in a &lt;alternatives&gt;&lt;stereotype&gt; section.
+         *          in a &lt;alternatives&gt;&lt;stereotype&gt; section or an empty List.
          */
         List<String> getAlternativeStereotypes();
     }

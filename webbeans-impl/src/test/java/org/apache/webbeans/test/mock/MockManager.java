@@ -166,12 +166,6 @@ public class MockManager extends AbstractBeanManager implements BeanManager
         return manager.resolveInterceptors(type, interceptorBindings);
     }
 
-    public BeanManager parse(InputStream xmlStream)
-    {
-        manager.parse(xmlStream);
-        return manager;
-    }
-
     @Override
     public <T> AnnotatedType<T> createAnnotatedType(Class<T> type)
     {

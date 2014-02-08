@@ -45,6 +45,9 @@ import org.w3c.dom.Element;
  */
 public class DefaultBeanArchiveService implements BeanArchiveService
 {
+    public static final String WEB_INF_BEANS_XML = "WEB-INF/beans.xml";
+    public static final String WEB_INF_CLASSES = "WEB-INF/classes";
+
     private static final Logger logger = WebBeansLoggerFacade.getLogger(BeanArchiveService.class);
 
     /**
@@ -56,16 +59,42 @@ public class DefaultBeanArchiveService implements BeanArchiveService
 
 
     @Override
-    public BeanArchiveInformation getBeanArchiveInformation(URL beansXmlUrl)
+    public BeanArchiveInformation getBeanArchiveInformation(URL beanArchiveUrl)
     {
-        String beansXmlLocation = beansXmlUrl.toExternalForm();
-        BeanArchiveInformation bdaInfo = beanArchiveInformations.get(beansXmlLocation);
+        String beanArchiveLocation = beanArchiveUrl.toExternalForm();
+        BeanArchiveInformation bdaInfo = beanArchiveInformations.get(beanArchiveLocation);
+
+        if (bdaInfo == null && !beanArchiveLocation.contains(".xml"))
+        {
+            // probably the beanArchiveUrl is a JAR classpath and not a beans.xml itself
+            // in this case we need to look whether we have a corresponding beans.xml already scanned
+
+            String strippedBeanArchiveUrl = stripProtocol(beanArchiveLocation);
+
+            if (strippedBeanArchiveUrl.contains(WEB_INF_BEANS_XML))
+            {
+                // this is a very special case for beans.xml in a WAR file
+                // in this case we are looking for the WEB-INF/classes URL
+                strippedBeanArchiveUrl = strippedBeanArchiveUrl.replace(WEB_INF_BEANS_XML, WEB_INF_CLASSES);
+            }
+
+            for (Map.Entry<String, BeanArchiveInformation> entry : beanArchiveInformations.entrySet())
+            {
+                if (stripProtocol(entry.getKey()).startsWith(strippedBeanArchiveUrl))
+                {
+                    bdaInfo = entry.getValue();
+                    break;
+                }
+            }
+
+        }
 
         if (bdaInfo == null)
         {
-            bdaInfo = readBeansXml(beansXmlUrl, beansXmlLocation);
-            beanArchiveInformations.put(beansXmlLocation, bdaInfo);
-            registeredBeanArchives.add(beansXmlUrl);
+            // if we still did not find anything, then this is a 'new' bean archive
+            bdaInfo = readBeansXml(beanArchiveUrl, beanArchiveLocation);
+            beanArchiveInformations.put(beanArchiveLocation, bdaInfo);
+            registeredBeanArchives.add(beanArchiveUrl);
         }
 
         return bdaInfo;
@@ -125,6 +154,22 @@ public class DefaultBeanArchiveService implements BeanArchiveService
             }
         }
     }
+
+    /**
+     * Get rid of any protocol header from the url externalForm
+     * @param urlPath
+     */
+    protected String stripProtocol(String urlPath)
+    {
+        int pos = urlPath.lastIndexOf(":/");
+        if (pos > 0)
+        {
+            return urlPath.substring(pos+1);
+        }
+
+        return urlPath;
+    }
+
 
     /**
      * Read the information from the given beans.xml and fill it into a

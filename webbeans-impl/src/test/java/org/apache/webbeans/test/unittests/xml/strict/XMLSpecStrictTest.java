@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.test.unittests.xml.strict;
 
-import java.io.InputStream;
 
 import junit.framework.Assert;
 
@@ -26,7 +25,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.xml.strict.DummyDecorator;
 import org.apache.webbeans.test.xml.strict.DummyInterceptor;
-import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.junit.Test;
 
 public class XMLSpecStrictTest extends AbstractUnitTest
@@ -34,11 +32,7 @@ public class XMLSpecStrictTest extends AbstractUnitTest
     @Test
     public void testXMLSpecStrictDecorators()
     {
-        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/decorators.xml");
-        Assert.assertNotNull(stream);
-
-        WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
-        configurator.configureSpecSpecific(stream, "decorators.xml");
+        startContainer("org/apache/webbeans/test/xml/strict/decorators.xml");
 
         boolean enable = WebBeansContext.getInstance().getDecoratorsManager().isDecoratorEnabled(DummyDecorator.class);
         Assert.assertTrue(enable);
@@ -47,11 +41,7 @@ public class XMLSpecStrictTest extends AbstractUnitTest
     @Test
     public void testXMLSpecStrictInterceptors()
     {
-        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/interceptors.xml");
-        Assert.assertNotNull(stream);
-
-        WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
-        configurator.configureSpecSpecific(stream, "interceptors.xml");
+        startContainer("org/apache/webbeans/test/xml/strict/interceptors.xml");
 
         boolean enable = WebBeansContext.getInstance().getInterceptorsManager().isInterceptorClassEnabled(DummyInterceptor.class);
         Assert.assertTrue(enable);

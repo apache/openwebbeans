@@ -256,8 +256,14 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
             {
                 continue;
             }
+
             Class<? extends Annotation> annotationType = annotation.annotationType();
-            
+
+            if (!webBeansContext.getBeanManagerImpl().isScope(annotationType))
+            {
+                continue;
+            }
+
             /*Normal scope*/
             Annotation var = annotationType.getAnnotation(NormalScope.class);
             /*Pseudo scope*/

@@ -18,8 +18,8 @@ specific language governing permissions and limitations
 under the License.
 -->
 <beans>
-	<alternatives>
-		<class>org.apache.webbeans.test.xml.strict.Alternative1</class>
-		<class>org.apache.webbeans.test.xml.strict.Alternative1</class>
-	</alternatives>
+    <alternatives>
+        <class>org.apache.webbeans.test.xml.strict.Alternative1</class>
+        <class>org.apache.webbeans.test.xml.strict.Alternative1</class>
+    </alternatives>
 </beans>

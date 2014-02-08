@@ -29,11 +29,6 @@ import org.junit.Assert;
 
 public class ExternalTestScopeExtension implements Extension 
 {
-    public ExternalTestScopeExtension()
-    {
-        System.out.println("ExternalTestScopeExtension got created");
-    }
-
     public void addViewScoped(@Observes BeforeBeanDiscovery beforeBeanDiscovery, BeanManager beanManager)
     {
         // see OWB-622 it's expected that the BeanManager already exists even in BeforeBeanDiscovery.

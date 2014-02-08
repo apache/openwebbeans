@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.container;
 
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -88,7 +87,6 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.GenericsUtil;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 /**
  * Implementation of the {@link BeanManager} contract of the web beans
@@ -138,9 +136,6 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     /**Injection resolver instance*/
     private InjectionResolver injectionResolver = null;
 
-    /**XML configurator instance*/
-    private WebBeansXMLConfigurator xmlConfigurator = null;
-    
     /**
      * This list contains additional qualifiers which got set via the
      * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addQualifier(Class)}
@@ -160,6 +155,13 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
      * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addScope(Class, boolean, boolean)} event function.
      */
     private List<ExternalScope> additionalScopes =  new ArrayList<ExternalScope>();
+
+    /** quick detection if an annotation is a scope-annotation  */
+    private Set<Class<? extends Annotation>> scopeAnnotations = new HashSet<Class<? extends Annotation>>();
+
+    /** quick detection if an annotation is NOT a scope-annotation  */
+    private Set<Class<? extends Annotation>> nonscopeAnnotations = new HashSet<Class<? extends Annotation>>();
+
 
     private ConcurrentMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>> additionalAnnotatedTypes = new ConcurrentHashMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>>();
 
@@ -255,22 +257,6 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         return injectionResolver;
     }
 
-    /**
-     * Sets the xml configurator instance.
-     * 
-     * @param xmlConfigurator set xml configurator instance.
-     * @see WebBeansXMLConfigurator
-     */
-    public synchronized void setXMLConfigurator(WebBeansXMLConfigurator xmlConfigurator)
-    {
-        if(this.xmlConfigurator != null)
-        {
-            throw new IllegalStateException("WebBeansXMLConfigurator is already defined!");
-        }
-        
-        this.xmlConfigurator = xmlConfigurator;
-    }
-    
     /**
      * Gets the active context for the given scope type.
      * 
@@ -523,20 +509,6 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         return new Reference(BeanManagerImpl.class.getName(), new StringRefAddr("ManagerImpl", "ManagerImpl"), ManagerObjectFactory.class.getName(), null);
     }
 
-    /**
-     * Parse the given XML input stream for adding XML defined artifacts.
-     * 
-     * @param xmlStream beans xml definitions
-     * @return {@link BeanManager} instance 
-     */
-    
-    public BeanManager parse(InputStream xmlStream)
-    {
-        xmlConfigurator.configure(xmlStream);
-
-        return this;
-    }
-    
     /**
      * {@inheritDoc}
      */
@@ -849,21 +821,42 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     @Override
     public boolean isScope(Class<? extends Annotation> annotationType)
     {
-        if(AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), Scope.class) ||
-                AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), NormalScope.class))
+        if (nonscopeAnnotations.contains(annotationType))
+        {
+            return false;
+        }
+
+        if (scopeAnnotations.contains(annotationType))
         {
             return true;
         }
-        
-        for(ExternalScope ext : additionalScopes)
+
+        boolean isScopeAnnotation = annotationType.getAnnotation(Scope.class) != null ||
+                annotationType.getAnnotation(NormalScope.class) != null;
+
+        if (!isScopeAnnotation)
         {
-            if(ext.getScope().equals(annotationType))
+            // also check external scopes
+            for (ExternalScope es : getAdditionalScopes())
             {
-                return true;
+                if (es.getScope().equals(annotationType))
+                {
+                    isScopeAnnotation = true;
+                    break;
+                }
             }
         }
-     
-        return false;
+
+        if (isScopeAnnotation)
+        {
+            scopeAnnotations.add(annotationType);
+        }
+        else
+        {
+            nonscopeAnnotations.add(annotationType);
+        }
+
+        return isScopeAnnotation;
     }
     
     @Override
@@ -1087,6 +1080,8 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         additionalAnnotatedTypes.clear();
         additionalQualifiers.clear();
         additionalScopes.clear();
+        scopeAnnotations.clear();
+        nonscopeAnnotations.clear();
         clearCacheProxies();
         singleContextMap.clear();
         contextMap.clear();

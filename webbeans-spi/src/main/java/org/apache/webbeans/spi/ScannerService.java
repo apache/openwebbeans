@@ -58,8 +58,10 @@ public interface ScannerService
 
     
     /**
-     * Gets xml configuration files that are occured
-     * in the deployment archives.
+     * Get the URLs of all bean archives in the deployment.
+     * In OWB-1.x this did give the base paths to META-INF/beans.xml
+     * files. Now, this will either return the the beans.xml locations
+     * or the base URL for the JAR if it is an 'implicit bean archive'.
      * @return the URL of the beans.xml files.
      */
     public Set<URL> getBeanXmls();

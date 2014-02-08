@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.test.portable;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.Bean;
@@ -110,10 +108,8 @@ public class ExtensionTest extends AbstractUnitTest
     {
         try 
         {
-            Collection<Class<?>> classes = new ArrayList<Class<?>>();
-            classes.add(ExternalUnserializableTestScopedBean.class);
             addExtension(new ExternalTestScopeExtension());
-            startContainer(classes);
+            startContainer(ExternalUnserializableTestScopedBean.class);
             
             // we must not get here since an Exception is expected!
             Assert.fail();

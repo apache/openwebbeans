@@ -38,7 +38,6 @@ import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.WebBeansConstants;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 public abstract class AbstractLifeCycle implements ContainerLifecycle
 {
@@ -77,11 +76,9 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         this.webBeansContext = webBeansContext;
         beanManager = this.webBeansContext.getBeanManagerImpl();
 
-        WebBeansXMLConfigurator xmlDeployer = new WebBeansXMLConfigurator();
-        deployer = new BeansDeployer(xmlDeployer, this.webBeansContext);
+        deployer = new BeansDeployer(webBeansContext);
 
         jndiService = this.webBeansContext.getService(JNDIService.class);
-        beanManager.setXMLConfigurator(xmlDeployer);
         scannerService = this.webBeansContext.getScannerService();
         contextsService = this.webBeansContext.getService(ContextsService.class);
         initApplication(properties);

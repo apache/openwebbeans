@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.corespi.scanner.xbean;
 
+import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.xbean.finder.archive.Archive;
 import org.apache.xbean.finder.archive.ClassesArchive;
 import org.apache.xbean.finder.archive.ClasspathArchive;
@@ -51,26 +53,21 @@ public class CdiArchive implements Archive
      */
     private final Map<String, FoundClasses> classesByUrl = new HashMap<String, FoundClasses>();
 
-    private final Set<String> classes = new HashSet<String>();
+    private final Set<String> allClasses = new HashSet<String>();
     private final Archive delegate;
 
-    public CdiArchive(final ClassLoader loader, final Iterable<URL> urls)
+    public CdiArchive(BeanManagerImpl beanManager, BeanArchiveService beanArchiveService, final ClassLoader loader, final Map<String, URL> urls)
     {
         final Collection<Archive> archives = new ArrayList<Archive>();
-        for (final URL url : urls)
+        for (final URL url : urls.values())
         {
-            final List<String> classes = new ArrayList<String>();
-            final Archive archive = new FilteredArchive(ClasspathArchive.archive(loader, url), new Filter()
-            {
-                @Override
-                public boolean accept(final String name)
-                {
-                    classes.add(name);
-                    CdiArchive.this.classes.add(name);
-                    return true;
-                }
-            });
-            classesByUrl.put(url.toExternalForm(), new FoundClasses(url, classes));
+            final List<String> urlClasses = new ArrayList<String>();
+
+            BeanArchiveService.BeanArchiveInformation beanArchiveInfo = beanArchiveService.getBeanArchiveInformation(url);
+            final Archive archive = new FilteredArchive(ClasspathArchive.archive(loader, url),
+                    new BeanArchiveFilter(loader, beanManager, beanArchiveInfo, urlClasses, allClasses));
+
+            classesByUrl.put(url.toExternalForm(), new FoundClasses(url, urlClasses));
             archives.add(archive);
         }
 
@@ -84,7 +81,7 @@ public class CdiArchive implements Archive
             @Override
             public boolean accept(final String name)
             {
-                classes.add(name);
+                allClasses.add(name);
                 return true;
             }
         });
@@ -92,7 +89,7 @@ public class CdiArchive implements Archive
 
     public Set<String> getClasses()
     {
-        return classes;
+        return allClasses;
     }
 
     public Map<String, FoundClasses> classesByUrl()
