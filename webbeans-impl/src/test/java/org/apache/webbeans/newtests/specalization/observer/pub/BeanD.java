@@ -16,24 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.newtests.specalization.observer;
+package org.apache.webbeans.newtests.specalization.observer.pub;
+
+
+import org.apache.webbeans.newtests.specalization.observer.TestEvent;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-import java.io.Serializable;
+import javax.enterprise.inject.Alternative;
+import javax.enterprise.inject.Specializes;
 
+@Specializes
+@Alternative
 @ApplicationScoped
-public class BeanA implements Serializable
+public class BeanD extends BeanA
 {
-    private static final long serialVersionUID = 9096367220631667211L;
+    private static final long serialVersionUID = 821164664338581947L;
 
-    protected void observeTestEvent(@Observes TestEvent testEvent)
+    @Override
+    public void observeTestEvent(@Observes TestEvent testEvent)
     {
         testEvent.addInvocation(getBeanName());
     }
 
+    @Override
     public String getBeanName()
     {
-        return getClass().getSimpleName();
+        return super.getBeanName() + ":[alternative]:[specialize]";
     }
 }

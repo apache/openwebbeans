@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.newtests.specalization.observer;
+package org.apache.webbeans.newtests.specalization.observer.pub;
 
 
 import javax.enterprise.context.ApplicationScoped;

@@ -16,8 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.newtests.specalization.observer;
+package org.apache.webbeans.newtests.specalization.observer.prot;
 
+
+import org.apache.webbeans.newtests.specalization.observer.TestEvent;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;

@@ -16,22 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.newtests.specalization.observer;
+package org.apache.webbeans.newtests.specalization.observer.pub;
 
+import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.newtests.specalization.observer.TestEvent;
+import org.junit.Assert;
+import org.junit.Test;
+
+import javax.enterprise.inject.spi.Bean;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.junit.Assert;
-import org.junit.Test;
-
-
-public class ObserverTest extends AbstractUnitTest
+public class PublicObserverTest extends AbstractUnitTest
 {
-    private static final String PACKAGE_NAME = ObserverTest.class.getPackage().getName();
+    private static final String PACKAGE_NAME = TestEvent.class.getPackage().getName();
     
     @Test
     public void testObserverMethodsInParentOfAlternativeAndSpecializedBeans()

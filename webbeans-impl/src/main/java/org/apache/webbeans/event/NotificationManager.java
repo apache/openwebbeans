@@ -101,8 +101,9 @@ public final class NotificationManager
                 {
                     AnnotatedMethod<?> observerMethod = ((ObserverMethodImpl<?>)observer).getObserverMethod();
 
-                    // we only remove methods from a superclass
-                    if (!observerMethod.getJavaMember().getDeclaringClass().equals(subClass))
+                    //needs to be a subtype and not the class itself (otherwise all observer-methods get removed)
+                    if (subClass.isAssignableFrom(observerMethod.getJavaMember().getDeclaringClass()) &&
+                            !subClass.equals(observerMethod.getJavaMember().getDeclaringClass()))
                     {
                         try
                         {
