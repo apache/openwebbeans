@@ -26,6 +26,7 @@ import javax.el.PropertyNotFoundException;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.Bean;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.el22.WebBeansELResolver;
@@ -67,7 +68,7 @@ public class OwbTckElResolver extends WebBeansELResolver
             }
 
             //Manager instance
-            BeanManagerImpl manager = elContextStore.getBeanManager();
+            BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
 
             //Get beans
             Set<Bean<?>> beans = manager.getBeans(name);

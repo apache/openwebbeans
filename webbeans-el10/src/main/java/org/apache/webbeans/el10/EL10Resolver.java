@@ -67,57 +67,49 @@ public class EL10Resolver extends ELResolver
 
     @Override
     @SuppressWarnings({"unchecked","deprecation"})
-    public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
+    public Object getValue(ELContext context, Object base, Object property) throws NullPointerException, PropertyNotFoundException, ELException
     {
+        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
+        //we only check root beans
         // Check if the OWB actually got used in this application
-        if (!webBeansContext.getBeanManagerImpl().isInUse())
+        if (base != null || !beanManager.isInUse())
         {
             return null;
         }
         
-        //Bean instance
-        Object contextualInstance = null;
+        //Name of the bean
+        String beanName = (String) property;
+        //Local store, create if not exist
+        ELContextStore elContextStore = ELContextStore.getInstance(true);
 
-        if (obj == null)
+        Object contextualInstance = elContextStore.findBeanByName(beanName);
+
+        if(contextualInstance != null)
         {
-            //Name of the bean
-            String name = (String) property;
-            //Local store, create if not exist
-            ELContextStore elContextStore = ELContextStore.getInstance(true);
+            context.setPropertyResolved(true);
 
-            contextualInstance = elContextStore.findBeanByName(name);
-
-            if(contextualInstance != null)
-            {
-                context.setPropertyResolved(true);
-
-                return contextualInstance;
-            }
-
-            //Manager instance
-            BeanManagerImpl manager = elContextStore.getBeanManager();
-
-            //Get beans
-            Set<Bean<?>> beans = manager.getBeans(name);
-
-            //Found?
-            if(beans != null && !beans.isEmpty())
-            {
-                //Managed bean
-                Bean<Object> bean = (Bean<Object>)beans.iterator().next();
-
-                if(bean.getScope().equals(Dependent.class))
-                {
-                    contextualInstance = getDependentContextualInstance(manager, elContextStore, context, bean);
-                }
-                else
-                {
-                    // now we check for NormalScoped beans
-                    contextualInstance = getNormalScopedContextualInstance(manager, elContextStore, context, bean, name);
-                }
-            }
+            return contextualInstance;
         }
 
+        //Get beans
+        Set<Bean<?>> beans = beanManager.getBeans(beanName);
+
+        //Found?
+        if(beans != null && !beans.isEmpty())
+        {
+            //Managed bean
+            Bean<Object> bean = (Bean<Object>)beans.iterator().next();
+
+            if(bean.getScope().equals(Dependent.class))
+            {
+                contextualInstance = getDependentContextualInstance(beanManager, elContextStore, context, bean);
+            }
+            else
+            {
+                // now we check for NormalScoped beans
+                contextualInstance = getNormalScopedContextualInstance(beanManager, elContextStore, context, bean, beanName);
+            }
+        }
         return contextualInstance;
     }
 
