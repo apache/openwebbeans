@@ -18,9 +18,6 @@
  */
 package org.apache.webbeans.el;
 
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.BeanManagerImpl;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -80,8 +77,6 @@ public class ELContextStore
      * drops it after the EL.
      */
     private Map<String, Object> normalScopedObjects = new HashMap<String, Object>();
-
-    private BeanManagerImpl beanManager;
 
     public Object findBeanByName(String name)
     {
@@ -180,18 +175,6 @@ public class ELContextStore
     }
 
     /**
-     * @return BeanManager for this thread
-     */
-    public BeanManagerImpl getBeanManager()
-    {
-        if (beanManager == null)
-        {
-            beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
-        }
-        return beanManager;
-    }
-
-    /**
      * This method have to be called after the EL parsing to cleanup the cache
      * for &#064;Dependent scoped beans.
      */
@@ -219,7 +202,6 @@ public class ELContextStore
      */
     public void destroyELContextStore()
     {
-        beanManager = null;
         normalScopedObjects.clear();
         contextStores.set(null);
         contextStores.remove();
