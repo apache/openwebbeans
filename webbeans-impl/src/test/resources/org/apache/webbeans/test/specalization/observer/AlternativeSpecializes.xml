@@ -19,7 +19,9 @@ under the License.
 -->
 <beans>
 	<alternatives>
-		<class>org.apache.webbeans.test.specalization.observer.BeanC</class>
-		<class>org.apache.webbeans.test.specalization.observer.BeanD</class>
+		<class>org.apache.webbeans.test.specalization.observer.prot.BeanC</class>
+		<class>org.apache.webbeans.test.specalization.observer.prot.BeanD</class>
+		<class>org.apache.webbeans.test.specalization.observer.pub.BeanC</class>
+		<class>org.apache.webbeans.test.specalization.observer.pub.BeanD</class>
 	</alternatives>
 </beans>

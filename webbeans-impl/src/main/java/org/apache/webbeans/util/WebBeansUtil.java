@@ -130,8 +130,6 @@ import java.util.Set;
 
 /**
  * Contains some utility methods used in the all project.
- *
- * @version $Rev$ $Date$
  */
 @SuppressWarnings("unchecked")
 public final class WebBeansUtil
@@ -724,7 +722,7 @@ public final class WebBeansUtil
                     throw new DefinitionException("@Specialized Class : " + specializedClass.getName()
                             + " must have all bean types of its super class");
                 }
-                webBeansContext.getBeanManagerImpl().getNotificationManager().disableOverriddenObservers(superClass);
+                webBeansContext.getBeanManagerImpl().getNotificationManager().disableOverriddenObservers(specializedClass);
 
                 // Recursively configure super class first if super class is also a special bean.
                 // So the name and bean meta data could be populated to this beanclass.
