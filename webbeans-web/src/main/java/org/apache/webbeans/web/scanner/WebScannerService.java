@@ -18,14 +18,11 @@
  */
 package org.apache.webbeans.web.scanner;
 
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
-import org.apache.webbeans.corespi.scanner.xbean.CdiArchive;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.apache.xbean.finder.AnnotationFinder;
 
 import javax.servlet.ServletContext;
 import java.net.MalformedURLException;
@@ -47,17 +44,6 @@ public class WebScannerService extends AbstractMetaDataDiscovery
     public WebScannerService()
     {
         
-    }
-
-    @Override
-    protected AnnotationFinder initFinder()
-    {
-        WebBeansContext webbeansContext = WebBeansContext.getInstance();
-        beanArchiveService = webbeansContext.getBeanArchiveService();
-        archive = new CdiArchive(webbeansContext.getBeanManagerImpl(), beanArchiveService, WebBeansUtil.getCurrentClassLoader(), getBeanDeploymentUrls());
-        finder = new AnnotationFinder(archive);
-
-        return finder;
     }
 
     @Override

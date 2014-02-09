@@ -18,14 +18,12 @@
  */
 package org.apache.webbeans.corespi.scanner.xbean;
 
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.spi.BeanArchiveService;
+import org.apache.webbeans.spi.BeanArchiveService.BeanArchiveInformation;
 import org.apache.xbean.finder.archive.Archive;
-import org.apache.xbean.finder.archive.ClassesArchive;
 import org.apache.xbean.finder.archive.ClasspathArchive;
 import org.apache.xbean.finder.archive.CompositeArchive;
 import org.apache.xbean.finder.archive.FilteredArchive;
-import org.apache.xbean.finder.filter.Filter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,11 +31,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * this delegate pattern is interesting
@@ -53,43 +49,24 @@ public class CdiArchive implements Archive
      */
     private final Map<String, FoundClasses> classesByUrl = new HashMap<String, FoundClasses>();
 
-    private final Set<String> allClasses = new HashSet<String>();
     private final Archive delegate;
 
-    public CdiArchive(BeanManagerImpl beanManager, BeanArchiveService beanArchiveService, final ClassLoader loader, final Map<String, URL> urls)
+    public CdiArchive(BeanArchiveService beanArchiveService, final ClassLoader loader, final Map<String, URL> urls)
     {
         final Collection<Archive> archives = new ArrayList<Archive>();
         for (final URL url : urls.values())
         {
             final List<String> urlClasses = new ArrayList<String>();
 
-            BeanArchiveService.BeanArchiveInformation beanArchiveInfo = beanArchiveService.getBeanArchiveInformation(url);
+            BeanArchiveInformation beanArchiveInfo = beanArchiveService.getBeanArchiveInformation(url);
             final Archive archive = new FilteredArchive(ClasspathArchive.archive(loader, url),
-                    new BeanArchiveFilter(loader, beanManager, beanArchiveInfo, urlClasses, allClasses));
+                    new BeanArchiveFilter(beanArchiveInfo, urlClasses));
 
-            classesByUrl.put(url.toExternalForm(), new FoundClasses(url, urlClasses));
+            classesByUrl.put(url.toExternalForm(), new FoundClasses(url, urlClasses, beanArchiveInfo));
             archives.add(archive);
         }
 
         delegate = new CompositeArchive(archives);
-    }
-
-    public CdiArchive(final Collection<Class<?>> classList)
-    {
-        delegate = new FilteredArchive(new ClassesArchive(classList), new Filter()
-        {
-            @Override
-            public boolean accept(final String name)
-            {
-                allClasses.add(name);
-                return true;
-            }
-        });
-    }
-
-    public Set<String> getClasses()
-    {
-        return allClasses;
     }
 
     public Map<String, FoundClasses> classesByUrl()
@@ -119,16 +96,23 @@ public class CdiArchive implements Archive
     {
         private URL url;
         private Collection<String> classNames;
+        private BeanArchiveInformation beanArchiveInfo;
 
-        public FoundClasses(URL url, Collection<String> classNames)
+        public FoundClasses(URL url, Collection<String> classNames, BeanArchiveInformation beanArchiveInfo)
         {
             this.url = url;
             this.classNames = classNames;
+            this.beanArchiveInfo = beanArchiveInfo;
         }
 
         public URL getUrl()
         {
             return url;
+        }
+
+        public BeanArchiveInformation getBeanArchiveInfo()
+        {
+            return beanArchiveInfo;
         }
 
         public Collection<String> getClassNames()

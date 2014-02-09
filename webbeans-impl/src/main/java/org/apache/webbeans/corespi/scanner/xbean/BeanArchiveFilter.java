@@ -18,11 +18,8 @@
  */
 package org.apache.webbeans.corespi.scanner.xbean;
 
-import java.lang.annotation.Annotation;
 import java.util.List;
-import java.util.Set;
 
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.spi.BeanArchiveService.BeanArchiveInformation;
 import org.apache.webbeans.spi.BeanArchiveService.BeanDiscoveryMode;
 import org.apache.xbean.finder.filter.Filter;
@@ -32,28 +29,18 @@ import org.apache.xbean.finder.filter.Filter;
  */
 public class BeanArchiveFilter implements Filter
 {
-    private final ClassLoader loader;
-    private final BeanManagerImpl beanManager;
     private final BeanArchiveInformation beanArchiveInfo;
-    private final boolean scanAll;
     private final boolean scanNone;
-    private final boolean scanAnnotated;
 
     private List<String> urlClasses;
-    private Set<String> allClasses;
 
-    public BeanArchiveFilter(ClassLoader loader, BeanManagerImpl beanManager, BeanArchiveInformation beanArchiveInfo, List<String> urlClasses, Set<String> allClasses)
+    public BeanArchiveFilter(BeanArchiveInformation beanArchiveInfo, List<String> urlClasses)
     {
-        this.loader = loader;
-        this.beanManager = beanManager;
         this.beanArchiveInfo = beanArchiveInfo;
         this.urlClasses = urlClasses;
-        this.allClasses = allClasses;
         BeanDiscoveryMode discoveryMode = beanArchiveInfo.getBeanDiscoveryMode();
 
-        scanAll = BeanDiscoveryMode.ALL.equals(discoveryMode);
         scanNone = BeanDiscoveryMode.NONE.equals(discoveryMode);
-        scanAnnotated = BeanDiscoveryMode.ANNOTATED.equals(discoveryMode);
     }
 
     @Override
@@ -69,51 +56,8 @@ public class BeanArchiveFilter implements Filter
             return false;
         }
 
-        if (scanAll)
-        {
             urlClasses.add(name);
-            allClasses.add(name);
             return true;
-        }
-
-        if (scanAnnotated)
-        {
-            try
-            {
-                Class clazz = Class.forName(name, false, loader);
-                if (!hasScopeAnnotation(clazz.getAnnotations()))
-                {
-                    return false;
-                }
-            }
-            catch (ClassNotFoundException cnfe)
-            {
-                // not a problem, just ignore this class
-                return false;
-            }
-            catch (NoClassDefFoundError ncdf)
-            {
-                // not a problem, just ignore this class
-                return false;
-            }
-
-            urlClasses.add(name);
-            allClasses.add(name);
-            return true;
-        }
-
-        return false;
     }
 
-    private boolean hasScopeAnnotation(Annotation[] annotations)
-    {
-        for (Annotation annotation : annotations)
-        {
-            if (beanManager.isScope(annotation.annotationType()))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 }

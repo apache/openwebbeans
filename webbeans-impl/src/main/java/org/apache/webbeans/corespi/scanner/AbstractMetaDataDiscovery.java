@@ -23,10 +23,12 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.corespi.scanner.xbean.CdiArchive;
+import org.apache.webbeans.corespi.scanner.xbean.OwbAnnotationFinder;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.BeanArchiveService;
+import org.apache.webbeans.spi.BeanArchiveService.BeanDiscoveryMode;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.UrlSet;
@@ -35,6 +37,7 @@ import org.apache.xbean.finder.AnnotationFinder;
 import org.apache.xbean.finder.ClassLoaders;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -75,11 +78,16 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
 
     protected ClassLoader loader;
     protected CdiArchive archive;
-    protected AnnotationFinder finder;
+    protected OwbAnnotationFinder finder;
     protected boolean isBDAScannerEnabled = false;
     protected BDABeansXmlScanner bdaBeansXmlScanner;
+    protected final WebBeansContext webBeansContext;
 
 
+    protected AbstractMetaDataDiscovery()
+    {
+        webBeansContext = WebBeansContext.getInstance();
+    }
 
     protected AnnotationFinder initFinder()
     {
@@ -88,14 +96,13 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
             return finder;
         }
 
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
         if (beanArchiveService == null)
         {
             beanArchiveService = webBeansContext.getBeanArchiveService();
         }
 
-        archive = new CdiArchive(webBeansContext.getBeanManagerImpl(), beanArchiveService, WebBeansUtil.getCurrentClassLoader(), getBeanDeploymentUrls());
-        finder = new AnnotationFinder(archive);
+        archive = new CdiArchive(beanArchiveService, WebBeansUtil.getCurrentClassLoader(), getBeanDeploymentUrls());
+        finder = new OwbAnnotationFinder(archive);
 
         return finder;
     }
@@ -250,6 +257,16 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
                 path.contains("/idea_rt") ||
                 path.contains("/eclipse") ||
                 path.contains("/jcommander") ||
+                path.contains("/tomcat") ||
+                path.contains("/catalina") ||
+                path.contains("/jasper") ||
+                path.contains("/jsp-api") ||
+                path.contains("/myfaces-") ||
+                path.contains("/servlet-api") ||
+                path.contains("/javax") ||
+                path.contains("/annotation-api") ||
+                path.contains("/el-api") ||
+                path.contains("/mojarra") ||
                 path.contains("/openwebbeans-"))
             {
                 //X TODO this should be much more actually
@@ -316,7 +333,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         // and also scan the bean archive!
         if (beanArchiveService == null)
         {
-            WebBeansContext webBeansContext = WebBeansContext.getInstance();
+
             beanArchiveService = webBeansContext.getBeanArchiveService();
         }
 
@@ -330,34 +347,92 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     public Set<Class<?>> getBeanClasses()
     {
         final Set<Class<?>> classSet = new HashSet<Class<?>>();
-        for(String str : archive.getClasses())
+        for (CdiArchive.FoundClasses foundClasses : archive.classesByUrl().values())
         {
-            try
+            boolean scanModeAnnotated = BeanDiscoveryMode.ANNOTATED.equals(foundClasses.getBeanArchiveInfo().getBeanDiscoveryMode());
+            for(String className : foundClasses.getClassNames())
             {
-                Class<?> clazz = ClassUtil.getClassFromName(str);
-                if (clazz != null)
+                try
                 {
+                    if (scanModeAnnotated)
+                    {
+                        // in this case we need to find out whether we should keep this class in the Archive
+                        AnnotationFinder.ClassInfo classInfo = finder.getClassInfo(className);
+                        if (classInfo == null || !isBeanAnnotatedClass(classInfo))
+                        {
+                            continue;
+                        }
+                    }
 
-                    // try to provoke a NoClassDefFoundError exception which is thrown
-                    // if some dependencies of the class are missing
-                    clazz.getDeclaredFields();
-                    clazz.getDeclaredMethods();
+                    Class<?> clazz = ClassUtil.getClassFromName(className);
+                    if (clazz != null)
+                    {
 
-                    // we can add this class cause it has been loaded completely
-                    classSet.add(clazz);
+                        // try to provoke a NoClassDefFoundError exception which is thrown
+                        // if some dependencies of the class are missing
+                        clazz.getDeclaredFields();
+                        clazz.getDeclaredMethods();
 
+                        // we can add this class cause it has been loaded completely
+                        classSet.add(clazz);
+
+                    }
+                }
+                catch (NoClassDefFoundError e)
+                {
+                    if (logger.isLoggable(Level.WARNING))
+                    {
+                        logger.log(Level.WARNING, OWBLogConst.WARN_0018, new Object[] { className, e.toString() });
+                    }
                 }
             }
-            catch (NoClassDefFoundError e)
-            {
-                if (logger.isLoggable(Level.WARNING))
-                {
-                    logger.log(Level.WARNING, OWBLogConst.WARN_0018, new Object[] { str, e.toString() });
-                }
-            }
+
         }
 
         return classSet;
+    }
+
+    /**
+     * This method is called for classes from bean archives with
+     * bean-discovery-mode 'annotated'.
+     *
+     * This method is intended to be overwritten in integration scenarios and e.g.
+     * allows to add other criterias for keeping the class.
+     *
+     * @param classInfo
+     * @return true if this class should be kept and further get picked up as CDI Bean
+     */
+    protected boolean isBeanAnnotatedClass(AnnotationFinder.ClassInfo classInfo)
+    {
+        // check whether this class has 'scope' annotations or a stereotype
+        for (AnnotationFinder.AnnotationInfo annotationInfo : classInfo.getAnnotations())
+        {
+            if (isBeanAnnotation(annotationInfo))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean isBeanAnnotation(AnnotationFinder.AnnotationInfo annotationInfo)
+    {
+        String annotationName = annotationInfo.getName();
+
+        // TODO add caches
+
+        try
+        {
+            Class<? extends Annotation> annotationType = (Class<? extends Annotation>) WebBeansUtil.getCurrentClassLoader().loadClass(annotationName);
+            boolean isBeanAnnotation = webBeansContext.getBeanManagerImpl().isScope(annotationType);
+            isBeanAnnotation = isBeanAnnotation || webBeansContext.getBeanManagerImpl().isStereotype(annotationType);
+
+            return isBeanAnnotation;
+        }
+        catch (ClassNotFoundException e)
+        {
+            return false;
+        }
     }
 
 
