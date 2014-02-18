@@ -1,12 +1,12 @@
 -------------------------------
-Apache OpenWebBeans 1.2.1
+Apache OpenWebBeans 1.2.2
 -------------------------------
 Welcome!
 
 Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.2.1 release of Apache OpenWebBeans.
+This document is based on the 1.2.2 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -28,10 +28,10 @@ https://cwiki.apache.org/confluence/display/OWB/Index
 
 
 --------------------------------
-OpenWebBeans 1.2.1 Release Features
+OpenWebBeans 1.2.2 Release Features
 --------------------------------
 
-- The 1.2.1 release supports the following features
+- The 1.2.2 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Session Beans Support (via Embeddable OpenEJB container in Tomcat)
@@ -76,6 +76,33 @@ of the Application. This is especially the case for <alternatives> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application. This behaviour will most likely also be the default behaviour
 in the CDI-1.1 JSR-346 specification.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.2.2
+-------------------------------------------
+
+Bug
+
+    [OWB-914] - @New Bean is not intercepted
+    [OWB-917] - Multiple specialization doesn't work
+    [OWB-918] - openwebbeans-el22 missing from binary
+    [OWB-919] - The word "occurred" misspelled in Messages.properties several times
+    [OWB-920] - NPE in org.apache.webbeans.servlet.WebBeansConfigurationListener.ensureRequestScope()
+    [OWB-923] - wrong handling of bridge methods
+    [OWB-924] - Extensions do miss the passivationId
+    [OWB-929] - implicit filter in InstanceImpl#iterator
+    [OWB-930] - NotificationManager#disableOverriddenObservers removes wrong observers
+
+Improvement
+
+    [OWB-820] - cleanup of el resolvers
+    [OWB-932] - skip validation of the cdi-api
+
+New Feature
+
+    [OWB-921] - Create a synthetic InjectionPoint if the bean got triggered programmatically
+
 
 
 -------------------------------------------
