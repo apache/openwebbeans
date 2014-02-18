@@ -26,7 +26,7 @@ import javax.enterprise.inject.spi.Bean;
 import junit.framework.Assert;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.exception.stero.ComponentDefaultScopeWithDifferentScopeSteros;
 import org.apache.webbeans.test.component.exception.stero.ComponentDefaultScopeWithNonScopeStero;
 import org.apache.webbeans.test.component.exception.stero.ComponentNonDefaultScopeWithDifferentScopeSteros;
@@ -35,15 +35,30 @@ import org.apache.webbeans.test.component.exception.stero.ComponentWithDifferent
 import org.apache.webbeans.test.component.exception.stero.ComponentWithNonScopeStero;
 import org.apache.webbeans.test.component.exception.stero.ComponentWithSameScopeSteros;
 import org.apache.webbeans.test.component.exception.stero.ComponentWithoutScopeStero;
+import org.junit.Before;
 import org.junit.Test;
 
-public class ScopeTypeExceptionComponentTest extends AbstractUnitTest
+public class ScopeTypeExceptionComponentTest extends TestContext
 {
+
+    public ScopeTypeExceptionComponentTest()
+    {
+        super(ScopeTypeExceptionComponentTest.class.getName());
+    }
+
+    @Override
+    @Before
+    public void init()
+    {
+        super.init();
+    }
+
     @Test
     public void testComponentWithNonScopeStero()
     {
-        startContainer(ComponentWithNonScopeStero.class);
-        Bean<?> bean = getBean(ComponentWithNonScopeStero.class);
+        clear();
+        defineManagedBean(ComponentWithNonScopeStero.class);
+        Bean<?> bean = getComponents().get(0);
 
         Assert.assertEquals(Dependent.class, bean.getScope());
     }
@@ -51,8 +66,9 @@ public class ScopeTypeExceptionComponentTest extends AbstractUnitTest
     @Test
     public void testComponentDefaultScopeWithNonScopeStero()
     {
-        startContainer(ComponentDefaultScopeWithNonScopeStero.class);
-        Bean<?> bean = getBean(ComponentDefaultScopeWithNonScopeStero.class);
+        clear();
+        defineManagedBean(ComponentDefaultScopeWithNonScopeStero.class);
+        Bean<?> bean = getComponents().get(0);
 
         Assert.assertEquals(SessionScoped.class, bean.getScope());
     }
@@ -60,23 +76,35 @@ public class ScopeTypeExceptionComponentTest extends AbstractUnitTest
     @Test
     public void testComponentWithDefaultScopeStero()
     {
-        startContainer(ComponentWithDefaultScopeStero.class);
-        Bean<?> bean = getBean(ComponentWithDefaultScopeStero.class);
+        clear();
+        defineManagedBean(ComponentWithDefaultScopeStero.class);
+        Bean<?> bean = getComponents().get(0);
 
         Assert.assertEquals(RequestScoped.class, bean.getScope());
     }
 
-    @Test(expected = WebBeansConfigurationException.class)
+    @Test
     public void testComponentWithDifferentScopeSteros()
     {
-        startContainer(ComponentWithDifferentScopeSteros.class);
+        clear();
+        try
+        {
+            defineManagedBean(ComponentWithDifferentScopeSteros.class);
+        }
+        catch (WebBeansConfigurationException e)
+        {
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
+        }
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testComponentWithoutScopeStero()
     {
-        startContainer(ComponentWithoutScopeStero.class);
-        Bean<?> bean = getBean(ComponentWithoutScopeStero.class);
+        clear();
+        defineManagedBean(ComponentWithoutScopeStero.class);
+        Bean<?> bean = getComponents().get(0);
 
         Assert.assertEquals(Dependent.class, bean.getScope());
     }
@@ -84,8 +112,9 @@ public class ScopeTypeExceptionComponentTest extends AbstractUnitTest
     @Test
     public void testComponentWithSameScopeSteros()
     {
-        startContainer(ComponentWithSameScopeSteros.class);
-        Bean<?> bean = getBean(ComponentWithSameScopeSteros.class);
+        clear();
+        defineManagedBean(ComponentWithSameScopeSteros.class);
+        Bean<?> bean = getComponents().get(0);
 
         Assert.assertEquals(SessionScoped.class, bean.getScope());
     }
@@ -93,16 +122,27 @@ public class ScopeTypeExceptionComponentTest extends AbstractUnitTest
     @Test
     public void testComponentDefaultScopeWithDifferentScopeSteros()
     {
-        startContainer(ComponentDefaultScopeWithDifferentScopeSteros.class);
-        Bean<?> bean = getBean(ComponentDefaultScopeWithDifferentScopeSteros.class);
+        clear();
+        defineManagedBean(ComponentDefaultScopeWithDifferentScopeSteros.class);
+        Bean<?> bean = getComponents().get(0);
 
         Assert.assertEquals(SessionScoped.class, bean.getScope());
     }
 
-    @Test(expected = WebBeansConfigurationException.class)
+    @Test
     public void testComponentNonDefaultScopeWithDifferentScopeSteros()
     {
-        startContainer(ComponentNonDefaultScopeWithDifferentScopeSteros.class);
+        clear();
+        try
+        {
+            defineManagedBean(ComponentNonDefaultScopeWithDifferentScopeSteros.class);
+        }
+        catch (WebBeansConfigurationException e)
+        {
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
+        }
+        Assert.fail("expecting an exception!");
     }
 
 }

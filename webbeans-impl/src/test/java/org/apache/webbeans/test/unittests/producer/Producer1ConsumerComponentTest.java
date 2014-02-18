@@ -18,30 +18,77 @@
  */
 package org.apache.webbeans.test.unittests.producer;
 
+import java.util.List;
+
+import javax.enterprise.inject.spi.BeanManager;
+
 import junit.framework.Assert;
 
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.producer.Producer1;
 import org.apache.webbeans.test.component.service.IService;
 import org.apache.webbeans.test.component.service.Producer1ConsumerComponent;
 import org.apache.webbeans.test.component.service.ServiceImpl1;
+import org.junit.Before;
 import org.junit.Test;
 
-public class Producer1ConsumerComponentTest extends AbstractUnitTest
+public class Producer1ConsumerComponentTest extends TestContext
 {
+    BeanManager container = null;
+
+    public Producer1ConsumerComponentTest()
+    {
+        super(Producer1ConsumerComponentTest.class.getSimpleName());
+    }
+
+    @Override
+    @Before
+    public void init()
+    {
+        super.init();
+        this.container = WebBeansContext.getInstance().getBeanManagerImpl();
+    }
+
     @Test
     public void testTypedComponent() throws Throwable
     {
-        startContainer(IService.class, ServiceImpl1.class, Producer1.class, Producer1ConsumerComponent.class);
+        clear();
 
-        IService svc1Named = getInstance("service");
-        Assert.assertNotNull(svc1Named);
-        Assert.assertEquals("ServiceImpl1", svc1Named.service());
+        defineManagedBean(ServiceImpl1.class);
+        defineManagedBean(Producer1.class);
+        defineManagedBean(Producer1ConsumerComponent.class);
 
-        Producer1ConsumerComponent single = getInstance(Producer1ConsumerComponent.class);
+        List<AbstractOwbBean<?>> comps = getComponents();
+
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
+        contextFactory.initApplicationContext(null);
+
+        Assert.assertEquals(4, getDeployedComponents());
+
+        Object obj = getManager().getInstance(comps.get(0));
+        
+        Assert.assertNotNull(obj);
+
+        getInstanceByName("service");
+
+        getManager().getInstance(comps.get(1));
+
+        Object object = getManager().getInstance(comps.get(2));
+
+        Assert.assertTrue(object instanceof Producer1ConsumerComponent);
+
+        Producer1ConsumerComponent single = (Producer1ConsumerComponent) object;
 
         IService service = single.getService();
+
         Assert.assertNotNull(service);
-        Assert.assertEquals("ServiceImpl1", service.service());
+
+        contextFactory.destroyApplicationContext(null);
+        contextFactory.destroyRequestContext(null);
     }
+
 }

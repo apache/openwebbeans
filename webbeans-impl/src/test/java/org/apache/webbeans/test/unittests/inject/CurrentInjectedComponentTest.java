@@ -18,31 +18,65 @@
  */
 package org.apache.webbeans.test.unittests.inject;
 
+import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.ContaintsCurrentComponent;
 import org.apache.webbeans.test.component.CurrentBindingComponent;
 import org.apache.webbeans.test.component.service.ITyped2;
 import org.apache.webbeans.test.component.service.Typed2;
+import org.junit.Before;
 import org.junit.Test;
 
-public class CurrentInjectedComponentTest extends AbstractUnitTest
+public class CurrentInjectedComponentTest extends TestContext
 {
+    public CurrentInjectedComponentTest()
+    {
+        super(CurrentInjectedComponentTest.class.getSimpleName());
+    }
+
+    @Override
+    @Before
+    public void init()
+    {
+        super.init();
+    }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testTypedComponent() throws Throwable
     {
-        startContainer(Typed2.class, CurrentBindingComponent.class, ContaintsCurrentComponent.class);
+        clear();
 
+        defineManagedBean(Typed2.class);
+        defineManagedBean(CurrentBindingComponent.class);
+        defineManagedBean(ContaintsCurrentComponent.class);
+        List<AbstractOwbBean<?>> comps = getComponents();
 
-        ContaintsCurrentComponent i = getInstance(ContaintsCurrentComponent.class);
+        Object session = getSession();
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
+        contextFactory.initSessionContext(session);
+
+        Assert.assertEquals(3, comps.size());
+
+        getManager().getInstance(comps.get(0));
+        getManager().getInstance(comps.get(1));
+
+        Object object = getManager().getInstance(comps.get(2));
+
+        Assert.assertTrue(object instanceof ContaintsCurrentComponent);
+
+        ContaintsCurrentComponent i = (ContaintsCurrentComponent) object;
 
         Assert.assertTrue(i.getInstance() instanceof CurrentBindingComponent);
 
-        Object obj2 = getInstance(CurrentBindingComponent.class);
+        Object obj2 = getManager().getInstance(comps.get(1));
 
         Assert.assertSame(i.getInstance().getTyped2(), ((CurrentBindingComponent) obj2).getTyped2());
 
@@ -50,6 +84,9 @@ public class CurrentInjectedComponentTest extends AbstractUnitTest
         ITyped2 typed2 = bc.getTyped2();
 
         Assert.assertNotNull(typed2);
+
+        contextFactory.destroyRequestContext(null);
+        contextFactory.destroySessionContext(session);
     }
 
 }

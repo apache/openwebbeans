@@ -18,24 +18,55 @@
  */
 package org.apache.webbeans.test.unittests.inject;
 
+import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.service.InjectedComponent;
 import org.apache.webbeans.test.component.service.ServiceImpl1;
+import org.junit.Before;
 import org.junit.Test;
 
-public class InjectedComponentTest extends AbstractUnitTest
+public class InjectedComponentTest extends TestContext
 {
+
+    public InjectedComponentTest()
+    {
+        super(InjectedComponentTest.class.getSimpleName());
+    }
+
+    @Override
+    @Before
+    public void init()
+    {
+        super.init();
+    }
+
     @Test
     public void testTypedComponent() throws Throwable
     {
-        startContainer(InjectedComponent.class, ServiceImpl1.class);
+        clear();
 
-        InjectedComponent component = getInstance(InjectedComponent.class);
+        defineManagedBean(InjectedComponent.class);
+        defineManagedBean(ServiceImpl1.class);
+        List<AbstractOwbBean<?>> comps = getComponents();
 
-        Assert.assertNotNull(component);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
+        contextFactory.initApplicationContext(null);
+
+        Assert.assertEquals(2, comps.size());
+
+        Object object = getManager().getInstance(comps.get(0));
+
+        Assert.assertTrue(object instanceof InjectedComponent);
+
+        contextFactory.destroyApplicationContext(null);
+        contextFactory.destroyRequestContext(null);
     }
 
 }

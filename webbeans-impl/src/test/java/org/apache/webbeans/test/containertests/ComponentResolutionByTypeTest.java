@@ -24,14 +24,17 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithBindingMember;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithNonBindingMember;
 import org.apache.webbeans.test.component.BindingComponent;
 import org.apache.webbeans.test.component.NonBindingComponent;
+import org.junit.Before;
 import org.junit.Test;
 
-public class ComponentResolutionByTypeTest extends AbstractUnitTest
+public class ComponentResolutionByTypeTest extends TestContext
 {
     public @AnnotationWithBindingMember(value = "B", number = 3)
     BindingComponent s1 = null;
@@ -45,45 +48,53 @@ public class ComponentResolutionByTypeTest extends AbstractUnitTest
     public @AnnotationWithNonBindingMember(value = "C", arg1 = "arg11", arg2 = "arg21")
     NonBindingComponent s5 = null;
 
+    private BeanManagerImpl cont;
+
     private static final String CLAZZ_NAME = ComponentResolutionByTypeTest.class.getName();
 
+    public ComponentResolutionByTypeTest()
+    {
+        super(CLAZZ_NAME);
+    }
     
+    @Override
+    @Before
+    public void init()
+    {
+        cont = WebBeansContext.getInstance().getBeanManagerImpl();
+    }
+
 
     @Test
-    public void testBindingTypeOk() throws Exception
+    public void testBindingTypeOk() throws Throwable
     {
-        startContainer(this.getClass());
-        getBeanManager().getBeans(BindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s1").getAnnotations());
+        cont.getBeans(BindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s1").getAnnotations());
     }
 
     @Test
-    public void testBindingTypeNonOk() throws Exception
+    public void testBindingTypeNonOk() throws Throwable
     {
-        startContainer(this.getClass());
-        getBeanManager().getBeans(BindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s2").getAnnotations());
+        cont.getBeans(BindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s2").getAnnotations());
     }
 
     @Test
-    public void testNonBindingTypeOk1() throws Exception
+    public void testNonBindingTypeOk1() throws Throwable
     {
-        startContainer(this.getClass());
-        getBeanManager().getBeans(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s3").getAnnotations());
+        cont.getBeans(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s3").getAnnotations());
     }
 
     @Test
-    public void testNonBindingTypeOk2() throws Exception
+    public void testNonBindingTypeOk2() throws Throwable
     {
-        startContainer(this.getClass());
-        Set<Bean<?>> beans = getBeanManager().getBeans(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s4").getAnnotations());
+        Set<Bean<?>> beans = cont.getBeans(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s4").getAnnotations());
         Assert.assertNotNull(beans);
         Assert.assertTrue(beans.isEmpty());
     }
 
     @Test
-    public void testNonBindingTypeNonOk() throws Exception
+    public void testNonBindingTypeNonOk() throws Throwable
     {
-        startContainer(this.getClass());
-        getBeanManager().getBeans(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s5").getAnnotations());
+        cont.getBeans(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s5").getAnnotations());
     }
 
 }

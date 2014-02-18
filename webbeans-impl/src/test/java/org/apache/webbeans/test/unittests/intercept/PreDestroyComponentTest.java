@@ -24,7 +24,7 @@ import java.util.Collection;
 
 import junit.framework.Assert;
 import org.apache.webbeans.annotation.AnyLiteral;
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.PreDestroyComponent;
 import org.junit.Test;

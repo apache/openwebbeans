@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.producer.broken;
 
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponent1;
 import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponent2;
 import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponent3;
@@ -26,24 +26,37 @@ import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponen
 import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponent5;
 import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponent6;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.DefinitionException;
-
-public class BrokenProducerTest extends AbstractUnitTest
+public class BrokenProducerTest extends TestContext
 {
+
+    public BrokenProducerTest()
+    {
+        super(BrokenProducerTest.class.getName());
+    }
+
+    @Override
+    @Before
+    public void init()
+    {
+    }
+
     @Test
     public void testBroken1()
     {
         try
         {
-            startContainer(BrokenProducerComponent1.class);
-            Assert.fail("DefinitionException expected");
+            clear();
+            defineManagedBean(BrokenProducerComponent1.class);
         }
-        catch (DefinitionException e)
+        catch (Exception e)
         {
-            return; // all ok
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
+        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -51,13 +64,15 @@ public class BrokenProducerTest extends AbstractUnitTest
     {
         try
         {
-            startContainer(BrokenProducerComponent2.class);
-            Assert.fail("DefinitionException expected");
+            clear();
+            defineManagedBean(BrokenProducerComponent2.class);
         }
-        catch (DefinitionException e)
+        catch (Exception e)
         {
-            return; // all ok
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
+        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -65,13 +80,15 @@ public class BrokenProducerTest extends AbstractUnitTest
     {
         try
         {
-            startContainer(BrokenProducerComponent3.class);
-            Assert.fail("DefinitionException expected");
+            clear();
+            defineManagedBean(BrokenProducerComponent3.class);
         }
-        catch (DefinitionException e)
+        catch (Exception e)
         {
-            return; // all ok
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
+        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -79,13 +96,15 @@ public class BrokenProducerTest extends AbstractUnitTest
     {
         try
         {
-            startContainer(BrokenProducerComponent4.class);
-            Assert.fail("DefinitionException expected");
+            clear();
+            defineManagedBean(BrokenProducerComponent4.class);
         }
-        catch (DefinitionException e)
+        catch (Exception e)
         {
-            return; // all ok
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
+        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -93,13 +112,15 @@ public class BrokenProducerTest extends AbstractUnitTest
     {
         try
         {
-            startContainer(BrokenProducerComponent5.class);
-            Assert.fail("DefinitionException expected");
+            clear();
+            defineManagedBean(BrokenProducerComponent5.class);
         }
-        catch (DefinitionException e)
+        catch (Exception e)
         {
-            return; // all ok
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
+        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -107,13 +128,15 @@ public class BrokenProducerTest extends AbstractUnitTest
     {
         try
         {
-            startContainer(BrokenProducerComponent6.class);
-            Assert.fail("DefinitionException expected");
+            clear();
+            defineManagedBean(BrokenProducerComponent6.class);
         }
-        catch (DefinitionException e)
+        catch (Exception e)
         {
-            return; // all ok
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
+        Assert.fail("expecting an exception!");
     }
 
 }

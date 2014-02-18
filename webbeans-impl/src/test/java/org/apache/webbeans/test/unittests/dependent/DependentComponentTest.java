@@ -18,37 +18,73 @@
  */
 package org.apache.webbeans.test.unittests.dependent;
 
+import java.util.List;
+
 import junit.framework.Assert;
 
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.dependent.DependentComponent;
 import org.apache.webbeans.test.component.dependent.DependentOwnerComponent;
 import org.apache.webbeans.test.component.dependent.circular.DependentA;
 import org.apache.webbeans.test.component.dependent.circular.DependentB;
+import org.junit.Before;
 import org.junit.Test;
 
-public class DependentComponentTest extends AbstractUnitTest
+public class DependentComponentTest extends TestContext
 {
+    public DependentComponentTest()
+    {
+        super(DependentComponentTest.class.getName());
+    }
+
+    @Override
+    @Before
+    public void init()
+    {
+        super.init();
+    }
+
     @Test
     public void testDependent()
     {
-        startContainer(DependentComponent.class, DependentOwnerComponent.class);
+        clear();
+        defineManagedBean(DependentComponent.class);
+        defineManagedBean(DependentOwnerComponent.class);
 
-        DependentOwnerComponent comp = getInstance(DependentOwnerComponent.class);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        webBeansContext.getContextFactory().initRequestContext(null);
+
+        List<AbstractOwbBean<?>> comps = getComponents();
+
+        Assert.assertEquals(2, comps.size());
+
+        DependentOwnerComponent comp = (DependentOwnerComponent) getManager().getInstance(comps.get(1));
 
         DependentComponent dc = comp.getDependent();
 
         Assert.assertNotNull(dc);
+
+        webBeansContext.getContextFactory().destroyRequestContext(null);
     }
 
     @Test
     public void testDependentCircular()
     {
-        startContainer(DependentA.class, DependentB.class);
+        clear();
 
-        DependentA dependentA = getInstance(DependentA.class);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
+
+        AbstractOwbBean<DependentA> componentA = defineManagedBean(DependentA.class);
+        AbstractOwbBean<DependentB> componentB = defineManagedBean(DependentB.class);
+        
+        Assert.assertNotNull(componentB);
+        
+        DependentA dependentA = getManager().getInstance(componentA);
         Assert.assertNotNull(dependentA);
         Assert.assertNotNull(dependentA.getDependentB());
+
     }
 
 }

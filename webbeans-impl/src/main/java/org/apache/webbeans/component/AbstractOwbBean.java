@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.component;
 
-import javax.enterprise.inject.spi.BeanAttributes;
+import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;

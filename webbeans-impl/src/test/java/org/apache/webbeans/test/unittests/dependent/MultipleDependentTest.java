@@ -20,19 +20,38 @@ package org.apache.webbeans.test.unittests.dependent;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.dependent.DependentComponent;
 import org.apache.webbeans.test.component.dependent.MultipleDependentComponent;
+import org.junit.Before;
 import org.junit.Test;
 
-public class MultipleDependentTest extends AbstractUnitTest
+public class MultipleDependentTest extends TestContext
 {
+    public MultipleDependentTest()
+    {
+        super(MultipleDependentTest.class.getName());
+    }
+    
+    
+    @Override
+    @Before
+    public void init()
+    {
+        initDependentContext();
+    }
+    
     @Test
     public void testMultipleDependent()
     {
-        startContainer(DependentComponent.class, MultipleDependentComponent.class);
+        clear();
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
+
+        defineManagedBean(DependentComponent.class);
+        defineManagedBean(MultipleDependentComponent.class);
         
-        MultipleDependentComponent bean = getInstance(MultipleDependentComponent.class);
+        MultipleDependentComponent bean = (MultipleDependentComponent)getManager().getInstance(getComponents().get(1));
         
         Assert.assertNotNull(bean.get1());
         Assert.assertNotNull(bean.get2());

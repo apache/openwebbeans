@@ -18,72 +18,98 @@
  */
 package org.apache.webbeans.test.unittests.exception.initializer;
 
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.exception.initializer.BrokenInitializer1;
 import org.apache.webbeans.test.component.exception.initializer.BrokenInitializer2;
 import org.apache.webbeans.test.component.exception.initializer.BrokenInitializer3;
 import org.apache.webbeans.test.component.exception.initializer.BrokenInitializer4;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.DefinitionException;
-
-public class BrokenInitializerTest extends AbstractUnitTest
+public class BrokenInitializerTest extends TestContext
 {
+    public BrokenInitializerTest()
+    {
+        super(BrokenInitializerTest.class.getName());
+    }
+    
+    @Override
+    @Before
+    public void init()
+    {
+    }
+    
     @Test
     public void broken1()
     {
+        Exception e = null;
+        
         try
         {
-            startContainer(BrokenInitializer1.class);
-            Assert.fail("DefinitionException expected");
-        }
-        catch (DefinitionException e)
+            defineManagedBean(BrokenInitializer1.class);
+            
+        }catch(Exception e1)
         {
-            return; // all ok
+            System.out.println(e1.getMessage());
+            e = e1;
         }
+        
+        Assert.assertNotNull(e);
     }
     
     @Test
     public void broken2()
     {
+        Exception e = null;
+        
         try
         {
-            startContainer(BrokenInitializer2.class);
-            Assert.fail("DefinitionException expected");
-        }
-        catch (DefinitionException e)
+            defineManagedBean(BrokenInitializer2.class);
+            
+        }catch(Exception e1)
         {
-            return; // all ok
+            System.out.println(e1.getMessage());
+            e = e1;
         }
+        
+        Assert.assertNotNull(e);
     }
 
     @Test
     public void broken3()
     {
+        Exception e = null;
+        
         try
         {
-            startContainer(BrokenInitializer3.class);
-            Assert.fail("DefinitionException expected");
-        }
-        catch (DefinitionException e)
+            defineManagedBean(BrokenInitializer3.class);
+            
+        }catch(Exception e1)
         {
-            return; // all ok
+            System.out.println(e1.getMessage());
+            e = e1;
         }
+        
+        Assert.assertNotNull(e);
     }
 
     @Test
     public void broken4()
     {
+        Exception e = null;
+        
         try
         {
-            startContainer(BrokenInitializer4.class);
-            Assert.fail("DefinitionException expected");
-        }
-        catch (DefinitionException e)
+            defineManagedBean(BrokenInitializer4.class);
+            
+        }catch(Exception e1)
         {
-            return; // all ok
+            System.out.println(e1.getMessage());
+            e = e1;
         }
+        
+        Assert.assertNotNull(e);
     }
 
   }

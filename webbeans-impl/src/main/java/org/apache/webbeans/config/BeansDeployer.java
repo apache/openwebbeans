@@ -40,17 +40,14 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.corespi.se.DefaultJndiService;
-import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
-import javax.enterprise.inject.spi.DefinitionException;
-import javax.enterprise.inject.spi.DeploymentException;
+import org.apache.webbeans.exception.inject.DefinitionException;
+import org.apache.webbeans.exception.inject.DeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
-import org.apache.webbeans.inject.AlternativesManager;
-import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -61,7 +58,6 @@ import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
-import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansJavaEEPlugin;
@@ -72,6 +68,7 @@ import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.InjectionExceptionUtil;
 import org.apache.webbeans.util.WebBeansConstants;
 import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.AmbiguousResolutionException;
@@ -88,6 +85,8 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.net.URL;
@@ -120,30 +119,22 @@ public class BeansDeployer
     protected boolean deployed = false;
 
     /**XML Configurator*/
-    protected BeanArchiveService beanArchiveService;
+    protected WebBeansXMLConfigurator xmlConfigurator = null;
     
     /**Discover ejb or not*/
     protected boolean discoverEjb = false;
     private final WebBeansContext webBeansContext;
 
-    private final ScannerService scannerService;
-    private final DecoratorsManager decoratorsManager;
-    private final InterceptorsManager interceptorsManager;
-
-
     /**
      * Creates a new deployer with given xml configurator.
      * 
+     * @param xmlConfigurator xml configurator
      * @param webBeansContext
      */
-    public BeansDeployer(WebBeansContext webBeansContext)
+    public BeansDeployer(WebBeansXMLConfigurator xmlConfigurator, WebBeansContext webBeansContext)
     {
+        this.xmlConfigurator = xmlConfigurator;
         this.webBeansContext = webBeansContext;
-        beanArchiveService = webBeansContext.getBeanArchiveService();
-        scannerService = webBeansContext.getScannerService();
-        decoratorsManager = webBeansContext.getDecoratorsManager();
-        interceptorsManager = webBeansContext.getInterceptorsManager();
-
         String usage = this.webBeansContext.getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_EJB_DISCOVERY);
         discoverEjb = Boolean.parseBoolean(usage);
     }
@@ -593,14 +584,7 @@ public class BeansDeployer
                 
                 if (null != annotatedType)
                 {
-                    try
-                    {
-                        deploySingleAnnotatedType(implClass, annotatedType);
-                    }
-                    catch (NoClassDefFoundError ncdfe)
-                    {
-                        logger.info("Skipping deployment of Class " + implClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
-                    }
+                    deploySingleAnnotatedType(implClass, annotatedType);
 
                     // if the implClass already gets processed as part of the
                     // standard BDA scanning, then we don't need to 'additionally'
@@ -733,171 +717,49 @@ public class BeansDeployer
     {
         logger.fine("Deploying configurations from XML files has started.");
 
-        Set<URL> bdaLocations = scanner.getBeanXmls();
-        Iterator<URL> it = bdaLocations.iterator();
+        Set<URL> xmlLocations = scanner.getBeanXmls();
+        Iterator<URL> it = xmlLocations.iterator();
 
         while (it.hasNext())
         {
             URL url = it.next();
 
-            logger.fine("OpenWebBeans BeansDeployer configuring: " + url.toExternalForm());
+            if (logger.isLoggable(Level.FINE))
+            {
+                logger.fine("OpenWebBeans BeansDeployer configuring: " + url.toExternalForm());
+            }
 
-            BeanArchiveService.BeanArchiveInformation beanArchiveInformation = beanArchiveService.getBeanArchiveInformation(url);
+            InputStream fis = null;
+            try
+            {
+                fis = url.openStream();
 
-            configureDecorators(url, beanArchiveInformation.getDecorators());
-            configureInterceptors(url, beanArchiveInformation.getInterceptors());
-            configureAlternatives(url, beanArchiveInformation.getAlternativeClasses(), false);
-            configureAlternatives(url, beanArchiveInformation.getAlternativeStereotypes(), true);
+                xmlConfigurator.configure(fis, url.toExternalForm(), scanner);
+            }
+            catch (IOException e)
+            {
+                throw new WebBeansDeploymentException("Error configuring: filename: " + url.toExternalForm() , e);
+            }
+            finally
+            {
+                if (fis != null)
+                {
+                    try
+                    {
+                        fis.close();
+                    }
+                    catch (IOException e)
+                    {
+                        // all ok, ignore this!
+                    }
+                }
+            }
         }
 
-        logger.fine("Deploying configurations from XML has ended successfully.");
-    }
-
-    private void configureAlternatives(URL bdaLocation, List<String> alternatives, boolean isStereotype)
-    {
-        // the alternatives in this beans.xml
-        // this gets used to detect multiple definitions of the
-        // same alternative in one beans.xml file.
-        Set<String> alternativesInFile = new HashSet<String>();
-
-        for (String alternativeName : alternatives)
+        if(logger.isLoggable(Level.FINE))
         {
-            if (alternativesInFile.contains(alternativeName))
-            {
-                throw new WebBeansConfigurationException(createConfigurationFailedMessage(bdaLocation) + "Given alternative : " + alternativeName
-                        + " is already added as @Alternative" );
-            }
-            alternativesInFile.add(alternativeName);
-
-            Class clazz = ClassUtil.getClassFromName(alternativeName);
-
-            if (clazz == null)
-            {
-                throw new WebBeansConfigurationException(createConfigurationFailedMessage(bdaLocation) + "Alternative: " + alternativeName + " not found");
-            }
-            else
-            {
-                AlternativesManager manager = WebBeansContext.getInstance().getAlternativesManager();
-                if (isStereotype)
-                {
-                    manager.addStereoTypeAlternative(clazz, bdaLocation.toExternalForm(), scannerService);
-                }
-                else
-                {
-                    manager.addClazzAlternative(clazz, bdaLocation.toExternalForm(), scannerService);
-                }
-            }
+            logger.fine("Deploying configurations from XML has ended successfully.");
         }
-    }
-
-    private void configureDecorators(URL bdaLocation, List<String> decorators)
-    {
-        Set<Class> decoratorsInFile = new HashSet<Class>();
-
-        for (String decorator : decorators)
-        {
-            Class<?> clazz = ClassUtil.getClassFromName(decorator);
-
-            if (clazz == null)
-            {
-                throw new WebBeansConfigurationException(createConfigurationFailedMessage(bdaLocation) + "Decorator class : " +
-                        decorator + " not found");
-            }
-            else
-            {
-                if ((scannerService.isBDABeansXmlScanningEnabled() && !scannerService.getBDABeansXmlScanner().addDecorator(clazz, bdaLocation.toExternalForm())) ||
-                        decoratorsInFile.contains(clazz))
-                {
-                    throw new WebBeansConfigurationException(createConfigurationFailedMessage(bdaLocation) + "Decorator class : " +
-                            decorator + " is already defined");
-                }
-
-                decoratorsManager.addEnabledDecorator(clazz);
-                decoratorsInFile.add(clazz);
-            }
-        }
-    }
-
-    private void configureInterceptors(URL bdaLocation, List<String> interceptors)
-    {
-        // the interceptors in this beans.xml
-        // this gets used to detect multiple definitions of the
-        // same interceptor in one beans.xml file.
-        Set<Class> interceptorsInFile = new HashSet<Class>();
-        
-        for (String interceptor : interceptors)
-        {
-            Class<?> clazz = ClassUtil.getClassFromName(interceptor);
-
-            if (clazz == null)
-            {
-                throw new WebBeansConfigurationException(createConfigurationFailedMessage(bdaLocation) + "Interceptor class : " +
-                        interceptor + " not found");
-            }
-            else
-            {
-                Annotation[] classAnnotations;
-                AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
-
-                ProcessAnnotatedTypeImpl<?> processAnnotatedEvent =
-                        webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
-
-                // if veto() is called
-                if (processAnnotatedEvent.isVeto())
-                {
-                    return;
-                }
-
-                annotatedType = processAnnotatedEvent.getAnnotatedType();
-
-                Set<Annotation> annTypeAnnotations = annotatedType.getAnnotations();
-                if (annTypeAnnotations != null)
-                {
-                    classAnnotations = annTypeAnnotations.toArray(new Annotation[annTypeAnnotations.size()]);
-                }
-                else
-                {
-                    classAnnotations = new Annotation[0];
-                }
-
-                if (AnnotationUtil.hasAnnotation(classAnnotations, javax.interceptor.Interceptor.class) &&
-                        !webBeansContext.getAnnotationManager().hasInterceptorBindingMetaAnnotation(classAnnotations))
-                {
-                    throw new WebBeansConfigurationException(createConfigurationFailedMessage(bdaLocation) + "Interceptor class : "
-                            + interceptor + " must have at least one @InterceptorBinding");
-                }
-
-                // check if the interceptor got defined twice in this beans.xml
-                if (interceptorsInFile.contains(clazz))
-                {
-                    throw new WebBeansConfigurationException(createConfigurationFailedMessage(bdaLocation) + "Interceptor class : "
-                            + interceptor + " already defined in this beans.xml file!");
-                }
-                interceptorsInFile.add(clazz);
-
-                boolean isBDAScanningEnabled = scannerService.isBDABeansXmlScanningEnabled();
-                if ((!isBDAScanningEnabled && interceptorsManager.isInterceptorClassEnabled(clazz)) ||
-                        (isBDAScanningEnabled && !scannerService.getBDABeansXmlScanner().addInterceptor(clazz, bdaLocation.toExternalForm())))
-                {
-                    logger.warning( "Interceptor class : " + interceptor + " is already defined");
-                }
-                else
-                {
-                    interceptorsManager.addEnabledInterceptorClass(clazz);
-                }
-            }
-        }
-    }
-
-
-    /**
-     * Gets error message for XML parsing of the current XML file.
-     *
-     * @return the error messages
-     */
-    private String createConfigurationFailedMessage(URL bdaLocation)
-    {
-        return "WebBeans configuration defined in " + bdaLocation.toExternalForm() + " did fail. Reason is : ";
     }
 
     /**

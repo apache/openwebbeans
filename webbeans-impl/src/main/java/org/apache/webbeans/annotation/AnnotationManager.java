@@ -22,7 +22,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import javax.enterprise.inject.spi.DefinitionException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ArrayUtil;
 import org.apache.webbeans.util.Asserts;

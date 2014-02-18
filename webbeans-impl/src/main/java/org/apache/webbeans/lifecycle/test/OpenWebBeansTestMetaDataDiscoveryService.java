@@ -19,14 +19,14 @@
 package org.apache.webbeans.lifecycle.test;
 
 import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
+import org.apache.webbeans.corespi.scanner.xbean.CdiArchive;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.util.Asserts;
+import org.apache.xbean.finder.AnnotationFinder;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Used by each test. 
@@ -35,18 +35,15 @@ import java.util.Set;
  */
 public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDiscovery
 {
-
-    private Collection<Class<?>> classes;
-
     public OpenWebBeansTestMetaDataDiscoveryService()
     {
-        super();
+        
     }
 
     @Override
     protected void configure()
     {
-        // Nothing to scan, we add all our stuff manually...
+        //Nothing we scan
     }
     
     /**
@@ -55,15 +52,13 @@ public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDi
      */
     public void deployClasses(Collection<Class<?>> classes)
     {
-        this.classes = classes;
+        if(classes != null)
+        {
+            archive = new CdiArchive(classes);
+            finder = new AnnotationFinder(archive);
+        }
     }
-
-    @Override
-    public Set<Class<?>> getBeanClasses()
-    {
-        return new HashSet<Class<?>>(classes);
-    }
-
+    
     /**
      * Those xmls will be scanned by container.
      * @param xmls beans xmls
@@ -96,5 +91,6 @@ public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDi
         
         addWebBeansXmlLocation(url);
     }
+    
 
 }

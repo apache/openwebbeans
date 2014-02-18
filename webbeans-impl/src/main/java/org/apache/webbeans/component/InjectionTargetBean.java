@@ -20,8 +20,8 @@ package org.apache.webbeans.component;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.InjectionTargetFactory;
+import org.apache.webbeans.component.spi.BeanAttributes;
+import org.apache.webbeans.component.spi.InjectionTargetFactory;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionTargetFactoryImpl;
 

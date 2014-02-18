@@ -30,8 +30,9 @@ import javax.enterprise.inject.spi.Decorator;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.test.AbstractUnitTest;
-import org.apache.webbeans.test.annotation.binding.Binding1;
+import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1Literal;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.decorator.clean.Account;
@@ -40,21 +41,42 @@ import org.apache.webbeans.test.component.decorator.clean.LargeTransactionDecora
 import org.apache.webbeans.test.component.decorator.clean.ServiceDecorator;
 import org.apache.webbeans.test.component.service.IService;
 import org.apache.webbeans.test.component.service.ServiceImpl1;
+import org.junit.Before;
 import org.junit.Test;
 
-public class Decorator1Test extends AbstractUnitTest
+public class Decorator1Test extends TestContext
 {
+
+    public Decorator1Test()
+    {
+        super(Decorator1Test.class.getName());
+    }
+
+    @Override
+    @Before
+    public void init()
+    {
+        super.init();
+        
+    }
+
     @Test
     public void test1()
     {
-        addDecorator(ServiceDecorator.class);
-        addDecorator(LargeTransactionDecorator.class);
+        clear();
         
-        startContainer(ServiceDecorator.class, CheckWithCheckPayment.class, ServiceImpl1.class, Binding1.class);
+        initializeDecoratorType(ServiceDecorator.class);
+        initializeDecoratorType(LargeTransactionDecorator.class);        
+        
+        defineDecorator(ServiceDecorator.class);
+        defineManagedBean(CheckWithCheckPayment.class);
+        AbstractOwbBean<ServiceImpl1> component = defineManagedBean(ServiceImpl1.class);
 
-        ServiceDecorator.delegateAttr = null;
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        webBeansContext.getContextFactory().initRequestContext(null);
+        webBeansContext.getContextFactory().initApplicationContext(null);
 
-        ServiceImpl1 serviceImpl = getInstance(ServiceImpl1.class, new Annotation[]{new Binding1Literal()});
+        ServiceImpl1 serviceImpl = getManager().getInstance(component);
         String s = serviceImpl.service();
 
         Assert.assertEquals("ServiceDecorator", s);
@@ -62,24 +84,25 @@ public class Decorator1Test extends AbstractUnitTest
         Set<Type> apiTyeps = new HashSet<Type>();
         apiTyeps.add(IService.class);
 
-        List<Decorator<?>> decs = getBeanManager().resolveDecorators(apiTyeps, new Annotation[]{new Binding1Literal()});
-        Assert.assertNotNull(decs);
-        Assert.assertTrue(decs.size() > 0);
+        List<Decorator<?>> decs = getManager().resolveDecorators(apiTyeps, new Annotation[] { new Binding1Literal() });
 
-        Assert.assertEquals(ServiceDecorator.delegateAttr, "ServiceImpl1");
+        ServiceDecorator dec = (ServiceDecorator) getManager().getInstance(decs.get(0));
+        Assert.assertEquals(null, dec.getDelegateAttr());
+
     }
 
     @Test
     public void test2()
     {
-        addDecorator(LargeTransactionDecorator.class);
+        clear();
+        initializeDecoratorType(LargeTransactionDecorator.class);
         
-        startContainer(LargeTransactionDecorator.class, AccountComponent.class);
+        defineDecorator(LargeTransactionDecorator.class);
+        AbstractOwbBean<AccountComponent> component = defineManagedBean(AccountComponent.class);
 
-        AccountComponent account = getInstance(AccountComponent.class);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
-        LargeTransactionDecorator.depositeAmount = null;
-        LargeTransactionDecorator.withDrawAmount = null;
+        AccountComponent account = getManager().getInstance(component);
 
         account.deposit(new BigDecimal(1500));
         account.withdraw(new BigDecimal(3000));
@@ -87,12 +110,11 @@ public class Decorator1Test extends AbstractUnitTest
         Set<Type> apiTyeps = new HashSet<Type>();
         apiTyeps.add(Account.class);
 
-        List<Decorator<?>> decs = getBeanManager().resolveDecorators(apiTyeps, new Annotation[] { DefaultLiteral.INSTANCE });
-        Assert.assertNotNull(decs);
-        Assert.assertTrue(decs.size() > 0);
+        List<Decorator<?>> decs = getManager().resolveDecorators(apiTyeps, new Annotation[] { new DefaultLiteral() });
 
-        Assert.assertEquals(1500, LargeTransactionDecorator.depositeAmount.intValue());
-        Assert.assertEquals(3000, LargeTransactionDecorator.withDrawAmount.intValue());
+        LargeTransactionDecorator dec = (LargeTransactionDecorator) getManager().getInstance(decs.get(0));
+        Assert.assertEquals(null, dec.getDepositeAmount());
+        Assert.assertEquals(null, dec.getWithDrawAmount());
 
     }
 

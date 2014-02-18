@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.exception;
 
-import javax.enterprise.inject.spi.DefinitionException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 
 /**
  * Exception that is thrown by the web beans container at the intialization

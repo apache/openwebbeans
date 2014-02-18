@@ -20,5 +20,6 @@ package org.apache.webbeans.test.component.service;
 
 public interface IService
 {
+
     public String service();
 }

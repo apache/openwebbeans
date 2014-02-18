@@ -23,7 +23,7 @@ import java.util.Collection;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.component.intercept.InterceptedComponent;
 import org.apache.webbeans.test.component.intercept.InterceptorWithSuperClassInterceptedComponent;
 import org.apache.webbeans.test.component.intercept.MultipleInterceptedComponent;

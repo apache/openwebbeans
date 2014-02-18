@@ -22,14 +22,19 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.inject.parametrized.BoundedTypeVariableComponent;
 import org.apache.webbeans.util.ClassUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class BoundedTypeVariableTest extends AbstractUnitTest
+public class BoundedTypeVariableTest extends TestContext
 {
+    public BoundedTypeVariableTest()
+    {
+        super(BoundedTypeVariableTest.class.getName());
+    }
+
     @Test
     public void testBoundedTypeVariableTest()
     {
@@ -80,10 +85,9 @@ public class BoundedTypeVariableTest extends AbstractUnitTest
             Assert.assertFalse(ClassUtil.isUnboundedTypeVariable(argument));
             
             
-        }
-        catch(Exception e)
+        }catch(Exception e)
         {
-            Assert.fail("BoundedWildCardTest");
+            fail("BoundedWildCardTest");
         }
         
     }

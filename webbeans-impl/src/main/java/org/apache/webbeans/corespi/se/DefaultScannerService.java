@@ -32,11 +32,16 @@ public class DefaultScannerService extends AbstractMetaDataDiscovery
     @Override
     protected void configure()
     {
-        ClassLoader loader = WebBeansUtil.getCurrentClassLoader();
-
-        registerBeanArchives(loader);
+        configureAnnotationDB();
     }
 
     
+    private void configureAnnotationDB()
+    {
+        ClassLoader loader = WebBeansUtil.getCurrentClassLoader();
+        //Store collection of beans.xml's before scanning archives
+
+        findBeansXmlBases(META_INF_BEANS_XML, loader);
+    }
 
 }

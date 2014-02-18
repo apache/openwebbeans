@@ -18,27 +18,43 @@
  */
 package org.apache.webbeans.test.unittests.specializes;
 
-import org.apache.webbeans.test.AbstractUnitTest;
-import org.apache.webbeans.test.annotation.binding.Asynchronous;
+import javax.enterprise.inject.spi.Bean;
+
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.specializes.AsynhrounousSpecalizesService;
 import org.apache.webbeans.test.component.specializes.SpecializesServiceInjectorComponent;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-import javax.enterprise.util.AnnotationLiteral;
-
-public class SpecializationComponentTest extends AbstractUnitTest
+public class SpecializationComponentTest extends TestContext
 {
+    public SpecializationComponentTest()
+    {
+        super(SpecializationComponentTest.class.getName());
+    }
+
+    @Override
+    @Before
+    public void init()
+    {
+    }
+    
     @Test
     public void testMockService()
     {
-        startContainer(AsynhrounousSpecalizesService.class, SpecializesServiceInjectorComponent.class);
-        
-        AsynhrounousSpecalizesService instanceOther
-                = getInstance(AsynhrounousSpecalizesService.class, new AnnotationLiteral<Asynchronous>() {});
-        Assert.assertNotNull(instanceOther);
+        clear();
 
-        SpecializesServiceInjectorComponent instance = getInstance(SpecializesServiceInjectorComponent.class);
-        Assert.assertNotNull(instance);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
+
+        Bean<AsynhrounousSpecalizesService> bean2 = defineManagedBean(AsynhrounousSpecalizesService.class);
+        Bean<SpecializesServiceInjectorComponent> bean3 = defineManagedBean(SpecializesServiceInjectorComponent.class);
+        
+        AsynhrounousSpecalizesService instanceOther = getManager().getInstance(bean2);
+        
+        Assert.assertNotNull(instanceOther);
+        
+        SpecializesServiceInjectorComponent instance = getManager().getInstance(bean3);
     }
 }

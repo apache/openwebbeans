@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.test.unittests.pfield;
 
-import javax.enterprise.inject.spi.DefinitionException;
+import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
@@ -31,37 +31,92 @@ import org.apache.webbeans.test.component.pfield.ProducerFieldInjectedComponent;
 import org.apache.webbeans.test.component.pfield.ProducerFieldInjectedWrongType;
 import org.apache.webbeans.test.component.pfield.broken.TypeVariableProducerField;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-public class ProducerFieldComponentTest extends AbstractUnitTest
+public class ProducerFieldComponentTest extends TestContext
 {
+    public ProducerFieldComponentTest()
+    {
+        super(ProducerFieldComponentTest.class.getName());
+    }
+    
+    @Override
+    @Before
+    public void init()
+    {
+    }
+    
+    
     @Test
     public void testInjectedProducerField()
     {
-        startContainer(CheckWithCheckPayment.class, CheckWithMoneyPayment.class, PaymentProcessorComponent.class,
-                ProducerFieldDefinitionComponent.class, ProducerFieldInjectedComponent.class);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
+
+        defineManagedBean(CheckWithCheckPayment.class);
+        defineManagedBean(CheckWithMoneyPayment.class);
         
-        ProducerFieldDefinitionComponent defineComponentInstance = getInstance(ProducerFieldDefinitionComponent.class);
+        Bean<PaymentProcessorComponent> pc = defineManagedBean(PaymentProcessorComponent.class);
+        Object obj = getManager().getInstance(pc);
+        
+        Assert.assertTrue(obj instanceof PaymentProcessorComponent);
+        
+        Bean<ProducerFieldDefinitionComponent> beanDefine = defineManagedBean(ProducerFieldDefinitionComponent.class);
+        Bean<ProducerFieldInjectedComponent> beanInjected = defineManagedBean(ProducerFieldInjectedComponent.class);
+        
+        ProducerFieldDefinitionComponent defineComponentInstance = getManager().getInstance(beanDefine);
+        
         Assert.assertNotNull(defineComponentInstance);
         Assert.assertTrue(defineComponentInstance.isExist());
         
-        ProducerFieldInjectedComponent injectedComponentInstance = getInstance(ProducerFieldInjectedComponent.class);
+        ProducerFieldInjectedComponent injectedComponentInstance = getManager().getInstance(beanInjected);
+        
         Assert.assertNotNull(injectedComponentInstance);
+        
         Assert.assertNotNull(injectedComponentInstance.getPaymentProcessorName());
     }
     
-    @Test(expected = DefinitionException.class)
+    @Test
     public void testInjectedProducerFieldIncorrectType()
     {
-        startContainer(ProducerFieldDefinitionParameterized.class, ProducerFieldInjectedWrongType.class);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
-        getInstance(ProducerFieldInjectedWrongType.class);
+        defineManagedBean(ProducerFieldDefinitionParameterized.class);
+        Bean<ProducerFieldInjectedWrongType> beanInjected = defineManagedBean(ProducerFieldInjectedWrongType.class);
+
+        Exception expected = null;
+        ProducerFieldInjectedWrongType instance = null;
+        try
+        {
+            instance = getManager().getInstance(beanInjected);
+        }
+        catch (Exception caught)
+        {
+            System.out.println(caught.getMessage());
+            expected = caught;
+        }
+        Assert.assertNotNull(expected);
+        Assert.assertNull(instance);
+        Assert.assertTrue(expected instanceof javax.enterprise.inject.UnsatisfiedResolutionException);
     }
     
-    @Test(expected = WebBeansConfigurationException.class)
+    @Test
     public void testProducerFieldTypeVariable()
     {
-        startContainer(TypeVariableProducerField.class);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
+
+        Exception expected = null;
+        try
+        {
+            defineManagedBean(TypeVariableProducerField.class);
+        }
+        catch(Exception caught){
+            caught.printStackTrace();
+            System.out.println(caught.getMessage());
+            expected = caught;
+        }
+        Assert.assertNotNull(expected);
+        Assert.assertTrue(expected instanceof org.apache.webbeans.exception.WebBeansConfigurationException);
     }
 
 }

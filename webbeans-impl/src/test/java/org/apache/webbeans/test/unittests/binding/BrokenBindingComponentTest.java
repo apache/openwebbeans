@@ -20,24 +20,37 @@ package org.apache.webbeans.test.unittests.binding;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.binding.BindingWithNonBindingAnnotationTypeComponent;
 import org.apache.webbeans.test.component.binding.BindingWithNonBindingArrayTypeComponent;
+import org.junit.Before;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.DefinitionException;
-
-public class BrokenBindingComponentTest extends AbstractUnitTest
+public class BrokenBindingComponentTest extends TestContext
 {
+
+    public BrokenBindingComponentTest()
+    {
+        super(BrokenBindingComponentTest.class.getName());
+    }
+
+    @Override
+    @Before
+    public void init()
+    {
+        super.init();
+    }
+
     @Test
     public void testNonBindingArrayType()
     {
         try
         {
-            startContainer(BindingWithNonBindingArrayTypeComponent.class);
+            defineManagedBean(BindingWithNonBindingArrayTypeComponent.class);
         }
-        catch (DefinitionException e)
+        catch (Exception e)
         {
+            System.out.println("got expected exception: " + e.getMessage());
             return; // all ok!
         }
         Assert.fail("expecting an exception!");
@@ -48,10 +61,11 @@ public class BrokenBindingComponentTest extends AbstractUnitTest
     {
         try
         {
-            startContainer(BindingWithNonBindingAnnotationTypeComponent.class);
+            defineManagedBean(BindingWithNonBindingAnnotationTypeComponent.class);
         }
-        catch (DefinitionException e)
+        catch (Exception e)
         {
+            System.out.println("got expected exception: " + e.getMessage());
             return; // all ok!
         }
         Assert.fail("expecting an exception!");

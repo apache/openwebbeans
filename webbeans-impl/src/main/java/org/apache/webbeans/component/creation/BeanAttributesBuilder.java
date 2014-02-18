@@ -49,7 +49,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import javax.enterprise.inject.spi.DefinitionException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -256,14 +256,8 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
             {
                 continue;
             }
-
             Class<? extends Annotation> annotationType = annotation.annotationType();
-
-            if (!webBeansContext.getBeanManagerImpl().isScope(annotationType))
-            {
-                continue;
-            }
-
+            
             /*Normal scope*/
             Annotation var = annotationType.getAnnotation(NormalScope.class);
             /*Pseudo scope*/

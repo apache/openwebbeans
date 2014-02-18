@@ -23,7 +23,6 @@ import java.util.Set;
 
 /**
  * due to a file-url issue it isn't compatible with wls (see OWB-519)
- * @deprecated should be replaced with a scanning-mode compatible approach which covers it all.
  */
 public interface BDABeansXmlScanner
 {

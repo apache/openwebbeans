@@ -30,7 +30,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.enterprise.inject.spi.BeanAttributes;
+import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionTargetFactoryImpl;
 import org.apache.webbeans.container.InterceptorInjectionTargetFactory;

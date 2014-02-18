@@ -25,9 +25,6 @@ import org.apache.webbeans.test.component.IPayment;
 
 public class NamedFieldWithNamedValue
 {
-    private @Inject @Named("value") IPayment paymentProcessor;
-
-    public IPayment getPayment() {
-        return paymentProcessor;
-    }
+    private @Inject @Named("payment") IPayment paymentProcessor;
+    
 }

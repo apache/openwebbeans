@@ -25,12 +25,10 @@ import javax.interceptor.InvocationContext;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure2;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
-import java.io.Serializable;
-
 @Interceptor
 @Secure2
 @Transactional
-public class SecureAndTransactionalInterceptor implements Serializable
+public class SecureAndTransactionalInterceptor
 {
 
     @AroundInvoke

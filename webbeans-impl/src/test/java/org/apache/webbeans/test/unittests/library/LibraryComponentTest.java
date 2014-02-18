@@ -18,37 +18,57 @@
  */
 package org.apache.webbeans.test.unittests.library;
 
+import java.util.List;
+
 import junit.framework.Assert;
 
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.library.Book;
 import org.apache.webbeans.test.component.library.BookShop;
 import org.apache.webbeans.test.component.library.Shop;
+import org.junit.Before;
 import org.junit.Test;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
-public class LibraryComponentTest extends AbstractUnitTest
+public class LibraryComponentTest extends TestContext
 {
+    public LibraryComponentTest()
+    {
+        super(LibraryComponentTest.class.getSimpleName());
+    }
+
+    @Override
+    @Before
+    public void init()
+    {
+        super.init();
+    }
+
     @Test
     public void testTypedComponent() throws Throwable
     {
-        startContainer(BookShop.class, BeanHolder.class);
+        clear();
 
-        BeanHolder beanHolder = getInstance(BeanHolder.class);
-        Assert.assertEquals("shop", beanHolder.getBookShop().shop());
-    }
+        defineManagedBean(BookShop.class);
+        List<AbstractOwbBean<?>> comps = getComponents();
 
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
 
-    @Dependent
-    public static class BeanHolder
-    {
-        private @Inject Shop<Book> bookShop;
+        Assert.assertEquals(1, comps.size());
 
-        public Shop<Book> getBookShop() {
-            return bookShop;
-        }
+        AbstractOwbBean<?> obj = comps.get(0);
+
+        Object instance = getManager().getInstance(obj);
+        Assert.assertTrue(instance instanceof Shop);
+
+        @SuppressWarnings("unchecked")
+        Shop<Book> shop = (Shop<Book>) instance;
+        shop.shop();
+
+        contextFactory.destroyRequestContext(null);
     }
 
 }

@@ -18,15 +18,23 @@
  */
 package org.apache.webbeans.web.scanner;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
+import org.apache.webbeans.corespi.scanner.xbean.CdiArchive;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.spi.BeanArchiveService;
-import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.xbean.finder.AnnotationFinder;
 
 import javax.servlet.ServletContext;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -34,12 +42,9 @@ import java.util.logging.Logger;
  */
 public class WebScannerService extends AbstractMetaDataDiscovery
 {
-    public static final String WEB_INF_BEANS_XML = "WEB-INF/beans.xml";
-
     private final static Logger logger = WebBeansLoggerFacade.getLogger(WebScannerService.class);
 
     protected ServletContext servletContext = null;
-    private BeanArchiveService beanArchiveService;
 
     public WebScannerService()
     {
@@ -47,19 +52,122 @@ public class WebScannerService extends AbstractMetaDataDiscovery
     }
 
     @Override
+    protected AnnotationFinder initFinder()
+    {
+        final Collection<URL> trimmedUrls = new ArrayList<URL>();
+        try
+        {
+            for (final String trimmed : getArchives())
+            {
+                try
+                {
+                    String file = trimmed;
+                    if (file.endsWith(META_INF_BEANS_XML))
+                    {
+                        file = file.substring(0, file.length() - META_INF_BEANS_XML.length());
+                    }
+                    trimmedUrls.add(new URL(file));
+                }
+                catch (MalformedURLException e)
+                {
+                    throw new WebBeansConfigurationException("Can't trim url " + trimmed);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            throw new WebBeansConfigurationException(WebBeansLoggerFacade.getTokenString(OWBLogConst.ERROR_0002), e);
+        }
+
+        archive = new CdiArchive(WebBeansUtil.getCurrentClassLoader(), trimmedUrls);
+        finder = new AnnotationFinder(archive);
+
+        return finder;
+    }
+
+    @Override
     public void init(Object context)
     {
         super.init(context);
-        servletContext = (ServletContext) context;
+        this.servletContext = (ServletContext) context;        
     }
     
     @Override
     protected void configure()
     {
-        ClassLoader loader = WebBeansUtil.getCurrentClassLoader();
-        addWarBeansArchive();
+    }
 
-        registerBeanArchives(loader);
+    /**
+     *  @return all beans.xml paths
+     */
+    private Set<String> getArchives() throws Exception
+    {
+        Set<String> lists = createURLFromMarkerFile();
+        String warUrlPath = createURLFromWARFile();
+
+        if (warUrlPath != null)
+        {
+            lists.add(warUrlPath);
+        }
+
+        return lists;
+    }
+
+    /* Creates URLs from the marker file */
+    protected Set<String> createURLFromMarkerFile() throws Exception
+    {
+        Set<String> listURL = new HashSet<String>();
+
+        // Root with beans.xml marker.
+        String[] urls = findBeansXmlBases(META_INF_BEANS_XML, WebBeansUtil.getCurrentClassLoader());
+
+        if (urls != null)
+        {
+            String addPath;
+            for (String url : urls)
+            {
+                String fileDir = new URL(url).getFile();
+                if (fileDir.endsWith(".jar!/"))
+                {
+                    fileDir = fileDir.substring(0, fileDir.lastIndexOf("/")) + "/" + META_INF_BEANS_XML;
+
+                    //fix for weblogic
+                    if (!fileDir.startsWith("file:/"))
+                    {
+                        fileDir = "file:/" + fileDir;
+                    }
+
+                    if (logger.isLoggable(Level.FINE))
+                    {
+                        logger.log(Level.FINE, "OpenWebBeans found the following url while doing web scanning: " + fileDir);
+                    }
+
+                    addPath = "jar:" + fileDir;
+
+                    if (logger.isLoggable(Level.FINE))
+                    {
+                        logger.log(Level.FINE, "OpenWebBeans added the following jar based path while doing web scanning: " +
+                                addPath);
+                    }
+                }
+                else
+                {
+                    //X TODO check!
+                    addPath = "file:" + url + "META-INF/beans.xml";
+
+                    if (logger.isLoggable(Level.FINE))
+                    {
+                        logger.log(Level.FINE, "OpenWebBeans added the following file based path while doing web scanning: " +
+                                addPath);
+                    }
+
+                }
+
+                listURL.add(url);
+            }
+        }
+
+        return listURL;
     }
 
     /**
@@ -69,31 +177,40 @@ public class WebScannerService extends AbstractMetaDataDiscovery
      * @return the web application class path
      * @throws Exception if any exception occurs
      */
-    protected void addWarBeansArchive()
+    protected String createURLFromWARFile() throws Exception
     {
         if (servletContext == null)
         {
             // this may happen if we are running in a test container, in IDE development, etc
-            return;
+            return null;
         }
-
-        URL url = null;
-        try
-        {
-            url = servletContext.getResource(WEB_INF_BEANS_XML);
-        }
-        catch (MalformedURLException e)
-        {
-            ExceptionUtil.throwAsRuntimeException(e);
-        }
+        
+        URL url = servletContext.getResource("/WEB-INF/beans.xml");
 
         if (url != null)
         {
             addWebBeansXmlLocation(url);
 
-            // the deployment URL already was part of the classpath
-            // so no need to do anything else
+            URL resourceUrl = null;
+            final String path = servletContext.getRealPath("/WEB-INF/classes");
+            if (path != null)
+            {
+                final File fp = new File(path);
+                if (fp.exists())
+                {
+                    resourceUrl = fp.toURI().toURL();
+                }
+            }
+
+            if (resourceUrl == null)
+            {
+                return null;
+            }
+
+            return resourceUrl.toExternalForm();
         }
+
+        return null;
     }
 
 }

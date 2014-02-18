@@ -22,12 +22,12 @@ import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionTargetFactoryImpl;
 import org.apache.webbeans.util.ClassUtil;
 
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.SessionBeanType;
 import java.lang.reflect.Method;
 import java.util.List;

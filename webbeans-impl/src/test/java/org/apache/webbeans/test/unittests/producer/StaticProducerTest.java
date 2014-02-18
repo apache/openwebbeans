@@ -18,20 +18,53 @@
  */
 package org.apache.webbeans.test.unittests.producer;
 
-import org.apache.webbeans.test.AbstractUnitTest;
+import java.lang.annotation.Annotation;
+
+import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.producer.StaticProducer1;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-public class StaticProducerTest extends AbstractUnitTest
+public class StaticProducerTest extends TestContext
 {
+
+    public StaticProducerTest()
+    {
+        super(StaticProducerTest.class.getName());
+    }
+
+    @Override
+    @Before
+    public void init()
+    {
+        super.init();
+    }
 
     @Test
     public void testStaticProducer1()
     {
-        startContainer(StaticProducer1.class);
+        clear();
 
-        Integer weight = getInstance("weight");
-        Assert.assertEquals(79, weight.intValue());
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
+
+        defineManagedBean(StaticProducer1.class);
+
+        ProducerMethodBean<?> pc = (ProducerMethodBean<?>) getManager().resolveByName("weight").iterator().next();
+
+        Object obj = getManager().getInstance(pc);
+
+        Assert.assertTrue(obj instanceof Integer);
+        Assert.assertEquals(79, obj);
+
+        pc = (ProducerMethodBean<?>) getManager().resolveByType(int.class, new Annotation[] {}).iterator().next();
+
+        obj = getManager().getInstance(pc);
+
+        Assert.assertTrue(obj instanceof Integer);
+        Assert.assertEquals(79, obj);
+
     }
 }

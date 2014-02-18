@@ -20,9 +20,11 @@ package org.apache.webbeans.test.unittests.inject.named;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
+import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -30,51 +32,96 @@ import javax.inject.Named;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.test.component.CheckWithCheckPayment;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.inject.named.NamedFieldWithNamedValue;
 import org.apache.webbeans.test.component.inject.named.NamedFieldWithoutNamedValue;
 import org.apache.webbeans.test.component.inject.named.NamedOtherWithNamedValue;
 import org.apache.webbeans.test.component.inject.named.NamedOtherWithoutNamedValue;
-import org.apache.webbeans.test.component.inject.named.NamedPayment_PaymentProcessor;
-import org.apache.webbeans.test.component.inject.named.NamedPayment_Value;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-public class NamedTests extends AbstractUnitTest
+public class NamedTests extends TestContext
 {
+    public NamedTests()
+    {
+        super(NamedTests.class.getName());
+    }
+    
+    @Override
+    @Before
+    public void init()
+    {
+        super.init();
+    }
+    
+    
     @Test
     public void testFieldWithNamedValue() throws Exception
     {
-        startContainer(NamedFieldWithNamedValue.class, CheckWithCheckPayment.class, NamedPayment_Value.class, NamedPayment_PaymentProcessor.class);
-        NamedFieldWithNamedValue instance = getInstance(NamedFieldWithNamedValue.class);
-        Assert.assertEquals("value-named", instance.getPayment().pay());
+        Bean<NamedFieldWithNamedValue> bean = defineManagedBean(NamedFieldWithNamedValue.class);
+        Field field = NamedFieldWithNamedValue.class.getDeclaredField("paymentProcessor");
+
+        AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
+        AnnotatedType<NamedFieldWithNamedValue> annotatedType = (AnnotatedType<NamedFieldWithNamedValue>) annotatedElementFactory.getAnnotatedType(field.getDeclaringClass());
+        AnnotatedField<NamedFieldWithNamedValue> annotatedField = annotatedElementFactory.newAnnotatedField(field, annotatedType);
+        InjectionPoint point =
+            WebBeansContext.getInstance().getInjectionPointFactory().buildInjectionPoint(bean, annotatedField);
+        
+        WebBeansUtil.checkInjectionPointNamedQualifier(point);
+        
+        String value = qulifier(point);
+        
+        Assert.assertEquals("payment", value);
     }
     
     @Test
     public void testFieldWithoutNamedValue() throws Exception
     {
-        startContainer(NamedFieldWithoutNamedValue.class, CheckWithCheckPayment.class, NamedPayment_Value.class, NamedPayment_PaymentProcessor.class);
-        NamedFieldWithoutNamedValue instance = getInstance(NamedFieldWithoutNamedValue.class);
-        Assert.assertEquals("paymentProcessor-named", instance.getPayment().pay());
-    }
+        Bean<NamedFieldWithoutNamedValue> bean = defineManagedBean(NamedFieldWithoutNamedValue.class);
+        Field field = NamedFieldWithoutNamedValue.class.getDeclaredField("paymentProcessor");
 
+        AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
+        AnnotatedType<NamedFieldWithNamedValue> annotatedType = (AnnotatedType<NamedFieldWithNamedValue>) annotatedElementFactory.getAnnotatedType(field.getDeclaringClass());
+        AnnotatedField<NamedFieldWithNamedValue> annotatedField = annotatedElementFactory.newAnnotatedField(field, annotatedType);
+        InjectionPoint point =
+            WebBeansContext.getInstance().getInjectionPointFactory().buildInjectionPoint(bean, annotatedField);
+        
+        WebBeansUtil.checkInjectionPointNamedQualifier(point);
+        
+        String value = qulifier(point);
+        
+        Assert.assertEquals("paymentProcessor", value);
+        
+    }
+    
     @Test
     public void testOtherWithNamedValue() throws Exception
     {
-        startContainer(NamedOtherWithNamedValue.class, CheckWithCheckPayment.class, NamedPayment_Value.class, NamedPayment_PaymentProcessor.class);
-        NamedOtherWithNamedValue instance = getInstance(NamedOtherWithNamedValue.class);
-        Assert.assertEquals("value-named", instance.getPayment().pay());
+        Bean<NamedOtherWithNamedValue> bean = defineManagedBean(NamedOtherWithNamedValue.class);
+        Constructor<NamedOtherWithNamedValue> constructor = NamedOtherWithNamedValue.class.getDeclaredConstructor(new Class<?>[]{IPayment.class});
+
+        AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
+        AnnotatedType<NamedOtherWithNamedValue> annotatedType = annotatedElementFactory.getAnnotatedType(constructor.getDeclaringClass());
+        AnnotatedConstructor<NamedOtherWithNamedValue> annotatedConstructor = annotatedElementFactory.newAnnotatedConstructor(constructor, annotatedType);
+        InjectionPoint point =
+            WebBeansContext.getInstance().getInjectionPointFactory().buildInjectionPoints(bean, annotatedConstructor).get(0);
+        
+        WebBeansUtil.checkInjectionPointNamedQualifier(point);
+        
+        String value = qulifier(point);
+        
+        Assert.assertEquals("value", value);
+        
     }
     
     @Test(expected=WebBeansConfigurationException.class)
     public void testOtherWithoutNamedValue() throws Exception
     {
-        startContainer(NamedOtherWithoutNamedValue.class);
-        Bean<NamedOtherWithoutNamedValue> bean = getBean(NamedOtherWithoutNamedValue.class);
+        Bean<NamedOtherWithoutNamedValue> bean = defineManagedBean(NamedOtherWithoutNamedValue.class);
         Constructor<NamedOtherWithoutNamedValue> constructor = NamedOtherWithoutNamedValue.class.getDeclaredConstructor(new Class<?>[]{IPayment.class});
 
         AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
@@ -83,7 +130,7 @@ public class NamedTests extends AbstractUnitTest
         InjectionPoint point =
             WebBeansContext.getInstance().getInjectionPointFactory().buildInjectionPoints(bean, annotatedConstructor).get(0);
                 
-        String value = qualifier(point);
+        String value = qulifier(point);
         
         Assert.assertEquals("", value);
         
@@ -92,7 +139,7 @@ public class NamedTests extends AbstractUnitTest
     }
     
     
-    private String qualifier(InjectionPoint injectionPoint)
+    private String qulifier(InjectionPoint injectionPoint)
     {
         Set<Annotation> qualifierset = injectionPoint.getQualifiers();
         Named namedQualifier = null;

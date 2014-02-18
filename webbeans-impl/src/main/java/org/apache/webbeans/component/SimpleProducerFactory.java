@@ -21,7 +21,7 @@ package org.apache.webbeans.component;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Producer;
 
-import javax.enterprise.inject.spi.ProducerFactory;
+import org.apache.webbeans.component.spi.ProducerFactory;
 
 /**
  * @version $Rev: 1440403 $ $Date: 2013-01-30 14:27:15 +0100 (Mi, 30 Jan 2013) $

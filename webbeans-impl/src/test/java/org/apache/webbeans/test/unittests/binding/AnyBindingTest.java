@@ -22,37 +22,47 @@ package org.apache.webbeans.test.unittests.binding;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import org.apache.webbeans.annotation.AnyLiteral;
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.binding.AnyBindingComponent;
 import org.apache.webbeans.test.component.binding.DefaultAnyBinding;
 import org.apache.webbeans.test.component.binding.NonAnyBindingComponent;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.Bean;
+public class AnyBindingTest extends TestContext{
 
-public class AnyBindingTest extends AbstractUnitTest {
+   public AnyBindingTest()
+   {
+      super(AnyBindingTest.class.getName());
+   }
 
-    @Test
-    public void testAny()
-    {
-        startContainer(AnyBindingComponent.class, NonAnyBindingComponent.class, DefaultAnyBinding.class);
+   @Override
+   @Before
+   public void init()
+   {
+   }
 
-        Bean<AnyBindingComponent> comp1 = getBean(AnyBindingComponent.class, AnyLiteral.INSTANCE);
-        Set<Annotation> qualifiers = comp1.getQualifiers();
+   @Test
+   public void testAny()
+   {
+      AbstractOwbBean<AnyBindingComponent> comp1 = defineManagedBean(AnyBindingComponent.class);
+      Set<Annotation> qualifiers = comp1.getQualifiers();
 
-        Assert.assertEquals(2, qualifiers.size());
+      Assert.assertEquals(2, qualifiers.size());
 
-        Bean<NonAnyBindingComponent> comp2 = getBean(NonAnyBindingComponent.class, AnyLiteral.INSTANCE);
-        qualifiers = comp2.getQualifiers();
+      AbstractOwbBean<NonAnyBindingComponent> comp2 = defineManagedBean(NonAnyBindingComponent.class);
+      qualifiers = comp2.getQualifiers();
 
-        Assert.assertEquals(4, qualifiers.size());
+      Assert.assertEquals(4, qualifiers.size());
 
 
-        Bean<DefaultAnyBinding> comp3 = getBean(DefaultAnyBinding.class, AnyLiteral.INSTANCE);
-        qualifiers = comp3.getQualifiers();
+      AbstractOwbBean<DefaultAnyBinding> comp3 = defineManagedBean(DefaultAnyBinding.class);
+      qualifiers = comp3.getQualifiers();
 
-        Assert.assertEquals(2, qualifiers.size());
-    }
+      Assert.assertEquals(2, qualifiers.size());
+
+
+   }
 }

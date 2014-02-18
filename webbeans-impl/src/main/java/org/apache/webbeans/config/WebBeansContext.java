@@ -46,7 +46,6 @@ import org.apache.webbeans.proxy.SubclassProxyFactory;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
 import org.apache.webbeans.service.DefaultLoaderService;
-import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.LoaderService;
 import org.apache.webbeans.spi.ScannerService;
@@ -54,7 +53,6 @@ import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.apache.webbeans.xml.DefaultBeanArchiveService;
 
 /**
  * This is the central point to manage the whole CDI container
@@ -90,7 +88,6 @@ public class WebBeansContext
     private final InterceptorUtil interceptorUtil = new InterceptorUtil(this);
     private final SecurityService securityService;
     private final LoaderService loaderService;
-    private BeanArchiveService beanArchiveService;
     private final InterceptorResolutionService interceptorResolutionService = new InterceptorResolutionService(this);
     private final DeploymentValidationService deploymentValidationService = new DeploymentValidationService(this);
     private ScannerService scannerService;
@@ -139,12 +136,6 @@ public class WebBeansContext
         loaderService = getService(LoaderService.class);
         securityService = getService(SecurityService.class);
 
-        beanArchiveService = getService(BeanArchiveService.class);
-        if (beanArchiveService == null)
-        {
-            // dirty fallback, but needed for being backward compat with old arquillian versions :(
-            beanArchiveService = new DefaultBeanArchiveService();
-        }
 
         // Allow the WebBeansContext itself to be looked up
         managerMap.put(getClass(), this);
@@ -360,11 +351,6 @@ public class WebBeansContext
     public SecurityService getSecurityService()
     {
         return securityService;
-    }
-
-    public BeanArchiveService getBeanArchiveService()
-    {
-        return beanArchiveService;
     }
 
     private Object get(String singletonName)

@@ -20,9 +20,8 @@ package org.apache.webbeans.test.component.producer.specializes;
 
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
+import javax.inject.Named;
 
-import org.apache.webbeans.test.annotation.binding.Binding1;
-import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.component.producer.specializes.superclazz.SpecializesProducer1SuperClazz;
 
 public class SpecializesProducer1 extends SpecializesProducer1SuperClazz
@@ -34,9 +33,9 @@ public class SpecializesProducer1 extends SpecializesProducer1SuperClazz
     }
 
     @Produces
-    @Binding1
-    @Binding2
+    @Override
     @Specializes
+    @Named("specializedNumber")
     public int createMaxNumber()
     {
         return 10000;

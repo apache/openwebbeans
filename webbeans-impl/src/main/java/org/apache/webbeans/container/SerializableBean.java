@@ -20,7 +20,7 @@ package org.apache.webbeans.container;
 
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
-import javax.enterprise.inject.spi.DeploymentException;
+import org.apache.webbeans.exception.inject.DeploymentException;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;

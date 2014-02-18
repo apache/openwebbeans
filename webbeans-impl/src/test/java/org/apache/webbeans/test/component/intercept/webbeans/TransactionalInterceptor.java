@@ -24,11 +24,9 @@ import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
-import java.io.Serializable;
-
 @Interceptor
 @Transactional
-public class TransactionalInterceptor implements Serializable
+public class TransactionalInterceptor
 {
 
     @AroundInvoke

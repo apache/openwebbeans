@@ -22,7 +22,7 @@ under the License.
     <parent>
         <artifactId>samples</artifactId>
         <groupId>org.apache.openwebbeans</groupId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>1.2.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -53,7 +53,7 @@ under the License.
 	<!-- Interceptor API -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-interceptor_1.2_spec</artifactId>
+            <artifactId>geronimo-interceptor_1.1_spec</artifactId>
         </dependency>
 
         <!-- JSF Plugin -->
@@ -87,7 +87,7 @@ under the License.
         <!-- JSR 299 API -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jcdi_1.1_spec</artifactId>
+            <artifactId>geronimo-jcdi_1.0_spec</artifactId>
         </dependency>
 
         <!-- JSR 330 API -->

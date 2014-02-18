@@ -25,8 +25,8 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.Producer;
 
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.ProducerFactory;
+import org.apache.webbeans.component.spi.BeanAttributes;
+import org.apache.webbeans.component.spi.ProducerFactory;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.WebBeansUtil;
 

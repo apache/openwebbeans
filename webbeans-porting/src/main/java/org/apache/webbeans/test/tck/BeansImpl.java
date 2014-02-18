@@ -23,8 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import org.jboss.cdi.tck.spi.Beans;
+import org.jboss.jsr299.tck.spi.Beans;
 
 public class BeansImpl implements Beans
 {
@@ -36,7 +35,7 @@ public class BeansImpl implements Beans
     }
 
     @Override
-    public byte[] passivate(Object o) throws IOException
+    public byte[] serialize(Object o) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -45,7 +44,7 @@ public class BeansImpl implements Beans
     }
 
     @Override
-    public Object activate(byte[] bytes) throws IOException, ClassNotFoundException
+    public Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bais);

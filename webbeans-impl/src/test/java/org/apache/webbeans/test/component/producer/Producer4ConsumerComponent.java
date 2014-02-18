@@ -21,12 +21,12 @@ package org.apache.webbeans.test.component.producer;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.Users;
 
-@RequestScoped
+@SessionScoped
 public class Producer4ConsumerComponent implements Serializable
 {    
     private @Inject @Users List<User> users;

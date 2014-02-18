@@ -25,14 +25,18 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.util.ClassUtil;
 import org.junit.Test;
 
-public class ClassTest extends AbstractUnitTest
+public class ClassTest extends TestContext
 {
     public Map<String, ?> map = null;
-
+    
+    public ClassTest()
+    {
+        super(ClassTest.class.getName());
+    }
 
     @Test
     public void testTypeVariableTest()
@@ -40,11 +44,13 @@ public class ClassTest extends AbstractUnitTest
         boolean result = ClassUtil.isDefinitionContainsTypeVariables(Map.class);
         
         Assert.assertEquals(true, result);
+        
     }
     
     @Test
     public void testCheckParameterizedType() throws Exception
     {
+        
         Field field = ClassTest.class.getField("map");
         
         Type type = field.getGenericType();
@@ -55,5 +61,7 @@ public class ClassTest extends AbstractUnitTest
             
             Assert.assertFalse(result);
         }
+        
+        
     }
 }

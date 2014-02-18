@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>1.2.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -31,45 +31,29 @@
     <name>TCK Porting Pkg</name>
     <packaging>jar</packaging>
     <description>Apache OpenWebBeans TCK Porting Package</description>
-    
+
     <properties>
-        <cdi.tck.version>1.1.2.Final</cdi.tck.version>
+        <webbeans.tck.version>1.0.4.CR1</webbeans.tck.version>
     </properties>
+
+        <!--Used for jboss-test-harness-api not in central maven -->
+    <!-- TODO finally REMOVE if all transitive stuff from the TCK moved to maven.central -->
+    <repositories>
+        <repository>
+            <id>repository.jboss.org</id>
+            <name>JBoss Repository</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
     
     <dependencies>
-        <dependency>
-            <groupId>org.jboss.cdi.tck</groupId>
-            <artifactId>cdi-tck-api</artifactId>
-            <version>${cdi.tck.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.enterprise</groupId>
-                    <artifactId>cdi-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.faces</groupId>
-                    <artifactId>jsf-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>javax.servlet-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.servlet.jsp</groupId>
-                    <artifactId>jsp-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.transaction</groupId>
-                    <artifactId>jta</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-spi</artifactId>
-        </dependency>
-        
+
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-impl</artifactId>
@@ -92,7 +76,7 @@
 
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-servlet_3.0_spec</artifactId>
+            <artifactId>geronimo-servlet_2.5_spec</artifactId>
         </dependency>
 
         <dependency>
@@ -102,7 +86,7 @@
 
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-annotation_1.2_spec</artifactId>
+            <artifactId>geronimo-annotation_1.1_spec</artifactId>
             <version>${geronimo_annotation.version}</version>
         </dependency>
 
@@ -112,14 +96,31 @@
             <version>3.1</version>
         </dependency>
 
+
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-interceptor_1.2_spec</artifactId>
+            <artifactId>geronimo-interceptor_1.1_spec</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.jsr299.tck</groupId>
+            <artifactId>jsr299-tck-api</artifactId>
+            <version>${webbeans.tck.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.enterprise</groupId>
+                    <artifactId>cdi-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.el</groupId>
+                    <artifactId>el-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jcdi_1.1_spec</artifactId>
+            <artifactId>geronimo-jcdi_1.0_spec</artifactId>
         </dependency>
 
         <dependency>
@@ -144,5 +145,6 @@
         </dependency>
 
     </dependencies>
+
 
 </project>

@@ -1,135 +1,151 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <!--
-    
-    Licensed to the Apache Software Foundation (ASF) under one or more
-    contributor license agreements. See the NOTICE file distributed with
-    this work for additional information regarding copyright ownership.
-    The ASF licenses this file to You under the Apache License, Version
-    2.0 (the "License"); you may not use this file except in compliance
-    with the License. You may obtain a copy of the License at
-    
-    http://www.apache.org/licenses/LICENSE-2.0 Unless required by
-    applicable law or agreed to in writing, software distributed under the
-    License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-    CONDITIONS OF ANY KIND, either express or implied. See the License for
-    the specific language governing permissions and limitations under the
-    License.
+	
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements. See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version
+	2.0 (the "License"); you may not use this file except in compliance
+	with the License. You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+	applicable law or agreed to in writing, software distributed under the
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+	CONDITIONS OF ANY KIND, either express or implied. See the License for
+	the specific language governing permissions and limitations under the
+	License.
 -->
-<suite name="JSR-346-TCK" verbose="2">
-    <test name="JSR-346 TCK">
+<suite name="JSR-299 TCK" verbose="2">
+    <test name="JSR-299 TCK">
+        <method-selectors>
+
+            <method-selector>
+                <selector-class
+                    name="org.jboss.testharness.impl.testng.DisableIntegrationTestsMethodSelector" />
+            </method-selector>
+
+            <method-selector>
+                <selector-class
+                    name="org.jboss.testharness.impl.testng.ExcludeIncontainerUnderInvestigationMethodSelector" />
+            </method-selector>
+        </method-selectors>
+
         <groups>
             <run>
-                <exclude name="integration" />
-                <exclude name="javaee-full" />
+                <exclude name="ri-broken" />
+                <exclude name="jboss-as-broken" />
+                <exclude name="broken" />
+                <exclude name="integration"></exclude>
             </run>
         </groups>
 
+        <classes>
+
+            <!--
+                It's not necessary to perform EJB tests in standalone mode!
+                Those tests will be executed as part of the integration in OpenEJB.
+            -->
+            <class name="org.jboss.jsr299.tck.tests.implementation.enterprise.definition.EnterpriseBeanDefinitionTest">
+                <methods>
+                    <exclude name="testConstructorAnnotatedInjectCalled"></exclude>
+                </methods>
+            </class>
+            <!-- Not necessary test some EJBs in standalone mode!!! -->
+            <class name="org.jboss.jsr299.tck.tests.inheritance.specialization.simple.broken.extendejb.SpecializingBeanExtendsEnterpriseBeanTest">
+                <methods>
+                    <exclude name=".*"></exclude>
+                </methods>
+            </class>
+            <class name="org.jboss.jsr299.tck.tests.implementation.enterprise.broken.statelessWithApplicationScope.StatelessWithApplicationScopeTest">
+                <methods>
+                    <exclude name=".*"></exclude>
+                </methods>
+            </class>
+            <class name="org.jboss.jsr299.tck.tests.implementation.enterprise.broken.statelessWithRequestScope.StatelessWithRequestScopeTest">
+                <methods>
+                    <exclude name=".*"></exclude>
+                </methods>
+            </class>
+            <!-- Not necessary test some EJBs in standalone mode!!! -->
+            <class name="org.jboss.jsr299.tck.tests.event.broken.observer.notBusinessMethod.EJBObserverMethodNotBusinessMethodTest">
+                <methods>
+                    <exclude name=".*"></exclude>
+                </methods>
+            </class>
+            <!-- Not necessary test some EJBs in standalone mode!!! -->
+            <class name="org.jboss.jsr299.tck.tests.implementation.enterprise.newBean.NewEnterpriseBeanTest">
+                <methods>
+                    <exclude name=".*"></exclude>
+                </methods>
+            </class>
+            <class name="org.jboss.jsr299.tck.tests.inheritance.specialization.enterprise.broken.directlyExtendsSimpleBean.DirectlyExtendsSimpleBeanTest">
+                <methods>
+                    <exclude name=".*"></exclude>
+                </methods>
+            </class>
+            <class name="org.jboss.jsr299.tck.tests.implementation.producer.method.broken.enterprise.nonbusiness.ProducerMethodNotBusinessMethodTest">
+                <methods>
+                    <exclude name="testProducerMethodOnSessionBeanMustBeBusinessMethod"></exclude>
+                </methods>
+            </class>
+            <class name="org.jboss.jsr299.tck.tests.implementation.enterprise.broken.singletonWithRequestScope.SingletonWithRequestScopeTest">
+                <methods>
+                    <exclude name="testSingletonWithRequestScopeFails"></exclude>
+                </methods>
+            </class>
+            <class name="org.jboss.jsr299.tck.tests.implementation.enterprise.broken.singletonWithSessionScope.SingletonWithSessionScopeTest">
+                <methods>
+                    <exclude name="testSingletonWithSessionScopeFails"></exclude>
+                </methods>
+            </class>
+            <class name="org.jboss.jsr299.tck.tests.implementation.enterprise.broken.singletonWithConversationScope.SingletonWithConversationScopeTest">
+                <methods>
+                    <exclude name="testSingletonWithConversationScopeFails"></exclude>
+                </methods>
+            </class>
+            <class name="org.jboss.jsr299.tck.tests.context.passivating.PassivatingContextTest">
+                <!-- sadly this test also loads EJBs :( -->
+                <methods>
+                    <exclude name=".*"></exclude>
+                </methods>
+            </class>
+
+
+
+            <!-- ERROR IN CDI-TCK-137 -->
+            <class name="org.jboss.jsr299.tck.tests.decorators.invocation.DecoratorInvocationTest">
+                <methods>
+                    <exclude name="testChainedDecoratorInvocation"></exclude>
+                </methods>
+            </class>
+
+
+            <!-- ERROR IN CDITCK-138 -->
+            <class name="org.jboss.jsr299.tck.tests.lookup.injectionpoint.InjectionPointTest">
+                <methods>
+                    <exclude name="testIsDelegate"></exclude>
+                </methods>
+            </class>
+
+            <!-- ERROR IN CDITCK-183 -->
+            <class name="org.jboss.jsr299.tck.tests.context.DestroyedInstanceReturnedByGetTest">
+                <methods>
+                    <exclude name="testDestroyedInstanceMustNotBeReturnedByGet"></exclude>
+                </methods>
+            </class>
+
+            <!-- see CDI-140 -->
+            <class name="org.jboss.jsr299.tck.tests.context.passivating.broken.passivatingProducerMethodWithNonPassivatingParameter.PassivatingProducerMethodWithNonPassivatingParameterTest">
+                <methods>
+                    <exclude name="testSimpleDependentWebBeanWithNonSerializableImplementationInjectedIntoProducerMethodParameterWithPassivatingScopeFails"></exclude>
+                </methods>
+            </class>
+
+        </classes>
+
         <packages>
-            <package name="org.jboss.cdi.tck.tests.*">
-                <!-- the following tests are excluded because we just have not yet implemented this features -->
-                <exclude name="org.jboss.cdi.tck.tests.inheritance.specialization.producer.method.broken.twobeans" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.definition.broken.interceptor" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.definition.broken.inject" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.definition.broken.decorator" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.definition.broken.enterprise.nonstatic" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.producer.method.broken.interceptor" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.producer.method.broken.decorator" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.disposal.method.definition.broken.interceptor" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.disposal.method.definition.broken.validation.ambiguous" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.disposal.method.definition.broken.validation.unsatisfied" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.disposal.method.definition.broken.decorator" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.simple.definition.broken.field" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.broken.injection" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.broken.injection.decorated" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.broken.injection.intercepted" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.broken.typeparam.interceptor" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.broken.typeparam" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.broken.typeparam.decorator" />
-                <exclude name="org.jboss.cdi.tck.tests.event.metadata.broken.initializer" />
-                <exclude name="org.jboss.cdi.tck.tests.event.broken.raw" />
-                <exclude name="org.jboss.cdi.tck.tests.event.observer.broken.validation.ambiguous" />
-                <exclude name="org.jboss.cdi.tck.tests.event.observer.broken.validation.unsatisfied" />
-                <exclude name="org.jboss.cdi.tck.tests.interceptors.definition.broken.observer" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.observer.broken.exception" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.observer.broken.definitionError" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.annotated.broken.processAnnotatedObserverThrowsException" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.annotated.delivery.broken" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.producer.broken.injectionTargetError" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.producer.broken.processing" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.broken.exception.validation" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.broken.exception.discovery" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.broken.addDefinitionError" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.broken.addDeploymentProblem" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.atd.broken" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.bbd.broken.normalScope" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.bbd.broken.exception" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.bbd.broken.passivatingScope" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.broken" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.broken.invalid" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.broken.passivation" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.processInjectionPoint.broken" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.container.event.broken.processBeanObserverRegistersException" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.container.event.broken.processBeanObserverThrowsException" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.byname.broken.injectionPointWithNamed2" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.injectionpoint.broken.disposer" />
-                <exclude name="org.jboss.cdi.tck.tests.decorators.definition.broken.observer" />
-                <exclude name="org.jboss.cdi.tck.tests.decorators.definition.broken.nodecoratedtypes" />
-                <exclude name="org.jboss.cdi.tck.tests.decorators.definition.broken.invalidAbstractMethodOnDecorator" />
-                <exclude name="org.jboss.cdi.tck.tests.decorators.definition.broken.notAllDecoratedTypesImplemented.parameterized" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.byname.ambiguous.broken" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.dynamic.broken.raw" />
-                <exclude name="org.jboss.cdi.tck.tests.deployment.exclude" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.simple.lifecycle.unproxyable" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.definition" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.lifecycle" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.disposal.method.definition.inheritance" />
-                <exclude name="org.jboss.cdi.tck.tests.implementation.disposal.method.definition" />
-                <exclude name="org.jboss.cdi.tck.tests.inheritance.generics" />
-                <exclude name="org.jboss.cdi.tck.tests.interceptors.definition.custom" />
-                <exclude name="org.jboss.cdi.tck.tests.interceptors.definition.interceptorNotListedInBeansXml" />
-                <exclude name="org.jboss.cdi.tck.tests.definition.stereotype.interceptor" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.afterBeanDiscovery.annotated" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.afterBeanDiscovery" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.annotated.synthetic" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.annotated.delivery" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.registration" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.builtin" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.beanManager.bean" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.beanManager.injectionPoint" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.beanManager.producer" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.beanManager.bootstrap.unavailable.methods" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.alternative.metadata.annotated" />
-                <exclude name="org.jboss.cdi.tck.tests.extensions.alternative.metadata" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.typesafe.resolution.interceptor" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.typesafe.resolution.decorator" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.typesafe.resolution.primitive" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.injection.parameterized" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.clientProxy.unproxyable.interceptor" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.clientProxy.unproxyable.beanConstructor" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.clientProxy.unproxyable.privateConstructor" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.clientProxy.unproxyable.finalClass" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.clientProxy.unproxyable.finalClass" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.clientProxy.unproxyable.decorator" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.clientProxy.unproxyable.primitive" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.clientProxy.unproxyable.finalMethod" />
-                <exclude name="org.jboss.cdi.tck.tests.lookup.clientProxy.unproxyable.array" />
-                <exclude name="org.jboss.cdi.tck.tests.context.passivating.transientreference" />
-                <exclude name="org.jboss.cdi.tck.tests.context.alterable" />
-                <exclude name="org.jboss.cdi.tck.tests.decorators.builtin.event" />
-                <exclude name="org.jboss.cdi.tck.tests.decorators.builtin.event.complex" />
-                <exclude name="org.jboss.cdi.tck.tests.decorators.builtin.injectionpoint" />
-                <exclude name="org.jboss.cdi.tck.tests.decorators.builtin.beanmanager" />
-                <exclude name="org.jboss.cdi.tck.tests.decorators.custom" />
-                <exclude name="org.jboss.cdi.tck.tests.decorators.custom.broken.nodelegateinjectionpoint" />
-                <exclude name="org.jboss.cdi.tck.tests.decorators.custom.broken.toomanydelegateinjectionpoints" />
-                <exclude name="org.jboss.cdi.tck.tests.alternative" />
-                <exclude name="org.jboss.cdi.tck.tests.alternative.selection.stereotype" />
-                <exclude name="org.jboss.cdi.tck.tests.vetoed" />
-                <exclude name="org.jboss.cdi.tck.tests.vetoed.enterprise" />
-                
-                <!-- The following tests are broken and tck issues exist for it -->
-                
-            </package>
+            <package name="org.jboss.jsr299.tck.tests.*"></package>
+            <package name="org.jboss.jsr299.tck.interceptors.tests.*"/>
         </packages>
     </test>
 
