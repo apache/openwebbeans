@@ -19,6 +19,7 @@
 package org.apache.webbeans.lifecycle;
 
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,6 +42,8 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 public abstract class AbstractLifeCycle implements ContainerLifecycle
 {
+    protected AtomicBoolean started = new AtomicBoolean(false);
+
     //Logger instance
     protected Logger logger;
     
@@ -98,6 +101,16 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     @Override
     public void startApplication(Object startupObject)
     {
+        bootstrapApplication(startupObject);
+    }
+
+    protected synchronized void bootstrapApplication(Object startupObject)
+    {
+        if (started.get())
+        {
+            return;
+        }
+
         // Initalize Application Context
         logger.info(OWBLogConst.INFO_0005);
         
@@ -131,6 +144,8 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         {
             logger.log(Level.INFO, OWBLogConst.INFO_0001, Long.toString(System.currentTimeMillis() - begin));
         }
+
+        started.set(true);
     }
 
     @Override
@@ -184,6 +199,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         }
         finally
         {
+            started.set(false);
             // Clear singleton list
             WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
         }
