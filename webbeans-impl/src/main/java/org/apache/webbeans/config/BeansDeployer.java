@@ -651,10 +651,20 @@ public class BeansDeployer
             logger.log(Level.FINE, "Found Enterprise Bean with class name : [{0}]", implClass.getName());
             defineEnterpriseWebBean((Class<Object>) implClass, (ProcessAnnotatedTypeImpl<Object>) processAnnotatedEvent);
         }
-        else if((ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(processAnnotatedEvent.getAnnotatedType())) &&
-                isValidManagedBean(processAnnotatedEvent.getAnnotatedType()))
+        else
         {
-            defineManagedBean(processAnnotatedEvent);
+            try
+            {
+                if((ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(processAnnotatedEvent.getAnnotatedType()))
+                        && isValidManagedBean(processAnnotatedEvent.getAnnotatedType()))
+                {
+                    defineManagedBean(processAnnotatedEvent);
+                }
+            }
+            catch (NoClassDefFoundError ncdfe)
+            {
+                logger.info("Skipping deployment of Class " + implClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
+            }
         }
     }
 
