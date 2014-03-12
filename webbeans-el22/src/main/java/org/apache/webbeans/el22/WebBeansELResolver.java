@@ -19,6 +19,7 @@
 package org.apache.webbeans.el22;
 
 import java.beans.FeatureDescriptor;
+import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.el.ELContextStore;
@@ -165,7 +167,7 @@ public class WebBeansELResolver extends ELResolver
         {
             // If no contextualInstance found on the store
             CreationalContext<Object> creationalContext = manager.createCreationalContext(bean);
-            contextualInstance = manager.getReference(bean, Object.class, creationalContext);
+            contextualInstance = manager.getReference(bean, bestType(bean), creationalContext);
             if (contextualInstance != null)
             {
                 context.setPropertyResolved(true);
@@ -174,6 +176,24 @@ public class WebBeansELResolver extends ELResolver
             }
         }
         return contextualInstance;
+    }
+
+    private static Type bestType(final Bean<?> bean)
+    {
+        if (bean == null)
+        {
+            return Object.class;
+        }
+        final Class<?> bc = bean.getBeanClass();
+        if (bc != null)
+        {
+            return bc;
+        }
+        if (OwbBean.class.isInstance(bean))
+        {
+            return OwbBean.class.cast(bean).getReturnType();
+        }
+        return Object.class;
     }
 
     /**
