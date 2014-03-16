@@ -56,7 +56,7 @@ public class DeploymentValidationService
      */
     public void validateProxyable(OwbBean<?> bean)
     {
-        //Unproxiable test for NormalScoped beans
+        // Unproxyable test for NormalScoped beans
         if (webBeansContext.getBeanManagerImpl().isNormalScope(bean.getScope()))
         {
             ViolationMessageBuilder violationMessage = ViolationMessageBuilder.newViolation();
@@ -82,16 +82,12 @@ public class DeploymentValidationService
                         violationMessage.addLine(beanClass.getName(), " is a final class! CDI doesn't allow to proxy that.");
                     }
 
-                    Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(beanClass);
-                    for (Method m : methods)
+                    String finalMethodName = hasNonPrivateFinalMethod(beanClass);
+                    if (finalMethodName != null)
                     {
-                        int modifiers = m.getModifiers();
-                        if (Modifier.isFinal(modifiers) && !Modifier.isPrivate(modifiers) &&
-                            !m.isSynthetic() && !m.isBridge())
-                        {
-                            violationMessage.addLine(beanClass.getName(), " has final method "+ m + " CDI doesn't allow to proxy that.");
-                        }
+                        violationMessage.addLine(beanClass.getName(), " has final method "+ finalMethodName + " CDI doesn't allow to proxy that.");
                     }
+
 
                     Constructor<?> cons = webBeansContext.getWebBeansUtil().getNoArgConstructor(beanClass);
                     if (cons == null)
@@ -112,6 +108,38 @@ public class DeploymentValidationService
                 }
             }
         }
+    }
+
+    /**
+     * check if the given class has any non-private, non-static final method
+     * @return the method name or <code>null</code> if there is no such method.
+     */
+    private String hasNonPrivateFinalMethod(Class<?> beanClass)
+    {
+        if (beanClass == Object.class)
+        {
+            return null;
+        }
+
+        // we also need to check the methods of the parent classes
+        String finalMethodName = hasNonPrivateFinalMethod(beanClass.getSuperclass());
+        if (finalMethodName != null)
+        {
+            return finalMethodName;
+        }
+
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(beanClass);
+        for (Method m : methods)
+        {
+            int modifiers = m.getModifiers();
+            if (Modifier.isFinal(modifiers) && !Modifier.isPrivate(modifiers) && !Modifier.isStatic(modifiers) &&
+                !m.isSynthetic() && !m.isBridge())
+            {
+                return m.getName();
+            }
+        }
+
+        return null;
     }
 
     /**

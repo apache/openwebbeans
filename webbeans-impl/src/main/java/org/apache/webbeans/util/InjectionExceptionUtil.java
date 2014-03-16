@@ -39,7 +39,7 @@ public class InjectionExceptionUtil
     public static void throwUnproxyableResolutionException(ViolationMessageBuilder violationMessage)
     {
         throw new UnproxyableResolutionException(
-                newViolation("WebBeans with api type with normal scope must be proxiable to inject.")
+                newViolation("WebBeans with api type with normal scope must be proxyable.")
                         .addLine(violationMessage.toString())
                         .toString());
     }

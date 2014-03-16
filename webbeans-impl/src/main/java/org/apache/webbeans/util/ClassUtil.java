@@ -247,8 +247,10 @@ public final class ClassUtil
      * package-private method will get skipped and treated similarly to private methods.
      *
      * Note: we filter out the {@link Object#finalize()} method as users must not deal with it.
+     * @param topClass the class to start with. Then move up the hierarchy
+     * @param excludeFinalMethods whether final classes should get excluded from the result
      */
-    public static List<Method> getNonPrivateMethods(Class<?> topClass, boolean noFinalMethods)
+    public static List<Method> getNonPrivateMethods(Class<?> topClass, boolean excludeFinalMethods)
     {
         Map<String, List<Method>> methodMap = new HashMap<String, List<Method>>();
         List<Method> allMethods = new ArrayList<Method>(10);
@@ -271,7 +273,7 @@ public final class ClassUtil
                 {
                     continue;
                 }
-                if (noFinalMethods && Modifier.isFinal(modifiers))
+                if (excludeFinalMethods && Modifier.isFinal(modifiers))
                 {
                     continue;
                 }

@@ -21,20 +21,17 @@ package org.apache.webbeans.newtests.definition.proxyable;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.newtests.definition.proxyable.beans.BeanWithPrivateFinalMethod;
+import org.apache.webbeans.newtests.definition.proxyable.beans.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.webbeans.newtests.definition.proxyable.beans.BeanWithPublicFinalMethod;
-import org.apache.webbeans.newtests.definition.proxyable.beans.DependentBeanWithoutDefaultCt;
-import org.apache.webbeans.newtests.definition.proxyable.beans.NonAbstractSubClassBean;
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * This test checks for various conditions about NormalScope
- * Bean criterias regarding the ability to proxy those classes.
+ * Bean criteria regarding the ability to proxy those classes.
  * See CDI-spec 5.4.1. This got changed in CDI-1.1 to also allow
  * static and private methods to be final.
  */
@@ -66,12 +63,13 @@ public class ProxyableBeanTypeTest extends AbstractUnitTest
     @Test(expected = WebBeansConfigurationException.class)
     public void testBeanWithPublicFinalMethods()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        startContainer(BeanWithPublicFinalMethod.class);
+    }
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(BeanWithPublicFinalMethod.class);
-
-        startContainer(beanClasses, beanXmls);
+    @Test(expected = WebBeansConfigurationException.class)
+    public void testSubclassBeanWithPublicFinalMethods()
+    {
+        startContainer(SubClassWithNormalScope.class, BaseClassWithPublicFinalMethod.class);
     }
 
     @Test
