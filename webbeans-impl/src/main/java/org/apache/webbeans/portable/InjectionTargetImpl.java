@@ -106,10 +106,10 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
 
     private List<Interceptor<?>> aroundConstructInterceptors;
 
-    public InjectionTargetImpl(AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext,
+    public InjectionTargetImpl(AnnotatedType<T> annotatedType, Set<InjectionPoint> injectionPoints, WebBeansContext webBeansContext,
                                List<AnnotatedMethod<?>> postConstructMethods, List<AnnotatedMethod<?>> preDestroyMethods)
     {
-        super(points);
+        super(injectionPoints);
         Asserts.assertNotNull(annotatedType);
         Asserts.assertNotNull(webBeansContext);
         this.annotatedType = annotatedType;
