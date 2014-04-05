@@ -324,7 +324,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             final MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
             mv.visitCode();
             mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, parentClassFileName, "<init>", descriptor);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, parentClassFileName, "<init>", descriptor, false);
 
             // the instance provider field
             mv.visitVarInsn(Opcodes.ALOAD, 0);
@@ -404,7 +404,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_INSTANCE_PROVIDER, Type.getDescriptor(Provider.class));
 
             // invoke the get() method on the Provider
-            mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, Type.getInternalName(Provider.class), "get", "()Ljava/lang/Object;");
+            mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, Type.getInternalName(Provider.class), "get", "()Ljava/lang/Object;", true);
 
             // and convert the Object to the target class type
             mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(classToProxy));
@@ -423,7 +423,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             final Type declaringClass = Type.getType(delegatedMethod.getDeclaringClass());
             boolean interfaceMethod = Modifier.isInterface(delegatedMethod.getDeclaringClass().getModifiers());
             mv.visitMethodInsn(interfaceMethod ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKEVIRTUAL,
-                               declaringClass.getInternalName(), delegatedMethod.getName(), methodDescriptor);
+                               declaringClass.getInternalName(), delegatedMethod.getName(), methodDescriptor, interfaceMethod);
 
             generateReturn(mv, delegatedMethod);
 
@@ -464,7 +464,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         mv.visitFieldInsn(Opcodes.GETFIELD, proxyClassFileName, FIELD_INSTANCE_PROVIDER, Type.getDescriptor(Provider.class));
 
         // invoke the get() method on the Provider
-        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, Type.getInternalName(Provider.class), "get", "()Ljava/lang/Object;");
+        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, Type.getInternalName(Provider.class), "get", "()Ljava/lang/Object;", true);
 
 
         // prepare the parameter array as Object[] and store it on the stack
@@ -473,7 +473,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
 
         // this invokes NormalScopeProxyFactory.delegateProtectedMethod
         mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type.getInternalName(NormalScopeProxyFactory.class), "delegateProtectedMethod",
-                "(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;");
+                "(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;", false);
 
         // cast the result
         mv.visitTypeInsn(Opcodes.CHECKCAST, getCastType(returnType));
@@ -483,7 +483,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         {
             // get the primitive value
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, getWrapperType(returnType), getPrimitiveMethod(returnType),
-                    "()" + Type.getDescriptor(returnType));
+                    "()" + Type.getDescriptor(returnType), false);
         }
 
         mv.visitInsn(getReturnInsn(returnType));

@@ -651,7 +651,7 @@ public abstract class AbstractProxyFactory
                 mv.visitVarInsn(getVarInsn(parameterType), index);
 
                 mv.visitMethodInsn(Opcodes.INVOKESTATIC, wrapperType, "valueOf",
-                        "(" + Type.getDescriptor(parameterType) + ")L" + wrapperType + ";");
+                        "(" + Type.getDescriptor(parameterType) + ")L" + wrapperType + ";", false);
                 mv.visitInsn(Opcodes.AASTORE);
 
                 if (Long.TYPE.equals(parameterType) || Double.TYPE.equals(parameterType))

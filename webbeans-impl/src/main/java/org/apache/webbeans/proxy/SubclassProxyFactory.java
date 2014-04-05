@@ -137,7 +137,7 @@ public class SubclassProxyFactory extends AbstractProxyFactory
             final MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
             mv.visitCode();
             mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, parentClassFileName, "<init>", descriptor);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, parentClassFileName, "<init>", descriptor, false);
 
             mv.visitInsn(Opcodes.RETURN);
             mv.visitMaxs(-1, -1);
@@ -214,7 +214,7 @@ public class SubclassProxyFactory extends AbstractProxyFactory
             else
             {
                 // invoke the method on the super class;
-                mv.visitMethodInsn(Opcodes.INVOKESPECIAL, declaringClass.getInternalName(), delegatedMethod.getName(), methodDescriptor);
+                mv.visitMethodInsn(Opcodes.INVOKESPECIAL, declaringClass.getInternalName(), delegatedMethod.getName(), methodDescriptor, false);
             }
 
             generateReturn(mv, delegatedMethod);

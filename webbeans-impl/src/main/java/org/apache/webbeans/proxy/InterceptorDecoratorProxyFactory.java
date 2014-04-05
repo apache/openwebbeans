@@ -265,7 +265,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         final MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, classFileName, "<init>", "()V");
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, classFileName, "<init>", "()V", false);
 
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitInsn(Opcodes.ACONST_NULL);
@@ -334,7 +334,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
             }
 
             final Type declaringClass = Type.getType(delegatedMethod.getDeclaringClass());
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, declaringClass.getInternalName(), delegatedMethod.getName(), methodDescriptor);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, declaringClass.getInternalName(), delegatedMethod.getName(), methodDescriptor, false);
 
             generateReturn(mv, delegatedMethod);
 
@@ -466,7 +466,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
 
         // invoke the invocationHandler
         mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, Type.getInternalName(InterceptorHandler.class), "invoke",
-                "(Ljava/lang/reflect/Method;[Ljava/lang/Object;)Ljava/lang/Object;");
+                "(Ljava/lang/reflect/Method;[Ljava/lang/Object;)Ljava/lang/Object;", true);
 
         // cast the result
         mv.visitTypeInsn(Opcodes.CHECKCAST, getCastType(returnType));
@@ -475,7 +475,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         {
             // get the primitive value
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, getWrapperType(returnType), getPrimitiveMethod(returnType),
-                    "()" + Type.getDescriptor(returnType));
+                    "()" + Type.getDescriptor(returnType), false);
         }
 
         // push return
@@ -506,9 +506,9 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
                 mv.visitLdcInsn(Type.getType("L" + exceptionType.getCanonicalName().replace('.', '/') + ";"));
                 mv.visitVarInsn(Opcodes.ALOAD, length);
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/reflect/InvocationTargetException", "getCause",
-                        "()Ljava/lang/Throwable;");
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "getClass", "()Ljava/lang/Class;");
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "equals", "(Ljava/lang/Object;)Z");
+                        "()Ljava/lang/Throwable;", false);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "getClass", "()Ljava/lang/Class;", false);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "equals", "(Ljava/lang/Object;)Z", false);
 
                 final Label l6 = new Label();
                 mv.visitJumpInsn(Opcodes.IFEQ, l6);
@@ -518,7 +518,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
 
                 mv.visitVarInsn(Opcodes.ALOAD, length);
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/reflect/InvocationTargetException", "getCause",
-                        "()Ljava/lang/Throwable;");
+                        "()Ljava/lang/Throwable;", false);
                 mv.visitTypeInsn(Opcodes.CHECKCAST, getCastType(exceptionType));
                 mv.visitInsn(Opcodes.ATHROW);
                 mv.visitLabel(l6);
@@ -529,7 +529,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
                     mv.visitInsn(Opcodes.DUP);
                     mv.visitVarInsn(Opcodes.ALOAD, length);
                     mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/reflect/UndeclaredThrowableException", "<init>",
-                            "(Ljava/lang/Throwable;)V");
+                            "(Ljava/lang/Throwable;)V", false);
                     mv.visitInsn(Opcodes.ATHROW);
                 }
             }
