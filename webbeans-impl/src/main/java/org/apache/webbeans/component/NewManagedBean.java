@@ -61,4 +61,13 @@ public class NewManagedBean<T> extends ManagedBean<T> implements NewBean<T>
         return true;
     }
 
+    /**
+     * always false for New qualifier
+     */
+    @Override
+    public boolean isAlternative()
+    {
+        return false;
+    }
+
 }

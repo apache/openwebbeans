@@ -16,34 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.test.unittests.clazz;
+package org.apache.webbeans.config;
 
 import java.lang.reflect.Type;
-import java.util.Set;
+import java.lang.reflect.WildcardType;
 
-import junit.framework.Assert;
-
-import org.apache.webbeans.util.GenericsUtil;
-import org.junit.Test;
-
-public class ClazzTest
+public class OwbWildcardTypeImpl implements WildcardType
 {
-    @Test
-    public void testStudent()
+
+    private Type[] upperBounds;
+    private Type[] lowerBounds;
+    
+    public OwbWildcardTypeImpl(Type[] upperBounds, Type[] lowerBounds)
     {
-        Set<Type> set = GenericsUtil.getTypeClosure(Student.class, Student.class, Student.class);
-
-        Assert.assertEquals(5, set.size());
-
+        this.upperBounds = upperBounds.clone();
+        this.lowerBounds = lowerBounds.clone();
     }
 
-    @Test
-    public void testStudent2()
+    @Override
+    public Type[] getUpperBounds()
     {
-        Set<Type> set = GenericsUtil.getTypeClosure(Student2.class, Student2.class, Student2.class);
-
-        Assert.assertEquals(4, set.size());
-
+        return upperBounds.clone();
     }
 
+    @Override
+    public Type[] getLowerBounds()
+    {
+        return lowerBounds.clone();
+    }
 }

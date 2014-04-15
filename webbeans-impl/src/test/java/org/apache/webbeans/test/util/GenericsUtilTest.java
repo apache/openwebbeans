@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
@@ -39,14 +40,22 @@ public class GenericsUtilTest {
 
         Type t = GenericsUtil.resolveType(GenericObject.class, field);
         assertTrue(t instanceof TypeVariable);
-        assertEquals("T", ((TypeVariable) t).getName());
+        assertEquals("T", ((TypeVariable<?>)t).getName());
 
-        //X TODO assertEquals(Number.class, GenericsUtil.resolveType(GenericNumberObject.class, field));
+        Type number = GenericsUtil.resolveType(GenericNumberObject.class, field);
+        assertTrue(number instanceof TypeVariable);
+		assertEquals(Number.class, GenericsUtil.getRawType(number));
 
         assertEquals(Integer.class, GenericsUtil.resolveType(IntegerObject.class, field));
-        assertEquals(Object[].class, GenericsUtil.resolveType(GenericArrayObject.class, field));
+        GenericArrayType genericArrayType = (GenericArrayType)GenericsUtil.resolveType(GenericArrayObject.class, field);
+        assertTrue(genericArrayType.getGenericComponentType() instanceof TypeVariable);
+        assertEquals("V", ((TypeVariable)genericArrayType.getGenericComponentType()).getName());
+        assertEquals(Object[].class, GenericsUtil.getRawType(genericArrayType));
         assertEquals(Long[].class, GenericsUtil.resolveType(LongArrayObject.class, field));
-        //X TODO assertEquals(SubInterface.class, GenericsUtil.resolveType(InterfaceObject.class, field));
+        
+        Type subInterfaceType = GenericsUtil.resolveType(InterfaceObject.class, field);
+        assertTrue(subInterfaceType instanceof TypeVariable);
+        assertEquals(SubInterface.class, GenericsUtil.getRawType(subInterfaceType));
     }
 
     public static abstract class AbstractObject<V> {

@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.clazz;
 
-public abstract class AbstractSchool2<T, K>
+public abstract class AbstractSchool2<T, K> extends AbstractSchool<Long>
 {
 
 }

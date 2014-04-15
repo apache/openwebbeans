@@ -18,9 +18,12 @@
  */
 package org.apache.webbeans.test.injection.generics;
 
+import javax.enterprise.util.TypeLiteral;
+
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.inject.generic.GenericComponent;
 import org.apache.webbeans.test.component.inject.generic.GenericComponentInjector;
+import org.apache.webbeans.test.component.inject.parametrized.Persistent;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,7 +35,7 @@ public class GenericBeanTest extends AbstractUnitTest
     {
         startContainer(GenericComponent.class, GenericComponentInjector.class);
         
-        GenericComponentInjector<?> instance = getInstance(GenericComponentInjector.class);
+        GenericComponentInjector<? extends Persistent> instance = getInstance(new TypeLiteral<GenericComponentInjector<? extends Persistent>>() {}.getType());
         Assert.assertNotNull(instance.getInjection1());
         Assert.assertNotNull(instance.getInjection2());
         Assert.assertNotNull(instance.getInjection3());

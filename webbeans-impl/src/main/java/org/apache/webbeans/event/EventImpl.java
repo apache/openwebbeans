@@ -120,9 +120,12 @@ public class EventImpl<T> implements Event<T>, Serializable
         {
             throw new IllegalArgumentException("Class : " + subtype + " cannot contain type variable");
         }
-        
         Type sub = subtype;
-        
+        return select(sub, bindings);
+    }
+
+    private <U extends T> Event<U> select(Type sub, Annotation... bindings)
+    {
         if(sub == null)
         {
             sub = eventType;
@@ -139,7 +142,8 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public <U extends T> Event<U> select(TypeLiteral<U> subtype, Annotation... bindings)
     {
-        return select(subtype.getRawType(), bindings);
+        //TODO check for type variables
+        return select(subtype.getType(), bindings);
     }
     
     private void writeObject(java.io.ObjectOutputStream op) throws IOException

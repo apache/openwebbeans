@@ -68,6 +68,7 @@ import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.third.PassivationCapableThirdpartyBeanImpl;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
+import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DecoratorComparator;
@@ -76,7 +77,9 @@ import org.apache.webbeans.event.EventMetadataImpl;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
+
 import javax.enterprise.inject.spi.DefinitionException;
+
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
@@ -409,7 +412,12 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     @Override
     public void fireEvent(Object event, Annotation... bindings)
     {       
-        fireEvent(event, new EventMetadataImpl(event.getClass(), null, bindings), false);
+        Type type = event.getClass();
+        if (event.getClass().getTypeParameters().length > 0)
+        {
+            type = new OwbParametrizedTypeImpl(event.getClass().getDeclaringClass(), event.getClass(), event.getClass().getTypeParameters());
+        }
+        fireEvent(event, new EventMetadataImpl(type, null, bindings), false);
     }
 
     /**
@@ -424,11 +432,6 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
 
     public void fireEvent(Object event, EventMetadata metadata, boolean isLifecycleEvent)
     {
-        if (ClassUtil.isDefinitionContainsTypeVariables(event.getClass()))
-        {
-            throw new IllegalArgumentException("Event class : " + event.getClass().getName() + " can not be defined as generic type");
-        }
-
         notificationManager.fireEvent(event, metadata, isLifecycleEvent);
     }
 

@@ -33,7 +33,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.webbeans.config.OwbGenericArrayTypeImpl;
 import org.apache.webbeans.config.OwbParametrizedTypeImpl;
+import org.apache.webbeans.config.OwbWildcardTypeImpl;
 
 /**
  * Utility classes for generic type operations.
@@ -263,7 +265,7 @@ public final class GenericsUtil
                 injectionPointTypeArgument instanceof Class &&
                 beanTypeArgument instanceof TypeVariable)
             {
-                for (Type upperBound: ((TypeVariable) beanTypeArgument).getBounds())
+                for (Type upperBound: ((TypeVariable<?>)beanTypeArgument).getBounds())
                 {
                     if (!isAssignableFrom(isDelegate, upperBound, injectionPointTypeArgument))
                     {
@@ -321,7 +323,7 @@ public final class GenericsUtil
      */
     public static Type resolveType(Class<?> subclass, Field field)
     {
-        return resolveType(field.getGenericType(), new TypeVariableResolver(subclass, field.getDeclaringClass()));
+        return resolveType(field.getGenericType(), subclass, field.getDeclaringClass());
     }
 
     /**
@@ -329,7 +331,7 @@ public final class GenericsUtil
      */
     public static Type resolveReturnType(Class<?> subclass, Method method)
     {
-        return resolveType(method.getGenericReturnType(), new TypeVariableResolver(subclass, method.getDeclaringClass()));
+        return resolveType(method.getGenericReturnType(), subclass, method.getDeclaringClass());
     }
 
     /**
@@ -337,7 +339,7 @@ public final class GenericsUtil
      */
     public static Type[] resolveParameterTypes(Class<?> subclass, Constructor<?> constructor)
     {
-        return resolveTypes(constructor.getGenericParameterTypes(), new TypeVariableResolver(subclass, constructor.getDeclaringClass()));
+        return resolveTypes(constructor.getGenericParameterTypes(), subclass, constructor.getDeclaringClass());
     }
 
     /**
@@ -345,7 +347,7 @@ public final class GenericsUtil
      */
     public static Type[] resolveParameterTypes(Class<?> subclass, Method method)
     {
-        return resolveTypes(method.getGenericParameterTypes(), new TypeVariableResolver(subclass, method.getDeclaringClass()));
+        return resolveTypes(method.getGenericParameterTypes(), subclass, method.getDeclaringClass());
     }
 
     /**
@@ -353,10 +355,10 @@ public final class GenericsUtil
      */
     public static Type resolveType(Type type, Class<?> subclass, Member member)
     {
-        return resolveType(type, new TypeVariableResolver(subclass, member.getDeclaringClass()));
+        return resolveType(type, subclass, member.getDeclaringClass());
     }
 
-    private static Type resolveType(Type type, TypeVariableResolver resolver)
+    public static Type resolveType(Type type, Type actualType, Type declaringType)
     {
         if (type instanceof Class)
         {
@@ -365,29 +367,25 @@ public final class GenericsUtil
         else if (type instanceof ParameterizedType)
         {
             ParameterizedType parameterizedType = (ParameterizedType)type;
-            Type[] resolvedTypes = resolveTypes(parameterizedType.getActualTypeArguments(), resolver);
-            return new OwbParametrizedTypeImpl(parameterizedType.getOwnerType(), parameterizedType.getRawType(), resolvedTypes);
+            Type[] resolvedTypeArguments = resolveTypes(parameterizedType.getActualTypeArguments(), actualType, declaringType);
+            return new OwbParametrizedTypeImpl(parameterizedType.getOwnerType(), parameterizedType.getRawType(), resolvedTypeArguments);
         }
         else if (type instanceof TypeVariable)
         {
             TypeVariable<?> variable = (TypeVariable<?>)type;
-            return resolver.resolve(variable);
+            return resolveTypeVariable(variable, declaringType, actualType);
         }
         else if (type instanceof WildcardType)
         {
-            WildcardType wildcardType = (WildcardType) type;
-            if (wildcardType.getLowerBounds().length > 0)
-            {
-                return type;
-            }
-            Type[] resolvedTypes = resolveTypes(wildcardType.getUpperBounds(), resolver);
-            return resolveType(getMostSpecificType(getRawTypes(resolvedTypes, resolver), resolvedTypes), resolver);
+            WildcardType wildcardType = (WildcardType)type;
+            Type[] upperBounds = resolveTypes(wildcardType.getUpperBounds(), actualType, declaringType);
+            Type[] lowerBounds = resolveTypes(wildcardType.getLowerBounds(), actualType, declaringType);
+            return new OwbWildcardTypeImpl(upperBounds, lowerBounds);
         }
         else if (type instanceof GenericArrayType)
         {
-            Type componentType = resolveType(((GenericArrayType)type).getGenericComponentType(), resolver);
-            Class<?> componentClass = getRawType(componentType, resolver);
-            return Array.newInstance(componentClass, 0).getClass();
+            GenericArrayType arrayType = (GenericArrayType)type;
+            return createArrayType(resolveType(arrayType.getGenericComponentType(), actualType, declaringType));
         }
         else
         {
@@ -395,44 +393,142 @@ public final class GenericsUtil
         }
     }
     
-    public static Type[] resolveTypes(Type[] types, TypeVariableResolver resolution)
+    public static Type[] resolveTypes(Type[] types, Type actualType, Type declaringType)
     {
         Type[] resolvedTypeArguments = new Type[types.length];
         for (int i = 0; i < types.length; i++)
         {
-            resolvedTypeArguments[i] = resolveType(types[i], resolution);
+            resolvedTypeArguments[i] = resolveType(types[i], actualType, declaringType);
         }
         return resolvedTypeArguments;
     }
 
-    public static Set<Type> getTypeClosure(Type type, Class<?> owningClass, Class<?> declaringClass)
+    public static Set<Type> getTypeClosure(Class<?> type)
     {
+        return getTypeClosure(type, type);
+    }
+
+    public static Set<Type> getTypeClosure(Type actualType, Class<?> declaringClass)
+    {
+        Type type = declaringClass;
+        if (declaringClass.getTypeParameters().length > 0)
+        {
+            type = getParameterizedType(declaringClass);
+        }
+        return getTypeClosure(type, actualType, declaringClass);
+    }
+
+    /**
+     * Returns the type closure for the specified parameters.
+     * <h3>Example 1:</h3>
+     * <p>
+     * Take the following classes:
+     * </p>
+     * <code>
+     * public class Foo<T> {
+     *   private T t;
+     * }
+     * public class Bar extends Foo<Number> {
+     * }
+     * </code>
+     * <p>
+     * To get the type closure of T in the context of Bar (which is {Number.class, Object.class}), you have to call this method like
+     * </p>
+     * <code>
+     * GenericUtil.getTypeClosure(Foo.class.getDeclaredField("t").getType(), Bar.class, Foo.class);
+     * </code>
+     * <h3>Example 2:</h3>
+     * <p>
+     * Take the following classes:
+     * </p>
+     * <code>
+     * public class Foo<T> {
+     *   private T t;
+     * }
+     * public class Bar<T> extends Foo<T> {
+     * }
+     * </code>
+     * <p>
+     * To get the type closure of Bar<T> in the context of Foo<Number> (which are besides Object.class the <tt>ParameterizedType</tt>s Bar<Number> and Foo<Number>),
+     * you have to call this method like
+     * </p>
+     * <code>
+     * GenericUtil.getTypeClosure(Foo.class, new TypeLiteral<Foo<Number>>() {}.getType(), Bar.class);
+     * </code>
+     * 
+     * @param type the type to get the closure for
+     * @param actualType the context to bind type variables
+     * @param declaringClass the class declaring the type
+     * @return the type closure
+     */
+    public static Set<Type> getTypeClosure(Type type, Type actualType, Class<?> declaringClass)
+    {
+        if (type instanceof Class)
+        {
+            Class<?> classType = (Class<?>)type;
+            TypeVariable<?>[] typeParameters = classType.getTypeParameters();
+            if (typeParameters.length > 0)
+            {
+                type = new OwbParametrizedTypeImpl(classType.getDeclaringClass(), classType, typeParameters);
+            }
+        }
         Set<Type> typeClosure = new HashSet<Type>();
         typeClosure.add(Object.class);
-        fillTypeHierarchy(typeClosure, type, new TypeVariableResolver(owningClass, declaringClass));
+        fillTypeHierarchy(typeClosure, type, actualType, declaringClass);
         return typeClosure;
     }
 
-    private static void fillTypeHierarchy(Set<Type> set, Type type, TypeVariableResolver resolver)
+    private static void fillTypeHierarchy(Set<Type> set, Type type, Type actualType, Type declaringType)
     {
         if (type == null)
         {
            return;
         }
-        Type resolvedType = GenericsUtil.resolveType(type, resolver);
+        if (declaringType instanceof Class)
+        {
+            Class<?> declaringClass = (Class<?>)declaringType;
+            TypeVariable<?>[] typeParameters = declaringClass.getTypeParameters();
+            if (typeParameters.length > 0)
+            {
+                declaringType = new OwbParametrizedTypeImpl(declaringClass.getDeclaringClass(), declaringClass, typeParameters);
+            }
+        }
+        Type resolvedType = GenericsUtil.resolveType(type, actualType, declaringType);
         set.add(resolvedType);
-        Class<?> resolvedClass = GenericsUtil.getRawType(resolvedType, resolver);
+        Class<?> resolvedClass = GenericsUtil.getRawType(resolvedType, actualType, declaringType);
         if (resolvedClass.getSuperclass() != null)
         {
-            fillTypeHierarchy(set, resolvedClass.getGenericSuperclass(), resolver.add(resolvedClass));
+            fillTypeHierarchy(set, resolvedClass.getGenericSuperclass(), resolvedClass.getGenericSuperclass(), resolvedType);
         }
         for (Type interfaceType: resolvedClass.getGenericInterfaces())
         {
-            fillTypeHierarchy(set, interfaceType, resolver.add(resolvedClass, interfaceType));
+            fillTypeHierarchy(set, interfaceType, interfaceType, resolvedType);
         }
     }
 
-    static <T> Class<T> getRawType(Type type, TypeVariableResolver resolver)
+    static ParameterizedType getParameterizedType(Type type)
+    {
+        if (type instanceof ParameterizedType)
+        {
+            return (ParameterizedType)type;
+        }
+        else if (type instanceof Class)
+        {
+            Class<?> classType = (Class<?>)type;
+            return new OwbParametrizedTypeImpl(classType.getDeclaringClass(), classType, classType.getTypeParameters());
+        }
+        else
+        {
+            throw new IllegalArgumentException(type.getClass().getSimpleName() + " is not supported");
+        }
+    }
+
+    public static <T> Class<T> getRawType(Type type)
+    {
+        return getRawType(type, null, null);
+    }
+
+    static <T> Class<T> getRawType(Type type, Type actualType, Type declaringType)
     {
         if (type instanceof Class)
         {
@@ -440,20 +536,25 @@ public final class GenericsUtil
         }
         else if (type instanceof ParameterizedType)
         {
-            return getRawType(((ParameterizedType) type).getRawType(), resolver);
+            ParameterizedType parameterizedType = (ParameterizedType)type;
+            return getRawType(parameterizedType.getRawType(), actualType, declaringType);
         }
-        else if ((type instanceof TypeVariable) || (type instanceof WildcardType) || (type instanceof GenericArrayType))
+        else if (type instanceof TypeVariable)
         {
-            Type resolvedType = resolveType(type, resolver);
-            if (resolvedType instanceof TypeVariable)
-            {
-                TypeVariable<?> variable = (TypeVariable<?>)resolvedType;
-                return getRawType(resolveType(getRawType(variable.getBounds(), resolver), resolver), resolver);
-            }
-            else
-            {
-                return getRawType(resolvedType, resolver);
-            }
+            TypeVariable<?> typeVariable = (TypeVariable<?>)type;
+            Type mostSpecificType = getMostSpecificType(getRawTypes(typeVariable.getBounds(), actualType, declaringType), typeVariable.getBounds());
+            return getRawType(mostSpecificType, actualType, declaringType);
+        }
+        else if (type instanceof WildcardType)
+        {
+            WildcardType wildcardType = (WildcardType)type;
+            Type mostSpecificType = getMostSpecificType(getRawTypes(wildcardType.getUpperBounds(), actualType, declaringType), wildcardType.getUpperBounds());
+            return getRawType(mostSpecificType, actualType, declaringType);
+        }
+        else if (type instanceof GenericArrayType)
+        {
+            GenericArrayType arrayType = (GenericArrayType)type;
+            return getRawType(createArrayType(getRawType(arrayType.getGenericComponentType(), actualType, declaringType)), actualType, declaringType);
         }
         else
         {
@@ -461,9 +562,9 @@ public final class GenericsUtil
         }
     }
 
-    private static Type getRawType(Type[] types, TypeVariableResolver resolver)
+    private static Type getRawType(Type[] types, Type actualType, Type declaringType)
     {
-        Class<?>[] rawTypes = getRawTypes(types, resolver);
+        Class<?>[] rawTypes = getRawTypes(types, actualType, declaringType);
         Class<?>[] classTypes = getClassTypes(rawTypes);
         if (classTypes.length > 0)
         {
@@ -475,12 +576,17 @@ public final class GenericsUtil
         }
     }
 
-    private static <T> Class<T>[] getRawTypes(Type[] types, TypeVariableResolver resolver)
+    private static <T> Class<T>[] getRawTypes(Type[] types)
+    {
+        return getRawTypes(types, null, null);
+    }
+
+    private static <T> Class<T>[] getRawTypes(Type[] types, Type actualType, Type declaringType)
     {
         Class<T>[] rawTypes = new Class[types.length];
         for (int i = 0; i < types.length; i++)
         {
-            rawTypes[i] = getRawType(types[i], resolver);
+            rawTypes[i] = getRawType(types[i], actualType, declaringType);
         }
         return rawTypes;
     }
@@ -513,131 +619,218 @@ public final class GenericsUtil
         return classTypes.toArray(new Class[classTypes.size()]);
     }
 
-    /**
-     * resolves actual types of a TypeVariable for a specific type hierarchy
-     */
-    private static class TypeVariableResolver
+    private static Type resolveTypeVariable(TypeVariable<?> variable, Type declaringType, Type actualType)
     {
-        private List<TypeVariableDeclaration> declarations = new ArrayList<TypeVariableDeclaration>();
-
-        private TypeVariableResolver(List<TypeVariableDeclaration> implementation)
+        if (declaringType == null || actualType == null)
         {
-            declarations = implementation;
+            return variable;
         }
-
-        public TypeVariableResolver(Class<?> subclass, Class<?> declaringClass)
+        Class<?> declaringClass = getRawType(declaringType);
+        Class<?> actualClass = getRawType(actualType);
+        if (actualClass == declaringClass)
         {
-            declarations.add(new TypeVariableDeclaration(subclass, subclass.getGenericSuperclass()));
-            while (declaringClass != subclass && declaringClass.isAssignableFrom(subclass))
-            {
-                subclass = subclass.getSuperclass();
-                declarations.add(new TypeVariableDeclaration(subclass, subclass.getGenericSuperclass()));
-            }
+            return resolveTypeVariable(variable, getParameterizedType(declaringType), getParameterizedType(actualType));
         }
-
-        public Type resolve(TypeVariable<?> variable)
+        else if (actualClass.isAssignableFrom(declaringClass))
         {
-            if (declarations.size() < 2)
+            Class<?> directSubclass = getDirectSubclass(declaringClass, actualClass);
+            Type[] typeArguments = resolveTypeArguments(directSubclass, actualType);
+            Type directSubtype = new OwbParametrizedTypeImpl(directSubclass.getDeclaringClass(), directSubclass, typeArguments);
+            return resolveTypeVariable(variable, declaringType, directSubtype);
+        }
+        else // if (declaringClass.isAssignableFrom(actualClass))
+        { 
+            Type genericSuperclass = getGenericSuperclass(actualClass, declaringClass);
+            if (genericSuperclass instanceof Class)
             {
-                return variable;
-                //X TODO better handling needed: return getRawType(variable.getBounds(), this);
-            }
-            int hierarchyIndex = declarations.size() - 1;
-            TypeVariableDeclaration typeVariableImplementation = declarations.get(hierarchyIndex);
-            TypeVariable<?>[] typeParameters = typeVariableImplementation.getDeclaredTypeParameters();
-            int typeIndex = -1;
-            for (int i = 0; i < typeParameters.length; i++)
-            {
-                if (variable.getName().equals(typeParameters[i].getName()))
-                {
-                    typeIndex = i;
-                    break;
-                }
-            }
-            if (typeIndex == -1)
-            {
-                // type erasure
-                return Object.class;
-            }
-            TypeVariableDeclaration declaration = declarations.get(hierarchyIndex - 1);
-            Type genericClass = declaration.getAssignment();
-            if (genericClass instanceof ParameterizedType)
-            {
-                ParameterizedType classType = (ParameterizedType)genericClass;
-                final Type[] actualTypeArguments = classType.getActualTypeArguments();
-                if (actualTypeArguments.length > typeIndex)
-                {
-                    return resolveType(actualTypeArguments[typeIndex], remove());
-                }
-                else
-                {
-                    return Object.class;
-                }
+                // special handling for type erasure
+                Class<?> superclass = (Class<?>)genericSuperclass;
+                genericSuperclass = new OwbParametrizedTypeImpl(superclass.getDeclaringClass(), superclass, getRawTypes(superclass.getTypeParameters()));
             }
             else
             {
-                TypeVariable<?>[] typeVariables = declaration.getDeclaredTypeParameters();
-                if (typeVariables.length > typeIndex)
+                ParameterizedType genericSupertype = getParameterizedType(genericSuperclass);
+                Type[] typeArguments = resolveTypeArguments(getParameterizedType(actualType), genericSupertype);
+                genericSuperclass = new OwbParametrizedTypeImpl(genericSupertype.getOwnerType(), genericSupertype.getRawType(), typeArguments);
+            }
+            Type resolvedType = resolveTypeVariable(variable, declaringType, genericSuperclass);
+            if (resolvedType instanceof TypeVariable)
+            {
+                TypeVariable<?> resolvedTypeVariable = (TypeVariable<?>)resolvedType;
+                TypeVariable<?>[] typeParameters = actualClass.getTypeParameters();
+                for (int i = 0; i < typeParameters.length; i++)
                 {
-                    return resolveType(typeVariables[typeIndex], remove());
+                    if (typeParameters[i].getName().equals(resolvedTypeVariable.getName()))
+                    {
+                        resolvedType = getParameterizedType(actualType).getActualTypeArguments()[i];
+                        break;
+                    }
                 }
-                else
+            }
+            return resolvedType;
+        }
+    }
+
+    private static Type resolveTypeVariable(TypeVariable<?> variable, ParameterizedType type1, ParameterizedType type2)
+    {
+        Type resolvedType = variable;
+        int index = getIndex(type1, variable);
+        if (index >= 0)
+        {
+            resolvedType = type2.getActualTypeArguments()[index];
+        }
+        else
+        {
+            index = getIndex(type2, variable);
+            if (index >= 0)
+            {
+                resolvedType = type1.getActualTypeArguments()[index];
+            }
+        }
+        return resolvedType;
+    }
+    
+    private static int getIndex(ParameterizedType type, TypeVariable<?> variable)
+    {
+        Type[] actualTypeArguments = type.getActualTypeArguments();
+        for (int i = 0; i < actualTypeArguments.length; i++)
+        {
+            if (actualTypeArguments[i] instanceof TypeVariable)
+            {
+                TypeVariable<?> variableArgument = (TypeVariable<?>)actualTypeArguments[i];
+                if (variableArgument.getName().equals(variable.getName()))
                 {
-                    return Object.class; //type erasure
+                    return i;
                 }
             }
         }
+        return -1;
+    }
 
-        public TypeVariableResolver add(Class<?> type)
+    private static Class<?> getDirectSubclass(Class<?> declaringClass, Class<?> actualClass)
+    {
+        if (actualClass.isInterface())
         {
-            return add(type, type.getGenericSuperclass());
+            Class<?> subclass = declaringClass;
+            for (Class<?> iface: declaringClass.getInterfaces())
+            {
+                if (iface == actualClass)
+                {
+                    return subclass;
+                }
+                if (actualClass.isAssignableFrom(iface))
+                {
+                    subclass = iface;
+                }
+            }
+            return getDirectSubclass(subclass, actualClass);
         }
-
-        public TypeVariableResolver add(Class<?> declaringClass, Type assignment)
+        else
         {
-            List<TypeVariableDeclaration> declarations = new ArrayList<TypeVariableDeclaration>(this.declarations);
-            declarations.add(new TypeVariableDeclaration(declaringClass, assignment));
-            return new TypeVariableResolver(declarations);
+            Class<?> directSubclass = declaringClass;
+            while (directSubclass.getSuperclass() != actualClass)
+            {
+                directSubclass = directSubclass.getSuperclass();
+            }
+            return directSubclass;
         }
+    }
 
-        public TypeVariableResolver remove()
+    private static Type getGenericSuperclass(Class<?> subclass, Class<?> superclass)
+    {
+        if (!superclass.isInterface())
         {
-            List<TypeVariableDeclaration> declarations = new ArrayList<TypeVariableDeclaration>(this.declarations);
-            declarations.remove(declarations.size() - 1);
-            return new TypeVariableResolver(declarations);
+            return subclass.getGenericSuperclass();
+        }
+        else
+        {
+            for (Type genericInterface: subclass.getGenericInterfaces())
+            {
+                if (getRawType(genericInterface) == superclass)
+                {
+                    return genericInterface;
+                }
+            }
+        }
+        return superclass;
+    }
+
+    private static Type[] resolveTypeArguments(Class<?> subclass, Type supertype)
+    {
+        if (supertype instanceof ParameterizedType)
+        {
+            ParameterizedType parameterizedSupertype = (ParameterizedType)supertype;
+            return resolveTypeArguments(subclass, parameterizedSupertype);
+        }
+        else
+        {
+            return subclass.getTypeParameters();
+        }
+    }
+
+    private static Type[] resolveTypeArguments(Class<?> subclass, ParameterizedType parameterizedSupertype)
+    {
+        Type genericSuperclass = getGenericSuperclass(subclass, getRawType(parameterizedSupertype));
+        if (!(genericSuperclass instanceof ParameterizedType))
+        {
+            return subclass.getTypeParameters();
+        }
+        ParameterizedType parameterizedSuperclass = (ParameterizedType)genericSuperclass;
+        Type[] typeParameters = subclass.getTypeParameters();
+        Type[] actualTypeArguments = parameterizedSupertype.getActualTypeArguments();
+        return resolveTypeArguments(parameterizedSuperclass, typeParameters, actualTypeArguments);
+    }
+
+    private static Type[] resolveTypeArguments(ParameterizedType subtype, ParameterizedType parameterizedSupertype)
+    {
+        return resolveTypeArguments(getParameterizedType(getRawType(subtype)), parameterizedSupertype.getActualTypeArguments(), subtype.getActualTypeArguments());
+    }
+
+    private static Type[] resolveTypeArguments(ParameterizedType parameterizedType, Type[] typeParameters, Type[] actualTypeArguments)
+    {
+        Type[] resolvedTypeArguments = new Type[typeParameters.length];
+        for (int i = 0; i < typeParameters.length; i++)
+        {
+            resolvedTypeArguments[i] = resolveTypeArgument(parameterizedType, typeParameters[i], actualTypeArguments);
+        }
+        return resolvedTypeArguments;
+    }
+
+    private static Type resolveTypeArgument(ParameterizedType parameterizedType, Type typeParameter, Type[] actualTypeArguments)
+    {
+        if (typeParameter instanceof TypeVariable)
+        {
+            TypeVariable<?> variable = (TypeVariable<?>)typeParameter;
+            int index = getIndex(parameterizedType, variable);
+            if (index == -1)
+            {
+                return typeParameter;
+            }
+            else
+            {
+                return actualTypeArguments[index];
+            }
+        }
+        else if (typeParameter instanceof GenericArrayType)
+        {
+            GenericArrayType array = (GenericArrayType)typeParameter;
+            return createArrayType(resolveTypeArgument(parameterizedType, array.getGenericComponentType(), actualTypeArguments));
+        }
+        else
+        {
+            return typeParameter;
         }
     }
     
-    /**
-     * A declaration of type variables along with its assignments
-     */
-    private static class TypeVariableDeclaration
+    private static Type createArrayType(Type componentType)
     {
-        private Class<?> declaringClass;
-        private Type assignment;
-        
-        public TypeVariableDeclaration(Class<?> declaringClass, Type assignment)
+        if (componentType instanceof Class)
         {
-            this.declaringClass = declaringClass;
-            this.assignment = assignment;
+            return Array.newInstance((Class<?>)componentType, 0).getClass();
         }
-
-        public Type getAssignment()
+        else
         {
-            return assignment;
-        }
-
-        public TypeVariable<?>[] getDeclaredTypeParameters()
-        {
-            return declaringClass.getTypeParameters();
-        }
-    }
-
-    private static class TypeErasureException extends Exception
-    {
-        public TypeErasureException()
-        {
-            super("generic type information not available");
+            return new OwbGenericArrayTypeImpl(componentType);
         }
     }
 }

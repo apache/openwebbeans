@@ -76,7 +76,7 @@ public final class EventUtil
 
     public static TransactionPhase getObserverMethodTransactionType(AnnotatedMethod<?> observerMethod)
     {
-        Observes observes = AnnotationUtil.getAnnotatedMethodFirstParameterAnnotation(observerMethod, Observes.class);
+        Observes observes = AnnotationUtil.getFirstAnnotatedParameter(observerMethod, Observes.class).getAnnotation(Observes.class);
         if (observes != null)
         {
             return observes.during();

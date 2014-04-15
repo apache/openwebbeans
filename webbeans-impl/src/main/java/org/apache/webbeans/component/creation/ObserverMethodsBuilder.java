@@ -93,14 +93,14 @@ public class ObserverMethodsBuilder<T, I extends InjectionTargetBean<T>>
                 if (bean.getScope().equals(Dependent.class))
                 {
                     //Check Reception
-                     AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Observes.class);
+                    AnnotatedParameter<?> annotatedParameter = AnnotationUtil.getFirstAnnotatedParameter(annotatedMethod, Observes.class);
                     
-                     Observes observes = AnnotationUtil.getAnnotatedMethodFirstParameterAnnotation(annotatedMethod, Observes.class);
-                     Reception reception = observes.notifyObserver();
-                     if(reception.equals(Reception.IF_EXISTS))
-                     {
-                         throw new WebBeansConfigurationException("Dependent Bean : " + annotatedType.getJavaClass() + " can not define observer method with @Receiver = IF_EXIST");
-                     }
+                    Observes observes = annotatedParameter.getAnnotation(Observes.class);
+                    Reception reception = observes.notifyObserver();
+                    if(reception.equals(Reception.IF_EXISTS))
+                    {
+                        throw new WebBeansConfigurationException("Dependent Bean : " + annotatedType.getJavaClass() + " can not define observer method with @Receiver = IF_EXIST");
+                    }
                 }
                 
                 //Looking for ObserverMethod

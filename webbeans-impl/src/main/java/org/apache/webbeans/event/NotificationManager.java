@@ -35,6 +35,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessProducer;
@@ -51,6 +52,7 @@ import org.apache.webbeans.spi.TransactionService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.GenericsUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 @SuppressWarnings("unchecked")
@@ -140,48 +142,31 @@ public final class NotificationManager
         return observersMethods;
     }
 
-    private <T> Set<ObserverMethod<? super T>> filterByType(T event, Type eventType)
+    private <T> Set<ObserverMethod<? super T>> filterByType(T event, Type declaredEventType)
     {
-        if(WebBeansUtil.isExtensionEventType(eventType))
+        if(WebBeansUtil.isExtensionEventType(declaredEventType))
         {
-            return filterByExtensionEventType(event, eventType);
+            return filterByExtensionEventType(event, declaredEventType);
         }
-        Class<?> eventClass = ClassUtil.getClass(eventType);
+        Class<?> eventClass = event.getClass();
         
         Set<ObserverMethod<? super T>> matching = new HashSet<ObserverMethod<? super T>>();
 
-        Set<Type> types = new HashSet<Type>();
-        types.add(eventType);
-        
-        Type superClazz = eventClass.getGenericSuperclass();
-        if(superClazz != null)
-        {
-            types.add(superClazz);    
-        }
-        
-        Type[] genericInts = eventClass.getGenericInterfaces();
-        
-        if(genericInts != null && genericInts.length > 0)
-        {
-            for(Type genericInt : genericInts)
-            {
-                types.add(genericInt);
-            }            
-        }
+        Set<Type> eventTypes = GenericsUtil.getTypeClosure(declaredEventType, eventClass); 
 
-        Set<Type> keySet = observers.keySet();
+        Set<Type> observedTypes = observers.keySet();
 
-        for (Type type : keySet)
+        for (Type observedType : observedTypes)
         {
-            for (Type check : types)
+            for (Type eventType : eventTypes)
             {
-                if (ClassUtil.checkEventTypeAssignability(check, type))
+                if (eventType.equals(observedType))
                 {
-                    Set<ObserverMethod<?>> wrappers = observers.get(type);
+                    Set<ObserverMethod<?>> observerMethods = observers.get(observedType);
 
-                    for (ObserverMethod<?> wrapper : wrappers)
+                    for (ObserverMethod<?> observerMethod : observerMethods)
                     {
-                        matching.add((ObserverMethod<T>) wrapper);
+                        matching.add((ObserverMethod<T>) observerMethod);
                     }
                     break;
                 }
@@ -529,7 +514,8 @@ public final class NotificationManager
     {
         Asserts.assertNotNull(annotatedMethod, "annotatedMethod parameter can not be null");
 
-        Observes observes = AnnotationUtil.getAnnotatedMethodFirstParameterAnnotation(annotatedMethod, Observes.class);
+        AnnotatedParameter<?> annotatedParameter = AnnotationUtil.getFirstAnnotatedParameter(annotatedMethod, Observes.class);
+        Observes observes = annotatedParameter.getAnnotation(Observes.class);
         boolean ifExist = false;
         if(observes != null)
         {
@@ -545,7 +531,7 @@ public final class NotificationManager
                 annotatedMethod, Observes.class);
         
         //Getting observer event type
-        Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Observes.class);
+        Type type = annotatedParameter.getBaseType();
         
         //Observer creation from annotated method
         ObserverMethodImpl<T> observer = new ObserverMethodImpl(bean, annotatedMethod, ifExist, observerQualifiers, type);

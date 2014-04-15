@@ -21,7 +21,6 @@ package org.apache.webbeans.util;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -188,82 +187,18 @@ public final class AnnotationUtil
         
         return false;
     }
-
-    public static <X> Type getAnnotatedMethodFirstParameterWithAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
-    {
-        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
-        Asserts.nullCheckForClass(clazz);
-
-        List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
-        for(AnnotatedParameter<X> parameter : parameters)
-        {
-            if(parameter.isAnnotationPresent(clazz))
-            {
-                return parameter.getBaseType();
-            }
-        }
-        
-        return null;
-    }
-
-    /**
-     * Get the Type of the method parameter which has the given annotation
-     * @param method which need to be scanned
-     * @param clazz the annotation to scan the method parameters for
-     * @return the Type of the method parameter which has the given annotation, or <code>null</code> if not found.
-     */
-    public static Type getTypeOfParameterWithGivenAnnotation(Method method, Class<? extends Annotation> clazz)
-    {
-        Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.nullCheckForClass(clazz);
-
-        Annotation[][] parameterAnns = method.getParameterAnnotations();
-        Type result = null;
-
-        int index = 0;
-        for (Annotation[] parameters : parameterAnns)
-        {
-            boolean found = false;
-            for (Annotation param : parameters)
-            {
-                Class<? extends Annotation> btype = param.annotationType();
-                if (btype.equals(clazz))
-                {
-                    found = true;
-                    //Adding Break instead of continue
-                    break;
-                }
-            }
-
-            if (found)
-            {
-                result = method.getGenericParameterTypes()[index];
-                break;
-            }
-
-            index++;
-
-        }
-        return result;
-    }
     
-    public static <X,T extends Annotation> T getAnnotatedMethodFirstParameterAnnotation(AnnotatedMethod<X> annotatedMethod, Class<T> clazz)
+    public static <X> AnnotatedParameter<X> getFirstAnnotatedParameter(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> annotation)
     {
-        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
-        Asserts.nullCheckForClass(clazz);
-        
-        
-        List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
-        for(AnnotatedParameter<X> parameter : parameters)
+        for (AnnotatedParameter<X> annotatedParameter: annotatedMethod.getParameters())
         {
-            if(parameter.isAnnotationPresent(clazz))
+            if (annotatedParameter.isAnnotationPresent(annotation))
             {
-                return clazz.cast(parameter.getAnnotation(clazz));
+                return annotatedParameter;
             }
         }
-        
-        return null;
-    }    
+        throw new IllegalArgumentException("annotation @" + annotation.getName() + " not found on any parameter");
+    }
 
     /**
      * Checks if the given cdi annotations are equal. cdi annotations may either be qualifiers or interceptor bindings.

@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.clazz;
 
-public abstract class AbstractSchool<T> implements IBook2<Integer, String>
+public abstract class AbstractSchool<T> extends BaseSchool<String, T> implements IBook2<T, String>
 {
-
+	private T attribute;
 }

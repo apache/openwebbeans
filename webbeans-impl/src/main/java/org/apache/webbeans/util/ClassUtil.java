@@ -458,52 +458,52 @@ public final class ClassUtil
      * @param observerType observer type
      * @return true if event is applicable
      */
-    public static boolean checkEventTypeAssignability(Type eventType, Type observerType)
-    {
-        //Observer type is a TypeVariable
-        if(isTypeVariable(observerType))
-        {
-            Class<?> eventClass = getClass(eventType);
-                        
-            TypeVariable<?> tvBeanTypeArg = (TypeVariable<?>)observerType;
-            Type tvBound = tvBeanTypeArg.getBounds()[0];
-            
-            if(tvBound instanceof Class)
-            {
-                Class<?> clazzTvBound = (Class<?>)tvBound;                
-                if(clazzTvBound.isAssignableFrom(eventClass))
-                {
-                    return true;
-                }                    
-            }
-        }
-        //Both of them are ParametrizedType
-        else if(observerType instanceof ParameterizedType && eventType instanceof ParameterizedType)
-        {
-            return isAssignableForParametrized((ParameterizedType)eventType, (ParameterizedType)observerType);
-        }
-        //Observer is class and Event type is Parametrized
-        else if(observerType instanceof Class && eventType instanceof ParameterizedType)
-        {
-            Class<?> clazzBeanType = (Class<?>)observerType;
-            ParameterizedType ptEvent = (ParameterizedType)eventType;
-            Class<?> eventClazz = (Class<?>)ptEvent.getRawType();
-            
-            if(isClassAssignable(clazzBeanType, eventClazz))
-            {
-                return true;
-            }
-            
-            return false;            
-        }
-        //Both of them is class type
-        else if(observerType instanceof Class && eventType instanceof Class)
-        {
-            return isClassAssignable((Class<?>)observerType, (Class<?>) eventType);
-        }
-        
-        return false;
-    }
+//    public static boolean checkEventTypeAssignability(Type eventType, Type observerType)
+//    {
+//        //Observer type is a TypeVariable
+//        if(isTypeVariable(observerType))
+//        {
+//            Class<?> eventClass = getClass(eventType);
+//                        
+//            TypeVariable<?> tvBeanTypeArg = (TypeVariable<?>)observerType;
+//            Type tvBound = tvBeanTypeArg.getBounds()[0];
+//            
+//            if(tvBound instanceof Class)
+//            {
+//                Class<?> clazzTvBound = (Class<?>)tvBound;                
+//                if(clazzTvBound.isAssignableFrom(eventClass))
+//                {
+//                    return true;
+//                }                    
+//            }
+//        }
+//        //Both of them are ParametrizedType
+//        else if(observerType instanceof ParameterizedType && eventType instanceof ParameterizedType)
+//        {
+//            return isAssignableForParametrized((ParameterizedType)eventType, (ParameterizedType)observerType);
+//        }
+//        //Observer is class and Event type is Parametrized
+//        else if(observerType instanceof Class && eventType instanceof ParameterizedType)
+//        {
+//            Class<?> clazzBeanType = (Class<?>)observerType;
+//            ParameterizedType ptEvent = (ParameterizedType)eventType;
+//            Class<?> eventClazz = (Class<?>)ptEvent.getRawType();
+//            
+//            if(isClassAssignable(clazzBeanType, eventClazz))
+//            {
+//                return true;
+//            }
+//            
+//            return false;            
+//        }
+//        //Both of them is class type
+//        else if(observerType instanceof Class && eventType instanceof Class)
+//        {
+//            return isClassAssignable((Class<?>)observerType, (Class<?>) eventType);
+//        }
+//        
+//        return false;
+//    }
     
     
     /**
@@ -534,149 +534,6 @@ public final class ClassUtil
             return true;
         }
 
-        return false;
-    }
-
-    /**
-     * Returns true if given bean's api type is injectable to
-     * injection point required type.
-     * 
-     * @param beanType bean parametrized api type
-     * @param requiredType injection point parametrized api type
-     * @return if injection is possible false otherwise
-     */
-    public static boolean isAssignableForParametrized(ParameterizedType beanType, ParameterizedType requiredType)
-    {
-        Class<?> beanRawType = (Class<?>) beanType.getRawType();
-        Class<?> requiredRawType = (Class<?>) requiredType.getRawType();
-
-        if (ClassUtil.isClassAssignable(requiredRawType,beanRawType))
-        {
-            //Bean api type actual type arguments
-            Type[] beanTypeArgs = beanType.getActualTypeArguments();
-            
-            //Injection point type actual arguments
-            Type[] requiredTypeArgs = requiredType.getActualTypeArguments();
-            
-            if(beanTypeArgs.length != requiredTypeArgs.length)
-            {                
-                return false;
-            }
-            else
-            {
-                return isAssignableForParametrizedCheckArguments(beanTypeArgs, requiredTypeArgs);
-            }
-        }
-
-        return false;
-    }
-    
-    /**
-     * Check parametrized type actual type arguments.
-     * @param beanTypeArgs bean type actual type arguments
-     * @param requiredTypeArgs required type actual type arguments.
-     * @return true if assignment applicable
-     */
-    private static boolean isAssignableForParametrizedCheckArguments(Type[] beanTypeArgs, Type[] requiredTypeArgs)
-    {
-        Type requiredTypeArg = null;
-        Type beanTypeArg = null;
-        int ok = 0;
-        for(int i = 0; i< requiredTypeArgs.length;i++)
-        {
-            requiredTypeArg = requiredTypeArgs[i];
-            beanTypeArg = beanTypeArgs[i];
-
-            //Required type is parametrized and bean type is parametrized
-            if(ClassUtil.isParametrizedType(requiredTypeArg) && ClassUtil.isParametrizedType(beanTypeArg))
-            {
-                if (checkBeanAndRequiredTypeIsParametrized(beanTypeArg, requiredTypeArg))
-                {
-                    ok++;
-                }
-            }
-            //Required type is wildcard
-            else if(ClassUtil.isWildCardType(requiredTypeArg))
-            {
-                if (checkRequiredTypeIsWildCard(beanTypeArg, requiredTypeArg))
-                {
-                    ok++;
-                }
-            }
-            //Required type is actual type and bean type is type variable
-            else if(requiredTypeArg instanceof Class && ClassUtil.isTypeVariable(beanTypeArg))
-            {
-                if (checkRequiredTypeIsClassAndBeanTypeIsVariable(beanTypeArg, requiredTypeArg))
-                {
-                    ok++;
-                }
-            }
-            //Required type is Type variable and bean type is type variable
-            else if(ClassUtil.isTypeVariable(requiredTypeArg) && ClassUtil.isTypeVariable(beanTypeArg))
-            {
-                if ( checkBeanTypeAndRequiredIsTypeVariable(beanTypeArg, requiredTypeArg))
-                {
-                    ok++;
-                }
-            }
-            else if (requiredTypeArg instanceof ParameterizedType && beanTypeArg instanceof TypeVariable)
-            {
-                if (checkRequiredTypeIsParameterizedAndBeanTypeIsVariable(beanTypeArg, requiredTypeArg))
-                {
-                    ok++;
-                }
-            }
-            //Both type is actual type
-            else if((beanTypeArg instanceof Class) && (requiredTypeArg instanceof Class))
-            {
-                if(isClassAssignable((Class<?>)requiredTypeArg,(Class<?>)beanTypeArg))
-                {
-                    ok++;
-                }
-            }
-            //Bean type is actual type and required type is type variable
-            else if((beanTypeArg instanceof Class) && (ClassUtil.isTypeVariable(requiredTypeArg)))
-            {
-                if (checkRequiredTypeIsTypeVariableAndBeanTypeIsClass(beanTypeArg, requiredTypeArg))
-                {
-                    ok++;
-                }
-            }
-        }
-
-        return ok == requiredTypeArgs.length;
-    }
-
-    /**
-     * Check parametrized bean type and parametrized
-     * required types.
-     * @param beanTypeArg parametrized bean type
-     * @param requiredTypeArg parametrized required type
-     * @return true if types are assignables
-     * @since 1.1.1
-     */
-    public static boolean checkBeanAndRequiredTypeIsParametrized(Type beanTypeArg, Type requiredTypeArg)
-    {
-        ParameterizedType ptRequiredTypeArg = (ParameterizedType)requiredTypeArg;
-        ParameterizedType ptBeanTypeArg = (ParameterizedType)beanTypeArg;
-        
-        //Equal raw types
-        if(ptRequiredTypeArg.getRawType().equals(ptBeanTypeArg.getRawType()))
-        {
-            //Check arguments
-            Type[] actualArgsRequiredType = ptRequiredTypeArg.getActualTypeArguments();
-            Type[] actualArgsBeanType = ptRequiredTypeArg.getActualTypeArguments();
-            
-            if(actualArgsRequiredType.length > 0 && actualArgsBeanType.length == actualArgsRequiredType.length)
-            {
-                return isAssignableForParametrizedCheckArguments(actualArgsBeanType, actualArgsRequiredType);
-            }
-            else
-            {
-                return true;
-            }
-        }
-        
         return false;
     }
 

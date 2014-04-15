@@ -814,7 +814,7 @@ public final class AnnotationManager
 
                     if(found)
                     {
-                        Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Disposes.class);
+                        Type type = AnnotationUtil.getFirstAnnotatedParameter(annotatedMethod, Disposes.class).getBaseType();
                         Annotation[] annots = getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
 
                         if(type.equals(beanType))

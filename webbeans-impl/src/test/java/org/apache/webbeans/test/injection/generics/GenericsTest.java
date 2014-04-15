@@ -39,7 +39,6 @@ public class GenericsTest extends AbstractUnitTest
 {
 
     @Test
-    @Ignore("TODO not yet working!")
     public void injectionPoint() throws Exception
     {
         addExtension(new BarVetoExtension());
@@ -76,7 +75,6 @@ public class GenericsTest extends AbstractUnitTest
     }
 
     @Test
-    @Ignore("TODO not yet working!")
     public void testInjected() throws Exception
     {
         addExtension(new BarVetoExtension());
@@ -90,7 +88,6 @@ public class GenericsTest extends AbstractUnitTest
     }
 
     @Test
-    @Ignore("TODO not yet working!")
     public void observerResolution() throws Exception
     {
         addExtension(new BarVetoExtension());
@@ -104,7 +101,6 @@ public class GenericsTest extends AbstractUnitTest
     }
 
     @Test
-    @Ignore("TODO not yet working!")
     public void testObserver() throws Exception
     {
         addExtension(new BarVetoExtension());

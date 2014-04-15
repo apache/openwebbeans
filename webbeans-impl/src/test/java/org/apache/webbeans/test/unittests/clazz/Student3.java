@@ -18,10 +18,8 @@
  */
 package org.apache.webbeans.test.unittests.clazz;
 
-import java.util.List;
-import java.util.Map;
 
-public class Student2 extends AbstractSchool2<List<String>, Map<String, String>> implements IBook2<Long, String>
+public class Student3<V> extends AbstractSchool<V>
 {
 
 }
