@@ -21,5 +21,6 @@ under the License.
    <decorators>
       <class>org.apache.webbeans.test.decorators.common.GarphlyDecorator</class>
       <class>org.apache.webbeans.test.decorators.generic.SampleDecorator</class>
+      <class>org.apache.webbeans.test.decorators.generic.ExtendedSampleDecorator</class>
    </decorators>
 </beans>

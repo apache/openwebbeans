@@ -36,6 +36,9 @@ import org.apache.webbeans.test.decorators.common.Cow;
 import org.apache.webbeans.test.decorators.common.Garphly;
 import org.apache.webbeans.test.decorators.common.GarphlyDecorator;
 import org.apache.webbeans.test.decorators.generic.DecoratedBean;
+import org.apache.webbeans.test.decorators.generic.ExtendedDecoratedBean;
+import org.apache.webbeans.test.decorators.generic.ExtendedGenericInterface;
+import org.apache.webbeans.test.decorators.generic.ExtendedSampleDecorator;
 import org.apache.webbeans.test.decorators.generic.GenericInterface;
 import org.apache.webbeans.test.decorators.generic.SampleDecorator;
 import org.junit.Test;
@@ -84,6 +87,22 @@ public class GenericDecoratorTest extends AbstractUnitTest
         startContainer(classes, xmls);
 
         DecoratedBean decoratedBean = getInstance(DecoratedBean.class);
+        Assert.assertTrue(decoratedBean.isDecoratorCalled());
+    }
+    
+    @Test
+    public void extendedInjection() throws Exception {
+        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.add(ExtendedDecoratedBean.class);
+        classes.add(ExtendedGenericInterface.class);
+        classes.add(ExtendedSampleDecorator.class);
+
+        Collection<String> xmls = new ArrayList<String>();
+        xmls.add(getXmlPath(PACKAGE_NAME, "GenericDecoratorTest"));
+
+        startContainer(classes, xmls);
+
+        ExtendedDecoratedBean decoratedBean = getInstance(ExtendedDecoratedBean.class);
         Assert.assertTrue(decoratedBean.isDecoratorCalled());
     }
 }
