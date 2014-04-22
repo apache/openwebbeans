@@ -155,7 +155,7 @@ abstract class AbstractAnnotated implements Annotated
     {
         if (typeClosures == null)
         {
-            typeClosures = GenericsUtil.getTypeClosure(baseType, getOwningClass(), getDeclaringClass());
+            typeClosures = GenericsUtil.getTypeClosure(baseType, getOwningClass());
             Set<String> ignoredInterfaces = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
             for (Iterator<Type> i = typeClosures.iterator(); i.hasNext(); )
             {

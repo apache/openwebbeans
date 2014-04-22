@@ -44,4 +44,44 @@ public class OwbWildcardTypeImpl implements WildcardType
     {
         return lowerBounds.clone();
     }
+
+    public String toString()
+    {
+        StringBuilder buffer = new StringBuilder("?");
+        if (upperBounds.length > 0)
+        {
+            buffer.append(" extends");
+            boolean first = true;
+            for (Type upperBound: upperBounds)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    buffer.append(',');
+                }
+                buffer.append(' ').append(upperBound);
+            }
+        }
+        if (lowerBounds.length > 0)
+        {
+            buffer.append(" super");
+            boolean first = true;
+            for (Type lowerBound: lowerBounds)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    buffer.append(',');
+                }
+                buffer.append(' ').append(lowerBound);
+            }
+        }
+        return buffer.toString();
+    }
 }
