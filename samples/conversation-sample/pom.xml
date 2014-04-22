@@ -23,7 +23,7 @@ under the License.
     <parent>
         <artifactId>samples</artifactId>
         <groupId>org.apache.openwebbeans</groupId>
-        <version>1.2.3</version>
+        <version>1.2.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
