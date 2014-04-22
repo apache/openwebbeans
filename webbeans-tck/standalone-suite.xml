@@ -140,6 +140,39 @@
                     <exclude name="testSimpleDependentWebBeanWithNonSerializableImplementationInjectedIntoProducerMethodParameterWithPassivatingScopeFails"></exclude>
                 </methods>
             </class>
+            
+            <!-- we need to force the order in which those methods get called as the TCK is broken otherwise -->
+            <class name="org.jboss.jsr299.tck.tests.event.observer.conditional.ConditionalObserverTest">
+                <methods>
+                    <include name="testConditionalObserver"/>
+                </methods>
+            </class>
+            <class name="org.jboss.jsr299.tck.tests.event.observer.conditional.ConditionalObserverTest">
+                <methods>
+                    <include name="testObserverMethodInvokedOnReturnedInstanceFromContext"/>
+                </methods>
+            </class>
+            <class name="org.jboss.jsr299.tck.tests.event.observer.conditional.ConditionalObserverTest">
+                <methods>
+                    <include name="testNotifyEnumerationContainsNotifyValues"/>
+                </methods>
+            </class>
+
+            <class name="org.jboss.jsr299.tck.tests.implementation.disposal.method.definition.DisposalMethodDefinitionTest">
+                <methods>
+                    <include name="testBindingTypesAppliedToDisposalMethodParameters"/>
+                </methods>
+            </class>
+            <class name="org.jboss.jsr299.tck.tests.implementation.disposal.method.definition.DisposalMethodDefinitionTest">
+                <methods>
+                    <include name="testDisposalMethodOnNonBean"/>
+                </methods>
+            </class>
+            <class name="org.jboss.jsr299.tck.tests.implementation.disposal.method.definition.DisposalMethodDefinitionTest">
+                <methods>
+                    <include name="testDisposalMethodParametersGetInjected"/>
+                </methods>
+            </class>
 
         </classes>
 
