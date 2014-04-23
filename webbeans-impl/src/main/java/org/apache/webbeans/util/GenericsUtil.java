@@ -224,13 +224,33 @@ public final class GenericsUtil
         }
         else
         {
-            throw new IllegalArgumentException("Unsupported type " + injectionPointType.getClass());
+            throw new IllegalArgumentException("Unsupported type " + beanType.getClass());
         }
     }
 
     private static boolean isAssignableFrom(boolean isDelegate, ParameterizedType injectionPointType, Class<?> beanType)
     {
-        return isAssignableFrom(isDelegate, injectionPointType.getRawType(), beanType);
+        Class<?> rawInjectionPointType = getRawType(injectionPointType);
+        if (rawInjectionPointType.equals(beanType))
+        {
+            return true;
+        }
+        if (!rawInjectionPointType.isAssignableFrom(beanType))
+        {
+            return false;
+        }
+        if (beanType.getSuperclass() != null && isAssignableFrom(isDelegate, injectionPointType, beanType.getGenericSuperclass()))
+        {
+            return true;
+        }
+        for (Type genericInterface: beanType.getGenericInterfaces())
+        {
+            if (isAssignableFrom(isDelegate, injectionPointType, genericInterface))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean isAssignableFrom(boolean isDelegate, ParameterizedType injectionPointType, TypeVariable<?> beanType)

@@ -152,21 +152,24 @@ public final class NotificationManager
         
         Set<ObserverMethod<? super T>> matching = new HashSet<ObserverMethod<? super T>>();
 
-        Type eventType = GenericsUtil.resolveType(declaredEventType, eventClass); 
+        Set<Type> eventTypes = GenericsUtil.getTypeClosure(declaredEventType, eventClass); 
 
         Set<Type> observedTypes = observers.keySet();
 
         for (Type observedType : observedTypes)
         {
-            if (GenericsUtil.isAssignableFrom(false, observedType, eventType))
+            for (Type eventType : eventTypes)
             {
-                Set<ObserverMethod<?>> observerMethods = observers.get(observedType);
-
-                for (ObserverMethod<?> observerMethod : observerMethods)
+                if (GenericsUtil.isAssignableFrom(false, observedType, eventType))
                 {
-                    matching.add((ObserverMethod<T>) observerMethod);
+                    Set<ObserverMethod<?>> observerMethods = observers.get(observedType);
+
+                    for (ObserverMethod<?> observerMethod : observerMethods)
+                    {
+                        matching.add((ObserverMethod<T>) observerMethod);
+                    }
+                    break;
                 }
-                break;
             }
         }
         return matching;
