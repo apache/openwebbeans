@@ -42,6 +42,7 @@ import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.annotation.AnnotationManager;
@@ -172,14 +173,15 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         Object object = null;
         
         List<ObserverParams> methodArgsMap = getMethodArguments(event, metadata);
-
+        
         BeanManagerImpl manager = bean.getWebBeansContext().getBeanManagerImpl();
         CreationalContextImpl<Object> creationalContext = manager.createCreationalContext(component);
         if (metadata != null)
         {
             creationalContext.putInjectionPoint(metadata.getInjectionPoint());
+            creationalContext.putEventMetadata(metadata);
         }
-
+        
         ObserverParams[] obargs = null;
         try
         {
@@ -273,6 +275,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         }
         finally
         {
+            creationalContext.removeEventMetadata();
             creationalContext.removeInjectionPoint();
             //Destory bean instance
             if (component.getScope().equals(Dependent.class) && object != null)
@@ -332,6 +335,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
                 CreationalContextImpl<Object> creational = manager.createCreationalContext(injectedBean);
                 creational.putInjectionPoint(metadata.getInjectionPoint());
                 creational.putInjectionPoint(point);
+                creational.putEventMetadata(metadata);
                 Object instance;
                 try
                 {
@@ -339,6 +343,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
                 }
                 finally
                 {
+                    creational.removeEventMetadata();
                     creational.removeInjectionPoint();
                     creational.removeInjectionPoint();
                 }

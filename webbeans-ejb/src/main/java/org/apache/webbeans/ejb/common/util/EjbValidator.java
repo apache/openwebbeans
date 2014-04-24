@@ -39,7 +39,6 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Validates session beans.
@@ -121,7 +120,7 @@ public final class EjbValidator
         Asserts.assertNotNull(ejbClass, "ejbClass parameter can not be null");
         Asserts.assertNotNull(ejbClass, "scopeType parameter can not be null");
         
-        if(ClassUtil.isDefinitionContainsTypeVariables(ejbClass))
+        if (ejbClass.getTypeParameters().length > 0)
         {
             if(!scopeType.equals(Dependent.class))
             {

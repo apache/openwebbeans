@@ -267,6 +267,7 @@ public class BeansDeployer
         
         //Register Event Bean
         beanManager.addInternalBean(webBeansUtil.getEventBean());
+        beanManager.addInternalBean(webBeansUtil.getEventMetadataBean());
         
         //Register Metadata Beans
         beanManager.addInternalBean(webBeansUtil.getBeanMetadataBean());

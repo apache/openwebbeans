@@ -30,6 +30,7 @@ import java.util.Stack;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -49,9 +50,14 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     private transient T delegate;
     
     /**
-     * The injection point object to be injected into injection points of type InjectionPoint
+     * The injection point objects to be injected into injection points of type InjectionPoint
      */
     private transient Stack<InjectionPoint> injectionPoints = null;
+    
+    /**
+     * The EventMetadata objects to be injected into injection points of type EventMetadata
+     */
+    private transient Stack<EventMetadata> eventMetadata = null;
 
     /**
      * Contextual bean dependent instances
@@ -136,6 +142,33 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
             return null;
         }
         return injectionPoints.pop();
+    }
+
+    public EventMetadata getEventMetadata()
+    {
+        if (eventMetadata == null || eventMetadata.isEmpty())
+        {
+            return null;
+        }
+        return eventMetadata.peek();
+    }
+
+    public void putEventMetadata(EventMetadata metadata)
+    {
+        if (eventMetadata == null)
+        {
+            eventMetadata = new Stack<EventMetadata>();
+        }
+        eventMetadata.push(metadata);
+    }
+
+    public EventMetadata removeEventMetadata()
+    {
+        if (eventMetadata == null || eventMetadata.isEmpty())
+        {
+            return null;
+        }
+        return eventMetadata.pop();
     }
 
     /**

@@ -26,6 +26,7 @@ import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;

@@ -29,6 +29,7 @@ import org.apache.webbeans.component.ConversationBean;
 import org.apache.webbeans.component.DecoratorMetadataBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.EventBean;
+import org.apache.webbeans.component.EventMetadataBean;
 import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -54,7 +55,9 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
+
 import javax.enterprise.inject.spi.DefinitionException;
+
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.plugins.PluginLoader;
@@ -107,6 +110,7 @@ import javax.enterprise.inject.spi.ProcessSessionBean;
 import javax.enterprise.inject.spi.Producer;
 import javax.inject.Inject;
 import javax.inject.Named;
+
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -467,6 +471,15 @@ public final class WebBeansUtil
     public <T> EventBean<T> getEventBean()
     {
         return new EventBean<T>(webBeansContext);
+    }
+
+    /**
+     * Creates a new event bean.
+     * @return new event bean
+     */
+    public EventMetadataBean getEventMetadataBean()
+    {
+        return new EventMetadataBean(webBeansContext);
     }
 
     /**

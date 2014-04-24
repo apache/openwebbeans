@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.event;
 
+import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.inject.spi.ObserverMethod;
 
 /**
