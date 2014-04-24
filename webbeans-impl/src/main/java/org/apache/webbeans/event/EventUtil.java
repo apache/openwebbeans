@@ -34,7 +34,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
 public final class EventUtil
@@ -42,16 +41,6 @@ public final class EventUtil
     private EventUtil()
     {
 
-    }
-
-    public static void checkEventType(Class<?> eventType)
-    {
-        Asserts.assertNotNull(eventType, "eventType parameter can not be null");
-
-        if (ClassUtil.isDefinitionContainsTypeVariables(eventType))
-        {
-            throw new IllegalArgumentException("Event type : " + eventType.getName() + " can not be generic");
-        }
     }
 
     //expensive check needed by the TCK (EventBindingTypesTest#testFireEventWithNonRuntimeBindingTypeFails) - see OWB-798

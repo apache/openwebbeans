@@ -417,7 +417,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         {
             type = new OwbParametrizedTypeImpl(event.getClass().getDeclaringClass(), event.getClass(), event.getClass().getTypeParameters());
         }
-        fireEvent(event, new EventMetadataImpl(type, null, bindings), false);
+        fireEvent(event, new EventMetadataImpl(type, null, bindings, webBeansContext), false);
     }
 
     /**
@@ -427,7 +427,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
      */
     public void fireLifecycleEvent(Object event, Annotation... bindings)
     {
-        fireEvent(event, new EventMetadataImpl(event.getClass(), null, bindings), true);
+        fireEvent(event, new EventMetadataImpl(event.getClass(), null, bindings, webBeansContext), true);
     }
 
     public void fireEvent(Object event, EventMetadata metadata, boolean isLifecycleEvent)
@@ -964,16 +964,11 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     @Override
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, Annotation... qualifiers)
     {
-        return resolveObserverMethods(event, new EventMetadataImpl(event.getClass(), null, qualifiers));
+        return resolveObserverMethods(event, new EventMetadataImpl(event.getClass(), null, qualifiers, webBeansContext));
     }
 
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, EventMetadata metadata) 
     {
-        if(ClassUtil.isDefinitionContainsTypeVariables(ClassUtil.getClass(metadata.getType())))
-        {
-            throw new IllegalArgumentException("Event type can not contain type variables. Event class is : " + event.getClass());
-        }
-        
         return notificationManager.resolveObservers(event, metadata);
     }
 

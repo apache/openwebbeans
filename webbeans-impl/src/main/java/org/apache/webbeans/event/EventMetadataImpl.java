@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.event;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -26,21 +27,32 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.annotation.AnyLiteral;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.ArrayUtil;
+import org.apache.webbeans.util.GenericsUtil;
 
-public class EventMetadataImpl implements EventMetadata
+public class EventMetadataImpl implements EventMetadata, Serializable
 {
 
     private final Type type;
     private final InjectionPoint injectionPoint;
     private final Set<Annotation> qualifiers;
+    private final WebBeansContext context;
     
-    public EventMetadataImpl(Type type, InjectionPoint injectionPoint, Annotation... qualifiers)
+    public EventMetadataImpl(Type type, InjectionPoint injectionPoint, Annotation[] qualifiers, WebBeansContext context)
     {
+        if (GenericsUtil.containsTypeVariable(type))
+        {
+            throw new IllegalArgumentException("event type may not contain type variable: " + type);
+        }
+        context.getAnnotationManager().checkQualifierConditions(qualifiers);
         this.type = type;
         this.injectionPoint = injectionPoint;
+        this.context = context;
         Set<Annotation> completeQualifiers;
         if (qualifiers.length == 0)
         {
@@ -77,5 +89,26 @@ public class EventMetadataImpl implements EventMetadata
     public Set<Annotation> getQualifiers()
     {
         return qualifiers;
+    }
+    
+    public EventMetadata select(Annotation... bindings)
+    {
+        return select(type, bindings);
+    }
+    
+    public EventMetadata select(TypeLiteral<?> subtype, Annotation... bindings)
+    {
+        return select(subtype.getType(), bindings);
+    }
+    
+    public EventMetadata select(Type subtype, Annotation... bindings)
+    {
+        Set<Annotation> newQualifiers = ArrayUtil.asSet(bindings);
+        newQualifiers.addAll(qualifiers);
+        if (newQualifiers.size() != qualifiers.size() + bindings.length)
+        {
+            throw new IllegalArgumentException("duplicate qualifier");
+        }
+        return new EventMetadataImpl(subtype, injectionPoint, newQualifiers.toArray(new Annotation[newQualifiers.size()]), context);
     }
 }

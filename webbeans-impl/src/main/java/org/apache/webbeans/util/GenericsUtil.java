@@ -30,6 +30,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -338,6 +339,58 @@ public final class GenericsUtil
             }
         }
         return true;
+    }
+    
+    /**
+     * @return <tt>true</tt>, if the specified type declaration contains an unresolved type variable.
+     */
+    public static boolean containsTypeVariable(Type type)
+    {
+        if (type instanceof Class)
+        {
+            return false;
+        }
+        else if (type instanceof TypeVariable)
+        {
+            return true;
+        }
+        else if (type instanceof ParameterizedType)
+        {
+            ParameterizedType parameterizedType = (ParameterizedType)type;
+            return containTypeVariable(parameterizedType.getActualTypeArguments());
+        }
+        else if (type instanceof WildcardType)
+        {
+            WildcardType wildcardType = (WildcardType)type;
+            return containTypeVariable(wildcardType.getUpperBounds()) || containTypeVariable(wildcardType.getLowerBounds());
+        }
+        else if (type instanceof GenericArrayType)
+        {
+            GenericArrayType arrayType = (GenericArrayType)type;
+            return containsTypeVariable(arrayType.getGenericComponentType());
+        }
+        else
+        {
+            throw new IllegalArgumentException("Unsupported type " + type.getClass().getName());
+        }
+
+    }
+    
+    public static boolean containTypeVariable(Collection<? extends Type> types)
+    {
+        return containTypeVariable(types.toArray(new Type[types.size()]));
+    }
+    
+    public static boolean containTypeVariable(Type[] types)
+    {
+        for (Type type: types)
+        {
+            if (containsTypeVariable(type))
+            {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**

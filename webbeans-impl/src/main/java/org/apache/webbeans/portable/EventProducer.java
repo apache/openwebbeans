@@ -30,6 +30,7 @@ import javax.enterprise.inject.spi.Interceptor;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.event.EventImpl;
+import org.apache.webbeans.event.EventMetadataImpl;
 import org.apache.webbeans.exception.WebBeansException;
 
 public class EventProducer<T> extends AbstractProducer<Event<T>>
@@ -75,7 +76,7 @@ public class EventProducer<T> extends AbstractProducer<Event<T>>
             
             try
             {
-                instance = new EventImpl<T>(qualifiers, eventType, injectionPoint, webBeansContext);
+                instance = new EventImpl<T>(new EventMetadataImpl(eventType, injectionPoint, qualifiers, webBeansContext), webBeansContext);
             }
             catch (Exception e)
             {

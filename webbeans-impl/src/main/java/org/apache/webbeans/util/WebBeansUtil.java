@@ -165,7 +165,7 @@ public final class WebBeansUtil
     {
         Asserts.assertNotNull(clazz);
 
-        if (ClassUtil.isDefinitionContainsTypeVariables(clazz))
+        if (clazz.getTypeParameters().length > 0)
         {
             if(!scope.equals(Dependent.class))
             {

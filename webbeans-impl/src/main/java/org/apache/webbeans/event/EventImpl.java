@@ -23,17 +23,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.event.Event;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -47,14 +43,7 @@ public class EventImpl<T> implements Event<T>, Serializable
 {
     private static final long serialVersionUID = -9035218380365451350L;
     
-    /**Event binding types*/
-    private Annotation[] injectedBindings;
-
-    /**Event types*/
-    private Type eventType;
-    
-    /**injection point of the event*/
-    private InjectionPoint injectionPoint;
+    private EventMetadataImpl metadata;
 
     private transient WebBeansContext webBeansContext;
 
@@ -65,12 +54,24 @@ public class EventImpl<T> implements Event<T>, Serializable
      * @param eventType event type
      * @param webBeansContext
      */
-    public EventImpl(Annotation[] injectedBindings, Type eventType, InjectionPoint injectionPoint, WebBeansContext webBeansContext)
+    public EventImpl(EventMetadata metadata, WebBeansContext webBeansContext)
     {
+        Asserts.assertNotNull(metadata, "event metadata may not be null");
+        this.metadata = wrapMetadata(metadata);
         this.webBeansContext = webBeansContext;
-        this.injectedBindings = injectedBindings;
-        this.eventType = eventType;
-        this.injectionPoint = injectionPoint;
+    }
+
+    private EventMetadataImpl wrapMetadata(EventMetadata metadata)
+    {
+        if (metadata instanceof EventMetadataImpl)
+        {
+            return (EventMetadataImpl)metadata;
+        }
+        else
+        {
+            Set<Annotation> qualifiers = metadata.getQualifiers();
+            return new EventMetadataImpl(metadata.getType(), metadata.getInjectionPoint(), qualifiers.toArray(new Annotation[qualifiers.size()]), webBeansContext);
+        }
     }
 
     /**
@@ -79,24 +80,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public void fire(T event)
     {
-        webBeansContext.getBeanManagerImpl().fireEvent(event, new EventMetadataImpl(eventType, injectionPoint, injectedBindings), false);
-    }
-
-    /**
-     * Returns total binding annotations.
-     * 
-     * @param annotations new annotations
-     * @return total binding annotations
-     */
-    private Annotation[] getEventBindings(Annotation... annotations)
-    {
-        webBeansContext.getAnnotationManager().checkQualifierConditions(annotations);
-
-        Set<Annotation> eventBindings = new HashSet<Annotation>();
-        Collections.addAll(eventBindings, injectedBindings);
-        Collections.addAll(eventBindings, annotations);
-
-        return eventBindings.toArray(new Annotation[eventBindings.size()]);
+        webBeansContext.getBeanManagerImpl().fireEvent(event, metadata, false);
     }
 
     /**
@@ -105,9 +89,8 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public Event<T> select(Annotation... bindings)
     {
-        Event<T> sub = new EventImpl<T>(getEventBindings(bindings), eventType, injectionPoint, webBeansContext);
         
-        return sub;
+        return new EventImpl<T>(metadata.select(bindings), webBeansContext);
     }
     
     /**
@@ -116,24 +99,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public <U extends T> Event<U> select(Class<U> subtype, Annotation... bindings)
     {
-        if(ClassUtil.isDefinitionContainsTypeVariables(subtype))
-        {
-            throw new IllegalArgumentException("Class : " + subtype + " cannot contain type variable");
-        }
-        Type sub = subtype;
-        return select(sub, bindings);
-    }
-
-    private <U extends T> Event<U> select(Type sub, Annotation... bindings)
-    {
-        if(sub == null)
-        {
-            sub = eventType;
-        }
-        
-        Event<U> subEvent = new EventImpl<U>(getEventBindings(bindings),sub, injectionPoint, webBeansContext);
-        
-        return subEvent;
+        return new EventImpl<U>(metadata.select(subtype, bindings), webBeansContext);
     }
     
     /**
@@ -142,15 +108,13 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public <U extends T> Event<U> select(TypeLiteral<U> subtype, Annotation... bindings)
     {
-        //TODO check for type variables
-        return select(subtype.getType(), bindings);
+        return new EventImpl<U>(metadata.select(subtype, bindings), webBeansContext);
     }
     
     private void writeObject(java.io.ObjectOutputStream op) throws IOException
     {
         ObjectOutputStream oos = new ObjectOutputStream(op);
-        oos.writeObject(eventType);
-        oos.writeObject(injectedBindings);
+        oos.writeObject(metadata);
         
         oos.flush();
     }
@@ -158,8 +122,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
     {
         final ObjectInputStream inputStream = new OwbCustomObjectInputStream(in, WebBeansUtil.getCurrentClassLoader());
-        eventType = (Type)inputStream.readObject();
-        injectedBindings = (Annotation[])inputStream.readObject();
+        metadata = (EventMetadataImpl)inputStream.readObject();
 
         webBeansContext = WebBeansContext.currentInstance();
     }

@@ -82,8 +82,6 @@ public final class NotificationManager
 
     public <T> void addObserver(ObserverMethod<T> observer, TypeLiteral<T> typeLiteral)
     {
-        EventUtil.checkEventType(typeLiteral.getRawType());
-
         addObserver(observer, typeLiteral.getType());
     }
 
@@ -152,7 +150,11 @@ public final class NotificationManager
         
         Set<ObserverMethod<? super T>> matching = new HashSet<ObserverMethod<? super T>>();
 
-        Set<Type> eventTypes = GenericsUtil.getTypeClosure(declaredEventType, eventClass); 
+        Set<Type> eventTypes = GenericsUtil.getTypeClosure(declaredEventType, eventClass);
+        if (GenericsUtil.containTypeVariable(eventTypes))
+        {
+            throw new IllegalArgumentException("event type may not contain unbound type variable: " + eventTypes);
+        }
 
         Set<Type> observedTypes = observers.keySet();
 

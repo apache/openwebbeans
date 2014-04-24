@@ -708,20 +708,6 @@ public final class ClassUtil
     }
 
     /**
-     * Learn whether the specified class is defined with type parameters.
-     * @param type to check
-     * @return true if there are type parameters
-     * @since 1.1.1
-     */
-    public static boolean isDefinitionContainsTypeVariables(Type type)
-    {
-        Class<?> clazz = ClassUtil.getClass(type);
-        Asserts.nullCheckForClass(clazz);
-        
-        return clazz.getTypeParameters().length > 0;
-    }
-
-    /**
      * Returns declared type arguments if {@code type} is a
      * {@link ParameterizedType} instance, else an empty array.
      * Get the actual type arguments of a type.
