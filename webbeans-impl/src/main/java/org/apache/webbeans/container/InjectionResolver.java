@@ -802,9 +802,19 @@ public class InjectionResolver
             }
         }
 
-        if (result.isEmpty() && annotations.length == 1 && New.class.equals(annotations[0].annotationType()) && Class.class.isInstance(type))
+        if (result.isEmpty() && annotations.length == 1 && New.class.equals(annotations[0].annotationType()))
         { // happen in TCKs, shouldn't be the case in real apps
-            result.add(webBeansContext.getWebBeansUtil().createNewComponent(Class.class.cast(type)));
+            New newQualifier = (New)annotations[0];
+            Class<?> beanClass;
+            if (newQualifier.value() != New.class)
+            {
+                beanClass = newQualifier.value(); 
+            }
+            else
+            {
+                beanClass = GenericsUtil.getRawType(type);
+            }
+            result.add(webBeansContext.getWebBeansUtil().createNewComponent(beanClass));
         }
 
         return result;

@@ -728,7 +728,11 @@ public final class GenericsUtil
         else // if (declaringClass.isAssignableFrom(actualClass))
         { 
             Type genericSuperclass = getGenericSuperclass(actualClass, declaringClass);
-            if (genericSuperclass instanceof Class)
+            if (genericSuperclass == null)
+            {
+                return variable;
+            }
+            else if (genericSuperclass instanceof Class)
             {
                 // special handling for type erasure
                 Class<?> superclass = (Class<?>)genericSuperclass;
