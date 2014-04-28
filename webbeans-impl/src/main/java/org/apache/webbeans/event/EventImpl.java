@@ -19,8 +19,6 @@
 package org.apache.webbeans.event;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.Set;
@@ -31,8 +29,6 @@ import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.OwbCustomObjectInputStream;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Event implementation.
@@ -42,8 +38,8 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class EventImpl<T> implements Event<T>, Serializable
 {
-    private static final long serialVersionUID = -9035218380365451350L;
-    
+    private static final long serialVersionUID = 393021493190378023L;
+
     private EventMetadataImpl metadata;
 
     private transient WebBeansContext webBeansContext;
@@ -112,19 +108,9 @@ public class EventImpl<T> implements Event<T>, Serializable
         return new EventImpl<U>(metadata.select(subtype, bindings), webBeansContext);
     }
     
-    private void writeObject(java.io.ObjectOutputStream op) throws IOException
-    {
-        ObjectOutputStream oos = new ObjectOutputStream(op);
-        oos.writeObject(metadata);
-        
-        oos.flush();
-    }
-    
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
     {
-        final ObjectInputStream inputStream = new OwbCustomObjectInputStream(in, WebBeansUtil.getCurrentClassLoader());
-        metadata = (EventMetadataImpl)inputStream.readObject();
-
+        in.defaultReadObject();
         webBeansContext = WebBeansContext.currentInstance();
     }
 }

@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.event;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -38,11 +39,12 @@ import org.apache.webbeans.util.GenericsUtil;
 
 public class EventMetadataImpl implements EventMetadata, Serializable
 {
-
+    private static final long serialVersionUID = -6401875861180683988L;
+ 
     private final Type type;
     private final InjectionPoint injectionPoint;
     private final Set<Annotation> qualifiers;
-    private final WebBeansContext context;
+    private transient WebBeansContext webBeansContext;
     
     public EventMetadataImpl(Type type, InjectionPoint injectionPoint, Annotation[] qualifiers, WebBeansContext context)
     {
@@ -53,7 +55,7 @@ public class EventMetadataImpl implements EventMetadata, Serializable
         context.getAnnotationManager().checkQualifierConditions(qualifiers);
         this.type = type;
         this.injectionPoint = injectionPoint;
-        this.context = context;
+        this.webBeansContext = context;
         Set<Annotation> completeQualifiers;
         if (qualifiers.length == 0)
         {
@@ -110,6 +112,12 @@ public class EventMetadataImpl implements EventMetadata, Serializable
         {
             throw new IllegalArgumentException("duplicate qualifier");
         }
-        return new EventMetadataImpl(subtype, injectionPoint, newQualifiers.toArray(new Annotation[newQualifiers.size()]), context);
+        return new EventMetadataImpl(subtype, injectionPoint, newQualifiers.toArray(new Annotation[newQualifiers.size()]), webBeansContext);
+    }
+    
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        in.defaultReadObject();
+        webBeansContext = WebBeansContext.currentInstance();
     }
 }
