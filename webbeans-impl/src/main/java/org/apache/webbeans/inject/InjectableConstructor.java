@@ -70,6 +70,7 @@ public class InjectableConstructor<T> extends AbstractInjectable<T>
             }
             
             instance = con.newInstance(createParameters());
+            transientCreationalContext.release();
             return instance;
         }
         catch (Exception e)

@@ -24,7 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.spi.Contextual;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.IllegalProductException;
+import javax.enterprise.inject.TransientReference;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
@@ -53,11 +55,14 @@ public abstract class AbstractInjectable<T>
     private Producer<?> owner;
     
     protected final CreationalContextImpl<?> creationalContext;
+    
+    protected CreationalContextImpl<?> transientCreationalContext;
 
     protected AbstractInjectable(Producer<?> owner, CreationalContextImpl<?> creationalContext)
     {
         this.owner = owner;
         this.creationalContext = creationalContext;
+        this.transientCreationalContext = creationalContext.getWebBeansContext().getBeanManagerImpl().createCreationalContext(creationalContext.getContextual());
     }
 
     /**
@@ -90,9 +95,19 @@ public abstract class AbstractInjectable<T>
                 }
             }
         }
+        
+        CreationalContext<?> injectionPointContext;
+        if (injectionPoint.getAnnotated().isAnnotationPresent(TransientReference.class))
+        {
+            injectionPointContext = transientCreationalContext;
+        }
+        else
+        {
+            injectionPointContext = creationalContext;
+        }
 
         //Gets injectable reference for injected bean
-        injected = (T) beanManager.getInjectableReference(injectionPoint, creationalContext);
+        injected = (T) beanManager.getInjectableReference(injectionPoint, injectionPointContext);
 
         if (injected == null && beanManager.isNormalScope(injectedBean.getScope()))
         {
