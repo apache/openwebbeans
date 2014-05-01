@@ -36,6 +36,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 
@@ -66,7 +67,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
      * Caches the proxy classes for each bean.
      * We need this to prevent filling up the ClassLoaders by
      */
-    private ConcurrentHashMap<Bean<?>, Class<?>> cachedProxyClasses = new ConcurrentHashMap<Bean<?>, Class<?>>();
+    private ConcurrentMap<Bean<?>, Class<?>> cachedProxyClasses = new ConcurrentHashMap<Bean<?>, Class<?>>();
 
 
     public InterceptorDecoratorProxyFactory(WebBeansContext webBeansContext)

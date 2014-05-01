@@ -30,6 +30,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
@@ -61,7 +62,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
      * Caches the proxy classes for each bean.
      * We need this to prevent filling up the ClassLoaders by
      */
-    private ConcurrentHashMap<Bean<?>, Class<?>> cachedProxyClasses = new ConcurrentHashMap<Bean<?>, Class<?>>();
+    private ConcurrentMap<Bean<?>, Class<?>> cachedProxyClasses = new ConcurrentHashMap<Bean<?>, Class<?>>();
 
 
     public NormalScopeProxyFactory(WebBeansContext webBeansContext)

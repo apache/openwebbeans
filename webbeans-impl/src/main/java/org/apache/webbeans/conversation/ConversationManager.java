@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,7 +48,7 @@ import org.apache.webbeans.util.Asserts;
 public class ConversationManager
 {
     /**Current conversations*/
-    private final ConcurrentHashMap<Conversation, ConversationContext> conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
+    private final ConcurrentMap<Conversation, ConversationContext> conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
     private final WebBeansContext webBeansContext;
     private final static Logger logger = WebBeansLoggerFacade.getLogger(ConversationManager.class);
 
