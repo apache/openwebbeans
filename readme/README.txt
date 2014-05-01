@@ -1,12 +1,11 @@
 -------------------------------
-Apache OpenWebBeans 1.2.2
+Apache OpenWebBeans 1.2.4
 -------------------------------
 Welcome!
 
 Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.2.2 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -28,10 +27,11 @@ https://cwiki.apache.org/confluence/display/OWB/Index
 
 
 --------------------------------
-OpenWebBeans 1.2.2 Release Features
+OpenWebBeans  Release Features
 --------------------------------
 
-- The 1.2.2 release supports the following features
+
+- The release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Session Beans Support (via Embeddable OpenEJB container in Tomcat)
@@ -76,6 +76,38 @@ of the Application. This is especially the case for <alternatives> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application. This behaviour will most likely also be the default behaviour
 in the CDI-1.1 JSR-346 specification.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.2.4
+-------------------------------------------
+
+Bug
+
+    [OWB-952] - ensure we only use ConcurrentMap and not ConcurrentHashMap API to avoid issues with java 8
+
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.2.3
+-------------------------------------------
+
+Bug
+
+    [OWB-938] - NoClassDefFoundError not caught when checking if a bean is a managed one or not in WebBeanUtils (isValidManagedBean)
+
+Improvement
+
+    [OWB-937] - unify startup detection
+
+New Feature
+
+    [OWB-941] - Signal or handle differently final methods
+
+Task
+
+    [OWB-944] - upgrade to asm5
+
 
 
 -------------------------------------------
