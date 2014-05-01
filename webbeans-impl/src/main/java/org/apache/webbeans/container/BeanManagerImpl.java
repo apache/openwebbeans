@@ -69,7 +69,6 @@ import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.third.PassivationCapableThirdpartyBeanImpl;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
-import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DecoratorComparator;
@@ -413,9 +412,9 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     public void fireEvent(Object event, Annotation... bindings)
     {       
         Type type = event.getClass();
-        if (event.getClass().getTypeParameters().length > 0)
+        if (GenericsUtil.hasTypeParameters(type))
         {
-            type = new OwbParametrizedTypeImpl(event.getClass().getDeclaringClass(), event.getClass(), event.getClass().getTypeParameters());
+            type = GenericsUtil.getParameterizedType(type);
         }
         fireEvent(event, new EventMetadataImpl(type, null, bindings, webBeansContext), false);
     }

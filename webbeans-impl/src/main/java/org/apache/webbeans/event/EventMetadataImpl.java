@@ -33,7 +33,6 @@ import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ArrayUtil;
 import org.apache.webbeans.util.GenericsUtil;
 
@@ -59,7 +58,7 @@ public class EventMetadataImpl implements EventMetadata, Serializable
         Set<Annotation> completeQualifiers;
         if (qualifiers.length == 0)
         {
-            completeQualifiers = AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION;
+            completeQualifiers = Collections.<Annotation>singleton(AnyLiteral.INSTANCE);
         }
         else
         {

@@ -21,6 +21,7 @@ package org.apache.webbeans.event;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.enterprise.event.Event;
@@ -29,6 +30,7 @@ import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.GenericsUtil;
 
 /**
  * Event implementation.
@@ -77,7 +79,12 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public void fire(T event)
     {
-        webBeansContext.getBeanManagerImpl().fireEvent(event, metadata, false);
+        Type eventType = event.getClass();
+        if (GenericsUtil.hasTypeParameters(eventType))
+        {
+            eventType = GenericsUtil.resolveType(GenericsUtil.getParameterizedType(eventType), metadata.getType());
+        }
+        webBeansContext.getBeanManagerImpl().fireEvent(event, metadata.select(eventType), false);
     }
 
     /**

@@ -548,7 +548,6 @@ public final class GenericsUtil
      * 
      * @param type the type to get the closure for
      * @param actualType the context to bind type variables
-     * @param declaringClass the class declaring the type
      * @return the type closure
      */
     public static Set<Type> getTypeClosure(Type type, Type actualType)
@@ -559,14 +558,9 @@ public final class GenericsUtil
         {
             return getTypeClosure(actualType, type);
         }
-        if (type instanceof Class)
+        if (hasTypeParameters(type))
         {
-            Class<?> classType = (Class<?>)type;
-            TypeVariable<?>[] typeParameters = classType.getTypeParameters();
-            if (typeParameters.length > 0)
-            {
-                type = new OwbParametrizedTypeImpl(classType.getDeclaringClass(), classType, typeParameters);
-            }
+            type = getParameterizedType(type);
         }
         Set<Type> typeClosure = new HashSet<Type>();
         typeClosure.add(Object.class);
@@ -593,7 +587,17 @@ public final class GenericsUtil
         }
     }
 
-    static ParameterizedType getParameterizedType(Type type)
+    public static boolean hasTypeParameters(Type type)
+    {
+        if (type instanceof Class)
+        {
+            Class<?> classType = (Class<?>)type;
+            return classType.getTypeParameters().length > 0;
+        }
+        return false;
+    }
+
+    public static ParameterizedType getParameterizedType(Type type)
     {
         if (type instanceof ParameterizedType)
         {
