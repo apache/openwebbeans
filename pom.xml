@@ -434,7 +434,6 @@
                 <version>2.9.1</version>
                 <configuration>
                     <!-- used to suppress fancy javadoc errors in java8 -->
-                    <additionalparam>-Xdoclint:none</additionalparam>
                     <quiet>true</quiet>
                     <links>
                         <link>http://download.oracle.com/javaee/6/api/</link>
@@ -472,7 +471,6 @@
                 <version>2.9.1</version>
                 <configuration>
                     <!-- used to suppress fancy javadoc errors in java8 -->
-                    <additionalparam>-Xdoclint:none</additionalparam>
                     <quiet>true</quiet>
                     <links>
                         <link>http://download.oracle.com/javaee/6/api/</link>
