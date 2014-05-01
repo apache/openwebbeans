@@ -30,6 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.context.spi.AlterableContext;
+import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
@@ -288,7 +290,16 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             NormalScopedBeanInterceptorHandler handler = (NormalScopedBeanInterceptorHandler)provider;
             Bean<T> bean = (Bean<T>)handler.getBean();
             CreationalContext<T> creationalContext = (CreationalContext<T>)parentCreationalContext;
-            bean.destroy(instance, creationalContext);
+            Context currentContext = webBeansContext.getContextsService().getCurrentContext(bean.getScope());
+            if (currentContext instanceof AlterableContext)
+            {
+                AlterableContext alterableContext = (AlterableContext)currentContext;
+                alterableContext.destroy(bean);
+            }
+            else
+            {
+                bean.destroy(instance, creationalContext);
+            }
         }
         else
         {

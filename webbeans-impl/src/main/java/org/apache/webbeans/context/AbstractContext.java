@@ -18,16 +18,20 @@
  */
 package org.apache.webbeans.context;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.enterprise.context.ContextNotActiveException;
+import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
@@ -46,7 +50,7 @@ import org.apache.webbeans.context.creational.BeanInstanceBag;
  * @see ApplicationContext
  * @see ConversationContext
  */
-public abstract class AbstractContext implements Context, Serializable
+public abstract class AbstractContext implements Context, AlterableContext, Serializable
 {
     private static final long serialVersionUID = 2357678967444477818L;
     /**Context status, active or not*/
@@ -58,10 +62,6 @@ public abstract class AbstractContext implements Context, Serializable
 
     /**Contextual Scope Type*/
     protected Class<? extends Annotation> scopeType;
-    
-
-
-
 
     @SuppressWarnings("unchecked")
     private <T> void createContextualBag(Contextual<T> contextual, CreationalContext<T> creationalContext)
@@ -164,6 +164,21 @@ public abstract class AbstractContext implements Context, Serializable
         return  instance;
     }
 
+    @Override
+    public void destroy(Contextual<?> contextual) {
+        
+        BeanInstanceBag<?> instance = componentInstanceMap.get(contextual);
+        //Get creational context
+        CreationalContext<Object> cc = (CreationalContext<Object>)instance.getBeanCreationalContext();
+
+        //Destroy instance
+        final Object beanInstance = instance.getBeanInstance();
+        if (beanInstance != null)
+        {
+            destroyInstance((Contextual<Object>)contextual, beanInstance, cc);
+        }
+    }
+
     /**
      * Destroy the given web beans component instance.
      * 
@@ -171,40 +186,23 @@ public abstract class AbstractContext implements Context, Serializable
      * @param component web beans component
      * @param instance component instance
      */
-    private <T> void destroyInstance(Contextual<T> component, T instance,CreationalContext<T> creationalContext)
+    private <T> void destroyInstance(Contextual<T> component, T instance, CreationalContext<T> creationalContext)
     {
         //Destroy component
         component.destroy(instance,creationalContext);
+        componentInstanceMap.remove(component);
     }
     
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public void destroy()
     {
-        Set<Entry<Contextual<?>, BeanInstanceBag<?>>> entrySet = componentInstanceMap.entrySet();
-        Iterator<Entry<Contextual<?>, BeanInstanceBag<?>>> it = entrySet.iterator();
-
-        Contextual<?> contextual;
-        while (it.hasNext())
+        Set<Contextual<?>> keySet = new HashSet<Contextual<?>>(componentInstanceMap.keySet());
+        for (Contextual<?> contextual: keySet)
         {
-            contextual = it.next().getKey();
-            
-            BeanInstanceBag<?> instance = componentInstanceMap.get(contextual);
-            //Get creational context
-            CreationalContext<Object> cc = (CreationalContext<Object>)instance.getBeanCreationalContext();
-
-            //Destroy instance
-            final Object beanInstance = instance.getBeanInstance();
-            if (beanInstance != null)
-            {
-                destroyInstance((Contextual<Object>) contextual, beanInstance, cc);
-            }
+            destroy(contextual);
         }
-        
-        //Clear context map
-        componentInstanceMap.clear();
         setActive(false);
     }
 
