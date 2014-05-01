@@ -165,7 +165,8 @@ public abstract class AbstractContext implements Context, AlterableContext, Seri
     }
 
     @Override
-    public void destroy(Contextual<?> contextual) {
+    public void destroy(Contextual<?> contextual)
+    {
         
         BeanInstanceBag<?> instance = componentInstanceMap.get(contextual);
         //Get creational context
