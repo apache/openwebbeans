@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -66,7 +67,7 @@ public class InterceptorsManager
     /**
      * EJB-style Interceptor beans.
      */
-    private ConcurrentHashMap<Class<?>, Interceptor<?>> ejbInterceptors = new ConcurrentHashMap<Class<?>, Interceptor<?>>();
+    private ConcurrentMap<Class<?>, Interceptor<?>> ejbInterceptors = new ConcurrentHashMap<Class<?>, Interceptor<?>>();
 
     /**Additional interceptor class*/
     private List<Class<?>> additionalInterceptorClasses = new ArrayList<Class<?>>();
