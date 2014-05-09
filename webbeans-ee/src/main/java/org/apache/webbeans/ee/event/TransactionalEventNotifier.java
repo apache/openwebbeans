@@ -19,6 +19,7 @@
 package org.apache.webbeans.ee.event;
 
 import javax.enterprise.event.TransactionPhase;
+import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
@@ -26,7 +27,6 @@ import javax.transaction.Transaction;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.event.EventMetadata;
 import org.apache.webbeans.event.OwbObserverMethod;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.TransactionService;
