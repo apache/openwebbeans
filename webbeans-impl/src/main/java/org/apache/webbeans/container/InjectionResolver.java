@@ -69,7 +69,6 @@ import static org.apache.webbeans.util.InjectionExceptionUtil.throwAmbiguousReso
  * </p>
  *
  * @version $Rev$ $Date$
- * @see org.apache.webbeans.config.WebBeansFinder
  */
 public class InjectionResolver
 {
@@ -684,6 +683,16 @@ public class InjectionResolver
 
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
     {
+        if (beans == null)
+        {
+            return null;
+        }
+
+        if (beans.size() == 1)
+        {
+            return beans.iterator().next();
+        }
+
         Set set = resolveAll(beans);
         
         if (set.isEmpty())

@@ -29,10 +29,13 @@ import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.concepts.alternatives.common.AlternativeBean;
 import org.apache.webbeans.test.concepts.alternatives.common.AlternativeOnClassAndProducerMethodBean;
 import org.apache.webbeans.test.concepts.alternatives.common.AlternativeOnClassOnlyBean;
+import org.apache.webbeans.test.concepts.alternatives.common.AlternativeWithPriorityBean;
 import org.apache.webbeans.test.concepts.alternatives.common.DefaultBeanProducerWithoutDisposes;
 import org.apache.webbeans.test.concepts.alternatives.common.Pen;
 import org.apache.webbeans.test.concepts.alternatives.common.Pencil;
 import org.apache.webbeans.test.concepts.alternatives.common.PencilProducerBean;
+import org.apache.webbeans.test.concepts.alternatives.common.SimpleBean;
+import org.apache.webbeans.test.concepts.alternatives.common.SimpleInterface;
 import org.apache.webbeans.test.concepts.alternatives.common.YetAnotherPencil;
 import org.junit.Test;
 import org.junit.Assert;
@@ -111,6 +114,20 @@ public class AlternativeBeanResolvingTest extends AbstractUnitTest
         Assert.assertNotNull(alternativeBean);
         Assert.assertEquals(AlternativeBean.class, alternativeBean.getImplementationType());
 
+    }
+
+    /**
+     * Test alternatives which are NOT in any beans.xml but activated
+     * by having a Priority annotation.
+     */
+    @Test
+    public void testPriorityAlternative() throws Exception
+    {
+        startContainer(AlternativeWithPriorityBean.class, SimpleBean.class);
+
+        SimpleInterface simpleInterface = getInstance(SimpleInterface.class);
+        Assert.assertNotNull(simpleInterface);
+        Assert.assertEquals(AlternativeWithPriorityBean.class, simpleInterface.getImplementationType());
     }
 
 }

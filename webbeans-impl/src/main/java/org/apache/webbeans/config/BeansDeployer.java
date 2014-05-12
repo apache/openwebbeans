@@ -46,6 +46,9 @@ import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
+
+import javax.annotation.Priority;
+import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
@@ -59,6 +62,7 @@ import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
+import org.apache.webbeans.portable.events.discovery.AfterTypeDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
 import org.apache.webbeans.spi.BeanArchiveService;
@@ -87,7 +91,6 @@ import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.net.URL;
@@ -194,12 +197,19 @@ public class BeansDeployer
                 
                 //Configure Default Beans
                 configureDefaultBeans();
-                                
-                //Discover classpath classes
-                deployFromClassPath(scanner);
-                
+
+                List<AnnotatedType<?>> annotatedTypes = annotatedTypesFromClassPath(scanner);
+
                 //Deploy additional Annotated Types
-                deployAdditionalAnnotatedTypes();
+                addAdditionalAnnotatedTypes(annotatedTypes);
+
+                registerAlternativesDecoratorsAndInterceptorsWithPriority(annotatedTypes);
+
+                fireAfterTypeDiscoveryEvent();
+
+                // create beans from the discovered AnnotatedTypes
+                deployFromAnnotatedTypes(annotatedTypes);
+                
 
                 //Check Specialization
                 processSpecializations(scanner);
@@ -245,6 +255,25 @@ public class BeansDeployer
             //if bootstrapping failed, it doesn't make sense to do it again
             //esp. because #addInternalBean might have been called already and would cause an exception in the next run
             deployed = true;
+        }
+    }
+
+    private void registerAlternativesDecoratorsAndInterceptorsWithPriority(List<AnnotatedType<?>> annotatedTypes)
+    {
+        AlternativesManager alternativesManager = webBeansContext.getAlternativesManager();
+
+        for (AnnotatedType<?> annotatedType : annotatedTypes)
+        {
+            if (annotatedType.getAnnotation(Alternative.class) != null)
+            {
+                Priority priority = annotatedType.getAnnotation(Priority.class);
+                if (priority != null)
+                {
+                    alternativesManager.addPriorityClazzAlternative(annotatedType.getJavaClass(), priority);
+                }
+            }
+
+            //X TODO handle interceptors and decorators as well
         }
     }
 
@@ -372,9 +401,26 @@ public class BeansDeployer
         manager.fireLifecycleEvent(new AfterBeanDiscoveryImpl(webBeansContext));
 
         webBeansContext.getWebBeansUtil().inspectErrorStack(
-            "There are errors that are added by AfterBeanDiscovery event observers. Look at logs for further details");
+                "There are errors that are added by AfterBeanDiscovery event observers. Look at logs for further details");
     }
     
+    /**
+     * Fires event after bean discovery.
+     */
+    private void fireAfterTypeDiscoveryEvent()
+    {
+        AlternativesManager alternativesManager = webBeansContext.getAlternativesManager();
+        List<Class<?>> sortedAlternatives = alternativesManager.getSortedAlternatives();
+
+        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
+        manager.fireLifecycleEvent(new AfterTypeDiscoveryImpl(webBeansContext, sortedAlternatives));
+        // we do not need to set back the sortedAlternatives to the AlternativesManager as the API
+        // and all layers in between use a mutable List. Not very elegant but spec conform.
+
+        webBeansContext.getWebBeansUtil().inspectErrorStack(
+            "There are errors that are added by AfterTypeDiscovery event observers. Look at logs for further details");
+    }
+
     /**
      * Fires event after deployment valdiation.
      */
@@ -566,121 +612,152 @@ public class BeansDeployer
             }            
         }
     }
-    
-    
-    
+
     /**
-     * Discovers and deploys classes from class path.
-     * 
-     * @param scanner discovery scanner
-     * @throws ClassNotFoundException if class not found
+     * Create AnnotatedTypes from the ClassPath via the ScannerService
      */
-    protected void deployFromClassPath(ScannerService scanner) throws ClassNotFoundException
+    private List<AnnotatedType<?>> annotatedTypesFromClassPath(ScannerService scanner)
     {
-        logger.fine("Deploying configurations from class files has started.");
+        logger.fine("Creating AnnotatedTypes from class files has started.");
 
         // Start from the class
         Set<Class<?>> classIndex = scanner.getBeanClasses();
-        
+
+        List<AnnotatedType<?>> annotatedTypes = new ArrayList<AnnotatedType<?>>();
+
         //Iterating over each class
         if (classIndex != null)
         {
             AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
 
-            for(Class<?> implClass : classIndex)
+            for (Class<?> implClass : classIndex)
             {
-                //Define annotation type
-                AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(implClass);
-                
-                if (null != annotatedType)
+                try
                 {
-                    try
+                    //Define annotation type
+                    AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(implClass);
+
+                    if (annotatedType == null)
                     {
-                        deploySingleAnnotatedType(implClass, annotatedType);
-                    }
-                    catch (NoClassDefFoundError ncdfe)
-                    {
-                        logger.info("Skipping deployment of Class " + implClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
+                        logger.info("Could not create AnnotatedType for class " + implClass);
+                        continue;
                     }
 
-                    // if the implClass already gets processed as part of the
-                    // standard BDA scanning, then we don't need to 'additionally'
-                    // deploy it anymore.
-                    webBeansContext.getBeanManagerImpl().removeAdditionalAnnotatedType(annotatedType);
-                } 
-                else
-                {
-                    if (logger.isLoggable(Level.FINE))
-                    {
-                        logger.fine("Error creating managed bean " + implClass);
-                    }
+                    // Fires ProcessAnnotatedType
+                    ProcessAnnotatedTypeImpl<?> processAnnotatedEvent =
+                            webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
 
+                    // if veto() is called
+                    if (!processAnnotatedEvent.isVeto())
+                    {
+                        annotatedTypes.add(processAnnotatedEvent.getAnnotatedType());
+                    }
                 }
-
+                catch (NoClassDefFoundError ncdfe)
+                {
+                    logger.info("Skipping deployment of Class " + implClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
+                }
             }
+        }
+
+        return annotatedTypes;
+    }
+
+    /**
+     * Process any AnnotatedTypes which got added by BeforeBeanDiscovery#addAnnotatedType
+     * @param annotatedTypes
+     */
+    private void addAdditionalAnnotatedTypes(List<AnnotatedType<?>> annotatedTypes)
+    {
+        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
+
+
+        Collection<AnnotatedType<?>> additionalAnnotatedTypes = beanManager.getAdditionalAnnotatedTypes();
+
+        for (AnnotatedType<?> annotatedType : additionalAnnotatedTypes)
+        {
+            // Fires ProcessAnnotatedType
+            ProcessAnnotatedTypeImpl<?> processAnnotatedEvent =
+                    webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
+
+            if (!processAnnotatedEvent.isVeto())
+            {
+                AnnotatedType<?> changedAnnotatedType = processAnnotatedEvent.getAnnotatedType();
+                if (annotatedTypes.contains(changedAnnotatedType))
+                {
+                    annotatedTypes.remove(changedAnnotatedType);
+                }
+                annotatedTypes.add(changedAnnotatedType);
+            }
+
+        }
+    }
+
+
+    /**
+     * Discovers and deploys classes from class path.
+     * 
+     * @param annotatedTypes the AnnotatedTypes which got discovered so far and are not vetoed
+     * @throws ClassNotFoundException if class not found
+     */
+    protected void deployFromAnnotatedTypes(List<AnnotatedType<?>> annotatedTypes) throws ClassNotFoundException
+    {
+        logger.fine("Deploying configurations from class files has started.");
+
+        // Start from the class
+        for(AnnotatedType<?> annotatedType : annotatedTypes)
+        {
+            try
+            {
+                deploySingleAnnotatedType(annotatedType);
+            }
+            catch (NoClassDefFoundError ncdfe)
+            {
+                logger.info("Skipping deployment of Class " + annotatedType.getJavaClass() + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
+            }
+
+            // if the implClass already gets processed as part of the
+            // standard BDA scanning, then we don't need to 'additionally'
+            // deploy it anymore.
+            webBeansContext.getBeanManagerImpl().removeAdditionalAnnotatedType(annotatedType);
+
         }
 
         logger.fine("Deploying configurations from class files has ended.");
 
     }
     
-    /**
-     * Deploys any AnnotatedTypes added to the BeanManager during beforeBeanDiscovery.
-     */
-    private void deployAdditionalAnnotatedTypes()
-    {
-        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
-
-        Collection<AnnotatedType<?>> annotatedTypes = beanManager.getAdditionalAnnotatedTypes();
-        
-        for(AnnotatedType<?> type : annotatedTypes)
-        {
-            Class implClass = type.getJavaClass();
-
-            deploySingleAnnotatedType(implClass, type);
-        }
-    }
 
     /**
      * Common helper method used to deploy annotated types discovered through
      * scanning or during beforeBeanDiscovery.
      * 
-     * @param implClass the class of the bean to be deployed
      * @param annotatedType the AnnotatedType representing the bean to be deployed
      */
-    private void deploySingleAnnotatedType(Class implClass, AnnotatedType annotatedType)
+    private void deploySingleAnnotatedType(AnnotatedType annotatedType)
     {
-        // Fires ProcessAnnotatedType
-        ProcessAnnotatedTypeImpl<?> processAnnotatedEvent =
-            webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
 
-        // if veto() is called
-        if (processAnnotatedEvent.isVeto())
-        {
-            return;
-        }
-
-        Class beanClass = processAnnotatedEvent.getAnnotatedType().getJavaClass();
+        Class beanClass = annotatedType.getJavaClass();
 
         // EJBs can be defined so test them really before going for a ManagedBean
-        if (discoverEjb && EJBWebBeansConfigurator.isSessionBean(implClass, webBeansContext))
+        if (discoverEjb && EJBWebBeansConfigurator.isSessionBean(beanClass, webBeansContext))
         {
-            logger.log(Level.FINE, "Found Enterprise Bean with class name : [{0}]", implClass.getName());
-            defineEnterpriseWebBean((Class<Object>) implClass, (ProcessAnnotatedTypeImpl<Object>) processAnnotatedEvent);
+            logger.log(Level.FINE, "Found Enterprise Bean with class name : [{0}]", beanClass.getName());
+            defineEnterpriseWebBean((Class<Object>) beanClass, annotatedType);
         }
         else
         {
             try
             {
-                if((ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(processAnnotatedEvent.getAnnotatedType()))
-                        && isValidManagedBean(processAnnotatedEvent.getAnnotatedType()))
+                if((ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(annotatedType))
+                        && isValidManagedBean(annotatedType))
                 {
-                    defineManagedBean(processAnnotatedEvent);
+                    defineManagedBean(annotatedType);
                 }
             }
             catch (NoClassDefFoundError ncdfe)
             {
-                logger.info("Skipping deployment of Class " + implClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
+                logger.info("Skipping deployment of Class " + beanClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
             }
         }
     }
@@ -791,11 +868,11 @@ public class BeansDeployer
                 AlternativesManager manager = WebBeansContext.getInstance().getAlternativesManager();
                 if (isStereotype)
                 {
-                    manager.addStereoTypeAlternative(clazz, bdaLocation.toExternalForm(), scannerService);
+                    manager.addXmlStereoTypeAlternative(clazz);
                 }
                 else
                 {
-                    manager.addClazzAlternative(clazz, bdaLocation.toExternalForm(), scannerService);
+                    manager.addXmlClazzAlternative(clazz);
                 }
             }
         }
@@ -1057,18 +1134,12 @@ public class BeansDeployer
      * Defines and configures managed bean.
      * @param <T> type info
      */
-    protected <T> void defineManagedBean(ProcessAnnotatedTypeImpl<T> processAnnotatedEvent)
+    protected <T> void defineManagedBean(AnnotatedType<T> annotatedType)
     {   
-        //Bean manager
-        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        
-        //Create an annotated type
-        AnnotatedType<T> annotatedType = processAnnotatedEvent.getAnnotatedType();
-                                
         //Fires ProcessInjectionTarget event for Java EE components instances
         //That supports injections but not managed beans
         ProcessInjectionTargetImpl<T> processInjectionTargetEvent;
-        Class beanClass = processAnnotatedEvent.getAnnotatedType().getJavaClass();
+        Class beanClass = annotatedType.getJavaClass();
         if(webBeansContext.getWebBeansUtil().supportsJavaEeComponentInjections(beanClass))
         {
             //Fires ProcessInjectionTarget
@@ -1222,9 +1293,9 @@ public class BeansDeployer
      * @param <T> bean class type
      * @param clazz bean class
      */
-    protected <T> void defineEnterpriseWebBean(Class<T> clazz, ProcessAnnotatedType<T> processAnnotatedTypeEvent)
+    protected <T> void defineEnterpriseWebBean(Class<T> clazz, AnnotatedType<T> annotatedType)
     {
-        InjectionTargetBean<T> bean = (InjectionTargetBean<T>) EJBWebBeansConfigurator.defineEjbBean(clazz, processAnnotatedTypeEvent,
+        InjectionTargetBean<T> bean = (InjectionTargetBean<T>) EJBWebBeansConfigurator.defineEjbBean(clazz, annotatedType,
                                                                                                      webBeansContext);
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(bean);
     }

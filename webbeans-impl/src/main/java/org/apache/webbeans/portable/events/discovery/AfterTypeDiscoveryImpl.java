@@ -1,0 +1,65 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.webbeans.portable.events.discovery;
+
+import javax.enterprise.inject.spi.AfterTypeDiscovery;
+import javax.enterprise.inject.spi.AnnotatedType;
+import java.util.List;
+
+import org.apache.webbeans.config.WebBeansContext;
+
+/**
+ * OWB fires this event after all AnnotatedTypes from scanned classes
+ * got picked up.
+ */
+public class AfterTypeDiscoveryImpl implements AfterTypeDiscovery
+{
+    private final WebBeansContext webBeansContext;
+    private final List<Class<?>> sortedAlternatives;
+
+    public AfterTypeDiscoveryImpl(WebBeansContext webBeansContext, List<Class<?>> sortedAlternatives)
+    {
+        this.webBeansContext = webBeansContext;
+        this.sortedAlternatives = sortedAlternatives;
+    }
+
+    @Override
+    public List<Class<?>> getAlternatives()
+    {
+        return sortedAlternatives;
+    }
+
+    @Override
+    public List<Class<?>> getInterceptors()
+    {
+        return null; //X TODO
+    }
+
+    @Override
+    public List<Class<?>> getDecorators()
+    {
+        return null; //X TODO
+    }
+
+    @Override
+    public void addAnnotatedType(AnnotatedType<?> type, String id)
+    {
+        webBeansContext.getBeanManagerImpl().addAdditionalAnnotatedType(type, id);
+    }
+}

@@ -44,8 +44,8 @@ public class AlternativesTest extends AbstractUnitTest
 
         AlternativesManager manager = WebBeansContext.getInstance().getAlternativesManager();
         
-        Assert.assertTrue(manager.isBeanHasAlternative(alternative1));
-        Assert.assertTrue(manager.isBeanHasAlternative(alternative2));
+        Assert.assertTrue(manager.isAlternative(alternative1));
+        Assert.assertTrue(manager.isAlternative(alternative2));
         
         manager.clear();
         

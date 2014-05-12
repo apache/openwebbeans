@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.component.third;
 
-import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -122,21 +121,9 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
         {
             AlternativesManager manager = getWebBeansContext().getAlternativesManager();
             //Class alternative
-            if(manager.isClassAlternative(getBeanClass()))
+            if (manager.isAlternative(getBeanClass(), bean.getStereotypes()))
             {
                 return true;
-            }
-            
-            Set<Class<? extends Annotation>> stereoTypes = bean.getStereotypes();
-            if(stereoTypes != null)
-            {
-                for(Class<? extends Annotation> stereo : stereoTypes)
-                {
-                    if(manager.isStereoAlternative(stereo))
-                    {
-                        return true;
-                    }
-                }
             }
         }
         

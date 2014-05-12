@@ -19,33 +19,76 @@
 package org.apache.webbeans.inject;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.AnnotationUtil;
 
+/**
+ * This class has 2 responsibilities.
+ *
+ * 1.) to collect information about configured &#064;Alternatives at boot time
+ *
+ * 2.) answer if a class is an enabled Alternative.
+ * This is needed for {@link org.apache.webbeans.container.BeanManagerImpl#resolve(java.util.Set)}
+ *
+ * The boot order for 1.) is to first register all the alternatives and stereotypes
+ * from the XML.
+ * After that the AnnotatedType scanning is performed and all &#064;Alternatives with
+ * &#064;Priority get added as well. We will also add classes which have an Alternative stereotype.
+ *
+ * After the AnnotatedTypes got scanned we have to fire the {@link javax.enterprise.inject.spi.AfterTypeDiscovery}
+ * event with the collected <i>effective</i> alternative classes sorted by their priority.
+ * Any extension can re-order the alternatives which then form the base of the resolve() handling
+ * at runtime.
+ */
 public class AlternativesManager
 {
-    private final Set<Class<?>> alternatives = new HashSet<Class<?>>();
-    
-    private final Set<Class<? extends Annotation>> stereoAlternatives = new HashSet<Class<? extends Annotation>>();
 
     private final WebBeansContext webBeansContext;
 
+    /**
+     * All the stereotypes which are configured via XML &lt;class&gt;
+     */
+    private final Set<Class<?>> configuredAlternatives = new HashSet<Class<?>>();
+
+    /**
+     * All Stereotypes which are declared as &#064;Alternative in a beans.xml.
+     * Please note that &#064;Priority on a stereotype does <b>not</b> automatically enable it!
+     */
+    private final Set<Class<? extends Annotation>> configuredStereotypeAlternatives = new HashSet<Class<? extends Annotation>>();
+
+    /**
+     * All the stereotypes which are either configured via XML &lt;class&gt; or
+     * have a &#064;Priority annotation.
+     * key: the class
+     * value: the priority. Alternatives from beans.xml have -1 as they are lowest prio.
+     */
+    private final List<PriorityAlternative> priorityAlternatives = new ArrayList<PriorityAlternative>();
+
+    private List<Class<?>> sortedAlternatives = null;
+
+
+
     public AlternativesManager(WebBeansContext webBeansContext)
     {
-
         this.webBeansContext = webBeansContext;
     }
 
-    @SuppressWarnings("unchecked")
-    public void addStereoTypeAlternative(Class<?> alternative, String fileName, ScannerService scanner)
+    /**
+     * This methods gets called while scanning the various beans.xml files.
+     * It registers a &lt;stereotype&gt; alternative.
+     */
+    public void addXmlStereoTypeAlternative(Class<?> alternative)
     {                
         if(Annotation.class.isAssignableFrom(alternative))
         {
@@ -55,15 +98,9 @@ public class AlternativesManager
             {
                 if(AnnotationUtil.hasClassAnnotation(stereo, Alternative.class))
                 {
-                    boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());
-                    if(isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addStereoType(stereo, fileName))
-                    {
-                        throw new WebBeansConfigurationException("Given alternative class : " + alternative.getName() + " is already added as @Alternative" );
-                    }
-                    
                     ok = true;
 
-                    stereoAlternatives.add(stereo);
+                    configuredStereotypeAlternatives.add(stereo);
                 }
             }
             
@@ -77,61 +114,126 @@ public class AlternativesManager
             throw new WebBeansConfigurationException("Given stereotype class : " + alternative.getName() + " is not an annotation" );
         }        
     }
-    
-    public void addClazzAlternative(Class<?> alternative, String fileName, ScannerService scanner)
+
+    /**
+     * This methods gets called while scanning the various beans.xml files.
+     * It registers a &lt;class&gt; alternative.
+     */
+    public void addXmlClazzAlternative(Class<?> alternative)
     {
         if(AnnotationUtil.hasClassAnnotation(alternative, Alternative.class))
         {
-            boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());
-            if((isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addAlternative(alternative, fileName)))
-            {
-                throw new WebBeansConfigurationException("Given class : " + alternative.getName() + " is already added as @Alternative" );
-            }
-
-            alternatives.add(alternative);
+            configuredAlternatives.add(alternative);
         }
         else
         {
             throw new WebBeansConfigurationException("Given class : " + alternative.getName() + " is not annotated with @Alternative" );
         }
     }
-    
+
+    /**
+     * This method is used to add Alternatives which have a &#064;Priority annotation.
+     * This is performed after the ProcessAnnotatedType events got fired.
+     */
+    public void addPriorityClazzAlternative(Class<?> clazz, Priority priority)
+    {
+        priorityAlternatives.add(new PriorityAlternative(clazz, priority.value()));
+    }
+
+    /**
+     * Alternatives get ordered by their priority and as lowest priority all
+     * the alternatives added via XML get added.
+     * @return the list of sorted alternatives
+     */
+    public List<Class<?>> getSortedAlternatives()
+    {
+        if (sortedAlternatives == null)
+        {
+            Collections.sort(priorityAlternatives);
+
+            sortedAlternatives = new ArrayList<Class<?>>(priorityAlternatives.size());
+
+            for (PriorityAlternative priorityAlternative : priorityAlternatives)
+            {
+                // add in reverse order
+                sortedAlternatives.add(0, priorityAlternative.clazz);
+            }
+        }
+
+        return sortedAlternatives;
+    }
+
+
+    /**
+     * @deprecated this is not enough since CDI-1.1. We now need to handle a weighted list of enabled alternatives
+     */
     public boolean isClassAlternative(Class<?> clazz)
     {
-        return alternatives.contains(clazz);
+        return configuredAlternatives.contains(clazz);
     }
 
-    public boolean isStereoAlternative(Class<? extends Annotation> stereo)
-    {
-        return stereoAlternatives.contains(stereo);
-    }
 
-    public boolean isBeanHasAlternative(Bean<?> bean)
+    /**
+     * @return <code>true</code> if the given bean is a configured alternative
+     * @deprecated this is not enough since CDI-1.1. We now need to handle a weighted list of enabled alternatives
+     */
+    public boolean isAlternative(Bean<?> bean)
     {
         return isAlternative(bean.getBeanClass(), bean.getStereotypes());
     }
 
+    /**
+     * @return <code>true</code> if the given bean is a configured alternative
+     */
     public boolean isAlternative(Class<?> beanType, Set<Class<? extends Annotation>> stereotypes)
     {
-        if(alternatives.contains(beanType))
+        if(configuredAlternatives.contains(beanType) ||
+           sortedAlternatives.contains(beanType))
         {
             return true;
         }
         
         for(Class<? extends Annotation> ann : stereotypes)
         {
-            if(stereoAlternatives.contains(ann))
+            if(configuredStereotypeAlternatives.contains(ann))
             {
                 return true;
             }
         }
-        
+
+
         return false;
     }
     
     public void clear()
     {
-        alternatives.clear();
-        stereoAlternatives.clear();
+        configuredAlternatives.clear();
+        configuredStereotypeAlternatives.clear();
+        priorityAlternatives.clear();
+
+        sortedAlternatives = null;
+    }
+
+    private static class PriorityAlternative implements Comparable<PriorityAlternative>
+    {
+        private final int priority;
+        private final Class<?> clazz;
+
+        public PriorityAlternative(Class<?> clazz, int priority)
+        {
+            this.clazz = clazz;
+            this.priority = priority;
+        }
+
+        @Override
+        public int compareTo(PriorityAlternative o)
+        {
+            if (priority != o.priority)
+            {
+                return Integer.compare(priority, o.priority);
+            }
+
+            return clazz.getName().compareTo(o.clazz.getName());
+        }
     }
 }

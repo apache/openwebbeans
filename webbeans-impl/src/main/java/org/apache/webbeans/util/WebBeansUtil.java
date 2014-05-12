@@ -661,6 +661,8 @@ public final class WebBeansUtil
      * @throws DefinitionException if name is defined
      * @throws InconsistentSpecializationException related with priority
      * @throws WebBeansConfigurationException any other exception
+     *
+     * TODO: this method needs to get changed to use AnnotatedTypes
      */
     protected void configureSpecializations(Class<?> specializedClass, List<Class<?>> beanClasses)
     {
@@ -857,7 +859,7 @@ public final class WebBeansUtil
                 //disable superbean if the current bean is not an alternative
                 superBean.setEnabled(false);
             }
-            else if(altManager.isClassAlternative(bean.getBeanClass()))
+            else if(altManager.isAlternative(bean))
             {
                 //disable superbean if the current bean is an enabled alternative
                 superBean.setEnabled(false);
@@ -1422,7 +1424,7 @@ public final class WebBeansUtil
         if (alternative)
         {
             return hasInjectionTargetBeanAnnotatedWithAlternative(parent) &&
-                    webBeansContext.getAlternativesManager().isBeanHasAlternative(parent);
+                    webBeansContext.getAlternativesManager().isAlternative(parent);
         }
         else
         {

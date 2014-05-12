@@ -19,8 +19,8 @@
 package org.apache.webbeans.spi.plugins;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import java.lang.reflect.Method;
 
 /**
@@ -50,9 +50,9 @@ public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
      * Configures session bean and adds it into the container.
      * 
      * @param clazz session bean class
-     * @param processAnnotateTypeEvent process annotated type event
+     * @param annotatedType processed annotated type
      */
-    public <T> Bean<T> defineSessionBean(Class<T> clazz, ProcessAnnotatedType<T> processAnnotateTypeEvent);
+    public <T> Bean<T> defineSessionBean(Class<T> clazz, AnnotatedType<T> annotatedType);
 
     public <T> Bean<T> defineNewSessionBean(Class<T> clazz);
 
@@ -84,7 +84,7 @@ public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
      * Returns session bean proxy.
      * 
      * @param bean session bean
-     * @param proxy interface
+     * @param iface interface
      * @return session bean proxy
      */
     public Object getSessionBeanProxy(Bean<?> bean, Class<?> iface, CreationalContext<?> creationalContext);
