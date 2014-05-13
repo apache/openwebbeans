@@ -694,8 +694,6 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
             creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(creationalContext, bean);
         }
 
-
-
         //Check type if bean type is given
         if(beanType != null)
         {
@@ -704,7 +702,10 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
             {
                 throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
             }
-            
+        }
+        else
+        {
+            beanType = bean.getBeanClass();
         }
                 
         //Scope is normal

@@ -84,7 +84,7 @@ public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
      * Returns session bean proxy.
      * 
      * @param bean session bean
-     * @param proxy interface
+     * @param iface interface
      * @return session bean proxy
      */
     public Object getSessionBeanProxy(Bean<?> bean, Class<?> iface, CreationalContext<?> creationalContext);
