@@ -65,7 +65,18 @@ public class InstanceIteratorTest extends AbstractUnitTest
     }
 
     @Test
-    public void testInstanceWithoutImpl()
+    public void testInstanceIteratorWithoutImpl()
+    {
+        startContainer(InstanceIteratorHolder.class);
+
+        InstanceIteratorHolder instanceIteratorHolder = getInstance(InstanceIteratorHolder.class);
+        assertNotNull(instanceIteratorHolder);
+
+        Assert.assertFalse(instanceIteratorHolder.iterateOverContracts());
+    }
+
+    @Test
+    public void testInstanceIteratorWithImpl()
     {
         startContainer(InstanceIteratorHolder.class, Bean1.class);
 
