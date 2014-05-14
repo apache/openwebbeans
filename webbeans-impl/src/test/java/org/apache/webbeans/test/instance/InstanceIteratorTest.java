@@ -18,10 +18,12 @@
  */
 package org.apache.webbeans.test.instance;
 
+import junit.framework.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
@@ -62,6 +64,30 @@ public class InstanceIteratorTest extends AbstractUnitTest
         assertEquals(3, count); //contextual instances: Bean1, Bean2, 2nd instance of Bean1 exposed by the producer
     }
 
+    @Test
+    public void testInstanceIteratorWithoutImpl()
+    {
+        startContainer(InstanceIteratorHolder.class);
+
+        InstanceIteratorHolder instanceIteratorHolder = getInstance(InstanceIteratorHolder.class);
+        assertNotNull(instanceIteratorHolder);
+
+        Assert.assertFalse(instanceIteratorHolder.iterateOverContracts());
+    }
+
+    @Test
+    public void testInstanceIteratorWithImpl()
+    {
+        startContainer(InstanceIteratorHolder.class, Bean1.class);
+
+        InstanceIteratorHolder instanceIteratorHolder = getInstance(InstanceIteratorHolder.class);
+        assertNotNull(instanceIteratorHolder);
+
+        Assert.assertTrue(instanceIteratorHolder.iterateOverContracts());
+    }
+
+
+
     public static class InstanceHolder
     {
         @Inject
@@ -72,6 +98,25 @@ public class InstanceIteratorTest extends AbstractUnitTest
         public Instance<ShardContract> getInstance()
         {
             return instance;
+        }
+    }
+
+    @RequestScoped
+    public static class InstanceIteratorHolder
+    {
+        @Inject
+        @Any
+        private Instance<ShardContract> instances;
+
+        public boolean iterateOverContracts()
+        {
+            boolean foundSomething = false;
+            for (ShardContract contract: instances)
+            {
+                foundSomething = true;
+            }
+
+            return foundSomething;
         }
     }
 

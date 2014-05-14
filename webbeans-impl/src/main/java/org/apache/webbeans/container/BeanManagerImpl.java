@@ -680,7 +680,11 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
             }
             
         }
-                
+        else
+        {
+            beanType = bean.getBeanClass();
+        }
+
         //Scope is normal
         if (isNormalScope(bean.getScope()))
         {
