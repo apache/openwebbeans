@@ -455,7 +455,15 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         mv.visitFieldInsn(Opcodes.GETSTATIC, proxyClassFileName, FIELD_INTERCEPTED_METHODS, Type.getDescriptor(Method[].class));
 
         // push the methodIndex of the current method
-        mv.visitIntInsn(Opcodes.BIPUSH, methodIndex);
+        if (methodIndex <128)
+        {
+            mv.visitIntInsn(Opcodes.BIPUSH, methodIndex);
+        }
+        else
+        {
+            // for methods > 127 we need to push a short number as index
+            mv.visitIntInsn(Opcodes.SIPUSH, methodIndex);
+        }
 
         // and now load the Method from the array
         mv.visitInsn(Opcodes.AALOAD);
