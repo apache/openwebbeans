@@ -459,10 +459,14 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         {
             mv.visitIntInsn(Opcodes.BIPUSH, methodIndex);
         }
-        else
+        else if (methodIndex < 32267)
         {
             // for methods > 127 we need to push a short number as index
             mv.visitIntInsn(Opcodes.SIPUSH, methodIndex);
+        }
+        else
+        {
+            throw new ProxyGenerationException("Sorry, we only support Classes with 2^15 methods...");
         }
 
         // and now load the Method from the array
