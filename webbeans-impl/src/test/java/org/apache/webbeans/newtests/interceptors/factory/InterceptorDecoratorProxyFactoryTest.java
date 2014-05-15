@@ -36,10 +36,12 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.factory.beans.ClassInterceptedClass;
+import org.apache.webbeans.newtests.interceptors.factory.beans.TonsOfMethodsInterceptedClass;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 
 import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.proxy.OwbInterceptorProxy;
+import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.CustomBaseType;
 import org.apache.webbeans.util.CustomType;
@@ -133,6 +135,26 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
 
         Assert.assertTrue(extendedSpecificProxyInstance instanceof OwbInterceptorProxy);
         Assert.assertNotNull(internalInstance.newInstance()); 
+    }
+
+    /**
+     * We originally did have a bug in our proxy code which
+     * blew up if we did have > 127 methods in an intercepted class.
+     */
+    @Test
+    public void testManyMethodsInterceptor() throws Exception
+    {
+        addInterceptor(TransactionalInterceptor.class);
+        startContainer(TonsOfMethodsInterceptedClass.class);
+
+        TonsOfMethodsInterceptedClass instance = getInstance(TonsOfMethodsInterceptedClass.class);
+
+        for (int i = 0; i < 130; i++)
+        {
+            String methodName = "method" + i;
+            Method m = instance.getClass().getDeclaredMethod(methodName);
+            m.invoke(instance);
+        }
     }
 
     public static class DummyBean implements Bean {
