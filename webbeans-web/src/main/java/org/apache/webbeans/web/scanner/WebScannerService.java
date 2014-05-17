@@ -129,7 +129,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
                 String fileDir = new URL(url).getFile();
                 if (fileDir.endsWith(".jar!/"))
                 {
-                    fileDir = fileDir.substring(0, fileDir.lastIndexOf("/")) + "/" + META_INF_BEANS_XML;
+                    fileDir = fileDir.substring(0, fileDir.lastIndexOf("/") + 1) + META_INF_BEANS_XML;
 
                     //fix for weblogic
                     if (!fileDir.startsWith("file:/"))
@@ -163,7 +163,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
 
                 }
 
-                listURL.add(url);
+                listURL.add(addPath);
             }
         }
 
