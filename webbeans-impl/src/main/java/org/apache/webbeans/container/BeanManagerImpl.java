@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
@@ -127,7 +126,7 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     private Map<Class<? extends Annotation>, Context> singleContextMap = new HashMap<Class<? extends Annotation>, Context>();
 
     /**Deployment archive beans*/
-    private Set<Bean<?>> deploymentBeans = new CopyOnWriteArraySet<Bean<?>>();
+    private Set<Bean<?>> deploymentBeans = new HashSet<Bean<?>>();
 
     /**Normal scoped cache proxies*/
     private Map<Contextual<?>, Object> cacheProxies = new ConcurrentHashMap<Contextual<?>, Object>();

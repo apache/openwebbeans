@@ -213,6 +213,8 @@ public class BeansDeployer
 
                 //Check Specialization
                 processSpecializations(scanner);
+
+                removeDisabledBeans();
                 
                 //Fire Event
                 fireAfterBeanDiscoveryEvent();
@@ -255,6 +257,26 @@ public class BeansDeployer
             //if bootstrapping failed, it doesn't make sense to do it again
             //esp. because #addInternalBean might have been called already and would cause an exception in the next run
             deployed = true;
+        }
+    }
+
+    /**
+     * Remove all beans which are not enabled anymore.
+     * This might e.g. happen because they are 'overridden'
+     * by a &#064;Specialized bean.
+     * We remove those beans now to not having to take care later
+     * during {@link org.apache.webbeans.container.BeanManagerImpl#resolve(java.util.Set)}
+     */
+    private void removeDisabledBeans()
+    {
+        Iterator<Bean<?>> beans = webBeansContext.getBeanManagerImpl().getBeans().iterator();
+        while(beans.hasNext())
+        {
+            Bean<?> bean = beans.next();
+            if (!((OwbBean) bean).isEnabled())
+            {
+                beans.remove();
+            }
         }
     }
 
@@ -410,7 +432,7 @@ public class BeansDeployer
     private void fireAfterTypeDiscoveryEvent()
     {
         AlternativesManager alternativesManager = webBeansContext.getAlternativesManager();
-        List<Class<?>> sortedAlternatives = alternativesManager.getSortedAlternatives();
+        List<Class<?>> sortedAlternatives = alternativesManager.getPrioritizedAlternatives();
 
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         manager.fireLifecycleEvent(new AfterTypeDiscoveryImpl(webBeansContext, sortedAlternatives));
@@ -590,9 +612,13 @@ public class BeansDeployer
                         Set<Bean<?>> beans = resolver.implResolveByName(beanName);
                         if(beans.size() > 1)
                         {
-                            beans = resolver.findByAlternatives(beans);                            
-                            if(beans.size() > 1)
+                            try
                             {
+                                resolver.resolve(beans);
+                            }
+                            catch(AmbiguousResolutionException are)
+                            {
+                                // throw the Exception with even more information
                                 InjectionExceptionUtil.throwAmbiguousResolutionExceptionForBeanName(beans, beanName);
                             }   
                         }
@@ -989,6 +1015,7 @@ public class BeansDeployer
     }
 
     /**
+     * TODO this has to be changed to use AnnotatedTypes instead of scanner.getBeanClasses()!
      * Checks specialization.
      * @param scanner scanner instance
      */
@@ -1002,7 +1029,7 @@ public class BeansDeployer
             if (beanClasses != null && beanClasses.size() > 0)
             {
                 //superClassList is used to handle the case: Car, CarToyota, Bus, SchoolBus, CarFord
-                //for which case, the owb should throw exception that both CarToyota and CarFord are 
+                //for which case OWB should throw exception that both CarToyota and CarFord are
                 //specialize Car. 
                 Class<?> superClass;
                 ArrayList<Class<?>> superClassList = new ArrayList<Class<?>>();

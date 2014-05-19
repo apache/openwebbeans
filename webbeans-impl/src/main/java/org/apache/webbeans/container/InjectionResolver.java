@@ -27,6 +27,7 @@ import java.lang.reflect.WildcardType;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,6 +49,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import javax.enterprise.inject.spi.DefinitionException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
+import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
@@ -56,6 +58,7 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.GenericsUtil;
 import org.apache.webbeans.util.InjectionExceptionUtil;
+import org.apache.webbeans.util.SingleItemSet;
 import org.apache.webbeans.util.WebBeansUtil;
 import static org.apache.webbeans.util.InjectionExceptionUtil.throwAmbiguousResolutionException;
 
@@ -78,6 +81,8 @@ public class InjectionResolver
      * Bean Manager
      */
     private WebBeansContext webBeansContext;
+
+    private AlternativesManager alternativesManager;
     
     /**
      * This Map contains all resolved beans via it's type and qualifiers.
@@ -99,7 +104,7 @@ public class InjectionResolver
     public InjectionResolver(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-
+        this.alternativesManager = webBeansContext.getAlternativesManager();
     }
 
     /**
@@ -344,20 +349,6 @@ public class InjectionResolver
             }
         }
 
-        //Look for enable/disable
-        resolvedComponents = findByEnabled(resolvedComponents);
-
-        //Still Ambigious, check for specialization
-        if (resolvedComponents.size() > 1)
-        {
-            //Check for specialization
-            Set<Bean<?>> specializedComponents = findSpecializedForNameResolution(resolvedComponents);
-            if (specializedComponents.size() > 0)
-            {
-                resolvedComponents = specializedComponents;
-            }
-        }
-
         if (resolvedComponents.isEmpty())
         {
             // maintain negative cache but use standard empty set so we can garbage collect
@@ -375,51 +366,6 @@ public class InjectionResolver
         return resolvedComponents;
     }
 
-    private Set<Bean<?>> findByEnabled(Set<Bean<?>> resolvedComponents)
-    {
-        Set<Bean<?>> specializedComponents = new HashSet<Bean<?>>();
-        if (resolvedComponents.size() > 0)
-        {
-            for (Bean<?> bean : resolvedComponents)
-            {
-                AbstractOwbBean<?> component = (AbstractOwbBean<?>) bean;
-
-                if (component.isEnabled())
-                {
-                    specializedComponents.add(component);
-                }
-            }
-        }
-
-        return specializedComponents;
-
-    }
-
-
-    /**
-     * Returns filtered set by specialization.
-     *
-     * @param resolvedComponents result beans
-     * @return filtered set by specialization
-     */
-    private Set<Bean<?>> findSpecializedForNameResolution(Set<Bean<?>> resolvedComponents)
-    {
-        Set<Bean<?>> specializedComponents = new HashSet<Bean<?>>();
-        if (resolvedComponents.size() > 0)
-        {
-            for (Bean<?> bean : resolvedComponents)
-            {
-                AbstractOwbBean<?> component = (AbstractOwbBean<?>) bean;
-
-                if (component.isSpecializedBean())
-                {
-                    specializedComponents.add(component);
-                }
-            }
-        }
-
-        return specializedComponents;
-    }
 
     /**
      * Resolution by type.
@@ -528,16 +474,6 @@ public class InjectionResolver
         // Look for qualifiers
         resolvedComponents = findByQualifier(resolvedComponents, injectionPointType, qualifiers);
 
-        // Ambigious resolution, check for specialization
-        /*
-        // super beans are deactivated so it is useless
-        if (resolvedComponents.size() > 1)
-        {
-            //Look for specialization
-            resolvedComponents = findBySpecialization(resolvedComponents);
-        }
-        */
-
         resolvedBeansByType.put(cacheKey, resolvedComponents);
         if (logger.isLoggable(Level.FINE))
         {
@@ -569,111 +505,53 @@ public class InjectionResolver
     }
 
     /**
-     * Returns specialized beans if exists, otherwise return input result
-     *
-     * @param result result beans
-     * @return specialized beans if exists, otherwise return input result
-     */
-    public Set<Bean<?>> findBySpecialization(Set<Bean<?>> result)
-    {
-        Iterator<Bean<?>> it = result.iterator();
-        Set<Bean<?>> res = new HashSet<Bean<?>>();
-
-        while (it.hasNext())
-        {
-            AbstractOwbBean<?> component = (AbstractOwbBean<?>) it.next();
-            if (component.isSpecializedBean() && component.isEnabled())
-            {
-                res.add(component);
-            }
-        }
-
-        if (res.size() > 0)
-        {
-            return res;
-        }
-
-        return result;
-    }
-
-    /**
      * Gets alternatives from set.
      *
-     * @param result resolved set
-     * @return containes alternatives
+     * @param beans resolved set
+     * @return contains alternatives
      */
-    public Set<Bean<?>> findByAlternatives(Set<Bean<?>> result)
+    public <X> Set<Bean<? extends X>> findByAlternatives(Set<Bean<? extends X>> beans)
     {
-        return findByAlternatives(result, null);
-    }
+        // first check whether we have Alternatives with a Priority annotation
+        List<Class<?>> prioritizedAlternatives = alternativesManager.getPrioritizedAlternatives();
 
-    /**
-     * Gets alternatives from set.
-     *
-     * @param result resolved set
-     * @return containes alternatives
-     */
-    public Set<Bean<?>> findByAlternatives(Set<Bean<?>> result, String bdaBeansXMLFilePath)
-    {
-        Set<Bean<?>> alternativeSet = new HashSet<Bean<?>>();
-        Set<Bean<?>> enableSet = new HashSet<Bean<?>>();
-        boolean containsAlternative = false;
-
-        if (bdaBeansXMLFilePath != null)
+        for (Class<?> alternativeClazz : prioritizedAlternatives)
         {
-            // per BDA beans.xml
-            for (Bean<?> bean : result)
+            for (Bean<? extends X> bean: beans)
             {
-                if (bean.isAlternative())
+                if (alternativeClazz.equals(bean.getBeanClass()))
                 {
-                    if (isAltBeanInInjectionPointBDA(bdaBeansXMLFilePath, bean))
-                    {
-                        if (!containsAlternative)
-                        {
-                            containsAlternative = true;
-                        }
-                        alternativeSet.add(bean);
-                    }
+                    return new SingleItemSet<Bean<? extends X>>(bean);
                 }
-                else
+            }
+
+        }
+
+
+        // if none such Alternative got found let's check the 'old' alternatives from beans.xml
+        Set<Bean<? extends X>> alternativeSet = new HashSet<Bean<? extends X>>();
+        Set<Bean<? extends X>> enableSet = new HashSet<Bean<? extends X>>();
+
+        for (Bean<? extends X> bean : beans)
+        {
+            if (bean.isAlternative())
+            {
+                alternativeSet.add(bean);
+            }
+            else
+            {
+                if (alternativeSet.isEmpty())
                 {
-                    if (!containsAlternative)
+                    AbstractOwbBean<?> temp = (AbstractOwbBean<?>) bean;
+                    if (temp.isEnabled())
                     {
-                        // Do not check isEnabled flag to allow beans to be
-                        // added on a per BDA basis when a bean is disabled due
-                        // to specialize alternative defined in a different BDA
                         enableSet.add(bean);
                     }
                 }
             }
         }
-        else
-        {
-            for (Bean<?> bean : result)
-            {
-                if (bean.isAlternative())
-                {
-                    if (!containsAlternative)
-                    {
-                        containsAlternative = true;
-                    }
-                    alternativeSet.add(bean);
-                }
-                else
-                {
-                    if (!containsAlternative)
-                    {
-                        AbstractOwbBean<?> temp = (AbstractOwbBean<?>) bean;
-                        if (temp.isEnabled())
-                        {
-                            enableSet.add(bean);
-                        }
-                    }
-                }
-            }
-        }
 
-        if (containsAlternative)
+        if (!alternativeSet.isEmpty())
         {
             return alternativeSet;
         }
@@ -681,15 +559,21 @@ public class InjectionResolver
         return enableSet;
     }
 
+    /**
+     * resolve any ambiguity by checking for Alternatives.
+     * If any &#064;Alternative exists, then we pick the one with the
+     * highest priority.
+     */
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
     {
-        if (beans == null)
+        if (beans == null || beans.isEmpty())
         {
             return null;
         }
 
         if (beans.size() == 1)
         {
+            // if there is only one Bean left, then there is for sure no ambiguity.
             return beans.iterator().next();
         }
 
@@ -702,11 +586,7 @@ public class InjectionResolver
 
         if(set.size() > 1)
         {
-            set = findBySpecialization(set);
-            if(set.size() > 1)
-            {
-                throwAmbiguousResolutionException(set);
-            }
+            throwAmbiguousResolutionException(set);
         }
 
         return (Bean<? extends X>)set.iterator().next();
@@ -719,56 +599,15 @@ public class InjectionResolver
             return Collections.emptySet();
         }
 
-        Set set = new HashSet<Bean<Object>>();
-        for(Bean<? extends X> obj : beans)
-        {
-            set.add(obj);
-        }
-
-        set = findByAlternatives(set);
+        Set set = findByAlternatives(beans);
 
         if (set == null || set.isEmpty())
         {
             return Collections.emptySet();
         }
 
-        /*
-        // specialized bean are disabled so no need to refilter
-        if(set.size() > 1)
-        {
-            set = findBySpecialization(set);
-        }
-        */
-
         return set;
     }
-
-    private boolean isAltBeanInInjectionPointBDA(String bdaBeansXMLFilePath, Bean<?> altBean)
-    {
-
-        ScannerService scannerService = webBeansContext.getScannerService();
-        BDABeansXmlScanner beansXMLScanner = scannerService.getBDABeansXmlScanner();
-
-        Set<Class<?>> definedAlternatives = beansXMLScanner.getAlternatives(bdaBeansXMLFilePath);
-
-        if (definedAlternatives.contains(altBean.getBeanClass()))
-        {
-            return true;
-        }
-
-        Set<Class<? extends Annotation>> definedStereotypes = beansXMLScanner.getStereotypes(bdaBeansXMLFilePath);
-
-        for (Class<? extends Annotation> stereoAnnotations : definedStereotypes)
-        {
-            if (AnnotationUtil.hasClassAnnotation(altBean.getBeanClass(), stereoAnnotations))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
 
     /**
      * Returns filtered bean set according to the qualifiers.

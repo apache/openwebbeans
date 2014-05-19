@@ -75,7 +75,7 @@ public class AlternativesManager
      */
     private final List<PriorityAlternative> priorityAlternatives = new ArrayList<PriorityAlternative>();
 
-    private List<Class<?>> sortedAlternatives = null;
+    private List<Class<?>> prioritizedAlternatives = null;
 
 
 
@@ -83,6 +83,8 @@ public class AlternativesManager
     {
         this.webBeansContext = webBeansContext;
     }
+
+
 
     /**
      * This methods gets called while scanning the various beans.xml files.
@@ -145,37 +147,27 @@ public class AlternativesManager
      * the alternatives added via XML get added.
      * @return the list of sorted alternatives
      */
-    public List<Class<?>> getSortedAlternatives()
+    public List<Class<?>> getPrioritizedAlternatives()
     {
-        if (sortedAlternatives == null)
+        if (prioritizedAlternatives == null)
         {
             Collections.sort(priorityAlternatives);
 
-            sortedAlternatives = new ArrayList<Class<?>>(priorityAlternatives.size());
+            prioritizedAlternatives = new ArrayList<Class<?>>(priorityAlternatives.size());
 
             for (PriorityAlternative priorityAlternative : priorityAlternatives)
             {
                 // add in reverse order
-                sortedAlternatives.add(0, priorityAlternative.clazz);
+                prioritizedAlternatives.add(priorityAlternative.clazz);
             }
         }
 
-        return sortedAlternatives;
-    }
-
-
-    /**
-     * @deprecated this is not enough since CDI-1.1. We now need to handle a weighted list of enabled alternatives
-     */
-    public boolean isClassAlternative(Class<?> clazz)
-    {
-        return configuredAlternatives.contains(clazz);
+        return prioritizedAlternatives;
     }
 
 
     /**
      * @return <code>true</code> if the given bean is a configured alternative
-     * @deprecated this is not enough since CDI-1.1. We now need to handle a weighted list of enabled alternatives
      */
     public boolean isAlternative(Bean<?> bean)
     {
@@ -188,7 +180,7 @@ public class AlternativesManager
     public boolean isAlternative(Class<?> beanType, Set<Class<? extends Annotation>> stereotypes)
     {
         if(configuredAlternatives.contains(beanType) ||
-           sortedAlternatives.contains(beanType))
+           prioritizedAlternatives.contains(beanType))
         {
             return true;
         }
@@ -211,7 +203,7 @@ public class AlternativesManager
         configuredStereotypeAlternatives.clear();
         priorityAlternatives.clear();
 
-        sortedAlternatives = null;
+        prioritizedAlternatives = null;
     }
 
     private static class PriorityAlternative implements Comparable<PriorityAlternative>
@@ -230,9 +222,13 @@ public class AlternativesManager
         {
             if (priority != o.priority)
             {
-                return Integer.compare(priority, o.priority);
+                // sort descending
+                return (priority > o.priority) ? -1 : ((priority == o.priority) ? 0 : 1);
             }
 
+            // we additionally sort according to the class name to at least
+            // prevent randomness if 2 classes have the same ordinal.
+            // see CDI-437 for more info about why it's broken in CDI-1.1.
             return clazz.getName().compareTo(o.clazz.getName());
         }
     }

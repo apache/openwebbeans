@@ -751,7 +751,7 @@ public final class WebBeansUtil
                     //disable superbean if the current bean is not an alternative
                     ((AbstractOwbBean<?>)superBean).setEnabled(false);
                 }
-                else if(altManager.isClassAlternative(specializedClass))
+                else if(altManager.isAlternative(specialized))
                 {
                     //disable superbean if the current bean is an enabled alternative
                     ((AbstractOwbBean<?>)superBean).setEnabled(false);

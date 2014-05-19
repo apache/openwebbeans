@@ -29,6 +29,8 @@ import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.concepts.alternatives.common.AlternativeBean;
 import org.apache.webbeans.test.concepts.alternatives.common.AlternativeOnClassAndProducerMethodBean;
 import org.apache.webbeans.test.concepts.alternatives.common.AlternativeOnClassOnlyBean;
+import org.apache.webbeans.test.concepts.alternatives.common.AlternativeWithEvenHigherPriorityBean;
+import org.apache.webbeans.test.concepts.alternatives.common.AlternativeWithHighPriorityBean;
 import org.apache.webbeans.test.concepts.alternatives.common.AlternativeWithPriorityBean;
 import org.apache.webbeans.test.concepts.alternatives.common.DefaultBeanProducerWithoutDisposes;
 import org.apache.webbeans.test.concepts.alternatives.common.Pen;
@@ -129,5 +131,21 @@ public class AlternativeBeanResolvingTest extends AbstractUnitTest
         Assert.assertNotNull(simpleInterface);
         Assert.assertEquals(AlternativeWithPriorityBean.class, simpleInterface.getImplementationType());
     }
+
+    /**
+     * Test alternatives which are NOT in any beans.xml but activated
+     * by having a Priority annotation.
+     */
+    @Test
+    public void testMultiplePriorityAlternative() throws Exception
+    {
+        startContainer(AlternativeWithPriorityBean.class, AlternativeWithEvenHigherPriorityBean.class, AlternativeWithHighPriorityBean.class, SimpleBean.class);
+
+        SimpleInterface simpleInterface = getInstance(SimpleInterface.class);
+        Assert.assertNotNull(simpleInterface);
+        Assert.assertEquals(AlternativeWithEvenHigherPriorityBean.class, simpleInterface.getImplementationType());
+    }
+
+
 
 }
