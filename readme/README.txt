@@ -1,5 +1,5 @@
 -------------------------------
-Apache OpenWebBeans 1.2.4
+Apache OpenWebBeans 1.2.5
 -------------------------------
 Welcome!
 
@@ -76,6 +76,21 @@ of the Application. This is especially the case for <alternatives> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application. This behaviour will most likely also be the default behaviour
 in the CDI-1.1 JSR-346 specification.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.2.5
+-------------------------------------------
+
+Bug
+
+    [OWB-953] - Bean scanning doesn't work in Websphere 7
+    [OWB-956] - DefinitionException when iterateing over instance of org.apache.webbeans.inject.instance.InstanceImpl
+    [OWB-957] - interceptor proxies blow up if you have more than 127 methods in a class
+
+Task
+
+    [OWB-899] - code cleanup for owb-1.2.1 release
 
 
 -------------------------------------------
