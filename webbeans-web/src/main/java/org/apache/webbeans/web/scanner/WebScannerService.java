@@ -152,8 +152,12 @@ public class WebScannerService extends AbstractMetaDataDiscovery
                 }
                 else
                 {
-                    //X TODO check!
-                    addPath = "file:" + url + "META-INF/beans.xml";
+                    addPath = url + "META-INF/beans.xml";
+
+                    if(!addPath.startsWith("file:/"))
+                    {
+                        addPath = "file:/" + addPath;
+                    }
 
                     if (logger.isLoggable(Level.FINE))
                     {
