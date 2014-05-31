@@ -50,7 +50,7 @@ under the License.
             <version>${project.version}</version>
         </dependency>
         
-	<!-- Interceptor API -->
+    <!-- Interceptor API -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-interceptor_1.1_spec</artifactId>
@@ -116,12 +116,8 @@ under the License.
         <finalName>jsf2sample</finalName>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>tomcat-maven-plugin</artifactId>
-                <version>1.1</version>
-                <configuration>
-                    <url>http://localhost:8080/manager/text</url>
-                </configuration>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
