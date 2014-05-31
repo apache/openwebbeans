@@ -78,7 +78,8 @@
         <geronimo_interceptor.version>1.0</geronimo_interceptor.version>
         <geronimo_validation.version>1.1</geronimo_validation.version>
         <openejb.version>3.1.4</openejb.version>
-        <myfaces.version>2.0.7</myfaces.version>
+        <myfaces.version>1.2.9</myfaces.version>
+        <myfaces2.version>2.2.3</myfaces2.version>
         <xbean.version>3.17</xbean.version>
     </properties>
     
@@ -119,7 +120,6 @@
             <email>gerdogdu at apache dot org</email>
             <roles>
                 <role>PMC</role>
-                <role>Chair</role>
             </roles>
         </developer>
         <developer>
@@ -225,7 +225,7 @@
             <email>arne at apache dot org</email>
             <timezone>+1</timezone>
             <roles>
-                <role>committer</role>
+                <role>PMC</role>
             </roles>
         </developer>
         <developer>
@@ -234,7 +234,7 @@
             <email>tandraschko at apache dot org</email>
             <timezone>+1</timezone>
             <roles>
-                <role>committer</role>
+                <role>PMC</role>
             </roles>
         </developer>
     </developers>
@@ -532,6 +532,11 @@
                 <artifactId>geronimo-servlet_2.5_spec</artifactId>
                 <version>${geronimo_servlet.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-servlet_3.0_spec</artifactId>
+                <version>1.0</version>
+            </dependency>
 
             <dependency>
                 <groupId>dom4j</groupId>
@@ -561,13 +566,13 @@
             <dependency>
                 <groupId>org.apache.myfaces.core</groupId>
                 <artifactId>myfaces-api</artifactId>
-                <version>${myfaces.version}</version>
+                <version>${myfaces2.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.myfaces.core</groupId>
                 <artifactId>myfaces-impl</artifactId>
-                <version>${myfaces.version}</version>
+                <version>${myfaces2.version}</version>
             </dependency>
 
             <dependency>

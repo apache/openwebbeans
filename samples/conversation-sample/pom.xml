@@ -37,6 +37,23 @@ under the License.
     </properties>
 
     <dependencies>
+        <!-- JSR-299 API -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jcdi_1.0_spec</artifactId>
+        </dependency>
+
+        <!-- JSR-330 API -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-atinject_1.0_spec</artifactId>
+        </dependency>
+
+        <!-- SPI API -->
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-spi</artifactId>
+        </dependency>
 
         <!-- JSR-299 Impl -->
         <dependency>
@@ -69,20 +86,26 @@ under the License.
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-web</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.openwebbeans</groupId>
+                    <artifactId>openwebbeans-el22</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- MyFaces API -->
         <dependency>
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-api</artifactId>
-            <version>1.2.8</version>
+            <version>${myfaces.version}</version>
         </dependency>
 
         <!-- MyFaces IMPL -->
         <dependency>
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-impl</artifactId>
-            <version>1.2.8</version>
+            <version>${myfaces.version}</version>
         </dependency>
 
         <!-- JSF Facelet -->
@@ -91,38 +114,14 @@ under the License.
             <artifactId>jsf-facelets</artifactId>
             <version>1.1.14</version>
         </dependency>
-
-        <!-- JSR-299 API -->
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jcdi_1.0_spec</artifactId>
-        </dependency>
-
-        <!-- JSR-330 API -->
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-atinject_1.0_spec</artifactId>
-        </dependency>
-
-        <!-- SPI API -->
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-spi</artifactId>
-        </dependency>
-
     </dependencies>
 
     <build>
         <finalName>conversation-sample</finalName>
         <plugins>
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>maven-jetty-plugin</artifactId>
-                <version>6.1.18</version>
-                <configuration>
-                    <contextPath>${project.build.finalName}</contextPath>
-                    <scanIntervalSeconds>3</scanIntervalSeconds>
-                </configuration>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat6-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
