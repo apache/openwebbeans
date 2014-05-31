@@ -43,7 +43,7 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
     @Override
     public String getActionURL(FacesContext context, String viewId)
     {
-        if(isOwbApplication())
+        if(!isOwbApplication())
         {
             return delegate.getActionURL(context, viewId);
         }
