@@ -187,7 +187,7 @@ public class SubclassProxyFactory extends AbstractProxyFactory
                 exceptionTypeNames[i] = Type.getType(exceptionTypes[i]).getInternalName();
             }
 
-            int targetModifiers = delegatedMethod.getModifiers() & (Modifier.PROTECTED | Modifier.PUBLIC);
+            int targetModifiers = delegatedMethod.getModifiers() & (Modifier.PROTECTED | Modifier.PUBLIC | MODIFIER_VARARGS);
 
             MethodVisitor mv = cw.visitMethod(targetModifiers, delegatedMethod.getName(), methodDescriptor, null, exceptionTypeNames);
 

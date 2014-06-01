@@ -37,4 +37,10 @@ public class TransactionalChildBean extends TransactionalBaseBean
     {
         return "21";
     }
+
+    public int methodWithVarAargs(String... strings)
+    {
+        return strings.length;
+    }
+
 }
