@@ -21,7 +21,7 @@ under the License.
   <display-name>guess</display-name>
   
   <welcome-file-list>
-  	<welcome-file>index.html</welcome-file>
+      <welcome-file>index.html</welcome-file>
   </welcome-file-list>
   
   <listener>
@@ -37,10 +37,10 @@ under the License.
     <servlet-name>Faces Servlet</servlet-name>
     <url-pattern>*.jsf</url-pattern>
   </servlet-mapping>
-	
-	<context-param>
+
+    <context-param>
       <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
       <param-value>.xhtml</param-value>
    </context-param>
-	  
+
 </web-app>

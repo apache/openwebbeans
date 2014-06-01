@@ -69,20 +69,26 @@ under the License.
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-web</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.openwebbeans</groupId>
+                    <artifactId>openwebbeans-el22</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- MyFaces API -->
         <dependency>
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-api</artifactId>
-            <version>1.2.8</version>
+            <version>${myfaces.version}</version>
         </dependency>
 
         <!-- MyFaces IMPL -->
         <dependency>
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-impl</artifactId>
-            <version>1.2.8</version>
+            <version>${myfaces.version}</version>
         </dependency>
 
         <!-- JSF Facelet -->
@@ -116,13 +122,8 @@ under the License.
         <finalName>conversation-sample</finalName>
         <plugins>
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>maven-jetty-plugin</artifactId>
-                <version>6.1.18</version>
-                <configuration>
-                    <contextPath>${project.build.finalName}</contextPath>
-                    <scanIntervalSeconds>3</scanIntervalSeconds>
-                </configuration>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat6-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

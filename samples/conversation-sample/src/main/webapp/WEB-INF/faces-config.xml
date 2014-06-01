@@ -24,17 +24,17 @@ under the License.
  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
 
    <navigation-rule>
-    	<from-view-id>/buy.xhtml</from-view-id>
-    	<navigation-case>
-    		<from-outcome>toListingPage</from-outcome>
+        <from-view-id>/buy.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>toListingPage</from-outcome>
                 <to-view-id>/listing.xhtml</to-view-id>
-    		<redirect/>
-    	</navigation-case>
+            <redirect/>
+        </navigation-case>
     </navigation-rule>
     
-    	 <application>
+         <application>
   <view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
  </application>
     
-		
+
 </faces-config>

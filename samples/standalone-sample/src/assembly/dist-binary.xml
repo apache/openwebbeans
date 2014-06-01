@@ -27,30 +27,30 @@ under the License.
     <includeBaseDirectory>false</includeBaseDirectory>
 
     <dependencySets>
-		
-		<dependencySet>
+
+        <dependencySet>
             <outputDirectory/>
             <includes>
                 <include>org.apache.openwebbeans:standalone-sample</include>
             </includes>
         </dependencySet>
-		
-		
+
+
         <dependencySet>
             <outputDirectory></outputDirectory>
             <includes>
                 <include>org.apache.openwebbeans:openwebbeans-impl</include>
                 <include>org.apache.openwebbeans:openwebbeans-spi</include>
                 <include>org.apache.geronimo.specs:geronimo-el_2.2_spec</include>
-				<include>org.apache.geronimo.specs:geronimo-interceptor_1.1_spec</include>
+                <include>org.apache.geronimo.specs:geronimo-interceptor_1.1_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-atinject_1.0_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-jcdi_1.0_spec</include>
-				<include>dom4j:dom4j</include>
+                <include>dom4j:dom4j</include>
             </includes>
-	    <excludes>
-			<exclude>org.apache.openwebbeans:openwebbeans-spi:jar:sources</exclude>
-			<exclude>org.apache.openwebbeans:openwebbeans-impl:jar:sources</exclude>
-	    </excludes>
+        <excludes>
+            <exclude>org.apache.openwebbeans:openwebbeans-spi:jar:sources</exclude>
+            <exclude>org.apache.openwebbeans:openwebbeans-impl:jar:sources</exclude>
+        </excludes>
         </dependencySet>
 
 
