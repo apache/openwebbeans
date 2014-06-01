@@ -32,8 +32,7 @@ import javax.inject.Named;
 
 @Named
 @ConversationScoped
-public class
-        ShoppingBean implements Serializable
+public class ShoppingBean implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
