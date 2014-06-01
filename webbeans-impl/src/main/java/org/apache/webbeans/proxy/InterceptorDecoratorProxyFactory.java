@@ -315,7 +315,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
                 exceptionTypeNames[i] = Type.getType(exceptionTypes[i]).getInternalName();
             }
 
-            int targetModifiers = modifiers & (Modifier.PROTECTED | Modifier.PUBLIC);
+            int targetModifiers = modifiers & (Modifier.PROTECTED | Modifier.PUBLIC | MODIFIER_VARARGS);
 
             MethodVisitor mv = cw.visitMethod(targetModifiers, delegatedMethod.getName(), methodDescriptor, null, exceptionTypeNames);
 
@@ -376,7 +376,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         }
 
         // push the method definition
-        int modifier = modifiers & (Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED);
+        int modifier = modifiers & (Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED | Opcodes.ACC_VARARGS);
 
         MethodVisitor mv = cw.visitMethod(modifier, method.getName(), Type.getMethodDescriptor(method), null, null);
         mv.visitCode();

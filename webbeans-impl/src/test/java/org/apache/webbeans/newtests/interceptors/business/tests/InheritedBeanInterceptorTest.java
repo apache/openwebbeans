@@ -25,6 +25,7 @@ import org.apache.webbeans.newtests.interceptors.business.common.TransactionalCh
 import org.apache.webbeans.newtests.interceptors.common.TransactionInterceptor;
 import org.junit.Test;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -63,6 +64,18 @@ public class InheritedBeanInterceptorTest extends AbstractUnitTest
         Assert.assertEquals("42", child.doBase());
         Assert.assertTrue(TransactionInterceptor.ECHO);
         Assert.assertEquals(1, TransactionInterceptor.count);
+
+        Assert.assertEquals(3, child.methodWithVarAargs("A", "B", "C"));
+        Assert.assertEquals(1, child.methodWithVarAargs("A"));
+
+        Method[] methods = child.getClass().getDeclaredMethods();
+        for (Method method : methods)
+        {
+            if (method.getName().equals("methodWithVarAargs"))
+            {
+                Assert.assertTrue(method.isVarArgs());
+            }
+        }
 
         shutDownContainer();
         

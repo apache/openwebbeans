@@ -39,6 +39,14 @@ public abstract class AbstractProxyFactory
 {
     public final static int MAX_CLASSLOAD_TRIES = 10000;
 
+    /**
+     * This is needed as the Modifier#VARARGS is not (yet) public.
+     * Note that the bitcode is the same as Modifier#TRANSIENT.
+     * But 'varargs' is only for methods, whereas 'transient' is only for fields.
+     */
+    public static final int MODIFIER_VARARGS = 0x00000080;;
+
+
     protected WebBeansContext webBeansContext;
 
     /**
