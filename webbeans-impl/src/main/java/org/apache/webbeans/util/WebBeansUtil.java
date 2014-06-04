@@ -37,7 +37,6 @@ import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.InterceptedOrDecoratedBeanMetadataBean;
 import org.apache.webbeans.component.InterceptorMetadataBean;
 import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.NewManagedBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerFieldBean;
@@ -52,18 +51,16 @@ import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
 import org.apache.webbeans.component.creation.ProducerMethodBeansBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.exception.WebBeansDeploymentException;
 
-import javax.enterprise.inject.spi.DefinitionException;
 
-import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.portable.InjectionTargetImpl;
-import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
@@ -79,35 +76,13 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
 import javax.decorator.Decorator;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.AfterDeploymentValidation;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMember;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.BeforeShutdown;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.PassivationCapable;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.inject.spi.ProcessBean;
-import javax.enterprise.inject.spi.ProcessInjectionTarget;
-import javax.enterprise.inject.spi.ProcessManagedBean;
-import javax.enterprise.inject.spi.ProcessObserverMethod;
-import javax.enterprise.inject.spi.ProcessProducer;
-import javax.enterprise.inject.spi.ProcessProducerField;
-import javax.enterprise.inject.spi.ProcessProducerMethod;
-import javax.enterprise.inject.spi.ProcessSessionBean;
-import javax.enterprise.inject.spi.Producer;
+import javax.enterprise.inject.spi.*;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -125,12 +100,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Contains some utility methods used in the all project.
@@ -138,6 +112,8 @@ import java.util.Set;
 @SuppressWarnings("unchecked")
 public final class WebBeansUtil
 {
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansUtil.class);
+
     private final WebBeansContext webBeansContext;
 
     public WebBeansUtil(WebBeansContext webBeansContext)
@@ -189,7 +165,7 @@ public final class WebBeansUtil
     {
         Asserts.assertNotNull(bean,"Bean is null");
 
-        Type type = null;
+        Type type;
 
         if(bean instanceof ProducerMethodBean)
         {
@@ -362,31 +338,63 @@ public final class WebBeansUtil
 
     /**
      * Check that simple web beans class has compatible constructor.
-     * @param clazz web beans simple class
+     * @param annotatedType web beans annotatedType
      * @throws WebBeansConfigurationException if the web beans has incompatible
      *             constructor
      */
-    public boolean isConstructorOk(Class<?> clazz) throws WebBeansConfigurationException
+    public boolean isConstructorOk(AnnotatedType<?> annotatedType) throws WebBeansConfigurationException
     {
-        Asserts.nullCheckForClass(clazz);
+        Class<?> clazz = annotatedType.getJavaClass();
 
         if (getNoArgConstructor(clazz) != null)
         {
+            // if we have a default ct, then all is fine in any case
             return true;
         }
 
-        Constructor<?>[] constructors = webBeansContext.getSecurityService().doPrivilegedGetDeclaredConstructors(clazz);
+        if (isNormalScoped(annotatedType))
+        {
+            logger.info("Bean implementation class : " + clazz.getName() + " must define at least one Constructor");
+            return false;
+        } // else not an issue
 
-        for (Constructor<?> constructor : constructors)
+        Set<? extends AnnotatedConstructor<?>> constructors = annotatedType.getConstructors();
+        for (AnnotatedConstructor<?> constructor : constructors)
         {
             if (constructor.getAnnotation(Inject.class) != null)
             {
                 return true;
             }
         }
+        return false;
+    }
+
+    private boolean isNormalScoped(final AnnotatedType<?> type)
+    {
+        final Set<Annotation> annotations = type.getAnnotations();
+        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
+        if (annotations != null)
+        {
+            for (final Annotation a : annotations)
+            {
+                if (AnnotationUtil.hasMetaAnnotation(a.annotationType().getAnnotations(), NormalScope.class)
+                    || AnnotationUtil.hasAnnotation(a.annotationType().getAnnotations(), NormalScope.class))
+                {
+                    return true;
+                }
+                for (ExternalScope externalScope : beanManager.getAdditionalScopes())
+                {
+                    if (externalScope.isNormal() && externalScope.getScope().equals(a))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
 
         return false;
     }
+
 
     public <T> Bean<T> createNewComponent(Class<T> type)
     {
@@ -585,249 +593,6 @@ public final class WebBeansUtil
         }
     }
 
-    /**
-     * Return true if a list of beans are directly specialized/extended each other.
-     *
-     * @param beans, a set of specialized beans.
-     *
-     * @return
-     */
-    protected static boolean isDirectlySpecializedBeanSet(Set<Bean<?>> beans)
-    {
-
-        ArrayList<AbstractOwbBean<?>> beanList = new ArrayList<AbstractOwbBean<?>>();
-
-        for(Bean<?> bb : beans)
-        {
-            AbstractOwbBean<?>bean = (AbstractOwbBean<?>)bb;
-            beanList.add(bean);
-        }
-
-        java.util.Collections.sort(beanList, new java.util.Comparator()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                AbstractOwbBean<?> b1 = (AbstractOwbBean<?>)o1;
-                AbstractOwbBean<?> b2 = (AbstractOwbBean<?>)o2;
-                Class c1 = b1.getReturnType();
-                Class c2 = b2.getReturnType();
-                if (c2.isAssignableFrom(c1))
-                {
-                    return 1;
-                }
-
-                if (c1.isAssignableFrom(c2))
-                {
-                    return -1;
-                }
-
-                throw new InconsistentSpecializationException(c1 + " and " + c2 + "are not assignable to each other." );
-            }
-        });
-
-        for(int i=0; i<beanList.size() - 1; i++)
-        {
-            if (!beanList.get(i).getReturnType().equals(beanList.get(i+1).getReturnType().getSuperclass()))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public void configureSpecializations(List<Class<?>> beanClasses)
-    {
-        for(Class<?> clazz : beanClasses)
-        {
-            configureSpecializations(clazz, beanClasses);
-        }
-    }
-
-    /**
-     * Configures the bean specializations.
-     * <p>
-     * Specialized beans inherit the <code>name</code> property
-     * from their parents. Specialized bean deployment priority
-     * must be higher than its super class related bean.
-     * </p>
-     *
-     * <p>from the spec:<br/>
-     * &quot;If Y has a name and X declares a name explicitly, using @Named,
-     * the container automatically detects the problem and treats it as a definition error.</p>
-     *
-     * @param specializedClass specialized class
-     * @param beanClasses all Classes which are either &#064;Specializes or specialized.
-     * @throws DefinitionException if name is defined
-     * @throws InconsistentSpecializationException related with priority
-     * @throws WebBeansConfigurationException any other exception
-     *
-     * TODO: this method needs to get changed to use AnnotatedTypes
-     */
-    protected void configureSpecializations(Class<?> specializedClass, List<Class<?>> beanClasses)
-    {
-        Asserts.nullCheckForClass(specializedClass);
-
-        Bean<?> superBean = null;
-        Bean<?> specialized;
-        Set<Bean<?>> resolvers = isConfiguredWebBeans(specializedClass, true);
-        AlternativesManager altManager = webBeansContext.getAlternativesManager();
-
-        if (resolvers != null && !resolvers.isEmpty())
-        {
-            specialized = resolvers.iterator().next();
-
-            if(resolvers.size() > 1)
-            {
-                if (!isDirectlySpecializedBeanSet(resolvers))
-                {
-                    throw new InconsistentSpecializationException("More than one specialized bean for class : "
-                            + specializedClass + " is enabled in the deployment.");
-                }
-                // find the widest bean which satisfies the specializedClass
-                for( Bean<?> sp : resolvers)
-                {
-                    if (sp == specialized)
-                    {
-                        continue;
-                    }
-
-                    if (sp.getTypes().size() > specialized.getTypes().size() && sp.getTypes().containsAll(specialized.getTypes()))
-                    {
-                        specialized = sp;
-                    }
-                }
-            }
-
-            Class<?> superClass = specializedClass.getSuperclass();
-
-            resolvers = isConfiguredWebBeans(superClass,false);
-
-            for(Bean<?> candidates : resolvers)
-            {
-                AbstractOwbBean<?> candidate = (AbstractOwbBean<?>)candidates;
-
-                if(!(candidate instanceof NewBean))
-                {
-                    if(candidate.getReturnType().equals(superClass))
-                    {
-                        superBean = candidates;
-                        break;
-                    }
-                }
-            }
-
-            if (superBean != null)
-            {
-                for (Class<?> beanClass: beanClasses)
-                {
-                    if (beanClass.equals(specializedClass))
-                    {
-                        continue;
-                    }
-                    if (beanClass.getSuperclass().equals(superClass))
-                    {
-                        InconsistentSpecializationException exception = new InconsistentSpecializationException(superClass.getName()
-                                + " is @Specialized by two classes: " + beanClass.getName() + " and " + specializedClass.getName());
-                        throw new WebBeansDeploymentException(exception);
-                    }
-                }
-                if (!specialized.getTypes().containsAll(superBean.getTypes()))
-                {
-                    throw new DefinitionException("@Specialized Class : " + specializedClass.getName()
-                            + " must have all bean types of its super class");
-                }
-                webBeansContext.getBeanManagerImpl().getNotificationManager().disableOverriddenObservers(specializedClass);
-
-                // Recursively configure super class first if super class is also a special bean.
-                // So the name and bean meta data could be populated to this beanclass.
-                if (beanClasses.contains(superClass) && ((AbstractOwbBean<?>)superBean).isEnabled())
-                {
-                    configureSpecializations(superClass, beanClasses);
-                }
-
-                if (!AnnotationUtil.hasClassAnnotation(specializedClass, Alternative.class))
-                {
-                    //disable superbean if the current bean is not an alternative
-                    ((AbstractOwbBean<?>)superBean).setEnabled(false);
-                }
-                else if(altManager.isAlternative(specialized))
-                {
-                    //disable superbean if the current bean is an enabled alternative
-                    ((AbstractOwbBean<?>)superBean).setEnabled(false);
-                }
-
-                AbstractOwbBean<?> comp = (AbstractOwbBean<?>)specialized;
-                if (comp.isSpecializedBean())
-                {
-                    // This comp is already configured in previous invocation
-                    // return directly, else Exception might be fired when set
-                    // bean name again.
-                    return;
-                }
-
-                //Check types of the beans
-                if(comp.getClass() != superBean.getClass())
-                {
-                    throw new InconsistentSpecializationException("@Specialized Class : " + specializedClass.getName()
-                            + " and its super class may be the same type of bean,i.e, ManagedBean, SessionBean etc.");
-                }
-
-                if(superBean.getName() != null)
-                {
-                    if (!superBean.getName().equals(comp.getName()))
-                    {
-                        throw new InconsistentSpecializationException("@Specialized Class : " + specializedClass.getName()
-                                + " may not explicitly declare a bean name");
-                    }
-
-                }
-                comp.setSpecializedBean(true);
-
-                final Map<Class<?>, ProducerMethodBean<?>> parentProducers = new HashMap<Class<?>, ProducerMethodBean<?>>();
-                final Map<Class<?>, ProducerMethodBean<?>> beanProducers = new HashMap<Class<?>, ProducerMethodBean<?>>();
-                for (Bean<?> bean: webBeansContext.getBeanManagerImpl().getComponents())
-                {
-                    if (bean instanceof ProducerMethodBean)
-                    {
-                        final ProducerMethodBean<?> producerBean = (ProducerMethodBean<?>)bean;
-                        final Class<?> returnType = producerBean.getReturnType();
-                        if (producerBean.getBeanClass() == superBean.getBeanClass() && producerBean.getProducer() instanceof ProducerMethodProducer)
-                        {
-                            final ProducerMethodProducer<?, ?> producer = (ProducerMethodProducer<?, ?>) producerBean.getProducer();
-                            producer.specializeBy((Bean) comp);
-
-                            if (beanProducers.keySet().contains(returnType))
-                            {
-                                beanProducers.get(returnType).setSpecializedBean(true);
-                            }
-                            else
-                            {
-                                parentProducers.put(returnType, producerBean);
-                            }
-                        }
-                        else if (specializedClass == bean.getBeanClass())
-                        {
-                            if (parentProducers.keySet().contains(returnType))
-                            {
-                                producerBean.setSpecializedBean(true);
-                            }
-                            else
-                            {
-                                beanProducers.put(returnType, producerBean);
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                throw new DefinitionException("WebBean component class : " + specializedClass.getName()
-                        + " is not enabled for specialized by the " + specializedClass + " class");
-            }
-        }
-
-    }
 
     /**
      * Configure a list of producer method beans, which override the same method
@@ -1012,41 +777,6 @@ public final class WebBeansUtil
     }
 
 
-    public Set<Bean<?>> isConfiguredWebBeans(Class<?> clazz,boolean annotate)
-    {
-        Asserts.nullCheckForClass(clazz);
-
-        Set<Bean<?>> beans = new HashSet<Bean<?>>();
-
-        Set<Bean<?>> components = webBeansContext.getBeanManagerImpl().getComponents();
-        Iterator<Bean<?>> it = components.iterator();
-
-        while (it.hasNext())
-        {
-            AbstractOwbBean<?> bean = (AbstractOwbBean<?>)it.next();
-
-            if (bean.getTypes().contains(clazz)
-                || (EnterpriseBeanMarker.class.isInstance(bean) && bean.getBeanClass().isAssignableFrom(clazz)))
-            {
-                if(annotate)
-                {
-                    if(bean.getReturnType().isAnnotationPresent(Specializes.class))
-                    {
-                        if(!(bean instanceof NewBean))
-                        {
-                            beans.add(bean);
-                        }
-                    }
-                }
-                else
-                {
-                    beans.add(bean);
-                }
-            }
-        }
-
-        return beans;
-    }
 
     public <T> Constructor<T> getNoArgConstructor(Class<T> clazz)
     {
@@ -1264,8 +994,8 @@ public final class WebBeansUtil
             Annotation[] annotationsFromSet = AnnotationUtil.asArray(bean.getQualifiers());
             Method disposal = annotationManager.getDisposalWithGivenAnnotatedMethod(annotatedType, bean.getReturnType(), annotationsFromSet);
 
-            AnnotatedMethod<?> disposalAnnotated = null;
-            GProcessProducerMethod processProducerMethodEvent = null;
+            AnnotatedMethod<?> disposalAnnotated;
+            GProcessProducerMethod processProducerMethodEvent;
             if(disposal != null)
             {
                 disposalAnnotated = webBeansContext.getAnnotatedElementFactory().newAnnotatedMethod(disposal, annotatedType);
@@ -1659,25 +1389,6 @@ public final class WebBeansUtil
     public static boolean isCdiInterceptor(AnnotatedType<?> annotatedType)
     {
         return annotatedType.isAnnotationPresent(javax.interceptor.Interceptor.class);
-    }
-
-    public <T> ManagedBean<T> defineManagedBean(AnnotatedType<T> type)
-    {
-        BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(type).build();
-        ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, type, beanAttributes);
-
-        //Check for Enabled via Alternative
-        ManagedBean<T> managedBean = managedBeanCreator.getBean();
-        new ProducerMethodBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerMethods(managedBean);
-        new ProducerFieldBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerFields(managedBean);
-        new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, managedBean.getAnnotatedType()).defineObserverMethods(managedBean);
-
-        if (managedBean.getProducer() instanceof AbstractProducer)
-        {
-            AbstractProducer<T> producer = (AbstractProducer<T>)managedBean.getProducer();
-            producer.defineInterceptorStack(managedBean, managedBean.getAnnotatedType(), webBeansContext);
-        }
-        return managedBean;
     }
 
     /**

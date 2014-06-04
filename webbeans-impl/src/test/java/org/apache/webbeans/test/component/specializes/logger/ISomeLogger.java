@@ -22,4 +22,6 @@ public interface ISomeLogger
 {
     public void printError(String errorMessage);
 
+    public Class<?> getRealClass();
+
 }

@@ -25,7 +25,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -86,42 +85,6 @@ public final class NotificationManager
         addObserver(observer, typeLiteral.getType());
     }
 
-    /**
-     * <p>This method shall only be called for subclasses.
-     * It will disable all observer methods which are overridden
-     * in the given subclass.</p>
-     */
-    public void disableOverriddenObservers(Class<?> subClass)
-    {
-        for (Set<ObserverMethod<?>> observerMethods: observers.values())
-        {
-            for (Iterator<ObserverMethod<?>> i = observerMethods.iterator(); i.hasNext();)
-            {
-                ObserverMethod<?> observer = i.next();
-                if (observer instanceof ObserverMethodImpl)
-                {
-                    AnnotatedMethod<?> observerMethod = ((ObserverMethodImpl<?>)observer).getObserverMethod();
-
-                    //needs to be a subtype and not the class itself (otherwise all observer-methods get removed)
-                    if (subClass.isAssignableFrom(observerMethod.getJavaMember().getDeclaringClass()) &&
-                            !subClass.equals(observerMethod.getJavaMember().getDeclaringClass()))
-                    {
-                        try
-                        {
-                            subClass.getMethod(observerMethod.getJavaMember().getName(), observerMethod.getJavaMember().getParameterTypes());
-                            i.remove();
-                        }
-                        catch(NoSuchMethodException nsme)
-                        {
-                            // that's perfectly fine.
-                            // it means that we don't need to remove anything because the
-                            // observer method didn't get overridden.
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     public <T> Set<ObserverMethod<? super T>> resolveObservers(T event, EventMetadata metadata)
     {

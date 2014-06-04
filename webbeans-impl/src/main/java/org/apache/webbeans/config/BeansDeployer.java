@@ -51,7 +51,6 @@ import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
-import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -74,13 +73,12 @@ import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.InjectionExceptionUtil;
+import org.apache.webbeans.util.SpecializationUtil;
 import org.apache.webbeans.util.WebBeansConstants;
 import org.apache.webbeans.util.WebBeansUtil;
 
-import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.Model;
-import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.AnnotatedField;
@@ -207,22 +205,26 @@ public class BeansDeployer
 
                 fireAfterTypeDiscoveryEvent();
 
+                // Handle Specialization
+                removeSpecializedTypes(annotatedTypes);
+
                 // create beans from the discovered AnnotatedTypes
                 deployFromAnnotatedTypes(annotatedTypes);
-                
 
-                //Check Specialization
-                processSpecializations(scanner);
 
+                //X TODO configure specialized producer beans.
+                webBeansContext.getWebBeansUtil().configureProducerMethodSpecializations();
+
+                // all beans which got 'overridden' by a Specialized version can be removed now
                 removeDisabledBeans();
                 
-                //Fire Event
+                // We are finally done with our bean discovery
                 fireAfterBeanDiscoveryEvent();
                 
-                //Validate injection Points
+                // Validate injection Points
                 validateInjectionPoints();
                 
-                //Fire Event
+                // fire event
                 fireAfterDeploymentValidationEvent();
 
 
@@ -794,12 +796,8 @@ public class BeansDeployer
         final WebBeansUtil webBeansUtil = webBeansContext.getWebBeansUtil();
 
         // done separately to be able to swallow the logging when not relevant and avoid to pollute logs
-        if (!webBeansUtil.isConstructorOk(beanClass))
+        if (!webBeansUtil.isConstructorOk(type))
         {
-            if (isNormalScoped(type))
-            {
-                logger.info("Bean implementation class : " + beanClass.getName() + " must define at least one Constructor");
-            } // else not an issue
             return false;
         }
 
@@ -816,24 +814,6 @@ public class BeansDeployer
         //we are not allowed to catch possible exceptions thrown by the following method
         webBeansUtil.checkManagedBeanCondition(beanClass);
         return true;
-    }
-
-    private static boolean isNormalScoped(final AnnotatedType<?> type)
-    {
-        final Set<Annotation> annotations = type.getAnnotations();
-        if (annotations != null)
-        {
-            for (final Annotation a : annotations)
-            {
-                if (AnnotationUtil.hasMetaAnnotation(a.annotationType().getAnnotations(), NormalScope.class)
-                        || AnnotationUtil.hasAnnotation(a.annotationType().getAnnotations(), NormalScope.class))
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -1015,52 +995,17 @@ public class BeansDeployer
     }
 
     /**
-     * TODO this has to be changed to use AnnotatedTypes instead of scanner.getBeanClasses()!
-     * Checks specialization.
-     * @param scanner scanner instance
+     * Checks specialization on classes and remove any AnnotatedType which got 'disabled' by having a sub-class with &#064;Specializes.
+     * @param annotatedTypes the annotatedTypes which got picked up during scanning. All 'disabled' annotatedTypes will be removed.
      */
-    protected void processSpecializations(ScannerService scanner)
+    private void removeSpecializedTypes(List<AnnotatedType<?>> annotatedTypes)
     {
         logger.fine("Checking Specialization constraints has started.");
         
         try
         {
-            Set<Class<?>> beanClasses = scanner.getBeanClasses();
-            if (beanClasses != null && beanClasses.size() > 0)
-            {
-                //superClassList is used to handle the case: Car, CarToyota, Bus, SchoolBus, CarFord
-                //for which case OWB should throw exception that both CarToyota and CarFord are
-                //specialize Car. 
-                Class<?> superClass;
-                ArrayList<Class<?>> superClassList = new ArrayList<Class<?>>();
-                ArrayList<Class<?>> specialClassList = new ArrayList<Class<?>>();
-                for(Class<?> specialClass : beanClasses)
-                {
-                    if(AnnotationUtil.hasClassAnnotation(specialClass, Specializes.class))
-                    {
-                        superClass = specialClass.getSuperclass();
-                        if(superClass.equals(Object.class))
-                        {
-                            throw new WebBeansConfigurationException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0003) + specialClass.getName()
-                                                                     + WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0004));
-                        }
-                        if (superClassList.contains(superClass))
-                        {
-                            // since CDI 1.1 we have to wrap this in a DeploymentException
-                            InconsistentSpecializationException exception
-                                = new InconsistentSpecializationException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0005) + superClass.getName());
-                            throw new WebBeansDeploymentException(exception);
-                        }
-                        superClassList.add(superClass);
-                        specialClassList.add(specialClass);
-                    }
-                }
-                webBeansContext.getWebBeansUtil().configureSpecializations(specialClassList);
-            }
-
-
-            //configure specialized producer beans.
-            webBeansContext.getWebBeansUtil().configureProducerMethodSpecializations();
+            SpecializationUtil specializationUtil = new SpecializationUtil(webBeansContext);
+            specializationUtil.removeDisabledTypes(annotatedTypes);
         }
         catch (DefinitionException e)
         {

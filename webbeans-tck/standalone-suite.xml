@@ -26,6 +26,10 @@
 
         <packages>
             <package name="org.jboss.cdi.tck.tests.*">
+                <!-- CHALLENGED TCK TESTS: clarifying this in the EG -->
+                <exclude name="org.jboss.cdi.tck.tests.inheritance.specialization.simple"/>
+
+
                 <!-- the following tests are excluded because we just have not yet implemented this features -->
                 <exclude name="org.jboss.cdi.tck.tests.inheritance.specialization.producer.method.broken.twobeans" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.definition.broken.interceptor" />

@@ -48,6 +48,8 @@ public class AppScopedBean
             producedModel = model;
         }
         System.out.println("produced DependentModel=" + model);
+        OK = false;
+
         return model;
     }
     

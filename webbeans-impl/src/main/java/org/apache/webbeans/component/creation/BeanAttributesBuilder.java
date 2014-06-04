@@ -437,7 +437,10 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
             this.name = name;
         }
     }
-    
+
+    /**
+     * @return the AnnotatedType of the next non-Specialized superclass
+     */
     protected abstract Annotated getSuperAnnotated();
 
     protected abstract void defineNullable();
@@ -517,15 +520,21 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         {
             if (getAnnotated().isAnnotationPresent(Specializes.class))
             {
-                Class<? super C> classToSpecialize = getAnnotated().getJavaClass().getSuperclass();
+                AnnotatedType<? super C>  annotatedToSpecialize = getAnnotated();
                 
-                while (classToSpecialize.isAnnotationPresent(Specializes.class))
+                do
                 {
-                    classToSpecialize = classToSpecialize.getSuperclass();
-                }
+                    Class<? super C> superclass = annotatedToSpecialize.getJavaClass().getSuperclass();
+                    if (superclass.equals(Object.class))
+                    {
+                        throw new DefinitionException("@Specialized Class : " + getAnnotated().getJavaClass().getName()
+                                + " must not directly extend Object.class");
+                    }
+                    annotatedToSpecialize = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(superclass);
+                } while(annotatedToSpecialize.getAnnotation(Specializes.class) != null);
 
-                AnnotatedType<? super C> annotatedToSpecialize = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(classToSpecialize);
-                defineName(annotatedToSpecialize, WebBeansUtil.getManagedBeanDefaultName(classToSpecialize.getSimpleName()));
+
+                defineName(annotatedToSpecialize, WebBeansUtil.getManagedBeanDefaultName(annotatedToSpecialize.getJavaClass().getSimpleName()));
             }
             if (name == null)
             {
@@ -551,12 +560,19 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         @Override
         protected AnnotatedType<? super C> getSuperAnnotated()
         {
-            Class<? super C> superclass = getAnnotated().getJavaClass().getSuperclass();
-            if (superclass == null)
+            AnnotatedType<? super C> annotatedType = getAnnotated();
+            do
             {
-                return null;
-            }
-            return webBeansContext.getAnnotatedElementFactory().newAnnotatedType(superclass);
+                Class<? super C> superclass = annotatedType.getJavaClass().getSuperclass();
+                if (superclass == null || superclass.equals(Object.class))
+                {
+                    return null;
+                }
+                annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(superclass);
+
+            } while (annotatedType.getAnnotation(Specializes.class) != null);
+
+            return annotatedType;
         }
     }
     

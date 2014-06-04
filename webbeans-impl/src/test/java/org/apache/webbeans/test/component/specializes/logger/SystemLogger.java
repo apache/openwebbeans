@@ -34,4 +34,10 @@ public class SystemLogger implements ISomeLogger
     {
         return this.message;
     }
+
+    @Override
+    public Class<?> getRealClass()
+    {
+        return getClass();
+    }
 }

@@ -48,7 +48,7 @@ public class OwbArquillianScannerService implements ScannerService
 
     private final static String WEB_INF_CLASS_FOLDER = "/WEB-INF/classes/";
 
-    private boolean beansXmlBdaScanningEnabled;
+    private final boolean beansXmlBdaScanningEnabled;
     private Archive archive;
 
     private UrlSet beansXmls = new UrlSet();
@@ -82,6 +82,7 @@ public class OwbArquillianScannerService implements ScannerService
     {
         if (archive == null)
         {
+            this.archive = null;
             return;
         }
 

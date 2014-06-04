@@ -39,6 +39,9 @@ public class LoggerSpecializationTest extends AbstractUnitTest
         SpecializedInjector injector = getInstance(SpecializedInjector.class);
         ISomeLogger logger = injector.logger();
         Assert.assertTrue(logger instanceof SystemLogger);
+
+        Assert.assertEquals(SystemLogger.class, logger.getRealClass());
+
         logger.printError("Hello World");
         SystemLogger sysLogger = (SystemLogger)logger;
         Assert.assertEquals("Hello World", sysLogger.getMessage());
@@ -54,6 +57,8 @@ public class LoggerSpecializationTest extends AbstractUnitTest
         
         ISomeLogger logger = injector.logger();
         Assert.assertTrue(logger instanceof MockSpecializedLogger);
+        Assert.assertEquals(MockSpecializedLogger.class, logger.getRealClass());
+
         logger.printError("Hello World");
         MockSpecializedLogger sysLogger = (MockSpecializedLogger)logger;
         Assert.assertEquals("Hello World", sysLogger.getMessage());
