@@ -18,14 +18,19 @@
  */
 package org.apache.webbeans.test.disposes;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Typed;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.util.AnnotationLiteral;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.test.annotation.binding.Users;
 import org.junit.Test;
 
 /**
@@ -35,15 +40,15 @@ public class StaticProducerTest extends AbstractUnitTest
 {
 
     @Test
-    public void testStaticProducer() throws Exception
+    public void testStaticProducerOnBean() throws Exception
     {
         startContainer(ProducerOwner.class);
 
         ProducerOwner.destroyed = null;
 
         MyBean myBean = getInstance(MyBean.class);
-        Assert.assertEquals("testval", myBean.getVal());
         Assert.assertNotNull(myBean);
+        Assert.assertEquals("testval", myBean.getVal());
         Assert.assertEquals(Boolean.FALSE, ProducerOwner.destroyed);
 
         getLifecycle().getContextService().endContext(RequestScoped.class, null);
@@ -51,6 +56,56 @@ public class StaticProducerTest extends AbstractUnitTest
         // now the bean should be destroyed
         Assert.assertEquals(Boolean.TRUE, ProducerOwner.destroyed);
 
+        getLifecycle().getContextService().startContext(RequestScoped.class, null);
+
+
+        ProducerOwner.destroyed = null;
+        Bean<MyBean> bean = getBean(MyBean.class);
+        CreationalContext<MyBean> cc = getBeanManager().createCreationalContext(bean);
+        MyBean myBean1 = (MyBean) getBeanManager().getReference(bean, MyBean.class, cc);
+        Assert.assertEquals("testval", myBean1.getVal());
+        Assert.assertNotNull(myBean1);
+        Assert.assertEquals(Boolean.FALSE, ProducerOwner.destroyed);
+
+        bean.destroy(myBean1, cc);
+        // now the bean should be destroyed
+        Assert.assertEquals(Boolean.TRUE, ProducerOwner.destroyed);
+    }
+
+    @Test
+    public void testStaticProducerOnString() throws Exception
+    {
+        startContainer(ProducerOwner.class);
+
+        ProducerOwner.destroyed = null;
+        Bean<String> bean = getBean(String.class);
+        CreationalContext<String> cc = getBeanManager().createCreationalContext(bean);
+        String myVal = (String) getBeanManager().getReference(bean, String.class, cc);
+        Assert.assertNotNull(myVal);
+        Assert.assertEquals("testval", myVal);
+        Assert.assertEquals(Boolean.FALSE, ProducerOwner.destroyed);
+
+        bean.destroy(myVal, cc);
+        // now the bean should be destroyed
+        Assert.assertEquals(Boolean.TRUE, ProducerOwner.destroyed);
+    }
+
+    @Test
+    public void testStaticUserProducerOnString() throws Exception
+    {
+        startContainer(ProducerOwner.class);
+
+        ProducerOwner.destroyed = null;
+        Bean<String> bean = getBean(String.class, new AnnotationLiteral<Users>() {});
+        CreationalContext<String> cc = getBeanManager().createCreationalContext(bean);
+        String myVal = (String) getBeanManager().getReference(bean, String.class, cc);
+        Assert.assertNotNull(myVal);
+        Assert.assertEquals("user", myVal);
+        Assert.assertEquals(Boolean.FALSE, ProducerOwner.destroyed);
+
+        bean.destroy(myVal, cc);
+        // now the bean should be destroyed
+        Assert.assertEquals(Boolean.TRUE, ProducerOwner.destroyed);
     }
 
 
@@ -66,11 +121,38 @@ public class StaticProducerTest extends AbstractUnitTest
             return new MyBean("testval");
         }
 
-        public static void destroyIt(@Disposes MyBean val)
+        public static void destroyMyBean(@Disposes MyBean val)
         {
             destroyed = Boolean.TRUE;
         }
 
+
+        @Produces
+        @Dependent
+        public static String createString()
+        {
+            destroyed = Boolean.FALSE;
+            return "testval";
+        }
+
+        public static void destroyString(@Disposes String val)
+        {
+            destroyed = Boolean.TRUE;
+        }
+
+        @Produces
+        @Dependent
+        @Users
+        public static String createUserString()
+        {
+            destroyed = Boolean.FALSE;
+            return "user";
+        }
+
+        public static void destroyUserString(@Disposes @Users String val)
+        {
+            destroyed = Boolean.TRUE;
+        }
     }
 
 
