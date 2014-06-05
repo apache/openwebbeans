@@ -31,9 +31,17 @@
     <packaging>jar</packaging>
     <description>All TCK tests for the Apache OpenWebBeans Implementation</description>
 
-    <properties>
-        <cdi.tck.version>1.2.0.Final</cdi.tck.version>
-    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>${arquillian.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
 
@@ -126,6 +134,14 @@
                     <groupId>org.apache.openwebbeans.arquillian</groupId>
                     <artifactId>owb-arquillian-standalone</artifactId>
                     <version>${project.version}</version>
+                </dependency>
+
+
+                <dependency>
+                    <!-- arquillian dependency hell hitting us again... -->
+                    <groupId>org.jboss.arquillian.container</groupId>
+                    <artifactId>arquillian-container-test-impl-base</artifactId>
+                    <version>${arquillian.version}</version>
                 </dependency>
                 
                 <dependency>

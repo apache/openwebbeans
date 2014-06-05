@@ -32,9 +32,6 @@
         <module>owb-arquillian-standalone</module>
     </modules>
 
-    <properties>
-        <arquillian.version>1.1.4.Final</arquillian.version>
-    </properties>
 
     <dependencyManagement>
         <dependencies>

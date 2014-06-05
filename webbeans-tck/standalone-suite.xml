@@ -31,6 +31,7 @@
 
 
                 <!-- the following tests are excluded because we just have not yet implemented this features -->
+<!--
                 <exclude name="org.jboss.cdi.tck.tests.inheritance.specialization.producer.method.broken.twobeans" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.definition.broken.interceptor" />
                 <exclude name="org.jboss.cdi.tck.tests.implementation.producer.field.definition.broken.inject" />
@@ -130,7 +131,8 @@
                 <exclude name="org.jboss.cdi.tck.tests.alternative.selection.stereotype" />
                 <exclude name="org.jboss.cdi.tck.tests.vetoed" />
                 <exclude name="org.jboss.cdi.tck.tests.vetoed.enterprise" />
-                
+-->
+
                 <!-- The following tests are broken and tck issues exist for it -->
                 
             </package>

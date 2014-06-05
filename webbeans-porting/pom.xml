@@ -32,10 +32,6 @@
     <packaging>jar</packaging>
     <description>Apache OpenWebBeans TCK Porting Package</description>
     
-    <properties>
-        <cdi.tck.version>1.1.2.Final</cdi.tck.version>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.jboss.cdi.tck</groupId>
