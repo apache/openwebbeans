@@ -32,7 +32,7 @@
     <description>All TCK tests for the Apache OpenWebBeans Implementation</description>
 
     <properties>
-        <cdi.tck.version>1.1.2.Final</cdi.tck.version>
+        <cdi.tck.version>1.2.0.Final</cdi.tck.version>
     </properties>
 
     <dependencies>

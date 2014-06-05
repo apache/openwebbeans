@@ -15,7 +15,7 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<suite name="JSR-346-TCK" verbose="2">
+<suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue">
     <test name="JSR-346 TCK">
         <groups>
             <run>
