@@ -116,4 +116,9 @@ public class GenericsTest extends AbstractUnitTest
         assertNotNull(foo.getABazEvent());
         assertEquals((String) foo.getAObserverInjectionPoint(), "a produced String");
     }
+
+    @Test
+    public void testEnum() throws Exception{
+        startContainer(BazEnum.class);
+    }
 }
