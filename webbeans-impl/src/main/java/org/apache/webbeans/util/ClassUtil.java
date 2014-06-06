@@ -61,6 +61,8 @@ public final class ClassUtil
         PRIMITIVE_TO_WRAPPERS_MAP.put(Void.TYPE,Void.class);
     }
 
+    public static final Type[] NO_TYPES = new Type[0];
+
     /*
      * Private constructor
      */
@@ -726,7 +728,7 @@ public final class ClassUtil
         }
         else
         {
-            return new Type[0];
+            return NO_TYPES;
         }
     }
 

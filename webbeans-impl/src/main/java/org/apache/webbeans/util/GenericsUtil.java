@@ -462,7 +462,20 @@ public final class GenericsUtil
         else if (type instanceof ParameterizedType)
         {
             ParameterizedType parameterizedType = (ParameterizedType)type;
-            Type[] resolvedTypeArguments = resolveTypes(parameterizedType.getActualTypeArguments(), actualType);
+
+            Type[] resolvedTypeArguments;
+            if (Enum.class.equals(parameterizedType.getRawType()))
+            {
+                // Enums derive from themselves, which would create an infinite loop
+                // we directly escape the loop if we detect this.
+                resolvedTypeArguments = new Type[]{new OwbWildcardTypeImpl(new Type[]{Enum.class}, ClassUtil.NO_TYPES)};
+            }
+            else
+            {
+                resolvedTypeArguments = resolveTypes(parameterizedType.getActualTypeArguments(), actualType);
+
+            }
+
             return new OwbParametrizedTypeImpl(parameterizedType.getOwnerType(), parameterizedType.getRawType(), resolvedTypeArguments);
         }
         else if (type instanceof TypeVariable)

@@ -30,8 +30,8 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.TypeLiteral;
 
+import junit.framework.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
-import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -111,5 +111,20 @@ public class GenericsTest extends AbstractUnitTest
         getBeanManager().fireEvent(new BazSubclass(null));
         assertNotNull(foo.getABazEvent());
         assertEquals((String) foo.getAObserverInjectionPoint(), "a produced String");
+    }
+
+    @Test
+    public void testEnum() throws Exception
+    {
+        startContainer(BazEnum.class);
+    }
+
+    @Test
+    public void testEnumProducer() throws Exception
+    {
+        startContainer(BazEnumProducer.class);
+        BazEnum bazEnum = getInstance(BazEnum.class);
+        Assert.assertNotNull(bazEnum);
+        Assert.assertEquals(BazEnum.YES, bazEnum);
     }
 }
