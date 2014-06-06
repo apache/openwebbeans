@@ -19,21 +19,25 @@
 package org.apache.webbeans.portable.events;
 
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType;
 
 /**
- * Default implementation of the {@link ProcessAnnotatedType}.
- * 
+ * Default implementation of the {@link javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType}.
+ *
  * @param <X> bean class info
  */
-public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
+public class ProcessSyntheticAnnotatedTypeImpl<X> implements ProcessSyntheticAnnotatedType<X>
 {
+
+    private Extension source;
+
     /**Annotated Type*/
     private AnnotatedType<X> annotatedType = null;
-    
+
     /**veto or not*/
     private boolean veto = false;
-    
+
     /**
      * This field gets set to <code>true</code> when a custom AnnotatedType
      * got set in an Extension. In this case we must now take this modified
@@ -41,16 +45,19 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
      */
     private boolean modifiedAnnotatedType = false;
 
-    /**
-     * Creates a new instance with the given annotated type.
-     * 
-     * @param annotatedType annotated type
-     */
-    public ProcessAnnotatedTypeImpl(AnnotatedType<X> annotatedType)
+
+    public ProcessSyntheticAnnotatedTypeImpl(AnnotatedType<X> annotatedType, Extension source)
     {
         this.annotatedType = annotatedType;
+        this.source = source;
     }
-    
+
+    @Override
+    public Extension getSource()
+    {
+        return source;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -69,10 +76,10 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
         annotatedType = type;
         modifiedAnnotatedType = true;
     }
-    
+
     /**
      * Returns sets or not.
-     * 
+     *
      * @return set or not
      */
     public boolean isModifiedAnnotatedType()
@@ -88,10 +95,10 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
     {
         veto = true;
     }
-    
+
     /**
      * Returns veto status.
-     * 
+     *
      * @return veto status
      */
     public boolean isVeto()

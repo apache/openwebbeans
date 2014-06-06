@@ -60,6 +60,7 @@ public class AfterTypeDiscoveryImpl implements AfterTypeDiscovery
     @Override
     public void addAnnotatedType(AnnotatedType<?> type, String id)
     {
+        //X TODO evaluate and file Extension
         webBeansContext.getBeanManagerImpl().addAdditionalAnnotatedType(type, id);
     }
 }

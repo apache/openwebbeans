@@ -54,7 +54,15 @@ public class ErrorStack
             while(it.hasNext())
             {
                 Throwable t = it.next();
-                logger.log(Level.SEVERE, t.getMessage(), t);
+                String message = t.getMessage();
+                if (message != null && message.length() > 0)
+                {
+                    logger.log(Level.SEVERE, t.getMessage(), t);
+                }
+                else
+                {
+                    logger.log(Level.SEVERE, "unknown error", t);
+                }
             }
         }
     }

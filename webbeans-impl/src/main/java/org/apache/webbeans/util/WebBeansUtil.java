@@ -71,6 +71,7 @@ import org.apache.webbeans.portable.events.generics.GProcessProducer;
 import org.apache.webbeans.portable.events.generics.GProcessProducerField;
 import org.apache.webbeans.portable.events.generics.GProcessProducerMethod;
 import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
+import org.apache.webbeans.portable.events.generics.GProcessSyntheticAnnotatedType;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
@@ -940,6 +941,28 @@ public final class WebBeansUtil
     }
 
     /**
+     * Returns <code>ProcessAnnotatedType</code> event.
+     * @param <T> bean type
+     * @param annotatedType bean class
+     * @return event
+     */
+    public <T> GProcessSyntheticAnnotatedType fireProcessSyntheticAnnotatedTypeEvent(AnnotatedType<T> annotatedType)
+    {
+        Extension source = null; //X TODO
+        GProcessSyntheticAnnotatedType gProcessSyntheticAnnotatedType = new GProcessSyntheticAnnotatedType(source, annotatedType);
+
+        //Fires ProcessSyntheticAnnotatedType
+        webBeansContext.getBeanManagerImpl().fireEvent(gProcessSyntheticAnnotatedType, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+
+        if (gProcessSyntheticAnnotatedType.isModifiedAnnotatedType())
+        {
+            webBeansContext.getAnnotatedElementFactory().setAnnotatedType(gProcessSyntheticAnnotatedType.getAnnotatedType());
+        }
+
+        return gProcessSyntheticAnnotatedType;
+    }
+
+    /**
      * Returns <code>ProcessInjectionTarget</code> event.
      * @param <T> bean type
      * @return event
@@ -1169,6 +1192,7 @@ public final class WebBeansUtil
                type.equals(AfterDeploymentValidation.class) ||
                type.equals(BeforeShutdown.class) ||
                type.equals(GProcessAnnotatedType.class) ||
+               type.equals(GProcessSyntheticAnnotatedType.class) ||
                type.equals(GProcessInjectionTarget.class) ||
                type.equals(GProcessProducer.class) ||
                type.equals(GProcessProducerField.class) ||
@@ -1182,6 +1206,7 @@ public final class WebBeansUtil
     public static boolean isExtensionBeanEventType(Type type)
     {
         return type.equals(GProcessAnnotatedType.class) ||
+               type.equals(GProcessSyntheticAnnotatedType.class) ||
                type.equals(GProcessInjectionTarget.class) ||
                type.equals(GProcessManagedBean.class) ||
                type.equals(GProcessSessionBean.class) ||
@@ -1191,6 +1216,7 @@ public final class WebBeansUtil
     public static boolean isDefaultExtensionBeanEventType(Class<?> clazz)
     {
         return clazz.equals(ProcessAnnotatedType.class) ||
+               clazz.equals(ProcessSyntheticAnnotatedType.class) ||
                clazz.equals(ProcessInjectionTarget.class) ||
                clazz.equals(ProcessManagedBean.class) ||
                clazz.equals(ProcessBean.class) ||

@@ -59,6 +59,7 @@ import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
+import org.apache.webbeans.portable.events.ProcessSyntheticAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
 import org.apache.webbeans.portable.events.discovery.AfterTypeDiscoveryImpl;
@@ -705,8 +706,8 @@ public class BeansDeployer
         for (AnnotatedType<?> annotatedType : additionalAnnotatedTypes)
         {
             // Fires ProcessAnnotatedType
-            ProcessAnnotatedTypeImpl<?> processAnnotatedEvent =
-                    webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
+            ProcessSyntheticAnnotatedTypeImpl<?> processAnnotatedEvent =
+                    webBeansContext.getWebBeansUtil().fireProcessSyntheticAnnotatedTypeEvent(annotatedType);
 
             if (!processAnnotatedEvent.isVeto())
             {
