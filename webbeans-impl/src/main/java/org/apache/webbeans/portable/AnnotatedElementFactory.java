@@ -49,10 +49,18 @@ public final class AnnotatedElementFactory
     // Logger instance
     private final static Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedElementFactory.class);
 
-    //Cache of the AnnotatedType
+    /**
+     * Cache of the initial AnnotatedTypes
+     */
     private ConcurrentMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>> annotatedTypeCache =
         new ConcurrentHashMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>>();
-    
+
+    /**
+     * Cache of modified AnnotatedTypes.
+     */
+    private ConcurrentMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>> modifiedAnnotatedTypeCache =
+        new ConcurrentHashMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>>();
+
     //Cache of AnnotatedConstructor
     private ConcurrentMap<Constructor<?>, AnnotatedConstructor<?>> annotatedConstructorCache =
         new ConcurrentHashMap<Constructor<?>, AnnotatedConstructor<?>>();
@@ -77,12 +85,22 @@ public final class AnnotatedElementFactory
 
     /**
      * Get an already registered AnnotatedType. This will NOT create a new one!
-     * @param annotatedClass
-     * @param <X>
-     * @return AnnotatedType
+     * The returned AnnotatedType will reflect all the changes made during the
+     * boot process so far.
+     * If there was no AnnotatedType created yet for the given Class,
+     * <code>null</code> will be returned.
      */
     public <X> AnnotatedType<X> getAnnotatedType(Class<X> annotatedClass)
     {
+        ConcurrentMap<String, AnnotatedType<?>> modifiedAnnotatedClasses = modifiedAnnotatedTypeCache.get(annotatedClass);
+        if (modifiedAnnotatedClasses != null)
+        {
+            AnnotatedType<X> annotatedType = (AnnotatedType<X>) modifiedAnnotatedClasses.get(OWB_DEFAULT_KEY);
+            if (annotatedType != null)
+            {
+                return annotatedType;
+            }
+        }
         return getAnnotatedTypeCache(annotatedClass).get(OWB_DEFAULT_KEY);
     }
 
@@ -114,12 +132,27 @@ public final class AnnotatedElementFactory
 
     public <X> AnnotatedType<X> setAnnotatedType(AnnotatedType<X> annotatedType, String id)
     {
-        ConcurrentMap<String, AnnotatedType<X>> annotatedTypes = getAnnotatedTypeCache(annotatedType.getJavaClass());
+        Class<X> type = annotatedType.getJavaClass();
+        ConcurrentMap<String, AnnotatedType<?>> annotatedTypes = modifiedAnnotatedTypeCache.get(type);
+        if (annotatedTypes == null)
+        {
+            annotatedTypes = new ConcurrentHashMap<String, AnnotatedType<?>>();
+        }
+        ConcurrentMap<String, AnnotatedType<?>> oldAnnotatedTypes = modifiedAnnotatedTypeCache.putIfAbsent(type, annotatedTypes);
+        if (oldAnnotatedTypes != null)
+        {
+            annotatedTypes = oldAnnotatedTypes;
+        }
         return (AnnotatedType<X>) annotatedTypes.put(id, annotatedType);
     }
 
     /**
-     * Creates and configures new annotated type.
+     * Creates and configures a new annotated type.
+     * This always returns the fresh AnnotatedTypes <b>without</b> any modifications
+     * applied by Extensions!.
+     *
+     * To get any AnnotatedTypes which are modified during the boot process you shall use
+     * {@link #getAnnotatedType(Class)}.
      * 
      * @param <X> class info
      * @param annotatedClass annotated class

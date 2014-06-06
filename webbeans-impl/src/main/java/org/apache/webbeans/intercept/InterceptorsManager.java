@@ -123,7 +123,12 @@ public class InterceptorsManager
         Interceptor<T> interceptor = (Interceptor<T>) ejbInterceptors.get(interceptorClass);
         if (interceptor == null)
         {
-            AnnotatedType<T> annotatedType = webBeansContext.getBeanManagerImpl().createAnnotatedType(interceptorClass);
+            AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(interceptorClass);
+            if (annotatedType == null)
+            {
+                annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(interceptorClass);
+            }
+
             BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
             EjbInterceptorBeanBuilder<T> buildr = new EjbInterceptorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
             buildr.defineEjbInterceptorRules();

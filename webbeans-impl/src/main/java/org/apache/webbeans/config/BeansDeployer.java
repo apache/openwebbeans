@@ -932,7 +932,11 @@ public class BeansDeployer
             else
             {
                 Annotation[] classAnnotations;
-                AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
+                AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(clazz);
+                if (annotatedType == null)
+                {
+                    annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
+                }
 
                 ProcessAnnotatedTypeImpl<?> processAnnotatedEvent =
                         webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);

@@ -120,10 +120,15 @@ public abstract class AbstractBeanManager implements BeanManager
 
     public <T> Bean<T> createBean(BeanAttributes<T> attributes, Class<T> type, InjectionTargetFactory<T> factory)
     {
+        AnnotatedType<T> annotatedType = getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(type);
+        if (annotatedType == null)
+        {
+            annotatedType = getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(type);
+        }
         return new InjectionTargetBean<T>(
                 getWebBeansContext(),
                 WebBeansType.THIRDPARTY,
-                getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(type),
+                annotatedType,
                 attributes,
                 type,
                 factory);
