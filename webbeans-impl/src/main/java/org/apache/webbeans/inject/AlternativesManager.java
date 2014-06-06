@@ -123,13 +123,14 @@ public class AlternativesManager
      */
     public void addXmlClazzAlternative(Class<?> alternative)
     {
-        if(AnnotationUtil.hasClassAnnotation(alternative, Alternative.class))
+        if (AnnotationUtil.hasClassAnnotation(alternative, Alternative.class) ||
+            AnnotationUtil.hasMetaAnnotation(alternative.getAnnotations(), Alternative.class))
         {
             configuredAlternatives.add(alternative);
         }
         else
         {
-            throw new WebBeansConfigurationException("Given class : " + alternative.getName() + " is not annotated with @Alternative" );
+            throw new WebBeansConfigurationException("Given class : " + alternative.getName() + " is not annotated with @Alternative");
         }
     }
 
