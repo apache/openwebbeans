@@ -310,6 +310,7 @@ public final class AnnotatedElementFactory
      */
     public void clear()
     {
+        modifiedAnnotatedTypeCache.clear();
         annotatedTypeCache.clear();
         annotatedConstructorCache.clear();
         annotatedFieldCache.clear();
