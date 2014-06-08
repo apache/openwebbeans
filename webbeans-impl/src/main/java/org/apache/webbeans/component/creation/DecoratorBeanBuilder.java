@@ -113,26 +113,17 @@ public class DecoratorBeanBuilder<T>
     {
         if (beanAttributes.getScope() != Dependent.class)
         {
-            if(logger.isLoggable(Level.WARNING))
-            {
-                logger.log(Level.WARNING, OWBLogConst.WARN_0005_1, annotatedType.getJavaClass().getName());
-            }
+            logger.log(Level.WARNING, OWBLogConst.WARN_0005_1, annotatedType.getJavaClass().getName());
         }
 
         if (beanAttributes.getName() != null)
         {
-            if(logger.isLoggable(Level.WARNING))
-            {
-                logger.log(Level.WARNING, OWBLogConst.WARN_0005_2, annotatedType.getJavaClass().getName());
-            }
+            logger.log(Level.WARNING, OWBLogConst.WARN_0005_2, annotatedType.getJavaClass().getName());
         }
 
         if (annotatedType.isAnnotationPresent(Alternative.class))
         {
-            if(logger.isLoggable(Level.WARNING))
-            {
-                logger.log(Level.WARNING, OWBLogConst.WARN_0005_3, annotatedType.getJavaClass().getName());
-            }
+            logger.log(Level.WARNING, OWBLogConst.WARN_0005_3, annotatedType.getJavaClass().getName());
         }
 
 
