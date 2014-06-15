@@ -25,7 +25,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.GenericsUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.enterprise.event.Observes;
@@ -33,20 +32,15 @@ import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Abstract implementation of {@link AbstractBeanBuilder}.
- * 
- * @version $Rev$ $Date$
- *
  * @param <T> bean class type
  */
-public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>>
+public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>> extends AbstractBeanBuilder
 {    
     
     protected final WebBeansContext webBeansContext;
@@ -100,7 +94,6 @@ public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>>
                 {
                     producerMethodBeanCreator.configureProducerSpecialization(producerMethodBean, (AnnotatedMethod<T>) annotatedMethod);
                 }
-                MethodProducerFactory<?> producerFactory = new MethodProducerFactory(annotatedMethod, bean, webBeansContext);
                 producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
                 
                 webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
@@ -114,30 +107,8 @@ public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>>
         }
 
         // valid all @Disposes have a @Produces
-        for (final AnnotatedMethod<? super T> annotatedMethod : annotatedMethods)
-        {
-            for (final AnnotatedParameter<?> param : annotatedMethod.getParameters())
-            {
-                if (param.isAnnotationPresent(Disposes.class))
-                {
-                    boolean found = false;
-                    for (final ProducerMethodBean<?> producer : producerBeans)
-                    {
-                        if (GenericsUtil.satisfiesDependency(false, producer.getCreatorMethod().getGenericReturnType(), param.getBaseType()))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found)
-                    {
-                        throw new WebBeansConfigurationException("@Disposes without @Produces " + annotatedMethod.getJavaMember());
-                    }
-                    break;
-                }
-            }
-        }
-        
+        validateNoDisposerWithoutProducer(annotatedMethods, producerBeans);
+
         return producerBeans;
     }
 

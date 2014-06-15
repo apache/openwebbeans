@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.creation.MethodProducerFactory;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
+
 
 /**
  * Concrete implementation of the {@link AbstractOwbBean}.
@@ -39,8 +39,6 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     /** Creator method of the parent component */
     protected Method creatorMethod;
 
-    /** Disposal method */
-    protected Method disposalMethod;
 
     /**
      * Creates a new instance.
@@ -67,11 +65,6 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     }
 
 
-    public Method getDisposalMethod()
-    {
-        return disposalMethod;
-    }
-
     /**
      * Sets the method.
      * 
@@ -82,22 +75,6 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         this.creatorMethod = creatorMethod;
     }
 
-    /**
-     * Sets the disposal method.
-     * 
-     * @param disposalMethod disposal method of this producer method component
-     */
-    public void setDisposalMethod(Method disposalMethod)
-    {
-        if (this.disposalMethod != null)
-        {
-            throw new WebBeansConfigurationException("There are multiple disposal method for producer method " +
-                    "component with name : " + getName() + " with implementation class " +
-                    getBeanClass().getName() + " with disposal method name : " +
-                    disposalMethod.getName());
-        }
-        this.disposalMethod = disposalMethod;
-    }
 
     @Override
     public String getId()

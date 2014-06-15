@@ -52,7 +52,7 @@ import org.apache.webbeans.util.ClassUtil;
 /**
  * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
  */
-public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>>
+public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> extends AbstractBeanBuilder
 {
     protected final WebBeansContext webBeansContext;
     protected final AnnotatedType<T> annotatedType;

@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.InterceptionType;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,6 +52,12 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
         checkInterceptorConditions();
         defineInterceptorMethods();
         defineInterceptorBindings();
+
+        // make sure that CDI interceptors do not have any Producer methods
+        validateNoProducerMethod(annotatedType);
+
+        // make sure that CDI interceptors do not have a Disposes method
+        validateNoDisposerWithoutProducer(annotatedType.getMethods(), Collections.EMPTY_SET);
     }
 
     @Override

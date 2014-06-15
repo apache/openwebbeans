@@ -44,10 +44,6 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
- * Abstract implementation of {@link AbstractBeanBuilder}.
- * 
- * @version $Rev$ $Date$
- *
  * @param <T> bean class type
  */
 public class ProducerFieldBeansBuilder<T, I extends InjectionTargetBean<T>>

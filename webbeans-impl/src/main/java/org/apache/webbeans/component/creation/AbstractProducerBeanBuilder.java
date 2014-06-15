@@ -20,6 +20,7 @@ package org.apache.webbeans.component.creation;
 
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.DefinitionException;
 
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.BeanAttributesImpl;
@@ -51,6 +52,14 @@ public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?
             return null;
         }
         return parent.getWebBeansContext().getAnnotatedElementFactory().getAnnotatedType(superclass);
+    }
+
+    /**
+     * Check if the producer rules are met.
+     */
+    public void validate() throws DefinitionException
+    {
+
     }
 
     protected abstract <X> P createBean(InjectionTargetBean<X> parent, Class<T> beanClass);

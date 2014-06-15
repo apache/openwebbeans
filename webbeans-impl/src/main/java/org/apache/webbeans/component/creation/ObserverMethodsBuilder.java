@@ -42,9 +42,6 @@ import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 
 /**
- * Abstract implementation of {@link AbstractBeanBuilder}.
- * 
- * @version $Rev$ $Date$
  *
  * @param <T> bean class type
  */

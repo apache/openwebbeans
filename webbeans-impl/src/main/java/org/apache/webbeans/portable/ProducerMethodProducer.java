@@ -85,11 +85,6 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
         }
     }
 
-    public void specializeBy(Bean<P> bean)
-    {
-        owner = bean;
-    }
-
     @Override
     protected T produce(Map<Interceptor<?>, ?> interceptors, CreationalContextImpl<T> creationalContext)
     {

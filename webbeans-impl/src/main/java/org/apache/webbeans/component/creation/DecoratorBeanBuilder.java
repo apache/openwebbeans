@@ -36,6 +36,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -57,7 +58,7 @@ import org.apache.webbeans.util.GenericsUtil;
 /**
  * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
  */
-public class DecoratorBeanBuilder<T>
+public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
 {
     private static Logger logger = WebBeansLoggerFacade.getLogger(DecoratorBeanBuilder.class);
 
@@ -145,6 +146,13 @@ public class DecoratorBeanBuilder<T>
                 }
             }
         }
+
+        // make sure that CDI Decorators do not have any Producer methods
+        validateNoProducerMethod(annotatedType);
+
+        // make sure that CDI Decorator do not have a Disposes method
+        validateNoDisposerWithoutProducer(annotatedType.getMethods(), Collections.EMPTY_SET);
+
     }
 
     public void defineDecoratorRules()
