@@ -21,8 +21,6 @@ package org.apache.webbeans.component.creation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,8 +38,8 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
+
 
 /**
  * @param <T> bean class type
@@ -75,20 +73,6 @@ public class ProducerFieldBeansBuilder<T, I extends InjectionTargetBean<T>>
         {
             if(annotatedField.isAnnotationPresent(Produces.class) && annotatedField.getJavaMember().getDeclaringClass().equals(annotatedType.getJavaClass()))
             {
-                Type genericType = annotatedField.getBaseType();
-                
-                if(ClassUtil.isTypeVariable(genericType))
-                {
-                    throw new WebBeansConfigurationException("Producer annotated field : " + annotatedField + " can not be Wildcard type or Type variable");
-                }
-                if(ClassUtil.isParametrizedType(genericType))
-                {
-                    if(!ClassUtil.checkParametrizedType((ParameterizedType)genericType))
-                    {
-                        throw new WebBeansConfigurationException("Producer annotated field : " + annotatedField + " can not be Wildcard type or Type variable");
-                    }
-                }
-                
                 Annotation[] anns = AnnotationUtil.asArray(annotatedField.getAnnotations());
                 Field field = annotatedField.getJavaMember();
                 

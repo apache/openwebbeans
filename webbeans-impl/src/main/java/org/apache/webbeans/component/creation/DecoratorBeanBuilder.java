@@ -23,9 +23,7 @@ import javax.annotation.PreDestroy;
 import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
@@ -131,20 +129,6 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
         if (logger.isLoggable(Level.FINE))
         {
             logger.log(Level.FINE, "Configuring decorator class : [{0}]", annotatedType.getJavaClass());
-        }
-
-        Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
-        for(AnnotatedMethod<?> method : methods)
-        {
-            for (AnnotatedParameter<?> parameter : method.getParameters())
-            {
-                if (parameter.isAnnotationPresent(Produces.class))
-                {
-                    throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass()
-                            + " can not have producer methods but it has one with name : "
-                            + method.getJavaMember().getName());
-                }
-            }
         }
 
         // make sure that CDI Decorators do not have any Producer methods
