@@ -43,8 +43,8 @@ public class AbstractDecoratorInjectionTarget<T> extends InjectionTargetImpl<T>
     protected AnnotatedConstructor<T> createConstructor()
     {
         // create proxy subclass
-        ClassLoader classLoader = getClass().getClassLoader();
         Class<T> classToProxy = annotatedType.getJavaClass();
+        ClassLoader classLoader = classToProxy.getClassLoader();
 
         proxySubClass = webBeansContext.getSubclassProxyFactory().createImplementedSubclass(classLoader, classToProxy);
 
