@@ -1,6 +1,7 @@
 -------------------------------
-Apache OpenWebBeans 1.2.5
+Apache OpenWebBeans 1.2.6
 -------------------------------
+
 Welcome!
 
 Thanks for downloading and using OpenWebBeans. 
@@ -76,6 +77,22 @@ of the Application. This is especially the case for <alternatives> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application. This behaviour will most likely also be the default behaviour
 in the CDI-1.1 JSR-346 specification.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.2.6
+-------------------------------------------
+
+Bug
+    [OWB-950] - rework ConcurrentHashMap usages to avoid java 8 issues
+    [OWB-959] - file:// urls are corrupted by WebScannerService
+    [OWB-960] - Proxying varargs methods not working
+    [OWB-962] - Conversation handling is broken for JSF-1.2
+    [OWB-970] - AbstractDecoratorInjectionTarget doesn't use right classloader to proxy classes (uses container classloader)
+
+Task
+    [OWB-963] - our EJB samples are pretty much useless.
+    [OWB-964] - remove CDI-1.1 module from OWB-1.2.x branch
 
 
 -------------------------------------------
