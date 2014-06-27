@@ -33,6 +33,7 @@ import java.util.Map;
 import org.apache.webbeans.intercept.DefaultInterceptorHandler;
 import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.test.component.intercept.webbeans.EnhancedActionInterceptor;
 import org.apache.webbeans.test.interceptors.factory.beans.ClassMultiInterceptedClass;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.InterceptorHandler;
@@ -65,6 +66,7 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
         beanClasses.add(Secure.class);
         beanClasses.add(Action.class);
         beanClasses.add(ActionInterceptor.class);
+        beanClasses.add(EnhancedActionInterceptor.class);
         beanClasses.add(SecureInterceptor.class);
         beanClasses.add(TransactionalInterceptor.class);
 
@@ -149,7 +151,12 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
         //X proxyInstance = getInstance(ClassMultiInterceptedClass.class);
 
         //X this is for creating the NormalScoping Proxy which is now separate
-        proxyInstance = createNormalScopingProxy(classLoader, ClassMultiInterceptedClass.class, proxyInstance);
+        ClassMultiInterceptedClass proxyInstance2 = createNormalScopingProxy(classLoader, ClassMultiInterceptedClass.class, proxyInstance);
+        Assert.assertNotNull(proxyInstance2);
+
+        int meaningOfNewLife = 97;
+        proxyInstance2.setMeaningOfLife(meaningOfNewLife);
+        Assert.assertEquals(meaningOfNewLife, proxyInstance2.getMeaningOfLife());
 
         //X performBenchmarkOn(proxyInstance);
 

@@ -22,6 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
 
+import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
 import org.apache.webbeans.test.proxy.beans.DummyBean;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
@@ -68,6 +69,7 @@ public class ClassInterceptedClass extends SomeBaseClass
         System.out.println("and being in " + this.getClass());
         return meaningOfLife;
     }
+
 
     public void setMeaningOfLife(int meaningOfLife)
     {

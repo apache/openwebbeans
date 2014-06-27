@@ -91,4 +91,11 @@ public class ClassMultiInterceptedClass
         return c;
     }
 
+    // this must override the default Action interceptor which was applied on class level
+    @Action(Action.Type.ENHANCED)
+    public char methodWithEnhancedAction()
+    {
+        return c;
+    }
+
 }

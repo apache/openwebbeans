@@ -29,6 +29,13 @@ import javax.interceptor.InterceptorBinding;
 @Retention(RetentionPolicy.RUNTIME)
 @Target( { ElementType.TYPE, ElementType.METHOD })
 @Transactional
-public @interface Action {
+public @interface Action
+{
+    Type value() default Type.STANDARD;
 
+    public enum Type
+    {
+        STANDARD,
+        ENHANCED
+    }
 }

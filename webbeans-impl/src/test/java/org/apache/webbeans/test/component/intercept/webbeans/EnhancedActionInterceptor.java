@@ -25,21 +25,17 @@ import javax.interceptor.InvocationContext;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Action;
 
 /**
- * This is an interceptor for an InterceptorBinding annotation (Action)
- * which has another InterceptorBinding (Transactional) as meta-annotation.
+ * This is an interceptor for an 'enhanced' Action
  */
-@Action
+@Action(Action.Type.ENHANCED)
 @Interceptor
-public class ActionInterceptor
+public class EnhancedActionInterceptor extends ActionInterceptor
 {
-    public static Action.Type type = null;
 
     @AroundInvoke
     public Object call(InvocationContext context) throws Exception
     {
-        type = Action.Type.STANDARD;
-        WInterceptorComponent.sWithMeta = 10;
-        WMetaInterceptorComponent.sWithMeta = 10;
+        type = Action.Type.ENHANCED;
         return context.proceed();
     }
 }
