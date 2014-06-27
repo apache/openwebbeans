@@ -42,18 +42,7 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Stereotype;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.Decorator;
-import javax.enterprise.inject.spi.EventMetadata;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.InterceptionType;
-import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.PassivationCapable;
-import javax.enterprise.inject.spi.Producer;
+import javax.enterprise.inject.spi.*;
 import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
 import javax.naming.NamingException;
@@ -63,9 +52,14 @@ import javax.naming.StringRefAddr;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.component.creation.BeanAttributesBuilder;
+import org.apache.webbeans.component.creation.FieldProducerFactory;
+import org.apache.webbeans.component.creation.MethodProducerFactory;
 import org.apache.webbeans.component.third.PassivationCapableThirdpartyBeanImpl;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansContext;
@@ -75,8 +69,6 @@ import org.apache.webbeans.event.EventMetadataImpl;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
-
-import javax.enterprise.inject.spi.DefinitionException;
 
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -101,7 +93,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @see BeanManager 
  */
 @SuppressWarnings("unchecked")
-public class BeanManagerImpl extends AbstractBeanManager implements BeanManager, Referenceable
+public class BeanManagerImpl implements BeanManager, Referenceable
 {
     private static final long serialVersionUID = 2L;
 
@@ -213,7 +205,6 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
     }
 
-    @Override
     public WebBeansContext getWebBeansContext()
     {
         return webBeansContext;
@@ -728,6 +719,66 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
         return instance;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public BeanAttributes<?> createBeanAttributes(AnnotatedMember<?> member)
+    {
+        if (member instanceof AnnotatedField)
+        {
+            return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<?>)member).build();
+        }
+        else if (member instanceof AnnotatedMethod)
+        {
+            return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedMethod<?>)member).build();
+        }
+        else
+        {
+            throw new IllegalArgumentException("Unsupported member type " + member.getClass().getName());
+        }
+    }
+
+    public InjectionPoint createInjectionPoint(AnnotatedField<?> field)
+    {
+        return webBeansContext.getInjectionPointFactory().buildInjectionPoint(null, field);
+    }
+
+    public InjectionPoint createInjectionPoint(AnnotatedParameter<?> parameter)
+    {
+        return webBeansContext.getInjectionPointFactory().buildInjectionPoint(null, parameter);
+    }
+
+    public <X> ProducerFactory<X> getProducerFactory(AnnotatedField<? super X> field, Bean<X> bean)
+    {
+        return new FieldProducerFactory<X>(field, bean, webBeansContext);
+    }
+
+    public <X> ProducerFactory<X> getProducerFactory(AnnotatedMethod<? super X> method, Bean<X> bean)
+    {
+        return new MethodProducerFactory<X>(method, bean, webBeansContext);
+    }
+
+    public <X> InjectionTargetFactory<X> getInjectionTargetFactory(AnnotatedType<X> type)
+    {
+        return new InjectionTargetFactoryImpl<X>(type, webBeansContext);
+    }
+
+    public <T> Bean<T> createBean(BeanAttributes<T> attributes, Class<T> type, InjectionTargetFactory<T> factory)
+    {
+        AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(type);
+        if (annotatedType == null)
+        {
+            annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
+        }
+        return new InjectionTargetBean<T>(
+                webBeansContext,
+                WebBeansType.THIRDPARTY,
+                annotatedType,
+                attributes,
+                type,
+                factory);
+    }
+
 
     private boolean isBeanTypeAssignableToGivenType(Set<Type> beanTypes, Type givenType, boolean newBean)
     {
@@ -915,6 +966,47 @@ public class BeanManagerImpl extends AbstractBeanManager implements BeanManager,
     public boolean isStereotype(Class<? extends Annotation> annotationType)
     {
         return AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), Stereotype.class);
+    }
+
+    public boolean areInterceptorBindingsEquivalent(Annotation annotation1, Annotation annotation2)
+    {
+        return AnnotationUtil.isCdiAnnotationEqual(annotation1, annotation2);
+    }
+
+    public boolean areQualifiersEquivalent(Annotation annotation1, Annotation annotation2)
+    {
+        return AnnotationUtil.isCdiAnnotationEqual(annotation1, annotation2);
+    }
+
+    public int getInterceptorBindingHashCode(Annotation annotation)
+    {
+        return AnnotationUtil.getCdiAnnotationHashCode(annotation);
+    }
+
+    public int getQualifierHashCode(Annotation annotation)
+    {
+        return AnnotationUtil.getCdiAnnotationHashCode(annotation);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T> BeanAttributes<T> createBeanAttributes(AnnotatedType<T> type)
+    {
+        return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(type).build();
+    }
+
+
+    public <T, X> Bean<T> createBean(BeanAttributes<T> attributes, Class<X> type, ProducerFactory<X> factory)
+    {
+        //X TODO we need to add the ProducerFactory stuff
+        return null;
+        //return new AbstractProducerBean<T>(type, webBeansContext, WebBeansType.THIRDPARTY, attributes, returnType, factory);
+    }
+
+    public <T extends Extension> T getExtension(Class<T> type)
+    {
+        return webBeansContext.getExtensionLoader().getExtension(type);
     }
 
     @Override

@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.test.mock;
 
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -30,15 +29,23 @@ import javax.el.ExpressionFactory;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMember;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.InjectionTargetFactory;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.ProducerFactory;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.component.AbstractOwbBean;
@@ -46,11 +53,10 @@ import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.container.AbstractBeanManager;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.util.WebBeansUtil;
 
-public class MockManager extends AbstractBeanManager implements BeanManager
+public class MockManager implements BeanManager
 {
     private BeanManagerImpl manager = null;
 
@@ -64,7 +70,6 @@ public class MockManager extends AbstractBeanManager implements BeanManager
         manager.addBean(webBeansContext.getWebBeansUtil().getManagerBean());
     }
 
-    @Override
     public WebBeansContext getWebBeansContext()
     {
         return manager.getWebBeansContext();
@@ -297,5 +302,83 @@ public class MockManager extends AbstractBeanManager implements BeanManager
     public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)
     {
         return null;
+    }
+
+    @Override
+    public boolean areQualifiersEquivalent(Annotation qualifier1, Annotation qualifier2)
+    {
+        return manager.areQualifiersEquivalent(qualifier1, qualifier2);
+    }
+
+    @Override
+    public int getQualifierHashCode(Annotation qualifier)
+    {
+        return manager.getQualifierHashCode(qualifier);
+    }
+
+    @Override
+    public boolean areInterceptorBindingsEquivalent(Annotation interceptorBinding1, Annotation interceptorBinding2)
+    {
+        return manager.areInterceptorBindingsEquivalent(interceptorBinding1, interceptorBinding2);
+    }
+
+    @Override
+    public int getInterceptorBindingHashCode(Annotation interceptorBinding)
+    {
+        return manager.getInterceptorBindingHashCode(interceptorBinding);
+    }
+
+    @Override
+    public InjectionPoint createInjectionPoint(AnnotatedField<?> field)
+    {
+        return manager.createInjectionPoint(field);
+    }
+
+    @Override
+    public InjectionPoint createInjectionPoint(AnnotatedParameter<?> parameter)
+    {
+        return manager.createInjectionPoint(parameter);
+    }
+
+    @Override
+    public <T> InjectionTargetFactory<T> getInjectionTargetFactory(AnnotatedType<T> type)
+    {
+        return manager.getInjectionTargetFactory(type);
+    }
+
+    @Override
+    public <X> ProducerFactory<X> getProducerFactory(AnnotatedField<? super X> field, Bean<X> declaringBean)
+    {
+        return manager.getProducerFactory(field, declaringBean);
+    }
+
+    @Override
+    public <X> ProducerFactory<X> getProducerFactory(AnnotatedMethod<? super X> method, Bean<X> declaringBean)
+    {
+        return manager.getProducerFactory(method, declaringBean);
+    }
+
+    @Override
+    public BeanAttributes<?> createBeanAttributes(AnnotatedMember<?> member)
+    {
+        return manager.createBeanAttributes(member);
+    }
+
+    @Override
+    public <T> Bean<T> createBean(BeanAttributes<T> attributes, Class<T> beanClass, InjectionTargetFactory<T> injectionTargetFactory)
+    {
+        return manager.createBean(attributes, beanClass, injectionTargetFactory);
+    }
+
+    @Override
+    public <T, X> Bean<T> createBean(BeanAttributes<T> attributes, Class<X> beanClass, ProducerFactory<X> producerFactory)
+    {
+        return manager.createBean(attributes, beanClass, producerFactory);
+    }
+
+    @Override
+    public <T extends Extension> T getExtension(Class<T> extensionClass)
+    {
+        return manager.getExtension(extensionClass);
     }
 }

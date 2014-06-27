@@ -30,7 +30,6 @@ import javax.enterprise.inject.spi.Extension;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -43,7 +42,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class ExtensionLoader
 {
     /**Map of extensions*/
-    private final  Map<Bean<?>, Object> extensions = new ConcurrentHashMap<Bean<?>, Object>();
+    private final  Map<Class<?>, Object> extensions = new ConcurrentHashMap<Class<?>, Object>();
     private final Set<Class<? extends Extension>> extensionClasses = new HashSet<Class<? extends Extension>>();
     private final BeanManagerImpl manager;
 
@@ -95,20 +94,13 @@ public class ExtensionLoader
     /**
      * Returns service bean instance.
      * 
-     * @param bean service bean
+     * @param extensionClass class of the extension
      * @return service bean instance
      */
     @SuppressWarnings("unchecked")
-    public <T> T getBeanInstance(Bean<T> bean)
+    public <T> T getExtension(Class<T> extensionClass)
     {
-        Asserts.assertNotNull(bean,"bean parameter cannot be null");
-        
-        if(extensions.containsKey(bean))
-        {
-            return (T) extensions.get(bean);
-        }
-        
-        return null;
+        return (T) extensions.get(extensionClass);
     }
 
 
@@ -119,7 +111,8 @@ public class ExtensionLoader
     public void addExtension(Extension ext)
     {
         Bean<?> bean = webBeansContext.getWebBeansUtil().createExtensionComponent(ext.getClass());
-        extensions.put(bean, ext);
+        Class<?> extensionClass = ext.getClass();
+        extensions.put(extensionClass, ext);
 
         manager.addBean(bean);
     }

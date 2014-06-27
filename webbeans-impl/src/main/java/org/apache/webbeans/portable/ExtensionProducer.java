@@ -45,6 +45,6 @@ public class ExtensionProducer<R> extends AbstractProducer<R>
     {
         ExtensionLoader loader = webBeansContext.getExtensionLoader();
         
-        return loader.getBeanInstance((Bean<R>)((CreationalContextImpl<R>) creationalContext).getBean());
+        return (R) loader.getExtension(creationalContext.getBean().getBeanClass());
     }
 }

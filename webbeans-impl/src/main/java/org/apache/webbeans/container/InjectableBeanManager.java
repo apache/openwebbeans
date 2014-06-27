@@ -33,15 +33,23 @@ import javax.el.ExpressionFactory;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMember;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.InjectionTargetFactory;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.ProducerFactory;
 
 import org.apache.webbeans.config.WebBeansContext;
 
@@ -55,7 +63,7 @@ import org.apache.webbeans.config.WebBeansContext;
  * This class is Serializable and always resolves the current
  * instance of the central BeanManager automatically.
  */
-public class InjectableBeanManager extends AbstractBeanManager implements BeanManager, Serializable, Externalizable 
+public class InjectableBeanManager implements BeanManager, Serializable, Externalizable
 {
 
     private static final long serialVersionUID = 1L;
@@ -73,12 +81,6 @@ public class InjectableBeanManager extends AbstractBeanManager implements BeanMa
     public InjectableBeanManager(BeanManagerImpl beanManager)
     {
         bm = beanManager;
-    }
-
-    @Override
-    public WebBeansContext getWebBeansContext()
-    {
-        return bm.getWebBeansContext();
     }
 
     @Override
@@ -229,6 +231,90 @@ public class InjectableBeanManager extends AbstractBeanManager implements BeanMa
     public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)
     {
         return bm.wrapExpressionFactory(expressionFactory);
+    }
+
+    @Override
+    public boolean areQualifiersEquivalent(Annotation qualifier1, Annotation qualifier2)
+    {
+        return bm.areQualifiersEquivalent(qualifier1, qualifier2);
+    }
+
+    @Override
+    public int getQualifierHashCode(Annotation qualifier)
+    {
+        return bm.getQualifierHashCode(qualifier);
+    }
+
+    @Override
+    public boolean areInterceptorBindingsEquivalent(Annotation interceptorBinding1, Annotation interceptorBinding2)
+    {
+        return bm.areInterceptorBindingsEquivalent(interceptorBinding1, interceptorBinding2);
+    }
+
+    @Override
+    public int getInterceptorBindingHashCode(Annotation interceptorBinding)
+    {
+        return bm.getInterceptorBindingHashCode(interceptorBinding);
+    }
+
+    @Override
+    public InjectionPoint createInjectionPoint(AnnotatedField<?> field)
+    {
+        return bm.createInjectionPoint(field);
+    }
+
+    @Override
+    public InjectionPoint createInjectionPoint(AnnotatedParameter<?> parameter)
+    {
+        return bm.createInjectionPoint(parameter);
+    }
+
+    @Override
+    public <T> InjectionTargetFactory<T> getInjectionTargetFactory(AnnotatedType<T> type)
+    {
+        return bm.getInjectionTargetFactory(type);
+    }
+
+    @Override
+    public <X> ProducerFactory<X> getProducerFactory(AnnotatedField<? super X> field, Bean<X> declaringBean)
+    {
+        return bm.getProducerFactory(field, declaringBean);
+    }
+
+    @Override
+    public <X> ProducerFactory<X> getProducerFactory(AnnotatedMethod<? super X> method, Bean<X> declaringBean)
+    {
+        return bm.getProducerFactory(method, declaringBean);
+    }
+
+    @Override
+    public <T> BeanAttributes<T> createBeanAttributes(AnnotatedType<T> type)
+    {
+        return bm.createBeanAttributes(type);
+    }
+
+    @Override
+    public BeanAttributes<?> createBeanAttributes(AnnotatedMember<?> member)
+    {
+        return bm.createBeanAttributes(member);
+    }
+
+    @Override
+    public <T> Bean<T> createBean(BeanAttributes<T> attributes, Class<T> beanClass, InjectionTargetFactory<T> injectionTargetFactory)
+    {
+        return bm.createBean(attributes, beanClass, injectionTargetFactory);
+    }
+
+    @Override
+    public <T, X> Bean<T> createBean(BeanAttributes<T> attributes, Class<X> beanClass, ProducerFactory<X> producerFactory)
+    {
+        return bm.createBean(attributes, beanClass, producerFactory);
+    }
+
+    @Override
+    public <T extends Extension> T getExtension(Class<T> extensionClass)
+    {
+        return bm.getExtension(extensionClass);
     }
 
     @Override
