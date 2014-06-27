@@ -43,17 +43,13 @@ public class OwbLifecycleHandler
 
     public void afterDeployment(@Observes AfterDeploy event)
     {
-        ContextsService service = lifecycle.get().getContextService();
-
-        //service.startContext(ApplicationScoped.class, null);
-        service.startContext(ApplicationScoped.class, null);
+        // the application context should be started already
     }
 
     public void beforeUndeployment(@Observes BeforeUnDeploy event)
     {
         ContextsService service = lifecycle.get().getContextService();
 
-        //service.startContext(ApplicationScoped.class, null);
         service.endContext(ApplicationScoped.class, null);
     }
 
