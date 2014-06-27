@@ -26,6 +26,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Context;
 import javax.inject.Singleton;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -79,7 +80,14 @@ public final class ContextFactory
     {
         if (webBeansContext.getBeanManagerImpl().isPassivatingScope(context.getScope()))
         {
-            return new CustomPassivatingContextImpl(webBeansContext.getSerializableBeanVault(), context);
+            if (context instanceof AlterableContext)
+            {
+                return new CustomAlterablePassivatingContextImpl(webBeansContext.getSerializableBeanVault(), (AlterableContext) context);
+            }
+            else
+            {
+                return new CustomPassivatingContextImpl(webBeansContext.getSerializableBeanVault(), context);
+            }
         }
 
         return context;

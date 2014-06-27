@@ -29,6 +29,10 @@ import javax.enterprise.inject.spi.BeanManager;
  * <p>Since there is only one single contextual instance of an &#064;ApplicationScoped bean,
  * we can simply cache this instance inside our bean. We only need to reload this instance
  * if it is null. This happens at the first usage and after the MethodHandler got deserialized</p>
+ *
+ * <p>Also if the application uses the {@link javax.enterprise.context.spi.AlterableContext#destroy(javax.enterprise.context.spi.Contextual)}
+ * method on any ApplicationScoped bean, then the standard NormalScopedBeanInterceptorHandler must be configured to prevent any caching.
+ * Be careful as this might slow down your application!</p>
  */
 public class ApplicationScopedBeanInterceptorHandler extends NormalScopedBeanInterceptorHandler
 {

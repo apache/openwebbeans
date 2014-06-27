@@ -27,6 +27,11 @@ import org.apache.webbeans.container.InjectionTargetFactoryImpl;
 
 import javax.enterprise.inject.spi.InjectionTarget;
 
+
+import java.io.NotSerializableException;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+
 import org.apache.webbeans.util.Asserts;
 
 /**
@@ -35,7 +40,7 @@ import org.apache.webbeans.util.Asserts;
  * @version $Rev$ $Date$
  * @param <T> bean class
  */
-public class InjectionTargetBean<T> extends AbstractOwbBean<T>
+public class InjectionTargetBean<T> extends AbstractOwbBean<T> implements Serializable
 {    
     /**Annotated type for bean*/
     private AnnotatedType<T> annotatedType;
@@ -85,5 +90,40 @@ public class InjectionTargetBean<T> extends AbstractOwbBean<T>
     public AnnotatedType<T> getAnnotatedType()
     {
         return annotatedType;
+    }
+
+    /**
+     * This uses the {@link org.apache.webbeans.component.InjectionTargetBean.PassivationBeanWrapper}
+     * to only store the beanPassivationId.
+     */
+    private Object writeReplace() throws ObjectStreamException
+    {
+        String passivationId = getId();
+        if (passivationId == null)
+        {
+            throw new NotSerializableException("Bean is about to be serialized and does not have any any PassivationCapable id: " + toString());
+        }
+
+        return new PassivationBeanWrapper(passivationId);
+    }
+
+
+    public static class PassivationBeanWrapper implements Serializable
+    {
+        private static final long serialVersionUID = -7588343501478247476L;
+
+        private final String passivationId;
+
+        public PassivationBeanWrapper(String passivationId)
+        {
+            this.passivationId = passivationId;
+        }
+
+        private Object readResolve() throws ObjectStreamException
+        {
+            WebBeansContext webBeansContext = WebBeansContext.getInstance();
+            return webBeansContext.getBeanManagerImpl().getPassivationCapableBean(passivationId);
+        }
+
     }
 }

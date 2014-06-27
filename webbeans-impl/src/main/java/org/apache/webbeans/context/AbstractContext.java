@@ -32,7 +32,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.AlterableContext;
-import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
@@ -41,7 +40,7 @@ import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.context.creational.BeanInstanceBag;
 
 /**
- * Abstract implementation of the {@link Context} interfaces.
+ * Abstract implementation of the {@link javax.enterprise.context.spi.Context} interfaces.
  * 
  * @see javax.enterprise.context.spi.Context
  * @see RequestContext
@@ -50,7 +49,7 @@ import org.apache.webbeans.context.creational.BeanInstanceBag;
  * @see ApplicationContext
  * @see ConversationContext
  */
-public abstract class AbstractContext implements Context, AlterableContext, Serializable
+public abstract class AbstractContext implements AlterableContext, Serializable
 {
     private static final long serialVersionUID = 2357678967444477818L;
     /**Context status, active or not*/
@@ -169,6 +168,12 @@ public abstract class AbstractContext implements Context, AlterableContext, Seri
     {
         
         BeanInstanceBag<?> instance = componentInstanceMap.get(contextual);
+        if (instance == null)
+        {
+            // just exit if people manually invoke destroy after the bean already got ditched
+            return;
+        }
+
         //Get creational context
         CreationalContext<Object> cc = (CreationalContext<Object>)instance.getBeanCreationalContext();
 

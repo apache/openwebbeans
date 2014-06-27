@@ -30,8 +30,8 @@ import java.lang.annotation.Annotation;
  */
 public class CustomPassivatingContextImpl implements Context
 {
-    private final SerializableBeanVault sbv;
-    private final Context context;
+    protected final SerializableBeanVault sbv;
+    protected final Context context;
 
 
     CustomPassivatingContextImpl(SerializableBeanVault sbv, Context context)

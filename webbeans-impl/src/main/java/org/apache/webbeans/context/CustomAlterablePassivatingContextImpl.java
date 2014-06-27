@@ -18,37 +18,24 @@
  */
 package org.apache.webbeans.context;
 
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Contextual;
 
-import org.apache.webbeans.context.creational.BeanInstanceBag;
+import org.apache.webbeans.container.SerializableBeanVault;
 
 /**
- * Application context implementation.
- * 
+ * Wrapper for custom AlterableContexts
  */
-public class ApplicationContext extends AbstractContext
+public class CustomAlterablePassivatingContextImpl extends CustomPassivatingContextImpl implements AlterableContext
 {
-    private static final long serialVersionUID = -8254441824647652312L;
-
-    public ApplicationContext()
+    CustomAlterablePassivatingContextImpl(SerializableBeanVault sbv, AlterableContext context)
     {
-        super(ApplicationScoped.class);
-    }
-
-    @Override
-    public void setComponentInstanceMap()
-    {
-        componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
+        super(sbv, context);
     }
 
     @Override
     public void destroy(Contextual<?> contextual)
     {
-        super.destroy(contextual);
-
-        // and now we also need to
+        ((AlterableContext) context).destroy(sbv.getSerializableBean(contextual));
     }
 }
