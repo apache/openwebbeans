@@ -15,20 +15,21 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue" >
-    <listeners>
-        <listener class-name="org.jboss.cdi.tck.impl.testng.SingleTestClassMethodInterceptor"/>
-        <listener class-name="org.jboss.cdi.tck.impl.testng.ProgressLoggingTestListener"/>
-    </listeners>
-    <test name="JSR-346 TCK">
-        <groups>
-            <run>
-                <exclude name="integration" />
-                <exclude name="javaee-full" />
-            </run>
-        </groups>
-        <classes>
-          <class name="org.jboss.cdi.tck.tests.extensions.beanManager.beanAttributes.CreateBeanAttributesTest" />
-        </classes>
-    </test>
+<suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue">
+  <test name="JSR-346 TCK">
+    <classes>
+      <class
+          name="org.jboss.cdi.tck.interceptors.tests.contract.interceptorLifeCycle.aroundConstruct.AroundConstructLifeCycleTest"/>
+    </classes>
+    <groups>
+      <run>
+        <exclude name="integration"/>
+        <exclude name="javaee-full"/>
+      </run>
+    </groups>
+  </test>
+  <listeners>
+    <listener class-name="org.jboss.cdi.tck.impl.testng.SingleTestClassMethodInterceptor"/>
+    <listener class-name="org.jboss.cdi.tck.impl.testng.ProgressLoggingTestListener"/>
+  </listeners>
 </suite>

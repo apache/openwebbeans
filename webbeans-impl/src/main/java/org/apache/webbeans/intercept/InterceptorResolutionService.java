@@ -29,12 +29,12 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.CDI11s;
 import org.apache.webbeans.util.ClassUtil;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.AnnotatedCallable;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -212,10 +212,7 @@ public class InterceptorResolutionService
 
             allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.POST_CONSTRUCT, interceptorBindings));
             allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.PRE_DESTROY, interceptorBindings));
-            if (CDI11s.AROUND_CONSTRUCT != null)
-            {
-                allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(CDI11s.AROUND_CONSTRUCT, interceptorBindings));
-            }
+            allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, interceptorBindings));
         }
     }
 
@@ -299,7 +296,7 @@ public class InterceptorResolutionService
     }
 
     private void calculateEjbMethodInterceptors(BusinessMethodInterceptorInfo methodInterceptorInfo, Set<Interceptor<?>> allUsedEjbInterceptors,
-                                                List<Interceptor<?>> classLevelEjbInterceptors, AnnotatedMethod annotatedMethod)
+                                                List<Interceptor<?>> classLevelEjbInterceptors, AnnotatedCallable annotatedMethod)
     {
         boolean unproxyable = isUnproxyable(annotatedMethod);
 
@@ -326,7 +323,7 @@ public class InterceptorResolutionService
         }
     }
 
-    private boolean isUnproxyable(AnnotatedMethod annotatedMethod)
+    private boolean isUnproxyable(AnnotatedCallable annotatedMethod)
     {
         int modifiers = annotatedMethod.getJavaMember().getModifiers();
         return Modifier.isFinal(modifiers) || Modifier.isPrivate(modifiers);
@@ -466,7 +463,7 @@ public class InterceptorResolutionService
     private void calculateCdiMethodInterceptors(BusinessMethodInterceptorInfo methodInterceptorInfo,
                                                 InterceptionType interceptionType,
                                                 Set<Interceptor<?>> allUsedCdiInterceptors,
-                                                AnnotatedMethod annotatedMethod,
+                                                AnnotatedCallable annotatedMethod,
                                                 Set<Annotation> classInterceptorBindings)
     {
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
@@ -590,8 +587,8 @@ public class InterceptorResolutionService
      */
     public static class BeanInterceptorInfo
     {
-        public BeanInterceptorInfo(List<Decorator<?>> decorators,
-                                   LinkedHashSet<Interceptor<?>> ejbInterceptors,
+
+        public BeanInterceptorInfo(List<Decorator<?>> decorators, LinkedHashSet<Interceptor<?>> ejbInterceptors,
                                    List<Interceptor<?>> cdiInterceptors,
                                    SelfInterceptorBean<?> selfInterceptorBean,
                                    Map<Method, BusinessMethodInterceptorInfo> businessMethodsInfo,
@@ -634,19 +631,19 @@ public class InterceptorResolutionService
          * For each business method which is either decorated or intercepted we keep an entry.
          * If there is no entry then the method has neither a decorator nor an interceptor.
          */
-        private Map<Method, BusinessMethodInterceptorInfo> businessMethodsInfo = new HashMap<Method, BusinessMethodInterceptorInfo>();
+        private Map<Method, BusinessMethodInterceptorInfo> businessMethodsInfo;
 
         /**
          * all non-intercepted methods
          */
-        private List<Method> nonInterceptedMethods = Collections.EMPTY_LIST;
+        private List<Method> nonInterceptedMethods;
 
         /**
          * Contains info about lifecycle methods.
          * A method can be a 'business method' when invoked via the user but a
          * 'lifecycle method' while invoked by the container!
          */
-        private Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos = Collections.EMPTY_MAP;
+        private Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos;
 
 
         public List<Decorator<?>> getDecorators()

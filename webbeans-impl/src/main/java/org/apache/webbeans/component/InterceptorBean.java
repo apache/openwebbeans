@@ -34,7 +34,6 @@ import javax.enterprise.inject.spi.BeanAttributes;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionTargetFactoryImpl;
 import org.apache.webbeans.container.InterceptorInjectionTargetFactory;
-import org.apache.webbeans.util.CDI11s;
 import org.apache.webbeans.util.ExceptionUtil;
 
 /**
@@ -133,7 +132,8 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
     @Override
     public boolean intercepts(InterceptionType interceptionType)
     {
-        return interceptionMethods.containsKey(interceptionType) || (interceptionType.equals(CDI11s.AROUND_CONSTRUCT) && aroundConstructMethod != null);
+        return interceptionMethods.containsKey(interceptionType)
+                || (interceptionType == InterceptionType.AROUND_CONSTRUCT && aroundConstructMethod != null);
     }
 
     @Override
@@ -141,7 +141,7 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
     {
         try
         {
-            if (interceptionType.equals(CDI11s.AROUND_CONSTRUCT) && aroundConstructMethod != null)
+            if (InterceptionType.AROUND_CONSTRUCT == interceptionType && aroundConstructMethod != null)
             {
                 return aroundConstructMethod.invoke(instance, invocationContext);
             }

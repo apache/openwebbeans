@@ -36,7 +36,6 @@ import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.proxy.OwbInterceptorProxy;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.CDI11s;
 import org.apache.webbeans.util.ExceptionUtil;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -129,14 +128,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         preDestroyInterceptors
             = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.PRE_DESTROY);
 
-        if (CDI11s.AROUND_CONSTRUCT != null)
-        {
-            aroundConstructInterceptors = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), CDI11s.AROUND_CONSTRUCT);
-        }
-        else
-        {
-            aroundConstructInterceptors = new ArrayList<Interceptor<?>>();
-        }
+        aroundConstructInterceptors = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.AROUND_CONSTRUCT);
     }
 
     @Override
@@ -148,7 +140,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             {
                 final Constructor<T> cons = getConstructor().getJavaMember();
                 final InjectableConstructor<T> injectableConstructor = new InjectableConstructor<T>(cons, this, creationalContext);
-                return (T)new InterceptorInvocationContext<T>(null, CDI11s.AROUND_CONSTRUCT, aroundConstructInterceptors, interceptorInstances,
+                return (T)new InterceptorInvocationContext<T>(null, InterceptionType.AROUND_CONSTRUCT, aroundConstructInterceptors, interceptorInstances,
                                                     cons, injectableConstructor.createParameters()).proceed();
             }
             catch (final Exception e) // CDI 1.0
