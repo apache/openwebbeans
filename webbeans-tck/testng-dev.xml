@@ -19,7 +19,7 @@
   <test name="JSR-346 TCK">
     <classes>
       <class
-          name="org.jboss.cdi.tck.interceptors.tests.contract.interceptorLifeCycle.aroundConstruct.AroundConstructLifeCycleTest"/>
+          name="org.jboss.cdi.tck.interceptors.tests.bindings.resolution.InterceptorBindingResolutionTest"/>
     </classes>
     <groups>
       <run>

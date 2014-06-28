@@ -111,7 +111,7 @@ public class InterceptorResolutionService
         // pick up CDI interceptors from a class level
         Set<Annotation> classInterceptorBindings = annotationManager.getInterceptorAnnotations(annotatedType.getAnnotations());
         Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
-        addCdiClassLifecycleInterceptors(classInterceptorBindings, allUsedCdiInterceptors);
+        addCdiClassLifecycleInterceptors(annotatedType, classInterceptorBindings, allUsedCdiInterceptors);
 
         LinkedHashSet<Interceptor<?>> allUsedEjbInterceptors = new LinkedHashSet<Interceptor<?>>(); // we need to preserve the order!
         allUsedEjbInterceptors.addAll(classLevelEjbInterceptors);
@@ -217,7 +217,9 @@ public class InterceptorResolutionService
     }
 
 
-    private void addCdiClassLifecycleInterceptors(Set<Annotation> classInterceptorBindings, Set<Interceptor<?>> allUsedCdiInterceptors)
+    private <T> void addCdiClassLifecycleInterceptors(AnnotatedType<T> annotatedType,
+                                                      Set<Annotation> classInterceptorBindings,
+                                                      Set<Interceptor<?>> allUsedCdiInterceptors)
     {
         if (classInterceptorBindings.size() > 0)
         {
@@ -226,7 +228,27 @@ public class InterceptorResolutionService
 
             allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.POST_CONSTRUCT, interceptorBindings));
             allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.PRE_DESTROY, interceptorBindings));
-            allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, interceptorBindings));
+
+            if (!annotatedType.getConstructors().isEmpty())
+            {
+                for (final AnnotatedConstructor<?> c : annotatedType.getConstructors())
+                {
+                    final Set<Annotation> constructorAnnot = webBeansContext.getAnnotationManager().getInterceptorAnnotations(c.getAnnotations());
+                    if (constructorAnnot.isEmpty())
+                    {
+                        allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, interceptorBindings));
+                    }
+                    else
+                    {
+                        constructorAnnot.addAll(classInterceptorBindings);
+                        allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, AnnotationUtil.asArray(constructorAnnot)));
+                    }
+                }
+            }
+            else
+            {
+                allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, interceptorBindings));
+            }
         }
     }
 
