@@ -171,7 +171,7 @@ public class InterceptorsManager
         final int p2 = priorityInterceptors.getSorted().indexOf(target);
         if (p1 != -1 && p2 != -1)
         {
-            return p1 - p2;
+            return p2 - p1;
         }
         if (p1 == -1 && p2 != -1)
         {
