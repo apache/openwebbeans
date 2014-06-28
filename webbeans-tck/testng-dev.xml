@@ -16,21 +16,10 @@
     License.
 -->
 <suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue" >
-
     <listeners>
-        <!-- Required - avoid randomly mixed test method execution -->
         <listener class-name="org.jboss.cdi.tck.impl.testng.SingleTestClassMethodInterceptor"/>
-        <!-- Optional - intended for debug purpose only -->
-        <listener class-name="org.jboss.cdi.tck.impl.testng.ConfigurationLoggingListener"/>
         <listener class-name="org.jboss.cdi.tck.impl.testng.ProgressLoggingTestListener"/>
-        <!-- Optional - it's recommended to disable the default JUnit XML reporter -->
-        <listener class-name="org.testng.reporters.SuiteHTMLReporter"/>
-        <listener class-name="org.testng.reporters.FailedReporter"/>
-        <listener class-name="org.testng.reporters.XMLReporter"/>
-        <listener class-name="org.testng.reporters.EmailableReporter"/>
-        <listener class-name="org.testng.reporters.TestHTMLReporter"/>
     </listeners>
-
     <test name="JSR-346 TCK">
         <groups>
             <run>
@@ -39,8 +28,7 @@
             </run>
         </groups>
         <classes>
-          <class
-              name="org.jboss.cdi.tck.tests.lookup.clientProxy.unproxyable.finalMethod.StaticFinalMethodTest" />
+          <class name="org.jboss.cdi.tck.tests.extensions.beanManager.beanAttributes.CreateBeanAttributesTest" />
         </classes>
     </test>
 </suite>

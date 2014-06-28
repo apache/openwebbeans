@@ -21,6 +21,7 @@ package org.apache.webbeans.component.creation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -28,8 +29,10 @@ import java.util.Set;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Specializes;
+import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMember;
@@ -50,10 +53,14 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import javax.enterprise.inject.spi.DefinitionException;
+
+import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.portable.OwbAnnotated;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.GenericsUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -130,15 +137,20 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         }
         else
         {
-            Set<Type> types = annotated.getTypeClosure();
+            // if already computed then reuse it otherwise
+            Set<Type> types = OwbAnnotated.class.isInstance(annotated) ?
+                                    annotated.getTypeClosure() : GenericsUtil.getTypeClosure(baseType, baseType);
             this.types.addAll(types);
             Set<String> ignored = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
-            for (Iterator<Type> i = this.types.iterator(); i.hasNext();)
+            if (!ignored.isEmpty())
             {
-                Type t = i.next();
-                if (t instanceof Class && ignored.contains(((Class<?>)t).getName()))
+                for (Iterator<Type> i = this.types.iterator(); i.hasNext();)
                 {
-                    i.remove();
+                    Type t = i.next();
+                    if (t instanceof Class && ignored.contains(((Class<?>)t).getName()))
+                    {
+                        i.remove();
+                    }
                 }
             }
         }
@@ -468,11 +480,42 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
             }
         }
     }
-    
+
+    // these alternatives can be not activated
     protected void defineAlternative()
     {
-        alternative = false;
+        final AlternativesManager alternativesManager = webBeansContext.getAlternativesManager();
+        alternative = alternativesManager.isAlternative(getType(), Collections.<Class<? extends Annotation>>emptySet());
+        if (alternative)
+        {
+            alternative = true;
+            return;
+        }
+
+        for (final Annotation a : annotated.getAnnotations())
+        {
+            final Class<? extends Annotation> annotationType = a.annotationType();
+            if (annotationType == Alternative.class)
+            {
+                alternative = true;
+                return;
+            }
+
+            if (annotationType.getAnnotation(Stereotype.class) != null)
+            {
+                for (final Annotation aa : annotationType.getAnnotations())
+                {
+                    if (aa.annotationType() == Alternative.class)
+                    {
+                        alternative = true;
+                        return;
+                    }
+                }
+            }
+        }
     }
+
+    protected abstract Class<?> getType();
     
     public static class BeanAttributesBuilderFactory
     {
@@ -558,6 +601,12 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         }
 
         @Override
+        protected Class<?> getType()
+        {
+            return annotated.getJavaClass();
+        }
+
+        @Override
         protected AnnotatedType<? super C> getSuperAnnotated()
         {
             AnnotatedType<? super C> annotatedType = getAnnotated();
@@ -582,6 +631,12 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         protected AnnotatedFieldBeanAttributesBuilder(WebBeansContext webBeansContext, AnnotatedField<M> annotated)
         {
             super(webBeansContext, annotated);
+        }
+
+        @Override
+        protected Class<?> getType()
+        {
+            return annotated.getJavaMember().getType();
         }
 
         @Override
@@ -624,6 +679,12 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         protected AnnotatedMethodBeanAttributesBuilder(WebBeansContext webBeansContext, AnnotatedMethod<M> annotated)
         {
             super(webBeansContext, annotated);
+        }
+
+        @Override
+        protected Class<?> getType()
+        {
+            return annotated.getJavaMember().getReturnType();
         }
 
         @Override
