@@ -40,7 +40,7 @@
         </groups>
         <classes>
           <class
-              name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.broken.invalid.InvalidScopeTest" />
+              name="org.jboss.cdi.tck.tests.lookup.clientProxy.unproxyable.finalMethod.StaticFinalMethodTest" />
         </classes>
     </test>
 </suite>

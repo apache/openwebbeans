@@ -49,6 +49,7 @@ import org.apache.webbeans.exception.WebBeansException;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
+import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
@@ -94,6 +95,7 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -120,6 +122,20 @@ public class BeansDeployer
     private static final Logger logger = WebBeansLoggerFacade.getLogger(BeansDeployer.class);
     public static final String JAVAX_ENTERPRISE_PACKAGE = "javax.enterprise.";
 
+    private static final Method GET_PACKAGE;
+    static
+    {
+        try
+        {
+            GET_PACKAGE = ClassLoader.class.getDeclaredMethod("getPackage", String.class);
+            GET_PACKAGE.setAccessible(true);
+        }
+        catch (final NoSuchMethodException e)
+        {
+            throw new IllegalStateException(e);
+        }
+    }
+
     /**Deployment is started or not*/
     protected boolean deployed = false;
 
@@ -134,6 +150,7 @@ public class BeansDeployer
     private final DecoratorsManager decoratorsManager;
     private final InterceptorsManager interceptorsManager;
 
+    private final Map<String, Boolean> packageVetoCache = new HashMap<String, Boolean>();
 
     /**
      * Creates a new deployer with given xml configurator.
@@ -458,6 +475,8 @@ public class BeansDeployer
 
         webBeansContext.getWebBeansUtil().inspectErrorStack(
             "There are errors that are added by AfterDeploymentValidation event observers. Look at logs for further details");
+
+        packageVetoCache.clear(); // no more needed, free the memory
     }
     
     /**
@@ -663,6 +682,11 @@ public class BeansDeployer
 
             for (Class<?> implClass : classIndex)
             {
+                if (isVetoed(implClass))
+                {
+                    continue;
+                }
+
                 try
                 {
                     //Define annotation type
@@ -692,6 +716,68 @@ public class BeansDeployer
         }
 
         return annotatedTypes;
+    }
+
+    private boolean isVetoed(final Class<?> implClass)
+    {
+        if (implClass.getAnnotation(Vetoed.class) != null)
+        {
+            return true;
+        }
+
+        ClassLoader classLoader = implClass.getClassLoader();
+        if (classLoader == null)
+        {
+            classLoader = BeansDeployer.class.getClassLoader();
+        }
+
+        Package pckge = implClass.getPackage();
+        do
+        {
+            // yes we cache result with potentially different classloader but this is not portable by spec
+            final String name = pckge.getName();
+            {
+                final Boolean result = packageVetoCache.get(name);
+                if (result != null && result)
+                {
+                    return result;
+                }
+            }
+            if (pckge.getAnnotation(Vetoed.class) != null)
+            {
+                packageVetoCache.put(pckge.getName(), true);
+                return true;
+            }
+            else
+            {
+                packageVetoCache.put(pckge.getName(), false);
+            }
+
+            final int idx = name.lastIndexOf('.');
+            if (idx > 0)
+            {
+                final String previousPackage = name.substring(0, idx);
+                final Boolean result = packageVetoCache.get(previousPackage);
+                if (result != null && result)
+                {
+                    return result;
+                }
+                try // this is related to classloader and not to Package actually :( so we need reflection
+                {
+                    pckge = Package.class.cast(GET_PACKAGE.invoke(classLoader, previousPackage));
+                }
+                catch (final Exception e)
+                {
+                    throw new IllegalStateException(e);
+                }
+            }
+            else
+            {
+                pckge = null;
+            }
+        } while (pckge != null);
+
+        return false;
     }
 
     /**
