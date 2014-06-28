@@ -465,7 +465,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         {
             try
             {
-                return (T) context.doProceed();
+                return (T) context.getNewInstance();
             }
             catch (final Exception e)
             {

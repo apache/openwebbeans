@@ -104,11 +104,6 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
     @Override
     public Object proceed() throws Exception
     {
-        return doProceed();
-    }
-
-    public Object doProceed() throws Exception
-    {
         if (newInstance != null) // already called
         {
             return newInstance;
