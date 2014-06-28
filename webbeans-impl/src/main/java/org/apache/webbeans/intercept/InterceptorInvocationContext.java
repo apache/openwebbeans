@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
+import javax.inject.Provider;
 
 /**
  * InvocationContext for business method interceptors
@@ -36,11 +37,11 @@ public class InterceptorInvocationContext<T> extends AbstractInvocationContext<T
     protected Map<Interceptor<?>, ?> instances;
     protected int index = 0;
     
-    public InterceptorInvocationContext(T target, InterceptionType type,
+    public InterceptorInvocationContext(Provider<T> provider, InterceptionType type,
                                         List<Interceptor<?>> interceptors, Map<Interceptor<?>, ?> instances,
                                         AccessibleObject method, Object[] parameters)
     {
-        super(target, method, parameters);
+        super(provider, method, parameters);
         this.type = type;
         this.interceptors = interceptors;
         this.instances = instances;

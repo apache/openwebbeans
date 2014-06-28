@@ -35,6 +35,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedCallable;
+import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -46,6 +47,7 @@ import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -115,6 +117,7 @@ public class InterceptorResolutionService
         allUsedEjbInterceptors.addAll(classLevelEjbInterceptors);
 
         Map<Method, BusinessMethodInterceptorInfo> businessMethodInterceptorInfos = new HashMap<Method, BusinessMethodInterceptorInfo>();
+        Map<Constructor<?>, BusinessMethodInterceptorInfo> constructorInterceptorInfos = new HashMap<Constructor<?>, BusinessMethodInterceptorInfo>();
 
         List<Method> nonInterceptedMethods = new ArrayList<Method>();
 
@@ -138,6 +141,17 @@ public class InterceptorResolutionService
             }
 
             businessMethodInterceptorInfos.put(annotatedMethod.getJavaMember(), methodInterceptorInfo);
+        }
+        for (AnnotatedConstructor annotatedConstructor : annotatedType.getConstructors())
+        {
+            final BusinessMethodInterceptorInfo constructorInterceptorInfo = new BusinessMethodInterceptorInfo();
+            calculateEjbMethodInterceptors(constructorInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, annotatedConstructor);
+            if (constructorInterceptorInfo.isEmpty() && (selfInterceptorBean == null || !selfInterceptorBean.isAroundInvoke()))
+            {
+                continue;
+            }
+
+            constructorInterceptorInfos.put(annotatedConstructor.getJavaMember(), constructorInterceptorInfo);
         }
 
         Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos
@@ -179,7 +193,7 @@ public class InterceptorResolutionService
         }
         
         return new BeanInterceptorInfo(decorators, allUsedEjbInterceptors, cdiInterceptors, selfInterceptorBean,
-                                       businessMethodInterceptorInfos,
+                                       constructorInterceptorInfos, businessMethodInterceptorInfos,
                                        nonInterceptedMethods, lifecycleMethodInterceptorInfos);
     }
 
@@ -259,6 +273,13 @@ public class InterceptorResolutionService
 
                 calculateCdiMethodInterceptors(methodInterceptorInfo, interceptionType, allUsedCdiInterceptors, lifecycleMethod, classInterceptorBindings);
             }
+        }
+        for (AnnotatedConstructor<?> lifecycleMethod : annotatedType.getConstructors())
+        {
+            // TODO: verifyLifecycleMethod(lifeycleAnnotation, lifecycleMethod);
+            calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, lifecycleMethod);
+
+            calculateCdiMethodInterceptors(methodInterceptorInfo, interceptionType, allUsedCdiInterceptors, lifecycleMethod, classInterceptorBindings);
         }
 
         if (foundMethods.size() > 0 )
@@ -589,8 +610,8 @@ public class InterceptorResolutionService
     {
 
         public BeanInterceptorInfo(List<Decorator<?>> decorators, LinkedHashSet<Interceptor<?>> ejbInterceptors,
-                                   List<Interceptor<?>> cdiInterceptors,
-                                   SelfInterceptorBean<?> selfInterceptorBean,
+                                   List<Interceptor<?>> cdiInterceptors, SelfInterceptorBean<?> selfInterceptorBean,
+                                   Map<Constructor<?>, BusinessMethodInterceptorInfo> constructorInterceptorInfos,
                                    Map<Method, BusinessMethodInterceptorInfo> businessMethodsInfo,
                                    List<Method> nonInterceptedMethods,
                                    Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos)
@@ -600,6 +621,7 @@ public class InterceptorResolutionService
             this.cdiInterceptors = cdiInterceptors;
             this.selfInterceptorBean = selfInterceptorBean;
             this.businessMethodsInfo = businessMethodsInfo;
+            this.constructorInterceptorInfos = constructorInterceptorInfos;
             this.nonInterceptedMethods = nonInterceptedMethods;
             this.lifecycleMethodInterceptorInfos = lifecycleMethodInterceptorInfos;
         }
@@ -632,6 +654,7 @@ public class InterceptorResolutionService
          * If there is no entry then the method has neither a decorator nor an interceptor.
          */
         private Map<Method, BusinessMethodInterceptorInfo> businessMethodsInfo;
+        private Map<Constructor<?>, BusinessMethodInterceptorInfo> constructorInterceptorInfos;
 
         /**
          * all non-intercepted methods
@@ -669,6 +692,11 @@ public class InterceptorResolutionService
         public Map<Method, BusinessMethodInterceptorInfo> getBusinessMethodsInfo()
         {
             return businessMethodsInfo;
+        }
+
+        public Map<Constructor<?>, BusinessMethodInterceptorInfo> getConstructorInterceptorInfos()
+        {
+            return constructorInterceptorInfos;
         }
 
         public List<Method> getNonInterceptedMethods()

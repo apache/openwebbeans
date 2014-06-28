@@ -43,10 +43,9 @@ public class EjbInterceptorBean<T> extends InterceptorBean<T> implements Interce
                               AnnotatedType<T> annotated,
                               BeanAttributes<T> beanAttributes,
                               Class<T> beanClass,
-                              Map<InterceptionType, Method[]> interceptionMethods,
-                              Method aroundConstruct)
+                              Map<InterceptionType, Method[]> interceptionMethods)
     {
-        super(webBeansContext, annotated, beanAttributes, beanClass, interceptionMethods, aroundConstruct);
+        super(webBeansContext, annotated, beanAttributes, beanClass, interceptionMethods);
     }
 
     /**

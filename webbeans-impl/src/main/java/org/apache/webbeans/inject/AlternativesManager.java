@@ -19,8 +19,6 @@
 package org.apache.webbeans.inject;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +30,7 @@ import javax.enterprise.inject.spi.Bean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.PriorityClasses;
 
 /**
  * This class has 2 responsibilities.
@@ -67,15 +66,7 @@ public class AlternativesManager
      */
     private final Set<Class<? extends Annotation>> configuredStereotypeAlternatives = new HashSet<Class<? extends Annotation>>();
 
-    /**
-     * All the stereotypes which are either configured via XML &lt;class&gt; or
-     * have a &#064;Priority annotation.
-     * key: the class
-     * value: the priority. Alternatives from beans.xml have -1 as they are lowest prio.
-     */
-    private final List<PriorityAlternative> priorityAlternatives = new ArrayList<PriorityAlternative>();
-
-    private List<Class<?>> prioritizedAlternatives = null;
+    private final PriorityClasses priorityAlternatives = new PriorityClasses();
 
 
 
@@ -140,7 +131,7 @@ public class AlternativesManager
      */
     public void addPriorityClazzAlternative(Class<?> clazz, Priority priority)
     {
-        priorityAlternatives.add(new PriorityAlternative(clazz, priority.value()));
+        priorityAlternatives.add(clazz, priority);
     }
 
     /**
@@ -150,20 +141,7 @@ public class AlternativesManager
      */
     public List<Class<?>> getPrioritizedAlternatives()
     {
-        if (prioritizedAlternatives == null)
-        {
-            Collections.sort(priorityAlternatives);
-
-            prioritizedAlternatives = new ArrayList<Class<?>>(priorityAlternatives.size());
-
-            for (PriorityAlternative priorityAlternative : priorityAlternatives)
-            {
-                // add in reverse order
-                prioritizedAlternatives.add(priorityAlternative.clazz);
-            }
-        }
-
-        return prioritizedAlternatives;
+        return priorityAlternatives.getSorted();
     }
 
 
@@ -181,7 +159,7 @@ public class AlternativesManager
     public boolean isAlternative(Class<?> beanType, Set<Class<? extends Annotation>> stereotypes)
     {
         if(configuredAlternatives.contains(beanType) ||
-           prioritizedAlternatives.contains(beanType))
+            priorityAlternatives.contains(beanType))
         {
             return true;
         }
@@ -203,34 +181,6 @@ public class AlternativesManager
         configuredAlternatives.clear();
         configuredStereotypeAlternatives.clear();
         priorityAlternatives.clear();
-
-        prioritizedAlternatives = null;
     }
 
-    private static class PriorityAlternative implements Comparable<PriorityAlternative>
-    {
-        private final int priority;
-        private final Class<?> clazz;
-
-        public PriorityAlternative(Class<?> clazz, int priority)
-        {
-            this.clazz = clazz;
-            this.priority = priority;
-        }
-
-        @Override
-        public int compareTo(PriorityAlternative o)
-        {
-            if (priority != o.priority)
-            {
-                // sort descending
-                return (priority > o.priority) ? -1 : ((priority == o.priority) ? 0 : 1);
-            }
-
-            // we additionally sort according to the class name to at least
-            // prevent randomness if 2 classes have the same ordinal.
-            // see CDI-437 for more info about why it's broken in CDI-1.1.
-            return clazz.getName().compareTo(o.clazz.getName());
-        }
-    }
 }

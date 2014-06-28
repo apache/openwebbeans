@@ -56,14 +56,12 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
      * This is for performance reasons
      */
     protected Method aroundInvokeMethod = null;
-    protected Method aroundConstructMethod = null;
 
     protected InterceptorBean(WebBeansContext webBeansContext,
                                   AnnotatedType<T> annotatedType,
                                   BeanAttributes<T> beanAttributes,
                                   Class<T> beanClass,
                                   Map<InterceptionType, Method[]> interceptionMethods,
-                                  Method aroundConstruct,
                                   InjectionTargetFactoryImpl<T> factory)
     {
         super(webBeansContext,
@@ -85,12 +83,6 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
             }
         }
 
-        aroundConstructMethod = aroundConstruct;
-        if (aroundConstructMethod != null && !aroundConstructMethod.isAccessible())
-        {
-            aroundConstructMethod.setAccessible(true);
-        }
-
         Method[] aroundInvokeMethods = interceptionMethods.get(InterceptionType.AROUND_INVOKE);
         if (aroundInvokeMethods != null && aroundInvokeMethods.length == 1)
         {
@@ -102,10 +94,9 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
                            AnnotatedType<T> annotatedType,
                            BeanAttributes<T> beanAttributes,
                            Class<T> beanClass,
-                           Map<InterceptionType, Method[]> interceptionMethods,
-                           Method aroundConstructMethod)
+                           Map<InterceptionType, Method[]> interceptionMethods)
     {
-        this(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods, aroundConstructMethod,
+        this(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods,
                 new InterceptorInjectionTargetFactory<T>(annotatedType, webBeansContext));
     }
 
@@ -132,8 +123,7 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
     @Override
     public boolean intercepts(InterceptionType interceptionType)
     {
-        return interceptionMethods.containsKey(interceptionType)
-                || (interceptionType == InterceptionType.AROUND_CONSTRUCT && aroundConstructMethod != null);
+        return interceptionMethods.containsKey(interceptionType);
     }
 
     @Override
@@ -141,11 +131,6 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
     {
         try
         {
-            if (InterceptionType.AROUND_CONSTRUCT == interceptionType && aroundConstructMethod != null)
-            {
-                return aroundConstructMethod.invoke(instance, invocationContext);
-            }
-
             if (InterceptionType.AROUND_INVOKE == interceptionType && aroundInvokeMethod != null)
             {
                 return aroundInvokeMethod.invoke(instance, invocationContext);

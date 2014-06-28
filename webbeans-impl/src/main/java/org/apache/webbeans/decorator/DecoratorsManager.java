@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.annotation.Priority;
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
@@ -36,6 +37,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.GenericsUtil;
+import org.apache.webbeans.util.PriorityClasses;
 
 public class DecoratorsManager
 {
@@ -52,7 +54,7 @@ public class DecoratorsManager
      */
     private Set<Decorator<?>> webBeansDecorators = new CopyOnWriteArraySet<Decorator<?>>();
 
-
+    private final PriorityClasses priorityDecorators = new PriorityClasses();
 
     public DecoratorsManager(WebBeansContext webBeansContext)
     {
@@ -230,12 +232,20 @@ public class DecoratorsManager
         return ok;
     }
 
-
-
-
     public void clear()
     {
         additionalDecoratorClasses.clear();
         webBeansDecorators.clear();
+        priorityDecorators.clear();
+    }
+
+    public List<Class<?>> getPrioritizedDecorators()
+    {
+        return priorityDecorators.getSorted();
+    }
+
+    public void addPriorityClazzDecorator(final Class<?> javaClass, final Priority priority)
+    {
+        priorityDecorators.add(javaClass, priority);
     }
 }

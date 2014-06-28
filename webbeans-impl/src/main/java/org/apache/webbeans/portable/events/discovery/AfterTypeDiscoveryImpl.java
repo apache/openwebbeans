@@ -32,11 +32,18 @@ public class AfterTypeDiscoveryImpl implements AfterTypeDiscovery
 {
     private final WebBeansContext webBeansContext;
     private final List<Class<?>> sortedAlternatives;
+    private final List<Class<?>> sortedInterceptors;
+    private final List<Class<?>> sortedDecorators;
 
-    public AfterTypeDiscoveryImpl(WebBeansContext webBeansContext, List<Class<?>> sortedAlternatives)
+    public AfterTypeDiscoveryImpl(WebBeansContext webBeansContext,
+                                  List<Class<?>> sortedInterceptors,
+                                  List<Class<?>> sortedDecorators,
+                                  List<Class<?>> sortedAlternatives)
     {
         this.webBeansContext = webBeansContext;
         this.sortedAlternatives = sortedAlternatives;
+        this.sortedInterceptors = sortedInterceptors;
+        this.sortedDecorators = sortedDecorators;
     }
 
     @Override
@@ -48,13 +55,13 @@ public class AfterTypeDiscoveryImpl implements AfterTypeDiscovery
     @Override
     public List<Class<?>> getInterceptors()
     {
-        return null; //X TODO
+        return sortedInterceptors;
     }
 
     @Override
     public List<Class<?>> getDecorators()
     {
-        return null; //X TODO
+        return sortedDecorators;
     }
 
     @Override

@@ -45,6 +45,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import javax.annotation.Priority;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.PriorityClasses;
 
 /**
  * This class keeps all the enabled interceptor classes information of a certain BeanManager.
@@ -78,6 +79,8 @@ public class InterceptorsManager
     private Map<Class<? extends Annotation>, Set<Annotation>> additionalInterceptorBindingTypes
             = new HashMap<Class<? extends Annotation>, Set<Annotation>>();
 
+    private final PriorityClasses priorityInterceptors = new PriorityClasses();
+
 
     public InterceptorsManager(WebBeansContext webBeansContext)
     {
@@ -96,6 +99,7 @@ public class InterceptorsManager
         configuredInterceptorClasses.clear();
         cdiInterceptors.clear();
         ejbInterceptors.clear();
+        priorityInterceptors.clear();
     }
 
 
@@ -163,17 +167,17 @@ public class InterceptorsManager
             throw new IllegalArgumentException(target.getName() + " is not an enabled interceptor!");
         }
 
-        final Priority p1 = src.getAnnotation(Priority.class);
-        final Priority p2 = target.getAnnotation(Priority.class);
-        if (p1 != null && p2 != null)
+        final int p1 = priorityInterceptors.getSorted().indexOf(src);
+        final int p2 = priorityInterceptors.getSorted().indexOf(target);
+        if (p1 != -1 && p2 != -1)
         {
-            return p1.value() - p2.value();
+            return p1 - p2;
         }
-        if (p1 == null && p2 != null)
+        if (p1 == -1 && p2 != -1)
         {
             return -1;
         }
-        if (p1 != null)
+        if (p1 != -1)
         {
             return 1;
         }
@@ -199,7 +203,8 @@ public class InterceptorsManager
     {
         Asserts.nullCheckForClass(interceptorClazz, "interceptorClazz can not be null");
 
-        return configuredInterceptorClasses.contains(interceptorClazz);
+        return configuredInterceptorClasses.contains(interceptorClazz)
+                || priorityInterceptors.contains(interceptorClazz);
     }
 
     public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
@@ -317,6 +322,16 @@ public class InterceptorsManager
             {
                 throw new WebBeansConfigurationException("Given class : " + interceptorClass + " is not a interceptor class");
             }   
-        }                
-    }    
+        }
+    }
+
+    public List<Class<?>> getPrioritizedInterceptors()
+    {
+        return priorityInterceptors.getSorted();
+    }
+
+    public void addPriorityClazzInterceptor(final Class<?> javaClass, final Priority priority)
+    {
+        priorityInterceptors.add(javaClass, priority);
+    }
 }

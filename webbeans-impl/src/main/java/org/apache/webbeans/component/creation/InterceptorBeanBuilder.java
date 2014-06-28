@@ -63,7 +63,6 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
     private final Class<? extends Annotation> postActivateClass;
 
     private Map<InterceptionType, Method[]> interceptionMethods;
-    private Method interceptionConstructor = null;
 
     protected InterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributes<T> beanAttributes)
     {
@@ -136,6 +135,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
         List<AnnotatedMethod> postConstructMethods = new ArrayList<AnnotatedMethod>();
         List<AnnotatedMethod> preDestroyMethods = new ArrayList<AnnotatedMethod>();
         List<AnnotatedMethod> aroundTimeoutMethods = new ArrayList<AnnotatedMethod>();
+        List<AnnotatedMethod> aroundConstructMethods = new ArrayList<AnnotatedMethod>();
 
         // EJB related interceptors
         List<AnnotatedMethod> prePassivateMethods = new ArrayList<AnnotatedMethod>();
@@ -150,15 +150,17 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 
             for (AnnotatedMethod m : methods)
             {
+                int arouncConstructCount = 0;
                 if (clazz == m.getJavaMember().getDeclaringClass())
                 {
                     if (m.getAnnotation(AroundConstruct.class) != null)
                     {
-                        if (interceptionConstructor != null)
+                        if (arouncConstructCount > 0)
                         {
                             throw new WebBeansConfigurationException("only one AroundConstruct allowed per Interceptor");
                         }
-                        interceptionConstructor = m.getJavaMember();
+                        arouncConstructCount++;
+                        aroundConstructMethods.add(m);
                     }
 
                     // we only take methods from this very class and not sub- or superclasses
@@ -266,6 +268,11 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
             interceptorFound = true;
             interceptionMethods.put(InterceptionType.POST_ACTIVATE, getMethodArray(postActivateMethods));
         }
+        if (aroundConstructMethods.size() > 0)
+        {
+            interceptorFound = true;
+            interceptionMethods.put(InterceptionType.AROUND_CONSTRUCT, getMethodArray(aroundConstructMethods));
+        }
 
         return interceptorFound;
     }
@@ -341,11 +348,10 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 
     protected abstract B createBean(Class<T> beanClass,
                                     boolean enabled,
-                                    Map<InterceptionType, Method[]> interceptionMethods,
-                                    Method aroundConstruct);
+                                    Map<InterceptionType, Method[]> interceptionMethods);
 
     public B getBean()
     {
-        return createBean(annotatedType.getJavaClass(), isInterceptorEnabled(), interceptionMethods, interceptionConstructor);
+        return createBean(annotatedType.getJavaClass(), isInterceptorEnabled(), interceptionMethods);
     }
 }

@@ -79,8 +79,8 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
     }
 
     @Override
-    protected CdiInterceptorBean<T> createBean(Class<T> beanClass, boolean enabled, Map<InterceptionType, Method[]> interceptionMethods, Method aroundConstruct)
+    protected CdiInterceptorBean<T> createBean(Class<T> beanClass, boolean enabled, Map<InterceptionType, Method[]> interceptionMethods)
     {
-        return new CdiInterceptorBean<T>(webBeansContext, annotatedType, beanAttributes, beanClass, interceptorBindings, enabled, interceptionMethods, aroundConstruct);
+        return new CdiInterceptorBean<T>(webBeansContext, annotatedType, beanAttributes, beanClass, interceptorBindings, enabled, interceptionMethods);
     }
 }

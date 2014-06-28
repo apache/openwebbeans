@@ -305,6 +305,7 @@ public class BeansDeployer
     private void registerAlternativesDecoratorsAndInterceptorsWithPriority(List<AnnotatedType<?>> annotatedTypes)
     {
         AlternativesManager alternativesManager = webBeansContext.getAlternativesManager();
+        InterceptorsManager interceptorsManager = webBeansContext.getInterceptorsManager();
 
         for (AnnotatedType<?> annotatedType : annotatedTypes)
         {
@@ -316,8 +317,26 @@ public class BeansDeployer
                     alternativesManager.addPriorityClazzAlternative(annotatedType.getJavaClass(), priority);
                 }
             }
-
-            //X TODO handle interceptors and decorators as well
+            if (annotatedType.getAnnotation(javax.interceptor.Interceptor.class) != null)
+            {
+                Priority priority = annotatedType.getAnnotation(Priority.class);
+                if (priority != null)
+                {
+                    final Class<?> javaClass = annotatedType.getJavaClass();
+                    interceptorsManager.addPriorityClazzInterceptor(javaClass, priority);
+                    interceptorsManager.addEnabledInterceptorClass(javaClass);
+                }
+            }
+            if (annotatedType.getAnnotation(javax.decorator.Decorator.class) != null)
+            {
+                Priority priority = annotatedType.getAnnotation(Priority.class);
+                if (priority != null)
+                {
+                    final Class<?> javaClass = annotatedType.getJavaClass();
+                    decoratorsManager.addPriorityClazzDecorator(javaClass, priority);
+                    decoratorsManager.addEnabledDecorator(javaClass);
+                }
+            }
         }
     }
 
@@ -453,11 +472,12 @@ public class BeansDeployer
      */
     private void fireAfterTypeDiscoveryEvent()
     {
-        AlternativesManager alternativesManager = webBeansContext.getAlternativesManager();
-        List<Class<?>> sortedAlternatives = alternativesManager.getPrioritizedAlternatives();
-
-        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        manager.fireLifecycleEvent(new AfterTypeDiscoveryImpl(webBeansContext, sortedAlternatives));
+        final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
+        manager.fireLifecycleEvent(new AfterTypeDiscoveryImpl(
+                webBeansContext,
+                webBeansContext.getInterceptorsManager().getPrioritizedInterceptors(),
+                webBeansContext.getDecoratorsManager().getPrioritizedDecorators(),
+                webBeansContext.getAlternativesManager().getPrioritizedAlternatives()));
         // we do not need to set back the sortedAlternatives to the AlternativesManager as the API
         // and all layers in between use a mutable List. Not very elegant but spec conform.
 

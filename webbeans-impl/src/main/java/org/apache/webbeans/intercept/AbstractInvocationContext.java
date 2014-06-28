@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Provider;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.util.ExceptionUtil;
@@ -32,13 +33,14 @@ import org.apache.webbeans.util.ExceptionUtil;
 public abstract class AbstractInvocationContext<T> implements InvocationContext
 {
 
-    private T target;
+    private Provider<T> target;
     private AccessibleObject member;
     private Object[] parameters;
     private Map<String, Object> contextData;
     private Object timer;
+    private Object newInstance = null;
 
-    public AbstractInvocationContext(T target, AccessibleObject member, Object[] parameters)
+    public AbstractInvocationContext(Provider<T> target, AccessibleObject member, Object[] parameters)
     {
         this.target = target;
         this.member = member;
@@ -49,7 +51,7 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
         }
     }
 
-    public AbstractInvocationContext(T target, Method method, Object[] parameters, Object timer)
+    public AbstractInvocationContext(Provider<T> target, Method method, Object[] parameters, Object timer)
     {
         this(target, method, parameters);
         this.timer = timer;
@@ -58,7 +60,7 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
     @Override
     public T getTarget()
     {
-        return target;
+        return target.get();
     }
 
     @Override
@@ -102,20 +104,35 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
     @Override
     public Object proceed() throws Exception
     {
+        return doProceed();
+    }
+
+    public Object doProceed() throws Exception
+    {
+        if (newInstance != null) // already called
+        {
+            return newInstance;
+        }
         try
         {
             final Method m = getMethod();
             if (m != null)
             {
-                return m.invoke(target, parameters);
+                return m.invoke(target.get(), parameters);
             }
-            return getConstructor().newInstance(parameters);
+            newInstance = getConstructor().newInstance(parameters);
+            return newInstance;
         }
         catch (final InvocationTargetException ite)
         {
             // unpack the reflection Exception
             throw ExceptionUtil.throwAsRuntimeException(ite.getCause());
         }
+    }
+
+    public Object getNewInstance()
+    {
+        return newInstance;
     }
 
     // @Override

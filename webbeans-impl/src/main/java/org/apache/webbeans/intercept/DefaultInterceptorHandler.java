@@ -32,6 +32,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
+import javax.inject.Provider;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.NotSerializableException;
@@ -133,7 +134,7 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
             }
 
             InterceptorInvocationContext<T> ctx
-                = new InterceptorInvocationContext<T>(delegate, InterceptionType.AROUND_INVOKE, methodInterceptors, instances, method, parameters);
+                = new InterceptorInvocationContext<T>(new InstanceProvider(delegate), InterceptionType.AROUND_INVOKE, methodInterceptors, instances, method, parameters);
 
             return ctx.proceed();
         }
@@ -321,5 +322,21 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
             }
         }
         return (Interceptor<?>) beanManager.getPassivationCapableBean(id);
+    }
+
+    private static class InstanceProvider<T> implements Provider<T>
+    {
+        private final T value;
+
+        public InstanceProvider(final T delegate)
+        {
+            this.value = delegate;
+        }
+
+        @Override
+        public T get()
+        {
+            return value;
+        }
     }
 }

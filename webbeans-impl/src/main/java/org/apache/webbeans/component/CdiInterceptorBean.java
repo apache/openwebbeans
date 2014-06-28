@@ -48,10 +48,9 @@ public class CdiInterceptorBean<T> extends InterceptorBean<T> implements Passiva
                               Class<T> beanClass,
                               Set<Annotation> interceptorBindings,
                               boolean enabled,
-                              Map<InterceptionType, Method[]> interceptionMethods,
-                              Method aroundConstruct)
+                              Map<InterceptionType, Method[]> interceptionMethods)
     {
-        super(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods, aroundConstruct);
+        super(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods);
         this.interceptorBindings = interceptorBindings;
     }
 

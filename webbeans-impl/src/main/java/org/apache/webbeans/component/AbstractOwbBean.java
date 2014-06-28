@@ -124,13 +124,13 @@ public abstract class AbstractOwbBean<T>
 
             final Producer<T> producer = getProducer();
             final T instance = producer.produce(creationalContext);
-            if (producer instanceof InjectionTarget)
+            if (producer instanceof InjectionTarget && instance != null) // @AroundConstruct can skip proceed and then it returns null
             {
                 final InjectionTarget<T> injectionTarget = (InjectionTarget<T>)producer;
                 injectionTarget.inject(instance, creationalContext);
                 injectionTarget.postConstruct(instance);
             }
-            if (getScope().equals(Dependent.class))
+            if (getScope().equals(Dependent.class) && instance != null)
             {
                 ((CreationalContextImpl<T>)creationalContext).addDependent(this, instance);
             }

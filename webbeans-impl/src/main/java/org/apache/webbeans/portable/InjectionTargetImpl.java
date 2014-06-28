@@ -28,6 +28,7 @@ import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethod;
 import org.apache.webbeans.intercept.DefaultInterceptorHandler;
 import org.apache.webbeans.intercept.InterceptorInvocationContext;
+import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
 import org.apache.webbeans.intercept.LifecycleInterceptorInvocationContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -61,11 +62,14 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static java.util.Arrays.asList;
 
 public class InjectionTargetImpl<T> extends AbstractProducer<T> implements InjectionTarget<T>
 {
@@ -128,7 +132,17 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         preDestroyInterceptors
             = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.PRE_DESTROY);
 
-        aroundConstructInterceptors = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.AROUND_CONSTRUCT);
+        final Constructor<?> constructor = getConstructor().getJavaMember();
+        final InterceptorResolutionService.BusinessMethodInterceptorInfo constructorInterceptorInfo =
+                                interceptorInfo.getConstructorInterceptorInfos().get(getConstructor().getJavaMember());
+        final Interceptor<?>[] constructorEjbInterceptorArray = constructorInterceptorInfo == null ?
+                                            null : constructorInterceptorInfo.getEjbInterceptors();
+        final List<Interceptor<?>> constructorEjbInterceptors = constructorEjbInterceptorArray == null ?
+                                            Collections.<Interceptor<?>>emptyList() : asList(constructorEjbInterceptorArray);
+        aroundConstructInterceptors = getLifecycleInterceptors(
+                constructorEjbInterceptors,
+                interceptorInfo.getCdiInterceptors(),
+                InterceptionType.AROUND_CONSTRUCT);
     }
 
     @Override
@@ -140,8 +154,14 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             {
                 final Constructor<T> cons = getConstructor().getJavaMember();
                 final InjectableConstructor<T> injectableConstructor = new InjectableConstructor<T>(cons, this, creationalContext);
-                return (T)new InterceptorInvocationContext<T>(null, InterceptionType.AROUND_CONSTRUCT, aroundConstructInterceptors, interceptorInstances,
-                                                    cons, injectableConstructor.createParameters()).proceed();
+                final ConstructorInstanceProvider provider = new ConstructorInstanceProvider();
+                final InterceptorInvocationContext<T> invocationContext = new InterceptorInvocationContext<T>(
+                        provider,
+                        InterceptionType.AROUND_CONSTRUCT, aroundConstructInterceptors,
+                        interceptorInstances, cons, injectableConstructor.createParameters());
+                provider.setContext(invocationContext);
+                final Object proceed = invocationContext.proceed();
+                return (T) invocationContext.getNewInstance();
             }
             catch (final Exception e) // CDI 1.0
             {
@@ -414,7 +434,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         return false;
     }
 
-    private List<Interceptor<?>> getLifecycleInterceptors(LinkedHashSet<Interceptor<?>> ejbInterceptors, List<Interceptor<?>> cdiInterceptors, InterceptionType interceptionType)
+    private List<Interceptor<?>> getLifecycleInterceptors(Collection<Interceptor<?>> ejbInterceptors, List<Interceptor<?>> cdiInterceptors, InterceptionType interceptionType)
     {
         List<Interceptor<?>> lifecycleInterceptors = new ArrayList<Interceptor<?>>();
 
@@ -434,5 +454,29 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         }
 
         return lifecycleInterceptors;
+    }
+
+    private static class ConstructorInstanceProvider<T> implements javax.inject.Provider<T>
+    {
+        private InterceptorInvocationContext<T> context;
+
+        @Override
+        public T get()
+        {
+            try
+            {
+                return (T) context.doProceed();
+            }
+            catch (final Exception e)
+            {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        // this dependency sucks, we should find something a bit more sexy
+        public void setContext(final InterceptorInvocationContext<T> context)
+        {
+            this.context = context;
+        }
     }
 }
