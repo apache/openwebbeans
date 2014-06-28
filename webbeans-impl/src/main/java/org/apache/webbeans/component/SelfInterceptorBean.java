@@ -20,6 +20,7 @@ package org.apache.webbeans.component;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import java.lang.annotation.Annotation;
@@ -44,7 +45,7 @@ public class SelfInterceptorBean<T> extends InterceptorBean<T> implements Interc
 
     public SelfInterceptorBean(WebBeansContext webBeansContext,
                                AnnotatedType<T> annotatedType,
-                               BeanAttributesImpl<T> beanAttributes,
+                               BeanAttributes<T> beanAttributes,
                                Class<T> beanClass,
                                Map<InterceptionType, Method[]> interceptionMethods,
                                Method aroundConstruct)

@@ -24,6 +24,7 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.interceptor.AroundConstruct;
 import javax.interceptor.AroundInvoke;
@@ -40,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -56,7 +56,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 {
     protected final WebBeansContext webBeansContext;
     protected final AnnotatedType<T> annotatedType;
-    protected final BeanAttributesImpl<T> beanAttributes;
+    protected final BeanAttributes<T> beanAttributes;
 
     private final OpenWebBeansEjbLCAPlugin ejbPlugin;
     private final Class<? extends Annotation> prePassivateClass;
@@ -65,7 +65,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
     private Map<InterceptionType, Method[]> interceptionMethods;
     private Method interceptionConstructor = null;
 
-    protected InterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
+    protected InterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributes<T> beanAttributes)
     {
         Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
         Asserts.assertNotNull(annotatedType, "annotated type may not be null");

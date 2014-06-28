@@ -19,8 +19,8 @@
 package org.apache.webbeans.component.creation;
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanAttributes;
 
-import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
@@ -39,12 +39,12 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
 {
     protected final WebBeansContext webBeansContext;
     protected final AnnotatedType<T> annotatedType;
-    protected final BeanAttributesImpl<T> beanAttributes;
+    protected final BeanAttributes<T> beanAttributes;
 
     /**
      * Creates a new creator.
      */
-    public ManagedBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
+    public ManagedBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributes<T> beanAttributes)
     {
         Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
         Asserts.assertNotNull(annotatedType, "annotated type may not be null");

@@ -101,7 +101,7 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
 
     public InterceptorBean(WebBeansContext webBeansContext, 
                            AnnotatedType<T> annotatedType,
-                           BeanAttributesImpl<T> beanAttributes,
+                           BeanAttributes<T> beanAttributes,
                            Class<T> beanClass,
                            Map<InterceptionType, Method[]> interceptionMethods,
                            Method aroundConstructMethod)

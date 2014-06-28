@@ -21,6 +21,7 @@ package org.apache.webbeans.component;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -36,7 +37,7 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
     public ManagedBean(WebBeansContext webBeansContext,
                        WebBeansType webBeansType,
                        AnnotatedType<T> annotated,
-                       BeanAttributesImpl<T> beanAttributes,
+                       BeanAttributes<T> beanAttributes,
                        Class<T> beanClass)
     {
         super(webBeansContext, webBeansType, annotated, beanAttributes, beanClass);

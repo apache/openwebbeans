@@ -19,6 +19,7 @@
 package org.apache.webbeans.component;
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.PassivationCapable;
 
@@ -43,7 +44,7 @@ public class CdiInterceptorBean<T> extends InterceptorBean<T> implements Passiva
 
     public CdiInterceptorBean(WebBeansContext webBeansContext,
                               AnnotatedType<T> annotatedType,
-                              BeanAttributesImpl<T> beanAttributes,
+                              BeanAttributes<T> beanAttributes,
                               Class<T> beanClass,
                               Set<Annotation> interceptorBindings,
                               boolean enabled,

@@ -25,6 +25,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
@@ -42,7 +43,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.DecoratorBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
@@ -62,7 +62,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
 
     protected final WebBeansContext webBeansContext;
     protected final AnnotatedType<T> annotatedType;
-    protected final BeanAttributesImpl<T> beanAttributes;
+    protected final BeanAttributes<T> beanAttributes;
 
     /**
      * The Types the decorator itself implements
@@ -81,7 +81,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
 
     private final Set<String> ignoredDecoratorInterfaces;
 
-    public DecoratorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
+    public DecoratorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributes<T> beanAttributes)
     {
         Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
         Asserts.assertNotNull(annotatedType, "annotated type may not be null");

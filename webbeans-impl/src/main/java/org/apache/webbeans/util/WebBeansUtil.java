@@ -64,6 +64,7 @@ import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
+import org.apache.webbeans.portable.events.generics.GProcessBeanAttributes;
 import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
 import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
@@ -1194,6 +1195,7 @@ public final class WebBeansUtil
                type.equals(GProcessAnnotatedType.class) ||
                type.equals(GProcessSyntheticAnnotatedType.class) ||
                type.equals(GProcessInjectionTarget.class) ||
+               type.equals(GProcessBeanAttributes.class) ||
                type.equals(GProcessProducer.class) ||
                type.equals(GProcessProducerField.class) ||
                type.equals(GProcessProducerMethod.class) ||
@@ -1208,6 +1210,7 @@ public final class WebBeansUtil
         return type.equals(GProcessAnnotatedType.class) ||
                type.equals(GProcessSyntheticAnnotatedType.class) ||
                type.equals(GProcessInjectionTarget.class) ||
+               type.equals(GProcessBeanAttributes.class) ||
                type.equals(GProcessManagedBean.class) ||
                type.equals(GProcessSessionBean.class) ||
                type.equals(GProcessBean.class);
@@ -1218,6 +1221,7 @@ public final class WebBeansUtil
         return clazz.equals(ProcessAnnotatedType.class) ||
                clazz.equals(ProcessSyntheticAnnotatedType.class) ||
                clazz.equals(ProcessInjectionTarget.class) ||
+               clazz.equals(ProcessBeanAttributes.class) ||
                clazz.equals(ProcessManagedBean.class) ||
                clazz.equals(ProcessBean.class) ||
                clazz.equals(ProcessSessionBean.class);

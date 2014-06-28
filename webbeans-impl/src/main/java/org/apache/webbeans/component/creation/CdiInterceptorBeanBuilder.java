@@ -20,6 +20,7 @@ package org.apache.webbeans.component.creation;
 
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.InterceptionType;
 
 import java.lang.annotation.Annotation;
@@ -28,7 +29,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.CdiInterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -42,7 +42,7 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
 
     private Set<Annotation> interceptorBindings;
 
-    public CdiInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
+    public CdiInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributes<T> beanAttributes)
     {
         super(webBeansContext, annotatedType, beanAttributes);
     }

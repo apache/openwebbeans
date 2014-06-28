@@ -19,6 +19,7 @@
 package org.apache.webbeans.component;
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.PassivationCapable;
@@ -40,7 +41,7 @@ public class EjbInterceptorBean<T> extends InterceptorBean<T> implements Interce
 
     public EjbInterceptorBean(WebBeansContext webBeansContext,
                               AnnotatedType<T> annotated,
-                              BeanAttributesImpl<T> beanAttributes,
+                              BeanAttributes<T> beanAttributes,
                               Class<T> beanClass,
                               Map<InterceptionType, Method[]> interceptionMethods,
                               Method aroundConstruct)
