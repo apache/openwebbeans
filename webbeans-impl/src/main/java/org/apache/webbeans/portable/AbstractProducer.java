@@ -177,6 +177,11 @@ public abstract class AbstractProducer<T> implements Producer<T>
                 creationalContextImpl.putContextual(interceptorBean);
                 interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContext));
             }
+            for (final Interceptor interceptorBean : interceptorInfo.getConstructorCdiInterceptors())
+            {
+                creationalContextImpl.putContextual(interceptorBean);
+                interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContext));
+            }
         }
         creationalContextImpl.putContextual(oldContextual);
 

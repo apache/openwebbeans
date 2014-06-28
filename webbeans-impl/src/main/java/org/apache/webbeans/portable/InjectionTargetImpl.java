@@ -141,7 +141,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                                             Collections.<Interceptor<?>>emptyList() : asList(constructorEjbInterceptorArray);
         aroundConstructInterceptors = getLifecycleInterceptors(
                 constructorEjbInterceptors,
-                interceptorInfo.getCdiInterceptors(),
+                interceptorInfo.getConstructorCdiInterceptors(),
                 InterceptionType.AROUND_CONSTRUCT);
     }
 

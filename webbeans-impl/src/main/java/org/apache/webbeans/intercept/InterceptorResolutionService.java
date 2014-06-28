@@ -111,7 +111,8 @@ public class InterceptorResolutionService
         // pick up CDI interceptors from a class level
         Set<Annotation> classInterceptorBindings = annotationManager.getInterceptorAnnotations(annotatedType.getAnnotations());
         Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
-        addCdiClassLifecycleInterceptors(annotatedType, classInterceptorBindings, allUsedCdiInterceptors);
+        Set<Interceptor<?>> allUsedConstructorCdiInterceptors = new HashSet<Interceptor<?>>();
+        addCdiClassLifecycleInterceptors(annotatedType, classInterceptorBindings, allUsedCdiInterceptors, allUsedConstructorCdiInterceptors);
 
         LinkedHashSet<Interceptor<?>> allUsedEjbInterceptors = new LinkedHashSet<Interceptor<?>>(); // we need to preserve the order!
         allUsedEjbInterceptors.addAll(classLevelEjbInterceptors);
@@ -182,6 +183,9 @@ public class InterceptorResolutionService
         List<Interceptor<?>> cdiInterceptors = new ArrayList<Interceptor<?>>(allUsedCdiInterceptors);
         Collections.sort(cdiInterceptors, new InterceptorComparator(webBeansContext));
 
+        List<Interceptor<?>> cdiConstructorInterceptors = new ArrayList<Interceptor<?>>(allUsedConstructorCdiInterceptors);
+        Collections.sort(cdiConstructorInterceptors, new InterceptorComparator(webBeansContext));
+
         if (Modifier.isFinal(annotatedType.getJavaClass().getModifiers()) &&
             (allUsedEjbInterceptors.size() > 0 || 
              allUsedCdiInterceptors.size() > 0 || 
@@ -192,7 +196,9 @@ public class InterceptorResolutionService
                                                      + annotatedType.getJavaClass().getName());
         }
         
-        return new BeanInterceptorInfo(decorators, allUsedEjbInterceptors, cdiInterceptors, selfInterceptorBean,
+        return new BeanInterceptorInfo(decorators, allUsedEjbInterceptors,
+                                       cdiInterceptors, cdiConstructorInterceptors,
+                                       selfInterceptorBean,
                                        constructorInterceptorInfos, businessMethodInterceptorInfos,
                                        nonInterceptedMethods, lifecycleMethodInterceptorInfos);
     }
@@ -219,12 +225,15 @@ public class InterceptorResolutionService
 
     private <T> void addCdiClassLifecycleInterceptors(AnnotatedType<T> annotatedType,
                                                       Set<Annotation> classInterceptorBindings,
-                                                      Set<Interceptor<?>> allUsedCdiInterceptors)
+                                                      Set<Interceptor<?>> allUsedCdiInterceptors,
+                                                      Set<Interceptor<?>> allUsedConstructorCdiInterceptors)
     {
+        final BeanManagerImpl beanManagerImpl = webBeansContext.getBeanManagerImpl();
+
+        Annotation[] interceptorBindings = null;
         if (classInterceptorBindings.size() > 0)
         {
-            final Annotation[] interceptorBindings = AnnotationUtil.asArray(classInterceptorBindings);
-            final BeanManagerImpl beanManagerImpl = webBeansContext.getBeanManagerImpl();
+            interceptorBindings = AnnotationUtil.asArray(classInterceptorBindings);
 
             allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.POST_CONSTRUCT, interceptorBindings));
             allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.PRE_DESTROY, interceptorBindings));
@@ -249,6 +258,45 @@ public class InterceptorResolutionService
             {
                 allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, interceptorBindings));
             }
+        }
+
+        if (!annotatedType.getConstructors().isEmpty())
+        {
+            for (final AnnotatedConstructor<?> c : annotatedType.getConstructors())
+            {
+                final Set<Annotation> constructorAnnot = webBeansContext.getAnnotationManager().getInterceptorAnnotations(c.getAnnotations());
+                if (constructorAnnot.isEmpty())
+                {
+                    if (interceptorBindings != null)
+                    {
+                        allUsedConstructorCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, interceptorBindings));
+                    }
+                }
+                else
+                {
+                    for (final Annotation classA : classInterceptorBindings)
+                    {
+                        boolean overriden = false;
+                        for (final Annotation consA : constructorAnnot)
+                        {
+                            if (classA.annotationType() == consA.annotationType())
+                            {
+                                overriden = true;
+                                break;
+                            }
+                        }
+                        if (!overriden)
+                        {
+                            constructorAnnot.add(classA);
+                        }
+                    }
+                    allUsedConstructorCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, AnnotationUtil.asArray(constructorAnnot)));
+                }
+            }
+        }
+        else if (interceptorBindings != null)
+        {
+            allUsedConstructorCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, interceptorBindings));
         }
     }
 
@@ -632,7 +680,8 @@ public class InterceptorResolutionService
     {
 
         public BeanInterceptorInfo(List<Decorator<?>> decorators, LinkedHashSet<Interceptor<?>> ejbInterceptors,
-                                   List<Interceptor<?>> cdiInterceptors, SelfInterceptorBean<?> selfInterceptorBean,
+                                   List<Interceptor<?>> cdiInterceptors, List<Interceptor<?>> constructorCdiInterceptors,
+                                   SelfInterceptorBean<?> selfInterceptorBean,
                                    Map<Constructor<?>, BusinessMethodInterceptorInfo> constructorInterceptorInfos,
                                    Map<Method, BusinessMethodInterceptorInfo> businessMethodsInfo,
                                    List<Method> nonInterceptedMethods,
@@ -641,6 +690,7 @@ public class InterceptorResolutionService
             this.decorators = decorators;
             this.ejbInterceptors = ejbInterceptors;
             this.cdiInterceptors = cdiInterceptors;
+            this.constructorCdiInterceptors = constructorCdiInterceptors;
             this.selfInterceptorBean = selfInterceptorBean;
             this.businessMethodsInfo = businessMethodsInfo;
             this.constructorInterceptorInfos = constructorInterceptorInfos;
@@ -660,6 +710,8 @@ public class InterceptorResolutionService
          * The Interceptors are not sorted according to beans.xml .
          */
         private List<Interceptor<?>> cdiInterceptors;
+
+        private final List<Interceptor<?>> constructorCdiInterceptors;
 
         /**
          * Set if this class intercepts itself.
@@ -704,6 +756,11 @@ public class InterceptorResolutionService
         public List<Interceptor<?>> getCdiInterceptors()
         {
             return cdiInterceptors;
+        }
+
+        public List<Interceptor<?>> getConstructorCdiInterceptors()
+        {
+            return constructorCdiInterceptors;
         }
 
         public SelfInterceptorBean<?> getSelfInterceptorBean()
