@@ -42,6 +42,7 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Stereotype;
+import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.*;
 import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
@@ -1096,6 +1097,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public void addAdditionalAnnotatedType(AnnotatedType<?> annotatedType, String id)
     {
+        if (annotatedType.getAnnotation(Vetoed.class) != null)
+        {
+            // we could check package here too but would be a lost of time 99.99% of the time
+            return;
+        }
+
         webBeansContext.getAnnotatedElementFactory().setAnnotatedType(annotatedType, id);
         ConcurrentMap<String, AnnotatedType<?>> annotatedTypes = additionalAnnotatedTypes.get(annotatedType.getJavaClass());
         if (annotatedTypes == null)
