@@ -1107,17 +1107,12 @@ public final class WebBeansUtil
 
     public boolean isBeanEnabled(AnnotatedType<?> at, Set<Class<? extends Annotation>> stereotypes)
     {
-        boolean isAlternative = hasInjectionTargetBeanAnnotatedWithAlternative(at, stereotypes);
+        boolean isAlternative = isAlternative(at, stereotypes);
 
         return !isAlternative || webBeansContext.getAlternativesManager().isAlternative(at.getJavaClass(), stereotypes);
     }
 
-    public static boolean hasInjectionTargetBeanAnnotatedWithAlternative(InjectionTargetBean<?> bean)
-    {
-        return hasInjectionTargetBeanAnnotatedWithAlternative(bean.getAnnotatedType(), bean.getStereotypes());
-    }
-    
-    public static boolean hasInjectionTargetBeanAnnotatedWithAlternative(AnnotatedType<?> beanType, Set<Class<? extends Annotation>> stereotypes)
+    public static boolean isAlternative(AnnotatedType<?> beanType, Set<Class<? extends Annotation>> stereotypes)
     {
         Asserts.assertNotNull(beanType, "bean type can not be null");
         Asserts.assertNotNull(stereotypes, "stereotypes can not be null");
@@ -1150,11 +1145,7 @@ public final class WebBeansUtil
     {
         Asserts.assertNotNull(parent, "parent can not be null");
         Asserts.assertNotNull(producer, "producer can not be null");
-        producer.setEnabled(isProducerBeanEnabled(parent, producer.getStereotypes(), annotations));
-    }
-    
-    public boolean isProducerBeanEnabled(InjectionTargetBean<?> parent, Set<Class<? extends Annotation>> stereotypes, Annotation[] annotations)
-    {
+        Set<Class<? extends Annotation>> stereotypes = producer.getStereotypes();
 
         boolean alternative = false;
 
@@ -1177,12 +1168,14 @@ public final class WebBeansUtil
 
         if (alternative)
         {
-            return hasInjectionTargetBeanAnnotatedWithAlternative(parent) &&
-                    webBeansContext.getAlternativesManager().isAlternative(parent);
+            // either the parent class is an enabled Alternative
+            // or the stereotype directly on the producer field or method is an enabled Alternative
+            producer.setEnabled(isAlternative(parent.getAnnotatedType(), parent.getStereotypes()) && webBeansContext.getAlternativesManager().isAlternative(parent) ||
+                                isAlternative(parent.getAnnotatedType(), stereotypes) && webBeansContext.getAlternativesManager().isAlternative(producer));
         }
         else
         {
-            return parent.isEnabled();
+            producer.setEnabled(parent.isEnabled());
         }
     }
 
