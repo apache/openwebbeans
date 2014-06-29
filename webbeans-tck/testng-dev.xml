@@ -19,7 +19,7 @@
   <test name="JSR-346 TCK">
     <classes>
       <class
-          name="org.jboss.cdi.tck.tests.lookup.dynamic.destroy.dependent.DestroyingDependentInstanceTest" />
+          name="org.jboss.cdi.tck.tests.lookup.dynamic.builtin.BuiltinInstanceTest" />
     </classes>
     <groups>
       <run>

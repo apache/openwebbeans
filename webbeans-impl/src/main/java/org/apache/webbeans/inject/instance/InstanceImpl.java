@@ -25,14 +25,13 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
@@ -124,16 +123,8 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             InjectionExceptionUtil.throwUnsatisfiedResolutionException(ClassUtil.getClazz(injectionClazz), injectionPoint, anns);
         }
 
-        // since Instance<T> is Dependent, we we gonna use the parent CreationalContext by default
-        CreationalContextImpl<?> creationalContext = beanManager.createCreationalContext(parentCreationalContext.getContextual());
+        CreationalContextImpl<?> creationalContext = beanManager.createCreationalContext(bean);
 
-        boolean isDependentBean = WebBeansUtil.isDependent(bean);
-
-        if (!isDependentBean)
-        {
-            // but for all NormalScoped beans we will need to create a fresh CreationalContext
-            creationalContext = beanManager.createCreationalContext(bean);
-        }
         if (!(creationalContext instanceof CreationalContextImpl))
         {
             creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(creationalContext, bean);
@@ -145,10 +136,10 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             final T reference = (T) beanManager.getReference(bean, injectionClazz, creationalContext);
             if (creationalContexts == null)
             {
-                creationalContexts = new HashMap<Object, CreationalContextImpl<?>>();
+                creationalContexts = new IdentityHashMap<Object, CreationalContextImpl<?>>();
             }
             creationalContexts.put(reference, creationalContext);
-            if (Dependent.class == bean.getScope())
+            if (WebBeansUtil.isDependent(bean))
             {
                 parentCreationalContext.addDependent(bean, reference);
             }
@@ -348,6 +339,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         injectionClazz = (Type)inputStream.readObject();
         qualifierAnnotations = (Set<Annotation>)inputStream.readObject();
         injectionPoint = (InjectionPoint) inputStream.readObject();
+        parentCreationalContext = webBeansContext.getBeanManagerImpl().createCreationalContext(null); // TODO: check what we can do
     }
     
     public String toString()

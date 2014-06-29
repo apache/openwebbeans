@@ -34,7 +34,6 @@ import javax.enterprise.util.TypeLiteral;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.ArrayUtil;
-import org.apache.webbeans.util.GenericsUtil;
 
 public class EventMetadataImpl implements EventMetadata, Serializable
 {
@@ -47,10 +46,6 @@ public class EventMetadataImpl implements EventMetadata, Serializable
     
     public EventMetadataImpl(Type type, InjectionPoint injectionPoint, Annotation[] qualifiers, WebBeansContext context)
     {
-        if (GenericsUtil.containsTypeVariable(type))
-        {
-            throw new IllegalArgumentException("event type may not contain type variable: " + type);
-        }
         context.getAnnotationManager().checkQualifierConditions(qualifiers);
         this.type = type;
         this.injectionPoint = injectionPoint;
