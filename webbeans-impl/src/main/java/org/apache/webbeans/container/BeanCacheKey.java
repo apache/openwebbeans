@@ -89,7 +89,7 @@ public final class BeanCacheKey
         {
             return false;
         }
-        if (qualifier != null ? !qualifierEquals(qualifier, cacheKey.qualifier) : cacheKey.qualifier != null)
+        if (qualifier != null && cacheKey.qualifier != null ? !qualifierEquals(qualifier, cacheKey.qualifier) : false)
         {
             return false;
         }

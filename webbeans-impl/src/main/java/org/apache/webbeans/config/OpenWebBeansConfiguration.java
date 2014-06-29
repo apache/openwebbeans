@@ -102,6 +102,9 @@ public class OpenWebBeansConfiguration
     /**Supports conversations*/
     public static final String APPLICATION_SUPPORTS_CONVERSATION = "org.apache.webbeans.application.supportsConversation";
 
+    /** @Produces with interceptor/decorator support */
+    public static final String PRODUCER_INTERCEPTION_SUPPORT = "org.apache.webbeans.application.supportsProducerInterception";
+
     /**EL Adaptor*/
     public static final String EL_ADAPTOR_CLASS = "org.apache.webbeans.spi.adaptor.ELAdaptor";
 
@@ -321,4 +324,8 @@ public class OpenWebBeansConfiguration
         return ignoredInterfaces;
     }
 
+    public boolean supportsInterceptionOnProducers()
+    {
+        return "true".equals(getProperty(PRODUCER_INTERCEPTION_SUPPORT, "true"));
+    }
 }

@@ -208,7 +208,6 @@ public class InjectionResolver
                                                       " type is primitive but resolved bean can have nullable objects!");
             }
         }
-
     }
 
 

@@ -25,11 +25,14 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
@@ -72,8 +75,9 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
 
     private WebBeansContext webBeansContext;
 
+    private Map<Object, CreationalContextImpl<?>> creationalContexts;
     private CreationalContextImpl<?> parentCreationalContext;
-    
+
     /**
      * Creates new instance.
      * 
@@ -121,7 +125,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         }
 
         // since Instance<T> is Dependent, we we gonna use the parent CreationalContext by default
-        CreationalContext<?> creationalContext = parentCreationalContext;
+        CreationalContextImpl<?> creationalContext = beanManager.createCreationalContext(parentCreationalContext.getContextual());
 
         boolean isDependentBean = WebBeansUtil.isDependent(bean);
 
@@ -138,7 +142,17 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         ((CreationalContextImpl<?>)creationalContext).putInjectionPoint(injectionPoint);
         try
         {
-            return (T) beanManager.getReference(bean, injectionClazz, creationalContext);
+            final T reference = (T) beanManager.getReference(bean, injectionClazz, creationalContext);
+            if (creationalContexts == null)
+            {
+                creationalContexts = new HashMap<Object, CreationalContextImpl<?>>();
+            }
+            creationalContexts.put(reference, creationalContext);
+            if (Dependent.class == bean.getScope())
+            {
+                parentCreationalContext.addDependent(bean, reference);
+            }
+            return reference;
         }
         finally
         {
@@ -308,7 +322,12 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         }
         else
         {
-            parentCreationalContext.destroyDependent(instance);
+            final CreationalContextImpl<?> creationalContext = creationalContexts.remove(instance);
+            if (creationalContext == null)
+            {
+                throw new IllegalArgumentException("instance " + instance + " not produced with this Instance<?>");
+            }
+            creationalContext.destroyDependent(instance);
         }
     }
     

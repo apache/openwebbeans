@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
@@ -82,6 +83,15 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
             {
                 disposalMethod = disposerMethod.getJavaMember();
             }
+        }
+    }
+
+    @Override
+    public void defineInterceptorStack(final Bean<T> bean, final AnnotatedType<T> annotatedType, final WebBeansContext webBeansContext)
+    {
+        if (webBeansContext.getOpenWebBeansConfiguration().supportsInterceptionOnProducers())
+        {
+            super.defineInterceptorStack(bean, annotatedType, webBeansContext);
         }
     }
 

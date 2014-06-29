@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
@@ -53,6 +54,15 @@ public class ProducerFieldProducer<T, P> extends AbstractProducer<T>
         this.owner = owner;
         webBeansContext = context;
         this.producerField = producerField;
+    }
+
+    @Override
+    public void defineInterceptorStack(final Bean<T> bean, final AnnotatedType<T> annotatedType, final WebBeansContext webBeansContext)
+    {
+        if (webBeansContext.getOpenWebBeansConfiguration().supportsInterceptionOnProducers())
+        {
+            super.defineInterceptorStack(bean, annotatedType, webBeansContext);
+        }
     }
 
     @Override

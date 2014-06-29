@@ -558,7 +558,7 @@ public class BeansDeployer
         
         if (beans != null && beans.size() > 0)
         {
-           Stack<String> beanNames = new Stack<String>();
+            Stack<String> beanNames = new Stack<String>();
             for (Bean<?> bean : beans)
             {
                 if (bean instanceof OwbBean && !((OwbBean)bean).isEnabled())
@@ -642,6 +642,7 @@ public class BeansDeployer
             
             //Clear Names
             beanNames.clear();
+
         }
         
     }

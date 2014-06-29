@@ -251,7 +251,10 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
                     Contextual<X> dependentContextual = (Contextual<X>)dependentContext.getContextual();
                     CreationalContext<X> creationalContext = (CreationalContext<X>)this;
                     dependentContextual.destroy(instance, creationalContext);
-                    i.remove();
+                    if (dependentObjects != null)
+                    {
+                        i.remove();
+                    } // else previous destroy removed it
                     break;
                 }
             }

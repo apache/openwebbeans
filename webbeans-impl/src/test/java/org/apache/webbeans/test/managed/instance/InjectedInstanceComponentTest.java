@@ -45,7 +45,7 @@ import org.junit.Test;
 public class InjectedInstanceComponentTest extends AbstractUnitTest
 {
 
-        @Test
+    @Test
     public void testInstanceInjectedComponent()
     {
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
