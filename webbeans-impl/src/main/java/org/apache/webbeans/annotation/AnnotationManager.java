@@ -22,7 +22,9 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+
 import javax.enterprise.inject.spi.DefinitionException;
+
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ArrayUtil;
 import org.apache.webbeans.util.Asserts;
@@ -42,12 +44,14 @@ import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,12 +72,6 @@ public final class AnnotationManager
 
     private final BeanManagerImpl beanManagerImpl;
     private final WebBeansContext webBeansContext;
-
-    private final static Annotation[] ONLY_DEFAULT_ANNOTATION = new Annotation[1];
-    static
-    {
-        ONLY_DEFAULT_ANNOTATION[0] = DefaultLiteral.INSTANCE;
-    }
 
     // No instantiate
 
@@ -342,9 +340,10 @@ public final class AnnotationManager
         return result;
     }
 
-    public Set<Annotation> getQualifierAnnotations(Set<Annotation> annotations)
+    public Annotation[] getQualifierAnnotations(Annotation... annotations)
     {
-        return new HashSet<Annotation>(Arrays.asList(getQualifierAnnotations(annotations.toArray(new Annotation[annotations.size()]))));
+        Set<Annotation> qualifiers = getQualifierAnnotations(Arrays.asList(annotations));
+        return qualifiers.toArray(new Annotation[qualifiers.size()]);
     }
 
     /**
@@ -353,13 +352,13 @@ public final class AnnotationManager
      * @param annotations annotation array
      * @return array containing qualifier anns
      */
-    public Annotation[] getQualifierAnnotations(Annotation... annotations)
+    public Set<Annotation> getQualifierAnnotations(Collection<Annotation> annotations)
     {
         Asserts.assertNotNull(annotations, "Annotations argument can not be null");
 
-        if (annotations.length == 0)
+        if (annotations.isEmpty())
         {
-            return ONLY_DEFAULT_ANNOTATION;
+            return DefaultLiteral.SET;
         }
 
         Set<Annotation> set = new HashSet<Annotation>();
@@ -373,16 +372,15 @@ public final class AnnotationManager
         }
 
         //Add the default qualifier if no others exist.  Section 3.10, OWB-142///
-        if(set.size() == 0)
+        if(set.isEmpty())
         {
-            return ONLY_DEFAULT_ANNOTATION;
+            return DefaultLiteral.SET;
         }
         ////////////////////////////////////////////////////////////////////////
 
         Annotation[] a = new Annotation[set.size()];
-        a = set.toArray(a);
 
-        return a;
+        return set;
     }
 
     public void checkQualifierConditions(Annotation... qualifierAnnots)

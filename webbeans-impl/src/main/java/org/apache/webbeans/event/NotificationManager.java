@@ -24,16 +24,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.event.ObserverException;
-import javax.enterprise.event.Observes;
-import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
-import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.inject.spi.Extension;
@@ -64,6 +63,19 @@ public final class NotificationManager
     public NotificationManager(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
+    }
+    
+    public List<ObserverMethod<?>> getObserverMethods()
+    {
+        List<ObserverMethod<?>> observerMethods = new ArrayList<ObserverMethod<?>>();
+        for (Set<ObserverMethod<?>> methods: observers.values())
+        {
+            for (ObserverMethod<?> method: methods)
+            {
+                observerMethods.add(method);
+            }
+        }
+        return observerMethods;
     }
 
     public <T> void addObserver(ObserverMethod<T> observer, Type eventType)
@@ -476,35 +488,15 @@ public final class NotificationManager
      * @param bean bean instance 
      * @return ObserverMethod
      */
-    public <T> ObserverMethod<?> getObservableMethodForAnnotatedMethod(AnnotatedMethod<?> annotatedMethod, AbstractOwbBean<T> bean)
+    public <T> ObserverMethod<?> getObservableMethodForAnnotatedMethod(AnnotatedParameter<?> annotatedParameter, AbstractOwbBean<T> bean)
     {
-        Asserts.assertNotNull(annotatedMethod, "annotatedMethod parameter can not be null");
-
-        AnnotatedParameter<?> annotatedParameter = AnnotationUtil.getFirstAnnotatedParameter(annotatedMethod, Observes.class);
-        Observes observes = annotatedParameter.getAnnotation(Observes.class);
-        boolean ifExist = false;
-        if(observes != null)
-        {
-            if (observes.notifyObserver().equals(Reception.IF_EXISTS))
-            {
-                ifExist = true;
-            }            
-        }
-        
-        //Looking for qualifiers
-        Annotation[] observerQualifiers =
-            bean.getWebBeansContext().getAnnotationManager().getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(
-                annotatedMethod, Observes.class);
-        
-        //Getting observer event type
-        Type type = annotatedParameter.getBaseType();
+        Asserts.assertNotNull(annotatedParameter, "annotatedParameter can not be null");
         
         //Observer creation from annotated method
-        ObserverMethodImpl<T> observer = new ObserverMethodImpl(bean, annotatedMethod, ifExist, observerQualifiers, type);
+        ObserverMethodImpl<T> observer = new ObserverMethodImpl(bean, annotatedParameter);
         
         //Adds this observer
-        addObserver(observer, type);
-        
+        addObserver(observer, annotatedParameter.getBaseType());
 
         return observer;
     }

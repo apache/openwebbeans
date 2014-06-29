@@ -164,9 +164,9 @@ public class InjectionPointFactory
         }
     }
 
-    public static InjectionPoint getPartialInjectionPoint(Bean<?> owner, AnnotatedParameter<?> parameter, Annotation...bindings)
+    public static InjectionPoint getPartialInjectionPoint(Bean<?> owner, AnnotatedParameter<?> parameter, Collection<Annotation> bindings)
     {
-        return new InjectionPointImpl(owner, Arrays.asList(bindings), parameter);
+        return new InjectionPointImpl(owner, bindings, parameter);
     }
 
     /**

@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.component.creation;
 
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,74 +68,68 @@ public class ObserverMethodsBuilder<T, I extends InjectionTargetBean<T>>
     public Set<ObserverMethod<?>> defineObserverMethods(AbstractOwbBean<T> bean)
     {   
         Set<ObserverMethod<?>> definedObservers = new HashSet<ObserverMethod<?>>();
-        Set<AnnotatedMethod<? super T>> annotatedMethods = annotatedType.getMethods();    
-        for (AnnotatedMethod<? super T> annotatedMethod : annotatedMethods)
+        for (AnnotatedMethod<?> annotatedMethod : annotatedType.getMethods())
         {
-            AnnotatedMethod<T> annt = (AnnotatedMethod<T>)annotatedMethod;
-            List<AnnotatedParameter<T>> parameters = annt.getParameters();
-            boolean found = false;
-            for(AnnotatedParameter<T> parameter : parameters)
+            List<AnnotatedParameter<?>> parameters = (List<AnnotatedParameter<?>>)(List<?>)annotatedMethod.getParameters();
+            AnnotatedParameter<?> observesParameter = null;
+            for(AnnotatedParameter<?> parameter : parameters)
             {
                 if(parameter.isAnnotationPresent(Observes.class))
                 {
-                    found = true;
-                    break;
-                }
-            }
-            
-            if(found)
-            {
-                checkObserverMethodConditions((AnnotatedMethod<T>) annotatedMethod, annotatedMethod.getDeclaringType().getJavaClass());
-                if (bean.getScope().equals(Dependent.class))
-                {
-                    //Check Reception
-                    AnnotatedParameter<?> annotatedParameter = AnnotationUtil.getFirstAnnotatedParameter(annotatedMethod, Observes.class);
-                    
-                    Observes observes = annotatedParameter.getAnnotation(Observes.class);
-                    Reception reception = observes.notifyObserver();
-                    if(reception.equals(Reception.IF_EXISTS))
+                    if (observesParameter != null)
                     {
-                        throw new WebBeansConfigurationException("Dependent Bean : " + annotatedType.getJavaClass() + " can not define observer method with @Receiver = IF_EXIST");
+                        throw new WebBeansConfigurationException("Observer method : " + annotatedMethod.getJavaMember().getName() 
+                                + " in class : " + annotatedMethod.getJavaMember().getDeclaringClass().getName()
+                                + " must not define two parameters that are annotated with @Observes");
                     }
+                    observesParameter = parameter;
                 }
+            }            
+            
+            if(observesParameter != null)
+            {
+                checkObserverMethodConditions(bean, observesParameter);
                 
                 //Looking for ObserverMethod
-                ObserverMethod<?> definedObserver = webBeansContext.getBeanManagerImpl().getNotificationManager().getObservableMethodForAnnotatedMethod(annotatedMethod, bean);
-                if(definedObserver != null)
-                {
-                    definedObservers.add(definedObserver);
-                }
+                ObserverMethod<?> definedObserver = webBeansContext.getBeanManagerImpl().getNotificationManager().getObservableMethodForAnnotatedMethod(observesParameter, bean);
+                definedObservers.add(definedObserver);
             }
         }
         
         return definedObservers;
     }
 
-    private void checkObserverMethodConditions(AnnotatedMethod<T> annotatedMethod, Class<?> clazz)
+    private void checkObserverMethodConditions(AbstractOwbBean<?> bean, AnnotatedParameter<?> annotatedParameter)
     {
-        Asserts.assertNotNull(annotatedMethod, "annotatedMethod parameter can not be null");
-        Asserts.nullCheckForClass(clazz);
+        Asserts.assertNotNull(annotatedParameter, "annotatedParameter can not be null");
         
-        Method candidateObserverMethod = annotatedMethod.getJavaMember();
-        
-        if (AnnotationUtil.hasAnnotatedMethodMultipleParameterAnnotation(annotatedMethod, Observes.class))
-        {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName()
-                                                     + " can not define two parameters with annotated @Observes");
-        }
+        AnnotatedMethod<?> annotatedMethod = (AnnotatedMethod<?>)annotatedParameter.getDeclaringCallable();
 
         if (annotatedMethod.isAnnotationPresent(Produces.class) 
                 || annotatedMethod.isAnnotationPresent(Inject.class))
         {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName()
+            throw new WebBeansConfigurationException("Observer method : " + annotatedMethod.getJavaMember().getName() + " in class : " 
+                                                     + annotatedMethod.getJavaMember().getDeclaringClass().getName()
                                                      + " can not annotated with annotation in the list {@Produces, @Initializer, @Destructor}");
 
         }
 
         if (AnnotationUtil.hasAnnotatedMethodParameterAnnotation(annotatedMethod, Disposes.class))
         {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : "
-                                                     + clazz.getName() + " can not annotated with annotation @Disposes");
+            throw new WebBeansConfigurationException("Observer method : " + annotatedMethod.getJavaMember().getName() + " in class : "
+                                                     + annotatedMethod.getJavaMember().getDeclaringClass().getName()
+                                                     + " can not annotated with annotation @Disposes");
         }                
+
+        if (bean.getScope().equals(Dependent.class))
+        {
+            //Check Reception
+            Observes observes = annotatedParameter.getAnnotation(Observes.class);
+            Reception reception = observes.notifyObserver();
+            if(reception.equals(Reception.IF_EXISTS))
+            {
+                throw new WebBeansConfigurationException("Dependent Bean : " + annotatedType.getJavaClass() + " can not define observer method with @Receiver = IF_EXIST");
+            }
+        }
     }
 }

@@ -135,6 +135,11 @@ public class InjectionResolver
             throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " can not define Type Variable generic type");
         }
 
+        //Check for raw event type (10.3.2)
+        if (type == Event.class)
+        {
+            throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " needs to define type argument for javax.enterprise.event.Event");
+        }
     }
 
     /**

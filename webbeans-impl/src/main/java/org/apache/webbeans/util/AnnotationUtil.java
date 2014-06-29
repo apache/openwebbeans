@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -48,8 +47,10 @@ public final class AnnotationUtil
 
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
     
-    public static final Set<Annotation> DEFAULT_AND_ANY_ANNOTATION
-        = Collections.unmodifiableSet(new HashSet<Annotation>(Arrays.<Annotation>asList(DefaultLiteral.INSTANCE, AnyLiteral.INSTANCE)));
+    public static final Annotation[] DEFAULT_AND_ANY_ANNOTATION_ARRAY = new Annotation[] {DefaultLiteral.INSTANCE, AnyLiteral.INSTANCE};
+
+    public static final Set<Annotation> DEFAULT_AND_ANY_ANNOTATION = Collections.unmodifiableSet(ArrayUtil.asSet(DEFAULT_AND_ANY_ANNOTATION_ARRAY));
+    
 
     // No instantiate
     private AnnotationUtil()

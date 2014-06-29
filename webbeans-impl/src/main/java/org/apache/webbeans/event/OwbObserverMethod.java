@@ -18,7 +18,10 @@
  */
 package org.apache.webbeans.event;
 
+import java.util.Set;
+
 import javax.enterprise.inject.spi.EventMetadata;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 
 /**
@@ -26,6 +29,10 @@ import javax.enterprise.inject.spi.ObserverMethod;
  */
 public interface OwbObserverMethod<T> extends ObserverMethod<T>
 {
+    /**
+     * Returns the {@link InjectionPoint}s for the parameters of this observer method.
+     */
+    public Set<InjectionPoint> getInjectionPoints();
 
     /**
      * will actually call the underlying observer method with the specified event metadata

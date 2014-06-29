@@ -19,6 +19,8 @@
 package org.apache.webbeans.annotation;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.Set;
 
 import javax.enterprise.inject.Default;
 
@@ -31,6 +33,7 @@ public class DefaultLiteral extends EmptyAnnotationLiteral<Default> implements D
 {
     public static final DefaultLiteral INSTANCE = new DefaultLiteral();
     public static final Annotation[] ARRAY = new Annotation[]{DefaultLiteral.INSTANCE};
+    public static final Set<Annotation> SET = Collections.<Annotation>singleton(INSTANCE); 
 
     private static final String TOSTRING = "@javax.enterprise.inject.Default()";
     private static final long serialVersionUID = 6788272256977634238L;

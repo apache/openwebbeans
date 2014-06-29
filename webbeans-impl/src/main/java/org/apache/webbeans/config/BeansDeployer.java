@@ -43,6 +43,7 @@ import org.apache.webbeans.corespi.se.DefaultJndiService;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.event.ObserverMethodImpl;
+import org.apache.webbeans.event.OwbObserverMethod;
 import org.apache.webbeans.portable.events.ProcessBeanAttributesImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
@@ -54,6 +55,7 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
+
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -94,6 +96,7 @@ import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -510,39 +513,33 @@ public class BeansDeployer
         webBeansContext.getDecoratorsManager().validateDecoratorClasses();
         webBeansContext.getInterceptorsManager().validateInterceptorClasses();
 
-        Set<Bean<?>> beans = new HashSet<Bean<?>>();
-        
         //Adding decorators to validate
         Set<Decorator<?>> decorators = webBeansContext.getDecoratorsManager().getDecorators();
 
-        beans.addAll(decorators);
-
-        
         logger.fine("Validation of the decorator's injection points has started.");
         
         //Validate Decorators
-        validate(beans);
-        
-        beans.clear();
+        validate(decorators);
         
         //Adding interceptors to validate
         List<javax.enterprise.inject.spi.Interceptor<?>> interceptors = webBeansContext.getInterceptorsManager().getCdiInterceptors();
-        for(javax.enterprise.inject.spi.Interceptor interceptor : interceptors)
-        {
-            beans.add(interceptor);
-        }
         
         logger.fine("Validation of the interceptor's injection points has started.");
         
         //Validate Interceptors
-        validate(beans);
-        
-        beans.clear();
-        
-        beans = webBeansContext.getBeanManagerImpl().getBeans();
+        validate(interceptors);
+
+        logger.fine("Validation of the beans' injection points has started.");
+
+        Set<Bean<?>> beans = webBeansContext.getBeanManagerImpl().getBeans();
         
         //Validate Others
-        validate(beans);                
+        validate(beans);
+        
+        logger.fine("Validation of the observer methods' injection points has started.");
+        
+        //Validate Observers
+        validateObservers(webBeansContext.getBeanManagerImpl().getNotificationManager().getObserverMethods());
 
         logger.info(OWBLogConst.INFO_0003);
     }
@@ -552,7 +549,7 @@ public class BeansDeployer
      * 
      * @param beans deployed beans
      */
-    private <T> void validate(Set<Bean<?>> beans)
+    private <T, B extends Bean<?>> void validate(Collection<B> beans)
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         
@@ -617,23 +614,7 @@ public class BeansDeployer
                 //Check injection points
                 if(injectionPoints != null)
                 {
-                    for (InjectionPoint injectionPoint : injectionPoints)
-                    {
-                        if(!injectionPoint.isDelegate())
-                        {
-                            manager.validate(injectionPoint);   
-                        }
-                        else
-                        {
-                            if(!bean.getBeanClass().isAnnotationPresent(javax.decorator.Decorator.class)
-                                    && !webBeansContext.getDecoratorsManager().containsCustomDecoratorClass(bean.getBeanClass()))
-                            {
-                                throw new WebBeansConfigurationException(
-                                        "Delegate injection points can not defined by beans that are not decorator. Injection point : "
-                                        + injectionPoint);
-                            }
-                        }
-                    }                    
+                    validate(injectionPoints, bean instanceof Decorator);                    
                 }
             }
             
@@ -645,6 +626,49 @@ public class BeansDeployer
 
         }
         
+    }
+    
+    private void validateObservers(Collection<ObserverMethod<?>> observerMethods)
+    {
+        for (ObserverMethod<?> observerMethod: observerMethods)
+        {
+            if (observerMethod instanceof OwbObserverMethod)
+            {
+                OwbObserverMethod<?> owbObserverMethod = (OwbObserverMethod<?>)observerMethod;
+                validate(owbObserverMethod.getInjectionPoints(), false);
+            }
+        }
+    }
+
+    private void validate(Set<InjectionPoint> injectionPoints, boolean isDecorator)
+    {
+        boolean delegateFound = false;
+        for (InjectionPoint injectionPoint : injectionPoints)
+        {
+            if (!injectionPoint.isDelegate())
+            {
+                webBeansContext.getBeanManagerImpl().validate(injectionPoint);   
+            }
+            else
+            {
+                if (!isDecorator)
+                {
+                    throw new WebBeansConfigurationException(
+                            "Delegate injection points can not defined by beans that are not decorator. Injection point : "
+                            + injectionPoint);
+                }
+                else if (delegateFound)
+                {
+                    throw new WebBeansConfigurationException(
+                            "Only one Delegate injection point can be defined by decorator. Decorator : "
+                            + injectionPoint.getBean());
+                }
+                else
+                {
+                    delegateFound = true;
+                }
+            }
+        }
     }
 
     private void validateBeanNames(Stack<String> beanNames)
