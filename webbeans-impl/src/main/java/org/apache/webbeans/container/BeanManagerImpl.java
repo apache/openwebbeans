@@ -1095,8 +1095,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         addAdditionalAnnotatedType(annotatedType, AnnotatedElementFactory.OWB_DEFAULT_KEY);
     }
 
-    public void addAdditionalAnnotatedType(AnnotatedType<?> annotatedType, String id)
+    public <T> void addAdditionalAnnotatedType(AnnotatedType<T> inAnnotatedType, String id)
     {
+        final AnnotatedType<T> annotatedType = new AnnotatedTypeWrapper<T>(inAnnotatedType);
         if (annotatedType.getAnnotation(Vetoed.class) != null)
         {
             // we could check package here too but would be a lost of time 99.99% of the time
@@ -1177,6 +1178,21 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             return null;
         }
         return (AnnotatedType<T>)annotatedTypes.get(id);
+    }
+
+    public <T> Iterable<AnnotatedType<T>> getAnnotatedTypes(final Class<T> type)
+    {
+        final Collection<AnnotatedType<T>> types = new ArrayList<AnnotatedType<T>>(2);
+        types.add(annotatedElementFactory.getAnnotatedType(type));
+        final ConcurrentMap<String, AnnotatedType<?>> aTypes = additionalAnnotatedTypes.get(type);
+        if (types != null)
+        {
+            for (final AnnotatedType at : aTypes.values())
+            {
+                types.add(at);
+            }
+        }
+        return types;
     }
 
     public void clear()

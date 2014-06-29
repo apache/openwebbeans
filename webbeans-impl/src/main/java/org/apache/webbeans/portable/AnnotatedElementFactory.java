@@ -38,12 +38,12 @@ import org.apache.webbeans.util.Asserts;
 
 /**
  * Factory for {@link javax.enterprise.inject.spi.Annotated} elements.
- * 
+ *
  * @version $Rev$ $Date$
  */
 public final class AnnotatedElementFactory
 {
-    
+
     public static final String OWB_DEFAULT_KEY = "OWB_DEFAULT_KEY";
 
     // Logger instance
@@ -64,17 +64,17 @@ public final class AnnotatedElementFactory
     //Cache of AnnotatedConstructor
     private ConcurrentMap<Constructor<?>, AnnotatedConstructor<?>> annotatedConstructorCache =
         new ConcurrentHashMap<Constructor<?>, AnnotatedConstructor<?>>();
-    
+
     //Cache of AnnotatedMethod
     private ConcurrentMap<Method, AnnotatedMethod<?>> annotatedMethodCache =
         new ConcurrentHashMap<Method, AnnotatedMethod<?>>();
-    
+
     //Cache of AnnotatedField
     private ConcurrentMap<Field, AnnotatedField<?>> annotatedFieldCache =
         new ConcurrentHashMap<Field, AnnotatedField<?>>();
 
     private WebBeansContext webBeansContext;
-    
+
     /**
      * No instantiate.
      */

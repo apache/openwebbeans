@@ -746,7 +746,11 @@ public class BeansDeployer
                 try
                 {
                     //Define annotation type
-                    AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(implClass);
+                    AnnotatedType<?> annotatedType = annotatedElementFactory.getAnnotatedType(implClass);
+                    if (annotatedType == null) // mean no annotation created it (normal case)
+                    {
+                        annotatedType = annotatedElementFactory.newAnnotatedType(implClass);
+                    }
 
                     if (annotatedType == null)
                     {

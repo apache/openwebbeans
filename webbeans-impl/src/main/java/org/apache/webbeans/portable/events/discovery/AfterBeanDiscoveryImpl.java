@@ -191,7 +191,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
      */
     public <T> Iterable<AnnotatedType<T>> getAnnotatedTypes(Class<T> type)
     {
-        return beanManager.getWebBeansContext().getAnnotatedElementFactory().getAnnotatedTypes(type);
+        return beanManager.getAnnotatedTypes(type);
     }
 
 }
