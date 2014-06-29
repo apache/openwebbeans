@@ -56,4 +56,9 @@ public abstract class BuiltInOwbBean<T> extends AbstractOwbBean<T>
     {
         return producer;
     }
+
+    /**
+     * @return some built in beans can be decorated, this class is the one used to generate the proxy
+     */
+    public abstract Class<?> proxyableType();
 }

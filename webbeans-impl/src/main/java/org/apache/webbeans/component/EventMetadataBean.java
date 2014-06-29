@@ -52,5 +52,10 @@ public class EventMetadataBean extends BuiltInOwbBean<EventMetadata>
     {
         return true;
     }
-    
+
+    @Override
+    public Class<?> proxyableType()
+    {
+        return null; // not using AbstractProducer
+    }
 }

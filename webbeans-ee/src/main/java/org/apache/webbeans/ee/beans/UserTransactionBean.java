@@ -43,5 +43,11 @@ public class UserTransactionBean extends BuiltInOwbBean<UserTransaction>
     public boolean isPassivationCapable()
     {
         return true;
-    }    
+    }
+
+    @Override
+    public Class<?> proxyableType()
+    {
+        return null;
+    }
 }

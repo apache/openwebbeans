@@ -24,6 +24,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.portable.EventProducer;
 import org.apache.webbeans.util.CollectionUtil;
 
@@ -58,5 +59,10 @@ public class EventBean<T> extends BuiltInOwbBean<Event<T>>
     {
         return true;
     }
-    
+
+    @Override
+    public Class<?> proxyableType()
+    {
+        return EventImpl.class;
+    }
 }

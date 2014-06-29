@@ -28,6 +28,18 @@ import org.apache.webbeans.util.CollectionUtil;
 
 public class InjectionPointBean extends BuiltInOwbBean<InjectionPoint>
 {
+    private static final Class<?> PROXY_CLASS;
+    static
+    {
+        try
+        {
+            PROXY_CLASS = BuiltInOwbBean.class.getClassLoader().loadClass("org.apache.webbeans.inject.impl.InjectionPointImpl");
+        }
+        catch (final ClassNotFoundException e)
+        {
+            throw new IllegalStateException(e);
+        }
+    }
     public InjectionPointBean(WebBeansContext webBeansContext)
     {
         super(webBeansContext,
@@ -46,5 +58,10 @@ public class InjectionPointBean extends BuiltInOwbBean<InjectionPoint>
     {
         return true;
     }
-    
+
+    @Override
+    public Class<?> proxyableType()
+    {
+        return PROXY_CLASS;
+    }
 }

@@ -55,5 +55,10 @@ public class BeanMetadataBean<T> extends BuiltInOwbBean<Bean<T>>
     {
         return true;
     }
-    
+
+    @Override
+    public Class<?> proxyableType()
+    {
+        return null;
+    }
 }

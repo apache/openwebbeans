@@ -43,5 +43,11 @@ public class ValidatorFactoryBean extends BuiltInOwbBean<ValidatorFactory>
     public boolean isPassivationCapable()
     {
         return true;
-    }    
+    }
+
+    @Override
+    public Class<?> proxyableType()
+    {
+        return null;
+    }
 }

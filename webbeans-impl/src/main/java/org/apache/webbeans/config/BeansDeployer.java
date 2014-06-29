@@ -20,6 +20,7 @@ package org.apache.webbeans.config;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractProducerBean;
+import org.apache.webbeans.component.BuiltInOwbBean;
 import org.apache.webbeans.component.CdiInterceptorBean;
 import org.apache.webbeans.component.DecoratorBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
@@ -569,6 +570,16 @@ public class BeansDeployer
                 //don't validate the cdi-api
                 if (bean.getBeanClass().getName().startsWith(JAVAX_ENTERPRISE_PACKAGE))
                 {
+                    if (BuiltInOwbBean.class.isInstance(bean))
+                    {
+                        final Class<?> proxyable = BuiltInOwbBean.class.cast(bean).proxyableType();
+                        if (proxyable != null)
+                        {
+                            final AbstractProducer producer = AbstractProducer.class.cast(OwbBean.class.cast(bean).getProducer());
+                            final AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(proxyable);
+                            producer.defineInterceptorStack(bean, annotatedType, webBeansContext);
+                        }
+                    }
                     continue;
                 }
 

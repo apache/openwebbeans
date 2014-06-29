@@ -54,5 +54,10 @@ public class InterceptorMetadataBean<T> extends BuiltInOwbBean<Interceptor<T>>
     {
         return true;
     }
-    
+
+    @Override
+    public Class<?> proxyableType()
+    {
+        return null;
+    }
 }

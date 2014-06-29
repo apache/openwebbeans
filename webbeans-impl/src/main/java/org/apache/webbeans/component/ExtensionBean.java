@@ -50,4 +50,10 @@ public class ExtensionBean<T> extends BuiltInOwbBean<T>
                 false,
                 new ExtensionProducerFactory<T>(webBeansContext.getAnnotatedElementFactory().getAnnotatedType(returnType), webBeansContext));
     }
+
+    @Override
+    public Class<?> proxyableType()
+    {
+        return null;
+    }
 }

@@ -25,6 +25,7 @@ import javax.enterprise.util.TypeLiteral;
 import javax.inject.Provider;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.inject.instance.InstanceImpl;
 import org.apache.webbeans.portable.InstanceProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
@@ -56,4 +57,9 @@ public class InstanceBean<T> extends BuiltInOwbBean<Instance<T>>
         return true;
     }
 
+    @Override
+    public Class<?> proxyableType()
+    {
+        return InstanceImpl.class;
+    }
 }

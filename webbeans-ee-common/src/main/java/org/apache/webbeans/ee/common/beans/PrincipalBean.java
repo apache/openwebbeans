@@ -43,5 +43,10 @@ public class PrincipalBean extends BuiltInOwbBean<Principal>
     {
         return true;
     }
-    
+
+    @Override
+    public Class<?> proxyableType()
+    {
+        return null;
+    }
 }

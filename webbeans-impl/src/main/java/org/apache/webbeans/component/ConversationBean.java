@@ -61,4 +61,10 @@ public class ConversationBean extends BuiltInOwbBean<ConversationImpl> implement
                       new ConversationProducer(webBeansContext.getAnnotatedElementFactory().newAnnotatedType(ConversationImpl.class), webBeansContext)));
         setEnabled(true);
     }
+
+    @Override
+    public Class<?> proxyableType()
+    {
+        return ConversationImpl.class;
+    }
 }

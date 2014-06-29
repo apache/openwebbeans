@@ -54,5 +54,10 @@ public class DecoratorMetadataBean<T> extends BuiltInOwbBean<Decorator<T>>
     {
         return true;
     }
-    
+
+    @Override
+    public Class<?> proxyableType()
+    {
+        return null;
+    }
 }

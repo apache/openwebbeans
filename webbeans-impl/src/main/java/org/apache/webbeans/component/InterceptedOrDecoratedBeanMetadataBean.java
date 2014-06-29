@@ -61,5 +61,10 @@ public class InterceptedOrDecoratedBeanMetadataBean<T> extends BuiltInOwbBean<Be
     {
         return true;
     }
-    
+
+    @Override
+    public Class<?> proxyableType()
+    {
+        return null;
+    }
 }

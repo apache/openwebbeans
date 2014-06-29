@@ -23,6 +23,7 @@ import java.lang.reflect.Type;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.portable.BeanManagerProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
@@ -46,5 +47,11 @@ public class BeanManagerBean extends BuiltInOwbBean<BeanManager>
     public boolean isPassivationCapable()
     {
         return true;
-    }    
+    }
+
+    @Override
+    public Class<?> proxyableType()
+    {
+        return BeanManagerImpl.class;
+    }
 }
