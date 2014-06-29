@@ -20,8 +20,6 @@ package org.apache.openwebbeans.tck.conversation;
 
 import org.apache.webbeans.spi.ConversationService;
 
-import java.util.UUID;
-
 public class TckConversationService implements ConversationService
 {
     @Override
