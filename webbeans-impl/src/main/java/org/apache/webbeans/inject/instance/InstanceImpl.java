@@ -283,6 +283,10 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
 
     public void destroy(T instance)
     {
+        if (instance == null)
+        {
+            throw new NullPointerException("instance is null, can't be destroyed");
+        }
         if (instance instanceof OwbNormalScopeProxy)
         {
             OwbNormalScopeProxy proxy = (OwbNormalScopeProxy) instance;
@@ -290,7 +294,8 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             NormalScopedBeanInterceptorHandler handler = (NormalScopedBeanInterceptorHandler)provider;
             Bean<T> bean = (Bean<T>)handler.getBean();
             CreationalContext<T> creationalContext = (CreationalContext<T>)parentCreationalContext;
-            Context currentContext = webBeansContext.getContextsService().getCurrentContext(bean.getScope());
+            Class<? extends Annotation> beanScope = bean.getScope();
+            Context currentContext = webBeansContext.getBeanManagerImpl().getContext(beanScope);
             if (currentContext instanceof AlterableContext)
             {
                 AlterableContext alterableContext = (AlterableContext)currentContext;
@@ -298,7 +303,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             }
             else
             {
-                bean.destroy(instance, creationalContext);
+                throw new UnsupportedOperationException("Not AlterableContext so you can't call destroy youself");
             }
         }
         else
