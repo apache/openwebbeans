@@ -35,6 +35,7 @@ import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.interceptor.AroundConstruct;
 import javax.interceptor.AroundInvoke;
 
@@ -80,20 +81,28 @@ class AnnotatedTypeImpl<X>
         }
         else
         {
+            final BeanManager bm = webBeansContext.getBeanManagerImpl();
             Set<Class<? extends Annotation>> annotationTypes = new HashSet<Class<? extends Annotation>>();
             List<Annotation> annotations = new ArrayList<Annotation>();
+            boolean hasScope = false;
             for (Annotation annotation : annotatedClass.getDeclaredAnnotations())
             {
+                if (bm.isScope(annotation.annotationType()))
+                {
+                    hasScope = true;
+                }
                 annotations.add(annotation);
                 annotationTypes.add(annotation.annotationType());
             }
             for (Annotation annotation : supertype.getAnnotations())
             {
-                if (annotation.annotationType().isAnnotationPresent(Inherited.class) &&
-                    !annotationTypes.contains(annotation.annotationType()))
+                final Class<? extends Annotation> annotationType = annotation.annotationType();
+                if (annotationType.isAnnotationPresent(Inherited.class)
+                    && !annotationTypes.contains(annotationType)
+                    && (!bm.isScope(annotationType) || !hasScope))
                 {
                     annotations.add(annotation);
-                    annotationTypes.add(annotation.annotationType());
+                    annotationTypes.add(annotationType);
                 }
             }
             setAnnotations(annotations.toArray(new Annotation[annotations.size()]));

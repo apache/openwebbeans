@@ -1166,6 +1166,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public <T> AnnotatedType<T> getAdditionalAnnotatedType(Class<T> type, String id)
     {
+        if (id == null)
+        {
+            return annotatedElementFactory.getAnnotatedType(type);
+        }
+
         ConcurrentMap<String, AnnotatedType<?>> annotatedTypes = additionalAnnotatedTypes.get(type);
         if (annotatedTypes == null)
         {
