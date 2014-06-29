@@ -19,7 +19,7 @@
   <test name="JSR-346 TCK">
     <classes>
       <class
-          name="org.jboss.cdi.tck.tests.decorators.builtin.injectionpoint.BuiltinInjectionPointDecoratorTest"/>
+          name="org.jboss.cdi.tck.tests.decorators.definition.producer.DecoratorNotAppliedToResultOfProducerTest"/>
     </classes>
     <groups>
       <run>

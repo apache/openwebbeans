@@ -51,12 +51,12 @@ import org.apache.webbeans.proxy.OwbInterceptorProxy;
 public abstract class AbstractProducer<T> implements Producer<T>
 {
 
-    private Set<InjectionPoint> injectionPoints;
-    private Class<? extends T> proxyClass;
-    private String passivationId;
-    private BeanInterceptorInfo interceptorInfo;
-    private InterceptorDecoratorProxyFactory proxyFactory;
-    private Map<Method, List<Interceptor<?>>> methodInterceptors;
+    protected Set<InjectionPoint> injectionPoints;
+    protected Class<? extends T> proxyClass;
+    protected String passivationId;
+    protected BeanInterceptorInfo interceptorInfo;
+    protected InterceptorDecoratorProxyFactory proxyFactory;
+    protected Map<Method, List<Interceptor<?>>> methodInterceptors;
 
     public AbstractProducer()
     {
@@ -198,7 +198,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
             T delegate = instance;
             if (interceptorInfo.getDecorators() != null && !isDelegateInjection(creationalContextImpl))
             {
-                List<Decorator<?>> decorators = interceptorInfo.getDecorators();
+                List<Decorator<?>> decorators = filterDecorators(instance, interceptorInfo.getDecorators());
                 Map<Decorator<?>, Object> instances = new HashMap<Decorator<?>, Object>();
                 for (int i = decorators.size(); i > 0; i--)
                 {
@@ -207,7 +207,8 @@ public abstract class AbstractProducer<T> implements Producer<T>
                     creationalContextImpl.putDelegate(delegate);
                     Object decoratorInstance = decorator.create((CreationalContext) creationalContext);
                     instances.put(decorator, decoratorInstance);
-                    delegate = proxyFactory.createProxyInstance(proxyClass, instance, new DecoratorHandler(interceptorInfo, instances, i - 1, instance, passivationId));
+                    delegate = proxyFactory.createProxyInstance(proxyClass, instance,
+                            new DecoratorHandler(interceptorInfo, decorators, instances, i - 1, instance, passivationId));
                 }
             }
             InterceptorHandler interceptorHandler = new DefaultInterceptorHandler<T>(instance, delegate, methodInterceptors, interceptorInstances, passivationId);
@@ -218,6 +219,11 @@ public abstract class AbstractProducer<T> implements Producer<T>
         }
 
         return instance;
+    }
+
+    protected List<Decorator<?>> filterDecorators(final T instance, final List<Decorator<?>> decorators)
+    {
+        return decorators;
     }
 
     @Override

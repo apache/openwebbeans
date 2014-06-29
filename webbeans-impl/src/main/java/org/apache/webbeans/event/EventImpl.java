@@ -120,4 +120,9 @@ public class EventImpl<T> implements Event<T>, Serializable
         in.defaultReadObject();
         webBeansContext = WebBeansContext.currentInstance();
     }
+
+    public EventMetadataImpl getMetadata()
+    {
+        return metadata;
+    }
 }

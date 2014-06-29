@@ -59,11 +59,11 @@ public class DecoratorHandler implements InterceptorHandler, Externalizable
     private Object target;
     private String passivationId;
 
-    public DecoratorHandler(BeanInterceptorInfo interceptorInfo, Map<Decorator<?>, ?> instances, int index, Object target, String passivationId)
+    public DecoratorHandler(BeanInterceptorInfo interceptorInfo, List<Decorator<?>> decorators, Map<Decorator<?>, ?> instances, int index, Object target, String passivationId)
     {
         this.interceptorInfo = interceptorInfo;
-        decorators = interceptorInfo.getDecorators();
         this.instances = instances;
+        this.decorators = decorators;
         this.index = index;
         this.target = target;
         this.passivationId = passivationId;

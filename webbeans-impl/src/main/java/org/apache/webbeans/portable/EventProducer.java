@@ -21,9 +21,12 @@ package org.apache.webbeans.portable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 
@@ -32,6 +35,7 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.event.EventMetadataImpl;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.util.GenericsUtil;
 
 public class EventProducer<T> extends AbstractProducer<Event<T>>
 {
@@ -42,7 +46,32 @@ public class EventProducer<T> extends AbstractProducer<Event<T>>
     {
         this.webBeansContext = webBeansContext;
     }
-    
+
+    @Override
+    protected List<Decorator<?>> filterDecorators(final Event<T> instance, final List<Decorator<?>> decorators)
+    {
+        if (!EventImpl.class.isInstance(instance)) // is this test useless?
+        {
+            return decorators;
+        }
+
+        final Type type = EventImpl.class.cast(instance).getMetadata().getType();
+        final ArrayList<Decorator<?>> list = new ArrayList<Decorator<?>>(decorators.size());
+        for (final Decorator<?> original : decorators)
+        {
+            final Type event = original.getDelegateType();
+            if (ParameterizedType.class.isInstance(event))
+            {
+                final ParameterizedType arg = ParameterizedType.class.cast(event);
+                final Type[] actualTypeArguments = arg.getActualTypeArguments();
+                if (actualTypeArguments.length > 0 && GenericsUtil.isAssignableFrom(false, actualTypeArguments[0], type))
+                {
+                    list.add(original);
+                }
+            }
+        }
+        return list;
+    }
     /**
      * {@inheritDoc}
      */

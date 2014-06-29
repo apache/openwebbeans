@@ -1251,6 +1251,13 @@ public class BeansDeployer
         {
             BeanAttributes<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
 
+            final ProcessBeanAttributesImpl event = fireProcessBeanAttributes(annotatedType, beanAttributes);
+            beanAttributes = updateBeanAttributesIfNeeded(beanAttributes, event);
+            if (event.isVeto())
+            {
+                return;
+            }
+
             ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, beanAttributes);
 
             if(WebBeansUtil.isDecorator(annotatedType))
@@ -1260,18 +1267,12 @@ public class BeansDeployer
                     logger.log(Level.FINE, "Found Managed Bean Decorator with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
 
-                final ProcessBeanAttributesImpl event = fireProcessBeanAttributes(annotatedType, beanAttributes);
-                if (!event.isVeto())
+                DecoratorBeanBuilder<T> dbb = new DecoratorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
+                if (dbb.isDecoratorEnabled())
                 {
-                    beanAttributes = updateBeanAttributesIfNeeded(beanAttributes, event);
-
-                    DecoratorBeanBuilder<T> dbb = new DecoratorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
-                    if (dbb.isDecoratorEnabled())
-                    {
-                        dbb.defineDecoratorRules();
-                        DecoratorBean<T> decorator = dbb.getBean();
-                        webBeansContext.getDecoratorsManager().addDecorator(decorator);
-                    }
+                    dbb.defineDecoratorRules();
+                    DecoratorBean<T> decorator = dbb.getBean();
+                    webBeansContext.getDecoratorsManager().addDecorator(decorator);
                 }
             }
             else if(WebBeansUtil.isCdiInterceptor(annotatedType))
@@ -1281,122 +1282,110 @@ public class BeansDeployer
                     logger.log(Level.FINE, "Found Managed Bean Interceptor with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
 
-                final ProcessBeanAttributesImpl event = fireProcessBeanAttributes(annotatedType, beanAttributes);
-                if (!event.isVeto())
+                CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
+                if (ibb.isInterceptorEnabled())
                 {
-                    beanAttributes = updateBeanAttributesIfNeeded(beanAttributes, event);
-
-                    CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
-                    if (ibb.isInterceptorEnabled())
-                    {
-                        ibb.defineCdiInterceptorRules();
-                        CdiInterceptorBean<T> interceptor = ibb.getBean();
-                        webBeansContext.getInterceptorsManager().addCdiInterceptor(interceptor);
-                    }
+                    ibb.defineCdiInterceptorRules();
+                    CdiInterceptorBean<T> interceptor = ibb.getBean();
+                    webBeansContext.getInterceptorsManager().addCdiInterceptor(interceptor);
                 }
             }
             else
             {
-                final ProcessBeanAttributesImpl event = fireProcessBeanAttributes(annotatedType, beanAttributes);
-                if (!event.isVeto())
+                InjectionTargetBean<T> bean = managedBeanCreator.getBean();
+
+                if (webBeansContext.getDecoratorsManager().containsCustomDecoratorClass(annotatedType.getJavaClass()) ||
+                        webBeansContext.getInterceptorsManager().containsCustomInterceptorClass(annotatedType.getJavaClass()))
                 {
-                    beanAttributes = updateBeanAttributesIfNeeded(beanAttributes, event);
+                    return; //TODO discuss this case (it was ignored before)
+                }
 
-                    InjectionTargetBean<T> bean = managedBeanCreator.getBean();
+                if (logger.isLoggable(Level.FINE))
+                {
+                    logger.log(Level.FINE, "Found Managed Bean with class name : [{0}]", annotatedType.getJavaClass().getName());
+                }
 
-                    if (webBeansContext.getDecoratorsManager().containsCustomDecoratorClass(annotatedType.getJavaClass()) ||
-                            webBeansContext.getInterceptorsManager().containsCustomInterceptorClass(annotatedType.getJavaClass()))
+                Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
+                if(bean.isEnabled())
+                {
+                    observerMethods = new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, bean.getAnnotatedType()).defineObserverMethods(bean);
+                }
+                Set<ProducerMethodBean<?>> producerMethods = new ProducerMethodBeansBuilder(bean.getWebBeansContext(), bean.getAnnotatedType()).defineProducerMethods(bean);
+                Set<ProducerFieldBean<?>> producerFields = new ProducerFieldBeansBuilder(bean.getWebBeansContext(), bean.getAnnotatedType()).defineProducerFields(bean);
+
+                ManagedBean<T> managedBean = (ManagedBean<T>)bean;
+                Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods =
+                        new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>();
+
+                for(ProducerMethodBean<?> producerMethod : producerMethods)
+                {
+                    AnnotatedMethod<?> method = webBeansContext.getAnnotatedElementFactory().newAnnotatedMethod(producerMethod.getCreatorMethod(), annotatedType);
+                    webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducer event observers for "
+                            + "ProducerMethods. Look at logs for further details");
+
+                    annotatedMethods.put(producerMethod, method);
+                }
+
+                Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields =
+                        new HashMap<ProducerFieldBean<?>, AnnotatedField<?>>();
+
+                for(ProducerFieldBean<?> producerField : producerFields)
+                {
+                    webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducer event observers for"
+                            + " ProducerFields. Look at logs for further details");
+
+                    annotatedFields.put(producerField,
+                            webBeansContext.getAnnotatedElementFactory().newAnnotatedField(
+                                    producerField.getCreatorField(),
+                                    webBeansContext.getAnnotatedElementFactory().newAnnotatedType(producerField.getBeanClass())));
+                }
+
+                Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap =
+                        new HashMap<ObserverMethod<?>, AnnotatedMethod<?>>();
+
+                for(ObserverMethod<?> observerMethod : observerMethods)
+                {
+                    ObserverMethodImpl<?> impl = (ObserverMethodImpl<?>)observerMethod;
+                    AnnotatedMethod<?> method = impl.getObserverMethod();
+
+                    observerMethodsMap.put(observerMethod, method);
+                }
+
+                BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
+
+                //Fires ProcessManagedBean
+                ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean, annotatedType);
+                beanManager.fireEvent(processBeanEvent);
+                webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessManagedBean event observers for " +
+                        "managed beans. Look at logs for further details");
+
+                //Fires ProcessProducerMethod
+                webBeansContext.getWebBeansUtil().fireProcessProducerMethodBeanEvent(annotatedMethods, annotatedType);
+                webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducerMethod event observers for " +
+                        "producer method beans. Look at logs for further details");
+
+                //Fires ProcessProducerField
+                webBeansContext.getWebBeansUtil().fireProcessProducerFieldBeanEvent(annotatedFields);
+                webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducerField event observers for " +
+                        "producer field beans. Look at logs for further details");
+
+                //Fire ObservableMethods
+                webBeansContext.getWebBeansUtil().fireProcessObservableMethodBeanEvent(observerMethodsMap);
+                webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessObserverMethod event observers for " +
+                        "observer methods. Look at logs for further details");
+
+                if(!webBeansContext.getWebBeansUtil().isAnnotatedTypeDecoratorOrInterceptor(annotatedType))
+                {
+                    beanManager.addBean(bean);
+                    for (ProducerMethodBean<?> producerMethod : producerMethods)
                     {
-                        return; //TODO discuss this case (it was ignored before)
+                        // add them one after the other to enable serialization handling et al
+                        beanManager.addBean(producerMethod);
                     }
-
-                    if (logger.isLoggable(Level.FINE))
+                    for (ProducerFieldBean<?> producerField : producerFields)
                     {
-                        logger.log(Level.FINE, "Found Managed Bean with class name : [{0}]", annotatedType.getJavaClass().getName());
-                    }
-
-                    Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
-                    if(bean.isEnabled())
-                    {
-                        observerMethods = new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, bean.getAnnotatedType()).defineObserverMethods(bean);
-                    }
-                    Set<ProducerMethodBean<?>> producerMethods = new ProducerMethodBeansBuilder(bean.getWebBeansContext(), bean.getAnnotatedType()).defineProducerMethods(bean);
-                    Set<ProducerFieldBean<?>> producerFields = new ProducerFieldBeansBuilder(bean.getWebBeansContext(), bean.getAnnotatedType()).defineProducerFields(bean);
-
-                    ManagedBean<T> managedBean = (ManagedBean<T>)bean;
-                    Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods =
-                            new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>();
-
-                    for(ProducerMethodBean<?> producerMethod : producerMethods)
-                    {
-                        AnnotatedMethod<?> method = webBeansContext.getAnnotatedElementFactory().newAnnotatedMethod(producerMethod.getCreatorMethod(), annotatedType);
-                        webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducer event observers for "
-                                + "ProducerMethods. Look at logs for further details");
-
-                        annotatedMethods.put(producerMethod, method);
-                    }
-
-                    Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields =
-                            new HashMap<ProducerFieldBean<?>, AnnotatedField<?>>();
-
-                    for(ProducerFieldBean<?> producerField : producerFields)
-                    {
-                        webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducer event observers for"
-                                + " ProducerFields. Look at logs for further details");
-
-                        annotatedFields.put(producerField,
-                                webBeansContext.getAnnotatedElementFactory().newAnnotatedField(
-                                        producerField.getCreatorField(),
-                                        webBeansContext.getAnnotatedElementFactory().newAnnotatedType(producerField.getBeanClass())));
-                    }
-
-                    Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap =
-                            new HashMap<ObserverMethod<?>, AnnotatedMethod<?>>();
-
-                    for(ObserverMethod<?> observerMethod : observerMethods)
-                    {
-                        ObserverMethodImpl<?> impl = (ObserverMethodImpl<?>)observerMethod;
-                        AnnotatedMethod<?> method = impl.getObserverMethod();
-
-                        observerMethodsMap.put(observerMethod, method);
-                    }
-
-                    BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
-
-                    //Fires ProcessManagedBean
-                    ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean, annotatedType);
-                    beanManager.fireEvent(processBeanEvent);
-                    webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessManagedBean event observers for " +
-                            "managed beans. Look at logs for further details");
-
-                    //Fires ProcessProducerMethod
-                    webBeansContext.getWebBeansUtil().fireProcessProducerMethodBeanEvent(annotatedMethods, annotatedType);
-                    webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducerMethod event observers for " +
-                            "producer method beans. Look at logs for further details");
-
-                    //Fires ProcessProducerField
-                    webBeansContext.getWebBeansUtil().fireProcessProducerFieldBeanEvent(annotatedFields);
-                    webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducerField event observers for " +
-                            "producer field beans. Look at logs for further details");
-
-                    //Fire ObservableMethods
-                    webBeansContext.getWebBeansUtil().fireProcessObservableMethodBeanEvent(observerMethodsMap);
-                    webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessObserverMethod event observers for " +
-                            "observer methods. Look at logs for further details");
-
-                    if(!webBeansContext.getWebBeansUtil().isAnnotatedTypeDecoratorOrInterceptor(annotatedType))
-                    {
-                        beanManager.addBean(bean);
-                        for (ProducerMethodBean<?> producerMethod : producerMethods)
-                        {
-                            // add them one after the other to enable serialization handling et al
-                            beanManager.addBean(producerMethod);
-                        }
-                        for (ProducerFieldBean<?> producerField : producerFields)
-                        {
-                            // add them one after the other to enable serialization handling et al
-                            beanManager.addBean(producerField);
-                        }
+                        // add them one after the other to enable serialization handling et al
+                        beanManager.addBean(producerField);
                     }
                 }
             }
