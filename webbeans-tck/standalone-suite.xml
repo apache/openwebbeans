@@ -79,6 +79,13 @@
                     <exclude name=".*"/>
                 </methods>
             </class>
+            
+            <!-- CDITCK-428 -->
+            <class name="org.jboss.cdi.tck.interceptors.tests.contract.interceptorLifeCycle.InterceptorLifeCycleTest">
+                <methods>
+                    <exclude name="testInterceptorInstanceCreatedWhenTargetInstanceCreated"/>
+                </methods>
+            </class>
 
             <class name="org.jboss.cdi.tck.interceptors.tests.contract.aroundTimeout.AroundTimeoutInterceptorTest">
                 <methods>
