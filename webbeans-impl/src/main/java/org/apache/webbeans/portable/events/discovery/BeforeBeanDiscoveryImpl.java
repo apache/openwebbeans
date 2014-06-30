@@ -34,11 +34,12 @@ import org.apache.webbeans.deployment.StereoTypeModel;
  * @version $Rev$ $Date$
  *
  */
-public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
+public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAware
 {
     
     private BeanManagerImpl beanManager = null;
     private final WebBeansContext webBeansContext;
+    private Object extension;
 
     public BeforeBeanDiscoveryImpl(WebBeansContext webBeansContext)
     {
@@ -52,7 +53,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     @Override
     public void addAnnotatedType(AnnotatedType<?> type)
     {
-        beanManager.addAdditionalAnnotatedType(type);
+        beanManager.addAdditionalAnnotatedType(extension, type);
     }
 
     /**
@@ -100,7 +101,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
      */
     public void addAnnotatedType(AnnotatedType<?> annotatedType, String id)
     {
-        beanManager.addAdditionalAnnotatedType(annotatedType, id);
+        beanManager.addAdditionalAnnotatedType(extension, annotatedType, id);
     }
 
     /**
@@ -118,5 +119,10 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     public void addQualifier(AnnotatedType<? extends Annotation> annotatedType)
     {
         beanManager.addAdditionalQualifier(annotatedType.getJavaClass());
+    }
+
+    public void setExtension(final Object extension)
+    {
+        this.extension = extension;
     }
 }

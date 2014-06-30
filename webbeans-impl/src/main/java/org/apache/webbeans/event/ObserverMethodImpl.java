@@ -19,6 +19,7 @@
 package org.apache.webbeans.event;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -294,7 +295,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
                     }
 
                     //Invoke Method
-                    view.invoke(object, args);
+                    invoke(object, args);
                 }
             }                        
         }
@@ -326,7 +327,12 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         }
 
     }
-    
+
+    protected void invoke(final Object object, final Object[] args) throws IllegalAccessException, InvocationTargetException
+    {
+        view.invoke(object, args);
+    }
+
     /**
      * Gets observer method parameters.
      * @param event event payload

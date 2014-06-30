@@ -28,12 +28,13 @@ import org.apache.webbeans.config.WebBeansContext;
  * OWB fires this event after all AnnotatedTypes from scanned classes
  * got picked up.
  */
-public class AfterTypeDiscoveryImpl implements AfterTypeDiscovery
+public class AfterTypeDiscoveryImpl implements AfterTypeDiscovery, ExtensionAware
 {
     private final WebBeansContext webBeansContext;
     private final List<Class<?>> sortedAlternatives;
     private final List<Class<?>> sortedInterceptors;
     private final List<Class<?>> sortedDecorators;
+    private Object extension;
 
     public AfterTypeDiscoveryImpl(WebBeansContext webBeansContext,
                                   List<Class<?>> sortedInterceptors,
@@ -68,6 +69,12 @@ public class AfterTypeDiscoveryImpl implements AfterTypeDiscovery
     public void addAnnotatedType(AnnotatedType<?> type, String id)
     {
         //X TODO evaluate and file Extension
-        webBeansContext.getBeanManagerImpl().addAdditionalAnnotatedType(type, id);
+        webBeansContext.getBeanManagerImpl().addAdditionalAnnotatedType(extension, type, id);
+    }
+
+    @Override
+    public void setExtension(final Object instance)
+    {
+        this.extension = instance;
     }
 }

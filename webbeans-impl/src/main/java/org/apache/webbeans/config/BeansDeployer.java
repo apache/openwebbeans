@@ -759,13 +759,17 @@ public class BeansDeployer
                     }
 
                     // Fires ProcessAnnotatedType
-                    ProcessAnnotatedTypeImpl<?> processAnnotatedEvent =
-                            webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
-
-                    // if veto() is called
-                    if (!processAnnotatedEvent.isVeto())
+                    if (!annotatedType.getJavaClass().isAnnotation())
                     {
-                        annotatedTypes.add(processAnnotatedEvent.getAnnotatedType());
+                        ProcessAnnotatedTypeImpl<?> processAnnotatedEvent = webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
+                        if (!processAnnotatedEvent.isVeto())
+                        {
+                            annotatedTypes.add(processAnnotatedEvent.getAnnotatedType());
+                        }
+                    }
+                    else
+                    {
+                        annotatedTypes.add(annotatedType);
                     }
                 }
                 catch (NoClassDefFoundError ncdfe)
@@ -854,12 +858,12 @@ public class BeansDeployer
         for (AnnotatedType<?> annotatedType : additionalAnnotatedTypes)
         {
             // Fires ProcessAnnotatedType
-            ProcessSyntheticAnnotatedTypeImpl<?> processAnnotatedEvent =
-                    webBeansContext.getWebBeansUtil().fireProcessSyntheticAnnotatedTypeEvent(annotatedType);
+            ProcessSyntheticAnnotatedTypeImpl<?> processAnnotatedEvent = !annotatedType.getJavaClass().isAnnotation() ?
+                    webBeansContext.getWebBeansUtil().fireProcessSyntheticAnnotatedTypeEvent(annotatedType) : null;
 
-            if (!processAnnotatedEvent.isVeto())
+            if (processAnnotatedEvent == null || !processAnnotatedEvent.isVeto())
             {
-                AnnotatedType<?> changedAnnotatedType = processAnnotatedEvent.getAnnotatedType();
+                AnnotatedType<?> changedAnnotatedType = processAnnotatedEvent == null ? annotatedType : processAnnotatedEvent.getAnnotatedType();
                 if (annotatedTypes.contains(changedAnnotatedType))
                 {
                     annotatedTypes.remove(changedAnnotatedType);

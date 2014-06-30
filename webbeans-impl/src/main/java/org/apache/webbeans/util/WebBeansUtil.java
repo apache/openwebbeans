@@ -50,6 +50,7 @@ import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
 import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
 import org.apache.webbeans.component.creation.ProducerMethodBeansBuilder;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.container.InjectionResolver;
@@ -949,7 +950,7 @@ public final class WebBeansUtil
      */
     public <T> GProcessSyntheticAnnotatedType fireProcessSyntheticAnnotatedTypeEvent(AnnotatedType<T> annotatedType)
     {
-        Extension source = null; //X TODO
+        Extension source = AnnotatedTypeWrapper.class.isInstance(annotatedType) ? AnnotatedTypeWrapper.class.cast(annotatedType).getSource() : null;
         GProcessSyntheticAnnotatedType gProcessSyntheticAnnotatedType = new GProcessSyntheticAnnotatedType(source, annotatedType);
 
         //Fires ProcessSyntheticAnnotatedType

@@ -1090,14 +1090,14 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
     }
 
-    public void addAdditionalAnnotatedType(AnnotatedType<?> annotatedType)
+    public void addAdditionalAnnotatedType(Object extension, AnnotatedType<?> annotatedType)
     {
-        addAdditionalAnnotatedType(annotatedType, AnnotatedElementFactory.OWB_DEFAULT_KEY);
+        addAdditionalAnnotatedType(extension, annotatedType, AnnotatedElementFactory.OWB_DEFAULT_KEY);
     }
 
-    public <T> void addAdditionalAnnotatedType(AnnotatedType<T> inAnnotatedType, String id)
+    public <T> void addAdditionalAnnotatedType(Object extension, AnnotatedType<T> inAnnotatedType, String id)
     {
-        final AnnotatedType<T> annotatedType = new AnnotatedTypeWrapper<T>(inAnnotatedType);
+        final AnnotatedType<T> annotatedType = new AnnotatedTypeWrapper<T>(Extension.class.cast(extension), inAnnotatedType);
         if (annotatedType.getAnnotation(Vetoed.class) != null)
         {
             // we could check package here too but would be a lost of time 99.99% of the time

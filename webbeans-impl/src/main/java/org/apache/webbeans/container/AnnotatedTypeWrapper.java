@@ -22,18 +22,21 @@ import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Extension;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
 // totally useless but TCKs check AT references creating a new instance for each call...
-class AnnotatedTypeWrapper<T> implements AnnotatedType<T>
+public class AnnotatedTypeWrapper<T> implements AnnotatedType<T>
 {
     private final AnnotatedType<T> original;
+    private final Extension source;
 
-    public AnnotatedTypeWrapper(final AnnotatedType<T> annotatedType)
+    public AnnotatedTypeWrapper(final Extension source, final AnnotatedType<T> annotatedType)
     {
-        original = annotatedType;
+        this.source = source;
+        this.original = annotatedType;
     }
 
     @Override
@@ -88,5 +91,10 @@ class AnnotatedTypeWrapper<T> implements AnnotatedType<T>
     public boolean isAnnotationPresent(final Class<? extends Annotation> aClass)
     {
         return original.isAnnotationPresent(aClass);
+    }
+
+    public Extension getSource()
+    {
+        return source;
     }
 }

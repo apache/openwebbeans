@@ -19,7 +19,7 @@
   <test name="JSR-346 TCK">
     <classes>
       <class
-          name="org.jboss.cdi.tck.tests.extensions.afterBeanDiscovery.annotated.GetAnnotatedTypesTest" />
+          name="org.jboss.cdi.tck.tests.extensions.annotated.synthetic.ProcessSyntheticAnnotatedTypeTest" />
     </classes>
     <groups>
       <run>

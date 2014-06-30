@@ -33,7 +33,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.TransactionPhase;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.AnnotatedCallable;
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ObserverMethod;
@@ -493,12 +497,25 @@ public final class NotificationManager
         Asserts.assertNotNull(annotatedParameter, "annotatedParameter can not be null");
         
         //Observer creation from annotated method
-        ObserverMethodImpl<T> observer = new ObserverMethodImpl(bean, annotatedParameter);
+        ObserverMethodImpl<T> observer = isContainerEvent(annotatedParameter)?
+                new ContainerEventObserverMethodImpl(bean, annotatedParameter) :
+                new ObserverMethodImpl(bean, annotatedParameter);
         
         //Adds this observer
         addObserver(observer, annotatedParameter.getBaseType());
 
         return observer;
+    }
+
+    private boolean isContainerEvent(final AnnotatedParameter<?> annotatedParameter)
+    {
+        final AnnotatedCallable<?> method = annotatedParameter.getDeclaringCallable();
+        if (!AnnotatedMethod.class.isInstance(method) || method.getParameters().size() == 0)
+        {
+            return false;
+        }
+        final Class<?> paramType = AnnotatedMethod.class.cast(method).getJavaMember().getParameterTypes()[0];
+        return paramType == BeforeBeanDiscovery.class || paramType == AfterBeanDiscovery.class;
     }
 
 }
