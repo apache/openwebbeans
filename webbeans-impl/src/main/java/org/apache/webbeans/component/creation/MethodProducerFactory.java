@@ -89,7 +89,8 @@ public class MethodProducerFactory<P> implements ProducerFactory<P>
                 producerQualifiersWithoutNamed.add(qualifier);
             }
         }
-        Set<AnnotatedMethod<? super P>> annotatedMethods = (Set<AnnotatedMethod<? super P>>)(Set<?>)producerMethod.getDeclaringType().getMethods();        
+        Set<AnnotatedMethod<? super P>> annotatedMethods
+            = (Set<AnnotatedMethod<? super P>>)(Set<?>)webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(producerMethod.getDeclaringType());        
         for (AnnotatedMethod<? super P> annotatedMethod : annotatedMethods)
         {            
             if (annotatedMethod.getDeclaringType().equals(producerMethod.getDeclaringType()))

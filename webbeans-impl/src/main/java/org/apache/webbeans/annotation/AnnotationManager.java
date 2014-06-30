@@ -790,7 +790,7 @@ public final class AnnotationManager
     @SuppressWarnings("unchecked")
     public <X> Method getDisposalWithGivenAnnotatedMethod(AnnotatedType<X> annotatedType, Type beanType, Annotation[] qualifiers)
     {
-        Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();
+        Set<AnnotatedMethod<? super X>> annotatedMethods = webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType);
 
         if(annotatedMethods != null)
         {

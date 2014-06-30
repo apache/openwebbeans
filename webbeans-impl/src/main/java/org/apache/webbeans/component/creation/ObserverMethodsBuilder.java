@@ -68,7 +68,7 @@ public class ObserverMethodsBuilder<T, I extends InjectionTargetBean<T>>
     public Set<ObserverMethod<?>> defineObserverMethods(AbstractOwbBean<T> bean)
     {   
         Set<ObserverMethod<?>> definedObservers = new HashSet<ObserverMethod<?>>();
-        for (AnnotatedMethod<?> annotatedMethod : annotatedType.getMethods())
+        for (AnnotatedMethod<?> annotatedMethod : webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType))
         {
             List<AnnotatedParameter<?>> parameters = (List<AnnotatedParameter<?>>)(List<?>)annotatedMethod.getParameters();
             AnnotatedParameter<?> observesParameter = null;

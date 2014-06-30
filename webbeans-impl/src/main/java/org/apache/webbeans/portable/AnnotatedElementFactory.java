@@ -21,6 +21,9 @@ package org.apache.webbeans.portable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
@@ -35,6 +38,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Factory for {@link javax.enterprise.inject.spi.Annotated} elements.
@@ -72,6 +76,10 @@ public final class AnnotatedElementFactory
     //Cache of AnnotatedField
     private ConcurrentMap<Field, AnnotatedField<?>> annotatedFieldCache =
         new ConcurrentHashMap<Field, AnnotatedField<?>>();
+
+    //Cache of AnnotatedMethod
+    private ConcurrentMap<AnnotatedType<?>, Set<AnnotatedMethod<?>>> annotatedMethodsOfTypeCache =
+        new ConcurrentHashMap<AnnotatedType<?>, Set<AnnotatedMethod<?>>>();
 
     private WebBeansContext webBeansContext;
 
@@ -306,6 +314,36 @@ public final class AnnotatedElementFactory
     }
     
     /**
+     * Returns the {@link AnnotatedMethod}s of the specified {@link AnnotatedType},
+     * filtering out the overridden methods.
+     */
+    public <T> Set<AnnotatedMethod<? super T>> getFilteredAnnotatedMethods(AnnotatedType<T> annotatedType)
+    {
+        Asserts.assertNotNull(annotatedType, "annotatedType is null");
+
+        Set<AnnotatedMethod<?>> methods = annotatedMethodsOfTypeCache.get(annotatedType);
+        if (methods != null)
+        {
+            return cast(methods);
+        }
+        methods = Collections.unmodifiableSet(getFilteredMethods(
+                annotatedType.getJavaClass(),
+                (Set<AnnotatedMethod<?>>)(Set<?>)annotatedType.getMethods(),
+                new HashSet<AnnotatedMethod<?>>()));
+        Set<AnnotatedMethod<?>> old = annotatedMethodsOfTypeCache.putIfAbsent(annotatedType, methods);
+        if (old != null)
+        {
+            return cast(old);
+        }
+        return cast(methods);
+    }
+    
+    private <T> Set<AnnotatedMethod<? super T>> cast(Set<AnnotatedMethod<?>> methods)
+    {
+        return (Set<AnnotatedMethod<? super T>>)(Set<?>)methods;
+    }
+
+    /**
      * Clear caches.
      */
     public void clear()
@@ -315,8 +353,37 @@ public final class AnnotatedElementFactory
         annotatedConstructorCache.clear();
         annotatedFieldCache.clear();
         annotatedMethodCache.clear();
+        annotatedMethodsOfTypeCache.clear();
     }
     
+    private Set<? extends AnnotatedMethod<?>> getFilteredMethods(Class<?> type, Set<AnnotatedMethod<?>> allMethods, Set<AnnotatedMethod<?>> filteredMethods)
+    {
+        if (type == null)
+        {
+            return filteredMethods;
+        }
+        for (AnnotatedMethod<?> annotatedMethod: allMethods)
+        {
+            if (annotatedMethod.getJavaMember().getDeclaringClass() == type && !isOverridden(annotatedMethod, filteredMethods))
+            {
+                filteredMethods.add(annotatedMethod);
+            }
+        }
+        return getFilteredMethods(type.getSuperclass(), allMethods, filteredMethods);
+    }
+
+    private boolean isOverridden(AnnotatedMethod<?> superclassMethod, Set<AnnotatedMethod<?>> methods)
+    {
+        for (AnnotatedMethod<?> subclassMethod : methods)
+        {
+            if (ClassUtil.isOverridden(subclassMethod.getJavaMember(), superclassMethod.getJavaMember()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private <T> ConcurrentMap<String, AnnotatedType<T>> getAnnotatedTypeCache(Class<T> type)
     {
         ConcurrentMap<String, AnnotatedType<?>> annotatedTypes = annotatedTypeCache.get(type);

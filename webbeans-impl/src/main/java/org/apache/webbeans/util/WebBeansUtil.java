@@ -1470,7 +1470,7 @@ public final class WebBeansUtil
             throw new WebBeansConfigurationException("Final managed bean class with name : " + clazz.getName() + " can not define any InterceptorBindings");
         }
 
-        Set<AnnotatedMethod<? super X>> methods = type.getMethods();
+        Set<AnnotatedMethod<? super X>> methods = webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(type);
         for(AnnotatedMethod<? super X> methodA : methods)
         {
             Method method = methodA.getJavaMember();

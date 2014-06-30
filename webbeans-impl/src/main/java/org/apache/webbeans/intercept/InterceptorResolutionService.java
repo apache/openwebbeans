@@ -649,7 +649,7 @@ public class InterceptorResolutionService
 
         List<AnnotatedMethod> interceptableAnnotatedMethods = new ArrayList<AnnotatedMethod>();
 
-        Set<AnnotatedMethod> annotatedMethods = annotatedType.getMethods();
+        Set<AnnotatedMethod> annotatedMethods = (Set<AnnotatedMethod>)webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType);
         for (Method interceptableMethod : interceptableMethods)
         {
             for (AnnotatedMethod<?> annotatedMethod : annotatedMethods)

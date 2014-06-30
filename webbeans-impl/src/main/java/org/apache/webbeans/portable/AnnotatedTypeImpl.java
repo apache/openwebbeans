@@ -29,18 +29,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.interceptor.AroundConstruct;
-import javax.interceptor.AroundInvoke;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Implementation of the {@link AnnotatedType} interface.
@@ -260,42 +255,10 @@ class AnnotatedTypeImpl<X>
                 }
                 for (AnnotatedMethod<? super X> method : supertype.getMethods())
                 {
-                    if (!isOverridden(method))
-                    {
-                        methods.add(new AnnotatedMethodImpl<X>(getWebBeansContext(), method.getJavaMember(), AnnotatedTypeImpl.this));
-                    }
+                    methods.add(new AnnotatedMethodImpl<X>(getWebBeansContext(), method.getJavaMember(), AnnotatedTypeImpl.this));
                 }
             }
 
-        }
-
-        private boolean isOverridden(AnnotatedMethod<? super X> superclassMethod)
-        {
-            for (AnnotatedMethod<? super X> subclassMethod : methods)
-            {
-                if (ClassUtil.isOverridden(subclassMethod.getJavaMember(), superclassMethod.getJavaMember()))
-                {
-                    final Set<Annotation> superAnnotations = superclassMethod.getAnnotations();
-                    final Set<Annotation> subAnnotations = subclassMethod.getAnnotations();
-                    // check that's not a deactivation of interceptors/lifecycle
-                    // before checking that's the exact same method
-                    // TODO: same for EJBs?
-                    for (final Annotation a : superAnnotations)
-                    {
-                        final Class<? extends Annotation> annotationType = a.annotationType();
-                        if (annotationType == AroundConstruct.class || annotationType == AroundInvoke.class
-                            || annotationType == PostConstruct.class || annotationType == PreDestroy.class)
-                        {
-                            if (!subAnnotations.contains(a))
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                    return subAnnotations.equals(superAnnotations);
-                }
-            }
-            return false;
         }
     }
 }

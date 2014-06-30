@@ -92,7 +92,7 @@ public class InjectionPointFactory
                 injectionPoints.add(buildInjectionPoint(owner, field));
             }
         }
-        for (AnnotatedMethod<? super X> method: annotatedType.getMethods())
+        for (AnnotatedMethod<? super X> method: webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType))
         {
             if (method.isAnnotationPresent(Inject.class) && !Modifier.isStatic(method.getJavaMember().getModifiers()))
             {

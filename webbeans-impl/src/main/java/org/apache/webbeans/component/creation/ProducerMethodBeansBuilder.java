@@ -64,7 +64,7 @@ public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>> ext
     public Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<T> bean)
     {
         Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
-        Set<AnnotatedMethod<? super T>> annotatedMethods = annotatedType.getMethods();
+        Set<AnnotatedMethod<? super T>> annotatedMethods = webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType);
         
         for(AnnotatedMethod<? super T> annotatedMethod: annotatedMethods)
         {

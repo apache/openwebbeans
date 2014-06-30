@@ -135,7 +135,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
         validateNoProducerMethod(annotatedType);
 
         // make sure that CDI Decorator do not have a Disposes method
-        validateNoDisposerWithoutProducer(annotatedType.getMethods(), Collections.EMPTY_SET);
+        validateNoDisposerWithoutProducer(webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType), Collections.EMPTY_SET);
 
     }
 
@@ -248,7 +248,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
             return;
         }
         collectPostConstructMethods(type.getSuperclass(), postConstructMethods);
-        for (AnnotatedMethod<?> annotatedMethod: annotatedType.getMethods())
+        for (AnnotatedMethod<?> annotatedMethod: webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType))
         {
             if (annotatedMethod.getJavaMember().getDeclaringClass() == type
                 && annotatedMethod.isAnnotationPresent(PostConstruct.class)
@@ -273,7 +273,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
             return;
         }
         collectPreDestroyMethods(type.getSuperclass(), preDestroyMethods);
-        for (AnnotatedMethod<?> annotatedMethod: annotatedType.getMethods())
+        for (AnnotatedMethod<?> annotatedMethod: webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType))
         {
             if (annotatedMethod.getJavaMember().getDeclaringClass() == type
                 && annotatedMethod.isAnnotationPresent(PreDestroy.class)

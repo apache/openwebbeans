@@ -67,7 +67,7 @@ public final class InterceptorUtil
         List<Class> classes = getReverseClassHierarchy(annotatedType.getJavaClass());
         for (Class clazz : classes)
         {
-            for (AnnotatedMethod<?> annotatedMethod : annotatedType.getMethods())
+            for (AnnotatedMethod<?> annotatedMethod : webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType))
             {
                 if (annotatedMethod.getJavaMember().getDeclaringClass() != clazz)
                 {

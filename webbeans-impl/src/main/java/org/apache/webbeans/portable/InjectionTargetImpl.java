@@ -249,7 +249,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
      */
     private void injectInitializerMethods(Class<?> declaringType, T instance, CreationalContextImpl<T> context)
     {
-        for (AnnotatedMethod<? super T> method : annotatedType.getMethods())
+        for (AnnotatedMethod<? super T> method : webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType))
         {
             if (method.getDeclaringType().getJavaClass().equals(declaringType) && method.isAnnotationPresent(Inject.class) && method.getParameters().isEmpty())
             {

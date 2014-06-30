@@ -94,7 +94,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 
     protected void checkInterceptorConditions()
     {
-        Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
+        Set<AnnotatedMethod<? super T>> methods = webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType);
         for(AnnotatedMethod<?> method : methods)
         {
             for (AnnotatedParameter<?> parameter : method.getParameters())
@@ -143,7 +143,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 
         boolean interceptorFound = false;
 
-        Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
+        Set<AnnotatedMethod<? super T>> methods = webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType);
 
         for (Class clazz : classHierarchy)
         {

@@ -726,7 +726,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         protected AnnotatedMethod<? super M> getSuperAnnotated()
         {
             AnnotatedMethod<M> thisMethod = getAnnotated();
-            for (AnnotatedMethod<? super M> superMethod: getSuperType().getMethods())
+            for (AnnotatedMethod<? super M> superMethod: webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(getSuperType()))
             {
                 List<AnnotatedParameter<M>> thisParameters = thisMethod.getParameters();
                 if (thisMethod.getJavaMember().getName().equals(superMethod.getJavaMember().getName())
