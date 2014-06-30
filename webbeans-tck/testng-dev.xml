@@ -19,7 +19,7 @@
   <test name="JSR-346 TCK">
     <classes>
       <class
-          name="org.jboss.cdi.tck.tests.extensions.beanManager.BeanManagerTest" />
+          name="org.jboss.cdi.tck.tests.deployment.exclude.ExcludeFiltersTest" />
     </classes>
     <groups>
       <run>

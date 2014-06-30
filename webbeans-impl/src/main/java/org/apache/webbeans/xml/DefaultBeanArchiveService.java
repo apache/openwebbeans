@@ -39,6 +39,8 @@ import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.util.UrlSet;
 import org.apache.webbeans.util.WebBeansConstants;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Please note that this implementation is not thread safe.
@@ -314,32 +316,94 @@ public class DefaultBeanArchiveService implements BeanArchiveService
 
     private void fillExcludes(DefaultBeanArchiveInformation bdaInfo, Element scanElement)
     {
-        ElementIterator elit = new ElementIterator(scanElement);
-        while (elit.hasNext())
+        final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        final NodeList childNodes = scanElement.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++)
         {
-            Element child = elit.next();
+            final Node nd = childNodes.item(i);
+            if (!Element.class.isInstance(nd))
+            {
+                continue;
+            }
+
+            final Element child = Element.class.cast(nd);
             if (WebBeansConstants.WEB_BEANS_XML_EXCLUDE.equalsIgnoreCase(child.getLocalName()))
             {
-                String name = getTrimmedAttribute(child, "name");
-                if (name != null)
+                final String name = getTrimmedAttribute(child, "name");
+                final NodeList children = child.getChildNodes();
+                boolean skip = false;
+                for (int j = 0; j < children.getLength(); j++)
                 {
-                    if (name.endsWith(".*"))
+                    final Node ndChild = children.item(j);
+                    if (!Element.class.isInstance(ndChild))
                     {
-                        // package exclude without sub-packages
-                        bdaInfo.addClassExclude(name.substring(0, name.length() - 2));
+                        continue;
                     }
-                    else if (name.endsWith(".**"))
+
+                    final Element condition = Element.class.cast(ndChild);
+
+                    final String localName = condition.getLocalName();
+                    if (WebBeansConstants.WEB_BEANS_XML_IF_CLASS_AVAILABLE.equalsIgnoreCase(localName))
                     {
-                        // package exclude WITH sub-packages
-                        bdaInfo.addPackageExclude(name.substring(0, name.length() - 3));
+                        if (!isClassAvailable(loader, getTrimmedAttribute(condition, "name")))
+                        {
+                            skip = true;
+                            break;
+                        }
                     }
-                    else
+                    else if (WebBeansConstants.WEB_BEANS_XML_IF_CLASS_NOT_AVAILABLE.equalsIgnoreCase(localName))
                     {
-                        // a simple Class
-                        bdaInfo.addClassExclude(name);
+                        if (isClassAvailable(loader, getTrimmedAttribute(condition, "name")))
+                        {
+                            skip = true;
+                            break;
+                        }
+                    }
+                    else if (WebBeansConstants.WEB_BEANS_XML_IF_SYSTEM_PROPERTY.equalsIgnoreCase(localName))
+                    {
+                        final String value = getTrimmedAttribute(condition, "value");
+                        final String systProp = System.getProperty(getTrimmedAttribute(condition, "name"));
+                        if ((value == null && systProp == null) || !value.equals(systProp))
+                        {
+                            skip = true;
+                            break;
+                        }
                     }
                 }
+                if (skip)
+                {
+                    continue;
+                }
+                if (name.endsWith(".*"))
+                {
+                    // package exclude without sub-packages
+                    bdaInfo.addClassExclude(name.substring(0, name.length() - 2));
+                }
+                else if (name.endsWith(".**"))
+                {
+                    // package exclude WITH sub-packages
+                    bdaInfo.addPackageExclude(name.substring(0, name.length() - 3));
+                }
+                else
+                {
+                    // a simple Class
+                    bdaInfo.addClassExclude(name);
+                }
             }
+        }
+    }
+
+    private static boolean isClassAvailable(final ClassLoader loader, final String name)
+    {
+        try
+        {
+            // no Class.forName(name) since it doesn't attach the classloader loader to the class in some cases
+            loader.loadClass(name);
+            return true;
+        }
+        catch (final Throwable e) // NoClassDefFoundError or ClassNotFoundException
+        {
+            return false;
         }
     }
 

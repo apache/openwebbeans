@@ -18,16 +18,9 @@
  */
 package org.apache.webbeans.arquillian.standalone;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
+import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.ScannerService;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
@@ -40,6 +33,15 @@ import org.jboss.shrinkwrap.api.asset.FileAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  *
  */
@@ -49,6 +51,9 @@ public class OwbArquillianScannerService implements ScannerService
     private final static String WEB_INF_CLASS_FOLDER = "/WEB-INF/classes/";
 
     private final boolean beansXmlBdaScanningEnabled;
+    private final WebBeansContext webBeansContext;
+    private final BeanArchiveService archiveService;
+
     private Archive archive;
 
     private UrlSet beansXmls = new UrlSet();
@@ -58,6 +63,8 @@ public class OwbArquillianScannerService implements ScannerService
     public OwbArquillianScannerService()
     {
         this.beansXmlBdaScanningEnabled = false;
+        webBeansContext = WebBeansContext.getInstance();
+        archiveService = webBeansContext.getBeanArchiveService();
     }
 
     @Override
@@ -144,9 +151,11 @@ public class OwbArquillianScannerService implements ScannerService
 
         if (metainfBeansXmlUrl != null || webBeansXmlUrl != null)
         {
+            final BeanArchiveService.BeanArchiveInformation info = archiveService.getBeanArchiveInformation(webBeansXmlUrl != null ? webBeansXmlUrl : metainfBeansXmlUrl);
+
             // in this case we need to scan the WEB-INF/classses folder for .class files
             Map<ArchivePath, Node> classes = archive.getContent(Filters.include(WEB_INF_CLASS_FOLDER + ".*\\.class"));
-            scanClasses(classes, WEB_INF_CLASS_FOLDER);
+            scanClasses(info, classes, WEB_INF_CLASS_FOLDER);
         }
 
 
@@ -171,7 +180,6 @@ public class OwbArquillianScannerService implements ScannerService
                 scanJarArchive(jarArchive);
             }
         }
-
     }
 
     private void scanJarArchive(final Archive<?> archive)
@@ -184,12 +192,13 @@ public class OwbArquillianScannerService implements ScannerService
             return;
         }
 
+
         // otherwise we store it for later use
         beansXmls.add(beansXmlUrl);
 
         // and now add all classes
         Map<ArchivePath, Node> classes = archive.getContent(Filters.include(".*\\.class"));
-        scanClasses(classes, null);
+        scanClasses(archiveService.getBeanArchiveInformation(beansXmlUrl), classes, null);
     }
 
     /**
@@ -197,7 +206,8 @@ public class OwbArquillianScannerService implements ScannerService
      * @param classes the scanned classes
      * @param classBasePath the base class in which the classes are, or null if they are directly in the root
      */
-    private void scanClasses(Map<ArchivePath, Node> classes, String classBasePath)
+    private void scanClasses(final BeanArchiveService.BeanArchiveInformation info,
+                             final Map<ArchivePath, Node> classes, String classBasePath)
     {
         for (Map.Entry<ArchivePath, Node> classEntry : classes.entrySet())
         {
@@ -218,6 +228,11 @@ public class OwbArquillianScannerService implements ScannerService
             className = className.substring(0, className.length() - ".class".length());
 
             className = className.replace('/', '.');
+
+            if (info != null && info.isClassExcluded(className))
+            {
+                continue;
+            }
 
 
             try
