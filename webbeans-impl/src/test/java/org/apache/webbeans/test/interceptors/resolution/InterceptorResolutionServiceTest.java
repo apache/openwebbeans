@@ -25,6 +25,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -163,10 +164,14 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
 
         Assert.assertEquals(0, interceptorInfo.getDecorators().size());
 
-        Map<Method, BusinessMethodInterceptorInfo> methodInterceptorInfos = interceptorInfo.getBusinessMethodsInfo();
+        Map<Method, BusinessMethodInterceptorInfo> methodInterceptorInfos = new HashMap<Method, BusinessMethodInterceptorInfo>(interceptorInfo.getBusinessMethodsInfo());
         Assert.assertNotNull(methodInterceptorInfos);
         Assert.assertEquals(8, methodInterceptorInfos.size());
 
+        Method methodWithEnhancedAction = ClassMultiInterceptedClass.class.getMethod("methodWithEnhancedAction");
+        Assert.assertEquals(2, methodInterceptorInfos.get(methodWithEnhancedAction).getCdiInterceptors().length);
+        
+        methodInterceptorInfos.remove(methodWithEnhancedAction);
         for (BusinessMethodInterceptorInfo mi : methodInterceptorInfos.values())
         {
             Assert.assertEquals(3, mi.getCdiInterceptors().length);

@@ -23,6 +23,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -589,7 +590,7 @@ public final class AnnotationUtil
         return null;        
     }
 
-    public static Annotation[] asArray(Set<Annotation> set)
+    public static Annotation[] asArray(Collection<Annotation> set)
     {
         if(set != null)
         {

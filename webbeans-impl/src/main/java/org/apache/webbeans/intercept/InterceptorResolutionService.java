@@ -561,9 +561,11 @@ public class InterceptorResolutionService
 
         boolean unproxyable = isUnproxyable(annotatedMethod);
 
-        Set<Annotation> cummulatedInterceptorBindings = new HashSet<Annotation>();
-        cummulatedInterceptorBindings.addAll(
-                annotationManager.getInterceptorAnnotations(annotatedMethod.getAnnotations()));
+        Map<Class<? extends Annotation>, Annotation> cummulatedInterceptorBindings = new HashMap<Class<? extends Annotation>, Annotation>();
+        for (Annotation interceptorBinding: annotationManager.getInterceptorAnnotations(annotatedMethod.getAnnotations()))
+        {
+            cummulatedInterceptorBindings.put(interceptorBinding.annotationType(), interceptorBinding);
+        }
 
         if (unproxyable && cummulatedInterceptorBindings.size() > 0)
         {
@@ -579,7 +581,13 @@ public class InterceptorResolutionService
             return;
         }
 
-        cummulatedInterceptorBindings.addAll(classInterceptorBindings);
+        for (Annotation interceptorBinding: classInterceptorBindings)
+        {
+            if (!cummulatedInterceptorBindings.containsKey(interceptorBinding.annotationType()))
+            {
+                cummulatedInterceptorBindings.put(interceptorBinding.annotationType(), interceptorBinding);
+            }
+        }
 
         if (cummulatedInterceptorBindings.size() == 0)
         {
@@ -587,7 +595,7 @@ public class InterceptorResolutionService
         }
 
         List<Interceptor<?>> methodInterceptors
-                = webBeansContext.getBeanManagerImpl().resolveInterceptors(interceptionType, AnnotationUtil.asArray(cummulatedInterceptorBindings));
+                = webBeansContext.getBeanManagerImpl().resolveInterceptors(interceptionType, AnnotationUtil.asArray(cummulatedInterceptorBindings.values()));
 
         methodInterceptorInfo.setCdiInterceptors(methodInterceptors);
 
