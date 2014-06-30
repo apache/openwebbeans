@@ -841,7 +841,7 @@ public final class WebBeansUtil
         }
         else
         {
-            throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString()
+            throw new IllegalArgumentException("<Instance> field injection " + injectionPoint.toString()
                     + " must be defined as ParameterizedType with one actual type argument");
         }
 

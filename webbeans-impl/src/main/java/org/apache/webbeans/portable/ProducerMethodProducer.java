@@ -56,7 +56,10 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
                                   WebBeansContext webBeansContext)
     {
         super(points);
-        Asserts.assertNotNull(owner, "owner may not be null");
+        if (owner == null && !producerMethod.isStatic())
+        {
+            throw new IllegalArgumentException("owner may not be null");
+        }
         Asserts.assertNotNull(producerMethod, "method may not be null");
         Asserts.assertNotNull(webBeansContext, "WebBeansContext may not be null");
         if (!producerMethod.isStatic())

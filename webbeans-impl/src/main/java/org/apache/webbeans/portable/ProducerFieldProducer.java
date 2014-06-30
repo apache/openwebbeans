@@ -48,7 +48,10 @@ public class ProducerFieldProducer<T, P> extends AbstractProducer<T>
     public ProducerFieldProducer(Bean<P> owner, AnnotatedField<? super P> producerField, WebBeansContext context)
     {
         super(Collections.<InjectionPoint>emptySet());
-        Asserts.assertNotNull(owner, "owner may not be null");
+        if (owner == null && !producerField.isStatic())
+        {
+            throw new IllegalArgumentException("owner may not be null");
+        }
         Asserts.assertNotNull(producerField, "field may not be null");
         Asserts.assertNotNull(context, "WebBeansContext may not be null");
         this.owner = owner;
@@ -98,7 +101,7 @@ public class ProducerFieldProducer<T, P> extends AbstractProducer<T>
         }
         finally
         {
-            if (owner.getScope().equals(Dependent.class))
+            if (owner != null && owner.getScope().equals(Dependent.class))
             {
                 owner.destroy(parentInstance, parentCreational);
             }
