@@ -32,6 +32,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
 import javax.enterprise.context.ContextNotActiveException;
@@ -41,6 +43,7 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Default;
+import javax.enterprise.inject.InjectionException;
 import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.*;
@@ -71,8 +74,10 @@ import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
 
+import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
@@ -1007,7 +1012,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public <T extends Extension> T getExtension(Class<T> type)
     {
-        return webBeansContext.getExtensionLoader().getExtension(type);
+        final T extension = webBeansContext.getExtensionLoader().getExtension(type);
+        if (extension == null)
+        {
+            throw new IllegalArgumentException("extension " + type + " not registered");
+        }
+        return extension;
     }
 
     @Override
@@ -1052,8 +1062,31 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
-        InjectionTargetFactoryImpl<T> factory = new InjectionTargetFactoryImpl<T>(type, webBeansContext);
-        return factory.createInjectionTarget();
+        final InjectionTargetFactoryImpl<T> factory = new InjectionTargetFactoryImpl<T>(type, webBeansContext);
+        final InterceptorUtil interceptorUtil = webBeansContext.getInterceptorUtil();
+        final InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(
+                        type,
+                        factory.createInjectionPoints(null),
+                        webBeansContext,
+                        interceptorUtil.getLifecycleMethods(type, PostConstruct.class, true),
+                        interceptorUtil.getLifecycleMethods(type, PreDestroy.class, true));
+        try
+        {
+            webBeansContext.getWebBeansUtil().validate(injectionTarget.getInjectionPoints(), false);
+        }
+        catch (final InjectionException ie)
+        {
+            throw new IllegalArgumentException(ie);
+        }
+        catch (final WebBeansConfigurationException ie)
+        {
+            throw new IllegalArgumentException(ie);
+        }
+        catch (final DeploymentException ie)
+        {
+            throw new IllegalArgumentException(ie);
+        }
+        return webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, type).getInjectionTarget();
     }
 
     @Override

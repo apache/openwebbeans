@@ -1546,4 +1546,35 @@ public final class WebBeansUtil
 
         return builder.toString();
     }
+
+    public void validate(final Set<InjectionPoint> injectionPoints, final boolean isDecorator)
+    {
+        boolean delegateFound = false;
+        for (InjectionPoint injectionPoint : injectionPoints)
+        {
+            if (!injectionPoint.isDelegate())
+            {
+                webBeansContext.getBeanManagerImpl().validate(injectionPoint);
+            }
+            else
+            {
+                if (!isDecorator)
+                {
+                    throw new WebBeansConfigurationException(
+                            "Delegate injection points can not defined by beans that are not decorator. Injection point : "
+                                    + injectionPoint);
+                }
+                else if (delegateFound)
+                {
+                    throw new WebBeansConfigurationException(
+                            "Only one Delegate injection point can be defined by decorator. Decorator : "
+                                    + injectionPoint.getBean());
+                }
+                else
+                {
+                    delegateFound = true;
+                }
+            }
+        }
+    }
 }

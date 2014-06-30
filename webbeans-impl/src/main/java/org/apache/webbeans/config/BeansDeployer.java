@@ -614,7 +614,7 @@ public class BeansDeployer
                 //Check injection points
                 if(injectionPoints != null)
                 {
-                    validate(injectionPoints, bean instanceof Decorator);                    
+                    webBeansContext.getWebBeansUtil().validate(injectionPoints, bean instanceof Decorator);
                 }
             }
             
@@ -635,38 +635,7 @@ public class BeansDeployer
             if (observerMethod instanceof OwbObserverMethod)
             {
                 OwbObserverMethod<?> owbObserverMethod = (OwbObserverMethod<?>)observerMethod;
-                validate(owbObserverMethod.getInjectionPoints(), false);
-            }
-        }
-    }
-
-    private void validate(Set<InjectionPoint> injectionPoints, boolean isDecorator)
-    {
-        boolean delegateFound = false;
-        for (InjectionPoint injectionPoint : injectionPoints)
-        {
-            if (!injectionPoint.isDelegate())
-            {
-                webBeansContext.getBeanManagerImpl().validate(injectionPoint);   
-            }
-            else
-            {
-                if (!isDecorator)
-                {
-                    throw new WebBeansConfigurationException(
-                            "Delegate injection points can not defined by beans that are not decorator. Injection point : "
-                            + injectionPoint);
-                }
-                else if (delegateFound)
-                {
-                    throw new WebBeansConfigurationException(
-                            "Only one Delegate injection point can be defined by decorator. Decorator : "
-                            + injectionPoint.getBean());
-                }
-                else
-                {
-                    delegateFound = true;
-                }
+                webBeansContext.getWebBeansUtil().validate(owbObserverMethod.getInjectionPoints(), false);
             }
         }
     }

@@ -61,7 +61,7 @@ public class InjectionTargetFactoryImpl<T> implements InjectionTargetFactory<T>
         return webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, annotatedType).getInjectionTarget();
     }
 
-    protected Set<InjectionPoint> createInjectionPoints(Bean<T> bean)
+    public Set<InjectionPoint> createInjectionPoints(Bean<T> bean)
     {
         Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
         for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType))
