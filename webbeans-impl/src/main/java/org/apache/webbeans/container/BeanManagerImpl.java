@@ -751,7 +751,19 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public InjectionPoint createInjectionPoint(AnnotatedParameter<?> parameter)
     {
-        return webBeansContext.getInjectionPointFactory().buildInjectionPoint(null, parameter);
+        final InjectionPoint injectionPoint = webBeansContext.getInjectionPointFactory().buildInjectionPoint(null, parameter);
+        if (AnnotatedMethod.class.isInstance(parameter.getDeclaringCallable()))
+        {
+            try
+            {
+                validate(injectionPoint);
+            }
+            catch (final Exception e)
+            {
+                throw new IllegalArgumentException(e);
+            }
+        } // TODO else constructor rules are a bit different
+        return injectionPoint;
     }
 
     public <X> ProducerFactory<X> getProducerFactory(AnnotatedField<? super X> field, Bean<X> bean)

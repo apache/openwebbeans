@@ -74,7 +74,8 @@ class InjectionPointImpl implements InjectionPoint, Serializable
     InjectionPointImpl(Bean<?> ownerBean, Collection<Annotation> qualifiers, AnnotatedField<?> annotatedField)
     {
         this(ownerBean, annotatedField.getBaseType(), qualifiers, annotatedField,
-                annotatedField.getJavaMember(), annotatedField.isAnnotationPresent(Delegate.class), Modifier.isTransient(annotatedField.getJavaMember().getModifiers()));
+                annotatedField.getJavaMember(), annotatedField.isAnnotationPresent(Delegate.class),
+                annotatedField.getJavaMember() == null? false : Modifier.isTransient(annotatedField.getJavaMember().getModifiers()));
     }
     
     InjectionPointImpl(Bean<?> ownerBean, Collection<Annotation> qualifiers, AnnotatedParameter<?> parameter)
@@ -93,7 +94,14 @@ class InjectionPointImpl implements InjectionPoint, Serializable
     
     private InjectionPointImpl(Bean<?> ownerBean, Type type, Collection<Annotation> qualifiers, Annotated annotated, Member member, boolean delegate, boolean isTransient)
     {
-        Asserts.assertNotNull(type, "required type may not be null");
+        if (type == null)
+        {
+            throw new IllegalArgumentException("type is null");
+        }
+        if (member == null)
+        {
+            throw new IllegalArgumentException("member is null");
+        }
         Asserts.assertNotNull(qualifiers, "qualifiers may not be null");
         this.ownerBean = ownerBean;
         injectionType = type;
@@ -105,7 +113,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         if(!WebBeansUtil.checkObtainsInjectionPointConditions(this))
         {
             EventUtil.checkObservableInjectionPointConditions(this);
-        }        
+        }
     }
     
     @Override
