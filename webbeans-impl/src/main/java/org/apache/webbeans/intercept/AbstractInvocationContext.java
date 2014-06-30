@@ -33,12 +33,11 @@ import org.apache.webbeans.util.ExceptionUtil;
 public abstract class AbstractInvocationContext<T> implements InvocationContext
 {
 
-    private Provider<T> target;
+    protected Provider<T> target;
     private AccessibleObject member;
-    private Object[] parameters;
+    protected Object[] parameters;
     private Map<String, Object> contextData;
     private Object timer;
-    private Object newInstance = null;
 
     public AbstractInvocationContext(Provider<T> target, AccessibleObject member, Object[] parameters)
     {
@@ -104,30 +103,20 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
     @Override
     public Object proceed() throws Exception
     {
-        if (newInstance != null) // already called
-        {
-            return newInstance;
-        }
+        return directProceed();
+    }
+
+    public Object directProceed() throws Exception
+    {
         try
         {
-            final Method m = getMethod();
-            if (m != null)
-            {
-                return m.invoke(target.get(), parameters);
-            }
-            newInstance = getConstructor().newInstance(parameters);
-            return newInstance;
+            return getMethod().invoke(target.get(), parameters);
         }
         catch (final InvocationTargetException ite)
         {
             // unpack the reflection Exception
             throw ExceptionUtil.throwAsRuntimeException(ite.getCause());
         }
-    }
-
-    public Object getNewInstance()
-    {
-        return newInstance;
     }
 
     // @Override

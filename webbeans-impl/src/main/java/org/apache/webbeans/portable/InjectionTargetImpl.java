@@ -26,8 +26,8 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethod;
+import org.apache.webbeans.intercept.ConstructorInterceptorInvocationContext;
 import org.apache.webbeans.intercept.DefaultInterceptorHandler;
-import org.apache.webbeans.intercept.InterceptorInvocationContext;
 import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
 import org.apache.webbeans.intercept.LifecycleInterceptorInvocationContext;
@@ -53,6 +53,7 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -155,12 +156,10 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                 final Constructor<T> cons = getConstructor().getJavaMember();
                 final InjectableConstructor<T> injectableConstructor = new InjectableConstructor<T>(cons, this, creationalContext);
                 final ConstructorInstanceProvider provider = new ConstructorInstanceProvider();
-                final InterceptorInvocationContext<T> invocationContext = new InterceptorInvocationContext<T>(
-                        provider,
-                        InterceptionType.AROUND_CONSTRUCT, aroundConstructInterceptors,
-                        interceptorInstances, cons, injectableConstructor.createParameters());
+                final ConstructorInterceptorInvocationContext<T> invocationContext = new ConstructorInterceptorInvocationContext<T>(
+                        provider, aroundConstructInterceptors, interceptorInstances, cons, injectableConstructor.createParameters());
                 provider.setContext(invocationContext);
-                final Object proceed = invocationContext.proceed();
+                invocationContext.proceed();
                 return (T) invocationContext.getNewInstance();
             }
             catch (final Exception e) // CDI 1.0
@@ -456,25 +455,18 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         return lifecycleInterceptors;
     }
 
-    private static class ConstructorInstanceProvider<T> implements javax.inject.Provider<T>
+    private static class ConstructorInstanceProvider<T> implements Provider<T>
     {
-        private InterceptorInvocationContext<T> context;
+        private ConstructorInterceptorInvocationContext<T> context;
 
         @Override
         public T get()
         {
-            try
-            {
-                return (T) context.getNewInstance();
-            }
-            catch (final Exception e)
-            {
-                throw new IllegalStateException(e);
-            }
+            return (T) context.getNewInstance();
         }
 
         // this dependency sucks, we should find something a bit more sexy
-        public void setContext(final InterceptorInvocationContext<T> context)
+        public void setContext(final ConstructorInterceptorInvocationContext<T> context)
         {
             this.context = context;
         }
