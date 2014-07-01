@@ -1360,7 +1360,7 @@ public class BeansDeployer
 
                 //Fires ProcessManagedBean
                 ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean, annotatedType);
-                beanManager.fireEvent(processBeanEvent);
+                beanManager.fireEvent(processBeanEvent, true);
                 webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessManagedBean event observers for " +
                         "managed beans. Look at logs for further details");
 
@@ -1421,7 +1421,7 @@ public class BeansDeployer
         final ProcessBeanAttributesImpl event = new GProcessBeanAttributes(annotatedType.getJavaClass(), annotatedType, beanAttributes);
         try
         {
-            webBeansContext.getBeanManagerImpl().fireEvent(event, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+            webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         }
         catch (final Exception e)
         {

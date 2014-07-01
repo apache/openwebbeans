@@ -21,17 +21,25 @@ package org.apache.webbeans.event;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.annotation.AnyLiteral;
+import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.ArrayUtil;
 
@@ -40,13 +48,15 @@ public class EventMetadataImpl implements EventMetadata, Serializable
     private static final long serialVersionUID = -6401875861180683988L;
  
     private final Type type;
+    private final Type selectType;
     private final InjectionPoint injectionPoint;
     private final Set<Annotation> qualifiers;
     private transient WebBeansContext webBeansContext;
     
-    public EventMetadataImpl(Type type, InjectionPoint injectionPoint, Annotation[] qualifiers, WebBeansContext context)
+    public EventMetadataImpl(Type selectType, Type type, InjectionPoint injectionPoint, Annotation[] qualifiers, WebBeansContext context)
     {
         context.getAnnotationManager().checkQualifierConditions(qualifiers);
+        this.selectType = selectType;
         this.type = type;
         this.injectionPoint = injectionPoint;
         this.webBeansContext = context;
@@ -73,9 +83,36 @@ public class EventMetadataImpl implements EventMetadata, Serializable
     @Override
     public Type getType()
     {
+        if (selectType != null
+                && ParameterizedType.class.isInstance(selectType))
+        {
+            final ParameterizedType parameterizedType = ParameterizedType.class.cast(selectType);
+            final Type rawType = parameterizedType.getRawType();
+            if (rawType == type)
+            {
+                return selectType;
+            }
+            else if (rawType == List.class && type == ArrayList.class)
+            {
+                return new OwbParametrizedTypeImpl(parameterizedType.getOwnerType(), type, parameterizedType.getActualTypeArguments());
+            }
+            else if (rawType == Set.class && type == HashSet.class)
+            {
+                return new OwbParametrizedTypeImpl(parameterizedType.getOwnerType(), type, parameterizedType.getActualTypeArguments());
+            }
+            else if (rawType == Map.class && (type == HashMap.class || type == ConcurrentHashMap.class || type == TreeMap.class))
+            {
+                return new OwbParametrizedTypeImpl(parameterizedType.getOwnerType(), type, parameterizedType.getActualTypeArguments());
+            } // TODO: better handling of these kind of types, the idea is to check selectType is a parent of type and param number is ==
+        }
         return type;
     }
-    
+
+    public Type validatedType()
+    {
+        return selectType != null? selectType : type;
+    }
+
     @Override
     public InjectionPoint getInjectionPoint()
     {
@@ -88,18 +125,18 @@ public class EventMetadataImpl implements EventMetadata, Serializable
         return qualifiers;
     }
     
-    public EventMetadata select(Annotation... bindings)
+    public EventMetadataImpl select(Annotation... bindings)
     {
         return select(type, bindings);
     }
     
-    public EventMetadata select(TypeLiteral<?> subtype, Annotation... bindings)
+    public EventMetadataImpl select(TypeLiteral<?> subtype, Annotation... bindings)
     {
         webBeansContext.getWebBeansUtil().checkTypeVariables(subtype);
         return select(subtype.getType(), bindings);
     }
 
-    public EventMetadata select(Type subtype, Annotation... bindings)
+    public EventMetadataImpl select(Type subtype, Annotation... bindings)
     {
         Set<Annotation> newQualifiers = ArrayUtil.asSet(bindings);
         newQualifiers.addAll(qualifiers);
@@ -107,7 +144,7 @@ public class EventMetadataImpl implements EventMetadata, Serializable
         {
             throw new IllegalArgumentException("duplicate qualifier");
         }
-        return new EventMetadataImpl(subtype, injectionPoint, newQualifiers.toArray(new Annotation[newQualifiers.size()]), webBeansContext);
+        return new EventMetadataImpl(type, subtype, injectionPoint, newQualifiers.toArray(new Annotation[newQualifiers.size()]), webBeansContext);
     }
     
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException

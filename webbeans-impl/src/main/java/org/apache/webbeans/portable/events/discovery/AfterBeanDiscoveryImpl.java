@@ -72,7 +72,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         
         //Fire Event
         ProcessBean<?> processBeanEvent = new GProcessBean(bean,annotatedType);
-        beanManager.fireEvent(processBeanEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        beanManager.fireEvent(processBeanEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         
         if(bean instanceof Interceptor)
         {
@@ -175,7 +175,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     public void addObserverMethod(ObserverMethod<?> observerMethod)
     {
         ProcessObserverMethod<?, ?> event = new GProcessObservableMethod(null,observerMethod);
-        beanManager.fireEvent(event, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        beanManager.fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         beanManager.getNotificationManager().addObserver(observerMethod, observerMethod.getObservedType());
     }
 

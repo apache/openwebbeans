@@ -407,13 +407,18 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     @Override
     public void fireEvent(Object event, Annotation... bindings)
-    {       
+    {
+        fireEvent(event, false, bindings);
+    }
+
+    public void fireEvent(Object event, boolean containerEvent, Annotation... bindings)
+    {
         Type type = event.getClass();
         if (GenericsUtil.hasTypeParameters(type))
         {
             type = GenericsUtil.getParameterizedType(type);
         }
-        fireEvent(event, new EventMetadataImpl(type, null, bindings, webBeansContext), false);
+        fireEvent(event, new EventMetadataImpl(null, type, null, bindings, webBeansContext), containerEvent);
     }
 
     /**
@@ -423,10 +428,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     public void fireLifecycleEvent(Object event, Annotation... bindings)
     {
-        fireEvent(event, new EventMetadataImpl(event.getClass(), null, bindings, webBeansContext), true);
+        fireEvent(event, new EventMetadataImpl(null, event.getClass(), null, bindings, webBeansContext), true);
     }
 
-    public void fireEvent(Object event, EventMetadata metadata, boolean isLifecycleEvent)
+    public void fireEvent(Object event, EventMetadataImpl metadata, boolean isLifecycleEvent)
     {
         notificationManager.fireEvent(event, metadata, isLifecycleEvent);
     }
@@ -1116,12 +1121,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, Annotation... qualifiers)
     {
-        return resolveObserverMethods(event, new EventMetadataImpl(event.getClass(), null, qualifiers, webBeansContext));
+        return resolveObserverMethods(event, new EventMetadataImpl(null, event.getClass(), null, qualifiers, webBeansContext));
     }
 
-    public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, EventMetadata metadata) 
+    public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, EventMetadataImpl metadata)
     {
-        return notificationManager.resolveObservers(event, metadata);
+        return notificationManager.resolveObservers(event, metadata, false);
     }
 
     @Override

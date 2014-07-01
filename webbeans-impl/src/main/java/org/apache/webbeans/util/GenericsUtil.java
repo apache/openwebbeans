@@ -84,7 +84,8 @@ public final class GenericsUtil
         }
         else if (requiredType instanceof GenericArrayType)
         {
-            return isAssignableFrom(isDelegate, (GenericArrayType)requiredType, beanType);
+            return Class.class.isInstance(beanType) && Class.class.cast(beanType).isArray()
+                    && isAssignableFrom(isDelegate, (GenericArrayType)requiredType, beanType);
         }
         else if (requiredType instanceof WildcardType)
         {
@@ -317,9 +318,20 @@ public final class GenericsUtil
         return true;
     }
 
+    // rules are a bit different when in an array so we handle ParameterizedType manually (not reusing isAssignableFrom)
     private static boolean isAssignableFrom(boolean isDelegate, GenericArrayType injectionPointType, Type beanType)
     {
-        throw new UnsupportedOperationException("Not yet implementeds");
+        final Type genericComponentType = injectionPointType.getGenericComponentType();
+        final Class componentType = Class.class.cast(beanType).getComponentType();
+        if (Class.class.isInstance(genericComponentType))
+        {
+            return Class.class.cast(genericComponentType).isAssignableFrom(componentType);
+        }
+        if (ParameterizedType.class.isInstance(genericComponentType))
+        {
+            return isAssignableFrom(isDelegate, ParameterizedType.class.cast(genericComponentType).getRawType(), componentType);
+        }
+        return isAssignableFrom(isDelegate, genericComponentType, componentType);
     }
 
     private static boolean isAssignableFrom(boolean isDelegate, WildcardType injectionPointType, Type beanType)

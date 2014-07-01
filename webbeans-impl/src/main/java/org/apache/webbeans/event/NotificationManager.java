@@ -38,7 +38,6 @@ import javax.enterprise.inject.spi.AnnotatedCallable;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessProducer;
@@ -102,12 +101,12 @@ public final class NotificationManager
     }
 
 
-    public <T> Set<ObserverMethod<? super T>> resolveObservers(T event, EventMetadata metadata)
+    public <T> Set<ObserverMethod<? super T>> resolveObservers(T event, EventMetadataImpl metadata, boolean isLifecycleEvent)
     {
         EventUtil.checkEventBindings(webBeansContext, metadata.getQualifiers());
 
-        Type eventType = metadata.getType();
-        Set<ObserverMethod<? super T>> observersMethods = filterByType(event, eventType);
+        Type eventType = metadata.validatedType();
+        Set<ObserverMethod<? super T>> observersMethods = filterByType(event, eventType, isLifecycleEvent);
 
         observersMethods = filterByQualifiers(observersMethods, metadata.getQualifiers());
 
@@ -120,9 +119,9 @@ public final class NotificationManager
         return observersMethods;
     }
 
-    private <T> Set<ObserverMethod<? super T>> filterByType(T event, Type declaredEventType)
+    private <T> Set<ObserverMethod<? super T>> filterByType(T event, Type declaredEventType, boolean isLifecycleEvent)
     {
-        if(WebBeansUtil.isExtensionEventType(declaredEventType))
+        if (isLifecycleEvent)
         {
             return filterByExtensionEventType(event, declaredEventType);
         }
@@ -407,9 +406,14 @@ public final class NotificationManager
         return matching;
     }
 
-    public void fireEvent(Object event, EventMetadata metadata, boolean isLifecycleEvent)
+    public void fireEvent(Object event, EventMetadataImpl metadata, boolean isLifecycleEvent)
     {
-        Set<ObserverMethod<? super Object>> observerMethods = resolveObservers(event, metadata);
+        if (!isLifecycleEvent && webBeansContext.getWebBeansUtil().isContainerEventType(event))
+        {
+            throw new IllegalArgumentException("Firing container events is forbidden");
+        }
+
+        Set<ObserverMethod<? super Object>> observerMethods = resolveObservers(event, metadata, isLifecycleEvent);
 
         for (ObserverMethod<? super Object> observer : observerMethods)
         {

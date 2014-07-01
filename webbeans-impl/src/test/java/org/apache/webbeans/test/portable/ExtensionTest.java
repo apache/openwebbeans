@@ -28,6 +28,8 @@ import junit.framework.Assert;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import javax.enterprise.inject.spi.DefinitionException;
+
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.contexts.SerializationTest;
 import org.apache.webbeans.test.portable.alternative.Egg;
@@ -78,7 +80,7 @@ public class ExtensionTest extends AbstractUnitTest
         Assert.assertTrue(getBeanManager().isPassivatingScope(ExternalTestScoped.class));
         
         //Fire shut down
-        getBeanManager().fireEvent(new BeforeShutdownImpl());
+        BeanManagerImpl.class.cast(getBeanManager()).fireEvent(new BeforeShutdownImpl(), true);
 
         webBeansContext.getContextFactory().destroyApplicationContext(null);
 

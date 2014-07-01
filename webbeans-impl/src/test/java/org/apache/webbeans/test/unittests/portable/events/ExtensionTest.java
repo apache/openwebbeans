@@ -27,6 +27,7 @@ import javax.enterprise.inject.spi.Bean;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.apache.webbeans.test.component.library.BookShop;
@@ -76,7 +77,7 @@ public class ExtensionTest extends AbstractUnitTest
         Assert.assertNotNull(MyExtension.processProducer);
         
         //Fire shut down
-        getBeanManager().fireEvent(new BeforeShutdownImpl(), new Annotation[0]);
+        BeanManagerImpl.class.cast(getBeanManager()).fireEvent(new BeforeShutdownImpl(), true);
 
         getWebBeansContext().getContextFactory().destroyApplicationContext(null);
 

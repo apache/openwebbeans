@@ -30,7 +30,6 @@ import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.GenericsUtil;
 
 /**
  * Event implementation.
@@ -69,7 +68,7 @@ public class EventImpl<T> implements Event<T>, Serializable
         else
         {
             Set<Annotation> qualifiers = metadata.getQualifiers();
-            return new EventMetadataImpl(metadata.getType(), metadata.getInjectionPoint(), qualifiers.toArray(new Annotation[qualifiers.size()]), webBeansContext);
+            return new EventMetadataImpl(null, metadata.getType(), metadata.getInjectionPoint(), qualifiers.toArray(new Annotation[qualifiers.size()]), webBeansContext);
         }
     }
 
@@ -80,10 +79,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     public void fire(T event)
     {
         Type eventType = event.getClass();
-        if (GenericsUtil.hasTypeParameters(eventType))
-        {
-            eventType = GenericsUtil.resolveType(GenericsUtil.getParameterizedType(eventType), metadata.getType());
-        }
+        webBeansContext.getWebBeansUtil().validEventType(eventType.getClass(), metadata.getType());
         webBeansContext.getBeanManagerImpl().fireEvent(event, metadata.select(eventType), false);
     }
 

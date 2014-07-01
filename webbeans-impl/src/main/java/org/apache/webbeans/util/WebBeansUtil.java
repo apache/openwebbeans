@@ -49,6 +49,8 @@ import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
 import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
 import org.apache.webbeans.component.creation.ProducerMethodBeansBuilder;
+import org.apache.webbeans.config.OwbParametrizedTypeImpl;
+import org.apache.webbeans.config.OwbWildcardTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -121,7 +123,11 @@ public final class WebBeansUtil
     private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansUtil.class);
 
     private final WebBeansContext webBeansContext;
+
+    // cache to skip some validations
     private final ConcurrentMap<Type, Boolean> noTypeVariables = new ConcurrentHashMap<Type, Boolean>();
+    private final ConcurrentMap<EventCacheKey, Boolean> validEventType = new ConcurrentHashMap<EventCacheKey, Boolean>();
+    private final ConcurrentMap<Type, Boolean> notContainerEvents = new ConcurrentHashMap<Type, Boolean>();
 
     public WebBeansUtil(WebBeansContext webBeansContext)
     {
@@ -930,7 +936,7 @@ public final class WebBeansUtil
         GProcessAnnotatedType processAnnotatedEvent = new GProcessAnnotatedType(annotatedType);
 
         //Fires ProcessAnnotatedType
-        webBeansContext.getBeanManagerImpl().fireEvent(processAnnotatedEvent,AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        webBeansContext.getBeanManagerImpl().fireEvent(processAnnotatedEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
 
         if (processAnnotatedEvent.isModifiedAnnotatedType())
         {
@@ -952,7 +958,7 @@ public final class WebBeansUtil
         GProcessSyntheticAnnotatedType gProcessSyntheticAnnotatedType = new GProcessSyntheticAnnotatedType(source, annotatedType);
 
         //Fires ProcessSyntheticAnnotatedType
-        webBeansContext.getBeanManagerImpl().fireEvent(gProcessSyntheticAnnotatedType, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        webBeansContext.getBeanManagerImpl().fireEvent(gProcessSyntheticAnnotatedType, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
 
         if (gProcessSyntheticAnnotatedType.isModifiedAnnotatedType())
         {
@@ -976,7 +982,7 @@ public final class WebBeansUtil
     private GProcessInjectionTarget fireProcessInjectionTargetEvent(GProcessInjectionTarget processInjectionTargetEvent)
     {
         //Fires ProcessInjectionTarget
-        webBeansContext.getBeanManagerImpl().fireEvent(processInjectionTargetEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        webBeansContext.getBeanManagerImpl().fireEvent(processInjectionTargetEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         return processInjectionTargetEvent;
     }
 
@@ -1000,7 +1006,7 @@ public final class WebBeansUtil
     {
         GProcessProducer processProducerEvent = new GProcessProducer(producer, annotatedMember);
         //Fires ProcessProducer
-        webBeansContext.getBeanManagerImpl().fireEvent(processProducerEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        webBeansContext.getBeanManagerImpl().fireEvent(processProducerEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducer event observers. Look at logs for further details");
         return processProducerEvent.getProducer();
     }
@@ -1032,7 +1038,7 @@ public final class WebBeansUtil
 
 
             //Fires ProcessProducer
-            webBeansContext.getBeanManagerImpl().fireEvent(processProducerMethodEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+            webBeansContext.getBeanManagerImpl().fireEvent(processProducerMethodEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         }
     }
 
@@ -1046,7 +1052,7 @@ public final class WebBeansUtil
             GProcessObservableMethod event = new GProcessObservableMethod(annotatedMethod, observableMethod);
 
             //Fires ProcessProducer
-            webBeansContext.getBeanManagerImpl().fireEvent(event, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+            webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         }
     }
 
@@ -1061,7 +1067,7 @@ public final class WebBeansUtil
             GProcessProducerField processProducerFieldEvent = new GProcessProducerField(bean, field, null);
 
             //Fire ProcessProducer
-            webBeansContext.getBeanManagerImpl().fireEvent(processProducerFieldEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+            webBeansContext.getBeanManagerImpl().fireEvent(processProducerFieldEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         }
     }
 
@@ -1601,5 +1607,112 @@ public final class WebBeansUtil
             }
         }
         noTypeVariables.putIfAbsent(t, true);
+    }
+
+    public void validEventType(final Type eventType, final Type metadataType)
+    {
+        final EventCacheKey key = new EventCacheKey(eventType, metadataType);
+        if (validEventType.containsKey(key))
+        {
+            return;
+        }
+
+        if (GenericsUtil.hasTypeParameters(eventType))
+        {
+            final Type et = GenericsUtil.resolveType(GenericsUtil.getParameterizedType(eventType), metadataType);
+            if (OwbParametrizedTypeImpl.class.isInstance(et))
+            {
+                for (final Type t : OwbParametrizedTypeImpl.class.cast(et).getActualTypeArguments())
+                {
+                    if (OwbWildcardTypeImpl.class.isInstance(t))
+                    {
+                        throw new IllegalArgumentException("TypeVariable forbidden for events");
+                    }
+                }
+            }
+        }
+        validEventType.putIfAbsent(key, true); // we don't care about the value but that's thread safe to use this map
+    }
+
+    public boolean isContainerEventType(final Object event)
+    {
+        if (event == null)
+        {
+            return false;
+        }
+
+        final Class<?> eventType = event.getClass();
+        if (notContainerEvents.containsKey(eventType))
+        {
+            return false;
+        }
+
+        if (AfterBeanDiscovery.class.isInstance(event)
+                || AfterDeploymentValidation.class.isInstance(event)
+                || BeforeShutdown.class.isInstance(event)
+                || ProcessAnnotatedType.class.isInstance(event)
+                || ProcessInjectionPoint.class.isInstance(event)
+                || ProcessInjectionTarget.class.isInstance(event)
+                || ProcessBeanAttributes.class.isInstance(event)
+                || ProcessBean.class.isInstance(event)
+                || ProcessObserverMethod.class.isInstance(event)
+                || ProcessSessionBean.class.isInstance(event)
+                || ProcessProducer.class.isInstance(event)
+                || ProcessProducerField.class.isInstance(event)
+                || ProcessProducerMethod.class.isInstance(event)
+                || BeforeBeanDiscovery.class.isInstance(event))
+        {
+            return true;
+        }
+
+        notContainerEvents.putIfAbsent(eventType, true);
+        return false;
+    }
+
+    private static final class EventCacheKey
+    {
+        private final Type event;
+        private final Type metadata;
+        private final int hashCache;
+
+        private EventCacheKey(final Type event, final Type metadata)
+        {
+            this.event = event;
+            this.metadata = metadata;
+
+            int result = event != null ? event.hashCode() : 0;
+            result = 31 * result + (metadata != null ? metadata.hashCode() : 0);
+            this.hashCache = result;
+        }
+
+        @Override
+        public boolean equals(final Object o)
+        {
+            if (this == o)
+            {
+                return true;
+            }
+            if (o == null || EventCacheKey.class != o.getClass())
+            {
+                return false;
+            }
+
+            final EventCacheKey that = EventCacheKey.class.cast(o);
+            if (event != null ? !event.equals(that.event) : that.event != null)
+            {
+                return false;
+            }
+            if (metadata != null ? !metadata.equals(that.metadata) : that.metadata != null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return hashCache;
+        }
     }
 }

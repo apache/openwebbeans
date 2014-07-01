@@ -105,7 +105,7 @@ public class EventProducer<T> extends AbstractProducer<Event<T>>
             
             try
             {
-                instance = new EventImpl<T>(new EventMetadataImpl(eventType, injectionPoint, qualifiers, webBeansContext), webBeansContext);
+                instance = new EventImpl<T>(new EventMetadataImpl(null, eventType, injectionPoint, qualifiers, webBeansContext), webBeansContext);
             }
             catch (Exception e)
             {
