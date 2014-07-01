@@ -42,7 +42,7 @@ public class WrappedExpressionFactory extends ExpressionFactory
     @Override
     public MethodExpression createMethodExpression(ELContext arg0, String arg1, Class<?> arg2, Class<?>[] arg3) throws ELException, NullPointerException
     {
-        return expressionFactory.createMethodExpression(arg0, arg1, arg2, arg3);
+        return new WrappedMethodExpression(expressionFactory.createMethodExpression(arg0, arg1, arg2, arg3));
     }
 
     @Override

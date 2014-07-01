@@ -18,9 +18,8 @@
 <suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue">
   <test name="JSR-346 TCK">
     <classes>
-      <class name="org.jboss.cdi.tck.tests.event.select.SelectEventTest" />
       <class
-          name="org.jboss.cdi.tck.tests.event.parameterized.ParameterizedEventTest" />
+          name="org.jboss.cdi.tck.tests.extensions.beanManager.el.WrapExpressionFactoryTest" />
     </classes>
     <groups>
       <run>
