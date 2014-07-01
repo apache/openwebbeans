@@ -78,6 +78,7 @@ import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.portable.LazyInterceptorDefinedInjectionTarget;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
@@ -783,18 +784,29 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public <T> Bean<T> createBean(BeanAttributes<T> attributes, Class<T> type, InjectionTargetFactory<T> factory)
     {
+        final InjectionTargetBean<T> bean = new InjectionTargetBean<T>(
+                webBeansContext,
+                WebBeansType.THIRDPARTY,
+                InjectionTargetFactoryImpl.class.isInstance(factory)?
+                        InjectionTargetFactoryImpl.class.cast(factory).getAnnotatedType() : getOrCreateAnnotatedType(type),
+                attributes, type, factory);
+
+        if (webBeansContext.getOpenWebBeansConfiguration().supportsInterceptionOnProducers())
+        {
+            bean.defineInterceptorsIfNeeded();
+        }
+
+        return bean;
+    }
+
+    private <T> AnnotatedType<T> getOrCreateAnnotatedType(final Class<T> type)
+    {
         AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(type);
         if (annotatedType == null)
         {
             annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
         }
-        return new InjectionTargetBean<T>(
-                webBeansContext,
-                WebBeansType.THIRDPARTY,
-                annotatedType,
-                attributes,
-                type,
-                factory);
+        return annotatedType;
     }
 
 
@@ -1076,7 +1088,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         final InjectionTargetFactoryImpl<T> factory = new InjectionTargetFactoryImpl<T>(type, webBeansContext);
         final InterceptorUtil interceptorUtil = webBeansContext.getInterceptorUtil();
-        final InjectionTargetImpl<T> injectionTarget = new InjectionTargetImpl<T>(
+        final InjectionTargetImpl<T> injectionTarget = new LazyInterceptorDefinedInjectionTarget<T>(
                         type,
                         factory.createInjectionPoints(null),
                         webBeansContext,

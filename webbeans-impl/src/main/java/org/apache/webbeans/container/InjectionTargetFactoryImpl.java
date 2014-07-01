@@ -71,7 +71,7 @@ public class InjectionTargetFactoryImpl<T> implements InjectionTargetFactory<T>
         return injectionPoints;
     }
 
-    protected AnnotatedType<T> getAnnotatedType()
+    public AnnotatedType<T> getAnnotatedType()
     {
         return annotatedType;
     }

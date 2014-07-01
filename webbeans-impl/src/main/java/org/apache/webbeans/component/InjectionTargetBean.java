@@ -32,6 +32,7 @@ import java.io.NotSerializableException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 
+import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.util.Asserts;
 
 /**
@@ -71,6 +72,16 @@ public class InjectionTargetBean<T> extends AbstractOwbBean<T> implements Serial
         this.annotatedType = annotatedType;
         injectionTarget = factory.createInjectionTarget(this);
         setEnabled(true);
+    }
+
+    // call it only if you know what you do, basically only useful when creating a bean manually and not using child classes
+    public void defineInterceptorsIfNeeded()
+    {
+        if (getProducer() instanceof AbstractProducer)
+        {
+            AbstractProducer<T> producer = (AbstractProducer<T>)getProducer();
+            producer.defineInterceptorStack(this, annotatedType, webBeansContext);
+        }
     }
 
     @Override
