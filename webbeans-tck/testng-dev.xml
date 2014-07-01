@@ -19,7 +19,7 @@
   <test name="JSR-346 TCK">
     <classes>
       <class
-          name="org.jboss.cdi.tck.tests.extensions.beanManager.el.WrapExpressionFactoryTest" />
+          name="org.jboss.cdi.tck.tests.extensions.stereotype.StereotypeExtensionTest" />
     </classes>
     <groups>
       <run>

@@ -41,6 +41,7 @@ import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.corespi.se.DefaultJndiService;
 import org.apache.webbeans.decorator.DecoratorsManager;
+import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.event.OwbObserverMethod;
@@ -1201,16 +1202,18 @@ public class BeansDeployer
         Set<Class<?>> beanClasses = scanner.getBeanClasses();
         if (beanClasses != null && beanClasses.size() > 0)
         {
+            final StereoTypeManager stereoTypeManager = webBeansContext.getStereoTypeManager();
             for(Class<?> beanClass : beanClasses)
             {                
                 if(beanClass.isAnnotation())
                 {
                     Class<? extends Annotation> stereoClass = (Class<? extends Annotation>) beanClass;
-                    if (annotationManager.isStereoTypeAnnotation(stereoClass))
+                    if (annotationManager.isStereoTypeAnnotation(stereoClass)
+                        && stereoTypeManager.getStereoTypeModel(stereoClass.getName()) == null)
                     {
                         webBeansContext.getAnnotationManager().checkStereoTypeClass(stereoClass, stereoClass.getDeclaredAnnotations());
                         StereoTypeModel model = new StereoTypeModel(webBeansContext, stereoClass);
-                        webBeansContext.getStereoTypeManager().addStereoTypeModel(model);
+                        stereoTypeManager.addStereoTypeModel(model);
                     }
                 }
             }

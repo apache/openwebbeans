@@ -65,6 +65,8 @@ public class StereoTypeModel implements IStereoTypeModel
     
     private static final Logger logger = WebBeansLoggerFacade.getLogger(StereoTypeModel.class);
 
+    private boolean named;
+
     /**
      * Creates a new instance of the stereotype model for
      * given class.
@@ -112,6 +114,10 @@ public class StereoTypeModel implements IStereoTypeModel
                     {
                         logger.log(Level.WARNING, OWBLogConst.WARN_0017, WebBeansLoggerFacade.args(clazz.getName(),qualifier.annotationType().getName()));
                     }
+                }
+                else if (!named)
+                {
+                    named = true;
                 }
             }            
         }
@@ -267,5 +273,10 @@ public class StereoTypeModel implements IStereoTypeModel
     public int hashCode()
     {
         return name.hashCode();
+    }
+
+    public boolean isNamed()
+    {
+        return named;
     }
 }

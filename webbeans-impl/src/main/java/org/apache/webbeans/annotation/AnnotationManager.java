@@ -21,6 +21,7 @@ package org.apache.webbeans.annotation;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 
 import javax.enterprise.inject.spi.DefinitionException;
@@ -459,7 +460,7 @@ public final class AnnotationManager
 
         boolean result = false;
 
-        if (clazz.isAnnotationPresent(Stereotype.class))
+        if (clazz.isAnnotationPresent(Stereotype.class) || webBeansContext.getStereoTypeManager().getStereoTypeModel(clazz.getName()) != null)
         {
             result = true;
         }
@@ -598,6 +599,11 @@ public final class AnnotationManager
             {
                 return true;
             }
+            final IStereoTypeModel model = webBeansContext.getStereoTypeManager().getStereoTypeModel(ann.getName());
+            if (model != null && model.isNamed())
+            {
+                return true;
+            }
         }
 
         return false;
@@ -639,6 +645,8 @@ public final class AnnotationManager
                 }
             }
         }
+
+        checkedStereotypeAnnotations.remove(clazz);
     }
 
     public void checkInterceptorResolverParams(Annotation... interceptorBindings)

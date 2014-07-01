@@ -67,4 +67,5 @@ public interface IStereoTypeModel
      */
     public Set<Annotation> getInheritedStereoTypes();
 
+    boolean isNamed();
 }
