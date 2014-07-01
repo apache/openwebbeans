@@ -26,6 +26,8 @@ import java.lang.reflect.Modifier;
 import java.util.Set;
 
 import javax.enterprise.inject.Disposes;
+import javax.enterprise.inject.TransientReference;
+import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -197,7 +199,8 @@ public class DeploymentValidationService
             {
                 if(!webBeansContext.getWebBeansUtil().isPassivationCapableDependency(injectionPoint))
                 {
-                    if(injectionPoint.getAnnotated().isAnnotationPresent(Disposes.class))
+                    Annotated annotated = injectionPoint.getAnnotated();
+                    if(annotated.isAnnotationPresent(Disposes.class) || annotated.isAnnotationPresent(TransientReference.class))
                     {
                         continue;
                     }
