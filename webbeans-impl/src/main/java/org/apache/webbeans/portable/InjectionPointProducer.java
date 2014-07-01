@@ -18,13 +18,27 @@
  */
 package org.apache.webbeans.portable;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.Set;
 
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.OwbCustomObjectInputStream;
+import org.apache.webbeans.util.WebBeansUtil;
 
 public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
 {
@@ -48,7 +62,25 @@ public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
         }
         try
         {
-            return creationalContextImpl.getInjectionPoint();
+            final InjectionPoint injectionPoint = creationalContextImpl.getInjectionPoint();
+            if (injectionPoint == null)
+            {
+                return null;
+            }
+
+            final Type type = injectionPoint.getType();
+            if (ParameterizedType.class.isInstance(type))
+            {
+                final ParameterizedType parameterizedType = ParameterizedType.class.cast(type);
+                if (parameterizedType.getRawType() == Instance.class)
+                {
+                    final Bean<InjectionPoint> bean = creationalContextImpl.getBean();
+                    return new InjectionPointDelegate(
+                            injectionPoint,
+                            bean.getBeanClass() != null ? bean.getBeanClass() : parameterizedType.getActualTypeArguments()[0]);
+                }
+            }
+            return injectionPoint;
         }
         finally
         {
@@ -60,5 +92,73 @@ public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
     public void dispose(InjectionPoint ip)
     {
         // nothing to do
+    }
+
+    private class InjectionPointDelegate implements InjectionPoint, Serializable
+    {
+        private InjectionPoint ip;
+        private Type type;
+
+        public InjectionPointDelegate(final InjectionPoint injectionPoint, final Type type)
+        {
+            this.ip = injectionPoint;
+            this.type = type;
+        }
+
+        @Override
+        public Type getType()
+        {
+            return type;
+        }
+
+        @Override
+        public Set<Annotation> getQualifiers()
+        {
+            return ip.getQualifiers();
+        }
+
+        @Override
+        public Bean<?> getBean()
+        {
+            return ip.getBean();
+        }
+
+        @Override
+        public Member getMember()
+        {
+            return ip.getMember();
+        }
+
+        @Override
+        public Annotated getAnnotated()
+        {
+            return ip.getAnnotated();
+        }
+
+        @Override
+        public boolean isDelegate()
+        {
+            return ip.isDelegate();
+        }
+
+        @Override
+        public boolean isTransient()
+        {
+            return ip.isTransient();
+        }
+
+        private void readObject(final ObjectInputStream inp) throws IOException, ClassNotFoundException
+        {
+            final OwbCustomObjectInputStream owbCustomObjectInputStream = new OwbCustomObjectInputStream(inp, WebBeansUtil.getCurrentClassLoader());
+            type = Type.class.cast(owbCustomObjectInputStream.readObject());
+            ip = InjectionPoint.class.cast(owbCustomObjectInputStream.readObject());
+        }
+
+        private void writeObject(final ObjectOutputStream op) throws IOException
+        {
+            final ObjectOutputStream out = new ObjectOutputStream(op);
+            out.writeObject(type);
+            out.writeObject(ip);
+        }
     }
 }

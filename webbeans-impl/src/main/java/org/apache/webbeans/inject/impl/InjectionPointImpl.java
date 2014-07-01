@@ -19,10 +19,8 @@
 package org.apache.webbeans.inject.impl;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.ObjectStreamClass;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -51,6 +49,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.OwbCustomObjectInputStream;
 import org.apache.webbeans.util.WebBeansUtil;
 
 class InjectionPointImpl implements InjectionPoint, Serializable
@@ -215,28 +214,11 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         
     }
     
-    public class CustomObjectInputStream extends ObjectInputStream
-    {
-        private ClassLoader classLoader;
-
-        public CustomObjectInputStream(InputStream in, ClassLoader classLoader) throws IOException
-        {
-            super(in);
-            this.classLoader = classLoader;
-        }
-        
-        @Override
-        protected Class<?> resolveClass(ObjectStreamClass desc) throws ClassNotFoundException
-        {
-            return Class.forName(desc.getName(), false, classLoader);
-        }
-    }
-
     @SuppressWarnings("unchecked")
     private void readObject(java.io.ObjectInputStream inp) throws IOException, ClassNotFoundException
     {
 
-        ObjectInputStream in = new CustomObjectInputStream(inp, WebBeansUtil.getCurrentClassLoader());
+        ObjectInputStream in = new OwbCustomObjectInputStream(inp, WebBeansUtil.getCurrentClassLoader());
 
         Class<?> beanClass = (Class<?>)in.readObject();
         Set<Annotation> anns = new HashSet<Annotation>();

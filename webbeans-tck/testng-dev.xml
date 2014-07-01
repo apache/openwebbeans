@@ -19,7 +19,7 @@
   <test name="JSR-346 TCK">
     <classes>
       <class
-          name="org.jboss.cdi.tck.tests.extensions.beanManager.producer.SyntheticProducerTest" />
+          name="org.jboss.cdi.tck.tests.lookup.injectionpoint.dynamic.DynamicInjectionPointTest" />
     </classes>
     <groups>
       <run>
