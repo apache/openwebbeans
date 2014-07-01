@@ -83,11 +83,11 @@ public class InjectionTargetFactoryImpl<T> implements InjectionTargetFactory<T>
 
     protected List<AnnotatedMethod<?>> getPostConstructMethods()
     {
-        return webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, PostConstruct.class, true);
+        return webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, PostConstruct.class);
     }
 
     protected List<AnnotatedMethod<?>> getPreDestroyMethods()
     {
-        return webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, PreDestroy.class, false);
+        return webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, PreDestroy.class);
     }
 }

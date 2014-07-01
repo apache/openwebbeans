@@ -60,7 +60,7 @@ public final class InterceptorUtil
     }
 
 
-    public List<AnnotatedMethod<?>> getLifecycleMethods(AnnotatedType<?> annotatedType, Class<? extends Annotation> annotation, boolean parentFirst)
+    public List<AnnotatedMethod<?>> getLifecycleMethods(AnnotatedType<?> annotatedType, Class<? extends Annotation> annotation)
     {
         List<AnnotatedMethod<?>> lifecycleMethods = new ArrayList<AnnotatedMethod<?>>();
 
@@ -76,14 +76,7 @@ public final class InterceptorUtil
 
                 if (annotatedMethod.isAnnotationPresent(annotation))
                 {
-                    if (parentFirst)
-                    {
-                        lifecycleMethods.add(annotatedMethod);
-                    }
-                    else
-                    {
-                        lifecycleMethods.add(0, annotatedMethod);
-                    }
+                    lifecycleMethods.add(annotatedMethod);
                 }
             }
         }

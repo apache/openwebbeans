@@ -166,8 +166,7 @@ public class InterceptorResolutionService
                 allUsedCdiInterceptors,
                 allUsedEjbInterceptors,
                 classLevelEjbInterceptors,
-                classInterceptorBindings,
-                true);
+                classInterceptorBindings);
 
         addLifecycleMethods(
                 lifecycleMethodInterceptorInfos,
@@ -177,8 +176,7 @@ public class InterceptorResolutionService
                 allUsedCdiInterceptors,
                 allUsedEjbInterceptors,
                 classLevelEjbInterceptors,
-                classInterceptorBindings,
-                true);
+                classInterceptorBindings);
 
         List<Interceptor<?>> cdiInterceptors = new ArrayList<Interceptor<?>>(allUsedCdiInterceptors);
         Collections.sort(cdiInterceptors, new InterceptorComparator(webBeansContext));
@@ -324,13 +322,12 @@ public class InterceptorResolutionService
                                      Set<Interceptor<?>> allUsedCdiInterceptors,
                                      Set<Interceptor<?>> allUsedEjbInterceptors,
                                      List<Interceptor<?>> classLevelEjbInterceptors,
-                                     Set<Annotation> classInterceptorBindings,
-                                     boolean parentFirst)
+                                     Set<Annotation> classInterceptorBindings)
     {
         List<AnnotatedMethod<?>> foundMethods = new ArrayList<AnnotatedMethod<?>>();
         BusinessMethodInterceptorInfo methodInterceptorInfo = new BusinessMethodInterceptorInfo();
 
-        List<AnnotatedMethod<?>> lifecycleMethodCandidates = webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, lifeycleAnnotation, parentFirst);
+        List<AnnotatedMethod<?>> lifecycleMethodCandidates = webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, lifeycleAnnotation);
 
         for (AnnotatedMethod<?> lifecycleMethod : lifecycleMethodCandidates)
         {

@@ -1092,8 +1092,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                         type,
                         factory.createInjectionPoints(null),
                         webBeansContext,
-                        interceptorUtil.getLifecycleMethods(type, PostConstruct.class, true),
-                        interceptorUtil.getLifecycleMethods(type, PreDestroy.class, true));
+                        interceptorUtil.getLifecycleMethods(type, PostConstruct.class),
+                        interceptorUtil.getLifecycleMethods(type, PreDestroy.class));
         try
         {
             webBeansContext.getWebBeansUtil().validate(injectionTarget.getInjectionPoints(), false);

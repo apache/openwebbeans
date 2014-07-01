@@ -34,7 +34,6 @@ import org.apache.webbeans.intercept.LifecycleInterceptorInvocationContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.InterceptorHandler;
-import org.apache.webbeans.proxy.NormalScopeProxyFactory;
 import org.apache.webbeans.proxy.OwbInterceptorProxy;
 import org.apache.webbeans.proxy.OwbNormalScopeProxy;
 import org.apache.webbeans.spi.ResourceInjectionService;
@@ -57,6 +56,7 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.interceptor.InvocationContext;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -322,41 +322,23 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     public void preDestroy(T instance)
     {
+        if (instance instanceof OwbNormalScopeProxy)
+        {
+            instance = webBeansContext.getNormalScopeProxyFactory().unwrapInstance(instance);
+        }
+
         Map<Interceptor<?>, ?> interceptorInstances = null;
         T internalInstance = instance;
 
-        if (getInterceptorInfo() != null)
+        if (getInterceptorInfo() != null && instance instanceof OwbInterceptorProxy)
         {
-            if (instance instanceof OwbInterceptorProxy)
+            InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
+            InterceptorHandler ih = pf.getInterceptorHandler((OwbInterceptorProxy) instance);
+            if (ih instanceof DefaultInterceptorHandler)
             {
-                InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
-                InterceptorHandler ih = pf.getInterceptorHandler((OwbInterceptorProxy) instance);
-                if (ih instanceof DefaultInterceptorHandler)
-                {
-                    DefaultInterceptorHandler dih = (DefaultInterceptorHandler) ih;
-                    interceptorInstances = dih.getInstances();
-                    internalInstance = (T) dih.getTarget();
-                }
-            }
-            else if (instance instanceof OwbNormalScopeProxy)
-            {
-                final NormalScopeProxyFactory nspf = webBeansContext.getNormalScopeProxyFactory();
-                final Provider provider = nspf.getInstanceProvider(OwbNormalScopeProxy.class.cast(instance));
-                if (provider != null)
-                {
-                    final Object object = provider.get();
-                    if (object != null && OwbInterceptorProxy.class.isInstance(object))
-                    {
-                        final InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
-                        final InterceptorHandler ih = pf.getInterceptorHandler(OwbInterceptorProxy.class.cast(object));
-                        if (DefaultInterceptorHandler.class.isInstance(ih))
-                        {
-                            final DefaultInterceptorHandler dih = DefaultInterceptorHandler.class.cast(ih);
-                            interceptorInstances = dih.getInstances();
-                            internalInstance = (T) dih.getTarget();
-                        }
-                    }
-                }
+                DefaultInterceptorHandler dih = (DefaultInterceptorHandler) ih;
+                interceptorInstances = dih.getInstances();
+                internalInstance = (T) dih.getTarget();
             }
         }
         else if (preDestroyMethods == null || preDestroyMethods.size() == 0)
