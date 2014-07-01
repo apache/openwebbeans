@@ -359,12 +359,6 @@ public final class WebBeansUtil
             return true;
         }
 
-        if (isNormalScoped(annotatedType))
-        {
-            logger.info("Bean implementation class : " + clazz.getName() + " must define at least one Constructor");
-            return false;
-        } // else not an issue
-
         Set<? extends AnnotatedConstructor<?>> constructors = annotatedType.getConstructors();
         for (AnnotatedConstructor<?> constructor : constructors)
         {
