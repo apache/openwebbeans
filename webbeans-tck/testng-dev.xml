@@ -19,7 +19,7 @@
   <test name="JSR-346 TCK">
     <classes>
       <class
-          name="org.jboss.cdi.tck.tests.lookup.injectionpoint.dynamic.DynamicInjectionPointTest" />
+          name="org.jboss.cdi.tck.interceptors.tests.contract.lifecycleCallback.LifecycleCallbackInterceptorTest" />
     </classes>
     <groups>
       <run>
