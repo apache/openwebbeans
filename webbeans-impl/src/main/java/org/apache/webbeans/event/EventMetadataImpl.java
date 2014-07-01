@@ -95,9 +95,10 @@ public class EventMetadataImpl implements EventMetadata, Serializable
     
     public EventMetadata select(TypeLiteral<?> subtype, Annotation... bindings)
     {
+        webBeansContext.getWebBeansUtil().checkTypeVariables(subtype);
         return select(subtype.getType(), bindings);
     }
-    
+
     public EventMetadata select(Type subtype, Annotation... bindings)
     {
         Set<Annotation> newQualifiers = ArrayUtil.asSet(bindings);

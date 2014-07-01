@@ -86,6 +86,7 @@ import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.*;
+import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -107,6 +108,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 /**
@@ -118,6 +121,7 @@ public final class WebBeansUtil
     private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansUtil.class);
 
     private final WebBeansContext webBeansContext;
+    private final ConcurrentMap<Type, Boolean> noTypeVariables = new ConcurrentHashMap<Type, Boolean>();
 
     public WebBeansUtil(WebBeansContext webBeansContext)
     {
@@ -1576,5 +1580,32 @@ public final class WebBeansUtil
                 }
             }
         }
+    }
+
+    public void checkTypeVariables(final TypeLiteral<?> subtype)
+    {
+        final Type t = subtype.getType();
+        Boolean result = noTypeVariables.get(t);
+        if (result != null)
+        {
+            if (!result)
+            {
+                throw new IllegalArgumentException(t + " has a TypeVariable which is forbidden");
+            }
+            return;
+        }
+
+        if (ParameterizedType.class.isInstance(t))
+        {
+            for (final Type arg : ParameterizedType.class.cast(t).getActualTypeArguments())
+            {
+                if (TypeVariable.class.isInstance(arg))
+                {
+                    noTypeVariables.putIfAbsent(t, false);
+                    throw new IllegalArgumentException(arg + " is a TypeVariable which is forbidden");
+                }
+            }
+        }
+        noTypeVariables.putIfAbsent(t, true);
     }
 }

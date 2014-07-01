@@ -31,8 +31,6 @@ import java.util.Set;
 
 public class LazyInterceptorDefinedInjectionTarget<T> extends InjectionTargetImpl<T>
 {
-    private volatile boolean interceptorsDefined;
-
     public LazyInterceptorDefinedInjectionTarget(final AnnotatedType<T> annotatedType,
                                                  final Set<InjectionPoint> injectionPoints,
                                                  final WebBeansContext webBeansContext,
@@ -40,27 +38,18 @@ public class LazyInterceptorDefinedInjectionTarget<T> extends InjectionTargetImp
                                                  final List<AnnotatedMethod<?>> preDestroyMethods)
     {
         super(annotatedType, injectionPoints, webBeansContext, postConstructMethods, preDestroyMethods);
-        interceptorsDefined = false;
     }
 
-    @Override
+    @Override // TODO: this is not thread safe
     public T produce(final CreationalContext<T> creationalContext)
     {
+        interceptorInfo = null;
+        proxyClass = null;
         final CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>) creationalContext;
-        if (interceptorInfo == null && !interceptorsDefined)
+        final Bean<T> bean = creationalContextImpl.getBean();
+        if (bean != null)
         {
-            final Bean<T> bean = creationalContextImpl.getBean();
-            if (bean != null)
-            {
-                synchronized (this)
-                {
-                    if (!interceptorsDefined)
-                    {
-                        defineInterceptorStack(bean, annotatedType, webBeansContext);
-                        interceptorsDefined = true;
-                    }
-                }
-            }
+            defineInterceptorStack(bean, annotatedType, webBeansContext);
         }
         return super.produce(creationalContext);
     }
