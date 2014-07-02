@@ -125,15 +125,12 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
      * used if the qualifiers and event type are already known, e.g. from the XML.
      * @param bean
      * @param annotatedObserverMethod
-     * @param ifExist
-     * @param qualifiers
-     * @param observedEventType
      */
-    public ObserverMethodImpl(AbstractOwbBean<?> bean, AnnotatedParameter<T> annotatedObservesParameter)
+    public ObserverMethodImpl(AbstractOwbBean<?> bean, AnnotatedMethod<T> annotatedObserverMethod, AnnotatedParameter<T> annotatedObservesParameter)
     {
         this.bean = bean;
         this.annotatedObservesParameter = annotatedObservesParameter;
-        annotatedObserverMethod = (AnnotatedMethod<T>)annotatedObservesParameter.getDeclaringCallable();
+        this.annotatedObserverMethod = annotatedObserverMethod;
         observedEventType = annotatedObservesParameter.getBaseType();
         Observes observes = annotatedObservesParameter.getAnnotation(Observes.class);
         ifExist = observes.notifyObserver() == Reception.IF_EXISTS;
@@ -160,7 +157,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         injectionPoints = new LinkedHashSet<InjectionPoint>();
         for (AnnotatedParameter<?> parameter: annotatedObserverMethod.getParameters())
         {
-            if (parameter != annotatedObservesParameter)
+            if (!parameter.isAnnotationPresent(Observes.class))
             {
                 Collection<Annotation> qualifierAnnots = getWebBeansContext().getAnnotationManager().getQualifierAnnotations(parameter.getAnnotations());
 

@@ -496,14 +496,14 @@ public final class NotificationManager
      * @param bean bean instance 
      * @return ObserverMethod
      */
-    public <T> ObserverMethod<?> getObservableMethodForAnnotatedMethod(AnnotatedParameter<?> annotatedParameter, AbstractOwbBean<T> bean)
+    public <T> ObserverMethod<?> getObservableMethodForAnnotatedMethod(AnnotatedMethod<?> annotatedMethod, AnnotatedParameter<?> annotatedParameter, AbstractOwbBean<T> bean)
     {
         Asserts.assertNotNull(annotatedParameter, "annotatedParameter can not be null");
         
         //Observer creation from annotated method
         ObserverMethodImpl<T> observer = isContainerEvent(annotatedParameter)?
-                new ContainerEventObserverMethodImpl(bean, annotatedParameter) :
-                new ObserverMethodImpl(bean, annotatedParameter);
+                new ContainerEventObserverMethodImpl(bean, annotatedMethod, annotatedParameter) :
+                new ObserverMethodImpl(bean, annotatedMethod, annotatedParameter);
         
         //Adds this observer
         addObserver(observer, annotatedParameter.getBaseType());

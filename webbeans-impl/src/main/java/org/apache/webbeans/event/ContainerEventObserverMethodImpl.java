@@ -21,14 +21,16 @@ package org.apache.webbeans.event;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.portable.events.discovery.ExtensionAware;
 
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import java.lang.reflect.InvocationTargetException;
 
 public class ContainerEventObserverMethodImpl<T> extends ObserverMethodImpl<T>
 {
-    public ContainerEventObserverMethodImpl(final AbstractOwbBean<?> bean, final AnnotatedParameter<T> annotatedObservesParameter)
+    public ContainerEventObserverMethodImpl(final AbstractOwbBean<?> bean, final AnnotatedMethod<T> annotatedObserverMethod,
+                                            final AnnotatedParameter<T> annotatedObservesParameter)
     {
-        super(bean, annotatedObservesParameter);
+        super(bean, annotatedObserverMethod, annotatedObservesParameter);
     }
 
     @Override

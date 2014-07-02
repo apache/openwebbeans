@@ -91,7 +91,8 @@ public class ObserverMethodsBuilder<T, I extends InjectionTargetBean<T>>
                 checkObserverMethodConditions(bean, observesParameter);
                 
                 //Looking for ObserverMethod
-                ObserverMethod<?> definedObserver = webBeansContext.getBeanManagerImpl().getNotificationManager().getObservableMethodForAnnotatedMethod(observesParameter, bean);
+                ObserverMethod<?> definedObserver = webBeansContext.getBeanManagerImpl().getNotificationManager().
+                        getObservableMethodForAnnotatedMethod(annotatedMethod, observesParameter, bean);
                 definedObservers.add(definedObserver);
             }
         }
