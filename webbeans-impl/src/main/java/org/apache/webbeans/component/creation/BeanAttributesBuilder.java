@@ -56,11 +56,9 @@ import javax.enterprise.inject.spi.DefinitionException;
 
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.portable.OwbAnnotated;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.GenericsUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -137,20 +135,15 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         }
         else
         {
-            // if already computed then reuse it otherwise
-            Set<Type> types = OwbAnnotated.class.isInstance(annotated) ?
-                                    annotated.getTypeClosure() : GenericsUtil.getTypeClosure(baseType, baseType);
+            Set<Type> types = annotated.getTypeClosure();
             this.types.addAll(types);
             Set<String> ignored = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
-            if (!ignored.isEmpty())
+            for (Iterator<Type> i = this.types.iterator(); i.hasNext();)
             {
-                for (Iterator<Type> i = this.types.iterator(); i.hasNext();)
+                Type t = i.next();
+                if (t instanceof Class && ignored.contains(((Class<?>)t).getName()))
                 {
-                    Type t = i.next();
-                    if (t instanceof Class && ignored.contains(((Class<?>)t).getName()))
-                    {
-                        i.remove();
-                    }
+                    i.remove();
                 }
             }
         }

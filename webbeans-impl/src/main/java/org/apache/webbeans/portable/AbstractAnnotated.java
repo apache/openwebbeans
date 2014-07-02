@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.enterprise.inject.Typed;
+import javax.enterprise.inject.spi.Annotated;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -38,7 +39,7 @@ import org.apache.webbeans.util.GenericsUtil;
  * 
  * @version $Rev$ $Date$
  */
-abstract class AbstractAnnotated implements OwbAnnotated
+abstract class AbstractAnnotated implements Annotated
 {
     /**Base type of an annotated element*/
     private final Type baseType;
