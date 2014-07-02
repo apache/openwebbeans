@@ -46,6 +46,7 @@ import javax.enterprise.util.TypeLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.events.generics.GenericBeanEvent;
@@ -465,6 +466,11 @@ public final class NotificationManager
                 {
                     InvocationTargetException invt = (InvocationTargetException)exc;
                     exc = invt.getCause();
+                }
+
+                if (isLifecycleEvent)
+                {
+                    throw new WebBeansConfigurationException("Error while sending SystemEvent to a CDI Extension! " + event.toString(), e);
                 }
                 
                 if (!RuntimeException.class.isAssignableFrom(exc.getClass()))

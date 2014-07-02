@@ -298,7 +298,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         }
         catch (Exception e)
         {
-                throw new WebBeansException(e);
+            throw new WebBeansException(e);
         }
         finally
         {
