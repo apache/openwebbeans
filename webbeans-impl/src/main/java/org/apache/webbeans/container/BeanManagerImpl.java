@@ -1247,7 +1247,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         final Collection<AnnotatedType<T>> types = new ArrayList<AnnotatedType<T>>(2);
         types.add(annotatedElementFactory.getAnnotatedType(type));
         final ConcurrentMap<String, AnnotatedType<?>> aTypes = additionalAnnotatedTypes.get(type);
-        if (types != null)
+        if (aTypes != null)
         {
             for (final AnnotatedType at : aTypes.values())
             {

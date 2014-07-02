@@ -338,6 +338,11 @@ public final class GenericsUtil
     {
         for (Type bounds: injectionPointType.getLowerBounds())
         {
+            if (!isAssignableFrom(isDelegate, beanType, bounds))
+            {
+                return false;
+            }
+            /*
             Set<Type> beanTypeClosure = getTypeClosure(beanType);
             boolean isAssignable = false;
             for (Type beanSupertype: beanTypeClosure)
@@ -352,6 +357,7 @@ public final class GenericsUtil
             { 
                 return false;
             }
+            */
         }
         for (Type bounds: injectionPointType.getUpperBounds())
         {
@@ -359,7 +365,10 @@ public final class GenericsUtil
             boolean isAssignable = false;
             for (Type beanSupertype: beanTypeClosure)
             {
-                if (isAssignableFrom(isDelegate, bounds, beanSupertype))
+                if (isAssignableFrom(isDelegate, bounds, beanSupertype)
+                    || (Class.class.isInstance(bounds)
+                        && ParameterizedType.class.isInstance(beanSupertype)
+                        && bounds == ParameterizedType.class.cast(beanSupertype).getRawType()))
                 {
                     isAssignable = true;
                     break;
