@@ -32,7 +32,7 @@
 
     <properties>
         <tomcat.port.it>9081</tomcat.port.it>
-        <tomcat7.version>7.0.30</tomcat7.version>
+        <tomcat7.version>7.0.54</tomcat7.version>
         <jstl.version>1.2</jstl.version>
         <projectStage>Development</projectStage>
     </properties>
@@ -42,7 +42,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.2</version>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
 
@@ -233,7 +233,7 @@
                         <dependency>
                             <groupId>org.apache.geronimo.specs</groupId>
                             <artifactId>geronimo-jcdi_1.1_spec</artifactId>
-                            <version>1.0</version>
+                            <version>1.0-SNAPSHOT</version>
                         </dependency>
 
                         <dependency>
@@ -245,7 +245,7 @@
                         <dependency>
                             <groupId>org.apache.geronimo.specs</groupId>
                             <artifactId>geronimo-interceptor_1.2_spec</artifactId>
-                            <version>1.0</version>
+                            <version>1.0-SNAPSHOT</version>
                         </dependency>
                     </dependencies>
                 </plugin>

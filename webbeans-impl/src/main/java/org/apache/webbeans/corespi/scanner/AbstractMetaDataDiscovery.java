@@ -49,6 +49,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.util.Arrays.asList;
+
 
 public abstract class AbstractMetaDataDiscovery implements ScannerService
 {
@@ -229,51 +231,69 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
 
     protected void filterExcludedJars(Set<URL> classPathUrls)
     {
-        Iterator<URL> it = classPathUrls.iterator();
+        final Iterator<URL> it = classPathUrls.iterator();
         while (it.hasNext())
         {
-            URL url = it.next();
-            String path = url.toExternalForm();
-            if (path.contains("/jre/lib") ||
-                path.contains("/Contents/Home/") ||
-                path.contains("/dt.jar") ||
-                path.contains("/tools.jar") ||
-                path.contains("/asm") ||
-                path.contains("/javassist") ||
-                path.contains("/xbean-") ||
-                path.contains("/jconsole.jar") ||
-                path.contains("/geronimo-") ||
-                path.contains("/commons-") ||
-                path.contains("/arquillian-") ||
-                path.contains("/bsh-") ||
-                path.contains("/shrinkwrap-") ||
-                path.contains("/junit-") ||
-                path.contains("/testng-") ||
-                path.contains("/openjpa-") ||
-                path.contains("/bcel") ||
-                path.contains("/hamcrest") ||
-                path.contains("/mysql-connector") ||
-                path.contains("/testng") ||
-                path.contains("/idea_rt") ||
-                path.contains("/eclipse") ||
-                path.contains("/jcommander") ||
-                path.contains("/tomcat") ||
-                path.contains("/catalina") ||
-                path.contains("/jasper") ||
-                path.contains("/jsp-api") ||
-                path.contains("/myfaces-") ||
-                path.contains("/servlet-api") ||
-                path.contains("/javax") ||
-                path.contains("/annotation-api") ||
-                path.contains("/el-api") ||
-                path.contains("/mojarra") ||
-                path.contains("/openwebbeans-"))
+            final URL url = it.next();
+            final String path = url.toExternalForm();
+            // TODO: should extract file path and test file.getName(), not the whole path
+            // + should be configurable
+            final int knownJarIdx = isKnownJar(path);
+            // -Prun-its openwebbeans-tomcat7 in path but WEB-INF/classes
+            if (knownJarIdx > 0 && knownJarIdx < path.indexOf(".jar"))
             {
                 //X TODO this should be much more actually
                 //X TODO we might need to configure it via files
                 it.remove();
             }
         }
+    }
+
+    private int isKnownJar(final String path)
+    {
+        for (final String p : asList(
+                                "/jre/lib",
+                                "/Contents/Home/",
+                                "/dt.jar",
+                                "/tools.jar",
+                                "/asm",
+                                "/javassist",
+                                "/xbean-",
+                                "/jconsole.jar",
+                                "/geronimo-",
+                                "/commons-",
+                                "/arquillian-",
+                                "/bsh-",
+                                "/shrinkwrap-",
+                                "/junit-",
+                                "/testng-",
+                                "/openjpa-",
+                                "/bcel",
+                                "/hamcrest",
+                                "/mysql-connector",
+                                "/testng",
+                                "/idea_rt",
+                                "/eclipse",
+                                "/jcommander",
+                                "/tomcat",
+                                "/catalina",
+                                "/jasper",
+                                "/jsp-api",
+                                "/myfaces-",
+                                "/servlet-api",
+                                "/javax",
+                                "/annotation-api",
+                                "/el-api",
+                                "/mojarra",
+                                "/openwebbeans-"))
+        {
+            final int i = path.indexOf(p);
+            if (i > 0)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
 
