@@ -45,6 +45,18 @@ public class TomcatInstanceManager implements InstanceManager
     }
 
     @Override
+    public Object newInstance(Class<?> aClass) throws IllegalAccessException, InvocationTargetException, NamingException, InstantiationException
+    {
+        // Creates a defaut instance
+        Object object = this.processor.newInstance(aClass);
+
+        // Inject dependencies
+        inject(object);
+
+        return object;
+    }
+
+    @Override
     public void destroyInstance(Object instance) throws IllegalAccessException, InvocationTargetException
     {
         Object injectorInstance = objects.get(instance);
