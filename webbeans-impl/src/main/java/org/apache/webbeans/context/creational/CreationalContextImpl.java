@@ -18,6 +18,16 @@
  */
 package org.apache.webbeans.context.creational;
 
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.WebBeansUtil;
+
+import javax.enterprise.context.spi.Contextual;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.EventMetadata;
+import javax.enterprise.inject.spi.InjectionPoint;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -26,17 +36,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
-
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.EventMetadata;
-import javax.enterprise.inject.spi.InjectionPoint;
-
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /** {@inheritDoc} */
 public class CreationalContextImpl<T> implements CreationalContext<T>, Serializable
@@ -374,7 +373,10 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 
         final StringBuilder sb = new StringBuilder("CreationalContext{name=");
 
-        sb.append(bean.getBeanClass().getSimpleName());
+        if (bean != null && bean.getBeanClass() != null)
+        {
+            sb.append(bean.getBeanClass().getSimpleName());
+        }
 
         return sb.append("}").toString();
     }
