@@ -673,7 +673,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
 
         //Check type if bean type is given
-        if(beanType != null)
+        if(beanType != null && beanType != Object.class)
         {
             if(!isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean) &&
                !GenericsUtil.satisfiesDependency(false, beanType, bean.getBeanClass()))
@@ -682,8 +682,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             }
             
         }
-        else
+        else if (bean instanceof OwbBean)
         {
+            // we cannot always use getBeanClass() as this will
+            // return the containing class for producer methods and fields
+            beanType = ((OwbBean) bean).getReturnType();
+        }
+        else {
             beanType = bean.getBeanClass();
         }
 
@@ -702,7 +707,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             if (instance == null)
             {
                 //Create Managed Bean Proxy
-                //X old approach: instance = webBeansContext.getProxyFactoryRemove().createNormalScopedBeanProxyRemove((AbstractOwbBean<?>) bean, creationalContext);
                 instance = webBeansContext.getNormalScopeProxyFactory().createNormalScopeProxy(bean);
 
                 //Cached instance
