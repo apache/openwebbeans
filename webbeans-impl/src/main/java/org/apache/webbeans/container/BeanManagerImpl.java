@@ -688,7 +688,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             // return the containing class for producer methods and fields
             beanType = ((OwbBean) bean).getReturnType();
         }
-        else {
+        else 
+        {
             beanType = bean.getBeanClass();
         }
 
