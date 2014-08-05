@@ -94,12 +94,12 @@ public class InjectableConstructor<T> extends AbstractInjectable<T>
         final List<Object> list = new ArrayList<Object>();
         final List<InjectionPoint> injectedPoints = getInjectionPoints(con);
 
-        for(int i=0;i<injectedPoints.size();i++)
+        for (int i=0; i<injectedPoints.size(); i++)
         {
-            for(InjectionPoint point : injectedPoints)
+            for (InjectionPoint point : injectedPoints)
             {
                 AnnotatedParameter<?> parameter = (AnnotatedParameter<?>)point.getAnnotated();
-                if(parameter.getPosition() == i)
+                if (parameter.getPosition() == i)
                 {
                     if (point.isDelegate())
                     {
