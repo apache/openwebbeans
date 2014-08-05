@@ -16,39 +16,44 @@
     License.
 -->
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
- <filter>
-  <filter-name>injectorfilter</filter-name>
-  <filter-class>org.apache.webbeans.samples.tomcat.MyFilter</filter-class>
- </filter>
- <filter-mapping>
-  <filter-name>injectorfilter</filter-name>
-  <servlet-name>injector</servlet-name>
-  <dispatcher>REQUEST</dispatcher>
- </filter-mapping>
- <servlet>
-  <servlet-name>injector</servlet-name>
-  <servlet-class>org.apache.webbeans.samples.tomcat.InjectorServlet</servlet-class>
- </servlet>
- <servlet-mapping>
-  <servlet-name>injector</servlet-name>
-  <url-pattern>/injector</url-pattern>
- </servlet-mapping>
- <security-constraint>
-  <display-name>injector</display-name>
-  <web-resource-collection>
-   <web-resource-name>injector</web-resource-name>
-   <url-pattern>/injector/*</url-pattern>
-  </web-resource-collection>
-  <auth-constraint>
-   <role-name>manager-script</role-name>
-  </auth-constraint>
- </security-constraint>
- <login-config>
-  <auth-method>BASIC</auth-method>
-  <realm-name>sample</realm-name>
- </login-config>
- <security-role>
-  <role-name>manager-script</role-name>
- </security-role>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <filter>
+        <filter-name>injectorfilter</filter-name>
+        <filter-class>org.apache.webbeans.samples.tomcat.MyFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>injectorfilter</filter-name>
+        <servlet-name>injector</servlet-name>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <servlet>
+        <servlet-name>injector</servlet-name>
+        <servlet-class>org.apache.webbeans.samples.tomcat.InjectorServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>injector</servlet-name>
+        <url-pattern>/injector</url-pattern>
+    </servlet-mapping>
+
+
+    <security-constraint>
+        <display-name>injector</display-name>
+        <web-resource-collection>
+            <web-resource-name>injector</web-resource-name>
+            <url-pattern>/injector/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>manager-script</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>sample</realm-name>
+    </login-config>
+
+    <security-role>
+        <role-name>manager-script</role-name>
+    </security-role>
+
 </web-app>

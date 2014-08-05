@@ -32,7 +32,6 @@
 
     <properties>
         <tomcat.port.it>9081</tomcat.port.it>
-        <tomcat7.version>7.0.54</tomcat7.version>
         <jstl.version>1.2</jstl.version>
         <projectStage>Development</projectStage>
     </properties>

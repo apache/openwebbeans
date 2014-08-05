@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.web.tomcat;
+package org.apache.webbeans.web.tomcat7;
 
 import javax.jws.WebService;
 import javax.servlet.Filter;
@@ -75,16 +75,16 @@ public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansWe
     @Override
     public void isManagedBean(Class<?> clazz)
     {
-        if(Servlet.class.isAssignableFrom(clazz) ||
-                Filter.class.isAssignableFrom(clazz) ||
-                ServletContextListener.class.isAssignableFrom(clazz) ||
-                ServletContextAttributeListener.class.isAssignableFrom(clazz) ||
-                HttpSessionActivationListener.class.isAssignableFrom(clazz) ||
-                HttpSessionAttributeListener.class.isAssignableFrom(clazz) ||
-                HttpSessionBindingListener.class.isAssignableFrom(clazz) ||
-                HttpSessionListener.class.isAssignableFrom(clazz) ||
-                ServletRequestListener.class.isAssignableFrom(clazz) ||
-                ServletRequestAttributeListener.class.isAssignableFrom(clazz) )
+        if (Servlet.class.isAssignableFrom(clazz) ||
+            Filter.class.isAssignableFrom(clazz) ||
+            ServletContextListener.class.isAssignableFrom(clazz) ||
+            ServletContextAttributeListener.class.isAssignableFrom(clazz) ||
+            HttpSessionActivationListener.class.isAssignableFrom(clazz) ||
+            HttpSessionAttributeListener.class.isAssignableFrom(clazz) ||
+            HttpSessionBindingListener.class.isAssignableFrom(clazz) ||
+            HttpSessionListener.class.isAssignableFrom(clazz) ||
+            ServletRequestListener.class.isAssignableFrom(clazz) ||
+            ServletRequestAttributeListener.class.isAssignableFrom(clazz) )
         {
             throw new DefinitionException("Given class  : " + clazz.getName() + " is not managed bean");
         }

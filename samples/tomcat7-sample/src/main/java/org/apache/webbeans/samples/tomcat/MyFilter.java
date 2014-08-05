@@ -19,8 +19,8 @@
 package org.apache.webbeans.samples.tomcat;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -32,29 +32,30 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.webbeans.annotation.DefaultLiteral;
 
 public class MyFilter implements Filter
 {
+    private static final Logger log = Logger.getLogger(MyFilter.class.getName());
+
     private @Inject BeanManager manager;
+
 
     @Override
     public void destroy()
     {
-        
-        
+
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain arg2) throws IOException, ServletException
     {
-        Set<Bean<?>> beans = manager.getBeans(CurrentDateProvider.class, new Annotation[]{new DefaultLiteral()});
-        System.out.println("Total found beans : " + beans.size());
+        Set<Bean<?>> beans = manager.getBeans(CurrentDateProvider.class);
+        log.info("Total found beans : " + beans.size());
         Bean<CurrentDateProvider> provider = (Bean<CurrentDateProvider>)beans.iterator().next();
         CurrentDateProvider instance = (CurrentDateProvider) manager.getReference(provider, CurrentDateProvider.class, manager.createCreationalContext(provider));
         
-        System.out.println("Current time is : " + instance.getCurrentDate());
+        log.info("Current time is : " + instance.getCurrentDate());
         
         arg2.doFilter(arg0, arg1);
         
