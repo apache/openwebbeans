@@ -64,7 +64,6 @@ import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
-import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.ProcessSyntheticAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
@@ -554,8 +553,6 @@ public class BeansDeployer
      */
     private <T, B extends Bean<?>> void validate(Collection<B> beans)
     {
-        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        
         if (beans != null && beans.size() > 0)
         {
             Stack<String> beanNames = new Stack<String>();
@@ -1241,13 +1238,11 @@ public class BeansDeployer
     {   
         //Fires ProcessInjectionTarget event for Java EE components instances
         //That supports injections but not managed beans
-        ProcessInjectionTargetImpl<T> processInjectionTargetEvent;
         Class beanClass = annotatedType.getJavaClass();
         if(webBeansContext.getWebBeansUtil().supportsJavaEeComponentInjections(beanClass))
         {
             //Fires ProcessInjectionTarget
-            processInjectionTargetEvent =
-                webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEventForJavaEeComponents(beanClass);
+            webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEventForJavaEeComponents(beanClass);
             webBeansContext.getWebBeansUtil().inspectErrorStack(
                 "There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
 
