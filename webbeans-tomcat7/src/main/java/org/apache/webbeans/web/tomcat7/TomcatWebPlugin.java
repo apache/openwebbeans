@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.web.tomcat;
+package org.apache.webbeans.web.tomcat7;
 
 import javax.jws.WebService;
 import javax.servlet.Filter;
@@ -30,7 +30,7 @@ import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.HttpSessionListener;
 
-import org.apache.webbeans.exception.inject.DefinitionException;
+import javax.enterprise.inject.spi.DefinitionException;
 import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
@@ -75,16 +75,16 @@ public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansWe
     @Override
     public void isManagedBean(Class<?> clazz)
     {
-        if(Servlet.class.isAssignableFrom(clazz) ||
-                Filter.class.isAssignableFrom(clazz) ||
-                ServletContextListener.class.isAssignableFrom(clazz) ||
-                ServletContextAttributeListener.class.isAssignableFrom(clazz) ||
-                HttpSessionActivationListener.class.isAssignableFrom(clazz) ||
-                HttpSessionAttributeListener.class.isAssignableFrom(clazz) ||
-                HttpSessionBindingListener.class.isAssignableFrom(clazz) ||
-                HttpSessionListener.class.isAssignableFrom(clazz) ||
-                ServletRequestListener.class.isAssignableFrom(clazz) ||
-                ServletRequestAttributeListener.class.isAssignableFrom(clazz) )
+        if (Servlet.class.isAssignableFrom(clazz) ||
+            Filter.class.isAssignableFrom(clazz) ||
+            ServletContextListener.class.isAssignableFrom(clazz) ||
+            ServletContextAttributeListener.class.isAssignableFrom(clazz) ||
+            HttpSessionActivationListener.class.isAssignableFrom(clazz) ||
+            HttpSessionAttributeListener.class.isAssignableFrom(clazz) ||
+            HttpSessionBindingListener.class.isAssignableFrom(clazz) ||
+            HttpSessionListener.class.isAssignableFrom(clazz) ||
+            ServletRequestListener.class.isAssignableFrom(clazz) ||
+            ServletRequestAttributeListener.class.isAssignableFrom(clazz) )
         {
             throw new DefinitionException("Given class  : " + clazz.getName() + " is not managed bean");
         }

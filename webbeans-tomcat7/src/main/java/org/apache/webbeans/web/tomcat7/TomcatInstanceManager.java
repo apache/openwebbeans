@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.web.tomcat;
+package org.apache.webbeans.web.tomcat7;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -45,18 +45,6 @@ public class TomcatInstanceManager implements InstanceManager
     }
 
     @Override
-    public Object newInstance(Class<?> aClass) throws IllegalAccessException, InvocationTargetException, NamingException, InstantiationException
-    {
-        // Creates a defaut instance
-        Object object = this.processor.newInstance(aClass);
-
-        // Inject dependencies
-        inject(object);
-
-        return object;
-    }
-
-    @Override
     public void destroyInstance(Object instance) throws IllegalAccessException, InvocationTargetException
     {
         Object injectorInstance = objects.get(instance);
@@ -76,6 +64,18 @@ public class TomcatInstanceManager implements InstanceManager
             }
         }
         this.processor.destroyInstance(instance);
+    }
+
+    @Override
+    public Object newInstance(Class<?> aClass) throws IllegalAccessException, InvocationTargetException, NamingException, InstantiationException
+    {
+        // Creates a defaut instance
+        Object object = this.processor.newInstance(aClass);
+
+        // Inject dependencies
+        inject(object);
+
+        return object;
     }
 
     @Override

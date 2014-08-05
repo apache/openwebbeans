@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.web.tomcat;
+package org.apache.webbeans.web.tomcat7;
 
 import java.security.Principal;
 
@@ -29,7 +29,7 @@ public class TomcatSecurityService extends SimpleSecurityService implements Secu
     @Override
     public Principal getCurrentPrincipal()
     {
-        return TomcatSecurityListener.principal.get();
+        return TomcatSecurityFilter.getPrincipal();
     }
 
 }
