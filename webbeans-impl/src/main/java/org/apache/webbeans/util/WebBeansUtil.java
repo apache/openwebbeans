@@ -39,6 +39,7 @@ import org.apache.webbeans.component.InterceptorMetadataBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewManagedBean;
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.component.PrincipalBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
@@ -87,7 +88,34 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.spi.*;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.AfterDeploymentValidation;
+import javax.enterprise.inject.spi.AnnotatedConstructor;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMember;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import javax.enterprise.inject.spi.BeforeShutdown;
+import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.PassivationCapable;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.ProcessBean;
+import javax.enterprise.inject.spi.ProcessBeanAttributes;
+import javax.enterprise.inject.spi.ProcessInjectionPoint;
+import javax.enterprise.inject.spi.ProcessInjectionTarget;
+import javax.enterprise.inject.spi.ProcessManagedBean;
+import javax.enterprise.inject.spi.ProcessObserverMethod;
+import javax.enterprise.inject.spi.ProcessProducer;
+import javax.enterprise.inject.spi.ProcessProducerField;
+import javax.enterprise.inject.spi.ProcessProducerMethod;
+import javax.enterprise.inject.spi.ProcessSessionBean;
+import javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType;
+import javax.enterprise.inject.spi.Producer;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -507,6 +535,15 @@ public final class WebBeansUtil
     }
 
     /**
+     * Creates a new bean metadata bean.
+     * @return new  bean
+     */
+    public PrincipalBean getPrincipalBean()
+    {
+        return new PrincipalBean(webBeansContext);
+    }
+
+    /**
      * Creates a new interceptor metadata bean.
      * @return new bean
      */
@@ -670,7 +707,7 @@ public final class WebBeansUtil
         // create sorted bean helper.
         SortedListHelper<ProducerMethodBean> producerBeanListHelper = new
                 SortedListHelper<ProducerMethodBean>(new ArrayList<ProducerMethodBean>(),
-                new Comparator<ProducerMethodBean> ()
+                new Comparator<ProducerMethodBean>()
                 {
                     @Override
                     public int compare(ProducerMethodBean e1, ProducerMethodBean e2)

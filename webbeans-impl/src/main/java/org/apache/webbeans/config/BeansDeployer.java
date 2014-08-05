@@ -371,6 +371,9 @@ public class BeansDeployer
         beanManager.addInternalBean(webBeansUtil.getInterceptorMetadataBean());
         beanManager.addInternalBean(webBeansUtil.getDecoratorMetadataBean());
         beanManager.addInternalBean(webBeansUtil.getInterceptedOrDecoratedBeanMetadataBean());
+
+        // Register PrincipalBean
+        beanManager.addInternalBean(webBeansUtil.getPrincipalBean());
         
         //REgister Provider Beans
         OpenWebBeansJavaEEPlugin beanEeProvider = webBeansContext.getPluginLoader().getJavaEEPlugin();
@@ -378,7 +381,6 @@ public class BeansDeployer
         
         if(beanEeProvider != null)
         {
-            addDefaultBean(webBeansContext, "org.apache.webbeans.ee.common.beans.PrincipalBean");
             addDefaultBean(webBeansContext, "org.apache.webbeans.ee.beans.ValidatorBean");
             addDefaultBean(webBeansContext, "org.apache.webbeans.ee.beans.ValidatorFactoryBean");
             addDefaultBean(webBeansContext, "org.apache.webbeans.ee.beans.UserTransactionBean");

@@ -16,17 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.ee.common.beans;
+package org.apache.webbeans.component;
 
 import java.security.Principal;
 
-import org.apache.webbeans.component.BuiltInOwbBean;
-import org.apache.webbeans.component.SimpleProducerFactory;
-import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.ProviderBasedProducer;
 
-//used by BeansDeployer (created via reflection)
 public class PrincipalBean extends BuiltInOwbBean<Principal>
 {
 

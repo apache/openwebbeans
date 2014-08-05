@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.ee.common.beans;
+package org.apache.webbeans.component;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
