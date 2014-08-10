@@ -765,7 +765,8 @@ public class BeansDeployer
         }
 
         Package pckge = implClass.getPackage();
-        if (pckge == null) {
+        if (pckge == null)
+        {
             return false;
         }
         do
