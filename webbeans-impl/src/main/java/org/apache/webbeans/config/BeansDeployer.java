@@ -765,6 +765,9 @@ public class BeansDeployer
         }
 
         Package pckge = implClass.getPackage();
+        if (pckge == null) {
+            return false;
+        }
         do
         {
             // yes we cache result with potentially different classloader but this is not portable by spec
