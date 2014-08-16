@@ -20,6 +20,7 @@ package org.apache.webbeans.test.component.decorator.clean;
 
 import javax.decorator.Delegate;
 import javax.decorator.Decorator;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -30,9 +31,16 @@ import org.apache.webbeans.test.component.service.IService;
 @Named
 public  class ServiceDecorator implements IService
 {
-    @Inject @Delegate @Binding1 IService delegate;
+    private @Inject @Delegate @Binding1 IService delegate;
 
     public static String delegateAttr = null;
+    public static InjectionPoint ip;
+
+    @Inject
+    public ServiceDecorator(InjectionPoint ip)
+    {
+        ServiceDecorator.ip = ip;
+    }
 
     @Override
     public String service()

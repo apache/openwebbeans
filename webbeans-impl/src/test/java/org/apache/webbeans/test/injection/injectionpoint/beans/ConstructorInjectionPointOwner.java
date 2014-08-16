@@ -15,11 +15,13 @@
  */
 package org.apache.webbeans.test.injection.injectionpoint.beans;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import java.io.Serializable;
 
+@Dependent
 public class ConstructorInjectionPointOwner extends AbstractInjectionPointOwner
 {
 

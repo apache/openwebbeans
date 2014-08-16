@@ -53,6 +53,7 @@ public class Decorator1Test extends AbstractUnitTest
         startContainer(ServiceDecorator.class, CheckWithCheckPayment.class, ServiceImpl1.class, Binding1.class);
 
         ServiceDecorator.delegateAttr = null;
+        ServiceDecorator.ip = null;
 
         ServiceImpl1 serviceImpl = getInstance(ServiceImpl1.class, new Annotation[]{new Binding1Literal()});
         String s = serviceImpl.service();
@@ -67,6 +68,10 @@ public class Decorator1Test extends AbstractUnitTest
         Assert.assertTrue(decs.size() > 0);
 
         Assert.assertEquals(ServiceDecorator.delegateAttr, "ServiceImpl1");
+
+        // actually the following is NOT defined in the spec!
+        // Assert.assertNotNull(ServiceDecorator.ip);
+        // It is _currently_ totally fine that it is null.
     }
 
     @Test

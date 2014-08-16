@@ -25,12 +25,15 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Inject;
 
+import junit.framework.Assert;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.injection.injectionpoint.beans.AbstractInjectionPointOwner;
@@ -133,5 +136,35 @@ public class InjectionPointInjectionTest extends AbstractUnitTest {
         assertNotNull(pmp.getInjectionPoint());
     }
 
+    @Test
+    public void testManualConstructorInjectionPoint() throws Exception
+    {
+        startContainer(ConstructorInjectionPointOwner.class);
+        ConstructorInjectionPointOwner owner = getInstance(ConstructorInjectionPointOwner.class);
+        Assert.assertNotNull(owner);
+        Assert.assertNull(owner.getInjectionPoint());
+    }
+
+    @Test
+    public void testIndirectConstructorInjectionPoint() throws Exception
+    {
+        startContainer(ConstructorInjectionPointOwner.class, ConstructorInjectionOwner.class);
+        ConstructorInjectionOwner owner = getInstance(ConstructorInjectionOwner.class);
+        Assert.assertNotNull(owner);
+        Assert.assertNotNull(owner.getConstructorInjectionPointOwner());
+        Assert.assertNotNull(owner.getConstructorInjectionPointOwner().getInjectionPoint());
+        Assert.assertNotNull(owner.getConstructorInjectionPointOwner().getName());
+    }
+
+    @Dependent
+    public static class ConstructorInjectionOwner
+    {
+        private @Inject ConstructorInjectionPointOwner constructorInjectionPointOwner;
+
+        public ConstructorInjectionPointOwner getConstructorInjectionPointOwner()
+        {
+            return constructorInjectionPointOwner;
+        }
+    }
 
 }
