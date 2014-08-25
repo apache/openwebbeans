@@ -18,19 +18,17 @@
  */
 package org.apache.webbeans.test.component.producer.specializes;
 
-import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 
-import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.component.producer.specializes.superclazz.SpecializesProducer1SuperClazz;
 
-public class SpecializesProducer1 extends SpecializesProducer1SuperClazz
+/**
+ * Specializing away the parent class means that all the producers defined in
+ * the parent class also get disabled.
+ * See CDI-1.0 §5.1.2.
+ */
+@Specializes
+public class SpecializesProducerParentBean extends SpecializesProducer1SuperClazz
 {
-    @Produces
-    @Binding1
-    @Specializes
-    public int createMaxNumber()
-    {
-        return 10000;
-    }
+
 }

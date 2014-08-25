@@ -25,17 +25,15 @@ import org.apache.webbeans.test.annotation.binding.Binding2;
 
 public class SpecializesProducer1SuperClazz
 {
-
-    public SpecializesProducer1SuperClazz()
-    {
-
-    }
+    @Produces
+    @Binding2
+    private int producedField = 4711;
 
     @Produces
     @Binding1
-    @Binding2
     public int createMaxNumber()
     {
         return Integer.MAX_VALUE;
     }
+
 }
