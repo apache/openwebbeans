@@ -32,8 +32,8 @@
     <description>All TCK tests for the Apache OpenWebBeans Implementation</description>
 
     <properties>
-        <!--  <webbeans.tck.version>1.0.1-Final</webbeans.tck.version> -->
-        <webbeans.tck.version>1.0.4.SP1</webbeans.tck.version>
+        <webbeans.tck.version>1.0.6.Final</webbeans.tck.version>
+        <!-- <webbeans.tck.version>1.0.4.SP1</webbeans.tck.version> -->
     </properties>
 
     <!--Used for jboss-test-harness-api not in central maven -->
