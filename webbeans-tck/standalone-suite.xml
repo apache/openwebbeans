@@ -44,6 +44,9 @@
             <package name="org.jboss.cdi.tck.tests.*">
                 <!-- CHALLENGED TCK TESTS: clarifying this in the EG -->
                 <exclude name="org.jboss.cdi.tck.tests.inheritance.specialization.simple"/>
+
+                <!-- CDITCK-432 -->
+                <exclude name="org.jboss.cdi.tck.tests.decorators.builtin.event.complex"/>
             </package>
 
             <package name="org.jboss.cdi.tck.interceptors.tests.*"/>
