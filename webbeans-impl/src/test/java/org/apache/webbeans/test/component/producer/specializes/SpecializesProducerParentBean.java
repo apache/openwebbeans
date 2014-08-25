@@ -16,23 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.test.component.producer.specializes.superclazz;
+package org.apache.webbeans.test.component.producer.specializes;
 
-import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.Specializes;
+import org.apache.webbeans.test.component.producer.specializes.superclazz.SpecializesProducer1SuperClazz;
 
-import org.apache.webbeans.test.annotation.binding.Binding1;
-import org.apache.webbeans.test.annotation.binding.Binding2;
-
-public class SpecializesProducer1SuperClazz
+/**
+ * Specializing away the parent class means that all the producers defined in
+ * the parent class also get disabled.
+ * See CDI-1.0 §5.1.2.
+ */
+@Specializes
+public class SpecializesProducerParentBean extends SpecializesProducer1SuperClazz
 {
-    @Produces
-    @Binding2
-    private int producedField = 4711;
 
-    @Produces
-    @Binding1
-    public int createMaxNumber()
-    {
-        return Integer.MAX_VALUE;
-    }
 }

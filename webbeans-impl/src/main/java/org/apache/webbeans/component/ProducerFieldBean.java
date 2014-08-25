@@ -42,7 +42,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T>
      */
     public ProducerFieldBean(InjectionTargetBean<?> ownerComponent, BeanAttributesImpl<T> beanAttributes, Class<T> returnType, ProducerFactory<T> producerFactory)
     {
-        super(ownerComponent.getBeanClass(), ownerComponent.getWebBeansContext(), WebBeansType.PRODUCERFIELD, beanAttributes, returnType, producerFactory);
+        super(ownerComponent, WebBeansType.PRODUCERFIELD, beanAttributes, returnType, producerFactory);
     }
 
     /**

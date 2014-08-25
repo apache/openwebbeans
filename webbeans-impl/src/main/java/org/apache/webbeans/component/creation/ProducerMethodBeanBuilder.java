@@ -36,9 +36,6 @@ import org.apache.webbeans.util.ClassUtil;
 public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T, AnnotatedMethod<?>, ProducerMethodBean<T>>
 {
 
-    //X TODO arne: this should get evaluated or deleted if not needed anymore
-    private boolean specialized;
-
     public ProducerMethodBeanBuilder(InjectionTargetBean<T> parent, AnnotatedMethod<?> annotatedMethod, BeanAttributesImpl<T> beanAttributes)
     {
         super(parent, annotatedMethod, beanAttributes);
@@ -73,35 +70,6 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
         bean.setSpecializedBean(true);        
     }
 
-    //X TODO arne: this should get implemented or removed if not needed anymore
-    protected AnnotatedMethod<?> getSuperAnnotated()
-    {
-        AnnotatedMethod<?> thisMethod = annotatedMember;
-        for (AnnotatedMethod<?> superMethod: getSuperType().getMethods())
-        {
-            List<AnnotatedParameter<?>> thisParameters = (List<AnnotatedParameter<?>>)(List<?>)thisMethod.getParameters();
-            if (thisMethod.getJavaMember().getName().equals(superMethod.getJavaMember().getName())
-                && thisMethod.getBaseType().equals(superMethod.getBaseType())
-                && thisParameters.size() == superMethod.getParameters().size())
-            {
-                List<AnnotatedParameter<?>> superParameters = (List<AnnotatedParameter<?>>)(List<?>)superMethod.getParameters();
-                boolean match = true;
-                for (int i = 0; i < thisParameters.size(); i++)
-                {
-                    if (!thisParameters.get(i).getBaseType().equals(superParameters.get(i).getBaseType()))
-                    {
-                        match = false;
-                        break;
-                    }
-                }
-                if (match)
-                {
-                    return superMethod;
-                }
-            }
-        }
-        return null;
-    }
 
     @Override
     protected <P> ProducerMethodBean<T> createBean(InjectionTargetBean<P> parent, Class<T> beanClass)
@@ -109,7 +77,7 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
         AnnotatedMethod<P> annotatedMethod = (AnnotatedMethod<P>) annotatedMember;
         ProducerMethodBean<T> producerMethodBean
             = new ProducerMethodBean<T>(parent, beanAttributes, beanClass, new MethodProducerFactory<P>(annotatedMethod, parent, parent.getWebBeansContext()));
-        producerMethodBean.setSpecializedBean(specialized);
+        producerMethodBean.setSpecializedBean(false);
         return producerMethodBean;
     }
     

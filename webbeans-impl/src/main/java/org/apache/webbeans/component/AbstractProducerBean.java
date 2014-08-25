@@ -27,7 +27,6 @@ import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.spi.BeanAttributes;
 import org.apache.webbeans.component.spi.ProducerFactory;
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.WebBeansUtil;
 
 
@@ -39,25 +38,31 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class AbstractProducerBean<T> extends AbstractOwbBean<T> implements PassivationCapable
 {
-    private Class<T> returnType;
+    private final InjectionTargetBean<?> ownerBean;
+    private final Class<T> returnType;
     private Producer<T> producer;
 
     /**
      * Create a new instance.
      * 
      * @param returnType bean type info
-     * @param ownerBeanClass class which contains this producer method or field
+     * @param ownerComponent bean which contains this producer method or field
      */
-    public AbstractProducerBean(Class<?> ownerBeanClass,
-            WebBeansContext webBeansContext,
+    public AbstractProducerBean(InjectionTargetBean<?> ownerComponent,
             WebBeansType webBeansType,
             BeanAttributes<T> beanAttributes,
             Class<T> returnType,
             ProducerFactory<?> producerFactory)
     {
-        super(webBeansContext, webBeansType, beanAttributes, ownerBeanClass, !returnType.isPrimitive());
+        super(ownerComponent.getWebBeansContext(), webBeansType, beanAttributes, ownerComponent.getBeanClass(), !returnType.isPrimitive());
+        this.ownerBean = ownerComponent;
         this.returnType = returnType;
         producer = producerFactory.createProducer(this);
+    }
+
+    public InjectionTargetBean<?> getOwnerBean()
+    {
+        return ownerBean;
     }
 
     @Override

@@ -19,18 +19,14 @@
 package org.apache.webbeans.newtests.producer.specializes;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Set;
-
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.AnnotationLiteral;
-
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.component.producer.specializes.SpecializesProducer1;
+import org.apache.webbeans.test.component.producer.specializes.SpecializesProducerParentBean;
 import org.apache.webbeans.test.component.producer.specializes.superclazz.SpecializesProducer1SuperClazz;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,13 +37,7 @@ public class SpecializesProducer1Test extends AbstractUnitTest
     @Test
     public void testSpecializedProducer1()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-
-        beanClasses.add(SpecializesProducer1SuperClazz.class);
-        beanClasses.add(SpecializesProducer1.class);
-        
-        startContainer(beanClasses, beanXmls);        
+        startContainer(SpecializesProducer1SuperClazz.class, SpecializesProducer1.class);
         
         Annotation binding1 = new AnnotationLiteral<Binding1>()
         {
@@ -56,16 +46,33 @@ public class SpecializesProducer1Test extends AbstractUnitTest
         {
         };
 
-        Set beans = getBeanManager().getBeans(int.class, new Annotation[] { binding1, binding2 });
-        System.out.print("Size of the bean set is " + beans.size());
-        Assert.assertTrue(beans.size() == 1);
-        Bean<Integer> bean = (Bean<Integer>)beans.iterator().next();
-        CreationalContext<Integer> cc = getBeanManager().createCreationalContext(bean);
-        Integer number = (Integer) getBeanManager().getReference(bean, int.class, cc);
-        
-        Assert.assertEquals(10000, number.intValue());
-        
-        shutDownContainer();       
-        
+        Integer methodNumber = getInstance(int.class, binding1);
+        Assert.assertEquals(10000, methodNumber.intValue());
+
+        Integer fieldNumber = getInstance(int.class, binding2);
+        Assert.assertEquals(4711, fieldNumber.intValue());
+    }
+
+    /**
+     * SpecializesProducerParentBean specializes SpecializesProducer1SuperClazz
+     * Thus all the producer fields and methods in the parent class must be disabled.
+     */
+    @Test
+    public void testDisabledProducerViaSpecialization()
+    {
+        startContainer(SpecializesProducer1SuperClazz.class, SpecializesProducerParentBean.class);
+
+        Annotation binding1 = new AnnotationLiteral<Binding1>()
+        {
+        };
+        Annotation binding2 = new AnnotationLiteral<Binding2>()
+        {
+        };
+
+        Set<Bean<?>> beans = getBeanManager().getBeans(int.class, binding1);
+        Assert.assertEquals(0, beans.size());
+
+        beans = getBeanManager().getBeans(int.class, binding2);
+        Assert.assertEquals(0, beans.size());
     }
 }

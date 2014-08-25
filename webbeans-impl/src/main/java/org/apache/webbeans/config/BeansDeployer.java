@@ -362,7 +362,7 @@ public class BeansDeployer
         manager.fireLifecycleEvent(new AfterBeanDiscoveryImpl(webBeansContext));
 
         webBeansContext.getWebBeansUtil().inspectErrorStack(
-            "There are errors that are added by AfterBeanDiscovery event observers. Look at logs for further details");
+                "There are errors that are added by AfterBeanDiscovery event observers. Look at logs for further details");
     }
     
     /**
@@ -818,6 +818,8 @@ public class BeansDeployer
 
             //configure specialized producer beans.
             webBeansContext.getWebBeansUtil().configureProducerMethodSpecializations();
+
+            removeProducersInDisabledBeans();
         }
         catch (DefinitionException e)
         {
@@ -836,7 +838,26 @@ public class BeansDeployer
         logger.fine("Checking Specialization constraints has ended.");
     }
 
-    
+    protected void removeProducersInDisabledBeans()
+    {
+        Iterator<Bean<?>> beanIterator = webBeansContext.getBeanManagerImpl().getBeans().iterator();
+        while (beanIterator.hasNext())
+        {
+            Bean<?> bean = beanIterator.next();
+            if (bean instanceof AbstractProducerBean)
+            {
+                AbstractProducerBean<?> producerBean = (AbstractProducerBean<?>) bean;
+                if (!producerBean.getOwnerBean().isEnabled())
+                {
+                    // if the parent component is disabled, then we also need to disabled the producer fields and methods in it as well.
+                    producerBean.setEnabled(false);
+                }
+            }
+        }
+    }
+
+
+
     /**
      * Check passivations.
      */
