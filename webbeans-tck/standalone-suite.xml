@@ -119,6 +119,12 @@
                 </methods>
             </class>
 
+            <class name="org.jboss.jsr299.tck.tests.implementation.producer.field.lifecycle.ProducerFieldLifecycleTest">
+                <methods>
+                    <exclude name=".*"></exclude>
+                </methods>
+            </class>
+
 
             <!-- ERROR IN CDITCK-138 -->
             <class name="org.jboss.jsr299.tck.tests.lookup.injectionpoint.InjectionPointTest">
