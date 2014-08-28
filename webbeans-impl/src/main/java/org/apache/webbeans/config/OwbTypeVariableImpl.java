@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.config;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -95,6 +97,34 @@ public class OwbTypeVariableImpl<G extends GenericDeclaration> implements TypeVa
           return false;
        }
        
+    }
+
+    /** from JDK-1.8 thus no at-Override yet */
+    public AnnotatedType[] getAnnotatedBounds()
+    {
+        //X TODO implement this properly
+        return new AnnotatedType[0];
+    }
+
+    /** from JDK-1.8 thus no at-Override yet */
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass)
+    {
+        //X TODO implement this properly
+        return null;
+    }
+
+    /** from JDK-1.8 thus no at-Override yet */
+    public Annotation[] getAnnotations()
+    {
+        //X TODO implement this properly
+        return new Annotation[0];
+    }
+
+    /** from JDK-1.8 thus no at-Override yet */
+    public Annotation[] getDeclaredAnnotations()
+    {
+        //X TODO implement this properly
+        return new Annotation[0];
     }
 
     public String toString()
