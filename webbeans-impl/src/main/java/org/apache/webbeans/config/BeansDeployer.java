@@ -274,6 +274,10 @@ public class BeansDeployer
         {
             throw new DeploymentException(e);
         }
+        catch (IllegalArgumentException e)
+        {
+            throw new DefinitionException(e);
+        }
         catch (Exception e)
         {
             throw ExceptionUtil.throwAsRuntimeException(e);
