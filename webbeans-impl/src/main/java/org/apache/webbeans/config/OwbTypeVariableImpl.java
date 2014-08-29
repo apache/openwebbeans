@@ -18,136 +18,169 @@
  */
 package org.apache.webbeans.config;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 
 import org.apache.webbeans.util.Asserts;
 
-public class OwbTypeVariableImpl<G extends GenericDeclaration> implements TypeVariable<G>
+
+public class OwbTypeVariableImpl
 {
+    private static final Class<?>[] TYPE_VARIABLE_TYPES = new Class<?>[]{TypeVariable.class};
 
-    private String name;
-    private G genericDeclaration;
-    private Type[] bounds;
-
-    public OwbTypeVariableImpl(TypeVariable<G> typeVariable, Type... bounds)
-    {
-        name = typeVariable.getName();
-        genericDeclaration = typeVariable.getGenericDeclaration();
-        Asserts.assertNotNull(name);
-        Asserts.assertNotNull(genericDeclaration);
-        if (bounds == null || bounds.length == 0)
-        {
-            this.bounds = typeVariable.getBounds();
-        }
-        else
-        {
-            this.bounds = bounds;
-        }
-    }
-
-    @Override
-    public String getName()
-    {
-        return name;
-    }
-
-    @Override
-    public G getGenericDeclaration()
-    {
-        return genericDeclaration;
-    }
-
-    @Override
-    public Type[] getBounds()
-    {
-        return bounds.clone();
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
+    /**
+     * Java TypeVariable is different in various JDK versions. Thus it is not possible to e.g.
+     * write a custom TypeVariable which works in either Java7 and Java8 as they introduced
+     * new methods in Java8 which have return types which only exist in Java8 :(
+     *
+     * As workaround we dynamically crate a proxy to wrap this and do the delegation manually.
+     * This is of course slower, but as we do not use it often it might not have much impact.
+     *
+     * @param typeVariable
+     * @param bounds
+     * @return the typeVariable with the defined bounds.
      */
-    @Override
-    public int hashCode()
+    public static TypeVariable createTypeVariable(TypeVariable typeVariable, Type... bounds)
     {
-       return Arrays.hashCode(bounds) ^ name.hashCode() ^ genericDeclaration.hashCode();
+        TypeVariable tv = (TypeVariable) Proxy.newProxyInstance(OwbTypeVariableImpl.class.getClassLoader(), TYPE_VARIABLE_TYPES,
+                new OwbTypeVariableInvocationHandler(typeVariable, bounds));
+
+        return tv;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object object)
-    {
-       if (this == object)
-       {
-          return true;
-       }
-       else if (object instanceof TypeVariable)
-       {
-          TypeVariable<?> that = (TypeVariable<?>)object;
-          return name.equals(that.getName()) && genericDeclaration.equals(that.getGenericDeclaration()) && Arrays.equals(bounds, that.getBounds());
-       }
-       else
-       {
-          return false;
-       }
-       
-    }
 
-    /** from JDK-1.8 thus no at-Override yet */
-    public AnnotatedType[] getAnnotatedBounds()
-    {
-        //X TODO implement this properly
-        return new AnnotatedType[0];
-    }
 
-    /** from JDK-1.8 thus no at-Override yet */
-    public <T extends Annotation> T getAnnotation(Class<T> annotationClass)
+    public static class OwbTypeVariableInvocationHandler implements InvocationHandler
     {
-        //X TODO implement this properly
-        return null;
-    }
 
-    /** from JDK-1.8 thus no at-Override yet */
-    public Annotation[] getAnnotations()
-    {
-        //X TODO implement this properly
-        return new Annotation[0];
-    }
+        private String name;
+        private GenericDeclaration genericDeclaration;
+        private Type[] bounds;
 
-    /** from JDK-1.8 thus no at-Override yet */
-    public Annotation[] getDeclaredAnnotations()
-    {
-        //X TODO implement this properly
-        return new Annotation[0];
-    }
 
-    public String toString()
-    {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append(name);
-        if (bounds.length > 0)
+        public OwbTypeVariableInvocationHandler(TypeVariable typeVariable, Type... bounds)
         {
-            buffer.append(" extends ");
-            boolean first = true;
-            for (Type bound: bounds)
+            name = typeVariable.getName();
+            genericDeclaration = typeVariable.getGenericDeclaration();
+            Asserts.assertNotNull(name);
+            Asserts.assertNotNull(genericDeclaration);
+            if (bounds == null || bounds.length == 0)
             {
-                if (first)
-                {
-                    first = false;
-                }
-                else
-                {
-                    buffer.append(',');
-                }
-                buffer.append(' ').append(bound);
+                this.bounds = typeVariable.getBounds();
+            }
+            else
+            {
+                this.bounds = bounds;
             }
         }
-        return buffer.toString();
+
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+        {
+            String methodName = method.getName();
+            if ("equals".equals(methodName))
+            {
+                return typeVariableEquals(args[0]);
+            }
+            else if ("hashCode".equals(methodName))
+            {
+                return typeVariableHashCode();
+            }
+            else if ("toString".equals(methodName))
+            {
+                return typeVariableToString();
+            }
+            else if ("getName".equals(methodName))
+            {
+                return getName();
+            }
+            else if ("getGenericDeclaration".equals(methodName))
+            {
+                return getGenericDeclaration();
+            }
+            else if ("getBounds".equals(methodName))
+            {
+                return getBounds();
+            }
+
+
+            // new method from java8...
+            return null;
+        }
+
+        /** method from TypeVariable */
+        public String getName()
+        {
+            return name;
+        }
+
+        /** method from TypeVariable */
+        public GenericDeclaration getGenericDeclaration()
+        {
+            return genericDeclaration;
+        }
+
+        /** method from TypeVariable */
+        public Type[] getBounds()
+        {
+            return bounds.clone();
+        }
+
+        /** method from TypeVariable */
+        public int typeVariableHashCode()
+        {
+            return Arrays.hashCode(bounds) ^ name.hashCode() ^ genericDeclaration.hashCode();
+        }
+
+        /** method from TypeVariable */
+        public boolean typeVariableEquals(Object object)
+        {
+            if (this == object)
+            {
+                return true;
+            }
+            else if (object instanceof TypeVariable)
+            {
+                TypeVariable<?> that = (TypeVariable<?>)object;
+                return name.equals(that.getName()) && genericDeclaration.equals(that.getGenericDeclaration()) && Arrays.equals(bounds, that.getBounds());
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        /** method from TypeVariable */
+        public String typeVariableToString()
+        {
+            StringBuilder buffer = new StringBuilder();
+            buffer.append(name);
+            if (bounds.length > 0)
+            {
+                buffer.append(" extends ");
+                boolean first = true;
+                for (Type bound: bounds)
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        buffer.append(',');
+                    }
+                    buffer.append(' ').append(bound);
+                }
+            }
+            return buffer.toString();
+        }
+
     }
 }

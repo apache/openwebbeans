@@ -837,7 +837,7 @@ public final class GenericsUtil
         else
         {
             Type[] resolvedBounds = resolveTypes(declaration.getTypeParameters()[index].getBounds(), type);
-            return new OwbTypeVariableImpl<GenericDeclaration>((TypeVariable<GenericDeclaration>)variable, resolvedBounds);
+            return OwbTypeVariableImpl.createTypeVariable(variable, resolvedBounds);
         }
         return variable;
     }
