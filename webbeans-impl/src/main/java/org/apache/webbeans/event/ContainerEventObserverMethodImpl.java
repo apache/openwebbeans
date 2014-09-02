@@ -23,14 +23,35 @@ import org.apache.webbeans.portable.events.discovery.ExtensionAware;
 
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.DefinitionException;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.WithAnnotations;
 import java.lang.reflect.InvocationTargetException;
 
 public class ContainerEventObserverMethodImpl<T> extends ObserverMethodImpl<T>
 {
+    private final Class[] withAnnotations;
+
     public ContainerEventObserverMethodImpl(final AbstractOwbBean<?> bean, final AnnotatedMethod<T> annotatedObserverMethod,
                                             final AnnotatedParameter<T> annotatedObservesParameter)
     {
         super(bean, annotatedObserverMethod, annotatedObservesParameter);
+        WithAnnotations withAnnotationsAnn = annotatedObservesParameter.getAnnotation(WithAnnotations.class);
+        if (withAnnotationsAnn != null)
+        {
+            if (annotatedObservesParameter.getBaseType().equals(ProcessAnnotatedType.class))
+            {
+                withAnnotations = withAnnotationsAnn.value();
+            }
+            else
+            {
+                throw new DefinitionException("WithAnnotations must only be used for ProcessAnnotatedType");
+            }
+        }
+        else
+        {
+            withAnnotations = null;
+        }
     }
 
     @Override
@@ -50,5 +71,10 @@ public class ContainerEventObserverMethodImpl<T> extends ObserverMethodImpl<T>
         {
             ExtensionAware.class.cast(extensionAware).setExtension(null);
         }
+    }
+
+    public Class[] getWithAnnotations()
+    {
+        return withAnnotations;
     }
 }

@@ -34,13 +34,28 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.AfterDeploymentValidation;
+import javax.enterprise.inject.spi.AfterTypeDiscovery;
 import javax.enterprise.inject.spi.AnnotatedCallable;
+import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.ProcessBean;
+import javax.enterprise.inject.spi.ProcessBeanAttributes;
+import javax.enterprise.inject.spi.ProcessInjectionPoint;
+import javax.enterprise.inject.spi.ProcessInjectionTarget;
+import javax.enterprise.inject.spi.ProcessManagedBean;
+import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.inject.spi.ProcessProducer;
+import javax.enterprise.inject.spi.ProcessProducerField;
+import javax.enterprise.inject.spi.ProcessProducerMethod;
+import javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.component.AbstractOwbBean;
@@ -49,6 +64,8 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
+import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
 import org.apache.webbeans.portable.events.generics.GenericBeanEvent;
 import org.apache.webbeans.portable.events.generics.GenericProducerObserverEvent;
 import org.apache.webbeans.spi.TransactionService;
@@ -63,6 +80,27 @@ public final class NotificationManager
 {
     private final Map<Type, Set<ObserverMethod<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverMethod<?>>>();
     private final WebBeansContext webBeansContext;
+
+    public static final Set<Class> CONTAINER_EVENT_CLASSES = new HashSet<Class>();
+    {
+        CONTAINER_EVENT_CLASSES.add(AfterBeanDiscovery.class);
+        CONTAINER_EVENT_CLASSES.add(AfterDeploymentValidation.class);
+        CONTAINER_EVENT_CLASSES.add(AfterTypeDiscovery.class);
+        CONTAINER_EVENT_CLASSES.add(BeforeBeanDiscovery.class);
+        CONTAINER_EVENT_CLASSES.add(BeforeShutdown.class);
+        CONTAINER_EVENT_CLASSES.add(ProcessAnnotatedType.class);
+        CONTAINER_EVENT_CLASSES.add(ProcessBean.class);
+        CONTAINER_EVENT_CLASSES.add(ProcessBeanAttributes.class);
+        CONTAINER_EVENT_CLASSES.add(ProcessInjectionPoint.class);
+        CONTAINER_EVENT_CLASSES.add(ProcessInjectionTarget.class);
+        CONTAINER_EVENT_CLASSES.add(ProcessManagedBean.class);
+        CONTAINER_EVENT_CLASSES.add(ProcessObserverMethod.class);
+        CONTAINER_EVENT_CLASSES.add(ProcessProducer.class);
+        CONTAINER_EVENT_CLASSES.add(ProcessProducerField.class);
+        CONTAINER_EVENT_CLASSES.add(ProcessProducerMethod.class);
+        CONTAINER_EVENT_CLASSES.add(ProcessSessionBeanImpl.class);
+        CONTAINER_EVENT_CLASSES.add(ProcessSyntheticAnnotatedType.class);
+    }
 
     public NotificationManager(WebBeansContext webBeansContext)
     {
@@ -111,6 +149,11 @@ public final class NotificationManager
 
         observersMethods = filterByQualifiers(observersMethods, metadata.getQualifiers());
 
+        if (isLifecycleEvent && event instanceof ProcessAnnotatedTypeImpl)
+        {
+            observersMethods = filterByWithAnnotations(observersMethods, ((ProcessAnnotatedTypeImpl) event).getAnnotatedType());
+        }
+
         //this check for the TCK is only needed if no observer was found
         if (observersMethods.isEmpty())
         {
@@ -118,6 +161,83 @@ public final class NotificationManager
         }
 
         return observersMethods;
+    }
+
+    private <T> Set<ObserverMethod<? super T>> filterByWithAnnotations(Set<ObserverMethod<? super T>> observersMethods, AnnotatedType annotatedType)
+    {
+        Set<ObserverMethod<? super T>> observerMethodsWithAnnotations = new HashSet<ObserverMethod<? super T>>();
+
+        for (ObserverMethod<? super T> observerMethod : observersMethods)
+        {
+            Class[] withAnnotations = ((ContainerEventObserverMethodImpl) observerMethod).getWithAnnotations();
+            if (withAnnotations != null && withAnnotations.length > 0)
+            {
+                if (annotatedTypeHasAnnotations(annotatedType, withAnnotations))
+                {
+                    observerMethodsWithAnnotations.add(observerMethod);
+                }
+
+                continue;
+            }
+
+            // no WithAnnotations
+            observerMethodsWithAnnotations.add(observerMethod);
+
+        }
+
+        return observerMethodsWithAnnotations;
+    }
+
+    private boolean annotatedTypeHasAnnotations(AnnotatedType annotatedType, Class<? extends Annotation>[] withAnnotations)
+    {
+        if (hasAnnotation(annotatedType.getAnnotations(), withAnnotations))
+        {
+            return true;
+        }
+
+        Set<AnnotatedField> fields = annotatedType.getFields();
+        for (AnnotatedField annotatedField : fields)
+        {
+            if (hasAnnotation(annotatedField.getAnnotations(), withAnnotations))
+            {
+                return true;
+            }
+        }
+
+        Set<AnnotatedMethod> annotatedMethods = annotatedType.getMethods();
+        for (AnnotatedMethod annotatedMethod : annotatedMethods)
+        {
+            if (hasAnnotation(annotatedMethod.getAnnotations(), withAnnotations))
+            {
+                return true;
+            }
+            for (AnnotatedParameter annotatedParameter : (List<AnnotatedParameter>) annotatedMethod.getParameters())
+            {
+                if (hasAnnotation(annotatedParameter.getAnnotations(), withAnnotations))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean hasAnnotation(Set<Annotation> annotations, Class<? extends Annotation>[] withAnnotations)
+    {
+        for (Class<? extends Annotation> withAnnotation : withAnnotations)
+        {
+            for (Annotation annotation : annotations)
+            {
+                if (withAnnotation.isAssignableFrom(annotation.getClass()))
+                {
+                    return true;
+                }
+
+            }
+        }
+
+        return false;
     }
 
     private <T> Set<ObserverMethod<? super T>> filterByType(T event, Type declaredEventType, boolean isLifecycleEvent)
@@ -517,7 +637,7 @@ public final class NotificationManager
         return observer;
     }
 
-    private boolean isContainerEvent(final AnnotatedParameter<?> annotatedParameter)
+    public boolean isContainerEvent(final AnnotatedParameter<?> annotatedParameter)
     {
         final AnnotatedCallable<?> method = annotatedParameter.getDeclaringCallable();
         if (!AnnotatedMethod.class.isInstance(method) || method.getParameters().size() == 0)
@@ -525,7 +645,7 @@ public final class NotificationManager
             return false;
         }
         final Class<?> paramType = AnnotatedMethod.class.cast(method).getJavaMember().getParameterTypes()[0];
-        return paramType == BeforeBeanDiscovery.class || paramType == AfterBeanDiscovery.class;
+        return CONTAINER_EVENT_CLASSES.contains(paramType);
     }
 
 }

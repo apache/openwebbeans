@@ -25,11 +25,14 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.DefinitionException;
+import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -85,6 +88,11 @@ public class ExtensionLoader
                 }
                 catch (Exception e)
                 {
+                    if (e instanceof DefinitionException || e instanceof DeploymentException)
+                    {
+                        ExceptionUtil.throwAsRuntimeException(e);
+                    }
+
                     throw new WebBeansException("Error occurred while reading Extension service list", e);
                 }
             }

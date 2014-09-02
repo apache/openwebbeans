@@ -52,8 +52,15 @@ public class EventMetadataImpl implements EventMetadata, Serializable
     private final InjectionPoint injectionPoint;
     private final Set<Annotation> qualifiers;
     private transient WebBeansContext webBeansContext;
-    
+    private final Class[] withAnnotations; // only used for ProcessAnnotatedType events
+
+
     public EventMetadataImpl(Type selectType, Type type, InjectionPoint injectionPoint, Annotation[] qualifiers, WebBeansContext context)
+    {
+        this(selectType, type, injectionPoint, qualifiers, context, null);
+    }
+
+    public EventMetadataImpl(Type selectType, Type type, InjectionPoint injectionPoint, Annotation[] qualifiers, WebBeansContext context, Class[] withAnnotations)
     {
         context.getAnnotationManager().checkQualifierConditions(qualifiers);
         this.selectType = selectType;
@@ -78,6 +85,7 @@ public class EventMetadataImpl implements EventMetadata, Serializable
             }
         }
         this.qualifiers = Collections.unmodifiableSet(completeQualifiers);
+        this.withAnnotations = withAnnotations;
     }
 
     @Override
@@ -124,7 +132,12 @@ public class EventMetadataImpl implements EventMetadata, Serializable
     {
         return qualifiers;
     }
-    
+
+    public Class[] getWithAnnotations()
+    {
+        return withAnnotations;
+    }
+
     public EventMetadataImpl select(Annotation... bindings)
     {
         return select(type, bindings);
