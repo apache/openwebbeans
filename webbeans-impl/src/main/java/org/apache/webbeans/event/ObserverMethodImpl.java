@@ -42,8 +42,10 @@ import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.WithAnnotations;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.WebBeansType;
@@ -95,7 +97,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
 
     /** the type of the observed event */
     private final Type observedEventType;
-    
+
     /** the transaction phase */
     private final TransactionPhase phase;
     
@@ -164,8 +166,19 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
                 injectionPoints.add(InjectionPointFactory.getPartialInjectionPoint(bean, parameter, qualifierAnnots));
             }
         }
+
+        checkObserverCondition(annotatedObservesParameter);
     }
-    
+
+    protected void checkObserverCondition(AnnotatedParameter<T> annotatedObservesParameter)
+    {
+        if (annotatedObservesParameter.getAnnotation(WithAnnotations.class) != null)
+        {
+            throw new DefinitionException("@WithAnnotations must only be used for ProcessAnnotatedType events");
+        }
+    }
+
+
     /**
      * {@inheritDoc}
      */

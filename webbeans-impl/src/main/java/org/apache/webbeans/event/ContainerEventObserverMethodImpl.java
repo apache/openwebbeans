@@ -55,6 +55,12 @@ public class ContainerEventObserverMethodImpl<T> extends ObserverMethodImpl<T>
     }
 
     @Override
+    protected void checkObserverCondition(AnnotatedParameter<T> annotatedObservesParameter)
+    {
+        // all fine
+    }
+
+    @Override
     protected void invoke(final Object object, final Object[] args) throws IllegalAccessException, InvocationTargetException
     {
         ExtensionAware extensionAware = null;
