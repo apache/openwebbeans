@@ -336,28 +336,16 @@ public final class GenericsUtil
 
     private static boolean isAssignableFrom(boolean isDelegate, WildcardType injectionPointType, Type beanType)
     {
+        if (beanType instanceof TypeVariable)
+        {
+            return isAssignableFrom(isDelegate, injectionPointType, (TypeVariable<?>)beanType);
+        }
         for (Type bounds: injectionPointType.getLowerBounds())
         {
             if (!isAssignableFrom(isDelegate, beanType, bounds))
             {
                 return false;
             }
-            /*
-            Set<Type> beanTypeClosure = getTypeClosure(beanType);
-            boolean isAssignable = false;
-            for (Type beanSupertype: beanTypeClosure)
-            {
-                if (isAssignableFrom(isDelegate, beanSupertype, bounds))
-                {
-                    isAssignable = true;
-                    break;
-                }
-            }
-            if (!isAssignable)
-            { 
-                return false;
-            }
-            */
         }
         for (Type bounds: injectionPointType.getUpperBounds())
         {
@@ -377,6 +365,34 @@ public final class GenericsUtil
             if (!isAssignable)
             {
                 return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * CDI 1.1 Spec. 5.2.4, third bullet point
+     */
+    private static boolean isAssignableFrom(boolean isDelegate, WildcardType injectionPointType, TypeVariable<?> beanType)
+    {
+        for (Type upperBound: injectionPointType.getUpperBounds())
+        {
+            for (Type bound: beanType.getBounds())
+            {
+                if (!isAssignableFrom(isDelegate, upperBound, bound) && !isAssignableFrom(isDelegate, bound, upperBound))
+                {
+                    return false;
+                }
+            }
+        }
+        for (Type lowerBound: injectionPointType.getLowerBounds())
+        {
+            for (Type bound: beanType.getBounds())
+            {
+                if (!isAssignableFrom(isDelegate, bound, lowerBound))
+                {
+                    return false;
+                }
             }
         }
         return true;

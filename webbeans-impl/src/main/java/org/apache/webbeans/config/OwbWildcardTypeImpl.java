@@ -62,7 +62,15 @@ public class OwbWildcardTypeImpl implements WildcardType
                 {
                     buffer.append(',');
                 }
-                buffer.append(' ').append(upperBound);
+                buffer.append(' ');
+                if (upperBound instanceof Class)
+                {
+                    buffer.append(((Class<?>)upperBound).getSimpleName());
+                }
+                else
+                {
+                    buffer.append(upperBound);
+                }
             }
         }
         if (lowerBounds.length > 0)
@@ -79,7 +87,15 @@ public class OwbWildcardTypeImpl implements WildcardType
                 {
                     buffer.append(',');
                 }
-                buffer.append(' ').append(lowerBound);
+                buffer.append(' ');
+                if (lowerBound instanceof Class)
+                {
+                    buffer.append(((Class<?>)lowerBound).getSimpleName());
+                }
+                else
+                {
+                    buffer.append(lowerBound);
+                }
             }
         }
         return buffer.toString();

@@ -116,7 +116,14 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
             int length = actualTypes.length;
             for(int i=0;i<length;i++)
             {
-                buffer.append(actualTypes[i].toString());
+                if (actualTypes[i] instanceof Class)
+                {
+                    buffer.append(((Class<?>)actualTypes[i]).getSimpleName());
+                }
+                else
+                {
+                    buffer.append(actualTypes[i].toString());
+                }
                 if(i != actualTypes.length-1)
                 {
                     buffer.append(",");
