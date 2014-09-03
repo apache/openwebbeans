@@ -298,6 +298,10 @@ public final class GenericsUtil
                 }
 
             }
+            else if (!isDelegate && injectionPointTypeArgument instanceof TypeVariable)
+            {
+                return false;
+            }
             else if (!isAssignableFrom(isDelegate, injectionPointTypeArgument, beanTypeArgument))
             {
                 return false;
