@@ -48,7 +48,6 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import javax.enterprise.inject.spi.DefinitionException;
-import org.apache.webbeans.exception.inject.NullableDependencyException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
@@ -202,16 +201,6 @@ public class InjectionResolver
         if (bean == null)
         {
             InjectionExceptionUtil.throwUnsatisfiedResolutionException(clazz, injectionPoint, qualifiers);
-        }
-
-
-        if (clazz.isPrimitive())
-        {
-            if (bean.isNullable())
-            {
-                throw new NullableDependencyException("Injection point type : " + injectionPoint +
-                                                      " type is primitive but resolved bean can have nullable objects!");
-            }
         }
     }
 

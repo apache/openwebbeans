@@ -36,6 +36,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -109,9 +110,17 @@ public abstract class AbstractInjectable<T>
         //Gets injectable reference for injected bean
         injected = (T) beanManager.getInjectableReference(injectionPoint, injectionPointContext);
 
-        if (injected == null && beanManager.isNormalScope(injectedBean.getScope()))
+        if (injected == null)
         {
-            throw new IllegalStateException("InjectableReference is 'null' for " + injectionPoint.toString());
+            if (beanManager.isNormalScope(injectedBean.getScope()))
+            {
+                throw new IllegalStateException("InjectableReference is 'null' for " + injectionPoint.toString());
+            }
+            Class<?> type = ClassUtil.getClass(injectionPoint.getType());
+            if (type.isPrimitive())
+            {
+                injected = (T) ClassUtil.getDefaultValue(type);
+            }
         }
 
         /*X TODO see spec issue CDI-140 */

@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.util;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -27,6 +28,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +38,7 @@ import java.util.Set;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.exception.WebBeansException;
+
 import javax.enterprise.inject.spi.DefinitionException;
 
 /**
@@ -46,19 +49,32 @@ import javax.enterprise.inject.spi.DefinitionException;
  */
 public final class ClassUtil
 {
-    public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPERS_MAP = new HashMap<Class<?>, Class<?>>();
+    public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPERS_MAP;
+    public static final Map<Class<?>, Object> DEFAULT_VALUES_MAP;
 
     static
     {
-        PRIMITIVE_TO_WRAPPERS_MAP.put(Integer.TYPE,Integer.class);
-        PRIMITIVE_TO_WRAPPERS_MAP.put(Float.TYPE,Float.class);
-        PRIMITIVE_TO_WRAPPERS_MAP.put(Double.TYPE,Double.class);
-        PRIMITIVE_TO_WRAPPERS_MAP.put(Character.TYPE,Character.class);
-        PRIMITIVE_TO_WRAPPERS_MAP.put(Long.TYPE,Long.class);
-        PRIMITIVE_TO_WRAPPERS_MAP.put(Byte.TYPE,Byte.class);
-        PRIMITIVE_TO_WRAPPERS_MAP.put(Short.TYPE,Short.class);
-        PRIMITIVE_TO_WRAPPERS_MAP.put(Boolean.TYPE,Boolean.class);
-        PRIMITIVE_TO_WRAPPERS_MAP.put(Void.TYPE,Void.class);
+        Map<Class<?>, Class<?>> primitiveToWrappersMap = new HashMap<Class<?>, Class<?>>();
+        primitiveToWrappersMap.put(Integer.TYPE,Integer.class);
+        primitiveToWrappersMap.put(Float.TYPE,Float.class);
+        primitiveToWrappersMap.put(Double.TYPE,Double.class);
+        primitiveToWrappersMap.put(Character.TYPE,Character.class);
+        primitiveToWrappersMap.put(Long.TYPE,Long.class);
+        primitiveToWrappersMap.put(Byte.TYPE,Byte.class);
+        primitiveToWrappersMap.put(Short.TYPE,Short.class);
+        primitiveToWrappersMap.put(Boolean.TYPE,Boolean.class);
+        primitiveToWrappersMap.put(Void.TYPE,Void.class);
+        PRIMITIVE_TO_WRAPPERS_MAP = Collections.unmodifiableMap(primitiveToWrappersMap);
+        Map<Class<?>, Object> defaultValuesMap = new HashMap<Class<?>, Object>();
+        defaultValuesMap.put(Integer.TYPE, Integer.valueOf(0));
+        defaultValuesMap.put(Float.TYPE, Float.valueOf(0F));
+        defaultValuesMap.put(Double.TYPE, Double.valueOf(0D));
+        defaultValuesMap.put(Character.TYPE, Character.valueOf('\u0000'));
+        defaultValuesMap.put(Long.TYPE, Long.valueOf(0L));
+        defaultValuesMap.put(Byte.TYPE, Byte.valueOf((byte)0));
+        defaultValuesMap.put(Short.TYPE, Short.valueOf((short)0));
+        defaultValuesMap.put(Boolean.TYPE, Boolean.FALSE);
+        DEFAULT_VALUES_MAP = Collections.unmodifiableMap(defaultValuesMap);
     }
 
     public static final Type[] NO_TYPES = new Type[0];
@@ -142,6 +158,11 @@ public final class ClassUtil
         
         return PRIMITIVE_TO_WRAPPERS_MAP.get(clazz);
 
+    }
+
+    public static Object getDefaultValue(Class<?> type)
+    {
+        return DEFAULT_VALUES_MAP.get(type);
     }
 
     /**
@@ -452,60 +473,6 @@ public final class ClassUtil
 
         return !Modifier.isAbstract(modifier) && !Modifier.isInterface(modifier);
     }
-
-    /**
-     * Checks that event is applicable
-     * for the given observer type.
-     * @param eventType event type
-     * @param observerType observer type
-     * @return true if event is applicable
-     */
-//    public static boolean checkEventTypeAssignability(Type eventType, Type observerType)
-//    {
-//        //Observer type is a TypeVariable
-//        if(isTypeVariable(observerType))
-//        {
-//            Class<?> eventClass = getClass(eventType);
-//                        
-//            TypeVariable<?> tvBeanTypeArg = (TypeVariable<?>)observerType;
-//            Type tvBound = tvBeanTypeArg.getBounds()[0];
-//            
-//            if(tvBound instanceof Class)
-//            {
-//                Class<?> clazzTvBound = (Class<?>)tvBound;                
-//                if(clazzTvBound.isAssignableFrom(eventClass))
-//                {
-//                    return true;
-//                }                    
-//            }
-//        }
-//        //Both of them are ParametrizedType
-//        else if(observerType instanceof ParameterizedType && eventType instanceof ParameterizedType)
-//        {
-//            return isAssignableForParametrized((ParameterizedType)eventType, (ParameterizedType)observerType);
-//        }
-//        //Observer is class and Event type is Parametrized
-//        else if(observerType instanceof Class && eventType instanceof ParameterizedType)
-//        {
-//            Class<?> clazzBeanType = (Class<?>)observerType;
-//            ParameterizedType ptEvent = (ParameterizedType)eventType;
-//            Class<?> eventClazz = (Class<?>)ptEvent.getRawType();
-//            
-//            if(isClassAssignable(clazzBeanType, eventClazz))
-//            {
-//                return true;
-//            }
-//            
-//            return false;            
-//        }
-//        //Both of them is class type
-//        else if(observerType instanceof Class && eventType instanceof Class)
-//        {
-//            return isClassAssignable((Class<?>)observerType, (Class<?>) eventType);
-//        }
-//        
-//        return false;
-//    }
     
     
     /**
@@ -751,7 +718,7 @@ public final class ClassUtil
         else if(type instanceof GenericArrayType)
         {
             GenericArrayType arrayType = (GenericArrayType)type;
-            return getClazz(arrayType.getGenericComponentType());
+            return Array.newInstance(getClazz(arrayType.getGenericComponentType()), 0).getClass();
         }
         else if (type instanceof WildcardType)
         {
@@ -885,7 +852,7 @@ public final class ClassUtil
         
         return false;
     }
-    
+
     private static boolean isSuperClass(Class<?> superClass, Class<?> subClass)
     {
         return superClass.isAssignableFrom(subClass) && !superClass.equals(subClass);
