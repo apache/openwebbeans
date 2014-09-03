@@ -21,6 +21,7 @@ package org.apache.webbeans.component.third;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -30,6 +31,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.AlternativesManager;
 
 public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
@@ -80,10 +82,23 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
     }
 
     @Override
-    public T create(CreationalContext<T> context)
+    public T create(final CreationalContext<T> context)
     {
-        
-        return bean.create(context);
+        final CreationalContextImpl<T> contextImpl;
+        if(!CreationalContextImpl.class.isInstance(context))
+        {
+            contextImpl = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(context, this);
+        }
+        else
+        {
+            contextImpl = CreationalContextImpl.class.cast(context);
+        }
+        final T t = bean.create(context);
+        if (getScope().equals(Dependent.class))
+        {
+            contextImpl.addDependent(this, t);
+        }
+        return t;
     }
 
     @Override
