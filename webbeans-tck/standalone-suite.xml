@@ -121,6 +121,13 @@
                     <exclude name=".*"/>
                 </methods>
             </class>
+            
+            <!-- CDITCK-437 -->
+            <class name="org.jboss.cdi.tck.tests.decorators.interceptor.DecoratorAndInterceptorTest">
+                <methods>
+                    <exclude name="testLifecycleCallbacks"/>
+                </methods>
+            </class>
 
         </classes>
 
