@@ -276,6 +276,7 @@ public final class GenericsUtil
         {
             return false;
         }
+        boolean swapParams = !isDelegate;
         Type[] injectionPointTypeArguments = injectionPointType.getActualTypeArguments();
         Type[] beanTypeArguments = beanType.getActualTypeArguments();
         for (int i = 0; i < injectionPointTypeArguments.length; i++)
@@ -285,20 +286,20 @@ public final class GenericsUtil
 
             // for this special case it's actually an 'assignable to', thus we swap the params, see CDI-389
             // but this special rule does not apply to Delegate injection points...
-            if (!isDelegate &&
+            if (swapParams &&
                 (injectionPointTypeArgument instanceof Class || injectionPointTypeArgument instanceof TypeVariable) &&
                 beanTypeArgument instanceof TypeVariable)
             {
                 for (Type upperBound: ((TypeVariable<?>)beanTypeArgument).getBounds())
                 {
-                    if (!isAssignableFrom(isDelegate, upperBound, injectionPointTypeArgument))
+                    if (!isAssignableFrom(swapParams, upperBound, injectionPointTypeArgument))
                     {
                         return false;
                     }
                 }
 
             }
-            else if (!isDelegate && injectionPointTypeArgument instanceof TypeVariable)
+            else if (swapParams && injectionPointTypeArgument instanceof TypeVariable)
             {
                 return false;
             }
