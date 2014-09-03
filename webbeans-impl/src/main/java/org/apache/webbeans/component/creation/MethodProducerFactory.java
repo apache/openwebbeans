@@ -30,6 +30,7 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 import javax.inject.Inject;
@@ -178,12 +179,21 @@ public class MethodProducerFactory<P> implements ProducerFactory<P>
         }
         
         if(annotatedMethod.isAnnotationPresent(Inject.class) 
-                || AnnotationUtil.hasAnnotatedMethodParameterAnnotation(annotatedMethod, Observes.class) 
-                || annotatedMethod.isAnnotationPresent(Produces.class))
+            || AnnotationUtil.hasAnnotatedMethodParameterAnnotation(annotatedMethod, Observes.class)
+            || annotatedMethod.isAnnotationPresent(Produces.class))
         {
-            throw new WebBeansConfigurationException("Error in definining disposal method of annotated method : " + annotatedMethod
+            throw new DefinitionException("Error in definining disposal method of annotated method : " + annotatedMethod
                     + ". Disposal methods  can not be annotated with" + " @Initializer/@Destructor/@Produces annotation or has a parameter annotated with @Observes.");
-        }        
+        }
+
+        for (AnnotatedParameter param : annotatedMethod.getParameters())
+        {
+            if (param.getBaseType().equals(InjectionPoint.class))
+            {
+                throw new DefinitionException("Error in definining disposal method of annotated method : " + annotatedMethod
+                    + ". Disposal methods must not have an InjectionPoint.");
+            }
+        }
     }
 
     protected Set<InjectionPoint> createInjectionPoints(Bean<?> bean)

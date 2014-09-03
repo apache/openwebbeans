@@ -68,6 +68,11 @@
                     <exclude name=".*"/>
                 </methods>
             </class>
+            <class name="org.jboss.cdi.tck.tests.extensions.annotated.delivery.broken.WithAnnotationsAppliedToIllegalContainerLifecycleEventParameterTest">
+                <methods>
+                    <exclude name=".*"/>
+                </methods>
+            </class>
 
             <!-- CDITCK-418 -->
             <class name="org.jboss.cdi.tck.interceptors.tests.contract.interceptorLifeCycle.environment.jndi.ejb.InterceptorEnvironmentJNDISessionBeanTest">

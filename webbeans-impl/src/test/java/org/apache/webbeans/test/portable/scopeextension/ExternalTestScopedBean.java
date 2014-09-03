@@ -18,12 +18,15 @@
  */
 package org.apache.webbeans.test.portable.scopeextension;
 
+import javax.annotation.PreDestroy;
 import java.io.Serializable;
 
 @ExternalTestScoped
 public class ExternalTestScopedBean implements Serializable{
 
     private static final long serialVersionUID = -917790714891819356L;
+
+    public static boolean destroyed;
 
     private int i = 0;
 
@@ -33,5 +36,11 @@ public class ExternalTestScopedBean implements Serializable{
 
     public void setI(int i) {
         this.i = i;
+    }
+
+    @PreDestroy
+    public void destroyMe()
+    {
+        destroyed = true;
     }
 }
