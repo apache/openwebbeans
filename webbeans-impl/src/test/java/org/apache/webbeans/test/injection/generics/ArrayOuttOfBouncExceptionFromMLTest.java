@@ -19,9 +19,11 @@
 package org.apache.webbeans.test.injection.generics;
 
 import org.apache.webbeans.test.AbstractUnitTest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +31,7 @@ import java.util.HashMap;
 import static org.junit.Assert.assertNotNull;
 
 // http://openejb.979440.n4.nabble.com/ArrayIndexOutOfBoundsException-on-TomEE-1-6-0-td4665080.html
+@Ignore("OWB-998")
 public class ArrayOuttOfBouncExceptionFromMLTest extends AbstractUnitTest
 {
     @Inject
