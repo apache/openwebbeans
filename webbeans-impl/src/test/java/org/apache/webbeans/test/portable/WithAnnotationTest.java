@@ -43,17 +43,20 @@ public class WithAnnotationTest extends AbstractUnitTest
     public void testWithAnnotation()
     {
         WithAnnotationExtension.scannedClasses = 0;
+        WithAnnotationExtension.one = 0;
 
         addExtension(new WithAnnotationExtension());
         startContainer(WithoutAnyAnnotation.class, WithAnnotatedClass.class, WithAnnotatedField.class, WithAnnotatedMethod.class);
 
         Assert.assertEquals(3, WithAnnotationExtension.scannedClasses);
+        Assert.assertEquals(1, WithAnnotationExtension.one);
     }
 
 
     public static class WithAnnotationExtension implements Extension
     {
         public static int scannedClasses = 0;
+        public static int one = 0;
 
         public void processClassess(@Observes @WithAnnotations(MyAnnoation.class) ProcessAnnotatedType pat)
         {
@@ -63,6 +66,11 @@ public class WithAnnotationTest extends AbstractUnitTest
         public void dontProcessClassess(@Observes @WithAnnotations(AnotherAnnoation.class) ProcessAnnotatedType pat)
         {
             throw new IllegalStateException("This observer must not get called by the container!");
+        }
+
+        public void noIssueWithGenericsOWB997(@Observes @WithAnnotations(MyAnnoation.class) ProcessAnnotatedType<WithAnnotatedClass> pat)
+        {
+            one++;
         }
     }
 

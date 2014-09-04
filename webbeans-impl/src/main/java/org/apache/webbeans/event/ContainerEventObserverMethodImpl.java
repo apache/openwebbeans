@@ -27,6 +27,8 @@ import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.WithAnnotations;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 public class ContainerEventObserverMethodImpl<T> extends ObserverMethodImpl<T>
 {
@@ -39,7 +41,12 @@ public class ContainerEventObserverMethodImpl<T> extends ObserverMethodImpl<T>
         WithAnnotations withAnnotationsAnn = annotatedObservesParameter.getAnnotation(WithAnnotations.class);
         if (withAnnotationsAnn != null)
         {
-            if (annotatedObservesParameter.getBaseType().equals(ProcessAnnotatedType.class))
+            Type baseType = annotatedObservesParameter.getBaseType();
+            if (ParameterizedType.class.isInstance(baseType))
+            {
+                baseType = ParameterizedType.class.cast(baseType).getRawType();
+            }
+            if (baseType.equals(ProcessAnnotatedType.class))
             {
                 withAnnotations = withAnnotationsAnn.value();
             }
