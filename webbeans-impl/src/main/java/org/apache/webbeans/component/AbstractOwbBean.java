@@ -334,8 +334,8 @@ public abstract class AbstractOwbBean<T>
     {
         StringBuilder builder = new StringBuilder();
         final String simpleName = getReturnType().getSimpleName();
-        builder.append(simpleName).append(", ");
-        builder.append("Name:").append(getName()).append(", WebBeans Type:").append(getWebBeansType());
+        builder.append(simpleName);
+        builder.append(", WebBeansType:").append(getWebBeansType()).append(", Name:").append(getName());
         builder.append(", API Types:[");
         
         int size = getTypes().size();

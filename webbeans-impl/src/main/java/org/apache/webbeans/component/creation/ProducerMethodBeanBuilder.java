@@ -58,14 +58,14 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
 
         if (superMethod == null)
         {
-            throw new WebBeansConfigurationException("Anontated producer method specialization is failed : " + annotatedMethod.getJavaMember().getName()
+            throw new WebBeansConfigurationException("Annotated producer method specialization failed : " + annotatedMethod.getJavaMember().getName()
                                                      + " not found in super class : " + annotatedMethod.getDeclaringType().getJavaClass().getSuperclass().getName()
                                                      + " for annotated method : " + annotatedMethod);
         }
         
         if (!AnnotationUtil.hasAnnotation(superMethod.getAnnotations(), Produces.class))
         {
-            throw new WebBeansConfigurationException("Anontated producer method specialization is failed : " + annotatedMethod.getJavaMember().getName()
+            throw new WebBeansConfigurationException("Annotated producer method specialization failed : " + annotatedMethod.getJavaMember().getName()
                                                      + " found in super class : " + annotatedMethod.getDeclaringType().getJavaClass().getSuperclass().getName()
                                                      + " is not annotated with @Produces" + " for annotated method : " + annotatedMethod);
         }

@@ -278,10 +278,6 @@ public class BeansDeployer
         {
             throw new DefinitionException(e);
         }
-        catch (DefinitionException de)
-        {
-            throw new DeploymentException(de);
-        }
         catch (Exception e)
         {
             throw ExceptionUtil.throwAsRuntimeException(e);

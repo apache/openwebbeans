@@ -23,7 +23,9 @@ import java.util.Collection;
 import junit.framework.Assert;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import javax.enterprise.inject.spi.DefinitionException;
+import javax.enterprise.inject.spi.DeploymentException;
 
+import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
@@ -71,6 +73,7 @@ public class MultipleSpecializationTest extends AbstractUnitTest
             beanClasses.add(BeanD.class);
 
             startContainer(beanClasses, null);
+            Assert.fail();
         }
         catch (Exception e)
         {
@@ -79,8 +82,24 @@ public class MultipleSpecializationTest extends AbstractUnitTest
 
         Assert.assertNotNull(occuredException);
         Assert.assertEquals(WebBeansConfigurationException.class.getName(), occuredException.getClass().getName());
-        Assert.assertEquals(DefinitionException.class.getName(), occuredException.getCause().getClass().getName());
+        Assert.assertEquals(DeploymentException.class.getName(), occuredException.getCause().getClass().getName());
         
         shutDownContainer();
+    }
+
+    @Test
+    public void testFailMultipleSpecializationOfSameType()
+    {
+        try
+        {
+            startContainer(BeanA.class, BeanB.class, BeanB2.class);
+            Assert.fail();
+        }
+        catch (Exception e)
+        {
+            Assert.assertTrue(e instanceof WebBeansConfigurationException);
+            Assert.assertTrue(e.getCause() instanceof WebBeansDeploymentException);
+            Assert.assertTrue(e.getCause().getMessage().contains("More than one class specialized"));
+        }
     }
 }

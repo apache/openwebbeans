@@ -99,6 +99,8 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.BeforeShutdown;
+import javax.enterprise.inject.spi.DefinitionException;
+import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
@@ -685,6 +687,7 @@ public final class WebBeansUtil
 
     /**
      * Configure direct/indirect specialized producer method beans.
+     * @deprecated remove
      */
     public void configureProducerMethodSpecializations()
     {
@@ -696,13 +699,27 @@ public final class WebBeansUtil
         // collect all producer method beans
         Set<Bean<?>> beans = webBeansContext.getBeanManagerImpl().getBeans();
         List<ProducerMethodBean> producerBeans = new ArrayList<ProducerMethodBean>();
+        Set<Class> classesDisabledDueToSpecialization = new HashSet<Class>();
+
         for(Bean b : beans)
         {
             if (b instanceof ProducerMethodBean)
             {
                 producerBeans.add((ProducerMethodBean)b);
+
+                if (((ProducerMethodBean) b).isSpecializedBean())
+                {
+                    Class superClass = b.getBeanClass().getSuperclass();
+                    if (classesDisabledDueToSpecialization.contains(superClass))
+                    {
+                        throw new DeploymentException("Multiple specializations for the same producer method got detected for type"
+                                + b.toString());
+                    }
+                    classesDisabledDueToSpecialization.add(superClass);
+                }
             }
         }
+        classesDisabledDueToSpecialization.clear(); // not needed any longer
 
         // create sorted bean helper.
         SortedListHelper<ProducerMethodBean> producerBeanListHelper = new
@@ -724,13 +741,15 @@ public final class WebBeansUtil
                     }
                 });
 
+        Set<Method> disabledProducerMethods = new HashSet<Method>();
+
         while(true)
         {
             pbean = null;
             method = null;
             producerBeanListHelper.clear();
 
-            //locate a specialized bean
+            //locate the first specialized bean
             for(ProducerMethodBean pb : producerBeans)
             {
                 if (pb.isSpecializedBean())
@@ -767,6 +786,12 @@ public final class WebBeansUtil
                         //Added by GE, method check is necessary otherwise getting wrong method qualifier annotations
                         if (superMethod != null && superMethod.equals(pb.getCreatorMethod()))
                         {
+                            if (disabledProducerMethods.contains(superMethod))
+                            {
+                                throw new DefinitionException("Multiple specializations for the same producer method got detected for type"
+                                        + pbean.toString());
+                            }
+                            disabledProducerMethods.add(superMethod);
                             producerBeanListHelper.add(pb);
                             pLeft = (pb.isSpecializedBean()) ? pb : null;
                         }
