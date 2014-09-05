@@ -471,6 +471,7 @@ public class BeansDeployer
     private void fireAfterBeanDiscoveryEvent()
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
+        manager.setAfterBeanDiscoveryFired(true);
         manager.fireLifecycleEvent(new AfterBeanDiscoveryImpl(webBeansContext));
 
         webBeansContext.getWebBeansUtil().inspectErrorStack(
@@ -501,6 +502,7 @@ public class BeansDeployer
     private void fireAfterDeploymentValidationEvent()
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
+        manager.setAfterDeploymentValidationFired(true);
         manager.fireLifecycleEvent(new AfterDeploymentValidationImpl(manager));
 
         webBeansContext.getWebBeansUtil().inspectErrorStack(

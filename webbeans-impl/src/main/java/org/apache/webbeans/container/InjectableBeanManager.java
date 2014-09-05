@@ -110,12 +110,16 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
     @Override
     public Set<Bean<?>> getBeans(String name)
     {
+        checkAfterBeanDiscoveryProcessed("It's not allowed to call getBeans(String) before AfterBeanDiscovery");
+
         return bm.getBeans(name);
     }
 
     @Override
     public Set<Bean<?>> getBeans(Type beanType, Annotation... qualifiers)
     {
+        checkAfterBeanDiscoveryProcessed("It's not allowed to call getBeans(Type, Annotation...) before AfterBeanDiscovery");
+
         return bm.getBeans(beanType, qualifiers);
     }
 
@@ -134,6 +138,8 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
     @Override
     public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> ctx)
     {
+        checkAfterDeploymentValidationFired("It's not allowed to call getInjectableReference(InjectionPoin, CreationalContext) before AfterDeploymentValidation");
+
         return bm.getInjectableReference(injectionPoint, ctx);
     }
 
@@ -146,12 +152,16 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
     @Override
     public Bean<?> getPassivationCapableBean(String id)
     {
+        checkAfterBeanDiscoveryProcessed("It's not allowed to call getPassivationCapableBean(String) before AfterBeanDiscovery");
+
         return bm.getPassivationCapableBean(id);
     }
 
     @Override
     public Object getReference(Bean<?> bean, Type beanType, CreationalContext<?> ctx)
     {
+        checkAfterDeploymentValidationFired("It's not allowed to call getReference(Bean, Type, CreationalContext) before AfterDeploymentValidation");
+
         return bm.getReference(bean, beanType, ctx);
     }
 
@@ -200,30 +210,40 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
     @Override
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
     {
+        checkAfterBeanDiscoveryProcessed("It's not allowed to call resolve(Set<Bean>) before AfterBeanDiscovery");
+
         return bm.resolve(beans);
     }
 
     @Override
     public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... qualifiers)
     {
+        checkAfterBeanDiscoveryProcessed("It's not allowed to call resolveDecorators(Set<Type>, Annotation...) before AfterBeanDiscovery");
+
         return bm.resolveDecorators(types, qualifiers);
     }
 
     @Override
     public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
     {
+        checkAfterBeanDiscoveryProcessed("It's not allowed to call resolveInterceptors(InterceptionType, Annotation...) before AfterBeanDiscovery");
+
         return bm.resolveInterceptors(type, interceptorBindings);
     }
 
     @Override
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, Annotation... qualifiers)
     {
+        checkAfterBeanDiscoveryProcessed("It's not allowed to call resolveObserverMethods(Object, Annotation...) before AfterBeanDiscovery");
+
         return bm.resolveObserverMethods(event, qualifiers);
     }
 
     @Override
     public void validate(InjectionPoint injectionPoint)
     {
+        checkAfterBeanDiscoveryProcessed("It's not allowed to call validate(InjectionPoint) before AfterBeanDiscovery");
+
         bm.validate(injectionPoint);
     }
 
@@ -370,7 +390,29 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
         
         return true;
     }
-    
-    
+
+
+    /**
+     * @throws IllegalStateException if {@link javax.enterprise.inject.spi.AfterBeanDiscovery}
+     */
+    private void checkAfterBeanDiscoveryProcessed(String message)
+    {
+        if (!bm.isAfterBeanDiscoveryFired())
+        {
+            throw new IllegalStateException(message);
+        }
+    }
+
+    /**
+     * @throws IllegalStateException if {@link javax.enterprise.inject.spi.AfterDeploymentValidation}
+     */
+    private void checkAfterDeploymentValidationFired(String message)
+    {
+        if (!bm.isAfterDeploymentValidationFired())
+        {
+            throw new IllegalStateException(message);
+        }
+    }
+
 
 }

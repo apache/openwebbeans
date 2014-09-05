@@ -188,6 +188,17 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     private boolean inUse = false;
 
+    /**
+     * This flag will get set to {@code true} after the
+     * {@link javax.enterprise.inject.spi.AfterBeanDiscovery} gets fired
+     */
+    private boolean afterBeanDiscoveryFired = false;
+
+    /**
+     * This flag will get set to {@code true} after the
+     * {@link javax.enterprise.inject.spi.AfterDeploymentValidation} gets fired
+     */
+    private boolean afterDeploymentValidationFired = false;
 
     /**
      * we cache results of calls to {@link #isNormalScope(Class)} because
@@ -1288,5 +1299,25 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public boolean isInUse()
     {
         return inUse;
+    }
+
+    public boolean isAfterBeanDiscoveryFired()
+    {
+        return afterBeanDiscoveryFired;
+    }
+
+    public void setAfterBeanDiscoveryFired(boolean afterBeanDiscoveryFired)
+    {
+        this.afterBeanDiscoveryFired = afterBeanDiscoveryFired;
+    }
+
+    public boolean isAfterDeploymentValidationFired()
+    {
+        return afterDeploymentValidationFired;
+    }
+
+    public void setAfterDeploymentValidationFired(boolean afterDeploymentValidationFired)
+    {
+        this.afterDeploymentValidationFired = afterDeploymentValidationFired;
     }
 }
