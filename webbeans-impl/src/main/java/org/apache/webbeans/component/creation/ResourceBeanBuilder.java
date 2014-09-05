@@ -21,8 +21,8 @@ package org.apache.webbeans.component.creation;
 import java.lang.annotation.Annotation;
 
 import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.BeanAttributes;
 
-import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.spi.api.ResourceReference;
@@ -32,7 +32,7 @@ public class ResourceBeanBuilder<T, R extends Annotation> extends ProducerFieldB
 
     private ResourceReference<T, R> resourceRef;
 
-    public ResourceBeanBuilder(InjectionTargetBean<?> parent, ResourceReference<T, R> resourceRef, AnnotatedField<?> annotatedField, BeanAttributesImpl<T> beanAttributes)
+    public ResourceBeanBuilder(InjectionTargetBean<?> parent, ResourceReference<T, R> resourceRef, AnnotatedField<?> annotatedField, BeanAttributes<T> beanAttributes)
     {
         super(parent, annotatedField, beanAttributes);
         this.resourceRef = resourceRef;

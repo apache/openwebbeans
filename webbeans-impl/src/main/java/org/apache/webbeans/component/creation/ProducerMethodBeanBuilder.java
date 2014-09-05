@@ -25,8 +25,8 @@ import java.util.List;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.BeanAttributes;
 
-import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -39,7 +39,7 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
     //X TODO arne: this should get evaluated or deleted if not needed anymore
     private boolean specialized;
 
-    public ProducerMethodBeanBuilder(InjectionTargetBean<T> parent, AnnotatedMethod<?> annotatedMethod, BeanAttributesImpl<T> beanAttributes)
+    public ProducerMethodBeanBuilder(InjectionTargetBean<T> parent, AnnotatedMethod<?> annotatedMethod, BeanAttributes<T> beanAttributes)
     {
         super(parent, annotatedMethod, beanAttributes);
     }

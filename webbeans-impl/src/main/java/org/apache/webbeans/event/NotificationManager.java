@@ -37,6 +37,7 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.AfterTypeDiscovery;
 import javax.enterprise.inject.spi.AnnotatedCallable;
+import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
@@ -212,6 +213,22 @@ public final class NotificationManager
                 return true;
             }
             for (AnnotatedParameter annotatedParameter : (List<AnnotatedParameter>) annotatedMethod.getParameters())
+            {
+                if (hasAnnotation(annotatedParameter.getAnnotations(), withAnnotations))
+                {
+                    return true;
+                }
+            }
+        }
+
+        Set<AnnotatedConstructor<?>> annotatedConstructors = annotatedType.getConstructors();
+        for (AnnotatedConstructor<?> annotatedConstructor : annotatedConstructors)
+        {
+            if (hasAnnotation(annotatedConstructor.getAnnotations(), withAnnotations))
+            {
+                return true;
+            }
+            for (AnnotatedParameter annotatedParameter : annotatedConstructor.getParameters())
             {
                 if (hasAnnotation(annotatedParameter.getAnnotations(), withAnnotations))
                 {

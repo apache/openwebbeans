@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 
 import javax.enterprise.context.spi.CreationalContext;
 
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.ProducerFactory;
 
 /**
@@ -40,7 +41,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T>
      * 
      * @param returnType type of the field decleration
      */
-    public ProducerFieldBean(InjectionTargetBean<?> ownerComponent, BeanAttributesImpl<T> beanAttributes, Class<T> returnType, ProducerFactory<T> producerFactory)
+    public ProducerFieldBean(InjectionTargetBean<?> ownerComponent, BeanAttributes<T> beanAttributes, Class<T> returnType, ProducerFactory<T> producerFactory)
     {
         super(ownerComponent.getBeanClass(), ownerComponent.getWebBeansContext(), WebBeansType.PRODUCERFIELD, beanAttributes, returnType, producerFactory);
     }

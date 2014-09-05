@@ -18,11 +18,12 @@
  */
 package org.apache.webbeans.component.creation;
 
-import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.portable.events.ProcessBeanAttributesImpl;
+import org.apache.webbeans.portable.events.generics.GProcessBeanAttributes;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -33,6 +34,8 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanAttributes;
+import javax.enterprise.inject.spi.DefinitionException;
 import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
@@ -83,25 +86,51 @@ public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>> ext
                     specialize = true;
                 }
                 
-                BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedMethod<T>)annotatedMethod).build();
-                ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<T>(bean, annotatedMethod, beanAttributes);
-                
-                ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
-                
-                webBeansContext.getDeploymentValidationService().validateProxyable(producerMethodBean);
-
-                if(specialize)
+                BeanAttributes beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedMethod<T>)annotatedMethod).build();
+                final ProcessBeanAttributesImpl event = new GProcessBeanAttributes(annotatedMethod.getJavaMember().getReturnType(), annotatedType, beanAttributes);
+                try
                 {
-                    producerMethodBeanCreator.configureProducerSpecialization(producerMethodBean, (AnnotatedMethod<T>) annotatedMethod);
+                    webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
                 }
-                producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
-                
-                webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
-                        producerMethodBean,
-                        AnnotationUtil.asArray(annotatedMethod.getAnnotations()));
-                WebBeansUtil.checkProducerGenericType(producerMethodBean, annotatedMethod.getJavaMember());
-                producerBeans.add(producerMethodBean);
-                
+                catch (final Exception e)
+                {
+                    throw new DefinitionException("event ProcessBeanAttributes thrown an exception for " + annotatedType, e);
+                }
+                final Throwable definitionError = event.getDefinitionError();
+                if (definitionError != null)
+                {
+                    throw new DefinitionException(definitionError);
+                }
+
+                if (!event.isVeto())
+                {
+                    if (event.getAttributes() != beanAttributes)
+                    {
+                        beanAttributes = event.getAttributes();
+                        if (!webBeansContext.getBeanManagerImpl().isScope(beanAttributes.getScope()))
+                        {
+                            throw new DefinitionException(beanAttributes.getScope() + " is not a scope");
+                        }
+                    }
+
+                    ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<T>(bean, annotatedMethod, beanAttributes);
+
+                    ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
+
+                    webBeansContext.getDeploymentValidationService().validateProxyable(producerMethodBean);
+
+                    if(specialize)
+                    {
+                        producerMethodBeanCreator.configureProducerSpecialization(producerMethodBean, (AnnotatedMethod<T>) annotatedMethod);
+                    }
+                    producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
+
+                    webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
+                            producerMethodBean,
+                            AnnotationUtil.asArray(annotatedMethod.getAnnotations()));
+                    WebBeansUtil.checkProducerGenericType(producerMethodBean, annotatedMethod.getJavaMember());
+                    producerBeans.add(producerMethodBean);
+                }
             }
             
         }

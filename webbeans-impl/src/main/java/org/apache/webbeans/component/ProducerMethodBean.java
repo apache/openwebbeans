@@ -21,6 +21,7 @@ package org.apache.webbeans.component;
 import java.lang.reflect.Method;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.BeanAttributes;
 
 import org.apache.webbeans.component.creation.MethodProducerFactory;
 
@@ -47,7 +48,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      * @param returnType producer method return type
      */
     public <P> ProducerMethodBean(InjectionTargetBean<P> ownerComponent,
-                                  BeanAttributesImpl<T> beanAttributes,
+                                  BeanAttributes<T> beanAttributes,
                                   Class<T> returnType,
                                   MethodProducerFactory<P> producerFactory)
     {

@@ -27,6 +27,8 @@ import java.util.Set;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanAttributes;
+import javax.enterprise.inject.spi.DefinitionException;
 import javax.inject.Named;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
@@ -35,6 +37,8 @@ import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.portable.events.ProcessBeanAttributesImpl;
+import org.apache.webbeans.portable.events.generics.GProcessBeanAttributes;
 import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -94,12 +98,36 @@ public class ProducerFieldBeansBuilder<T, I extends InjectionTargetBean<T>>
                             throw new WebBeansConfigurationException("Resource producer annotated field : " + annotatedField + " can not define EL name");
                         }
                         
-                        BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)annotatedField).build();
-                        ResourceBeanBuilder<T, Annotation> resourceBeanCreator
-                            = new ResourceBeanBuilder<T, Annotation>(bean, resourceRef, annotatedField, beanAttributes);
-                        ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
-                        resourceBean.setProducerField(field);
-                        producerBeans.add(resourceBean);                                            
+                        BeanAttributes<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)annotatedField).build();
+
+                        final ProcessBeanAttributesImpl event = new GProcessBeanAttributes(annotatedField.getJavaMember().getType(), annotatedType, beanAttributes);
+                        try
+                        {
+                            webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+                        }
+                        catch (final Exception e)
+                        {
+                            throw new DefinitionException("event ProcessBeanAttributes thrown an exception for " + annotatedType, e);
+                        }
+                        final Throwable definitionError = event.getDefinitionError();
+                        if (definitionError != null)
+                        {
+                            throw new DefinitionException(definitionError);
+                        }
+
+                        if (!event.isVeto())
+                        {
+                            if (event.getAttributes() != beanAttributes)
+                            {
+                                beanAttributes = event.getAttributes();
+                            }
+
+                            ResourceBeanBuilder<T, Annotation> resourceBeanCreator
+                                    = new ResourceBeanBuilder<T, Annotation>(bean, resourceRef, annotatedField, beanAttributes);
+                            ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
+                            resourceBean.setProducerField(field);
+                            producerBeans.add(resourceBean);
+                        }
                     }
                 }
                 else

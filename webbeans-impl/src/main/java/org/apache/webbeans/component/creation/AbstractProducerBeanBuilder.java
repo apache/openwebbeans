@@ -20,10 +20,10 @@ package org.apache.webbeans.component.creation;
 
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.DefinitionException;
 
 import org.apache.webbeans.component.AbstractProducerBean;
-import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.util.Asserts;
 
@@ -32,9 +32,9 @@ public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?
 
     protected final InjectionTargetBean<?> parent;
     protected final A annotatedMember;
-    protected final BeanAttributesImpl<T> beanAttributes;
+    protected final BeanAttributes<T> beanAttributes;
 
-    public AbstractProducerBeanBuilder(InjectionTargetBean<?> parent, A annotated, BeanAttributesImpl<T> beanAttributes)
+    public AbstractProducerBeanBuilder(InjectionTargetBean<?> parent, A annotated, BeanAttributes<T> beanAttributes)
     {
         Asserts.assertNotNull(parent, "webBeansContext may not be null");
         Asserts.assertNotNull(annotated, "annotated may not be null");

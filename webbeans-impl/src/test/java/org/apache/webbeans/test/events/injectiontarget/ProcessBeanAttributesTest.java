@@ -18,14 +18,13 @@
  */
 package org.apache.webbeans.test.events.injectiontarget;
 
-import junit.framework.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ProcessBeanAttributes;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -44,18 +43,26 @@ public class ProcessBeanAttributesTest extends AbstractUnitTest
 
         assertEquals(1, processBeanAttributesExtension.someBean.size());
         assertEquals(1, processBeanAttributesExtension.someOtherBean.size());
+        assertEquals(1, processBeanAttributesExtension.producer.size());
     }
 
     public static class ProcessBeanAttributesExtension implements Extension
     {
         private Collection<ProcessBeanAttributes<?>> someBean = new ArrayList<ProcessBeanAttributes<?>>();
         private Collection<ProcessBeanAttributes<?>> someOtherBean = new ArrayList<ProcessBeanAttributes<?>>();
+        private Collection<ProcessBeanAttributes<?>> producer = new ArrayList<ProcessBeanAttributes<?>>();
 
 
         public void someBean(@Observes ProcessBeanAttributes<SomeBean> pba)
         {
             someBean.add(pba);
         }
+
+        public void producer(@Observes ProcessBeanAttributes<String> pba)
+        {
+            producer.add(pba);
+        }
+
         public void otherBean(@Observes ProcessBeanAttributes<SomeOtherBean> pba)
         {
             someOtherBean.add(pba);
@@ -81,6 +88,11 @@ public class ProcessBeanAttributesTest extends AbstractUnitTest
         public int getMeaningOfLife()
         {
             return meaningOfLife;
+        }
+
+        @Produces
+        public String producer() {
+            return "producer";
         }
 
         public void setMeaningOfLife(int meaningOfLife)

@@ -23,6 +23,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.WithAnnotations;
+import javax.inject.Inject;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -46,9 +47,9 @@ public class WithAnnotationTest extends AbstractUnitTest
         WithAnnotationExtension.one = 0;
 
         addExtension(new WithAnnotationExtension());
-        startContainer(WithoutAnyAnnotation.class, WithAnnotatedClass.class, WithAnnotatedField.class, WithAnnotatedMethod.class);
+        startContainer(WithConstructorAnnotatedClass.class, WithoutAnyAnnotation.class, WithAnnotatedClass.class, WithAnnotatedField.class, WithAnnotatedMethod.class);
 
-        Assert.assertEquals(3, WithAnnotationExtension.scannedClasses);
+        Assert.assertEquals(4, WithAnnotationExtension.scannedClasses);
         Assert.assertEquals(1, WithAnnotationExtension.one);
     }
 
@@ -75,7 +76,7 @@ public class WithAnnotationTest extends AbstractUnitTest
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})
+    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.PARAMETER})
     public static @interface MyAnnoation
     {
     }
@@ -107,6 +108,14 @@ public class WithAnnotationTest extends AbstractUnitTest
         public int getMeanintOfLife()
         {
             return 42;
+        }
+    }
+
+    @MyAnnoation
+    public static class WithConstructorAnnotatedClass
+    {
+        @Inject
+        public WithConstructorAnnotatedClass(@MyAnnoation WithAnnotatedClass wac) {
         }
     }
 

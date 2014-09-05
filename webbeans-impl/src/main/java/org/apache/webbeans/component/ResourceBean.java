@@ -25,6 +25,7 @@ import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.spi.BeanAttributes;
 
 public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
 {
@@ -33,7 +34,7 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
 
     public ResourceBean(InjectionTargetBean<?> ownerComponent,
                         ResourceReference<X, T> resourceReference,
-                        BeanAttributesImpl<X> beanAttributes,
+                        BeanAttributes<X> beanAttributes,
                         Class<X> beanClass)
     {
         super(ownerComponent,
