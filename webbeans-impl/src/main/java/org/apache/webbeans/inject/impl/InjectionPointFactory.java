@@ -18,16 +18,12 @@
  */
 package org.apache.webbeans.inject.impl;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.apache.webbeans.annotation.AnnotationManager;
+import org.apache.webbeans.annotation.NamedLiteral;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.Asserts;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
@@ -42,13 +38,16 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.apache.webbeans.annotation.AnnotationManager;
-import org.apache.webbeans.annotation.NamedLiteral;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.Asserts;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class InjectionPointFactory
 {
@@ -103,7 +102,7 @@ public class InjectionPointFactory
         return injectionPoints;
     }
 
-    public <X> InjectionPoint buildInjectionPoint(Bean<?> owner, AnnotatedField<X> annotField)
+    public <X> InjectionPoint buildInjectionPoint(Bean<?> owner, AnnotatedField<X> annotField, boolean fireEvent)
     {
         Asserts.assertNotNull(annotField, "annotField parameter can not be null");
 
@@ -111,12 +110,12 @@ public class InjectionPointFactory
         Annotation[] qualifierAnnots = webBeansContext.getAnnotationManager().getQualifierAnnotations(annots);
 
         //@Named update for injection fields!
-        for (int i=0; i < qualifierAnnots.length; i++)
+        for (int i = 0; i < qualifierAnnots.length; i++)
         {
             Annotation qualifier = qualifierAnnots[i];
             if (qualifier.annotationType().equals(Named.class))
             {
-                Named named = (Named)qualifier;
+                Named named = (Named) qualifier;
                 String value = named.value();
 
                 if (value == null || value.equals(""))
@@ -130,7 +129,20 @@ public class InjectionPointFactory
             }
         }
 
-        return new InjectionPointImpl(owner, Arrays.asList(qualifierAnnots), annotField);
+        InjectionPoint injectionPoint = new InjectionPointImpl(owner, Arrays.asList(qualifierAnnots), annotField);
+
+        if (fireEvent)
+        {
+            injectionPoint = webBeansContext.getWebBeansUtil().fireProcessInjectionPointEvent(injectionPoint).getInjectionPoint();
+        }
+
+        return injectionPoint;
+
+    }
+
+    public <X> InjectionPoint buildInjectionPoint(Bean<?> owner, AnnotatedField<X> annotField)
+    {
+        return buildInjectionPoint(owner, annotField, true);
     }
 
     public <X> InjectionPoint buildInjectionPoint(Bean<?> owner, AnnotatedParameter<X> parameter)

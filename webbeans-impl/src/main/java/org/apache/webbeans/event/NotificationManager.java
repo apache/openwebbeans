@@ -318,7 +318,7 @@ public final class NotificationManager
                             
                             if(ClassUtil.isParametrizedType(type))
                             {
-                                addToMathingWithParametrizedForBeans(type,beanClass,matching);
+                                addToMatchingWithParametrizedForBeans(type, beanClass, matching);
                             }
                             else
                             {
@@ -354,7 +354,7 @@ public final class NotificationManager
                         {
                             if(ClassUtil.isParametrizedType(type))
                             {
-                                addToMathingWithParametrizedForBeans(type,beanClass,matching);
+                                addToMatchingWithParametrizedForBeans(type, beanClass, matching);
                             }
                             else
                             {
@@ -431,7 +431,7 @@ public final class NotificationManager
         }        
     }
     
-    private <T> void addToMathingWithParametrizedForBeans(Type type, Class<?> beanClass, Set<ObserverMethod<? super T>> matching )
+    private <T> void addToMatchingWithParametrizedForBeans(Type type, Class<?> beanClass, Set<ObserverMethod<? super T>> matching)
     {
         ParameterizedType pt = (ParameterizedType)type;
         Type[] actualArgs = pt.getActualTypeArguments();

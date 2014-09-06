@@ -768,7 +768,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public InjectionPoint createInjectionPoint(AnnotatedField<?> field)
     {
-        return webBeansContext.getInjectionPointFactory().buildInjectionPoint(null, field);
+        return webBeansContext.getInjectionPointFactory().buildInjectionPoint(null, field, false);
     }
 
     public InjectionPoint createInjectionPoint(AnnotatedParameter<?> parameter)

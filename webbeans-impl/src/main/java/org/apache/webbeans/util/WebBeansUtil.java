@@ -69,6 +69,7 @@ import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
 import org.apache.webbeans.portable.events.generics.GProcessBeanAttributes;
+import org.apache.webbeans.portable.events.generics.GProcessInjectionPoint;
 import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
 import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
@@ -1031,6 +1032,17 @@ public final class WebBeansUtil
     }
 
     /**
+     * @param injectionPoint the original {@link InjectionPoint}
+     * @return fired {@link ProcessInjectionPoint} event
+     */
+    public GProcessInjectionPoint fireProcessInjectionPointEvent(InjectionPoint injectionPoint)
+    {
+        GProcessInjectionPoint event = new GProcessInjectionPoint(injectionPoint);
+        webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        return event;
+    }
+
+    /**
      * Returns <code>ProcessInjectionTarget</code> event.
      * @param <T> bean type
      * @return event
@@ -1246,29 +1258,11 @@ public final class WebBeansUtil
         }
     }
 
-    public static boolean isExtensionEventType(Type type)
-    {
-        return type.equals(BeforeBeanDiscovery.class) ||
-               type.equals(AfterBeanDiscovery.class) ||
-               type.equals(AfterDeploymentValidation.class) ||
-               type.equals(BeforeShutdown.class) ||
-               type.equals(GProcessAnnotatedType.class) ||
-               type.equals(GProcessSyntheticAnnotatedType.class) ||
-               type.equals(GProcessInjectionTarget.class) ||
-               type.equals(GProcessBeanAttributes.class) ||
-               type.equals(GProcessProducer.class) ||
-               type.equals(GProcessProducerField.class) ||
-               type.equals(GProcessProducerMethod.class) ||
-               type.equals(GProcessManagedBean.class) ||
-               type.equals(GProcessBean.class) ||
-               type.equals(GProcessSessionBean.class) ||
-               type.equals(GProcessObservableMethod.class);
-    }
-
     public static boolean isExtensionBeanEventType(Type type)
     {
         return type.equals(GProcessAnnotatedType.class) ||
                type.equals(GProcessSyntheticAnnotatedType.class) ||
+               type.equals(GProcessInjectionPoint.class) ||
                type.equals(GProcessInjectionTarget.class) ||
                type.equals(GProcessBeanAttributes.class) ||
                type.equals(GProcessManagedBean.class) ||
@@ -1280,6 +1274,7 @@ public final class WebBeansUtil
     {
         return clazz.equals(ProcessAnnotatedType.class) ||
                clazz.equals(ProcessSyntheticAnnotatedType.class) ||
+               clazz.equals(ProcessInjectionPoint.class) ||
                clazz.equals(ProcessInjectionTarget.class) ||
                clazz.equals(ProcessBeanAttributes.class) ||
                clazz.equals(ProcessManagedBean.class) ||
