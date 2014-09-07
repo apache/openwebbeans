@@ -63,6 +63,7 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
         bean.setEnabled(webBeansContext.getWebBeansUtil().isBeanEnabled(annotatedType, bean.getStereotypes()));
         webBeansContext.getWebBeansUtil().checkManagedBeanCondition(annotatedType);
         WebBeansUtil.checkGenericType(annotatedType.getJavaClass(), beanAttributes.getScope());
+        webBeansContext.getWebBeansUtil().validateBeanInjection(bean);
         webBeansContext.getDeploymentValidationService().validateProxyable(bean);
         return bean;
     }

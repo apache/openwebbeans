@@ -22,7 +22,8 @@ import org.apache.webbeans.config.WebBeansContext;
 
 import java.io.ObjectStreamException;
 
-public class PassivationBeanWrapper {
+public class PassivationBeanWrapper
+{
     private static final long serialVersionUID = 1L;
 
     private final String passivationId;

@@ -1766,6 +1766,30 @@ public final class WebBeansUtil
         return beanAttributes;
     }
 
+    public void validateBeanInjection(final Bean<?> bean)
+    {
+        for (final InjectionPoint injectionPoint : bean.getInjectionPoints())
+        {
+            final Type type = injectionPoint.getType();
+            if (type instanceof ParameterizedType)
+            {
+                final Bean injectionPointBean = injectionPoint.getBean();
+                ParameterizedType pt = (ParameterizedType) type;
+
+                if (pt.getRawType() == Bean.class)
+                {
+                    final Class<?> beanClass = AbstractOwbBean.class.isInstance(injectionPointBean) ?
+                            AbstractOwbBean.class.cast(injectionPointBean).getReturnType() : injectionPointBean.getBeanClass();
+                    final Type beanType = pt.getActualTypeArguments()[0];
+                    if (!GenericsUtil.isAssignableFrom(false, beanClass, beanType))
+                    {
+                        throw new DefinitionException("@Inject Bean<X> can only be done in X, found " + beanType + " and " + beanClass);
+                    }
+                }
+            }
+        }
+    }
+
     private static final class EventCacheKey
     {
         private final Type event;
