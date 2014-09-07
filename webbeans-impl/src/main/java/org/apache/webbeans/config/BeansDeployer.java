@@ -45,7 +45,6 @@ import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.event.OwbObserverMethod;
-import org.apache.webbeans.portable.events.ProcessBeanAttributesImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -69,7 +68,6 @@ import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
 import org.apache.webbeans.portable.events.discovery.AfterTypeDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
-import org.apache.webbeans.portable.events.generics.GProcessBeanAttributes;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
 import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.JNDIService;
@@ -1261,11 +1259,11 @@ public class BeansDeployer
         }
 
         {
-            BeanAttributes<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
 
-            final ProcessBeanAttributesImpl event = fireProcessBeanAttributes(annotatedType, beanAttributes);
-            beanAttributes = updateBeanAttributesIfNeeded(beanAttributes, event);
-            if (event.isVeto())
+            final BeanAttributes<T> beanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(
+                    annotatedType, annotatedType.getJavaClass(),
+                    BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build());
+            if (beanAttributes == null)
             {
                 return;
             }
@@ -1402,39 +1400,6 @@ public class BeansDeployer
                 }
             }
         }
-    }
-
-    private <T> BeanAttributes<T> updateBeanAttributesIfNeeded(BeanAttributes<T> beanAttributes, ProcessBeanAttributesImpl event)
-    {
-        if (event.getDefinitionError() != null)
-        {
-            throw new DefinitionException(event.getDefinitionError());
-        }
-        if (event.getAttributes() != beanAttributes)
-        {
-            beanAttributes = event.getAttributes();
-            if (!webBeansContext.getBeanManagerImpl().isScope(beanAttributes.getScope()))
-            {
-                throw new DefinitionException(beanAttributes.getScope() + " is not a scope");
-            }
-        }
-        return beanAttributes;
-    }
-
-    // we don't use bm stack since it is actually quite useless
-    private <T> ProcessBeanAttributesImpl fireProcessBeanAttributes(final AnnotatedType<T> annotatedType,
-                                                                       final BeanAttributes<T> beanAttributes)
-    {
-        final ProcessBeanAttributesImpl event = new GProcessBeanAttributes(annotatedType.getJavaClass(), annotatedType, beanAttributes);
-        try
-        {
-            webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-        }
-        catch (final Exception e)
-        {
-            throw new DefinitionException("event ProcessBeanAttributes thrown an exception for " + annotatedType, e);
-        }
-        return event;
     }
 
     /**

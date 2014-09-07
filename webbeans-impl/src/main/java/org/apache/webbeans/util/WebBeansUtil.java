@@ -65,6 +65,7 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.portable.events.ProcessBeanAttributesImpl;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
@@ -97,6 +98,7 @@ import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.BeforeShutdown;
@@ -1724,6 +1726,44 @@ public final class WebBeansUtil
 
         notContainerEvents.putIfAbsent(eventType, true);
         return false;
+    }
+
+    public <T> BeanAttributes<T> fireProcessBeanAttributes(final AnnotatedType<T> annotatedType, final Class<?> type, final BeanAttributes<T> ba)
+    {
+        // we don't use bm stack since it is actually quite useless
+        final ProcessBeanAttributesImpl event = new GProcessBeanAttributes(type, annotatedType, ba);
+        try
+        {
+            webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        }
+        catch (final Exception e)
+        {
+            throw new DefinitionException("event ProcessBeanAttributes thrown an exception for " + annotatedType, e);
+        }
+
+        if (event.getDefinitionError() != null)
+        {
+            throw new DefinitionException(event.getDefinitionError());
+        }
+
+        final BeanAttributes<T> beanAttributes;
+        if (event.getAttributes() != ba)
+        {
+            beanAttributes = event.getAttributes();
+            if (!webBeansContext.getBeanManagerImpl().isScope(beanAttributes.getScope()))
+            {
+                throw new DefinitionException(beanAttributes.getScope() + " is not a scope");
+            }
+        }
+        else
+        {
+            beanAttributes = ba;
+        }
+        if (event.isVeto())
+        {
+            return null;
+        }
+        return beanAttributes;
     }
 
     private static final class EventCacheKey

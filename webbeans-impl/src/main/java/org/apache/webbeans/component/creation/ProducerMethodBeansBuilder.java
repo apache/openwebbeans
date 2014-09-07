@@ -22,8 +22,6 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.portable.events.ProcessBeanAttributesImpl;
-import org.apache.webbeans.portable.events.generics.GProcessBeanAttributes;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -35,7 +33,6 @@ import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.DefinitionException;
 import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
@@ -43,7 +40,7 @@ import java.util.Set;
 /**
  * @param <T> bean class type
  */
-public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>> extends AbstractBeanBuilder
+public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
 {    
     
     protected final WebBeansContext webBeansContext;
@@ -85,34 +82,13 @@ public class ProducerMethodBeansBuilder<T, I extends InjectionTargetBean<T>> ext
                     
                     specialize = true;
                 }
-                
-                BeanAttributes beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedMethod<T>)annotatedMethod).build();
-                final ProcessBeanAttributesImpl event = new GProcessBeanAttributes(annotatedMethod.getJavaMember().getReturnType(), annotatedType, beanAttributes);
-                try
-                {
-                    webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-                }
-                catch (final Exception e)
-                {
-                    throw new DefinitionException("event ProcessBeanAttributes thrown an exception for " + annotatedType, e);
-                }
-                final Throwable definitionError = event.getDefinitionError();
-                if (definitionError != null)
-                {
-                    throw new DefinitionException(definitionError);
-                }
 
-                if (!event.isVeto())
+                final AnnotatedMethod<T> method = (AnnotatedMethod<T>) annotatedMethod;
+                final BeanAttributes<T> beanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(
+                        annotatedType, annotatedMethod.getJavaMember().getReturnType(),
+                        BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(method).build());
+                if (beanAttributes != null)
                 {
-                    if (event.getAttributes() != beanAttributes)
-                    {
-                        beanAttributes = event.getAttributes();
-                        if (!webBeansContext.getBeanManagerImpl().isScope(beanAttributes.getScope()))
-                        {
-                            throw new DefinitionException(beanAttributes.getScope() + " is not a scope");
-                        }
-                    }
-
                     ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<T>(bean, annotatedMethod, beanAttributes);
 
                     ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
