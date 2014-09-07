@@ -353,7 +353,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         if(newBean instanceof AbstractOwbBean)
         {
-            addPassivationInfo((OwbBean<T>)newBean);
+            addPassivationInfo(newBean);
             deploymentBeans.add(newBean);
         }
         else
