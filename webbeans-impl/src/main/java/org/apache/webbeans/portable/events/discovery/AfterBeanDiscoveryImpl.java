@@ -24,6 +24,8 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.DefinitionException;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessBean;
@@ -44,14 +46,14 @@ import java.util.logging.Logger;
 
 /**
  * Event that is fired by the container after it discovers beans.
- * 
+ *
  * @version $Rev$ $Date$
  *
  */
 public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
 {
     private BeanManagerImpl beanManager = null;
-    
+
     private static final Logger logger = WebBeansLoggerFacade.getLogger(AfterBeanDiscoveryImpl.class);
     private final WebBeansContext webBeansContext;
     private Object extension;
@@ -61,7 +63,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         this.webBeansContext = webBeansContext;
         beanManager = this.webBeansContext.getBeanManagerImpl();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -69,16 +71,16 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     public void addBean(Bean<?> bean)
     {
         AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(bean.getBeanClass());
-        
+
         //Fire Event
         ProcessBean<?> processBeanEvent = new GProcessBean(bean,annotatedType);
         beanManager.fireEvent(processBeanEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-        
+
         if(bean instanceof Interceptor)
         {
             //Required for custom interceptors
             webBeansContext.getWebBeansUtil().defineManagedBeanWithoutFireEvents((AnnotatedType<?>) annotatedType);
-            
+
             Interceptor<?> interceptor =  (Interceptor<?>)bean;
             if(interceptor.getScope() != Dependent.class)
             {
@@ -87,7 +89,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
                     logger.log(Level.WARNING, OWBLogConst.WARN_0005_1, interceptor.getBeanClass().getName());
                 }
             }
-            
+
             if(interceptor.getName() != null)
             {
                 if(logger.isLoggable(Level.WARNING))
@@ -95,20 +97,20 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
                     logger.log(Level.WARNING, OWBLogConst.WARN_0005_2, interceptor.getBeanClass().getName());
                 }
             }
-            
+
             if(interceptor.isAlternative())
             {
                 if(logger.isLoggable(Level.WARNING))
                 {
                     logger.log(Level.WARNING, OWBLogConst.WARN_0005_3, interceptor.getBeanClass().getName());
-                }                
+                }
             }
 
             InterceptorsManager interceptorsManager = webBeansContext.getInterceptorsManager();
             interceptorsManager.addCdiInterceptor(interceptor);
             interceptorsManager.addCustomInterceptorClass(bean.getBeanClass());
         }
-        
+
         else if(bean instanceof Decorator)
         {
             //Required for custom decorators
@@ -122,7 +124,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
                     logger.log(Level.WARNING, OWBLogConst.WARN_0005_1, managedBean.getBeanClass().getName());
                 }
             }
-            
+
             if(managedBean.getName() != null)
             {
                 if(logger.isLoggable(Level.WARNING))
@@ -130,15 +132,29 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
                     logger.log(Level.WARNING, OWBLogConst.WARN_0005_2, managedBean.getBeanClass().getName());
                 }
             }
-            
+
             if(managedBean.isAlternative())
             {
                 if(logger.isLoggable(Level.WARNING))
                 {
                     logger.log(Level.WARNING, OWBLogConst.WARN_0005_3, managedBean.getBeanClass().getName());
-                }                
+                }
             }
 
+            boolean found = false;
+            for (final InjectionPoint ip : bean.getInjectionPoints())
+            {
+                if (ip.isDelegate())
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                throw new DefinitionException("Decorators must have a one @Delegate injection point. " +
+                        "But the decorator bean : " + managedBean.toString() + " has more than one");
+            }
 
             webBeansContext.getDecoratorsManager().addDecorator((Decorator<?>) bean);
             webBeansContext.getDecoratorsManager().addCustomDecoratorClass(bean.getBeanClass());
