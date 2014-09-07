@@ -65,7 +65,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
 import org.apache.webbeans.portable.events.generics.GenericBeanEvent;
 import org.apache.webbeans.portable.events.generics.GenericProducerObserverEvent;
@@ -83,7 +82,7 @@ public final class NotificationManager
     private final WebBeansContext webBeansContext;
 
     public static final Set<Class> CONTAINER_EVENT_CLASSES = new HashSet<Class>();
-    {
+    static {
         CONTAINER_EVENT_CLASSES.add(AfterBeanDiscovery.class);
         CONTAINER_EVENT_CLASSES.add(AfterDeploymentValidation.class);
         CONTAINER_EVENT_CLASSES.add(AfterTypeDiscovery.class);
@@ -150,9 +149,9 @@ public final class NotificationManager
 
         observersMethods = filterByQualifiers(observersMethods, metadata.getQualifiers());
 
-        if (isLifecycleEvent && event instanceof ProcessAnnotatedTypeImpl)
+        if (isLifecycleEvent && event instanceof ProcessAnnotatedType)
         {
-            observersMethods = filterByWithAnnotations(observersMethods, ((ProcessAnnotatedTypeImpl) event).getAnnotatedType());
+            observersMethods = filterByWithAnnotations(observersMethods, ((ProcessAnnotatedType) event).getAnnotatedType());
         }
 
         //this check for the TCK is only needed if no observer was found
@@ -246,11 +245,18 @@ public final class NotificationManager
         {
             for (Annotation annotation : annotations)
             {
-                if (withAnnotation.isAssignableFrom(annotation.getClass()))
+                if (withAnnotation.isAssignableFrom(annotation.annotationType()))
                 {
                     return true;
                 }
 
+                for (final Annotation meta : annotation.annotationType().getAnnotations())
+                {
+                    if (withAnnotation.isAssignableFrom(meta.annotationType()))
+                    {
+                        return true;
+                    }
+                }
             }
         }
 

@@ -149,9 +149,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * event function.
      */
     private List<Class<? extends Annotation>> additionalInterceptorBindings = new ArrayList<Class<? extends Annotation>>();
-    
+
     /**
-     * This list contains additional scopes which got set via the 
+     * This list contains additional scopes which got set via the
      * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addScope(Class, boolean, boolean)} event function.
      */
     private List<ExternalScope> additionalScopes =  new ArrayList<ExternalScope>();
@@ -166,12 +166,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private ConcurrentMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>> additionalAnnotatedTypes = new ConcurrentHashMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>>();
 
     private ErrorStack errorStack = new ErrorStack();
-    
+
     /**
      * This map stores all beans along with their unique {@link javax.enterprise.inject.spi.PassivationCapable} id.
      * This is used as a reference for serialization.
      */
-    private ConcurrentMap<String, Bean<?>> passivationBeans = new ConcurrentHashMap<String, Bean<?>>(); 
+    private ConcurrentMap<String, Bean<?>> passivationBeans = new ConcurrentHashMap<String, Bean<?>>();
 
     /**InjectionTargets for Java EE component instances that supports injections*/
     private Map<Class<?>, Producer<?>> producersForJavaEeComponents =
@@ -235,13 +235,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         producersForJavaEeComponents.put(javaEeComponentClass, wrapper);
     }
-    
+
     public <T> Producer<T> getProducerForJavaEeComponent(Class<T> javaEeComponentClass)
     {
         Asserts.assertNotNull(javaEeComponentClass);
         return (Producer<T>) producersForJavaEeComponents.get(javaEeComponentClass);
-    }    
-    
+    }
+
     public ErrorStack getErrorStack()
     {
         return errorStack;
@@ -249,17 +249,17 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     /**
      * Return manager notification manager.
-     * 
+     *
      * @return notification manager
      */
     public NotificationManager getNotificationManager()
     {
         return notificationManager;
     }
-    
+
     /**
      * Gets injection resolver.
-     * 
+     *
      * @return injection resolver
      */
     public InjectionResolver getInjectionResolver()
@@ -269,7 +269,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     /**
      * Gets the active context for the given scope type.
-     * 
+     *
      * @param scopeType scope type of the context
      * @throws ContextNotActiveException if no active context
      * @throws IllegalStateException if more than one active context
@@ -315,25 +315,25 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                         throw new IllegalStateException("More than one active context exists with scope type annotation @"
                                                         + scopeType.getSimpleName());
                     }
-                    
+
                     found = otherContext;
                 }
             }
         }
-        
+
         if (found == null)
         {
             throw new ContextNotActiveException("WebBeans context with scope type annotation @"
                                                 + scopeType.getSimpleName() + " does not exist within current thread");
         }
-        
+
         return found;
     }
 
     /**
      * Add new bean to the BeanManager.
      * This will also set OWBs {@link #inUse} status.
-     * 
+     *
      * @param newBean new bean instance
      * @return the this manager
      */
@@ -404,7 +404,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
     }
 
-    
+
     public BeanManager addContext(Context context)
     {
         addContext(context.getScope(), webBeansContext.getContextFactory().getCustomContext(context));
@@ -451,7 +451,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         return deploymentBeans;
     }
-    
+
 
     /**
      * {@inheritDoc}
@@ -479,7 +479,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return webBeansContext.getInterceptorsManager().resolveInterceptors(type, interceptorBindings);
     }
 
-    
+
     public Set<Bean<?>> getBeans()
     {
         return deploymentBeans;
@@ -491,7 +491,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         Asserts.assertNotNull(context, "context parameter can not be null");
 
         List<Context> contextList = contextMap.get(scopeType);
-        
+
         if(contextList == null)
         {
             Context singleContext = singleContextMap.get(scopeType);
@@ -531,7 +531,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public <T> AnnotatedType<T> createAnnotatedType(Class<T> type)
     {
         AnnotatedType<T> annotatedType = annotatedElementFactory.newAnnotatedType(type);
-        
+
         return annotatedType;
     }
 
@@ -568,9 +568,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     @Override
     public Set<Bean<?>> getBeans(String name)
-    {        
+    {
         Asserts.assertNotNull(name, "name parameter can not be null");
-        
+
         return injectionResolver.implResolveByName(name);
     }
 
@@ -591,16 +591,16 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         //Injected instance
         Object instance = null;
-        
+
         //Injection point is null
         if(injectionPoint == null)
         {
             return null;
         }
-        
+
         //Find the injection point Bean
         Bean<Object> injectedBean = (Bean<Object>)injectionResolver.getInjectionPointBean(injectionPoint);
-        
+
         if(WebBeansUtil.isDependent(injectedBean))
         {
             if (!(ownerCreationalContext instanceof CreationalContextImpl))
@@ -645,12 +645,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         Annotation[] annotations = binding.getDeclaredAnnotations();
         Set<Annotation> set = new HashSet<Annotation>();
-        
+
         if(binding.isAnnotationPresent(InterceptorBinding.class))
         {
             Collections.addAll(set, annotations);
         }
-        
+
         return set;
     }
 
@@ -691,7 +691,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             {
                 throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
             }
-            
+
         }
         else if (bean instanceof OwbBean)
         {
@@ -699,7 +699,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             // return the containing class for producer methods and fields
             beanType = ((OwbBean) bean).getReturnType();
         }
-        else 
+        else
         {
             beanType = bean.getBeanClass();
         }
@@ -708,12 +708,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         if (isNormalScope(bean.getScope()))
         {
             instance = getEjbOrJmsProxyReference(bean, beanType,creationalContext);
-            
+
             if(instance != null)
             {
                 return instance;
             }
-            
+
             instance = cacheProxies.get(bean);
 
             if (instance == null)
@@ -731,19 +731,19 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {
             //Get bean context
             context = getContext(bean.getScope());
-            
+
             //Get instance for ejb or jms
             instance = getEjbOrJmsProxyReference(bean, beanType, creationalContext);
-            
+
             if(instance != null)
             {
                 return instance;
             }
-            
+
             //Get dependent from DependentContex that create contextual instance
             instance = context.get((Bean<Object>)bean, (CreationalContext<Object>)creationalContext);
         }
-        
+
         return instance;
     }
 
@@ -879,10 +879,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             {
                 throw new IllegalStateException("There is no EJB plugin provider. Injection is failed for bean : " + bean);
             }
-            
+
             return ejbPlugin.getSessionBeanProxy(bean,ClassUtil.getClazz(beanType), creationalContext);
         }
-        
+
         //Create JMS Proxy
         else if(bean instanceof JmsBeanMarker)
         {
@@ -890,26 +890,26 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             if(jmsPlugin == null)
             {
                 throw new IllegalStateException("There is no JMS plugin provider. Injection is failed for bean : " + bean);
-            }            
-            
+            }
+
             return jmsPlugin.getJmsBeanProxy(bean, ClassUtil.getClass(beanType));
         }
-        
+
         return null;
     }
 
-    
+
     @Override
     public Set<Annotation> getStereotypeDefinition(Class<? extends Annotation> stereotype)
     {
         Annotation[] annotations = stereotype.getDeclaredAnnotations();
         Set<Annotation> set = new HashSet<Annotation>();
-        
+
         if(stereotype.isAnnotationPresent(Stereotype.class))
         {
             Collections.addAll(set, annotations);
         }
-        
+
         return set;
     }
 
@@ -965,7 +965,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         return isScopeAnnotation;
     }
-    
+
     @Override
     public boolean isNormalScope(Class<? extends Annotation> scopeType)
     {
@@ -990,7 +990,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         return isNormal;
     }
-    
+
     @Override
     public boolean isPassivatingScope(Class<? extends Annotation> annotationType)
     {
@@ -1008,10 +1008,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {
             return scope.passivating();
         }
-     
+
         return false;
-    }    
-    
+    }
+
 
     @Override
     public boolean isStereotype(Class<? extends Annotation> annotationType)
@@ -1078,12 +1078,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public void validate(InjectionPoint injectionPoint)
     {
         Bean<?> bean = injectionPoint.getBean();
-                
+
         //Check for correct injection type
         injectionResolver.checkInjectionPointType(injectionPoint);
 
         Class<?> rawType = ClassUtil.getRawTypeForInjectionPoint(injectionPoint);
-                
+
         // check for InjectionPoint injection
         if (rawType.equals(InjectionPoint.class))
         {
@@ -1098,7 +1098,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         else
         {
             injectionResolver.checkInjectionPoint(injectionPoint);
-        }        
+        }
     }
 
     /**
@@ -1218,7 +1218,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         return additionalQualifiers;
     }
-    
+
     public void addAdditionalScope(ExternalScope additionalScope)
     {
         if (!additionalScopes.contains(additionalScope))
@@ -1256,6 +1256,22 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             return null;
         }
         return (AnnotatedType<T>)annotatedTypes.get(id);
+    }
+
+    public <T> String getId(final Class<T> type, final AnnotatedType<T> at)
+    {
+        final ConcurrentMap<String, AnnotatedType<?>> additionals = additionalAnnotatedTypes.get(type);
+        if (additionals != null)
+        {
+            for (final Map.Entry<String, AnnotatedType<?>> entry : additionals.entrySet())
+            {
+                if (entry.getValue() == at)
+                {
+                    return entry.getKey();
+                }
+            }
+        }
+        return null;
     }
 
     public <T> Iterable<AnnotatedType<T>> getAnnotatedTypes(final Class<T> type)

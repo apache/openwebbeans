@@ -85,6 +85,12 @@ public class InjectionTargetBean<T> extends AbstractOwbBean<T> implements Serial
     }
 
     @Override
+    protected String providedId()
+    {
+        return webBeansContext.getBeanManagerImpl().getId(Class.class.cast(getBeanClass()), annotatedType);
+    }
+
+    @Override
     public InjectionTarget<T> getProducer()
     {
         return injectionTarget;

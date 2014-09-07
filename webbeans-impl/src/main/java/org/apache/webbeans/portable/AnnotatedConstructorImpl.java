@@ -21,7 +21,11 @@ package org.apache.webbeans.portable;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.GenericsUtil;
 
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -43,11 +47,54 @@ public class AnnotatedConstructorImpl<X> extends AbstractAnnotatedCallable<X> im
     public AnnotatedConstructorImpl(WebBeansContext webBeansContext, Constructor<X> javaMember, AnnotatedType<X> declaringType)
     {        
         super(webBeansContext, javaMember.getDeclaringClass(), javaMember, declaringType);
-        setAnnotations(javaMember.getDeclaredAnnotations());
+        setAnnotations(findAnnotations(javaMember));
         setAnnotatedParameters(GenericsUtil.resolveParameterTypes(declaringType.getJavaClass(), javaMember), javaMember.getParameterAnnotations());
     }
-    
-    
+
+    private static Annotation[] findAnnotations(final Constructor<?> javaMember)
+    {
+        // I really don't like this code, can make thing not respecting java like
+        // class A {  A() { super("yep"); } class B { @Foo public B() {} B(String value) {} }
+        // but TCKs mandate it
+        if (javaMember.getParameterTypes().length == 0)
+        {
+            final Class<?> clazz = javaMember.getDeclaringClass();
+            final Map<Class<?>, Annotation> annotations = new HashMap<Class<?>, Annotation>();
+            for (final Annotation a : javaMember.getDeclaredAnnotations())
+            {
+                annotations.put(a.annotationType(), a);
+            }
+
+            Class<?> current = clazz.getSuperclass();
+            while (current != null && current != Object.class)
+            {
+                final Constructor<?> parentCons;
+                try
+                {
+                    parentCons = current.getConstructor();
+                }
+                catch (final Throwable e)
+                {
+                    break;
+                }
+
+                for (final Annotation a : parentCons.getAnnotations())
+                {
+                    final Class<? extends Annotation> annotationType = a.annotationType();
+                    if (!annotations.containsKey(annotationType) && annotationType.getAnnotation(Inherited.class) != null)
+                    {
+                        annotations.put(annotationType, a);
+                    }
+                }
+                current = current.getSuperclass();
+            }
+            return annotations.values().toArray(new Annotation[annotations.size()]);
+        }
+
+        return javaMember.getDeclaredAnnotations();
+    }
+
+
     /**
      * {@inheritDoc}
      */
@@ -60,11 +107,7 @@ public class AnnotatedConstructorImpl<X> extends AbstractAnnotatedCallable<X> im
     
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Annotated Constructor,");
-        builder.append(super.toString());
-        
-        return builder.toString();
+        return "Annotated Constructor," + super.toString();
     }
 
 }
