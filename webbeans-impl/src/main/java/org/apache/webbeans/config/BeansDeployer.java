@@ -77,6 +77,7 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.ExceptionUtil;
+import org.apache.webbeans.util.GenericsUtil;
 import org.apache.webbeans.util.InjectionExceptionUtil;
 import org.apache.webbeans.util.SpecializationUtil;
 import org.apache.webbeans.util.WebBeansConstants;
@@ -98,6 +99,8 @@ import javax.enterprise.inject.spi.ObserverMethod;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -111,6 +114,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.util.Arrays.asList;
 
 /**
  * Deploys the all beans that are defined in the {@link org.apache.webbeans.spi.ScannerService} at
@@ -245,7 +250,9 @@ public class BeansDeployer
                 
                 // Validate injection Points
                 validateInjectionPoints();
-                
+
+                validateDecoratorGenericTypes();
+
                 // fire event
                 fireAfterDeploymentValidationEvent();
 
@@ -285,6 +292,65 @@ public class BeansDeployer
             //if bootstrapping failed, it doesn't make sense to do it again
             //esp. because #addInternalBean might have been called already and would cause an exception in the next run
             deployed = true;
+        }
+    }
+
+    // avoid delegate implementing Foo<A> and decorator implementing Foo<B> with no link between A and B
+    private void validateDecoratorGenericTypes()
+    {
+        for (final Decorator<?> decorator : webBeansContext.getDecoratorsManager().getDecorators())
+        {
+            final Type type = decorator.getDelegateType();
+
+            // capture ParameterizedType from decorator type
+            final Collection<Type> types = new HashSet<Type>();
+            if (Class.class.isInstance(type))
+            {
+                Class<?> c = Class.class.cast(type);
+                while (c != Object.class && c != null)
+                {
+                    types.add(c);
+                    for (final Type t : asList(c.getGenericInterfaces()))
+                    {
+                        if (ParameterizedType.class.isInstance(t))
+                        {
+                            types.add(t);
+                        }
+                    }
+                    final Type genericSuperclass = c.getGenericSuperclass();
+                    if (ParameterizedType.class.isInstance(genericSuperclass))
+                    {
+                        types.add(genericSuperclass);
+                    }
+                    c = c.getSuperclass();
+                }
+            } // else?
+
+            // check arguments matches with decorator API
+            for (final Type api : decorator.getTypes())
+            {
+                if (!ParameterizedType.class.isInstance(api)) // no need to check here
+                {
+                    continue;
+                }
+
+                final ParameterizedType pt1 = ParameterizedType.class.cast(api);
+                for (final Type t : types)
+                {
+                    if (ParameterizedType.class.isInstance(t))
+                    {
+                        final ParameterizedType pt2 = ParameterizedType.class.cast(t);
+
+                        if (pt1.getRawType() == pt2.getRawType())
+                        {
+                            if (!GenericsUtil.isAssignableFrom(true, pt1, pt2))
+                            {
+                                throw new DefinitionException("Generic error matching " + api + " and " + t);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
