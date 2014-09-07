@@ -110,7 +110,7 @@ public class InjectionTargetBean<T> extends AbstractOwbBean<T> implements Serial
     }
 
     /**
-     * This uses the {@link org.apache.webbeans.component.InjectionTargetBean.PassivationBeanWrapper}
+     * This uses the {@link org.apache.webbeans.component.PassivationBeanWrapper}
      * to only store the beanPassivationId.
      */
     private Object writeReplace() throws ObjectStreamException
@@ -122,25 +122,5 @@ public class InjectionTargetBean<T> extends AbstractOwbBean<T> implements Serial
         }
 
         return new PassivationBeanWrapper(passivationId);
-    }
-
-
-    public static class PassivationBeanWrapper implements Serializable
-    {
-        private static final long serialVersionUID = -7588343501478247476L;
-
-        private final String passivationId;
-
-        public PassivationBeanWrapper(String passivationId)
-        {
-            this.passivationId = passivationId;
-        }
-
-        private Object readResolve() throws ObjectStreamException
-        {
-            WebBeansContext webBeansContext = WebBeansContext.getInstance();
-            return webBeansContext.getBeanManagerImpl().getPassivationCapableBean(passivationId);
-        }
-
     }
 }

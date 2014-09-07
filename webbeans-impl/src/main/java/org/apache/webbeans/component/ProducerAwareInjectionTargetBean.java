@@ -67,22 +67,4 @@ public class ProducerAwareInjectionTargetBean<T> extends AbstractOwbBean<T> impl
         }
         return new PassivationBeanWrapper(passivationId);
     }
-
-
-    public static class PassivationBeanWrapper implements Serializable
-    {
-        private static final long serialVersionUID = 1L;
-
-        private final String passivationId;
-
-        public PassivationBeanWrapper(final String passivationId)
-        {
-            this.passivationId = passivationId;
-        }
-
-        private Object readResolve() throws ObjectStreamException
-        {
-            return WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(passivationId);
-        }
-    }
 }
