@@ -1318,7 +1318,7 @@ public class BeansDeployer
                 Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
                 if(bean.isEnabled())
                 {
-                    observerMethods = new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, bean.getAnnotatedType()).defineObserverMethods(bean);
+                    observerMethods = new ObserverMethodsBuilder<T>(webBeansContext, bean.getAnnotatedType()).defineObserverMethods(bean);
                 }
                 Set<ProducerMethodBean<?>> producerMethods = new ProducerMethodBeansBuilder(bean.getWebBeansContext(), bean.getAnnotatedType()).defineProducerMethods(bean);
                 Set<ProducerFieldBean<?>> producerFields = new ProducerFieldBeansBuilder(bean.getWebBeansContext(), bean.getAnnotatedType()).defineProducerFields(bean);

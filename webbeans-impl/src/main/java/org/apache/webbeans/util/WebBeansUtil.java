@@ -489,7 +489,7 @@ public final class WebBeansUtil
         Asserts.nullCheckForClass(clazz);
         ExtensionBeanBuilder<T> extensionBeanBuilder = new ExtensionBeanBuilder<T>(webBeansContext, clazz);
         ExtensionBean<T> bean = extensionBeanBuilder.getBean();
-        new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, extensionBeanBuilder.getAnnotatedType()).defineObserverMethods(bean);
+        new ObserverMethodsBuilder<T>(webBeansContext, extensionBeanBuilder.getAnnotatedType()).defineObserverMethods(bean);
         return bean;
     }
 
@@ -1380,7 +1380,7 @@ public final class WebBeansUtil
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
         new ProducerMethodBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerMethods(managedBean);
         new ProducerFieldBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerFields(managedBean);
-        new ObserverMethodsBuilder<T, InjectionTargetBean<T>>(webBeansContext, managedBean.getAnnotatedType()).defineObserverMethods(managedBean);
+        new ObserverMethodsBuilder<T>(webBeansContext, managedBean.getAnnotatedType()).defineObserverMethods(managedBean);
 
         if (managedBean.getProducer() instanceof AbstractProducer)
         {

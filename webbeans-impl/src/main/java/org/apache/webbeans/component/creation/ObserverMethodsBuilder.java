@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.component.creation;
 
+import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,16 +26,19 @@ import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.DefinitionException;
+import javax.enterprise.inject.spi.EventMetadata;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.inject.Inject;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -44,7 +48,7 @@ import org.apache.webbeans.util.Asserts;
  *
  * @param <T> bean class type
  */
-public class ObserverMethodsBuilder<T, I extends InjectionTargetBean<T>>
+public class ObserverMethodsBuilder<T>
 {    
     
     protected final WebBeansContext webBeansContext;
@@ -94,6 +98,20 @@ public class ObserverMethodsBuilder<T, I extends InjectionTargetBean<T>>
                 ObserverMethod<?> definedObserver = webBeansContext.getBeanManagerImpl().getNotificationManager().
                         getObservableMethodForAnnotatedMethod(annotatedMethod, observesParameter, bean);
                 definedObservers.add(definedObserver);
+            }
+        }
+
+        if (!definedObservers.isEmpty())
+        {
+            for (final InjectionPoint ip : bean.getInjectionPoints())
+            {
+                final Set<Annotation> qualifiers = ip.getQualifiers();
+                if (EventMetadata.class == ip.getType()
+                        && qualifiers != null && ip.getQualifiers().size() == 1
+                        && Default.class == qualifiers.iterator().next().annotationType())
+                {
+                    throw new DefinitionException(ip + " is not an observer parameter");
+                }
             }
         }
         

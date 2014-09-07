@@ -105,6 +105,7 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
                             producerMethodBean,
                             AnnotationUtil.asArray(annotatedMethod.getAnnotations()));
                     WebBeansUtil.checkProducerGenericType(producerMethodBean, annotatedMethod.getJavaMember());
+
                     producerBeans.add(producerMethodBean);
                 }
             }
