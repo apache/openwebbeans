@@ -73,4 +73,9 @@ public class FieldProducerFactory<P> implements ProducerFactory<P>
         Producer<T> producer = new ProducerFieldProducer<T, P>(parent, producerField, webBeansContext);
         return webBeansContext.getWebBeansUtil().fireProcessProducerEvent(producer, producerField);
     }
+
+    public Class<?> getReturnType()
+    {
+        return producerField.getJavaMember().getType();
+    }
 }

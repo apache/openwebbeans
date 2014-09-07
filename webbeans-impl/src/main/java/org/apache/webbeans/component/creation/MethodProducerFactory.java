@@ -62,6 +62,11 @@ public class MethodProducerFactory<P> implements ProducerFactory<P>
         defineDisposalMethod();
     }
 
+    public Class<?> getReturnType()
+    {
+        return producerMethod.getJavaMember().getReturnType();
+    }
+
     @Override
     public <T> Producer<T> createProducer(Bean<T> bean)
     {

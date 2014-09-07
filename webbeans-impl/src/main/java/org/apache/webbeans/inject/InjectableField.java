@@ -72,6 +72,10 @@ public class InjectableField<T> extends AbstractInjectable<T>
         {
             throw new WebBeansException(e);
         }
+        catch (IllegalArgumentException e)
+        {
+            throw e;
+        }
 
         return null;
     }

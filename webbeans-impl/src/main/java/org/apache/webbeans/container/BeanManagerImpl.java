@@ -55,13 +55,18 @@ import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.CdiInterceptorBean;
+import org.apache.webbeans.component.DecoratorBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.component.ProducerAwareInjectionTargetBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
+import org.apache.webbeans.component.creation.CdiInterceptorBeanBuilder;
+import org.apache.webbeans.component.creation.DecoratorBeanBuilder;
 import org.apache.webbeans.component.creation.FieldProducerFactory;
 import org.apache.webbeans.component.creation.MethodProducerFactory;
 import org.apache.webbeans.component.third.PassivationCapableThirdpartyBeanImpl;
@@ -803,13 +808,40 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return new InjectionTargetFactoryImpl<X>(type, webBeansContext);
     }
 
-    public <T> Bean<T> createBean(BeanAttributes<T> attributes, Class<T> type, InjectionTargetFactory<T> factory)
+    public <T> Bean<T> createBean(final BeanAttributes<T> attributes, final Class<T> type, final InjectionTargetFactory<T> factory)
     {
+        final AnnotatedType annotatedType = InjectionTargetFactoryImpl.class.isInstance(factory) ?
+                InjectionTargetFactoryImpl.class.cast(factory).getAnnotatedType() : getOrCreateAnnotatedType(type);
+
+        if (WebBeansUtil.isDecorator(annotatedType))
+        {
+            final DecoratorBeanBuilder<T> dbb = new DecoratorBeanBuilder<T>(webBeansContext, annotatedType, attributes);
+            DecoratorBean<T> decorator = null;
+            if (dbb.isDecoratorEnabled())
+            {
+                dbb.defineDecoratorRules();
+                decorator = dbb.getBean();
+                webBeansContext.getDecoratorsManager().addDecorator(decorator);
+            }
+            return decorator;
+        }
+        else if(WebBeansUtil.isCdiInterceptor(annotatedType))
+        {
+            final CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType, attributes);
+            CdiInterceptorBean<T> interceptor = null;
+            if (ibb.isInterceptorEnabled())
+            {
+                ibb.defineCdiInterceptorRules();
+                interceptor = ibb.getBean();
+                webBeansContext.getInterceptorsManager().addCdiInterceptor(interceptor);
+            }
+            return interceptor;
+        }
+
         final InjectionTargetBean<T> bean = new InjectionTargetBean<T>(
                 webBeansContext,
                 WebBeansType.THIRDPARTY,
-                InjectionTargetFactoryImpl.class.isInstance(factory)?
-                        InjectionTargetFactoryImpl.class.cast(factory).getAnnotatedType() : getOrCreateAnnotatedType(type),
+                annotatedType,
                 attributes, type, factory);
 
         if (webBeansContext.getOpenWebBeansConfiguration().supportsInterceptionOnProducers())
@@ -1048,11 +1080,28 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
 
-    public <T, X> Bean<T> createBean(BeanAttributes<T> attributes, Class<X> type, ProducerFactory<X> factory)
+    public <T, X> Bean<T> createBean(final BeanAttributes<T> attributes, final Class<X> type, final ProducerFactory<X> factory)
     {
-        //X TODO we need to add the ProducerFactory stuff
-        return null;
-        //return new AbstractProducerBean<T>(type, webBeansContext, WebBeansType.THIRDPARTY, attributes, returnType, factory);
+        return new ProducerAwareInjectionTargetBean<T>(
+                webBeansContext,
+                WebBeansType.THIRDPARTY,
+                attributes,
+                findClass(factory, type),
+                false,
+                factory);
+    }
+
+    private Class<?> findClass(final ProducerFactory<?> factory, final Class<?> type)
+    {
+        if (MethodProducerFactory.class.isInstance(factory))
+        {
+            return MethodProducerFactory.class.cast(factory).getReturnType();
+        }
+        if (FieldProducerFactory.class.isInstance(factory))
+        {
+            return FieldProducerFactory.class.cast(factory).getReturnType();
+        }
+        return type;
     }
 
     public <T extends Extension> T getExtension(Class<T> type)
