@@ -87,8 +87,10 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.inject.Alternative;
+import javax.enterprise.inject.Decorated;
 import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.Intercepted;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
@@ -106,6 +108,7 @@ import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
@@ -1610,11 +1613,31 @@ public final class WebBeansUtil
         return builder.toString();
     }
 
-    public void validate(final Set<InjectionPoint> injectionPoints, final boolean isDecorator)
+    public void validate(final Set<InjectionPoint> injectionPoints, Bean<?> bean)
     {
+
+        boolean isDecorator = false;
+        boolean isInterceptor = false;
+
+        if (bean != null)
+        {
+            isInterceptor = bean instanceof Interceptor;
+            isDecorator = !isInterceptor && bean instanceof javax.enterprise.inject.spi.Decorator;
+        }
+
         boolean delegateFound = false;
         for (InjectionPoint injectionPoint : injectionPoints)
         {
+            if (!isDecorator && injectionPoint.getAnnotated().isAnnotationPresent(Decorated.class))
+            {
+                throw new DefinitionException(injectionPoint.getBean().getBeanClass() + " must be a Decorator");
+            }
+
+            if (!isInterceptor && injectionPoint.getAnnotated().isAnnotationPresent(Intercepted.class))
+            {
+                throw new DefinitionException(injectionPoint.getBean().getBeanClass() + " must be an Interceptor");
+            }
+
             if (!injectionPoint.isDelegate())
             {
                 webBeansContext.getBeanManagerImpl().validate(injectionPoint);

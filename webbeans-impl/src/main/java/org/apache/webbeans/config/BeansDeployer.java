@@ -684,7 +684,7 @@ public class BeansDeployer
                 //Check injection points
                 if(injectionPoints != null)
                 {
-                    webBeansContext.getWebBeansUtil().validate(injectionPoints, bean instanceof Decorator);
+                    webBeansContext.getWebBeansUtil().validate(injectionPoints, bean);
                 }
             }
             
@@ -705,7 +705,7 @@ public class BeansDeployer
             if (observerMethod instanceof OwbObserverMethod)
             {
                 OwbObserverMethod<?> owbObserverMethod = (OwbObserverMethod<?>)observerMethod;
-                webBeansContext.getWebBeansUtil().validate(owbObserverMethod.getInjectionPoints(), false);
+                webBeansContext.getWebBeansUtil().validate(owbObserverMethod.getInjectionPoints(), null);
             }
         }
     }
