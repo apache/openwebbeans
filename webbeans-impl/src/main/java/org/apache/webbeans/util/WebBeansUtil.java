@@ -19,6 +19,7 @@
 package org.apache.webbeans.util;
 
 import org.apache.webbeans.annotation.AnnotationManager;
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.NewLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractProducerBean;
@@ -1660,6 +1661,14 @@ public final class WebBeansUtil
                 {
                     delegateFound = true;
                 }
+            }
+
+            if (injectionPoint.getQualifiers().contains(DefaultLiteral.INSTANCE)
+                    && ParameterizedType.class.isInstance(injectionPoint.getType())
+                    && javax.enterprise.inject.spi.Decorator.class == ParameterizedType.class.cast(injectionPoint.getType()).getRawType()
+                    && !isDecorator)
+            {
+                throw new DefinitionException("@Inject Decorator<X> only supported in decorators");
             }
         }
     }
