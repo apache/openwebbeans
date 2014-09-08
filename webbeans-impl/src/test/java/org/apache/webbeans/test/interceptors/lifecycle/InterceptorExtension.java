@@ -23,7 +23,6 @@ import javax.enterprise.inject.spi.*;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.interceptor.Interceptor;
 
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.ExceptionUtil;
 
 import java.lang.annotation.Annotation;
@@ -58,10 +57,14 @@ public class InterceptorExtension implements Extension
         process.setAnnotatedType(process.getAnnotatedType());
     }
 
+    public void vetoDefaultInterceptor(@Observes ProcessAnnotatedType<LifecycleInterceptorBbd> pat)
+    {
+        pat.veto();
+    }
+
     // manually add the correct LifecycleInterceptorBbd
     public void observeLiveCycleInterceptorBbd(@Observes BeforeBeanDiscovery bbd)
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
         AnnotatedTypeImpl<LifecycleInterceptorBbd> annotatedType =
                 new AnnotatedTypeImpl<LifecycleInterceptorBbd>(LifecycleInterceptorBbd.class );
 
