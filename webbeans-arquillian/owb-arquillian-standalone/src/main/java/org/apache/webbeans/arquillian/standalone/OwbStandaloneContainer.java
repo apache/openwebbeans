@@ -108,7 +108,6 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
         ContainerLifecycle lifecycle = webBeansContext.getService(ContainerLifecycle.class);
 
         lifecycleProducer.set(lifecycle);
-        beanManagerProducer.set(lifecycle.getBeanManager());
 
         OwbArquillianScannerService dummyScannerService = (OwbArquillianScannerService) webBeansContext.getScannerService();
         dummyScannerService.setArchive(archive);
@@ -125,6 +124,9 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
         {
             throw new DeploymentException(e.getMessage(), e);
         }
+
+        // finally make the BeanManager available to Arquillian, but only if the boot succeeded
+        beanManagerProducer.set(lifecycle.getBeanManager());
 
         return new ProtocolMetaData();
     }
@@ -164,7 +166,6 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
     public void stop() throws LifecycleException
     {
         LOG.fine("OpenWebBeans Arquillian stopping");
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
