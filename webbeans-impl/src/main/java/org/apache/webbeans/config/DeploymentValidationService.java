@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.config;
 
+import static org.apache.webbeans.util.InjectionExceptionUtil.createUnproxyableResolutionException;
 import static org.apache.webbeans.util.InjectionExceptionUtil.throwUnproxyableResolutionException;
 
 import java.lang.reflect.Constructor;
@@ -27,6 +28,7 @@ import java.util.Set;
 
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.TransientReference;
+import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
@@ -55,8 +57,9 @@ public class DeploymentValidationService
     /**
      * Checks the unproxyable condition.
      * @throws org.apache.webbeans.exception.WebBeansConfigurationException if bean is not proxied by the container
+     * @return exception TCKs validate at runtime
      */
-    public void validateProxyable(OwbBean<?> bean)
+    public UnproxyableResolutionException validateProxyable(OwbBean<?> bean)
     {
         // Unproxyable test for NormalScoped beans
         if (webBeansContext.getBeanManagerImpl().isNormalScope(bean.getScope()))
@@ -99,7 +102,12 @@ public class DeploymentValidationService
                     }
                     else if (Modifier.isPrivate(cons.getModifiers()))
                     {
+                        final boolean containsViolation = violationMessage.containsViolation();
                         violationMessage.addLine(beanClass.getName(), " has a >private< no-arg constructor! CDI doesn't allow to proxy that.");
+                        if (!containsViolation)
+                        { // lazy
+                            return createUnproxyableResolutionException(violationMessage);
+                        }
                     }
                 }
 
@@ -110,6 +118,7 @@ public class DeploymentValidationService
                 }
             }
         }
+        return null;
     }
 
     /**

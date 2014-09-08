@@ -33,7 +33,7 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
  * @version $Rev$ $Date$
  */
 public class ManagedBean<T> extends InjectionTargetBean<T> implements InterceptedMarker, PassivationCapable
-{    
+{
     public ManagedBean(WebBeansContext webBeansContext,
                        WebBeansType webBeansType,
                        AnnotatedType<T> annotated,
@@ -41,6 +41,11 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
                        Class<T> beanClass)
     {
         super(webBeansContext, webBeansType, annotated, beanAttributes, beanClass);
+    }
+
+    public boolean valid()
+    {
+        return true;
     }
 
     public T create(CreationalContext<T> creationalContext)

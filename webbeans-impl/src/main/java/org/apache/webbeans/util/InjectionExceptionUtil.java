@@ -38,7 +38,12 @@ public class InjectionExceptionUtil
 
     public static void throwUnproxyableResolutionException(ViolationMessageBuilder violationMessage)
     {
-        throw new UnproxyableResolutionException(
+        throw createUnproxyableResolutionException(violationMessage);
+    }
+
+    public static UnproxyableResolutionException createUnproxyableResolutionException(ViolationMessageBuilder violationMessage)
+    {
+        return new UnproxyableResolutionException(
                 newViolation("WebBeans with api type with normal scope must be proxyable.")
                         .addLine(violationMessage.toString())
                         .toString());

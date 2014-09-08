@@ -56,7 +56,7 @@ public class ProxyableBeanTypeTest extends AbstractUnitTest
             Assert.assertNotNull(testInstance);
 
             Assert.assertEquals(42, testInstance.externalMethod());
-            Assert.assertEquals(4711, testInstance.staticMethod());
+            Assert.assertEquals(4711, BeanWithPrivateFinalMethod.staticMethod());
         }
         finally
         {

@@ -60,6 +60,7 @@ import org.apache.webbeans.component.DecoratorBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.JmsBeanMarker;
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerAwareInjectionTargetBean;
@@ -686,7 +687,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(creationalContext, bean);
         }
 
-
+        if (ManagedBean.class.isInstance(bean))
+        {
+            ManagedBean.class.cast(bean).valid();
+        }
 
         //Check type if bean type is given
         if(beanType != null && beanType != Object.class)
