@@ -61,6 +61,7 @@ import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
+import org.apache.webbeans.portable.ProducerMethodProducer;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessSyntheticAnnotatedTypeImpl;
@@ -95,6 +96,7 @@ import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.Producer;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -250,6 +252,7 @@ public class BeansDeployer
                 
                 // Validate injection Points
                 validateInjectionPoints();
+                validateDisposeParameters();
 
                 validateDecoratorGenericTypes();
 
@@ -292,6 +295,26 @@ public class BeansDeployer
             //if bootstrapping failed, it doesn't make sense to do it again
             //esp. because #addInternalBean might have been called already and would cause an exception in the next run
             deployed = true;
+        }
+    }
+
+    private void validateDisposeParameters()
+    {
+        final WebBeansUtil webBeansUtil = webBeansContext.getWebBeansUtil();
+        for (final Bean<?> bean : webBeansContext.getBeanManagerImpl().getBeans())
+        {
+            if (ProducerMethodBean.class.isInstance(bean))
+            {
+                final Producer<?> producer = ProducerMethodBean.class.cast(bean).getProducer();
+                if (ProducerMethodProducer.class.isInstance(producer))
+                {
+                    final Set<InjectionPoint> disposalIPs = ProducerMethodProducer.class.cast(producer).getDisposalIPs();
+                    if (disposalIPs != null)
+                    {
+                        webBeansUtil.validate(disposalIPs, bean);
+                    }
+                } // else?
+            }
         }
     }
 

@@ -157,4 +157,9 @@ public class ProducerMethodProducer<T, P> extends AbstractProducer<T>
             }
         }
     }
+
+    public Set<InjectionPoint> getDisposalIPs()
+    {
+        return disposalIPs;
+    }
 }
