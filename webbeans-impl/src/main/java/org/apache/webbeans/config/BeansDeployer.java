@@ -61,7 +61,7 @@ import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.portable.ProducerMethodProducer;
+import org.apache.webbeans.portable.BaseProducerProducer;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessSyntheticAnnotatedTypeImpl;
@@ -305,11 +305,12 @@ public class BeansDeployer
         {
             if (ProducerMethodBean.class.isInstance(bean))
             {
-                final Producer<?> producer = ProducerMethodBean.class.cast(bean).getProducer();
-                if (ProducerMethodProducer.class.isInstance(producer))
+                final Producer<?> producer = AbstractProducerBean.class.cast(bean).getProducer();
+                if (BaseProducerProducer.class.isInstance(producer))
                 {
-                    final Set<InjectionPoint> disposalIPs = ProducerMethodProducer.class.cast(producer).getDisposalIPs();
-                    if (disposalIPs != null)
+                    final BaseProducerProducer producerProducer = BaseProducerProducer.class.cast(producer);
+                    final Set<InjectionPoint> disposalIPs = producerProducer.getDisposalIPs();
+                    if (disposalIPs != null && !producerProducer.isAnyDisposal()) // any can be ambiguous but that's not an issue
                     {
                         webBeansUtil.validate(disposalIPs, bean);
                     }
@@ -1404,13 +1405,20 @@ public class BeansDeployer
                     logger.log(Level.FINE, "Found Managed Bean with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
 
-                Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
+                final Set<ObserverMethod<?>> observerMethods;
+                final AnnotatedType<T> beanAnnotatedType = bean.getAnnotatedType();
                 if(bean.isEnabled())
                 {
-                    observerMethods = new ObserverMethodsBuilder<T>(webBeansContext, bean.getAnnotatedType()).defineObserverMethods(bean);
+                    observerMethods = new ObserverMethodsBuilder<T>(webBeansContext, beanAnnotatedType).defineObserverMethods(bean);
                 }
-                Set<ProducerMethodBean<?>> producerMethods = new ProducerMethodBeansBuilder(bean.getWebBeansContext(), bean.getAnnotatedType()).defineProducerMethods(bean);
-                Set<ProducerFieldBean<?>> producerFields = new ProducerFieldBeansBuilder(bean.getWebBeansContext(), bean.getAnnotatedType()).defineProducerFields(bean);
+                else
+                {
+                    observerMethods = new HashSet<ObserverMethod<?>>();
+                }
+
+                final WebBeansContext wbc = bean.getWebBeansContext();
+                Set<ProducerFieldBean<?>> producerFields = new ProducerFieldBeansBuilder(wbc, beanAnnotatedType).defineProducerFields(bean);
+                Set<ProducerMethodBean<?>> producerMethods = new ProducerMethodBeansBuilder(wbc, beanAnnotatedType).defineProducerMethods(bean, producerFields);
 
                 ManagedBean<T> managedBean = (ManagedBean<T>)bean;
                 Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods =

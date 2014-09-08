@@ -1382,8 +1382,8 @@ public final class WebBeansUtil
         //Check for Enabled via Alternative
         setInjectionTargetBeanEnableFlag(managedBeanCreator.getBean());
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
-        new ProducerMethodBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerMethods(managedBean);
-        new ProducerFieldBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerFields(managedBean);
+        new ProducerMethodBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerMethods(
+                managedBean, new ProducerFieldBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerFields(managedBean));
         new ObserverMethodsBuilder<T>(webBeansContext, managedBean.getAnnotatedType()).defineObserverMethods(managedBean);
 
         if (managedBean.getProducer() instanceof AbstractProducer)

@@ -19,6 +19,7 @@
 package org.apache.webbeans.component.creation;
 
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -61,7 +62,7 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
     /**
      * {@inheritDoc}
      */
-    public Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<T> bean)
+    public Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<T> bean, Set<ProducerFieldBean<?>> producerFields)
     {
         Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
         Set<AnnotatedMethod<? super T>> annotatedMethods = webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType);
@@ -113,7 +114,7 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
         }
 
         // valid all @Disposes have a @Produces
-        validateNoDisposerWithoutProducer(annotatedMethods, producerBeans);
+        validateNoDisposerWithoutProducer(annotatedMethods, producerBeans, producerFields);
 
         return producerBeans;
     }

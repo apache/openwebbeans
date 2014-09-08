@@ -26,6 +26,7 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import java.util.Set;
 
+import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.GenericsUtil;
@@ -41,7 +42,9 @@ public abstract class AbstractBeanBuilder<T>
      * @param annotatedMethods of the given bean class
      * @param producerBeans or an empty Set
      */
-    protected void validateNoDisposerWithoutProducer(Set<AnnotatedMethod<? super T>> annotatedMethods, Set<ProducerMethodBean<?>> producerBeans)
+    protected void validateNoDisposerWithoutProducer(Set<AnnotatedMethod<? super T>> annotatedMethods,
+                                                     Set<ProducerMethodBean<?>> producerBeans,
+                                                     Set<ProducerFieldBean<?>> producerFields)
     {
         for (final AnnotatedMethod<?> annotatedMethod : annotatedMethods)
         {
@@ -60,7 +63,18 @@ public abstract class AbstractBeanBuilder<T>
                     }
                     if (!found)
                     {
-                        throw new WebBeansConfigurationException("@Disposes without @Produces " + annotatedMethod.getJavaMember());
+                        for (final ProducerFieldBean<?> field : producerFields)
+                        {
+                            if (GenericsUtil.satisfiesDependency(false, field.getCreatorField().getType(), param.getBaseType()))
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found)
+                        {
+                            throw new WebBeansConfigurationException("@Disposes without @Produces " + annotatedMethod.getJavaMember());
+                        }
                     }
                     break;
                 }

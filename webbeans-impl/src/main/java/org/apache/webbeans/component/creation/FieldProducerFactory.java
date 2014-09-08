@@ -18,32 +18,29 @@
  */
 package org.apache.webbeans.component.creation;
 
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Producer;
-
-import javax.enterprise.inject.spi.ProducerFactory;
-import javax.inject.Inject;
-
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.ProducerFieldProducer;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMember;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Producer;
+import javax.inject.Inject;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Set;
 
-public class FieldProducerFactory<P> implements ProducerFactory<P>
+public class FieldProducerFactory<P> extends BaseProducerFactory<P>
 {
-
     private AnnotatedField<? super P> producerField;
-    private Bean<P> parent;
-    private WebBeansContext webBeansContext;
 
     public FieldProducerFactory(AnnotatedField<? super P> producerField, Bean<P> parent, WebBeansContext webBeansContext)
     {
+        super(parent, webBeansContext);
         Asserts.assertNotNull(producerField, "producer method may not be null");
-        Asserts.assertNotNull(webBeansContext, "WebBeansContext may not be null");
 
         if (producerField.isAnnotationPresent(Inject.class))
         {
@@ -63,19 +60,25 @@ public class FieldProducerFactory<P> implements ProducerFactory<P>
         }
 
         this.producerField = producerField;
-        this.parent = parent;
-        this.webBeansContext = webBeansContext;
+        defineDisposalMethod();
     }
 
     @Override
     public <T> Producer<T> createProducer(Bean<T> bean)
     {
-        Producer<T> producer = new ProducerFieldProducer<T, P>(parent, producerField, webBeansContext);
+        final Set<InjectionPoint> disposalIPs = getInjectionPoints(bean);
+        final Producer<T> producer = new ProducerFieldProducer<T, P>(parent, producerField, disposalMethod, disposalIPs, webBeansContext);
         return webBeansContext.getWebBeansUtil().fireProcessProducerEvent(producer, producerField);
     }
 
     public Class<?> getReturnType()
     {
         return producerField.getJavaMember().getType();
+    }
+
+    @Override
+    protected AnnotatedMember<? super P> producerType()
+    {
+        return producerField;
     }
 }

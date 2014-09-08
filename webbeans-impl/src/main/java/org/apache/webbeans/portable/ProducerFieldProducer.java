@@ -18,19 +18,6 @@
  */
 package org.apache.webbeans.portable;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.Map;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.Interceptor;
-
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -38,34 +25,36 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
-public class ProducerFieldProducer<T, P> extends AbstractProducer<T>
-{
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Interceptor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
-    private Bean<P> owner;
-    private WebBeansContext webBeansContext;
+public class ProducerFieldProducer<T, P> extends BaseProducerProducer<T, P>
+{
     private AnnotatedField<? super P> producerField;
 
-    public ProducerFieldProducer(Bean<P> owner, AnnotatedField<? super P> producerField, WebBeansContext context)
+    public ProducerFieldProducer(Bean<P> owner,
+                                 AnnotatedField<? super P> producerField,
+                                 AnnotatedMethod<? super P> disposerMethod,
+                                 Set<InjectionPoint> disposalIPs,
+                                 WebBeansContext webBeansContext)
     {
-        super(Collections.<InjectionPoint>emptySet());
+        super(owner, disposerMethod, Collections.<InjectionPoint>emptySet(), disposalIPs, webBeansContext);
         if (owner == null && !producerField.isStatic())
         {
             throw new IllegalArgumentException("owner may not be null");
         }
         Asserts.assertNotNull(producerField, "field may not be null");
-        Asserts.assertNotNull(context, "WebBeansContext may not be null");
-        this.owner = owner;
-        webBeansContext = context;
         this.producerField = producerField;
-    }
-
-    @Override
-    public void defineInterceptorStack(final Bean<T> bean, final AnnotatedType<T> annotatedType, final WebBeansContext webBeansContext)
-    {
-        if (webBeansContext.getOpenWebBeansConfiguration().supportsInterceptionOnProducers())
-        {
-            super.defineInterceptorStack(bean, annotatedType, webBeansContext);
-        }
     }
 
     @Override

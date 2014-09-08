@@ -135,7 +135,8 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
         validateNoProducerMethod(annotatedType);
 
         // make sure that CDI Decorator do not have a Disposes method
-        validateNoDisposerWithoutProducer(webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType), Collections.EMPTY_SET);
+        validateNoDisposerWithoutProducer(
+                webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType), Collections.EMPTY_SET, Collections.emptySet());
 
     }
 
