@@ -38,6 +38,7 @@ import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.Producer;
 import javax.interceptor.AroundInvoke;
 
+import org.apache.webbeans.component.BeanManagerBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.intercept.DecoratorHandler;
@@ -79,6 +80,12 @@ public abstract class AbstractProducer<T> implements Producer<T>
      */
     public void defineInterceptorStack(Bean<T> bean, AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
+        if (bean instanceof BeanManagerBean)
+        {
+            // the BeanManager cannot be decorated nor intercepted
+            return;
+        }
+
         interceptorInfo = webBeansContext.getInterceptorResolutionService().
                 calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
         proxyFactory = webBeansContext.getInterceptorDecoratorProxyFactory();
