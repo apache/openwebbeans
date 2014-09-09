@@ -262,45 +262,42 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
     protected void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName)
             throws ProxyGenerationException
     {
+        Constructor superDefaultCt;
+        String parentClassFileName = classFileName;
+        String descriptor = "()V";
+
         try
         {
-            Constructor superDefaultCt;
-            String parentClassFileName;
             if (classToProxy.isInterface())
             {
                 parentClassFileName = Type.getInternalName(Object.class);
                 superDefaultCt = Object.class.getConstructor(null);
+                descriptor = Type.getConstructorDescriptor(superDefaultCt);
             }
-            else
-            {
-                parentClassFileName = classFileName;
-                superDefaultCt = classToProxy.getDeclaredConstructor(null);
-            }
-            final String descriptor = Type.getConstructorDescriptor(superDefaultCt);
-
-            // was: final String descriptor = Type.getConstructorDescriptor(classToProxy.getDeclaredConstructor());
-            // but we need to get a default constructor even if the bean uses constructor injection
-            final MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
-            mv.visitCode();
-            mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, parentClassFileName, "<init>", descriptor, false);
-
-            mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitInsn(Opcodes.ACONST_NULL);
-            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy));
-
-            mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitInsn(Opcodes.ACONST_NULL);
-            mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_INTERCEPTOR_HANDLER, Type.getDescriptor(InterceptorHandler.class));
-
-            mv.visitInsn(Opcodes.RETURN);
-            mv.visitMaxs(-1, -1);
-            mv.visitEnd();
         }
         catch (NoSuchMethodException nsme)
         {
-            throw new ProxyGenerationException(nsme);
+            // no worries
         }
+
+        // was: final String descriptor = Type.getConstructorDescriptor(classToProxy.getDeclaredConstructor());
+        // but we need to get a default constructor even if the bean uses constructor injection
+        final MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
+        mv.visitCode();
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, parentClassFileName, "<init>", descriptor, false);
+
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitInsn(Opcodes.ACONST_NULL);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_PROXIED_INSTANCE, Type.getDescriptor(classToProxy));
+
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitInsn(Opcodes.ACONST_NULL);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, proxyClassFileName, FIELD_INTERCEPTOR_HANDLER, Type.getDescriptor(InterceptorHandler.class));
+
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
     }
 
     /**

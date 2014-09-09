@@ -64,12 +64,6 @@ public class InterceptionOfBeanWithConstructorInjectionTest extends AbstractUnit
     {
         private final Injected injected;
 
-        BuildMeWithMyConstructor()
-        {
-            // default ct is needed for the proxy
-            injected = null;
-        }
-
         @Inject
         public BuildMeWithMyConstructor(final Injected injected)
         {
