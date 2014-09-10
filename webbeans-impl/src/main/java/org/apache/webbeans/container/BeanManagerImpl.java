@@ -1223,7 +1223,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public void addAdditionalAnnotatedType(Object extension, AnnotatedType<?> annotatedType)
     {
-        addAdditionalAnnotatedType(extension, annotatedType, extension + AnnotatedElementFactory.OWB_DEFAULT_KEY);
+        addAdditionalAnnotatedType(extension, annotatedType, extension.toString() + annotatedType + AnnotatedElementFactory.OWB_DEFAULT_KEY);
     }
 
     public <T> void addAdditionalAnnotatedType(Object extension, AnnotatedType<T> inAnnotatedType, String id)
