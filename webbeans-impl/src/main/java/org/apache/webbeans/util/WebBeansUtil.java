@@ -1670,6 +1670,13 @@ public final class WebBeansUtil
             {
                 throw new DefinitionException("@Inject Decorator<X> only supported in decorators");
             }
+            if (injectionPoint.getQualifiers().contains(DefaultLiteral.INSTANCE)
+                    && ParameterizedType.class.isInstance(injectionPoint.getType())
+                    && Interceptor.class == ParameterizedType.class.cast(injectionPoint.getType()).getRawType()
+                    && !isInterceptor)
+            {
+                throw new DefinitionException("@Inject Interceptor<X> only supported in interceptors");
+            }
         }
     }
 
