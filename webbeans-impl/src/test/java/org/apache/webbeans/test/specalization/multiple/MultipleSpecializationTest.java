@@ -23,7 +23,6 @@ import java.util.Collection;
 import junit.framework.Assert;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import javax.enterprise.inject.spi.DefinitionException;
-import javax.enterprise.inject.spi.DeploymentException;
 
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.test.AbstractUnitTest;
@@ -82,7 +81,7 @@ public class MultipleSpecializationTest extends AbstractUnitTest
 
         Assert.assertNotNull(occuredException);
         Assert.assertEquals(WebBeansConfigurationException.class.getName(), occuredException.getClass().getName());
-        Assert.assertEquals(DeploymentException.class.getName(), occuredException.getCause().getClass().getName());
+        Assert.assertEquals(DefinitionException.class.getName(), occuredException.getCause().getClass().getName());
         
         shutDownContainer();
     }

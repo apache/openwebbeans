@@ -39,7 +39,6 @@ import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Named;
 import javax.inject.Scope;
@@ -582,7 +581,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
                 // TODO XXX We have to check stereotypes here, too
                 if (getAnnotated().getJavaClass().isAnnotationPresent(Named.class))
                 {
-                    throw new DeploymentException("@Specialized Class : " + getAnnotated().getJavaClass().getName()
+                    throw new DefinitionException("@Specialized Class : " + getAnnotated().getJavaClass().getName()
                             + " may not explicitly declare a bean name");
                 }
             }
