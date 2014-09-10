@@ -93,7 +93,6 @@ public class CustomBeanTest
                     return 0;
                 }
 
-                @Override
                 public Logger getParentLogger() throws SQLFeatureNotSupportedException
                 {
                     return null;
