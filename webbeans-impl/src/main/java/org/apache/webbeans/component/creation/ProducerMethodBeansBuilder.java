@@ -35,6 +35,7 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -64,12 +65,14 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
      */
     public Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<T> bean, Set<ProducerFieldBean<?>> producerFields)
     {
-        Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
-        Set<AnnotatedMethod<? super T>> annotatedMethods = webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType);
-        
+        final Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
+        final Set<AnnotatedMethod<? super T>> annotatedMethods = webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType);
+        final Collection<AnnotatedMethod<?>> skipMethods = new HashSet<AnnotatedMethod<?>>();
+
         for(AnnotatedMethod<? super T> annotatedMethod: annotatedMethods)
         {
-            if(annotatedMethod.isAnnotationPresent(Produces.class) &&
+            final boolean isProducer = annotatedMethod.isAnnotationPresent(Produces.class);
+            if(isProducer &&
                 annotatedMethod.getJavaMember().getDeclaringClass().equals(annotatedType.getJavaClass()))
             {
                 checkProducerMethodForDeployment(annotatedMethod);
@@ -110,11 +113,15 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
                     producerBeans.add(producerMethodBean);
                 }
             }
+            else if (isProducer)
+            {
+                skipMethods.add(annotatedMethod);
+            }
             
         }
 
         // valid all @Disposes have a @Produces
-        validateNoDisposerWithoutProducer(annotatedMethods, producerBeans, producerFields);
+        validateNoDisposerWithoutProducer(annotatedMethods, producerBeans, producerFields, skipMethods);
 
         return producerBeans;
     }

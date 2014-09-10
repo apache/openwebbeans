@@ -57,7 +57,8 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
         validateNoProducerMethod(annotatedType);
 
         // make sure that CDI interceptors do not have a Disposes method
-        validateNoDisposerWithoutProducer(webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType), Collections.EMPTY_SET, Collections.emptySet());
+        validateNoDisposerWithoutProducer(webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType),
+                Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
     }
 
     @Override

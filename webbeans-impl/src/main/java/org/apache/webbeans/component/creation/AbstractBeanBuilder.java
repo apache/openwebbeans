@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
+import java.util.Collection;
 import java.util.Set;
 
 import org.apache.webbeans.component.ProducerFieldBean;
@@ -44,7 +45,8 @@ public abstract class AbstractBeanBuilder<T>
      */
     protected void validateNoDisposerWithoutProducer(Set<AnnotatedMethod<? super T>> annotatedMethods,
                                                      Set<ProducerMethodBean<?>> producerBeans,
-                                                     Set<ProducerFieldBean<?>> producerFields)
+                                                     Set<ProducerFieldBean<?>> producerFields,
+                                                     Collection<AnnotatedMethod<?>> ignoredProducers)
     {
         for (final AnnotatedMethod<?> annotatedMethod : annotatedMethods)
         {
@@ -71,6 +73,20 @@ public abstract class AbstractBeanBuilder<T>
                                 break;
                             }
                         }
+
+                        if (!found)
+                        {
+                            // see if @Disposes should just be ignored as well - no inheritance
+                            for (final AnnotatedMethod<?> producer : ignoredProducers)
+                            {
+                                if (GenericsUtil.satisfiesDependency(false, producer.getJavaMember().getGenericReturnType(), param.getBaseType()))
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+
                         if (!found)
                         {
                             throw new WebBeansConfigurationException("@Disposes without @Produces " + annotatedMethod.getJavaMember());
