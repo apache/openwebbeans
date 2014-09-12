@@ -53,8 +53,8 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
         defineInterceptorMethods();
         defineInterceptorBindings();
 
-        // make sure that CDI interceptors do not have any Producer methods
-        validateNoProducerMethod(annotatedType);
+        // make sure that CDI interceptors do not have any Producer methods or a method with @Observes
+        validateNoProducerOrObserverMethod(annotatedType);
 
         // make sure that CDI interceptors do not have a Disposes method
         validateNoDisposerWithoutProducer(webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType),

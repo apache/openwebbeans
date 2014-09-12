@@ -18,12 +18,14 @@
  */
 package org.apache.webbeans.component.creation;
 
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.DefinitionException;
 import java.util.Collection;
 import java.util.Set;
 
@@ -103,14 +105,22 @@ public abstract class AbstractBeanBuilder<T>
      * Certain beans like CDI Interceptors and Decorators
      * are not allowed to define producer methods.
      */
-    protected void validateNoProducerMethod(AnnotatedType<T> annotatedType)
+    protected void validateNoProducerOrObserverMethod(AnnotatedType<T> annotatedType)
     {
         Set<AnnotatedMethod<? super T>> annotatedMethods = annotatedType.getMethods();
         for (final AnnotatedMethod<?> annotatedMethod : annotatedMethods)
         {
             if (annotatedMethod.isAnnotationPresent(Produces.class))
             {
-                throw new WebBeansConfigurationException("This class must not have a @Produces method" + annotatedMethod.getJavaMember());
+                throw new DefinitionException("This class must not have a @Produces method" + annotatedMethod.getJavaMember());
+            }
+
+            for (AnnotatedParameter<?> parameter : annotatedMethod.getParameters())
+            {
+                if (parameter.isAnnotationPresent(Observes.class))
+                {
+                    throw new DefinitionException("This class must not have a @Observes method " + annotatedMethod.getJavaMember());
+                }
             }
         }
 
@@ -119,7 +129,7 @@ public abstract class AbstractBeanBuilder<T>
         {
             if (annotatedField.isAnnotationPresent(Produces.class))
             {
-                throw new WebBeansConfigurationException("This class must not have a @Produces field" + annotatedField.getJavaMember());
+                throw new DefinitionException("This class must not have a @Produces field" + annotatedField.getJavaMember());
             }
         }
     }

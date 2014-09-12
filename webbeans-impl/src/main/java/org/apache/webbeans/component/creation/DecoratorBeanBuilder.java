@@ -131,8 +131,8 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
             logger.log(Level.FINE, "Configuring decorator class : [{0}]", annotatedType.getJavaClass());
         }
 
-        // make sure that CDI Decorators do not have any Producer methods
-        validateNoProducerMethod(annotatedType);
+        // make sure that CDI Decorators do not have any Producer methods or a method with @Observes
+        validateNoProducerOrObserverMethod(annotatedType);
 
         // make sure that CDI Decorator do not have a Disposes method
         validateNoDisposerWithoutProducer(
