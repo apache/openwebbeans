@@ -45,11 +45,11 @@ import org.apache.webbeans.config.OwbWildcardTypeImpl;
  */
 public final class GenericsUtil
 {
-    public static boolean satisfiesDependency(boolean isDelegate, Type injectionPointType, Type beanType)
+    public static boolean satisfiesDependency(boolean isDelegateOrEvent, Type injectionPointType, Type beanType)
     {
         if (beanType instanceof TypeVariable || beanType instanceof WildcardType || beanType instanceof GenericArrayType)
         {
-            return isAssignableFrom(isDelegate, injectionPointType, beanType);
+            return isAssignableFrom(isDelegateOrEvent, injectionPointType, beanType);
         }
         else
         {
@@ -58,7 +58,7 @@ public final class GenericsUtil
             
             if  (ClassUtil.isSame(injectionPointRawType, beanRawType))
             {
-                return isAssignableFrom(isDelegate, injectionPointType, beanType);
+                return isAssignableFrom(isDelegateOrEvent, injectionPointType, beanType);
             }
         }
 
@@ -68,28 +68,28 @@ public final class GenericsUtil
     /**
      * 5.2.3 and 5.2.4
      */
-    public static boolean isAssignableFrom(boolean isDelegate, Type requiredType, Type beanType)
+    public static boolean isAssignableFrom(boolean isDelegateOrEvent, Type requiredType, Type beanType)
     {
         if (requiredType instanceof Class)
         {
-            return isAssignableFrom(isDelegate, (Class<?>)requiredType, beanType);
+            return isAssignableFrom(isDelegateOrEvent, (Class<?>)requiredType, beanType);
         }
         else if (requiredType instanceof ParameterizedType)
         {
-            return isAssignableFrom(isDelegate, (ParameterizedType)requiredType, beanType);
+            return isAssignableFrom(isDelegateOrEvent, (ParameterizedType)requiredType, beanType);
         }
         else if (requiredType instanceof TypeVariable)
         {
-            return isAssignableFrom(isDelegate, (TypeVariable<?>)requiredType, beanType);
+            return isAssignableFrom(isDelegateOrEvent, (TypeVariable<?>)requiredType, beanType);
         }
         else if (requiredType instanceof GenericArrayType)
         {
             return Class.class.isInstance(beanType) && Class.class.cast(beanType).isArray()
-                    && isAssignableFrom(isDelegate, (GenericArrayType)requiredType, beanType);
+                    && isAssignableFrom(isDelegateOrEvent, (GenericArrayType)requiredType, beanType);
         }
         else if (requiredType instanceof WildcardType)
         {
-            return isAssignableFrom(isDelegate, (WildcardType)requiredType, beanType);
+            return isAssignableFrom(isDelegateOrEvent, (WildcardType)requiredType, beanType);
         }
         else
         {
@@ -97,27 +97,27 @@ public final class GenericsUtil
         }
     }
 
-    private static boolean isAssignableFrom(boolean isDelegate, Class<?> injectionPointType, Type beanType)
+    private static boolean isAssignableFrom(boolean isDelegateOrEvent, Class<?> injectionPointType, Type beanType)
     {
         if (beanType instanceof Class)
         {
-            return isAssignableFrom(isDelegate, injectionPointType, (Class<?>)beanType);
+            return isAssignableFrom(isDelegateOrEvent, injectionPointType, (Class<?>)beanType);
         }
         else if (beanType instanceof TypeVariable)
         {
-            return isAssignableFrom(isDelegate, injectionPointType, (TypeVariable<?>)beanType);
+            return isAssignableFrom(isDelegateOrEvent, injectionPointType, (TypeVariable<?>)beanType);
         }
         else if (beanType instanceof ParameterizedType)
         {
-            return isAssignableFrom(isDelegate, injectionPointType, (ParameterizedType)beanType);
+            return isAssignableFrom(isDelegateOrEvent, injectionPointType, (ParameterizedType)beanType);
         }
         else if (beanType instanceof GenericArrayType)
         {
-            return isAssignableFrom(isDelegate, injectionPointType, (GenericArrayType)beanType);
+            return isAssignableFrom(isDelegateOrEvent, injectionPointType, (GenericArrayType)beanType);
         }
         else if (beanType instanceof WildcardType)
         {
-            return isAssignableFrom(isDelegate, (Type)injectionPointType, (WildcardType)beanType);
+            return isAssignableFrom(isDelegateOrEvent, (Type)injectionPointType, (WildcardType)beanType);
         }
         else
         {
@@ -125,16 +125,16 @@ public final class GenericsUtil
         }
     }
 
-    private static boolean isAssignableFrom(boolean isDelegate, Class<?> injectionPointType, Class<?> beanType)
+    private static boolean isAssignableFrom(boolean isDelegateOrEvent, Class<?> injectionPointType, Class<?> beanType)
     {
         return ClassUtil.isClassAssignable(injectionPointType, beanType);
     }
 
-    private static boolean isAssignableFrom(boolean isDelegate, Class<?> injectionPointType, TypeVariable<?> beanType)
+    private static boolean isAssignableFrom(boolean isDelegateOrEvent, Class<?> injectionPointType, TypeVariable<?> beanType)
     {
         for (Type bounds: beanType.getBounds())
         {
-            if (isAssignableFrom(isDelegate, injectionPointType, bounds))
+            if (isAssignableFrom(isDelegateOrEvent, injectionPointType, bounds))
             {
                 return true;
             }
@@ -146,7 +146,7 @@ public final class GenericsUtil
      * CDI Spec. 5.2.4: "A parameterized bean type is considered assignable to a raw required type
      * if the raw types are identical and all type parameters of the bean type are either unbounded type variables or java.lang.Object." 
      */
-    private static boolean isAssignableFrom(boolean isDelegate, Class<?> injectionPointType, ParameterizedType beanType)
+    private static boolean isAssignableFrom(boolean isDelegateOrEvent, Class<?> injectionPointType, ParameterizedType beanType)
     {
         if (beanType.getRawType() != injectionPointType)
         {
@@ -174,27 +174,27 @@ public final class GenericsUtil
         return true;
     }
 
-    private static boolean isAssignableFrom(boolean isDelegate, Class<?> injectionPointType, GenericArrayType beanType)
+    private static boolean isAssignableFrom(boolean isDelegateOrEvent, Class<?> injectionPointType, GenericArrayType beanType)
     {
         if (!injectionPointType.isArray())
         {
             return false;
         }
-        return isAssignableFrom(isDelegate, injectionPointType.getComponentType(), beanType.getGenericComponentType());
+        return isAssignableFrom(isDelegateOrEvent, injectionPointType.getComponentType(), beanType.getGenericComponentType());
     }
     
-    private static boolean isAssignableFrom(boolean isDelegate, Type injectionPointType, WildcardType beanType)
+    private static boolean isAssignableFrom(boolean isDelegateOrEvent, Type injectionPointType, WildcardType beanType)
     {
         for (Type bounds: beanType.getLowerBounds())
         {
-            if (!isAssignableFrom(isDelegate, bounds, injectionPointType))
+            if (!isAssignableFrom(isDelegateOrEvent, bounds, injectionPointType))
             {
                 return false;
             }
         }
         for (Type bounds: beanType.getUpperBounds())
         {
-            if (isAssignableFrom(isDelegate, injectionPointType, bounds))
+            if (isAssignableFrom(isDelegateOrEvent, injectionPointType, bounds))
             {
                 return true;
             }
@@ -202,23 +202,23 @@ public final class GenericsUtil
         return false;
     }
 
-    private static boolean isAssignableFrom(boolean isDelegate, ParameterizedType injectionPointType, Type beanType)
+    private static boolean isAssignableFrom(boolean isDelegateOrEvent, ParameterizedType injectionPointType, Type beanType)
     {
         if (beanType instanceof Class)
         {
-            return isAssignableFrom(isDelegate, injectionPointType, (Class<?>)beanType);
+            return isAssignableFrom(isDelegateOrEvent, injectionPointType, (Class<?>)beanType);
         }
         else if (beanType instanceof TypeVariable)
         {
-            return isAssignableFrom(isDelegate, injectionPointType, (TypeVariable<?>)beanType);
+            return isAssignableFrom(isDelegateOrEvent, injectionPointType, (TypeVariable<?>)beanType);
         }
         else if (beanType instanceof ParameterizedType)
         {
-            return isAssignableFrom(isDelegate, injectionPointType, (ParameterizedType)beanType);
+            return isAssignableFrom(isDelegateOrEvent, injectionPointType, (ParameterizedType)beanType);
         }
         else if (beanType instanceof WildcardType)
         {
-            return isAssignableFrom(isDelegate, (Type)injectionPointType, (WildcardType)beanType);
+            return isAssignableFrom(isDelegateOrEvent, (Type)injectionPointType, (WildcardType)beanType);
         }
         else if (beanType instanceof GenericArrayType)
         {
@@ -230,7 +230,7 @@ public final class GenericsUtil
         }
     }
 
-    private static boolean isAssignableFrom(boolean isDelegate, ParameterizedType injectionPointType, Class<?> beanType)
+    private static boolean isAssignableFrom(boolean isDelegateOrEvent, ParameterizedType injectionPointType, Class<?> beanType)
     {
         Class<?> rawInjectionPointType = getRawType(injectionPointType);
         if (rawInjectionPointType.equals(beanType))
@@ -241,13 +241,13 @@ public final class GenericsUtil
         {
             return false;
         }
-        if (beanType.getSuperclass() != null && isAssignableFrom(isDelegate, injectionPointType, beanType.getGenericSuperclass()))
+        if (beanType.getSuperclass() != null && isAssignableFrom(isDelegateOrEvent, injectionPointType, beanType.getGenericSuperclass()))
         {
             return true;
         }
         for (Type genericInterface: beanType.getGenericInterfaces())
         {
-            if (isAssignableFrom(isDelegate, injectionPointType, genericInterface))
+            if (isAssignableFrom(isDelegateOrEvent, injectionPointType, genericInterface))
             {
                 return true;
             }
@@ -255,11 +255,11 @@ public final class GenericsUtil
         return false;
     }
 
-    private static boolean isAssignableFrom(boolean isDelegate, ParameterizedType injectionPointType, TypeVariable<?> beanType)
+    private static boolean isAssignableFrom(boolean isDelegateOrEvent, ParameterizedType injectionPointType, TypeVariable<?> beanType)
     {
         for (Type bounds: beanType.getBounds())
         {
-            if (isAssignableFrom(isDelegate, injectionPointType, bounds))
+            if (isAssignableFrom(isDelegateOrEvent, injectionPointType, bounds))
             {
                 return true;
             }
@@ -270,13 +270,13 @@ public final class GenericsUtil
     /**
      * CDI Spec. 5.2.4
      */
-    private static boolean isAssignableFrom(boolean isDelegate, ParameterizedType injectionPointType, ParameterizedType beanType)
+    private static boolean isAssignableFrom(boolean isDelegateOrEvent, ParameterizedType injectionPointType, ParameterizedType beanType)
     {
         if (injectionPointType.getRawType() != beanType.getRawType())
         {
             return false;
         }
-        boolean swapParams = !isDelegate;
+        boolean swapParams = !isDelegateOrEvent;
         Type[] injectionPointTypeArguments = injectionPointType.getActualTypeArguments();
         Type[] beanTypeArguments = beanType.getActualTypeArguments();
         for (int i = 0; i < injectionPointTypeArguments.length; i++)
@@ -303,7 +303,7 @@ public final class GenericsUtil
             {
                 return false;
             }
-            else if (!isAssignableFrom(isDelegate, injectionPointTypeArgument, beanTypeArgument))
+            else if (!isAssignableFrom(isDelegateOrEvent, injectionPointTypeArgument, beanTypeArgument))
             {
                 return false;
             }
@@ -311,11 +311,11 @@ public final class GenericsUtil
         return true;
     }
 
-    private static boolean isAssignableFrom(boolean isDelegate, TypeVariable<?> injectionPointType, Type beanType)
+    private static boolean isAssignableFrom(boolean isDelegateOrEvent, TypeVariable<?> injectionPointType, Type beanType)
     {
         for (Type bounds: injectionPointType.getBounds())
         {
-            if (!isAssignableFrom(isDelegate, bounds, beanType))
+            if (!isAssignableFrom(isDelegateOrEvent, bounds, beanType))
             {
                 return false;
             }
@@ -324,7 +324,7 @@ public final class GenericsUtil
     }
 
     // rules are a bit different when in an array so we handle ParameterizedType manually (not reusing isAssignableFrom)
-    private static boolean isAssignableFrom(boolean isDelegate, GenericArrayType injectionPointType, Type beanType)
+    private static boolean isAssignableFrom(boolean isDelegateOrEvent, GenericArrayType injectionPointType, Type beanType)
     {
         final Type genericComponentType = injectionPointType.getGenericComponentType();
         final Class componentType = Class.class.cast(beanType).getComponentType();
@@ -334,20 +334,20 @@ public final class GenericsUtil
         }
         if (ParameterizedType.class.isInstance(genericComponentType))
         {
-            return isAssignableFrom(isDelegate, ParameterizedType.class.cast(genericComponentType).getRawType(), componentType);
+            return isAssignableFrom(isDelegateOrEvent, ParameterizedType.class.cast(genericComponentType).getRawType(), componentType);
         }
-        return isAssignableFrom(isDelegate, genericComponentType, componentType);
+        return isAssignableFrom(isDelegateOrEvent, genericComponentType, componentType);
     }
 
-    private static boolean isAssignableFrom(boolean isDelegate, WildcardType injectionPointType, Type beanType)
+    private static boolean isAssignableFrom(boolean isDelegateOrEvent, WildcardType injectionPointType, Type beanType)
     {
         if (beanType instanceof TypeVariable)
         {
-            return isAssignableFrom(isDelegate, injectionPointType, (TypeVariable<?>)beanType);
+            return isAssignableFrom(isDelegateOrEvent, injectionPointType, (TypeVariable<?>)beanType);
         }
         for (Type bounds: injectionPointType.getLowerBounds())
         {
-            if (!isAssignableFrom(isDelegate, beanType, bounds))
+            if (!isAssignableFrom(isDelegateOrEvent, beanType, bounds))
             {
                 return false;
             }
@@ -358,7 +358,7 @@ public final class GenericsUtil
             boolean isAssignable = false;
             for (Type beanSupertype: beanTypeClosure)
             {
-                if (isAssignableFrom(isDelegate, bounds, beanSupertype)
+                if (isAssignableFrom(isDelegateOrEvent, bounds, beanSupertype)
                     || (Class.class.isInstance(bounds)
                         && ParameterizedType.class.isInstance(beanSupertype)
                         && bounds == ParameterizedType.class.cast(beanSupertype).getRawType()))
@@ -378,13 +378,13 @@ public final class GenericsUtil
     /**
      * CDI 1.1 Spec. 5.2.4, third bullet point
      */
-    private static boolean isAssignableFrom(boolean isDelegate, WildcardType injectionPointType, TypeVariable<?> beanType)
+    private static boolean isAssignableFrom(boolean isDelegateOrEvent, WildcardType injectionPointType, TypeVariable<?> beanType)
     {
         for (Type upperBound: injectionPointType.getUpperBounds())
         {
             for (Type bound: beanType.getBounds())
             {
-                if (!isAssignableFrom(isDelegate, upperBound, bound) && !isAssignableFrom(isDelegate, bound, upperBound))
+                if (!isAssignableFrom(isDelegateOrEvent, upperBound, bound) && !isAssignableFrom(isDelegateOrEvent, bound, upperBound))
                 {
                     return false;
                 }
@@ -394,7 +394,7 @@ public final class GenericsUtil
         {
             for (Type bound: beanType.getBounds())
             {
-                if (!isAssignableFrom(isDelegate, bound, lowerBound))
+                if (!isAssignableFrom(isDelegateOrEvent, bound, lowerBound))
                 {
                     return false;
                 }
