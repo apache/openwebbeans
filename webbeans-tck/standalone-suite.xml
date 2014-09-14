@@ -66,6 +66,14 @@
                 </methods>
             </class>
 
+            <!-- Issues in the TCK -->
+            <!-- CDITCK-444 -->
+            <class name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.broken.invalid.InvalidStereotypeTest">
+                <methods>
+                    <exclude name=".*"/>
+                </methods>
+            </class>
+
             <!-- CDITCK-418 -->
             <class name="org.jboss.cdi.tck.interceptors.tests.contract.interceptorLifeCycle.environment.jndi.ejb.InterceptorEnvironmentJNDISessionBeanTest">
                 <methods>
