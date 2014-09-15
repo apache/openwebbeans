@@ -254,6 +254,7 @@ public class BeansDeployer
                 validateInjectionPoints();
                 validateDisposeParameters();
 
+                validateDecoratorDecoratedTypes();
                 validateDecoratorGenericTypes();
 
                 // fire event
@@ -316,6 +317,22 @@ public class BeansDeployer
                     }
                 } // else?
             }
+        }
+    }
+
+
+    /**
+     * @throws DefinitionException if {@link javax.enterprise.inject.spi.Decorator#getDecoratedTypes()} isEmpty
+     */
+    private void validateDecoratorDecoratedTypes()
+    {
+        for (Decorator decorator : webBeansContext.getDecoratorsManager().getDecorators())
+        {
+            if (decorator.getDecoratedTypes().isEmpty())
+            {
+                throw new DefinitionException("Decorator must implement at least one interface (java.io.Serializeable will be ignored)");
+            }
+
         }
     }
 

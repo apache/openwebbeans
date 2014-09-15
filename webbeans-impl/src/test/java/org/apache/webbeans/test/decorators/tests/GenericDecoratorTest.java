@@ -18,21 +18,14 @@
 */
 package org.apache.webbeans.test.decorators.tests;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-import javax.enterprise.inject.spi.Decorator;
-import javax.enterprise.util.TypeLiteral;
+import javax.enterprise.inject.spi.DefinitionException;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.test.AbstractUnitTest;
-import org.apache.webbeans.test.decorators.common.Cow;
 import org.apache.webbeans.test.decorators.common.Garphly;
 import org.apache.webbeans.test.decorators.common.GarphlyDecorator;
 import org.apache.webbeans.test.decorators.generic.DecoratedBean;
@@ -52,26 +45,23 @@ public class GenericDecoratorTest extends AbstractUnitTest
     public void testGenericDecorator()
     {
         
-        TypeLiteral<Garphly<Cow>> GARPHLY_LITERAL = new TypeLiteral<Garphly<Cow>>()
-        {
-        };
-
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(Garphly.class);
         classes.add(GarphlyDecorator.class);
         
         Collection<String> xmls = new ArrayList<String>();
         xmls.add(getXmlPath(PACKAGE_NAME, "GenericDecoratorTest"));
-        
-        startContainer(classes,xmls);
-        
-        Set<Type> types = new HashSet<Type>();
-        types.add(GARPHLY_LITERAL.getType());
-        List<Decorator<?>> decorators = getBeanManager().resolveDecorators(types, new Annotation[]{});
-        
-        Assert.assertTrue(decorators.size() > 0);
-        
-        shutDownContainer();
+
+        try
+        {
+            startContainer(classes, xmls);
+            Assert.fail("DefinitionException expected");
+        }
+        catch (DefinitionException e)
+        {
+            // expected, all ok
+            shutDownContainer();
+        }
     }
 
     @Test
