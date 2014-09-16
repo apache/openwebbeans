@@ -1629,9 +1629,33 @@ public final class WebBeansUtil
         boolean delegateFound = false;
         for (InjectionPoint injectionPoint : injectionPoints)
         {
-            if (!isDecorator && injectionPoint.getAnnotated().isAnnotationPresent(Decorated.class))
+            if (injectionPoint.getAnnotated().isAnnotationPresent(Decorated.class))
             {
-                throw new DefinitionException(injectionPoint.getBean().getBeanClass() + " must be a Decorator");
+                if (isDecorator)
+                {
+                        Type[] types = ClassUtil.getActualTypeArguments(injectionPoint.getType());
+                        if (types.length != 1 ||
+                                !((javax.enterprise.inject.spi.Decorator) bean).getDecoratedTypes().contains(types[0]))
+                        {
+                            throw new DefinitionException("ParametrizedType must be a DecoratedType");
+                        }
+                }
+                else
+                {
+                    throw new DefinitionException(injectionPoint.getBean().getBeanClass() + " must be a Decorator");
+                }
+            }
+            else
+            {
+                Class<?> rawType = ClassUtil.getRawTypeForInjectionPoint(injectionPoint);
+                if (rawType.equals(javax.enterprise.inject.spi.Decorator.class) || (isDecorator && rawType.equals(Bean.class)))
+                {
+                    Type[] types = ClassUtil.getActualTypeArguments(injectionPoint.getType());
+                    if (types.length != 1 || !injectionPoint.getBean().getBeanClass().equals(types[0]))
+                    {
+                        throw new DefinitionException("injected bean parameter must be " + rawType);
+                    }
+                }
             }
 
             if (!isInterceptor && injectionPoint.getAnnotated().isAnnotationPresent(Intercepted.class))
