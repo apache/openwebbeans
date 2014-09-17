@@ -68,6 +68,34 @@ public class ClassUtilTest {
         Assert.assertFalse(isOverridden(MyOtherPackageSubClass.class, "privateMethod"));
     }
 
+    @Test
+    public void testGetAbstractMethods() throws Exception
+    {
+        List<Method> methods = ClassUtil.getAbstractMethods(AbstractClassWithAbstractMethod.class);
+        Assert.assertNotNull(methods);
+        Assert.assertEquals(2, methods.size());
+
+        for (Method method : methods)
+        {
+            String name = method.getName();
+            if (!name.equals("getPublicString") && !name.equals("getProtectedInt"))
+            {
+                Assert.fail("unexpected Method " + name);
+            }
+        }
+
+        Assert.assertTrue("returned methods must be empty", ClassUtil.getAbstractMethods(MySubClass.class).isEmpty());
+    }
+
+    @Test
+    public void testIsMethodDeclared() throws Exception
+    {
+        Class<AbstractClassWithAbstractMethod> clazz = AbstractClassWithAbstractMethod.class;
+
+        Assert.assertTrue(ClassUtil.isMethodDeclared(clazz, "doSomething"));
+        Assert.assertFalse(ClassUtil.isMethodDeclared(clazz, "notExistingMethod"));
+    }
+
     private boolean isOverridden(Class subClass, String methodName) throws Exception
     {
         Method superClassMethod = MySuperClass.class.getDeclaredMethod(methodName);

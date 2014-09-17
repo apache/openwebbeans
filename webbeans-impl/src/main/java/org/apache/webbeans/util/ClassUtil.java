@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -346,6 +347,61 @@ public final class ClassUtil
         }
 
         return allMethods;
+    }
+
+    /**
+     * collect all abstract methods for the given class if the given class
+     * is {@link Modifier#ABSTRACT}
+     *
+     * @param clazz {@link Class} to check
+     *
+     * @return {@link List} with all abstract methods of the given class or an empty list
+     *         if the given class is not abstract or doesn't contain an abstract method
+     */
+    public static List<Method> getAbstractMethods(Class<?> clazz)
+    {
+        if (!Modifier.isAbstract(clazz.getModifiers()))
+        {
+            return Collections.emptyList();
+        }
+
+        List<Method> methods = getNonPrivateMethods(clazz, true);
+        if (!methods.isEmpty())
+        {
+            Iterator<Method> iterator = methods.iterator();
+            while (iterator.hasNext())
+            {
+                if (!Modifier.isAbstract(iterator.next().getModifiers()))
+                {
+                    iterator.remove();
+                }
+            }
+        }
+
+        return methods;
+    }
+
+    /**
+     * Checks, if the given {@link Class} declares the {@link Method} with the
+     * given name und parameterTypes.
+     *
+     * @param clazz to check
+     * @param name of the method
+     * @param parameterTypes of the method
+     *
+     * @return {@code} true if the given class contains a method with the given name and parameterTypes,
+     *         otherwise {@code false}
+     */
+    public static boolean isMethodDeclared(Class<?> clazz, String name, Class<?>... parameterTypes)
+    {
+        try
+        {
+            return clazz.getMethod(name, parameterTypes) != null;
+        }
+        catch (NoSuchMethodException e)
+        {
+            return false;
+        }
     }
 
     /**

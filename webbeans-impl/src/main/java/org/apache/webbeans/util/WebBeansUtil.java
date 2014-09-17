@@ -1656,6 +1656,32 @@ public final class WebBeansUtil
                         throw new DefinitionException("injected bean parameter must be " + rawType);
                     }
                 }
+
+                if (isDecorator)
+                {
+                    List<Method> abstractMethods = ClassUtil.getAbstractMethods(bean.getBeanClass());
+                    if (!abstractMethods.isEmpty())
+                    {
+                        Set<Type> types = ((javax.enterprise.inject.spi.Decorator) bean).getDecoratedTypes();
+                        for (Method abstractMethod : abstractMethods)
+                        {
+                            boolean methodDeclared = false;
+                            for (Type type : types)
+                            {
+                                if (ClassUtil.isMethodDeclared(ClassUtil.getClass(type), abstractMethod.getName(), abstractMethod.getParameterTypes()))
+                                {
+                                    methodDeclared = true;
+                                    break;
+                                }
+                            }
+
+                            if (!methodDeclared)
+                            {
+                                throw new DefinitionException("Decorator must not declare abstract methods which is not declared in any Decorated type.");
+                            }
+                        }
+                    }
+                }
             }
 
             if (!isInterceptor && injectionPoint.getAnnotated().isAnnotationPresent(Intercepted.class))
