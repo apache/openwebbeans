@@ -142,6 +142,7 @@ public final class AnnotationManager
 
         // check for stereotypes _explicitly_ declared on the bean class (not inherited)
         Annotation[] stereoTypes = getStereotypeMetaAnnotations(typeAnns.toArray(new Annotation[typeAnns.size()]));
+        Map<Class<? extends Annotation>, Annotation> annotationsFromSteretypes = new HashMap<Class<? extends Annotation>, Annotation>();
         for (Annotation stereoType : stereoTypes)
         {
             if (hasInterceptorBindingMetaAnnotation(stereoType.annotationType().getDeclaredAnnotations()))
@@ -151,14 +152,25 @@ public final class AnnotationManager
                 for (Annotation ann : steroInterceptorBindings)
                 {
                     Annotation oldBinding = bindings.get(ann.annotationType());
-                    if (oldBinding != null && !AnnotationUtil.isCdiAnnotationEqual(oldBinding, ann))
+
+                    // annotations which are declared on bean class overrides the one
+                    // declared in stereotypes
+                    if (oldBinding == null)
                     {
-                        throw new WebBeansConfigurationException("Illegal interceptor binding: annotation of type "
-                                + ann.annotationType().getName()
-                                + " is present twice with diffenent values: "
-                                + oldBinding.toString() + " and " + ann.toString());
+                        bindings.put(ann.annotationType(), ann);
                     }
-                    bindings.put(ann.annotationType(), ann);
+                    else
+                    {
+                        if (annotationsFromSteretypes.containsKey(ann.annotationType()) && !AnnotationUtil.isCdiAnnotationEqual(oldBinding, ann))
+                        {
+                            throw new WebBeansConfigurationException("Illegal interceptor binding: annotation of type "
+                                    + ann.annotationType().getName()
+                                    + " is present twice with diffenent values: "
+                                    + oldBinding.toString() + " and " + ann.toString());
+                        }
+                    }
+
+                    annotationsFromSteretypes.put(ann.annotationType(), ann);
                 }
             }
         }
