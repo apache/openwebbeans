@@ -139,6 +139,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1631,27 +1632,21 @@ public final class WebBeansUtil
         {
             if (injectionPoint.getAnnotated().isAnnotationPresent(Decorated.class))
             {
-                if (isDecorator)
-                {
-                        Type[] types = ClassUtil.getActualTypeArguments(injectionPoint.getType());
-                        if (types.length != 1 ||
-                                !((javax.enterprise.inject.spi.Decorator) bean).getDecoratedTypes().contains(types[0]))
-                        {
-                            throw new DefinitionException("ParametrizedType must be a DecoratedType");
-                        }
-                }
-                else
-                {
-                    throw new DefinitionException(injectionPoint.getBean().getBeanClass() + " must be a Decorator");
-                }
+                validateDecorated(bean, isDecorator, injectionPoint);
+            }
+            else if (injectionPoint.getAnnotated().isAnnotationPresent(Intercepted.class))
+            {
+                validateIntercepted(bean, isInterceptor, injectionPoint);
             }
             else
             {
                 Class<?> rawType = ClassUtil.getRawTypeForInjectionPoint(injectionPoint);
-                if (rawType.equals(javax.enterprise.inject.spi.Decorator.class) || (isDecorator && rawType.equals(Bean.class)))
+                if (rawType.equals(javax.enterprise.inject.spi.Decorator.class) ||
+                    (isDecorator && rawType.equals(Bean.class)) ||
+                    rawType.equals(Interceptor.class))
                 {
                     Type[] types = ClassUtil.getActualTypeArguments(injectionPoint.getType());
-                    if (types.length != 1 || !injectionPoint.getBean().getBeanClass().equals(types[0]))
+                    if (types.length != 1 || !GenericsUtil.isAssignableFrom(false, bean.getBeanClass(), types[0]))
                     {
                         throw new DefinitionException("injected bean parameter must be " + rawType);
                     }
@@ -1682,11 +1677,6 @@ public final class WebBeansUtil
                         }
                     }
                 }
-            }
-
-            if (!isInterceptor && injectionPoint.getAnnotated().isAnnotationPresent(Intercepted.class))
-            {
-                throw new DefinitionException(injectionPoint.getBean().getBeanClass() + " must be an Interceptor");
             }
 
             if (!injectionPoint.isDelegate())
@@ -1878,6 +1868,44 @@ public final class WebBeansUtil
             }
         }
     }
+
+
+    private void validateDecorated(Bean<?> bean, boolean isDecorator, InjectionPoint injectionPoint)
+    {
+        if (isDecorator)
+        {
+            Type[] types = ClassUtil.getActualTypeArguments(injectionPoint.getType());
+            if (types.length != 1 ||
+                    !((javax.enterprise.inject.spi.Decorator) bean).getDecoratedTypes().contains(types[0]))
+            {
+                throw new DefinitionException("ParametrizedType must be a DecoratedType");
+            }
+        }
+        else
+        {
+            throw new DefinitionException(injectionPoint.getBean().getBeanClass() + " must be a Decorator");
+        }
+    }
+
+    private void validateIntercepted(Bean<?> bean, boolean isInterceptor, InjectionPoint injectionPoint)
+    {
+        if (isInterceptor)
+        {
+            Type[] types = ClassUtil.getActualTypeArguments(injectionPoint.getType());
+            if (types.length != 1 ||
+                    !ClassUtil.isWildCardType(types[0]) ||
+                    ((WildcardType) types[0]).getLowerBounds().length > 0 ||
+                    !(((WildcardType) types[0]).getUpperBounds().length == 1 && Object.class.equals(((WildcardType) types[0]).getUpperBounds()[0])))
+            {
+                throw new DefinitionException("Type parameter for interceptor " + bean.getBeanClass() + " must be an unbound wildcard");
+            }
+        }
+        else
+        {
+            throw new DefinitionException(bean.getBeanClass() + " must be an Interceptor");
+        }
+    }
+
 
     private static final class EventCacheKey
     {
