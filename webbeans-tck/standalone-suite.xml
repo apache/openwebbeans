@@ -48,8 +48,6 @@
                 <!-- CDITCK-432 -->
                 <exclude name="org.jboss.cdi.tck.tests.decorators.builtin.event.complex"/>
 
-                <!-- CDITCK-438 -->
-                <exclude name="org.jboss.cdi.tck.tests.implementation.builtin.metadata.broken.typeparam.interceptor"/>
             </package>
 
             <package name="org.jboss.cdi.tck.interceptors.tests.*"/>
