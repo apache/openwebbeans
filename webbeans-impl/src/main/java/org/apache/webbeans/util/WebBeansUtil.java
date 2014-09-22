@@ -695,7 +695,6 @@ public final class WebBeansUtil
 
     /**
      * Configure direct/indirect specialized producer method beans.
-     * @deprecated remove
      */
     public void configureProducerMethodSpecializations()
     {
