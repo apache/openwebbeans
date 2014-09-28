@@ -16,6 +16,7 @@
  */
 package org.apache.webbeans.test.producer;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.DefinitionException;
@@ -59,6 +60,16 @@ public class ProducerPassivationTest extends AbstractUnitTest
         Assert.assertNotNull(instance.getInstance());
     }
 
+    @Test
+    public void testDependentNonSerializableInterfaceInjectionWorks()
+    {
+        startContainer(DependentSerializableImplProducerOwner.class, NonSerializableImplHolder.class);
+
+        NonSerializableImplHolder instance = getInstance(NonSerializableImplHolder.class);
+        Assert.assertNotNull(instance);
+        Assert.assertNotNull(instance.getInstance());
+    }
+
     @Test(expected = DefinitionException.class)
     public void testBrokenNonPassivatingProducer()
     {
@@ -79,6 +90,16 @@ public class ProducerPassivationTest extends AbstractUnitTest
     {
         @Produces
         @SessionScoped
+        public NonSerializableInterface createSerializableImpl()
+        {
+            return new SerializableImpl(); // all fine as the actual impl is Serializable at runtime
+        }
+    }
+
+    public static class DependentSerializableImplProducerOwner
+    {
+        @Produces
+        @Dependent
         public NonSerializableInterface createSerializableImpl()
         {
             return new SerializableImpl(); // all fine as the actual impl is Serializable at runtime
