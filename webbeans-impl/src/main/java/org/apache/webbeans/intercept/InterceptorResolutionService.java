@@ -41,8 +41,10 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
+import javax.inject.Inject;
 import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 import javax.interceptor.InvocationContext;
@@ -184,16 +186,36 @@ public class InterceptorResolutionService
         List<Interceptor<?>> cdiConstructorInterceptors = new ArrayList<Interceptor<?>>(allUsedConstructorCdiInterceptors);
         Collections.sort(cdiConstructorInterceptors, new InterceptorComparator(webBeansContext));
 
-        if (Modifier.isFinal(annotatedType.getJavaClass().getModifiers()) &&
-            (allUsedEjbInterceptors.size() > 0 || 
-             allUsedCdiInterceptors.size() > 0 || 
-             lifecycleMethodInterceptorInfos.size() > 0 ||
-             (decorators != null && decorators.size() > 0)))
+        boolean interceptedBean = allUsedEjbInterceptors.size() > 0 ||
+                                  allUsedCdiInterceptors.size() > 0 ||
+                                  lifecycleMethodInterceptorInfos.size() > 0;
+
+        if ((interceptedBean || decorators.size() > 0) && Modifier.isFinal(annotatedType.getJavaClass().getModifiers()))
         {
-            throw new WebBeansConfigurationException("Cannot apply Decorators or Interceptors on a final class: " 
+            throw new WebBeansConfigurationException("Cannot apply Decorators or Interceptors on a final class: "
                                                      + annotatedType.getJavaClass().getName());
         }
-        
+
+        // if we have an interceptedBean, the bean must be proxyable in any case (also @Dependent)
+        if (interceptedBean)
+        {
+            boolean proxyable = false;
+            for (AnnotatedConstructor<T> constructor : annotatedType.getConstructors())
+            {
+                if ((constructor.getParameters().isEmpty() && !isUnproxyable(constructor)) ||
+                     constructor.isAnnotationPresent(Inject.class))
+                {
+                    proxyable = true;
+                    break;
+                }
+            }
+
+            if (!proxyable)
+            {
+                throw new DeploymentException("Intercepted Bean " + annotatedType.getBaseType() + " must be proxyable");
+            }
+        }
+
         return new BeanInterceptorInfo(decorators, allUsedEjbInterceptors,
                                        cdiInterceptors, cdiConstructorInterceptors,
                                        selfInterceptorBean,
