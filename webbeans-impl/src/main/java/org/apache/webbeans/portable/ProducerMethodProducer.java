@@ -53,7 +53,10 @@ public class ProducerMethodProducer<T, P> extends BaseProducerProducer<T, P>
         Asserts.assertNotNull(producerMethod, "method may not be null");
         if (!producerMethod.isStatic())
         {
-            Asserts.assertNotNull(owner, "owner may not be null for non-static producer method");
+            if (owner == null)
+            {
+                throw new IllegalArgumentException("owner may not be null for non-static producer method " + producerMethod);
+            }
         }
         final OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
         if (ejbPlugin != null)
