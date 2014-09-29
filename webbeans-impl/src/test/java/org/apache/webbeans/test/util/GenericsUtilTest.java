@@ -58,6 +58,15 @@ public class GenericsUtilTest {
         assertEquals(SubInterface.class, GenericsUtil.getRawType(subInterfaceType));
     }
 
+    @Test
+    public void testContainsWildcardTypes() throws Exception
+    {
+        Assert.assertFalse(GenericsUtil.containsWildcardType(StringObject.class));
+        Assert.assertTrue(GenericsUtil.containsWildcardType(GenericNumberObject.class.getMethod("getObject").getGenericReturnType()));
+        Assert.assertFalse(GenericsUtil.containsWildcardType(GenericObject.class.getMethod("getObject").getGenericReturnType()));
+    }
+
+
     public static abstract class AbstractObject<V> {
     
         private V field;
@@ -73,10 +82,19 @@ public class GenericsUtilTest {
 
     private static class GenericObject<T, V> extends AbstractObject<T> {
 
+        public GenericObject<T, V> getObject()
+        {
+            return new GenericObject<T, V>();
+        }
+
     }
 
     private static class GenericNumberObject<X, Y extends Number & Comparable<Integer>> extends AbstractObject<Y> {
 
+        public GenericNumberObject<?, ? extends Comparable<Integer>> getObject()
+        {
+            return new GenericNumberObject<X, Integer>();
+        }
     }
 
     private static class IntegerObject extends GenericNumberObject<String, Integer> {

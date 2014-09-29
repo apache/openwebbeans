@@ -114,7 +114,11 @@ public class ProducerFieldBeansBuilder<T>
                     ProducerFieldBeanBuilder<T, ProducerFieldBean<T>> producerFieldBeanCreator
                         = new ProducerFieldBeanBuilder<T, ProducerFieldBean<T>>(bean, annotatedField, beanAttributes);
                     ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
+
+                    //X TODO validateProxyable returns the exception, throw the returned exception??
                     webBeansContext.getDeploymentValidationService().validateProxyable(producerFieldBean);
+                    producerFieldBeanCreator.validate();
+
                     producerFieldBean.setProducerField(field);
 
                     webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean, producerFieldBean, anns);

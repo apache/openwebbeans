@@ -18,14 +18,21 @@
  */
 package org.apache.webbeans.component.creation;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.DefinitionException;
 
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.GenericsUtil;
 
 public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?>, P extends AbstractProducerBean<T>>
 {
@@ -59,7 +66,27 @@ public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?
      */
     public void validate() throws DefinitionException
     {
+        Type type = annotatedMember.getBaseType();
+        if (type instanceof GenericArrayType)
+        {
+            throw new DefinitionException("Produced Type must not be a GenericArrayType");
+        }
+        else if (ClassUtil.isParametrizedType(type))
+        {
+            if (GenericsUtil.containsWildcardType(type))
+            {
+                throw new DefinitionException("Produced type must not be a WildcardType");
+            }
+            else if (!Dependent.class.equals(beanAttributes.getScope()))
+            {
 
+                ParameterizedType parameterizedType = GenericsUtil.getParameterizedType(type);
+                if (GenericsUtil.containTypeVariable(parameterizedType.getActualTypeArguments()))
+                {
+                    throw new DefinitionException("Produced ParametrizedType must be @Dependent-Scope");
+                }
+            }
+        }
     }
 
     protected abstract <X> P createBean(InjectionTargetBean<X> parent, Class<T> beanClass);

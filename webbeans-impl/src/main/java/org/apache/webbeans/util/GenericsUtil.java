@@ -454,7 +454,43 @@ public final class GenericsUtil
         }
         return false;
     }
-    
+
+    /**
+     *
+     * @param type to check
+     *
+     * @return {@code true} if the given type contains a {@link java.lang.reflect.WildcardType}
+     *         {@code false} otherwise
+     */
+    public static boolean containsWildcardType(Type type)
+    {
+        if (!(type instanceof ParameterizedType))
+        {
+            return false;
+        }
+
+        for (Type typeArgument : getParameterizedType(type).getActualTypeArguments())
+        {
+            if (ClassUtil.isParametrizedType(typeArgument))
+            {
+                if (containsWildcardType(typeArgument))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (ClassUtil.isWildCardType(typeArgument))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+
     /**
      * Resolves the actual type of the specified field for the type hierarchy specified by the given subclass
      */

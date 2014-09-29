@@ -97,7 +97,9 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
 
                     ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
 
+                    //X TODO validateProxyable returns the exception, throw the returned exception??
                     webBeansContext.getDeploymentValidationService().validateProxyable(producerMethodBean);
+                    producerMethodBeanCreator.validate();
 
                     if(specialize)
                     {
