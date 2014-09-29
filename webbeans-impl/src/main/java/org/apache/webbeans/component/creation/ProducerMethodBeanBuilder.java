@@ -19,13 +19,16 @@
 package org.apache.webbeans.component.creation;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanAttributes;
+import javax.enterprise.inject.spi.DefinitionException;
 
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerMethodBean;
@@ -86,5 +89,21 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
     public ProducerMethodBean<T> getBean()
     {
         return createBean((Class<T>) annotatedMember.getJavaMember().getReturnType());
+    }
+
+    @Override
+    public void validate() throws DefinitionException
+    {
+        super.validate();
+
+        for (AnnotatedParameter<?> parameter : annotatedMember.getParameters())
+        {
+            Type type = parameter.getBaseType();
+            if (Bean.class.equals(ClassUtil.getClass(type)) &&
+                !annotatedMember.getBaseType().equals(ClassUtil.getActualTypeArguments(type)[0]))
+            {
+                throw new DefinitionException("Type parameter of the injected bean must be the same as the return type. Producer method: " + annotatedMember);
+            }
+        }
     }
 }

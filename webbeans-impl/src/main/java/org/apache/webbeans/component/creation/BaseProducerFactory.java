@@ -23,6 +23,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.GenericsUtil;
 
 import javax.enterprise.event.Observes;
@@ -205,10 +206,17 @@ public abstract class BaseProducerFactory<P> implements ProducerFactory<P>
 
         for (AnnotatedParameter param : annotatedMethod.getParameters())
         {
-            if (param.getBaseType().equals(InjectionPoint.class))
+            Type type = param.getBaseType();
+            if (type.equals(InjectionPoint.class))
             {
+
                 throw new DefinitionException("Error in definining disposal method of annotated method : " + annotatedMethod
                     + ". Disposal methods must not have an InjectionPoint.");
+            }
+            else if (Bean.class.isAssignableFrom(ClassUtil.getClass(type)))
+            {
+                throw new DefinitionException("Error in defining disposal method of annoted method: " + annotatedMethod +
+                        ". Disposal methods must not have a Bean parameter.");
             }
         }
     }
