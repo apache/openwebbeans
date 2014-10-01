@@ -534,11 +534,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * {@inheritDoc}
      */
     @Override
-    public <T> AnnotatedType<T> createAnnotatedType(Class<T> type)
+    public <T> AnnotatedType<T> createAnnotatedType(final Class<T> type)
     {
-        AnnotatedType<T> annotatedType = annotatedElementFactory.newAnnotatedType(type);
-
-        return annotatedType;
+        return annotatedElementFactory.newAnnotatedType(type);
     }
 
     /**

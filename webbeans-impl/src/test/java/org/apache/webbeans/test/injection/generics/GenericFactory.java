@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.test.injection.generics;
 
-import java.util.List;
-
 import javax.enterprise.inject.Produces;
 
 public class GenericFactory {
@@ -35,7 +33,7 @@ public class GenericFactory {
     }
 
     @Produces
-    public Baz<List<BazSubclass>> produceBazBazBazSubclass() {
+    public Baz<Baz<BazSubclass>> produceBazBazBazSubclass() {
         return new Baz();
     }
 }

@@ -292,7 +292,7 @@ public final class GenericsUtil
             {
                 for (Type upperBound: ((TypeVariable<?>)beanTypeArgument).getBounds())
                 {
-                    if (!isAssignableFrom(swapParams, upperBound, injectionPointTypeArgument))
+                    if (!isAssignableFrom(true, upperBound, injectionPointTypeArgument))
                     {
                         return false;
                     }
@@ -303,7 +303,8 @@ public final class GenericsUtil
             {
                 return false;
             }
-            else if (!isAssignableFrom(isDelegateOrEvent, injectionPointTypeArgument, beanTypeArgument))
+            else if ((!TypeVariable.class.isInstance(beanTypeArgument) || TypeVariable.class.cast(beanTypeArgument).getGenericDeclaration() != beanType.getRawType())
+                && !isAssignableFrom(isDelegateOrEvent, injectionPointTypeArgument, beanTypeArgument))
             {
                 return false;
             }

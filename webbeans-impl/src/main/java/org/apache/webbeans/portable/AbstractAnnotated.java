@@ -46,7 +46,7 @@ abstract class AbstractAnnotated implements Annotated
     
     /**Type closures*/
     private Set<Type> typeClosures = null;
-    
+
     /**Set of annotations*/
     private Set<Annotation> annotations = new HashSet<Annotation>();
 
@@ -226,13 +226,8 @@ abstract class AbstractAnnotated implements Annotated
     
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        
-        builder.append("Base Type : " + baseType.toString() + ",");
-        builder.append("Type Closures : " + typeClosures + ",");
-        builder.append("Annotations : " + annotations.toString());
-        
-        return builder.toString();
+        return ("Base Type : " + baseType.toString() + ",")
+                + "Type Closures : " + typeClosures + ","
+                + "Annotations : " + annotations.toString();
     }
-
 }

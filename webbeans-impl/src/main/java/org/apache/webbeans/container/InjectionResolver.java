@@ -18,6 +18,34 @@
  */
 package org.apache.webbeans.container;
 
+import org.apache.webbeans.annotation.AnyLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
+import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.inject.AlternativesManager;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.spi.BDABeansXmlScanner;
+import org.apache.webbeans.spi.ScannerService;
+import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.GenericsUtil;
+import org.apache.webbeans.util.InjectionExceptionUtil;
+import org.apache.webbeans.util.SingleItemSet;
+import org.apache.webbeans.util.WebBeansUtil;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.New;
+import javax.enterprise.inject.UnproxyableResolutionException;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.DefinitionException;
+import javax.enterprise.inject.spi.DeploymentException;
+import javax.enterprise.inject.spi.InjectionPoint;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
@@ -34,31 +62,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.New;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
-
-import org.apache.webbeans.annotation.AnyLiteral;
-import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
-import javax.enterprise.inject.spi.DefinitionException;
-import org.apache.webbeans.inject.AlternativesManager;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.spi.BDABeansXmlScanner;
-import org.apache.webbeans.spi.ScannerService;
-import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.GenericsUtil;
-import org.apache.webbeans.util.InjectionExceptionUtil;
-import org.apache.webbeans.util.SingleItemSet;
-import org.apache.webbeans.util.WebBeansUtil;
 import static org.apache.webbeans.util.InjectionExceptionUtil.throwAmbiguousResolutionException;
 
 /**
@@ -138,6 +141,20 @@ public class InjectionResolver
         if (type == Event.class)
         {
             throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " needs to define type argument for javax.enterprise.event.Event");
+        }
+
+        // not that happy about this check here and at runtime but few TCKs test Weld behavior only...
+        final Bean<?> bean = resolve(implResolveByType(false, type, injectionPoint.getQualifiers().toArray(new Annotation[injectionPoint.getQualifiers().size()])));
+        if (bean != null && ManagedBean.class.isInstance(bean))
+        {
+            try
+            {
+                ManagedBean.class.cast(bean).valid();
+            }
+            catch (final UnproxyableResolutionException ure)
+            {
+                throw new DeploymentException(ure);
+            }
         }
     }
 
