@@ -1645,7 +1645,7 @@ public final class WebBeansUtil
                     rawType.equals(Interceptor.class))
                 {
                     Type[] types = ClassUtil.getActualTypeArguments(injectionPoint.getType());
-                    if (types.length != 1 || !GenericsUtil.isAssignableFrom(false, bean.getBeanClass(), types[0]))
+                    if (types.length != 1 || !GenericsUtil.isAssignableFrom(false, AbstractProducerBean.class.isInstance(bean), bean.getBeanClass(), types[0]))
                     {
                         throw new DefinitionException("injected bean parameter must be " + rawType);
                     }
@@ -1859,7 +1859,7 @@ public final class WebBeansUtil
                     final Class<?> beanClass = AbstractOwbBean.class.isInstance(injectionPointBean) ?
                             AbstractOwbBean.class.cast(injectionPointBean).getReturnType() : injectionPointBean.getBeanClass();
                     final Type beanType = pt.getActualTypeArguments()[0];
-                    if (!GenericsUtil.isAssignableFrom(false, beanClass, beanType))
+                    if (!GenericsUtil.isAssignableFrom(false, AbstractProducerBean.class.isInstance(bean), beanClass, beanType))
                     {
                         throw new DefinitionException("@Inject Bean<X> can only be done in X, found " + beanType + " and " + beanClass);
                     }

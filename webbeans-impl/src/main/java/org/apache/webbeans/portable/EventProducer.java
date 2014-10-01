@@ -64,7 +64,7 @@ public class EventProducer<T> extends AbstractProducer<Event<T>>
             {
                 final ParameterizedType arg = ParameterizedType.class.cast(event);
                 final Type[] actualTypeArguments = arg.getActualTypeArguments();
-                if (actualTypeArguments.length > 0 && GenericsUtil.isAssignableFrom(true, actualTypeArguments[0], type))
+                if (actualTypeArguments.length > 0 && GenericsUtil.isAssignableFrom(true, false, actualTypeArguments[0], type))
                 {
                     list.add(original);
                 }

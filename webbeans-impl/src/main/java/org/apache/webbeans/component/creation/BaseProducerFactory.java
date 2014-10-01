@@ -102,7 +102,7 @@ public abstract class BaseProducerFactory<P> implements ProducerFactory<P>
                 {
                     if (annotatedParameter.isAnnotationPresent(Disposes.class))
                     {
-                        if (!GenericsUtil.satisfiesDependency(false, producerBaseType, annotatedParameter.getBaseType()))
+                        if (!GenericsUtil.satisfiesDependency(false, true, producerBaseType, annotatedParameter.getBaseType()))
                         {
                             continue;
                         }

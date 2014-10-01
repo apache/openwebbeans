@@ -384,7 +384,7 @@ public class BeansDeployer
 
                         if (pt1.getRawType() == pt2.getRawType())
                         {
-                            if (!GenericsUtil.isAssignableFrom(true, pt1, pt2))
+                            if (!GenericsUtil.isAssignableFrom(true, false, pt1, pt2))
                             {
                                 throw new DefinitionException("Generic error matching " + api + " and " + t);
                             }

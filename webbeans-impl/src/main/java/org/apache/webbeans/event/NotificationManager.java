@@ -285,7 +285,7 @@ public final class NotificationManager
         {
             for (Type eventType : eventTypes)
             {
-                if (GenericsUtil.isAssignableFrom(true, observedType, eventType))
+                if (GenericsUtil.isAssignableFrom(true, false, observedType, eventType))
                 {
                     Set<ObserverMethod<?>> observerMethods = observers.get(observedType);
 

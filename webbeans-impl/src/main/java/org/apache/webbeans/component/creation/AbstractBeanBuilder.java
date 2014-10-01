@@ -59,7 +59,7 @@ public abstract class AbstractBeanBuilder<T>
                     boolean found = false;
                     for (final ProducerMethodBean<?> producer : producerBeans)
                     {
-                        if (GenericsUtil.satisfiesDependency(false, producer.getCreatorMethod().getGenericReturnType(), param.getBaseType()))
+                        if (GenericsUtil.satisfiesDependency(false, true, producer.getCreatorMethod().getGenericReturnType(), param.getBaseType()))
                         {
                             found = true;
                             break;
@@ -69,7 +69,7 @@ public abstract class AbstractBeanBuilder<T>
                     {
                         for (final ProducerFieldBean<?> field : producerFields)
                         {
-                            if (GenericsUtil.satisfiesDependency(false, field.getCreatorField().getType(), param.getBaseType()))
+                            if (GenericsUtil.satisfiesDependency(false, true, field.getCreatorField().getType(), param.getBaseType()))
                             {
                                 found = true;
                                 break;
@@ -81,7 +81,7 @@ public abstract class AbstractBeanBuilder<T>
                             // see if @Disposes should just be ignored as well - no inheritance
                             for (final AnnotatedMethod<?> producer : ignoredProducers)
                             {
-                                if (GenericsUtil.satisfiesDependency(false, producer.getJavaMember().getGenericReturnType(), param.getBaseType()))
+                                if (GenericsUtil.satisfiesDependency(false, true, producer.getJavaMember().getGenericReturnType(), param.getBaseType()))
                                 {
                                     found = true;
                                     break;

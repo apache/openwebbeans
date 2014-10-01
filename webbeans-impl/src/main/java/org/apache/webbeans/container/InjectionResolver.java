@@ -21,6 +21,7 @@ package org.apache.webbeans.container;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.OwbBean;
@@ -472,7 +473,8 @@ public class InjectionResolver
                 for (Type componentApiType : component.getTypes())
                 {
 
-                    if (GenericsUtil.satisfiesDependency(isDelegate, injectionPointType, componentApiType))
+                    if (GenericsUtil.satisfiesDependency(isDelegate, AbstractProducerBean.class.isInstance(component),
+                            injectionPointType, componentApiType))
                     {
                         resolvedComponents.add(component);
                         break;

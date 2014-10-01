@@ -55,6 +55,7 @@ import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.CdiInterceptorBean;
 import org.apache.webbeans.component.DecoratorBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
@@ -694,7 +695,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         if(beanType != null && beanType != Object.class)
         {
             if(!isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean) &&
-               !GenericsUtil.satisfiesDependency(false, beanType, bean.getBeanClass()))
+               !GenericsUtil.satisfiesDependency(false, AbstractProducerBean.class.isInstance(bean), beanType, bean.getBeanClass()))
             {
                 throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
             }
@@ -872,7 +873,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {
             Type beanApiType = itBeanApiTypes.next();
 
-            if(GenericsUtil.satisfiesDependency(false, givenType, beanApiType))
+            if(GenericsUtil.satisfiesDependency(false, false, givenType, beanApiType))
             {
                 return true;
             }
