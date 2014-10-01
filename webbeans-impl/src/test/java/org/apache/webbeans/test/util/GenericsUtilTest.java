@@ -25,6 +25,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.Set;
 
 import org.apache.webbeans.util.GenericsUtil;
 import org.junit.Assert;
@@ -44,7 +45,7 @@ public class GenericsUtilTest {
 
         Type number = GenericsUtil.resolveType(GenericNumberObject.class, field);
         assertTrue(number instanceof TypeVariable);
-		assertEquals(Number.class, GenericsUtil.getRawType(number));
+        assertEquals(Number.class, GenericsUtil.getRawType(number));
 
         assertEquals(Integer.class, GenericsUtil.resolveType(IntegerObject.class, field));
         GenericArrayType genericArrayType = (GenericArrayType)GenericsUtil.resolveType(GenericArrayObject.class, field);
@@ -56,6 +57,11 @@ public class GenericsUtilTest {
         Type subInterfaceType = GenericsUtil.resolveType(InterfaceObject.class, field);
         assertTrue(subInterfaceType instanceof TypeVariable);
         assertEquals(SubInterface.class, GenericsUtil.getRawType(subInterfaceType));
+
+        assertEquals(JustAPlainClass.class, GenericsUtil.getRawType(JustAPlainClass.class));
+
+        Set<Type> typeClosure = GenericsUtil.getTypeClosure(JustAPlainClass.class);
+        assertEquals(2, typeClosure.size());
     }
 
     @Test
@@ -67,20 +73,24 @@ public class GenericsUtilTest {
     }
 
 
-    public static abstract class AbstractObject<V> {
+    public static abstract class AbstractObject<V>
+    {
     
         private V field;
     }
 
-    private static class SimpleObject extends AbstractObject {
+    private static class SimpleObject extends AbstractObject
+    {
 
     }
 
-    private static class StringObject extends AbstractObject<String> {
+    private static class StringObject extends AbstractObject<String>
+    {
 
     }
 
-    private static class GenericObject<T, V> extends AbstractObject<T> {
+    private static class GenericObject<T, V> extends AbstractObject<T>
+    {
 
         public GenericObject<T, V> getObject()
         {
@@ -89,7 +99,8 @@ public class GenericsUtilTest {
 
     }
 
-    private static class GenericNumberObject<X, Y extends Number & Comparable<Integer>> extends AbstractObject<Y> {
+    private static class GenericNumberObject<X, Y extends Number & Comparable<Integer>> extends AbstractObject<Y>
+    {
 
         public GenericNumberObject<?, ? extends Comparable<Integer>> getObject()
         {
@@ -97,27 +108,38 @@ public class GenericsUtilTest {
         }
     }
 
-    private static class IntegerObject extends GenericNumberObject<String, Integer> {
+    private static class IntegerObject extends GenericNumberObject<String, Integer>
+    {
 
     }
 
-    private static class GenericArrayObject<V> extends GenericObject<V[], V> {
+    private static class GenericArrayObject<V> extends GenericObject<V[], V>
+    {
 
     }
 
-    private static class LongArrayObject extends GenericArrayObject<Long> {
+    private static class LongArrayObject extends GenericArrayObject<Long>
+    {
 
     }
 
-    private static class InterfaceObject<V extends SubInterface & SuperInterface> extends AbstractObject<V> {
+    private static class InterfaceObject<V extends SubInterface & SuperInterface> extends AbstractObject<V>
+    {
 
     }
 
-    private interface SuperInterface {
+    private interface SuperInterface
+    {
 
     }
 
-    private interface SubInterface extends SuperInterface {
+    private interface SubInterface extends SuperInterface
+    {
+
+    }
+
+    private static class JustAPlainClass
+    {
 
     }
 }
