@@ -90,41 +90,42 @@
             <artifactId>geronimo-ejb_3.1_spec</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.jboss.cdi.tck</groupId>
+            <artifactId>cdi-tck-impl</artifactId>
+            <version>${cdi.tck.version}</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.enterprise</groupId>
+                    <artifactId>cdi-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.faces</groupId>
+                    <artifactId>jsf-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet.jsp</groupId>
+                    <artifactId>jsp-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.transaction</groupId>
+                    <artifactId>jta</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
     </dependencies>
 
     <profiles>
         <profile>
             <id>tck</id>
             <dependencies>
-                <dependency>
-                    <groupId>org.jboss.cdi.tck</groupId>
-                    <artifactId>cdi-tck-impl</artifactId>
-                    <version>${cdi.tck.version}</version>
-                    <scope>test</scope>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>javax.enterprise</groupId>
-                            <artifactId>cdi-api</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>javax.faces</groupId>
-                            <artifactId>jsf-api</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>javax.servlet</groupId>
-                            <artifactId>javax.servlet-api</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>javax.servlet.jsp</groupId>
-                            <artifactId>jsp-api</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>javax.transaction</groupId>
-                            <artifactId>jta</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                
+
                 <dependency>
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>openwebbeans-porting</artifactId>
