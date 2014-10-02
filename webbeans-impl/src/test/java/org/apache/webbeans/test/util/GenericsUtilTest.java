@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Set;
@@ -71,7 +72,6 @@ public class GenericsUtilTest {
         Assert.assertTrue(GenericsUtil.containsWildcardType(GenericNumberObject.class.getMethod("getObject").getGenericReturnType()));
         Assert.assertFalse(GenericsUtil.containsWildcardType(GenericObject.class.getMethod("getObject").getGenericReturnType()));
     }
-
 
     public static abstract class AbstractObject<V>
     {
@@ -141,5 +141,20 @@ public class GenericsUtilTest {
     private static class JustAPlainClass
     {
 
+    }
+
+    public static class Methods
+    {
+        public AbstractObject raw()
+        {
+            return new AbstractObject() {
+            };
+        }
+
+        public <T> AbstractObject<T> generic()
+        {
+            return new AbstractObject<T>() {
+            };
+        }
     }
 }

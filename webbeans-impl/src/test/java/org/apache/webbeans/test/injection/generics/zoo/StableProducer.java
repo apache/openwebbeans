@@ -48,4 +48,11 @@ public class StableProducer
 
         return stable;
     }
+
+    @Produces
+    @Dependent
+    public Stable createStableWithoutGenerics(InjectionPoint injectionPoint)
+    {
+        throw new UnsupportedOperationException("shouldn't be called");
+    }
 }

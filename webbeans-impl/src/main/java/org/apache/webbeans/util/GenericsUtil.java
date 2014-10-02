@@ -231,6 +231,19 @@ public final class GenericsUtil
         Class<?> rawInjectionPointType = getRawType(injectionPointType);
         if (rawInjectionPointType.equals(beanType))
         {
+            if (isProducer)
+            {
+                for (final Type t : injectionPointType.getActualTypeArguments())
+                {
+                    if (!TypeVariable.class.isInstance(t) || !isNotBound(TypeVariable.class.cast(t).getBounds()))
+                    {
+                        if (!Class.class.isInstance(t) || Object.class != t)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
             return true;
         }
         if (!rawInjectionPointType.isAssignableFrom(beanType))
@@ -293,20 +306,14 @@ public final class GenericsUtil
             {
                 final Type[] bounds = ((TypeVariable<?>) beanTypeArgument).getBounds();
                 final boolean isNotBound = isNotBound(bounds);
-                if (isNotBound)
+                if (!isNotBound)
                 {
-                    final boolean valid = Object.class == injectionPointTypeArgument
-                            || (TypeVariable.class.isInstance(injectionPointTypeArgument) && isNotBound(TypeVariable.class.cast(injectionPointTypeArgument).getBounds()));
-                    if (!valid)
+                    for (final Type upperBound : bounds)
                     {
-                        return !isProducer;
-                    }
-                }
-                for (final Type upperBound : bounds)
-                {
-                    if (!isAssignableFrom(true, false, upperBound, injectionPointTypeArgument))
-                    {
-                        return false;
+                        if (!isAssignableFrom(true, false, upperBound, injectionPointTypeArgument))
+                        {
+                            return false;
+                        }
                     }
                 }
             }
@@ -316,10 +323,7 @@ public final class GenericsUtil
             }
             else if (!isAssignableFrom(isDelegateOrEvent, false, injectionPointTypeArgument, beanTypeArgument))
             {
-                if (!isProducer || beanTypeArgument != Object.class) // if unbound that's ok for producers (5.2.3 IIRC)
-                {
-                    return false;
-                }
+                return false;
             }
         }
         return true;
@@ -672,6 +676,11 @@ public final class GenericsUtil
         {
             type = getParameterizedType(type);
         }
+        return getDirectTypeClosure(type, actualType);
+    }
+
+    public static Set<Type> getDirectTypeClosure(final Type type, final Type actualType)
+    {
         Set<Type> typeClosure = new HashSet<Type>();
         typeClosure.add(Object.class);
         fillTypeHierarchy(typeClosure, type, actualType);
@@ -703,6 +712,30 @@ public final class GenericsUtil
         {
             Class<?> classType = (Class<?>)type;
             return classType.getTypeParameters().length > 0;
+        }
+        return false;
+    }
+
+    public static boolean hasBoundParameters(final ParameterizedType pt)
+    {
+        final Type[] typeParameters = pt.getActualTypeArguments();
+        if (typeParameters == null || typeParameters.length == 0)
+        {
+            return false;
+        }
+        for (final Type tv : typeParameters)
+        {
+            if (TypeVariable.class.isInstance(tv))
+            {
+                if (!isNotBound(TypeVariable.class.cast(tv).getBounds()))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return true;
+            }
         }
         return false;
     }

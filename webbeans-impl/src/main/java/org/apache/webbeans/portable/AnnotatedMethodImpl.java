@@ -22,6 +22,8 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.GenericsUtil;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -48,7 +50,12 @@ class AnnotatedMethodImpl<X> extends AbstractAnnotatedCallable<X> implements Ann
         setAnnotations(javaMember.getDeclaredAnnotations());
         setAnnotatedParameters(GenericsUtil.resolveParameterTypes(declaringType.getJavaClass(), javaMember), javaMember.getParameterAnnotations());
     }
-    
+
+    @Override
+    protected Set<Type> extractTypeClojure(final Type baseType)
+    {   // we want to skip hasTypeParameters() check which is already done for methods
+        return GenericsUtil.getDirectTypeClosure(baseType, getOwningClass());
+    }
     
     /**
      * {@inheritDoc}
@@ -58,16 +65,11 @@ class AnnotatedMethodImpl<X> extends AbstractAnnotatedCallable<X> implements Ann
     {
         return Method.class.cast(javaMember);
     }
-    
+
+    @Override
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Annotated Method '");
-        builder.append(javaMember.getName());
-        builder.append("', ");
-        builder.append(super.toString());
-
-        return builder.toString();
+        return "Annotated Method '" + javaMember.getName() + "', " + super.toString();
     }
     
 }

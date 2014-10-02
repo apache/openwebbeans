@@ -155,7 +155,7 @@ abstract class AbstractAnnotated implements Annotated
     {
         if (typeClosures == null)
         {
-            typeClosures = GenericsUtil.getTypeClosure(baseType, getOwningClass());
+            typeClosures = extractTypeClojure(baseType);
             Set<String> ignoredInterfaces = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
             if (!ignoredInterfaces.isEmpty())
             {
@@ -205,6 +205,11 @@ abstract class AbstractAnnotated implements Annotated
             }
 
         }
+    }
+
+    protected Set<Type> extractTypeClojure(final Type baseType)
+    {
+        return GenericsUtil.getTypeClosure(baseType, getOwningClass());
     }
 
     /**

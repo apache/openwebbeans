@@ -18,13 +18,11 @@
  */
 package org.apache.webbeans.test.injection.generics.zoo;
 
-import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Assert;
 import org.junit.Test;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.spi.DeploymentException;
 import javax.inject.Inject;
 
 /**
@@ -64,7 +62,7 @@ public class GenericsInTheZooTest extends AbstractUnitTest
         }
     }
 
-    @Test(expected = WebBeansConfigurationException.class) // yes it sucks but producers and managed beans doesn't have same rules
+    @Test
     public void testGenericProducer() throws Exception
     {
         // create the stables via a single producer method
