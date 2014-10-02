@@ -694,8 +694,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Check type if bean type is given
         if(beanType != null && beanType != Object.class)
         {
-            if(!isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean) &&
-               !GenericsUtil.satisfiesDependency(false, AbstractProducerBean.class.isInstance(bean), beanType, bean.getBeanClass()))
+            final boolean isProducer = AbstractProducerBean.class.isInstance(bean);
+            if(!isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean, isProducer) &&
+               !GenericsUtil.satisfiesDependency(false, isProducer, beanType, bean.getBeanClass()))
             {
                 throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
             }
@@ -866,24 +867,21 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
 
-    private boolean isBeanTypeAssignableToGivenType(Set<Type> beanTypes, Type givenType, boolean newBean)
+    private boolean isBeanTypeAssignableToGivenType(Set<Type> beanTypes, Type givenType, boolean newBean, boolean producer)
     {
-        Iterator<Type> itBeanApiTypes = beanTypes.iterator();
-        while (itBeanApiTypes.hasNext())
+        for (final Type beanApiType : beanTypes)
         {
-            Type beanApiType = itBeanApiTypes.next();
-
-            if(GenericsUtil.satisfiesDependency(false, false, givenType, beanApiType))
+            if (GenericsUtil.satisfiesDependency(false, producer, givenType, beanApiType))
             {
                 return true;
             }
             else
             {
                 //Check for @New
-                if(newBean && ClassUtil.isParametrizedType(givenType))
+                if (newBean && ClassUtil.isParametrizedType(givenType))
                 {
                     Class<?> requiredType = ClassUtil.getClass(givenType);
-                    if(ClassUtil.isClassAssignable(requiredType, ClassUtil.getClass(beanApiType)))
+                    if (ClassUtil.isClassAssignable(requiredType, ClassUtil.getClass(beanApiType)))
                     {
                         return true;
                     }

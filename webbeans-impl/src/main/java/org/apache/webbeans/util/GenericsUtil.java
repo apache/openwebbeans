@@ -316,7 +316,10 @@ public final class GenericsUtil
             }
             else if (!isAssignableFrom(isDelegateOrEvent, false, injectionPointTypeArgument, beanTypeArgument))
             {
-                return false;
+                if (!isProducer || beanTypeArgument != Object.class) // if unbound that's ok for producers (5.2.3 IIRC)
+                {
+                    return false;
+                }
             }
         }
         return true;
