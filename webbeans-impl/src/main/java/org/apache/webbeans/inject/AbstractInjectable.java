@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.inject;
 
-import java.io.Serializable;
 import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -26,7 +25,6 @@ import java.util.List;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Event;
-import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Provider;
@@ -134,16 +132,6 @@ public abstract class AbstractInjectable implements Injectable
 
             //Gets injectable reference for injected bean
             injected = beanManager.getInjectableReference(injectionPoint, injectionOwnerCreationalContext);
-
-            /*X TODO see spec issue CDI-140 */
-            if(dependentProducer)
-            {
-                if(injected != null && !Serializable.class.isAssignableFrom(injected.getClass()))
-                {
-                    throw new IllegalProductException("If a producer method or field of scope @Dependent returns an serializable object for injection " +
-                                                    "into an injection point "+ injectionPoint +" that requires a passivation capable dependency");
-                }
-            }
 
             // add this dependent into bean dependent list
             if (!WebBeansUtil.isStaticInjection(injectionPoint) && WebBeansUtil.isDependent(injectedBean))

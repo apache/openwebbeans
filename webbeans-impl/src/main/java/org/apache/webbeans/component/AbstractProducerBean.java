@@ -150,13 +150,8 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
         {
             return false;
         }
-        
-        if(returnType.isPrimitive() || Serializable.class.isAssignableFrom(returnType))
-        {
-            return true;
-        }
-        
-        return false;
+
+        return true;
     }
 
     public void validatePassivationDependencies()
