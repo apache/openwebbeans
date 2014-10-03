@@ -19,6 +19,8 @@
 package org.apache.webbeans.container;
 
 import javax.enterprise.inject.spi.InjectionTargetFactory;
+
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.Asserts;
@@ -58,6 +60,10 @@ public class InjectionTargetFactoryImpl<T> implements InjectionTargetFactory<T>
     {
         final InjectionTargetImpl<T> injectionTarget
             = new InjectionTargetImpl<T>(annotatedType, createInjectionPoints(bean), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
+        if (ManagedBean.class.isInstance(bean))
+        {
+            ManagedBean.class.cast(bean).setOriginalInjectionTarget(injectionTarget);
+        }
         return webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, annotatedType).getInjectionTarget();
     }
 

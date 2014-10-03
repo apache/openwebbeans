@@ -26,6 +26,7 @@ import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.portable.InjectionTargetImpl;
 
 /**
  * Managed bean implementation of the {@link javax.enterprise.inject.spi.Bean}.
@@ -34,6 +35,9 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
  */
 public class ManagedBean<T> extends InjectionTargetBean<T> implements InterceptedMarker, PassivationCapable
 {
+    // just needed in BeansDeployer
+    private InjectionTargetImpl<T> originalInjectionTarget; // don't do = null!
+
     public ManagedBean(WebBeansContext webBeansContext,
                        WebBeansType webBeansType,
                        AnnotatedType<T> annotated,
@@ -64,5 +68,15 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
         {
             creationalContextImpl.putBean(oldBean);
         }
+    }
+
+    public void setOriginalInjectionTarget(final InjectionTargetImpl<T> originalInjectionTarget)
+    {
+        this.originalInjectionTarget = originalInjectionTarget;
+    }
+
+    public InjectionTargetImpl<T> getOriginalInjectionTarget()
+    {
+        return originalInjectionTarget;
     }
 }

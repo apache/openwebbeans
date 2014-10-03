@@ -699,10 +699,19 @@ public class BeansDeployer
                 
                 if (bean instanceof OwbBean && !(bean instanceof Interceptor) && !(bean instanceof Decorator))
                 {
+                    AbstractProducer<T> producer = null;
+
                     OwbBean<T> owbBean = (OwbBean<T>)bean;
-                    if (owbBean.getProducer() instanceof AbstractProducer)
+                    if (ManagedBean.class.isInstance(bean)) // in this case don't use producer which can be wrapped
                     {
-                        AbstractProducer<T> producer = (AbstractProducer<T>)owbBean.getProducer();
+                        producer = ManagedBean.class.cast(bean).getOriginalInjectionTarget();
+                    }
+                    if (producer == null && owbBean.getProducer() instanceof AbstractProducer)
+                    {
+                        producer = (AbstractProducer<T>)owbBean.getProducer();
+                    }
+                    if (producer != null)
+                    {
                         AnnotatedType<T> annotatedType;
                         if (owbBean instanceof InjectionTargetBean)
                         {
