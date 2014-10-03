@@ -147,14 +147,19 @@ public abstract class AbstractUnitTest
 
         if (inject)
         {
-            try
-            {
-                OWBInjector.inject(getBeanManager(), this, null);
-            }
-            catch (Exception e)
-            {
-                throw new WebBeansConfigurationException(e);
-            }
+            inject(this);
+        }
+    }
+
+    public void inject(final Object bean)
+    {
+        try
+        {
+            OWBInjector.inject(getBeanManager(), bean, null);
+        }
+        catch (final Exception e)
+        {
+            throw new WebBeansConfigurationException(e);
         }
     }
 

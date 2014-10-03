@@ -463,14 +463,18 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * {@inheritDoc}
      */
     @Override
-    public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
+    public List<Decorator<?>> resolveDecorators(final Set<Type> types, final Annotation... bindingTypes)
     {
         webBeansContext.getAnnotationManager().checkDecoratorResolverParams(types, bindingTypes);
-        Set<Decorator<?>> intsSet = webBeansContext.getDecoratorsManager().findDeployedWebBeansDecorator(types, bindingTypes);
+        return unsafeResolveDecorators(types, bindingTypes);
+    }
 
-        List<Decorator<?>> decoratorList = new ArrayList<Decorator<?>>(intsSet);
+    public List<Decorator<?>> unsafeResolveDecorators(final Set<Type> types, final Annotation[] bindingTypes)
+    {
+        webBeansContext.getAnnotationManager().checkQualifiersParams(types, bindingTypes); // checkDecoratorResolverParams is too restrictive for repeatable bindings
+        final Set<Decorator<?>> intsSet = webBeansContext.getDecoratorsManager().findDeployedWebBeansDecorator(types, bindingTypes);
+        final List<Decorator<?>> decoratorList = new ArrayList<Decorator<?>>(intsSet);
         Collections.sort(decoratorList, new DecoratorComparator(webBeansContext));
-
         return decoratorList;
     }
 

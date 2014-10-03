@@ -39,7 +39,6 @@ import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.InterceptionType;
@@ -95,7 +94,7 @@ public class InterceptorResolutionService
         List<AnnotatedMethod> interceptableAnnotatedMethods = getInterceptableBusinessMethods(annotatedType);
 
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-        BeanManager beanManager = webBeansContext.getBeanManagerImpl();
+        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
 
 
         // pick up EJB-style interceptors from a class level
@@ -104,7 +103,7 @@ public class InterceptorResolutionService
         collectEjbInterceptors(classLevelEjbInterceptors, annotatedType, false, beanTypes);
 
         // pick up the decorators
-        List<Decorator<?>> decorators = beanManager.resolveDecorators(beanTypes, AnnotationUtil.asArray(qualifiers));
+        List<Decorator<?>> decorators = beanManager.unsafeResolveDecorators(beanTypes, AnnotationUtil.asArray(qualifiers));
         if (decorators.size() == 0)
         {
             decorators = Collections.emptyList(); // less to store

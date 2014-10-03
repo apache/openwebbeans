@@ -33,7 +33,7 @@ import java.util.Collection;
 public class InjectNonContextualTest extends AbstractUnitTest
 {
     @SuppressWarnings("unchecked")
-    public <T> void inject(T instance)
+    public <T> void doInject(T instance)
     {
         BeanManager mgr = WebBeansContext.getInstance().getBeanManagerImpl();
         AnnotatedType<T> annotatedType = mgr.createAnnotatedType((Class<T>) instance.getClass());
@@ -54,7 +54,7 @@ public class InjectNonContextualTest extends AbstractUnitTest
         try
         {
             final NonContextualBean bean = new NonContextualBean();
-            inject(bean);
+            doInject(bean);
             Assert.assertNotNull(bean.getContextual());
         }
         finally

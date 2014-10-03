@@ -698,20 +698,10 @@ public final class AnnotationManager
 
     public void checkDecoratorResolverParams(Set<Type> apiTypes, Annotation... qualifiers)
     {
-        if (apiTypes == null || apiTypes.size() == 0)
-        {
-            throw new IllegalArgumentException("Manager.resolveDecorators() method parameter api types argument " +
-                    "can not be empty");
-        }
-
+        checkQualifiersParams(apiTypes, qualifiers);
         Annotation old = null;
-        for (Annotation qualifier : qualifiers)
+        for (final Annotation qualifier : qualifiers)
         {
-            if (!isQualifierAnnotation(qualifier.annotationType()))
-            {
-                throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers array " +
-                        "can not contain other annotation that is not @Qualifier");
-            }
             if (old == null)
             {
                 old = qualifier;
@@ -726,6 +716,24 @@ public final class AnnotationManager
                 }
 
                 old = qualifier;
+            }
+        }
+
+    }
+
+    public void checkQualifiersParams(Set<Type> apiTypes, Annotation... qualifiers)
+    {
+        if (apiTypes == null || apiTypes.size() == 0)
+        {
+            throw new IllegalArgumentException("method parameter api types argument can not be empty");
+        }
+
+        for (final Annotation qualifier : qualifiers)
+        {
+            if (!isQualifierAnnotation(qualifier.annotationType()))
+            {
+                throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers array " +
+                        "can not contain other annotation that is not @Qualifier");
             }
         }
 
