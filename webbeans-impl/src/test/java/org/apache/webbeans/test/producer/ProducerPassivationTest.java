@@ -106,7 +106,8 @@ public class ProducerPassivationTest extends AbstractUnitTest
         }
     }
 
-    public static class NonSerializableImplHolder
+    @SessionScoped
+    public static class NonSerializableImplHolder implements Serializable
     {
         private @Inject NonSerializableInterface instance;
 
