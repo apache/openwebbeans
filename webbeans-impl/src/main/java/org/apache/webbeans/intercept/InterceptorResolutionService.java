@@ -587,10 +587,7 @@ public class InterceptorResolutionService
 
         if (unproxyable && cummulatedInterceptorBindings.size() > 0)
         {
-            if (unproxyable)
-            {
-                throw new WebBeansConfigurationException(annotatedMethod + " is not proxyable, but an Interceptor got defined on it!");
-            }
+            throw new WebBeansConfigurationException(annotatedMethod + " is not proxyable, but an Interceptor got defined on it!");
         }
 
         if (unproxyable)
