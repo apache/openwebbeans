@@ -121,11 +121,6 @@ public class AbstractProducerBean<T> extends AbstractOwbBean<T> implements Passi
             return false;
         }
         
-        if(returnType.isPrimitive() || Serializable.class.isAssignableFrom(returnType))
-        {
-            return true;
-        }
-        
-        return false;
+        return true;
     }
 }
