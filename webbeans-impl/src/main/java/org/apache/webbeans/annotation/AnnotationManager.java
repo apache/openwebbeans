@@ -223,8 +223,12 @@ public final class AnnotationManager
         Asserts.assertNotNull(anns, "anns parameter can not be null");
         List<Annotation> interAnns = new ArrayList<Annotation>();
 
-        for (Annotation ann : anns)
+        for (final Annotation ann : anns)
         {
+            if (ann.annotationType().getName().startsWith("java.lang."))
+            {
+                continue;
+            }
             if (isInterceptorBindingAnnotation(ann.annotationType()))
             {
                 interAnns.add(ann);

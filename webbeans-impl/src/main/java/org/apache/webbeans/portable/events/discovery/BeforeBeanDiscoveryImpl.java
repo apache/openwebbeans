@@ -110,7 +110,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
     public void addInterceptorBinding(AnnotatedType<? extends Annotation> annotatedType)
     {
         // TODO extract inherited types
-        webBeansContext.getInterceptorsManager().addInterceptorBindingType(annotatedType.getJavaClass());
+        webBeansContext.getInterceptorsManager().addInterceptorBindingType(annotatedType);
     }
 
     /**

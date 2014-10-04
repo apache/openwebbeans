@@ -30,6 +30,7 @@ import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.util.Nonbinding;
 
 import org.apache.webbeans.annotation.AnyLiteral;
@@ -202,6 +203,20 @@ public final class AnnotationUtil
         throw new IllegalArgumentException("annotation @" + annotation.getName() + " not found on any parameter");
     }
 
+    private static boolean areParamEquals(final Annotation annotation1, final Annotation annotation2, final List<Method> bindingCdiAnnotationMethods)
+    {
+        for (final Method method : bindingCdiAnnotationMethods)
+        {
+            final Object value1 = callMethod(annotation1, method);
+            final Object value2 = callMethod(annotation2, method);
+            if (!checkEquality(value1, value2))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Checks if the given cdi annotations are equal. cdi annotations may either be qualifiers or interceptor bindings.
      *
@@ -212,6 +227,27 @@ public final class AnnotationUtil
      * @param annotation2
      * @return 
      */
+    public static boolean isCdiAnnotationEqual(final AnnotatedType<?> at, final Annotation annotation1, final Annotation annotation2)
+    {
+        Asserts.assertNotNull(annotation1, "annotation1 argument can not be null");
+        Asserts.assertNotNull(annotation2, "annotation2 argument can not be null");
+
+        Class<?> qualifier1AnnotationType = at.getJavaClass();
+
+        // check if the annotationTypes are equal
+        if (qualifier1AnnotationType == null
+                || !qualifier1AnnotationType.equals(annotation2.annotationType()))
+        {
+            return false;
+        }
+
+        // check the values of all qualifier-methods
+        // except those annotated with @Nonbinding
+        List<Method> bindingCdiAnnotationMethods = getBindingCdiAnnotationMethods(at);
+
+        return areParamEquals(annotation1, annotation2, bindingCdiAnnotationMethods);
+    }
+
     public static boolean isCdiAnnotationEqual(Annotation annotation1, Annotation annotation2)
     {
         Asserts.assertNotNull(annotation1, "annotation1 argument can not be null");
@@ -232,18 +268,7 @@ public final class AnnotationUtil
         List<Method> bindingCdiAnnotationMethods
                 = getBindingCdiAnnotationMethods(qualifier1AnnotationType);
 
-        for (Method method : bindingCdiAnnotationMethods)
-        {
-            Object value1 = callMethod(annotation1, method);
-            Object value2 = callMethod(annotation2, method);
-
-            if (!checkEquality(value1, value2))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return areParamEquals(annotation1, annotation2, bindingCdiAnnotationMethods);
     }
 
     /**
@@ -446,6 +471,20 @@ public final class AnnotationUtil
 
         // annotation has no methods
         return Collections.emptyList();
+    }
+
+    private static List<Method> getBindingCdiAnnotationMethods(final AnnotatedType<?> at)
+    {
+        final List<Method> bindingMethods = new ArrayList<Method>();
+        for (final AnnotatedMethod<?> method : at.getMethods())
+        {
+            if (method.isAnnotationPresent(Nonbinding.class))
+            {
+                continue;
+            }
+            bindingMethods.add(method.getJavaMember());
+        }
+        return bindingMethods;
     }
 
     /**

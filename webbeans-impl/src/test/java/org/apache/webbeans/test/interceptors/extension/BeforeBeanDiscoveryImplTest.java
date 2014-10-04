@@ -18,11 +18,9 @@
  */
 package org.apache.webbeans.test.interceptors.extension;
 
+import org.apache.webbeans.annotation.EmptyAnnotationLiteral;
 import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.test.AbstractUnitTest;
-import org.apache.webbeans.test.interceptors.annotation.DependentInterceptorBindingType;
-import org.apache.webbeans.util.AnnotationUtil;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.enterprise.event.Observes;
@@ -53,20 +51,39 @@ import static org.junit.Assert.assertEquals;
 public class BeforeBeanDiscoveryImplTest extends AbstractUnitTest
 {
     @Test
-    @Ignore("not yet implemented")
     public void nonBindingByExtension()
     {
         addExtension(new TheExtension());
         addInterceptor(TheInterceptor.class);
-        startContainer(TheInterceptor.class, Intercepted.class);
-        assertEquals("interceptor", getInstance(Intercepted.class).value());
+        startContainer(Intercepted.class);
+
+        final Intercepted instance = getInstance(Intercepted.class);
+        assertEquals("interceptor", instance.value());
+        assertEquals("bean", instance.noInterceptor());
     }
 
     public static class TheExtension implements Extension
     {
         void obs(@Observes final BeforeBeanDiscovery bbd, final BeanManager bm)
         {
-            final AnnotatedType<TheBindingType> annotatedType = bm.createAnnotatedType(TheBindingType.class);
+            final AnnotatedType<TheBindingType> annotatedType1 = bm.createAnnotatedType(TheBindingType.class);
+            final Set<Annotation> annotations = annotatedType1.getAnnotations();
+            annotations.add(new EmptyAnnotationLiteral<InterceptorBinding>() {});
+
+            final AnnotatedType<TheBindingType> annotatedType = new AnnotatedTypeWrapper<TheBindingType>(this, annotatedType1) {
+                @Override
+                public Set<Annotation> getAnnotations()
+                {
+                    return annotations;
+                }
+
+                @Override
+                public boolean isAnnotationPresent(final Class<? extends Annotation> aClass)
+                {
+                    return super.isAnnotationPresent(aClass) || InterceptorBinding.class == aClass;
+                }
+            };
+
             final AnnotatedTypeWrapper<TheBindingType> wrapper = new AnnotatedTypeWrapper<TheBindingType>(this, annotatedType) {
                 @Override
                 public Set<AnnotatedMethod<? super TheBindingType>> getMethods() {
@@ -114,14 +131,7 @@ public class BeforeBeanDiscoveryImplTest extends AbstractUnitTest
                                     final T annotation = m.getAnnotation(annotationType);
                                     if (annotation == null && Nonbinding.class == annotationType)
                                     {
-                                        return (T) new Nonbinding()
-                                        {
-                                            @Override
-                                            public Class<? extends Annotation> annotationType()
-                                            {
-                                                return Nonbinding.class;
-                                            }
-                                        };
+                                        return (T) new EmptyAnnotationLiteral<Nonbinding>() {};
                                     }
                                     return annotation;
                                 }
@@ -149,17 +159,19 @@ public class BeforeBeanDiscoveryImplTest extends AbstractUnitTest
         }
     }
 
-    @InterceptorBinding
+    // @InterceptorBinding: done by the extension
     @Retention(RetentionPolicy.RUNTIME)
     @Target( { ElementType.TYPE, ElementType.METHOD })
     public static @interface TheBindingType
     {
         String shouldBeBound();
+
+        boolean binding();
     }
 
     @Interceptor
-    @TheBindingType(shouldBeBound = "useless normally")
-    public class TheInterceptor
+    @TheBindingType(shouldBeBound = "useless normally", binding = true)
+    public static class TheInterceptor
     {
         @AroundInvoke
         public Object aroundInvoke(final InvocationContext ctx) throws Exception
@@ -170,10 +182,16 @@ public class BeforeBeanDiscoveryImplTest extends AbstractUnitTest
 
     public static class Intercepted
     {
-        @TheBindingType(shouldBeBound = "another value")
+        @TheBindingType(shouldBeBound = "another value", binding = true)
         public String value()
         {
-            throw new UnsupportedOperationException("shouldn't be called");
+            throw new UnsupportedOperationException("the test failed :(");
+        }
+
+        @TheBindingType(shouldBeBound = "useless normally", binding = false)
+        public String noInterceptor()
+        {
+            return "bean";
         }
     }
 }

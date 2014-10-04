@@ -20,6 +20,7 @@ package org.apache.webbeans.intercept;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,6 +79,8 @@ public class InterceptorsManager
      */
     private Map<Class<? extends Annotation>, Set<Annotation>> additionalInterceptorBindingTypes
             = new HashMap<Class<? extends Annotation>, Set<Annotation>>();
+    private final Collection<AnnotatedType<?>> additionalInterceptorBindingTypesAnnotatedTypes
+            = new ArrayList<AnnotatedType<?>>();
 
     private final PriorityClasses priorityInterceptors = new PriorityClasses();
 
@@ -230,14 +233,41 @@ public class InterceptorsManager
             // if an interceptor has multiple bindings then all of them must be in the
             // requestedInterceptorBindings for a positive match
 
-            if (!inBindingArray(interceptorBinding, requestedInterceptorBindings))
+            // first check AT since it can override some methods (@NonBinding)
+            boolean found = false;
+            for (final AnnotatedType<?> at : additionalInterceptorBindingTypesAnnotatedTypes)
             {
-                return false;
+                if (interceptorBinding.annotationType().equals(at.getJavaClass()))
+                {
+                    found = true;
+                    if (!inBindingArray(at, interceptorBinding, requestedInterceptorBindings))
+                    {
+                        return false;
+                    }
+                }
             }
-
+            if (!found)
+            {
+                if (!inBindingArray(interceptorBinding, requestedInterceptorBindings))
+                {
+                    return false;
+                }
+            }
         }
 
         return true;
+    }
+
+    private boolean inBindingArray(final AnnotatedType<?> at, final Annotation interceptorBinding, final Annotation[] requestedInterceptorBindings)
+    {
+        for (final Annotation requestedBinding : requestedInterceptorBindings)
+        {
+            if (AnnotationUtil.isCdiAnnotationEqual(at, requestedBinding, interceptorBinding))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean inBindingArray(Annotation interceptorBinding, Annotation[] requestedInterceptorBindings)
@@ -289,6 +319,11 @@ public class InterceptorsManager
         return additionalInterceptorClasses.contains(clazz);
     }
 
+    public void addInterceptorBindingType(final AnnotatedType<? extends Annotation> annotatedType)
+    {
+        additionalInterceptorBindingTypesAnnotatedTypes.add(annotatedType);
+    }
+
     public void addInterceptorBindingType(Class<? extends Annotation> bindingType, Annotation... inheritsArray)
     {
         Set<Annotation> inherits = additionalInterceptorBindingTypes.get(bindingType);
@@ -297,16 +332,24 @@ public class InterceptorsManager
             inherits = new HashSet<Annotation>();
             additionalInterceptorBindingTypes.put(bindingType, inherits);
         }
-        for(Annotation ann : inheritsArray)
-        {
-            inherits.add(ann);
-        }
-
+        Collections.addAll(inherits, inheritsArray);
     }
 
     public boolean hasInterceptorBindingType(Class<? extends Annotation> bindingType)
     {
-        return additionalInterceptorBindingTypes.keySet().contains(bindingType);
+        final boolean contains = additionalInterceptorBindingTypes.keySet().contains(bindingType);
+        if (contains)
+        {
+            return true;
+        }
+        for (final AnnotatedType<?> at : additionalInterceptorBindingTypesAnnotatedTypes)
+        {
+            if (bindingType.equals(at.getJavaClass()))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
 
