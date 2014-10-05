@@ -56,13 +56,11 @@ import org.apache.webbeans.config.OwbWildcardTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 
 
 import org.apache.webbeans.inject.AlternativesManager;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.portable.InjectionTargetImpl;
@@ -85,7 +83,6 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
 import javax.decorator.Decorator;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Decorated;
@@ -150,7 +147,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Logger;
 
 /**
  * Contains some utility methods used in the all project.
@@ -158,8 +154,6 @@ import java.util.logging.Logger;
 @SuppressWarnings("unchecked")
 public final class WebBeansUtil
 {
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansUtil.class);
-
     private final WebBeansContext webBeansContext;
 
     // cache to skip some validations
@@ -413,33 +407,6 @@ public final class WebBeansUtil
         }
         return false;
     }
-
-    private boolean isNormalScoped(final AnnotatedType<?> type)
-    {
-        final Set<Annotation> annotations = type.getAnnotations();
-        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
-        if (annotations != null)
-        {
-            for (final Annotation a : annotations)
-            {
-                if (AnnotationUtil.hasMetaAnnotation(a.annotationType().getAnnotations(), NormalScope.class)
-                    || AnnotationUtil.hasAnnotation(a.annotationType().getAnnotations(), NormalScope.class))
-                {
-                    return true;
-                }
-                for (ExternalScope externalScope : beanManager.getAdditionalScopes())
-                {
-                    if (externalScope.isNormal() && externalScope.getScope().equals(a))
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
 
     public <T> Bean<T> createNewComponent(Class<T> type)
     {

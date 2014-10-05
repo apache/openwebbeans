@@ -18,21 +18,35 @@
  */
 package org.apache.webbeans.test.util;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 
+import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.util.GenericsUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class GenericsUtilTest {
+    @Test
+    public void stackOverFlowProtection() throws Exception
+    {
+        final Type type = new OwbParametrizedTypeImpl(null, ByDefaultIllDoAStackOverFlowIngenericUtils.class, ByDefaultIllDoAStackOverFlowIngenericUtils.class.getTypeParameters());
+        final Collection<Method> methods = new ArrayList<Method>(asList(ByDefaultIllDoAStackOverFlowIngenericUtils.class.getMethods()));
+        methods.removeAll(asList(Object.class.getMethods()));
+        final Type actualType = methods.iterator().next().getTypeParameters()[0];
+        GenericsUtil.resolveTypes(new Type[] { actualType }, type);
+    }
 
     @Test
     public void resolveType() throws NoSuchFieldException {
@@ -155,6 +169,15 @@ public class GenericsUtilTest {
         {
             return new AbstractObject<T>() {
             };
+        }
+    }
+
+    public static class ByDefaultIllDoAStackOverFlowIngenericUtils<C, R>
+    {
+        public <P extends Comparable<? super P>> ByDefaultIllDoAStackOverFlowIngenericUtils<C, R> foo(
+                final ByDefaultIllDoAStackOverFlowIngenericUtils<? super C, P> att, P value)
+        {
+            return this;
         }
     }
 }

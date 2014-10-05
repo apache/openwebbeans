@@ -519,7 +519,7 @@ public final class GenericsUtil
      */
     public static Type resolveType(Class<?> subclass, Field field)
     {
-        return resolveType(field.getGenericType(), subclass);
+        return resolveType(field.getGenericType(), subclass, newSeenList());
     }
 
     /**
@@ -527,7 +527,7 @@ public final class GenericsUtil
      */
     public static Type resolveReturnType(Class<?> subclass, Method method)
     {
-        return resolveType(method.getGenericReturnType(), subclass);
+        return resolveType(method.getGenericReturnType(), subclass, newSeenList());
     }
 
     /**
@@ -551,10 +551,15 @@ public final class GenericsUtil
      */
     public static Type resolveType(Type type, Class<?> subclass, Member member)
     {
-        return resolveType(type, subclass);
+        return resolveType(type, subclass, newSeenList());
     }
 
-    public static Type resolveType(Type type, Type actualType)
+    public static Type resolveType(Type type, Class<?> subclass, Member member, Collection<TypeVariable<?>> seen)
+    {
+        return resolveType(type, subclass, seen);
+    }
+
+    public static Type resolveType(Type type, Type actualType, Collection<TypeVariable<?>> seen)
     {
         if (type instanceof Class)
         {
@@ -573,7 +578,7 @@ public final class GenericsUtil
             }
             else
             {
-                resolvedTypeArguments = resolveTypes(parameterizedType.getActualTypeArguments(), actualType);
+                resolvedTypeArguments = resolveTypes(parameterizedType.getActualTypeArguments(), actualType, seen);
 
             }
 
@@ -582,19 +587,19 @@ public final class GenericsUtil
         else if (type instanceof TypeVariable)
         {
             TypeVariable<?> variable = (TypeVariable<?>)type;
-            return resolveTypeVariable(variable, actualType);
+            return resolveTypeVariable(variable, actualType, seen);
         }
         else if (type instanceof WildcardType)
         {
             WildcardType wildcardType = (WildcardType)type;
-            Type[] upperBounds = resolveTypes(wildcardType.getUpperBounds(), actualType);
-            Type[] lowerBounds = resolveTypes(wildcardType.getLowerBounds(), actualType);
+            Type[] upperBounds = resolveTypes(wildcardType.getUpperBounds(), actualType, seen);
+            Type[] lowerBounds = resolveTypes(wildcardType.getLowerBounds(), actualType, seen);
             return new OwbWildcardTypeImpl(upperBounds, lowerBounds);
         }
         else if (type instanceof GenericArrayType)
         {
             GenericArrayType arrayType = (GenericArrayType)type;
-            return createArrayType(resolveType(arrayType.getGenericComponentType(), actualType));
+            return createArrayType(resolveType(arrayType.getGenericComponentType(), actualType, seen));
         }
         else
         {
@@ -602,12 +607,26 @@ public final class GenericsUtil
         }
     }
     
+    public static Type[] resolveTypes(Type[] types, Type actualType, Collection<TypeVariable<?>> seen)
+    {
+        Type[] resolvedTypeArguments = new Type[types.length];
+        for (int i = 0; i < types.length; i++)
+        {
+            final Type type = resolveType(types[i], actualType, seen);
+            if (type != null) // means a stackoverflow was avoided, just keep what we have
+            {
+                resolvedTypeArguments[i] = type;
+            }
+        }
+        return resolvedTypeArguments;
+    }
+
     public static Type[] resolveTypes(Type[] types, Type actualType)
     {
         Type[] resolvedTypeArguments = new Type[types.length];
         for (int i = 0; i < types.length; i++)
         {
-            resolvedTypeArguments[i] = resolveType(types[i], actualType);
+            resolvedTypeArguments[i] = resolveType(types[i], actualType, newSeenList());
         }
         return resolvedTypeArguments;
     }
@@ -693,7 +712,7 @@ public final class GenericsUtil
         {
            return;
         }
-        Type resolvedType = GenericsUtil.resolveType(type, actualType);
+        Type resolvedType = GenericsUtil.resolveType(type, actualType, newSeenList());
         set.add(resolvedType);
         Class<?> resolvedClass = GenericsUtil.getRawType(resolvedType, actualType);
         if (resolvedClass.getSuperclass() != null)
@@ -704,6 +723,11 @@ public final class GenericsUtil
         {
             fillTypeHierarchy(set, interfaceType, resolvedType);
         }
+    }
+
+    private static Collection<TypeVariable<?>> newSeenList()
+    {
+        return new ArrayList<TypeVariable<?>>();
     }
 
     public static boolean hasTypeParameters(Type type)
@@ -829,7 +853,7 @@ public final class GenericsUtil
         return classTypes.toArray(new Class[classTypes.size()]);
     }
 
-    private static Type resolveTypeVariable(TypeVariable<?> variable, Type actualType)
+    private static Type resolveTypeVariable(TypeVariable<?> variable, Type actualType, Collection<TypeVariable<?>> seen)
     {
         if (actualType == null)
         {
@@ -839,14 +863,14 @@ public final class GenericsUtil
         Class<?> actualClass = getRawType(actualType);
         if (actualClass == declaringClass)
         {
-            return resolveTypeVariable(variable, variable.getGenericDeclaration(), getParameterizedType(actualType));
+            return resolveTypeVariable(variable, variable.getGenericDeclaration(), getParameterizedType(actualType), seen);
         }
         else if (actualClass.isAssignableFrom(declaringClass))
         {
             Class<?> directSubclass = getDirectSubclass(declaringClass, actualClass);
             Type[] typeArguments = resolveTypeArguments(directSubclass, actualType);
             Type directSubtype = new OwbParametrizedTypeImpl(directSubclass.getDeclaringClass(), directSubclass, typeArguments);
-            return resolveTypeVariable(variable, directSubtype);
+            return resolveTypeVariable(variable, directSubtype, seen);
         }
         else // if (declaringClass.isAssignableFrom(actualClass))
         { 
@@ -867,7 +891,7 @@ public final class GenericsUtil
                 Type[] typeArguments = resolveTypeArguments(getParameterizedType(actualType), genericSupertype);
                 genericSuperclass = new OwbParametrizedTypeImpl(genericSupertype.getOwnerType(), genericSupertype.getRawType(), typeArguments);
             }
-            Type resolvedType = resolveTypeVariable(variable, genericSuperclass);
+            Type resolvedType = resolveTypeVariable(variable, genericSuperclass, seen);
             if (resolvedType instanceof TypeVariable)
             {
                 TypeVariable<?> resolvedTypeVariable = (TypeVariable<?>)resolvedType;
@@ -901,7 +925,8 @@ public final class GenericsUtil
         }
     }
 
-    private static Type resolveTypeVariable(TypeVariable<?> variable, GenericDeclaration declaration, ParameterizedType type)
+    private static Type resolveTypeVariable(TypeVariable<?> variable, GenericDeclaration declaration, ParameterizedType type,
+                                            Collection<TypeVariable<?>> seen)
     {
         int index = getIndex(declaration, variable);
         if (declaration instanceof Class)
@@ -921,7 +946,13 @@ public final class GenericsUtil
         }
         else
         {
-            Type[] resolvedBounds = resolveTypes(declaration.getTypeParameters()[index].getBounds(), type);
+            if (seen.contains(variable))
+            {
+                return null;
+            }
+            seen.add(variable);
+
+            Type[] resolvedBounds = resolveTypes(declaration.getTypeParameters()[index].getBounds(), type, seen);
             return OwbTypeVariableImpl.createTypeVariable(variable, resolvedBounds);
         }
         return variable;
@@ -1086,5 +1117,10 @@ public final class GenericsUtil
         {
             return new OwbGenericArrayTypeImpl(componentType);
         }
+    }
+
+    public static Type resolveType(ParameterizedType parameterizedType, Type metadataType)
+    {
+        return resolveType(parameterizedType, metadataType, newSeenList());
     }
 }
