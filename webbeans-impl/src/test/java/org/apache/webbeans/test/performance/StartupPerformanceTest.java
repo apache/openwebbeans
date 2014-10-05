@@ -20,8 +20,36 @@ package org.apache.webbeans.test.performance;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.test.component.binding.AnyBindingComponent;
+import org.apache.webbeans.test.component.binding.DefaultAnyBinding;
+import org.apache.webbeans.test.component.binding.NonAnyBindingComponent;
+import org.apache.webbeans.test.component.decorator.clean.AccountComponent;
+import org.apache.webbeans.test.component.decorator.clean.LargeTransactionDecorator;
+import org.apache.webbeans.test.component.decorator.clean.ServiceDecorator;
+import org.apache.webbeans.test.component.definition.BeanTypesDefinedBean;
+import org.apache.webbeans.test.component.dependent.DependentComponent;
+import org.apache.webbeans.test.component.dependent.DependentOwnerComponent;
+import org.apache.webbeans.test.component.dependent.MultipleDependentComponent;
+import org.apache.webbeans.test.component.dependent.circular.DependentA;
+import org.apache.webbeans.test.component.dependent.circular.DependentB;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObservable1;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObserves1;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObserves2;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObserves3;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObserves4;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObserves5;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObserves6;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObserves7;
+import org.apache.webbeans.test.component.event.normal.Transactional;
+import org.apache.webbeans.test.component.event.normal.TransactionalInterceptor;
+import org.apache.webbeans.test.component.inheritance.InheritFromMultipleParentComponent;
+import org.apache.webbeans.test.component.inheritance.InheritFromParentComponent;
+import org.apache.webbeans.test.component.inheritance.ParentComponent;
+import org.apache.webbeans.test.component.inheritance.ParentComponentSubClass;
 import org.apache.webbeans.test.concepts.alternatives.common.AlternativeBean;
 import org.apache.webbeans.test.concepts.alternatives.common.Pencil;
 import org.apache.webbeans.test.concepts.alternatives.common.PencilProducerBean;
@@ -62,20 +90,12 @@ public class StartupPerformanceTest extends AbstractUnitTest
 {
     private static final int NUMBER_ITERATIONS = 2;
 
+    private static final Logger log = Logger.getLogger(StartupPerformanceTest.class.getName());
+
 
     @Test
     public void testPerformance()
     {
-        for (int i=0; i < NUMBER_ITERATIONS; i++)
-        {
-            startupWithClasses();
-        }
-    }
-
-    private void startupWithClasses()
-    {
-        Collection<String> beanXmls = new ArrayList<String>();
-
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(PaymentProcessorComponent.class);
         beanClasses.add(InstanceInjectedComponent.class);
@@ -102,18 +122,57 @@ public class StartupPerformanceTest extends AbstractUnitTest
         beanClasses.add(DependentBean.class);
         beanClasses.add(DependentBeanProducer.class);
         beanClasses.add(InstanceForDependentBean.class);
-
-
         beanClasses.add(MyProductBean.class);
         beanClasses.add(MyProductProducer.class);
         beanClasses.add(ProductInjectedBean.class);
-
         beanClasses.add(StringProducerBean.class);
         beanClasses.add(GetterStringFieldInjector.class);
         beanClasses.add(GetterStringProducerBean.class);
         beanClasses.add(InformationConsumerBean.class);
         beanClasses.add(MultipleListProducer.class);
         beanClasses.add(GetterStringProducerBean.class);
+        beanClasses.add(AnyBindingComponent.class);
+        beanClasses.add(DefaultAnyBinding.class);
+        beanClasses.add(NonAnyBindingComponent.class);
+        beanClasses.add(AccountComponent.class);
+        beanClasses.add(BeanTypesDefinedBean.class);
+        beanClasses.add(DependentA.class);
+        beanClasses.add(DependentB.class);
+        beanClasses.add(DependentComponent.class);
+        beanClasses.add(DependentOwnerComponent.class);
+        beanClasses.add(MultipleDependentComponent.class);
+        beanClasses.add(ComponentWithObservable1.class);
+        beanClasses.add(ComponentWithObserves1.class);
+        beanClasses.add(ComponentWithObserves2.class);
+        beanClasses.add(ComponentWithObserves3.class);
+        beanClasses.add(ComponentWithObserves4.class);
+        beanClasses.add(ComponentWithObserves5.class);
+        beanClasses.add(ComponentWithObserves6.class);
+        beanClasses.add(ComponentWithObserves7.class);
+        beanClasses.add(InheritFromMultipleParentComponent.class);
+        beanClasses.add(InheritFromParentComponent.class);
+        beanClasses.add(ParentComponent.class);
+        beanClasses.add(ParentComponentSubClass.class);
+
+        beanClasses.add(Transactional.class);
+        addInterceptor(TransactionalInterceptor.class);
+
+        addDecorator(LargeTransactionDecorator.class);
+        addDecorator(ServiceDecorator.class);
+
+        long start = System.nanoTime();
+        for (int i=0; i < NUMBER_ITERATIONS; i++)
+        {
+            startupWithClasses(beanClasses);
+        }
+        long stop = System.nanoTime();
+        log.info("Starting up " + beanClasses.size() + " classes " + NUMBER_ITERATIONS + " times took " + TimeUnit.NANOSECONDS.toMillis(stop - start) + " ms");
+    }
+
+    private void startupWithClasses(Collection<Class<?>> beanClasses)
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+
 
         startContainer(beanClasses, beanXmls);
 

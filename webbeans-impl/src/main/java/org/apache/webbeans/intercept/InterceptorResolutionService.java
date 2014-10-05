@@ -109,9 +109,21 @@ public class InterceptorResolutionService
             decorators = Collections.emptyList(); // less to store
         }
 
+        Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
+
         // pick up CDI interceptors from a class level
         Set<Annotation> classInterceptorBindings = annotationManager.getInterceptorAnnotations(annotatedType.getAnnotations());
-        Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
+        List<Interceptor<?>> classLevelInterceptors;
+        if (classInterceptorBindings.size() > 0)
+        {
+            classLevelInterceptors = webBeansContext.getBeanManagerImpl().resolveInterceptors(InterceptionType.AROUND_INVOKE, AnnotationUtil.asArray(classInterceptorBindings));
+            allUsedCdiInterceptors.addAll(classLevelInterceptors);
+        }
+        else
+        {
+            classLevelInterceptors = Collections.EMPTY_LIST;
+        }
+
         Set<Interceptor<?>> allUsedConstructorCdiInterceptors = new HashSet<Interceptor<?>>();
         addCdiClassLifecycleInterceptors(annotatedType, classInterceptorBindings, allUsedCdiInterceptors, allUsedConstructorCdiInterceptors);
 
@@ -132,7 +144,8 @@ public class InterceptorResolutionService
 
             calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, annotatedMethod);
 
-            calculateCdiMethodInterceptors(methodInterceptorInfo, InterceptionType.AROUND_INVOKE, allUsedCdiInterceptors, annotatedMethod, classInterceptorBindings);
+            calculateCdiMethodInterceptors(methodInterceptorInfo, InterceptionType.AROUND_INVOKE, allUsedCdiInterceptors, annotatedMethod,
+                                           classInterceptorBindings, classLevelInterceptors);
 
             calculateCdiMethodDecorators(methodInterceptorInfo, decorators, annotatedMethod);
 
@@ -359,7 +372,7 @@ public class InterceptorResolutionService
                 foundMethods.add(lifecycleMethod);
                 calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, lifecycleMethod);
 
-                calculateCdiMethodInterceptors(methodInterceptorInfo, interceptionType, allUsedCdiInterceptors, lifecycleMethod, classInterceptorBindings);
+                calculateCdiMethodInterceptors(methodInterceptorInfo, interceptionType, allUsedCdiInterceptors, lifecycleMethod, classInterceptorBindings, null);
             }
         }
         for (AnnotatedConstructor<?> lifecycleMethod : annotatedType.getConstructors())
@@ -367,7 +380,7 @@ public class InterceptorResolutionService
             // TODO: verifyLifecycleMethod(lifeycleAnnotation, lifecycleMethod);
             calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, lifecycleMethod);
 
-            calculateCdiMethodInterceptors(methodInterceptorInfo, interceptionType, allUsedCdiInterceptors, lifecycleMethod, classInterceptorBindings);
+            calculateCdiMethodInterceptors(methodInterceptorInfo, interceptionType, allUsedCdiInterceptors, lifecycleMethod, classInterceptorBindings, null);
         }
 
         if (foundMethods.size() > 0 )
@@ -573,19 +586,22 @@ public class InterceptorResolutionService
                                                 InterceptionType interceptionType,
                                                 Set<Interceptor<?>> allUsedCdiInterceptors,
                                                 AnnotatedCallable annotatedMethod,
-                                                Set<Annotation> classInterceptorBindings)
+                                                Set<Annotation> classInterceptorBindings,
+                                                List<Interceptor<?>> classLevelInterceptors)
     {
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
         boolean unproxyable = isUnproxyable(annotatedMethod);
+        boolean hasMethodInterceptors = false;
 
         Map<Class<? extends Annotation>, Annotation> cummulatedInterceptorBindings = new HashMap<Class<? extends Annotation>, Annotation>();
         for (Annotation interceptorBinding: annotationManager.getInterceptorAnnotations(annotatedMethod.getAnnotations()))
         {
             cummulatedInterceptorBindings.put(interceptorBinding.annotationType(), interceptorBinding);
+            hasMethodInterceptors = true;
         }
 
-        if (unproxyable && cummulatedInterceptorBindings.size() > 0)
+        if (unproxyable && hasMethodInterceptors)
         {
             throw new WebBeansConfigurationException(annotatedMethod + " is not proxyable, but an Interceptor got defined on it!");
         }
@@ -609,12 +625,20 @@ public class InterceptorResolutionService
             return;
         }
 
-        List<Interceptor<?>> methodInterceptors
-                = webBeansContext.getBeanManagerImpl().resolveInterceptors(interceptionType, AnnotationUtil.asArray(cummulatedInterceptorBindings.values()));
+
+        List<Interceptor<?>> methodInterceptors;
+        if (hasMethodInterceptors || classLevelInterceptors == null)
+        {
+            methodInterceptors = webBeansContext.getBeanManagerImpl().resolveInterceptors(interceptionType, AnnotationUtil.asArray(cummulatedInterceptorBindings.values()));
+            allUsedCdiInterceptors.addAll(methodInterceptors);
+        }
+        else
+        {
+            // if there is no explicit interceptor defined on the method, then we just take all the interceptors from the class
+            methodInterceptors = classLevelInterceptors;
+        }
 
         methodInterceptorInfo.setCdiInterceptors(methodInterceptors);
-
-        allUsedCdiInterceptors.addAll(methodInterceptors);
     }
 
     /**
@@ -630,34 +654,35 @@ public class InterceptorResolutionService
     private <T> void verifyLifecycleMethod(Class<? extends Annotation> lifecycleAnnotation, AnnotatedMethod<T> annotatedMethod)
     {
         List<AnnotatedParameter<T>> params = annotatedMethod.getParameters();
+        Method method = annotatedMethod.getJavaMember();
         if (params.size() > 0 && (params.size() > 1 || !params.get(0).getBaseType().equals(InvocationContext.class)))
         {
             throw new WebBeansConfigurationException(lifecycleAnnotation.getName() + " LifecycleMethod "
-                                                     + annotatedMethod.getJavaMember()
+                                                     + method
                                                      + " must either have no parameter or InvocationContext but has:"
-                                                     + Arrays.toString(annotatedMethod.getJavaMember().getParameterTypes()));
+                                                     + Arrays.toString(method.getParameterTypes()));
         }
 
-        if (!annotatedMethod.getJavaMember().getReturnType().equals(Void.TYPE))
+        if (!method.getReturnType().equals(Void.TYPE))
         {
             throw new WebBeansConfigurationException("@" + lifecycleAnnotation.getName()
-                    + " annotated method : " + annotatedMethod.getJavaMember().getName()
+                    + " annotated method : " + method.getName()
                     + " in class : " + annotatedMethod.getDeclaringType().getJavaClass().getName()
                     + " must return void type");
         }
 
-        if (isNoCheckedExceptionEnforced() && ClassUtil.isMethodHasCheckedException(annotatedMethod.getJavaMember()))
+        if (isNoCheckedExceptionEnforced() && ClassUtil.isMethodHasCheckedException(method))
         {
             throw new WebBeansConfigurationException("@" + lifecycleAnnotation.getName()
-                    + " annotated method : " + annotatedMethod.getJavaMember().getName()
+                    + " annotated method : " + method.getName()
                     + " in class : " + annotatedMethod.getDeclaringType().getJavaClass().getName()
                     + " can not throw any checked exception");
         }
 
-        if (Modifier.isStatic(annotatedMethod.getJavaMember().getModifiers()))
+        if (Modifier.isStatic(method.getModifiers()))
         {
             throw new WebBeansConfigurationException("@" + lifecycleAnnotation.getName()
-                    + " annotated method : " + annotatedMethod.getJavaMember().getName()
+                    + " annotated method : " + method.getName()
                     + " in class : " + annotatedMethod.getDeclaringType().getJavaClass().getName()
                     + " can not be static");
         }

@@ -28,7 +28,6 @@ import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.component.service.IService;
 
 @Decorator
-@Named
 public  class ServiceDecorator implements IService
 {
     private @Inject @Delegate @Binding1 IService delegate;

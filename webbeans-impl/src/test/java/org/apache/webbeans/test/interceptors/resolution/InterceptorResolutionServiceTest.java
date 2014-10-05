@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.test.AbstractUnitTest;
@@ -63,6 +65,8 @@ import static org.apache.webbeans.intercept.InterceptorResolutionService.Lifecyc
  */
 public class InterceptorResolutionServiceTest extends AbstractUnitTest
 {
+
+    private static final Logger log = Logger.getLogger(InterceptorResolutionServiceTest.class.getName());
 
     @Test
     public void testClassLevelSingleInterceptor() throws Exception
@@ -156,7 +160,16 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         Bean<ClassMultiInterceptedClass> bean =
                 (Bean<ClassMultiInterceptedClass>) getBeanManager().resolve((Set) getBeanManager().getBeans(ClassMultiInterceptedClass.class));
 
-        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
+        BeanInterceptorInfo interceptorInfo = null;
+        long start = System.nanoTime();
+        for (int i=0; i < 2; i++)
+        {
+            // for being able to do some cheap performance tests
+            interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
+        }
+        long end = System.nanoTime();
+        log.info("calculating the interceptor info took " + TimeUnit.NANOSECONDS.toMillis(end-start) + " ms");
+
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getCdiInterceptors());

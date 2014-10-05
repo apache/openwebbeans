@@ -19,7 +19,6 @@
 package org.apache.webbeans.util;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,28 +93,7 @@ public final class AnnotationUtil
 
     /**
      * Check given annotation exist on the method.
-     * 
-     * @param method method
-     * @param clazz annotation class
-     * @return true or false
-     */
-    public static boolean hasMethodAnnotation(Method method, Class<? extends Annotation> clazz)
-    {
-        final AnnotatedElement element = method;
-        Annotation[] anns = getDeclaredAnnotations(element);
-        for (Annotation annotation : anns)
-        {
-            if (annotation.annotationType().equals(clazz))
-            {
-                return true;
-            }
-        }
-
-        return false;
-
-    }
-
-    /**
+     *
      * Utility method to get around some errors caused by
      * interactions between the Equinox class loaders and
      * the OpenJPA transformation process.  There is a window
@@ -128,20 +106,21 @@ public final class AnnotationUtil
      * defined on the second pass, this should succeed.  If
      * we get a second exception, then it's likely some
      * other problem.
-     *
-     * @param element The AnnotatedElement we need information for.
-     *
-     * @return An array of the Annotations defined on the element.
+
+     * @param method method
+     * @param clazz annotation class
+     * @return true or false
      */
-    private static Annotation[] getDeclaredAnnotations(AnnotatedElement element)
+    public static boolean hasMethodAnnotation(Method method, Class<? extends Annotation> clazz)
     {
         try
         {
-            return element.getDeclaredAnnotations();
+            return method.getAnnotation(clazz) != null;
         }
-        catch (LinkageError e)
+        catch (LinkageError le)
         {
-            return element.getDeclaredAnnotations();
+            // try once again
+            return method.getAnnotation(clazz) != null;
         }
     }
 
@@ -164,33 +143,6 @@ public final class AnnotationUtil
         return false;
     }
 
-    public static <X> boolean hasAnnotatedMethodMultipleParameterAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
-    {
-        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
-        Asserts.nullCheckForClass(clazz);
-
-        boolean found = false;
-        
-        List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
-        for(AnnotatedParameter<X> parameter : parameters)
-        {
-            if(parameter.isAnnotationPresent(clazz))
-            {
-                if(!found)
-                {
-                    found = true;
-                }
-                else
-                {
-                    return true;   
-                }                
-            }
-        }
-        
-        
-        return false;
-    }
-    
     public static <X> AnnotatedParameter<X> getFirstAnnotatedParameter(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> annotation)
     {
         for (AnnotatedParameter<X> annotatedParameter: annotatedMethod.getParameters())
@@ -425,8 +377,7 @@ public final class AnnotationUtil
      *
      * @param qualifierAnnotationType
      */
-    private static List<Method> getBindingCdiAnnotationMethods(
-            Class<? extends Annotation> qualifierAnnotationType)
+    private static List<Method> getBindingCdiAnnotationMethods(Class<? extends Annotation> qualifierAnnotationType)
     {
         Method[] qualifierMethods = qualifierAnnotationType.getDeclaredMethods();
 
@@ -436,32 +387,9 @@ public final class AnnotationUtil
 
             for (Method qualifierMethod : qualifierMethods)
             {
-                Annotation[] qualifierMethodAnnotations = getDeclaredAnnotations(qualifierMethod);
-
-                if (qualifierMethodAnnotations.length > 0)
+                if (!hasMethodAnnotation(qualifierMethod, Nonbinding.class))
                 {
-                    // look for @Nonbinding
-                    boolean nonbinding = false;
-
-                    for (Annotation qualifierMethodAnnotation : qualifierMethodAnnotations)
-                    {
-                        if (Nonbinding.class.equals(
-                                qualifierMethodAnnotation.annotationType()))
-                        {
-                            nonbinding = true;
-                            break;
-                        }
-                    }
-
-                    if (!nonbinding)
-                    {
-                        // no @Nonbinding found - add to list
-                        bindingMethods.add(qualifierMethod);
-                    }
-                }
-                else
-                {
-                    // no method-annotations - add to list
+                    // no @Nonbinding found - add to list
                     bindingMethods.add(qualifierMethod);
                 }
             }

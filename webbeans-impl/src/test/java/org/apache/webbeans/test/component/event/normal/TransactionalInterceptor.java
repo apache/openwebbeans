@@ -21,10 +21,11 @@ package org.apache.webbeans.test.component.event.normal;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
+import java.io.Serializable;
 
 @Interceptor
 @Transactional
-public class TransactionalInterceptor
+public class TransactionalInterceptor implements Serializable
 {
 
     @AroundInvoke
