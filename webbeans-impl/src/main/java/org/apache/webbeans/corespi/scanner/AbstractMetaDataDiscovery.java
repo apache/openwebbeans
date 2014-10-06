@@ -285,6 +285,10 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
                                 "/annotation-api",
                                 "/el-api",
                                 "/mojarra",
+                                "/sisu-guice-",
+                                "/sisu-inject-",
+                                "/aether-",
+                                "/plexus-",
                                 "/openwebbeans-"))
         {
             final int i = path.indexOf(p);
