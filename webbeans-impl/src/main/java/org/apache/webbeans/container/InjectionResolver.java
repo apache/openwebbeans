@@ -171,54 +171,55 @@ public class InjectionResolver
         WebBeansUtil.checkInjectionPointNamedQualifier(injectionPoint);
 
         Type type = injectionPoint.getType();
-        Class<?> clazz;
-
         if (ClassUtil.isTypeVariable(type))
         {
             throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " type can not be defined as Typevariable or Wildcard type!");
         }
 
-        if (type instanceof ParameterizedType)
+        if (webBeansContext.getBeanManagerImpl().isAfterBeanDiscoveryFired())
         {
-            ParameterizedType pt = (ParameterizedType) type;
+            Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
+            qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
 
-            clazz = (Class<?>) pt.getRawType();
-        }
-        else
-        {
-            clazz = (Class<?>) type;
-        }
-
-        Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
-        qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
-
-        // OWB-890 some 3rd party InjectionPoints return null in getBean();
-        Class<?> injectionPointClass = Object.class; // the fallback
-        Bean injectionPointBean = injectionPoint.getBean();
-        if (injectionPointBean != null)
-        {
-            injectionPointClass = injectionPointBean.getBeanClass();
-        }
-        if (injectionPointClass == null && type instanceof Class)
-        {
-            injectionPointClass = (Class) type;
-        }
-
-        Set<Bean<?>> beanSet = implResolveByType(injectionPoint.isDelegate(), type, injectionPointClass, qualifiers);
-
-        if (beanSet.isEmpty())
-        {
-            if (qualifiers.length == 1 && qualifiers[0].annotationType().equals(New.class))
+            // OWB-890 some 3rd party InjectionPoints return null in getBean();
+            Class<?> injectionPointClass = Object.class; // the fallback
+            Bean injectionPointBean = injectionPoint.getBean();
+            if (injectionPointBean != null)
             {
-                createNewBean(injectionPoint, type, qualifiers, beanSet);
+                injectionPointClass = injectionPointBean.getBeanClass();
             }
-        }
+            if (injectionPointClass == null && type instanceof Class)
+            {
+                injectionPointClass = (Class) type;
+            }
 
-        Bean<?> bean = resolve(beanSet);
+            Set<Bean<?>> beanSet = implResolveByType(injectionPoint.isDelegate(), type, injectionPointClass, qualifiers);
 
-        if (bean == null)
-        {
-            InjectionExceptionUtil.throwUnsatisfiedResolutionException(clazz, injectionPoint, qualifiers);
+            if (beanSet.isEmpty())
+            {
+                if (qualifiers.length == 1 && qualifiers[0].annotationType().equals(New.class))
+                {
+                    createNewBean(injectionPoint, type, qualifiers, beanSet);
+                }
+            }
+
+            Bean<?> bean = resolve(beanSet);
+
+            if (bean == null)
+            {
+                Class<?> clazz;
+                if (type instanceof ParameterizedType)
+                {
+                    ParameterizedType pt = (ParameterizedType) type;
+
+                    clazz = (Class<?>) pt.getRawType();
+                }
+                else
+                {
+                    clazz = (Class<?>) type;
+                }
+                InjectionExceptionUtil.throwUnsatisfiedResolutionException(clazz, injectionPoint, qualifiers);
+            }
         }
     }
 

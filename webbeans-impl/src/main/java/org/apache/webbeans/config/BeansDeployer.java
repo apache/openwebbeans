@@ -664,6 +664,8 @@ public class BeansDeployer
      */
     private <T, B extends Bean<?>> void validate(Collection<B> beans)
     {
+        webBeansContext.getBeanManagerImpl().getInjectionResolver().clearCaches();
+
         if (beans != null && beans.size() > 0)
         {
             Stack<String> beanNames = new Stack<String>();
