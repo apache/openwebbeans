@@ -23,6 +23,7 @@ import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
+import javax.annotation.Priority;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
@@ -30,7 +31,9 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.enterprise.util.Nonbinding;
+import javax.interceptor.AroundConstruct;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InterceptorBinding;
@@ -60,6 +63,90 @@ public class BeforeBeanDiscoveryImplTest extends AbstractUnitTest
         final Intercepted instance = getInstance(Intercepted.class);
         assertEquals("interceptor", instance.value());
         assertEquals("bean", instance.noInterceptor());
+    }
+
+    @Test
+    public void classAndMethod() {
+        addExtension(new OwbExtension());
+        addInterceptor(OwbMethodInterceptor.class);
+        startContainer(OwbBean.class);
+
+        final OwbBean instance = getInstance(OwbBean.class);
+        assertEquals("ok", instance.method());
+        assertEquals(0, instance.getCounter());
+    }
+
+    @OwbClassBinding
+    public static class OwbBean {
+        private int counter;
+
+        @OwbMethodBinding
+        public String method() {
+            throw new UnsupportedOperationException();
+        }
+
+        public void incr() {
+            counter++;
+        }
+
+        public int getCounter() {
+            return counter;
+        }
+    }
+
+    public static class OwbExtension implements Extension {
+        private void addInterceptorBindings(@Observes BeforeBeanDiscovery bbd, BeanManager manager) {
+            final AnnotatedType<OwbMethodBinding> annotatedType1 = manager.createAnnotatedType(OwbMethodBinding.class);
+            final Set<Annotation> annotations = annotatedType1.getAnnotations();
+            annotations.add(new EmptyAnnotationLiteral<InterceptorBinding>() {});
+
+            final AnnotatedType<OwbMethodBinding> annotatedType = new AnnotatedTypeWrapper<OwbMethodBinding>(this, annotatedType1) {
+                @Override
+                public Set<Annotation> getAnnotations()
+                {
+                    return annotations;
+                }
+
+                @Override
+                public boolean isAnnotationPresent(final Class<? extends Annotation> aClass)
+                {
+                    return super.isAnnotationPresent(aClass) || InterceptorBinding.class == aClass;
+                }
+            };
+            bbd.addInterceptorBinding(annotatedType);
+        }
+    }
+
+    @InterceptorBinding
+    @Target({ ElementType.TYPE, ElementType.METHOD })
+    @Retention(RetentionPolicy.RUNTIME)
+    static @interface OwbClassBinding {
+    }
+
+    //@InterceptorBinding
+    @Target({ ElementType.TYPE, ElementType.METHOD })
+    @Retention(RetentionPolicy.RUNTIME)
+    static @interface OwbMethodBinding {
+    }
+
+    @OwbMethodBinding
+    @Interceptor
+    @Priority(1000 + 10)
+    static class OwbMethodInterceptor {
+        @AroundConstruct
+        private Object constructor(InvocationContext context) throws Exception {
+            final Object proceed = context.proceed();
+            OwbBean.class.cast(context.getTarget()).incr();
+            return proceed;
+        }
+
+        @AroundInvoke
+        private Object method(InvocationContext context) throws Exception {
+            if (context.getMethod().getName().equals("method")) {
+                return "ok";
+            }
+            return context.proceed();
+        }
     }
 
     public static class TheExtension implements Extension
