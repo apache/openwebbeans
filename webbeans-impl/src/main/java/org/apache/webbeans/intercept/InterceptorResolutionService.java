@@ -446,7 +446,7 @@ public class InterceptorResolutionService
                 boolean paramsMatch = true;
                 for (int i = 0; i < method1Params.length; i++)
                 {
-                    if (!method1Params[i].equals(method2Params[i]))
+                    if (!method1Params[i].isAssignableFrom(method2Params[i]))
                     {
                         paramsMatch = false;
                         break;

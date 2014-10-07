@@ -34,6 +34,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -230,11 +231,54 @@ public class DecoratorBeanBuilder<T>
             {
                 if(ClassUtil.isParametrizedType(decType) && ClassUtil.isParametrizedType(delegateType))
                 {
-                    if(!delegateType.equals(decType))
+                    checkParametrizedType((ParameterizedType) decType, (ParameterizedType) delegateType);
+                }
+                else if (ClassUtil.isTypeVariable(decType))
+                {
+                    if (!delegateType.equals(delegateType))
                     {
                         throw new WebBeansConfigurationException("Decorator : " + toString() + " generic delegate attribute must be same with decorated type : " + decType);
                     }
                 }
+
+            }
+        }
+    }
+
+    /**
+     * Checks recursive, if the ParameterizedTypes are equal
+     *
+     * @param decoratedType ParameterizedType of the decoreatedType
+     * @param delegateType ParameterizedType of the delegateType
+     *
+     * @throws WebBeansConfigurationException
+     */
+    private void checkParametrizedType(ParameterizedType decoratedType, ParameterizedType delegateType)
+    {
+        //X TODO maybe we could move this to GenericsUtil
+
+        Type[] decTypeArguments = ClassUtil.getActualTypeArguments(decoratedType);
+        Type[] delegateTypeArguments = ClassUtil.getActualTypeArguments(delegateType);
+
+        if (decTypeArguments.length != delegateTypeArguments.length)
+        {
+            throw new WebBeansConfigurationException("Decorator: " + toString() + " " +
+                    "Number of TypeArguments must match - Decorated Type:  " + decTypeArguments.length +
+                    " Delegate Type: " + delegateTypeArguments.length);
+        }
+
+        for (int i = 0; i < decTypeArguments.length; i++)
+        {
+            Type decTypeArg = decTypeArguments[i];
+            Type delegateTypeArg = delegateTypeArguments[i];
+
+            if (ClassUtil.isParametrizedType(decTypeArg) && ClassUtil.isParametrizedType(delegateTypeArg))
+            {
+                checkParametrizedType((ParameterizedType) decTypeArg, (ParameterizedType) delegateTypeArg);
+            }
+            else if (!decTypeArg.equals(delegateTypeArg))
+            {
+                throw new WebBeansConfigurationException("Decorator: " + toString() + " delegate attribute must match decorated type: " + decTypeArg);
             }
         }
     }
