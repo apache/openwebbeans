@@ -23,6 +23,7 @@ import javax.decorator.Delegate;
 import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
+import junit.framework.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
@@ -37,6 +38,7 @@ public class RepeatedGenericTypeDecoratorTest extends AbstractUnitTest
 
         MyService myService = getInstance(MyService.class);
 
+        MyServiceDecorator.called = false;
         myService.doSomethingStrange(new MyInterface<MyInterface>()
         {
             @Override
@@ -45,8 +47,7 @@ public class RepeatedGenericTypeDecoratorTest extends AbstractUnitTest
                 // have no idea here too
             }
         });
-
-        shutDownContainer();
+        Assert.assertTrue(MyServiceDecorator.called);
     }
 
 
@@ -69,19 +70,19 @@ public class RepeatedGenericTypeDecoratorTest extends AbstractUnitTest
 
 
     @Decorator
-    public static class MyServiceDecorator implements MyInterface<MyInterface<MyInterface>>
+    public static class MyServiceDecorator<T extends MyInterface<T>> implements MyInterface<T>
     {
+        private static boolean called;
 
         @Delegate
         @Inject
         @Any
-        private MyInterface<MyInterface<MyInterface>> delegate;
+        private MyInterface<T> delegate;
 
         @Override
-        public void doSomethingStrange(MyInterface<MyInterface> param)
+        public void doSomethingStrange(T param)
         {
-            // really have no idea what to do here
-            param.doSomethingStrange(param);
+            called = true;
         }
     }
 }
