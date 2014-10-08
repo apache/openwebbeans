@@ -1130,6 +1130,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public void validate(InjectionPoint injectionPoint)
     {
+        if (injectionPoint == null)
+        {
+            throw new IllegalArgumentException("InjectionPoint parameter must not be nul");
+        }
+
         Bean<?> bean = injectionPoint.getBean();
 
         //Check for correct injection type
