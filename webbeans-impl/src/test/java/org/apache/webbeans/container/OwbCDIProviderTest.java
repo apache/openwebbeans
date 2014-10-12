@@ -36,6 +36,7 @@ public class OwbCDIProviderTest extends AbstractUnitTest
         assertNotNull(CDI.current());
         assertNotNull(CDI.current().getBeanManager());
         assertFalse(CDI.current().isUnsatisfied());
-        assertTrue(CDI.current().isAmbiguous());
+        assertFalse(CDI.current().isAmbiguous());
+        assertNotNull(CDI.current().get());
     }
 }

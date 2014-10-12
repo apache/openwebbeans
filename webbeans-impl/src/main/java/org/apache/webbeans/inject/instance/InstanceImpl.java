@@ -163,7 +163,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
 
         InjectionResolver injectionResolver = webBeansContext.getBeanManagerImpl().getInjectionResolver();
 
-        Bean<?> injectionPointBean = injectionPoint.getBean();
+        Bean<?> injectionPointBean = injectionPoint != null ? injectionPoint.getBean() : null;
         Class<?> injectionPointClass = null;
         if (injectionPointBean != null)
         {

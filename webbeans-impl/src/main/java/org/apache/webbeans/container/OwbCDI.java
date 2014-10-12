@@ -26,17 +26,12 @@ import org.apache.webbeans.inject.instance.InstanceImpl;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
-import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.util.Iterator;
 
 public class OwbCDI extends CDI<Object>
 {
-    @Inject
-    private Instance<Object> injectionPoint;
-
     private WebBeansContext getWebBeansContext()
     {
         return WebBeansContext.currentInstance();
@@ -47,8 +42,6 @@ public class OwbCDI extends CDI<Object>
         final WebBeansContext webBeansContext = getWebBeansContext();
         final BeanManagerImpl bm = webBeansContext.getBeanManagerImpl();
         final CreationalContextImpl<Instance<Object>> creationalContext = bm.createCreationalContext(null);
-        final InjectionPoint injectionPoint1 = bm.createInjectionTarget(bm.createAnnotatedType(OwbCDI.class)).getInjectionPoints().iterator().next();
-        creationalContext.putInjectionPoint(injectionPoint1);
         return new InstanceBean<Object>(webBeansContext).create(creationalContext);
     }
 
