@@ -36,6 +36,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.PassivationCapable;
 
+import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -159,7 +160,7 @@ public class DeploymentValidationService
      */
     public <T> void validatePassivationCapable(OwbBean<T> bean)
     {
-        if (isPassivationCapable(bean))
+        if (isPassivationCapable(bean) && !EnterpriseBeanMarker.class.isInstance(bean))
         {
             if (!(bean instanceof ProducerMethodBean))
             {
