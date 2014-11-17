@@ -50,6 +50,7 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -231,7 +232,7 @@ public class DecoratorBeanBuilder<T>
             {
                 if(ClassUtil.isParametrizedType(decType) && ClassUtil.isParametrizedType(delegateType))
                 {
-                    checkParametrizedType((ParameterizedType) decType, (ParameterizedType) delegateType);
+                    checkParametrizedType();
                 }
                 else if (ClassUtil.isTypeVariable(decType))
                 {
@@ -248,37 +249,34 @@ public class DecoratorBeanBuilder<T>
     /**
      * Checks recursive, if the ParameterizedTypes are equal
      *
-     * @param decoratedType ParameterizedType of the decoreatedType
-     * @param delegateType ParameterizedType of the delegateType
-     *
-     * @throws WebBeansConfigurationException
+     * @throws DefinitionException
      */
-    private void checkParametrizedType(ParameterizedType decoratedType, ParameterizedType delegateType)
+    private void checkParametrizedType()
     {
-        //X TODO maybe we could move this to GenericsUtil
+        Type[] delegeteTypes = ((ParameterizedType) delegateType).getActualTypeArguments();
+        Type[] interfaceTypes = annotatedType.getJavaClass().getGenericInterfaces();
 
-        Type[] decTypeArguments = ClassUtil.getActualTypeArguments(decoratedType);
-        Type[] delegateTypeArguments = ClassUtil.getActualTypeArguments(delegateType);
-
-        if (decTypeArguments.length != delegateTypeArguments.length)
+        for (Type interfaceType : interfaceTypes)
         {
-            throw new WebBeansConfigurationException("Decorator: " + toString() + " " +
-                    "Number of TypeArguments must match - Decorated Type:  " + decTypeArguments.length +
-                    " Delegate Type: " + delegateTypeArguments.length);
-        }
-
-        for (int i = 0; i < decTypeArguments.length; i++)
-        {
-            Type decTypeArg = decTypeArguments[i];
-            Type delegateTypeArg = delegateTypeArguments[i];
-
-            if (ClassUtil.isParametrizedType(decTypeArg) && ClassUtil.isParametrizedType(delegateTypeArg))
+            if (!ClassUtil.isClassAssignable(ClassUtil.getClass(delegateType), ClassUtil.getClass(interfaceType)))
             {
-                checkParametrizedType((ParameterizedType) decTypeArg, (ParameterizedType) delegateTypeArg);
+                // only check the interface from the decorated type
+                continue;
             }
-            else if (!decTypeArg.equals(delegateTypeArg))
+
+            Type[] arguments = ClassUtil.getActualTypeArguments(interfaceType);
+            if (arguments.length != delegeteTypes.length)
             {
-                throw new WebBeansConfigurationException("Decorator: " + toString() + " delegate attribute must match decorated type: " + decTypeArg);
+                throw new DefinitionException("Decorator: " + toString() + " Number of TypeArguments must match - Decorated Type:  " + arguments.length +
+                                                      " Delegate Type: " + delegeteTypes.length);
+            }
+
+            for (int i = 0; i < delegeteTypes.length; i++)
+            {
+                if (!delegeteTypes[i].equals(arguments[i]))
+                {
+                    throw new DefinitionException("Decorator: " + toString() + " delegate attribute must match decorated type: " + delegeteTypes[i]);
+                }
             }
         }
     }
