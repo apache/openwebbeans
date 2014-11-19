@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -39,6 +40,12 @@ public class InjectorServlet extends HttpServlet
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
+        BeanManager bm = CDI.current().getBeanManager();
+        if (bm == null)
+        {
+            throw new IllegalArgumentException("CDI.current.getBeanManager() doesn't work!");
+        }
+
         PrintWriter writer = resp.getWriter();
         writer.write("==================Injection of Bean Instance into Servlet==================" + "\n\n");
         writer.write("Caller Principal name injection into DateProvider instance : " + dateProvider.getPrincipal().getName() + "\n\n");
