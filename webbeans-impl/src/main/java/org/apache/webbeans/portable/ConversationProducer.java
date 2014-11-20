@@ -48,6 +48,14 @@ public class ConversationProducer extends InjectionTargetImpl<ConversationImpl>
         ConversationImpl conversation = null;
         //Gets conversation service
         ConversationService conversationService = webBeansContext.getService(ConversationService.class);
+
+        if (conversationService == null)
+        {
+            // in case where we do not support a 'real' Conversation handling, the user will just get a temporarily one.
+            return new ConversationImpl(webBeansContext);
+
+        }
+
         //Gets conversation id
         String conversationId = conversationService.getConversationId();       
         //Gets session id that conversation is created
