@@ -46,7 +46,6 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
               bean.isNullable());
         
         this.bean = bean;
-        
     }
 
     @Override
@@ -92,7 +91,17 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
         {
             contextImpl = CreationalContextImpl.class.cast(context);
         }
-        final T t = bean.create(context);
+
+        final T t;
+        final Bean<T> oldBean = contextImpl.putBean(this);
+        try
+        {
+            t = bean.create(contextImpl);
+        }
+        finally
+        {
+            contextImpl.putBean(oldBean);
+        }
         if (getScope().equals(Dependent.class))
         {
             contextImpl.addDependent(this, t);

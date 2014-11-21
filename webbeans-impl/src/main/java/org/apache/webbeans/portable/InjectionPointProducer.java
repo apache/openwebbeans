@@ -35,6 +35,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 
+import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
@@ -47,27 +48,36 @@ public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
      * {@inheritDoc}
      */
     @Override
-    protected InjectionPoint produce(Map<Interceptor<?>, ?> interceptors, CreationalContextImpl<InjectionPoint> creationalContext)
+    protected InjectionPoint produce(Map<Interceptor<?>, ?> interceptors, CreationalContextImpl<InjectionPoint> creationalContextImpl)
     {
-        if (!(creationalContext instanceof CreationalContextImpl))
+        if (creationalContextImpl == null)
         {
             return null;
         }
+
         // the first injection point on the stack is of type InjectionPoint, so we need the second one
-        CreationalContextImpl<InjectionPoint> creationalContextImpl = (CreationalContextImpl<InjectionPoint>)creationalContext;
         InjectionPoint first = creationalContextImpl.removeInjectionPoint();
+        final InjectionPoint injectionPoint;
         if (!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(first.getType())))
         {
-            throw new IllegalStateException("Inconsistent injection point stack");
+            if (!ThirdpartyBeanImpl.class.isInstance(creationalContextImpl.getBean()))
+            {
+                throw new IllegalStateException("Inconsistent injection point stack");
+            }
+            injectionPoint = first;
         }
+        else
+        {
+            injectionPoint = creationalContextImpl.getInjectionPoint();
+        }
+
+        if (injectionPoint == null)
+        {
+            return null;
+        }
+
         try
         {
-            final InjectionPoint injectionPoint = creationalContextImpl.getInjectionPoint();
-            if (injectionPoint == null)
-            {
-                return null;
-            }
-
             final Type type = injectionPoint.getType();
             if (ParameterizedType.class.isInstance(type))
             {

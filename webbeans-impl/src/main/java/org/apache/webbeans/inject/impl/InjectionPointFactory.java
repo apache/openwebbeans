@@ -186,7 +186,7 @@ public class InjectionPointFactory
      */
     public static InjectionPoint getVirtualInjectionPoint(Bean<?> bean)
     {
-        return new InjectionPointImpl(bean.getBeanClass(), bean.getQualifiers());
+        return new InjectionPointImpl(bean);
     }
 
     private void validateInitializerConstructor(AnnotatedConstructor<?> constructor)
