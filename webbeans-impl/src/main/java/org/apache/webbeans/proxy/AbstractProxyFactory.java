@@ -24,9 +24,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.logging.Logger;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.xbean.asm5.ClassWriter;
 import org.apache.xbean.asm5.MethodVisitor;
 import org.apache.xbean.asm5.Opcodes;
@@ -47,7 +49,10 @@ public abstract class AbstractProxyFactory
     public static final int MODIFIER_VARARGS = 0x00000080;;
 
 
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(AbstractProxyFactory.class);
+
     protected WebBeansContext webBeansContext;
+
 
     /**
      * contains the instance of sun.misc.Unsafe.
@@ -55,7 +60,7 @@ public abstract class AbstractProxyFactory
      * initializing the class.
      */
     private Object unsafe = null;
-    private Method unsafeAllocateInstance;
+    private Method unsafeAllocateInstance = null;
 
 
     /**
@@ -542,7 +547,21 @@ public abstract class AbstractProxyFactory
     {
         try
         {
-            return (T) unsafeAllocateInstance.invoke(unsafe, clazz);
+            if (unsafeAllocateInstance != null)
+            {
+                return (T) unsafeAllocateInstance.invoke(unsafe, clazz);
+            }
+            else
+            {
+                try
+                {
+                    return (T) clazz.newInstance();
+                }
+                catch (InstantiationException e)
+                {
+                    throw new IllegalStateException("Failed to allocateInstance of Proxy class " + clazz.getName(), e);
+                }
+            }
         }
         catch (IllegalAccessException e)
         {
@@ -603,30 +622,34 @@ public abstract class AbstractProxyFactory
                 }
                 catch (Exception e)
                 {
-                    throw new IllegalStateException("Cannot get sun.misc.Unsafe", e);
+                    logger.warning("ATTENTION: Cannot get sun.misc.Unsafe - will use newInstance() instead! Intended for GAE only!");
+                    return null;
                 }
             }
         });
 
         this.unsafe = unsafe;
 
-        unsafeAllocateInstance = AccessController.doPrivileged(new PrivilegedAction<Method>()
+        if (unsafe != null)
         {
-            @Override
-            public Method run()
+            unsafeAllocateInstance = AccessController.doPrivileged(new PrivilegedAction<Method>()
             {
-                try
+                @Override
+                public Method run()
                 {
-                    Method mtd = unsafeClass.getDeclaredMethod("allocateInstance", Class.class);
-                    mtd.setAccessible(true);
-                    return mtd;
+                    try
+                    {
+                        Method mtd = unsafeClass.getDeclaredMethod("allocateInstance", Class.class);
+                        mtd.setAccessible(true);
+                        return mtd;
+                    }
+                    catch (Exception e)
+                    {
+                        throw new IllegalStateException("Cannot get sun.misc.Unsafe.allocateInstance", e);
+                    }
                 }
-                catch (Exception e)
-                {
-                    throw new IllegalStateException("Cannot get sun.misc.Unsafe.allocateInstance", e);
-                }
-            }
-        });
+            });
+        }
     }
 
     /**
