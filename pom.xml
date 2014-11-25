@@ -830,11 +830,5 @@
             </modules>
         </profile>
 
-        <profile>
-            <id>doc</id>
-            <modules>
-                <module>webbeans-doc</module>
-            </modules>
-        </profile>
     </profiles>
 </project>
