@@ -46,6 +46,7 @@ import org.apache.webbeans.proxy.SubclassProxyFactory;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
 import org.apache.webbeans.service.DefaultLoaderService;
+import org.apache.webbeans.spi.ApplicationBoundaryService;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.LoaderService;
 import org.apache.webbeans.spi.ScannerService;
@@ -92,6 +93,8 @@ public class WebBeansContext
     private final DeploymentValidationService deploymentValidationService = new DeploymentValidationService(this);
     private ScannerService scannerService;
     private ContextsService contextsService;
+    private final ApplicationBoundaryService applicationBoundaryService;
+
 
     public WebBeansContext()
     {
@@ -105,7 +108,7 @@ public class WebBeansContext
 
     private WebBeansContext(Map<Class<?>, Object> initialServices, OpenWebBeansConfiguration openWebBeansConfiguration)
     {
-        this.openWebBeansConfiguration = openWebBeansConfiguration;
+        this.openWebBeansConfiguration = openWebBeansConfiguration != null ? openWebBeansConfiguration : new OpenWebBeansConfiguration();
 
         //pluggable service-loader
         if (initialServices == null || !initialServices.containsKey(LoaderService.class))
@@ -135,6 +138,7 @@ public class WebBeansContext
         }
         loaderService = getService(LoaderService.class);
         securityService = getService(SecurityService.class);
+        applicationBoundaryService = getService(ApplicationBoundaryService.class);
 
 
         // Allow the WebBeansContext itself to be looked up
@@ -436,5 +440,10 @@ public class WebBeansContext
     public DeploymentValidationService getDeploymentValidationService()
     {
         return deploymentValidationService;
+    }
+
+    public ApplicationBoundaryService getApplicationBoundaryService()
+    {
+        return applicationBoundaryService;
     }
 }

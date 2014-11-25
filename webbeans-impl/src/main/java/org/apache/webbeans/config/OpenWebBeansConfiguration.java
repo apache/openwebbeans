@@ -132,6 +132,9 @@ public class OpenWebBeansConfiguration
      */
     public OpenWebBeansConfiguration(Properties properties)
     {
+        this();
+
+        // and override all settings with the given properties
         configProperties.putAll(properties);
     }
 

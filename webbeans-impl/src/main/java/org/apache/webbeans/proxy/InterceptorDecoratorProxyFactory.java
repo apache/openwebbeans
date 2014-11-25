@@ -169,7 +169,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
      *
      *
      * @param bean the bean the proxy serves for. Needed for caching and serialisation.
-     * @param classLoader to use for creating the class in
+     * @param classLoader to use for creating the class
      * @param classToProxy the class for which a subclass will get generated
      * @param interceptedMethods the list of intercepted or decorated business methods.
      * @param nonInterceptedMethods all methods which are <b>not</b> intercepted nor decorated and shall get delegated directly

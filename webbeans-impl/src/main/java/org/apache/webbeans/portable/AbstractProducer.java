@@ -129,7 +129,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
             // we only need to create a proxy class for intercepted or decorated Beans
             InterceptorDecoratorProxyFactory pf = webBeansContext.getInterceptorDecoratorProxyFactory();
 
-            ClassLoader classLoader = annotatedType.getJavaClass().getClassLoader();
+            ClassLoader classLoader = webBeansContext.getApplicationBoundaryService().getBoundaryClassLoader(annotatedType.getJavaClass());
 
             Method[] businessMethods = methodInterceptors.keySet().toArray(new Method[methodInterceptors.size()]);
             Method[] nonInterceptedMethods = interceptorInfo.getNonInterceptedMethods().toArray(new Method[interceptorInfo.getNonInterceptedMethods().size()]);
