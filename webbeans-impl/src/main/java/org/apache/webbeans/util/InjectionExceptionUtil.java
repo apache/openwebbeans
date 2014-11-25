@@ -50,7 +50,7 @@ public class InjectionExceptionUtil
         ViolationMessageBuilder violationMessage =
                 newViolation("Api type [", type.getName(), "] is not found with the qualifiers ");
 
-        violationMessage.addLine(createQualifierMessage(qualifiers));
+        violationMessage.addLine(createQualifierMessage(injectionPoint, qualifiers));
 
         if (injectionPoint != null)
         {
@@ -73,22 +73,21 @@ public class InjectionExceptionUtil
 
     public static void throwAmbiguousResolutionException(Set<Bean<?>> beans, Class type, InjectionPoint injectionPoint, Annotation... qualifiers)
     {
-        String qualifierMessage = createQualifierMessage(qualifiers);
+        String qualifierMessage = createQualifierMessage(injectionPoint, qualifiers);
 
-        ViolationMessageBuilder violationMessage;
-
-        if(type != null)
+        String classString = type != null ? ClassUtil.getClass(type).getName() : null;
+        if (classString == null && injectionPoint != null)
         {
-            violationMessage = newViolation("There is more than one api type with : ",
-                    ClassUtil.getClass(type).getName(), " with qualifiers : ", qualifierMessage);
-            if (injectionPoint != null)
-            {
-                violationMessage.addLine("for injection into ", injectionPoint.toString());
-            }
+            classString = ClassUtil.getClass(injectionPoint.getType()).getName();
         }
-        else
+
+        ViolationMessageBuilder violationMessage = newViolation("There is more than one Bean ",
+                classString != null ? "with type " + classString : ""
+                , qualifierMessage);
+
+        if (injectionPoint != null)
         {
-            violationMessage = newViolation("Ambiguous resolution");
+            violationMessage.addLine("for injection into ", injectionPoint.toString());
         }
 
         throwAmbiguousResolutionExceptionForBeans(beans, violationMessage);
@@ -123,11 +122,18 @@ public class InjectionExceptionUtil
         }
     }
 
-    private static String createQualifierMessage(Annotation... qualifiers)
+    private static String createQualifierMessage(InjectionPoint injectionPoint, Annotation... qualifiers)
     {
         if(qualifiers == null || qualifiers.length == 0)
         {
-            return null;
+            if (injectionPoint != null)
+            {
+                qualifiers = injectionPoint.getQualifiers().toArray(new Annotation[injectionPoint.getQualifiers().size()]);
+            }
+            else
+            {
+                return "@Default";
+            }
         }
 
         //reused source-code

@@ -188,7 +188,7 @@ public class InjectionResolver
             }
         }
 
-        Bean<?> bean = resolve(beanSet);
+        Bean<?> bean = resolve(beanSet, injectionPoint);
 
         if (bean == null)
         {
@@ -251,7 +251,7 @@ public class InjectionResolver
             }
         }
 
-        return resolve(beanSet);
+        return resolve(beanSet, injectionPoint);
     }
 
     private void createNewBean(InjectionPoint injectionPoint, Type type, Annotation[] qualifiers, Set<Bean<?>> beanSet)
@@ -529,16 +529,6 @@ public class InjectionResolver
         // Look for qualifiers
         resolvedComponents = findByQualifier(resolvedComponents, injectionPointType, qualifiers);
 
-        // Ambigious resolution, check for specialization
-        /*
-        // super beans are deactivated so it is useless
-        if (resolvedComponents.size() > 1)
-        {
-            //Look for specialization
-            resolvedComponents = findBySpecialization(resolvedComponents);
-        }
-        */
-
         resolvedBeansByType.put(cacheKey, resolvedComponents);
         if (logger.isLoggable(Level.FINE))
         {
@@ -682,7 +672,15 @@ public class InjectionResolver
         return enableSet;
     }
 
-    public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
+    /**
+     *
+     * @param beans
+     * @param injectionPoint only used for logging. Can be null.
+     * @param <X>
+     * @return the single resolved bean, null if none is activated
+     * @throws javax.enterprise.inject.AmbiguousResolutionException if more than 1 bean is active
+     */
+    public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans, InjectionPoint injectionPoint)
     {
         Set set = resolveAll(beans);
         
@@ -696,7 +694,7 @@ public class InjectionResolver
             set = findBySpecialization(set);
             if(set.size() > 1)
             {
-                throwAmbiguousResolutionException(set);
+                throwAmbiguousResolutionException(set, null, injectionPoint);
             }
         }
 
@@ -722,14 +720,6 @@ public class InjectionResolver
         {
             return Collections.emptySet();
         }
-
-        /*
-        // specialized bean are disabled so no need to refilter
-        if(set.size() > 1)
-        {
-            set = findBySpecialization(set);
-        }
-        */
 
         return set;
     }
