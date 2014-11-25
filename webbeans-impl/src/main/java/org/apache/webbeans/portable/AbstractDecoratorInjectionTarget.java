@@ -44,7 +44,7 @@ public class AbstractDecoratorInjectionTarget<T> extends InjectionTargetImpl<T>
     {
         // create proxy subclass
         Class<T> classToProxy = annotatedType.getJavaClass();
-        ClassLoader classLoader = classToProxy.getClassLoader();
+        ClassLoader classLoader = webBeansContext.getApplicationBoundaryService().getBoundaryClassLoader(classToProxy);
         if (classLoader == null)
         {
             classLoader = Thread.currentThread().getContextClassLoader();

@@ -53,7 +53,6 @@ public abstract class AbstractProxyFactory
 
     protected WebBeansContext webBeansContext;
 
-
     /**
      * contains the instance of sun.misc.Unsafe.
      * We use it for creating the proxy instance without fully
@@ -75,6 +74,11 @@ public abstract class AbstractProxyFactory
     {
         this.webBeansContext = webBeansContext;
         initializeUnsafe();
+    }
+
+    protected ClassLoader getProxyClassLoader(Class<?> beanClass)
+    {
+        return webBeansContext.getApplicationBoundaryService().getBoundaryClassLoader(beanClass);
     }
 
     /**
