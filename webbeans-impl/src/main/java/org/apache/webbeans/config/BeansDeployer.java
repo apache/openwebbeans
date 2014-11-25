@@ -846,7 +846,7 @@ public class BeansDeployer
             {
                 final AbstractProducerBean<?> producerBean = (AbstractProducerBean<?>) bean;
                 final InjectionTargetBean<?> ownerBean = producerBean.getOwnerBean();
-                if (!ownerBean.isEnabled() && !EnterpriseBeanMarker.class.isInstance(ownerBean))
+                if (!ownerBean.isEnabled())
                 {
                     // if the parent component is disabled, then we also need to disabled the producer fields and methods in it as well.
                     producerBean.setEnabled(false);
