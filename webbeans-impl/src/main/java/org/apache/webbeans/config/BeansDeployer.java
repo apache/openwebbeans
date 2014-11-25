@@ -840,14 +840,13 @@ public class BeansDeployer
 
     protected void removeProducersInDisabledBeans()
     {
-        Iterator<Bean<?>> beanIterator = webBeansContext.getBeanManagerImpl().getBeans().iterator();
-        while (beanIterator.hasNext())
+        for (final Bean<?> bean : webBeansContext.getBeanManagerImpl().getBeans())
         {
-            Bean<?> bean = beanIterator.next();
             if (bean instanceof AbstractProducerBean)
             {
-                AbstractProducerBean<?> producerBean = (AbstractProducerBean<?>) bean;
-                if (!producerBean.getOwnerBean().isEnabled())
+                final AbstractProducerBean<?> producerBean = (AbstractProducerBean<?>) bean;
+                final InjectionTargetBean<?> ownerBean = producerBean.getOwnerBean();
+                if (!ownerBean.isEnabled() && !EnterpriseBeanMarker.class.isInstance(ownerBean))
                 {
                     // if the parent component is disabled, then we also need to disabled the producer fields and methods in it as well.
                     producerBean.setEnabled(false);
