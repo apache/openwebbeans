@@ -1121,7 +1121,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
     {
-        return injectionResolver.resolve(beans);
+        return injectionResolver.resolve(beans, null);
     }
 
     /**

@@ -145,7 +145,8 @@ public class InjectionResolver
         }
 
         // not that happy about this check here and at runtime but few TCKs test Weld behavior only...
-        final Bean<?> bean = resolve(implResolveByType(false, type, injectionPoint.getQualifiers().toArray(new Annotation[injectionPoint.getQualifiers().size()])));
+        final Bean<?> bean = resolve(implResolveByType(false, type, injectionPoint.getQualifiers().toArray(new Annotation[injectionPoint.getQualifiers().size()])),
+                                     injectionPoint);
         if (bean != null && ManagedBean.class.isInstance(bean))
         {
             try
@@ -203,7 +204,7 @@ public class InjectionResolver
                 }
             }
 
-            Bean<?> bean = resolve(beanSet);
+            Bean<?> bean = resolve(beanSet, injectionPoint);
 
             if (bean == null)
             {
@@ -267,7 +268,7 @@ public class InjectionResolver
             }
         }
 
-        return resolve(beanSet);
+        return resolve(beanSet, injectionPoint);
     }
 
     private void createNewBean(InjectionPoint injectionPoint, Type type, Annotation[] qualifiers, Set<Bean<?>> beanSet)
@@ -576,8 +577,14 @@ public class InjectionResolver
      * resolve any ambiguity by checking for Alternatives.
      * If any &#064;Alternative exists, then we pick the one with the
      * highest priority.
+     *
+     * @param beans
+     * @param injectionPoint only used for logging. Can be null.
+     * @param <X>
+     * @return the single resolved bean, null if none is activated
+     * @throws javax.enterprise.inject.AmbiguousResolutionException if more than 1 bean is active
      */
-    public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
+    public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans, InjectionPoint injectionPoint)
     {
         if (beans == null || beans.isEmpty())
         {
@@ -599,7 +606,7 @@ public class InjectionResolver
 
         if(set.size() > 1)
         {
-            throwAmbiguousResolutionException(set);
+            throwAmbiguousResolutionException(set, null, injectionPoint);
         }
 
         return (Bean<? extends X>)set.iterator().next();

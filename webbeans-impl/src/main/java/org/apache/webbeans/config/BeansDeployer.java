@@ -785,7 +785,7 @@ public class BeansDeployer
                         {
                             try
                             {
-                                resolver.resolve(beans);
+                                resolver.resolve(beans, null);
                             }
                             catch(AmbiguousResolutionException are)
                             {
