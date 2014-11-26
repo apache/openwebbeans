@@ -1,5 +1,5 @@
 -------------------------------
-Apache OpenWebBeans 1.2.6
+Apache OpenWebBeans 1.2.7
 -------------------------------
 
 Welcome!
@@ -75,8 +75,35 @@ In Apache OpenWebBeans, a settings configured in a beans.xml file of a BDA is no
 only effective for this very bean archive but for the whole BeanManager in control
 of the Application. This is especially the case for <alternatives> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
-for the whole Application. This behaviour will most likely also be the default behaviour
-in the CDI-1.1 JSR-346 specification.
+for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.2.7
+-------------------------------------------
+
+Bug
+
+    [OWB-934] - Contextual#destroy not invoked for custom implementations
+    [OWB-961] - review and pimp our samples
+    [OWB-985] - support tomcat 7.0.54
+    [OWB-988] - Move PrincipalBean from owb-ee-common to owb-impl
+    [OWB-991] - producer fields and methods of disabled beans must be disabled as well
+    [OWB-992] - Decorator generic delegate attribute must be same with decorated type
+    [OWB-1019] - implement passivation check rules as defined in CDI-140 and CDI-153
+    [OWB-1024] - DecoratorBeanBuilder : Number of TypeArguments must match - Decorated Type: 2 Delegate Type: 1
+    [OWB-1028] - ConversationProducer blows up with NPE
+
+Improvement
+
+    [OWB-972] - Define an Application Boundary SPI
+    [OWB-987] - improve getReference type handling
+    [OWB-1031] - improve error message if injection point validation fails
+
+Task
+
+    [OWB-990] - upgrade owb-1.2.x to latest CDI-1.0 TCK 1.0.6.Final
+
 
 
 -------------------------------------------
