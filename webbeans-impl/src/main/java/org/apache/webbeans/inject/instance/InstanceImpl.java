@@ -295,7 +295,8 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     }
 
     @SuppressWarnings("unchecked")
-    private T create(Bean<?> bean) {
+    private T create(Bean<?> bean)
+    {
         BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
         CreationalContextImpl<?> creationalContext = beanManager.createCreationalContext(bean);
 
