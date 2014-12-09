@@ -106,7 +106,6 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
      * @return bean instance
      */
     @Override
-    @SuppressWarnings("unchecked")
     public T get()
     {
         Annotation[] anns = new Annotation[qualifierAnnotations.size()];
@@ -114,42 +113,16 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
 
         Set<Bean<?>> beans = resolveBeans();
 
-        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
-
-        Bean<?> bean = beanManager.resolve(beans);
+        Bean<?> bean = webBeansContext.getBeanManagerImpl().resolve(beans);
 
         if (bean == null)
         {
             InjectionExceptionUtil.throwUnsatisfiedResolutionException(ClassUtil.getClazz(injectionClazz), injectionPoint, anns);
         }
 
-        CreationalContextImpl<?> creationalContext = beanManager.createCreationalContext(bean);
-
-        if (!(creationalContext instanceof CreationalContextImpl))
-        {
-            creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(creationalContext, bean);
-        }
-
-        ((CreationalContextImpl<?>)creationalContext).putInjectionPoint(injectionPoint);
-        try
-        {
-            final T reference = (T) beanManager.getReference(bean, injectionClazz, creationalContext);
-            if (creationalContexts == null)
-            {
-                creationalContexts = new IdentityHashMap<Object, CreationalContextImpl<?>>();
-            }
-            creationalContexts.put(reference, creationalContext);
-            if (WebBeansUtil.isDependent(bean))
-            {
-                parentCreationalContext.addDependent(bean, reference);
-            }
-            return reference;
-        }
-        finally
-        {
-            ((CreationalContextImpl<?>)creationalContext).removeInjectionPoint();
-        }
+        return create(bean);
     }
+
 
     /**
      * Returns set of resolved beans.
@@ -264,7 +237,6 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public Iterator<T> iterator()
     {
         Set<Bean<?>> beans = resolveBeans();
@@ -274,7 +246,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         {
             for(Bean<?> bean : beans)
             {
-                T instance = (T) webBeansContext.getBeanManagerImpl().getReference(bean,null, parentCreationalContext);
+                T instance = create(bean);
                 instances.add(instance);
             }
         }
@@ -319,6 +291,32 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
                 throw new IllegalArgumentException("instance " + instance + " not produced with this Instance<?>");
             }
             creationalContext.destroyDependent(instance);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private T create(Bean<?> bean) {
+        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
+        CreationalContextImpl<?> creationalContext = beanManager.createCreationalContext(bean);
+
+        creationalContext.putInjectionPoint(injectionPoint);
+        try
+        {
+            final T reference = (T) beanManager.getReference(bean, injectionClazz, creationalContext);
+            if (creationalContexts == null)
+            {
+                creationalContexts = new IdentityHashMap<Object, CreationalContextImpl<?>>();
+            }
+            creationalContexts.put(reference, creationalContext);
+            if (WebBeansUtil.isDependent(bean))
+            {
+                parentCreationalContext.addDependent(bean, reference);
+            }
+            return reference;
+        }
+        finally
+        {
+            creationalContext.removeInjectionPoint();
         }
     }
     
