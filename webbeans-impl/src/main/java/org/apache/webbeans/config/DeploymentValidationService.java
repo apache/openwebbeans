@@ -160,8 +160,17 @@ public class DeploymentValidationService
      */
     public <T> void validatePassivationCapable(OwbBean<T> bean)
     {
-        if (isPassivationCapable(bean) && !EnterpriseBeanMarker.class.isInstance(bean))
+        if (isPassivationCapable(bean))
         {
+            if (EnterpriseBeanMarker.class.isInstance(bean))
+            {
+                if (BeanInterceptorInfoProvider.class.isInstance(bean))
+                {
+                    validatePassivationCapableInterceptorInfo(bean, BeanInterceptorInfoProvider.class.cast(bean).interceptorInfo());
+                }
+                return;
+            }
+
             if (!(bean instanceof ProducerMethodBean))
             {
                 validatePassivationCapableDependencies(bean, bean.getInjectionPoints());
@@ -170,25 +179,30 @@ public class DeploymentValidationService
             {
                 InjectionTargetImpl<T> injectionTarget = (InjectionTargetImpl<T>)bean.getProducer();
                 BeanInterceptorInfo interceptorInfo = injectionTarget.getInterceptorInfo();
-                if (interceptorInfo != null)
-                {
-                    for (Interceptor<?> ejbInterceptor: interceptorInfo.getEjbInterceptors())
-                    {
-                        validatePassivationCapableDependency(bean, ejbInterceptor);
-                    }
-                    for (Interceptor<?> cdiInterceptor: interceptorInfo.getCdiInterceptors())
-                    {
-                        validatePassivationCapableDependency(bean, cdiInterceptor);
-                    }
-                    for (Decorator<?> decorators: interceptorInfo.getDecorators())
-                    {
-                        validatePassivationCapableDependency(bean, decorators);
-                    }
-                }
+                validatePassivationCapableInterceptorInfo(bean, interceptorInfo);
             }
         }
     }
-    
+
+    private <T> void validatePassivationCapableInterceptorInfo(final OwbBean<T> bean, final BeanInterceptorInfo interceptorInfo)
+    {
+        if (interceptorInfo != null)
+        {
+            for (Interceptor<?> ejbInterceptor: interceptorInfo.getEjbInterceptors())
+            {
+                validatePassivationCapableDependency(bean, ejbInterceptor);
+            }
+            for (Interceptor<?> cdiInterceptor: interceptorInfo.getCdiInterceptors())
+            {
+                validatePassivationCapableDependency(bean, cdiInterceptor);
+            }
+            for (Decorator<?> decorators: interceptorInfo.getDecorators())
+            {
+                validatePassivationCapableDependency(bean, decorators);
+            }
+        }
+    }
+
     private <T> void validatePassivationCapableDependency(Bean<T> bean, Bean<?> dependentBean)
     {
         if (!isPassivationCapable(dependentBean))
@@ -226,5 +240,10 @@ public class DeploymentValidationService
     private boolean isPassivationCapable(Bean<?> bean)
     {
         return bean instanceof OwbBean? ((OwbBean<?>)bean).isPassivationCapable(): bean instanceof PassivationCapable;
+    }
+
+    public static interface BeanInterceptorInfoProvider
+    {
+        BeanInterceptorInfo interceptorInfo();
     }
 }
