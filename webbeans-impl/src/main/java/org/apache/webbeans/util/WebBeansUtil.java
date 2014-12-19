@@ -81,6 +81,7 @@ import org.apache.webbeans.portable.events.generics.GProcessSyntheticAnnotatedTy
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
+import javax.annotation.Priority;
 import javax.decorator.Decorator;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Contextual;
@@ -1201,22 +1202,25 @@ public final class WebBeansUtil
 
         boolean alternative = false;
 
-        if (AnnotationUtil.hasAnnotation(annotations, Alternative.class))
+        if (parent.getAnnotatedType().getAnnotation(Priority.class) == null)
         {
-            alternative = true;
-        }
-
-        if (!alternative)
-        {
-            for (Class<? extends Annotation> stereoType : stereotypes)
+            if (AnnotationUtil.hasAnnotation(annotations, Alternative.class))
             {
-                if (AnnotationUtil.hasClassAnnotation(stereoType, Alternative.class))
+                alternative = true;
+            }
+
+            if (!alternative)
+            {
+                for (Class<? extends Annotation> stereoType : stereotypes)
                 {
-                    alternative = true;
-                    break;
+                    if (AnnotationUtil.hasClassAnnotation(stereoType, Alternative.class))
+                    {
+                        alternative = true;
+                        break;
+                    }
                 }
             }
-        }
+        } // else activated implicitely
 
         if (alternative)
         {
