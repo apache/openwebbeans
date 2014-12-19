@@ -37,6 +37,7 @@ public class PriorityClasses
     public void add(final Class<?> clazz, final Priority priority)
     {
         raw.add(new PriorityClass(clazz, priority.value()));
+        sorted = null;
     }
 
     public List<Class<?>> getSorted()
