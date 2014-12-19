@@ -269,67 +269,53 @@ public class InterceptorResolutionService
 
             allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.POST_CONSTRUCT, interceptorBindings));
             allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.PRE_DESTROY, interceptorBindings));
-
-            if (!annotatedType.getConstructors().isEmpty())
-            {
-                for (final AnnotatedConstructor<?> c : annotatedType.getConstructors())
-                {
-                    final Set<Annotation> constructorAnnot = webBeansContext.getAnnotationManager().getInterceptorAnnotations(c.getAnnotations());
-                    if (constructorAnnot.isEmpty())
-                    {
-                        allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, interceptorBindings));
-                    }
-                    else
-                    {
-                        constructorAnnot.addAll(classInterceptorBindings);
-                        allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, AnnotationUtil.asArray(constructorAnnot)));
-                    }
-                }
-            }
-            else
-            {
-                allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, interceptorBindings));
-            }
         }
 
-        if (!annotatedType.getConstructors().isEmpty())
+        AnnotatedConstructor<?> constructorToUse = null;
+        if (!annotatedType.getConstructors().isEmpty()) // avoid to use class annotations for not used constructors
         {
             for (final AnnotatedConstructor<?> c : annotatedType.getConstructors())
             {
-                final Set<Annotation> constructorAnnot = webBeansContext.getAnnotationManager().getInterceptorAnnotations(c.getAnnotations());
-                if (constructorAnnot.isEmpty())
+                if (constructorToUse == null && c.getParameters().isEmpty())
                 {
-                    if (interceptorBindings != null)
+                    constructorToUse = c;
+                }
+                else if (c.getAnnotation(Inject.class) != null)
+                {
+                    constructorToUse = c;
+                    break;
+                }
+            }
+        }
+        if (constructorToUse != null)
+        {
+            final Set<Annotation> constructorAnnot = webBeansContext.getAnnotationManager().getInterceptorAnnotations(constructorToUse.getAnnotations());
+            for (final Annotation classA : classInterceptorBindings)
+            {
+                boolean overriden = false;
+                for (final Annotation consA : constructorAnnot)
+                {
+                    if (classA.annotationType() == consA.annotationType())
                     {
-                        allUsedConstructorCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, interceptorBindings));
+                        overriden = true;
+                        break;
                     }
                 }
-                else
+                if (!overriden)
                 {
-                    for (final Annotation classA : classInterceptorBindings)
-                    {
-                        boolean overriden = false;
-                        for (final Annotation consA : constructorAnnot)
-                        {
-                            if (classA.annotationType() == consA.annotationType())
-                            {
-                                overriden = true;
-                                break;
-                            }
-                        }
-                        if (!overriden)
-                        {
-                            constructorAnnot.add(classA);
-                        }
-                    }
-                    allUsedConstructorCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, AnnotationUtil.asArray(constructorAnnot)));
+                    constructorAnnot.add(classA);
                 }
+            }
+            if (!constructorAnnot.isEmpty())
+            {
+                allUsedConstructorCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, AnnotationUtil.asArray(constructorAnnot)));
             }
         }
         else if (interceptorBindings != null)
         {
             allUsedConstructorCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, interceptorBindings));
         }
+        allUsedCdiInterceptors.addAll(allUsedConstructorCdiInterceptors);
     }
 
     /**
@@ -389,7 +375,7 @@ public class InterceptorResolutionService
         }
     }
 
-    private <T> void collectEjbInterceptors(List<Interceptor<?>> ejbInterceptors, Annotated annotated, boolean unproxyable, Set<Type> types)
+    private void collectEjbInterceptors(List<Interceptor<?>> ejbInterceptors, Annotated annotated, boolean unproxyable, Set<Type> types)
     {
         Interceptors interceptorsAnnot = annotated.getAnnotation(Interceptors.class);
         if (interceptorsAnnot != null)
