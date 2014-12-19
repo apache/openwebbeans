@@ -164,6 +164,7 @@ public class DeploymentValidationService
         {
             if (EnterpriseBeanMarker.class.isInstance(bean))
             {
+                validatePassivationCapableDependencies(bean, bean.getInjectionPoints());
                 if (BeanInterceptorInfoProvider.class.isInstance(bean))
                 {
                     validatePassivationCapableInterceptorInfo(bean, BeanInterceptorInfoProvider.class.cast(bean).interceptorInfo());
