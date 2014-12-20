@@ -75,34 +75,50 @@ public class DecoratorsManager
         Asserts.assertNotNull(src, "src parameter can not be  null");
         Asserts.assertNotNull(target, "target parameter can not be null");
 
-        int srcIndex = enabledDecorators.indexOf(src);
-        int targetIndex = enabledDecorators.indexOf(target);
+        final int p1 = priorityDecorators.getSorted().indexOf(src);
+        final int p2 = priorityDecorators.getSorted().indexOf(target);
 
-        if (srcIndex == -1 || targetIndex == -1)
+        int srcIndex = p1;
+        if (srcIndex == -1)
         {
-            throw new IllegalArgumentException("One of the compare class of the list : [" + src.getName() + "," + target.getName() + "]"
-                                               + " is not contained in the enabled decorators list!");
+            int i = enabledDecorators.indexOf(src);
+            if (i == -1)
+            {
+                throw new IllegalArgumentException(src.getName() + " is not contained in the enabled decorators list!");
+            }
+            srcIndex = priorityDecorators.getSorted().size() + i;
+        }
+        int targetIndex = p2;
+        if (targetIndex == -1)
+        {
+            int i = enabledDecorators.indexOf(target);
+            if (i == -1)
+            {
+                throw new IllegalArgumentException(target.getName() + " is not contained in the enabled decorators list!");
+            }
+            targetIndex = priorityDecorators.getSorted().size() + i;
         }
 
-        if (srcIndex == targetIndex)
+        if (p1 != -1 && p2 != -1)
         {
-            return 0;
+            return p1 - p2;
         }
-        else if (srcIndex < targetIndex)
-        {
-            return -1;
-        }
-        else
+        if (p1 == -1 && p2 != -1)
         {
             return 1;
         }
+        if (p1 != -1)
+        {
+            return -1;
+        }
+        return srcIndex - targetIndex;
     }
 
     public boolean isDecoratorEnabled(Class<?> decoratorClazz)
     {
         Asserts.nullCheckForClass(decoratorClazz, "decoratorClazz can not be null");
 
-        return enabledDecorators.contains(decoratorClazz);
+        return enabledDecorators.contains(decoratorClazz) || priorityDecorators.contains(decoratorClazz);
     }
     
     public void validateDecoratorClasses()

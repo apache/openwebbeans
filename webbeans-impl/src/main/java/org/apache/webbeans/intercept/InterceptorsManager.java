@@ -158,23 +158,34 @@ public class InterceptorsManager
         Asserts.assertNotNull(src, "src parameter can not be  null");
         Asserts.assertNotNull(target, "target parameter can not be null");
 
-        int srcIndex = configuredInterceptorClasses.indexOf(src);
-        if (srcIndex == -1)
-        {
-            throw new IllegalArgumentException(src.getName() + " is not an enabled interceptor!");
-        }
-
-        int targetIndex = configuredInterceptorClasses.indexOf(target);
-        if (targetIndex == -1)
-        {
-            throw new IllegalArgumentException(target.getName() + " is not an enabled interceptor!");
-        }
-
         final int p1 = priorityInterceptors.getSorted().indexOf(src);
         final int p2 = priorityInterceptors.getSorted().indexOf(target);
+
+        int srcIndex = p1;
+        if (srcIndex == -1)
+        {
+            int i = configuredInterceptorClasses.indexOf(src);
+            if (i == -1)
+            {
+                throw new IllegalArgumentException(src.getName() + " is not an enabled interceptor!");
+            }
+            srcIndex = priorityInterceptors.getSorted().size() + i;
+        }
+
+        int targetIndex = p2;
+        if (targetIndex == -1)
+        {
+            int i = configuredInterceptorClasses.indexOf(target);
+            if (i == -1)
+            {
+                throw new IllegalArgumentException(target.getName() + " is not an enabled interceptor!");
+            }
+            targetIndex = priorityInterceptors.getSorted().size() + i;
+        }
+
         if (p1 != -1 && p2 != -1)
         {
-            return p2 - p1;
+            return p1 - p2;
         }
         if (p1 == -1 && p2 != -1)
         {
@@ -184,19 +195,7 @@ public class InterceptorsManager
         {
             return 1;
         }
-
-        if (srcIndex == targetIndex)
-        {
-            return 0;
-        }
-        else if (srcIndex < targetIndex)
-        {
-            return -1;
-        }
-        else
-        {
-            return 1;
-        }
+        return srcIndex - targetIndex;
     }
 
     /**
@@ -215,7 +214,7 @@ public class InterceptorsManager
         List<Interceptor<?>> interceptorList = new ArrayList<Interceptor<?>>();
         for (Interceptor<?> interceptor : cdiInterceptors)
         {
-            if (interceptor.intercepts(type) && intercepts(interceptor, interceptorBindings))
+            if (interceptor.intercepts(type) && intercepts(interceptor, interceptorBindings) && isInterceptorClassEnabled(interceptor.getBeanClass()))
             {
                 interceptorList.add(interceptor);
             }

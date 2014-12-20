@@ -449,6 +449,11 @@ public class InterceptorResolutionService
 
         for (Decorator decorator : decorators)
         {
+            if (!webBeansContext.getDecoratorsManager().isDecoratorEnabled(decorator.getBeanClass()))
+            {
+                continue;
+            }
+
             Method decoratingMethod = getDecoratingMethod(decorator, annotatedMethod);
             if (decoratingMethod != null)
             {

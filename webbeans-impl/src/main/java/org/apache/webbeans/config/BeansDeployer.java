@@ -107,6 +107,7 @@ import java.net.URL;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -438,7 +439,7 @@ public class BeansDeployer
                 {
                     final Class<?> javaClass = annotatedType.getJavaClass();
                     interceptorsManager.addPriorityClazzInterceptor(javaClass, priority);
-                    interceptorsManager.addEnabledInterceptorClass(javaClass);
+                    // interceptorsManager.addEnabledInterceptorClass(javaClass);
                 }
             }
             if (annotatedType.getAnnotation(javax.decorator.Decorator.class) != null)
@@ -448,7 +449,7 @@ public class BeansDeployer
                 {
                     final Class<?> javaClass = annotatedType.getJavaClass();
                     decoratorsManager.addPriorityClazzDecorator(javaClass, priority);
-                    decoratorsManager.addEnabledDecorator(javaClass);
+                    // decoratorsManager.addEnabledDecorator(javaClass);
                 }
             }
         }
@@ -591,12 +592,20 @@ public class BeansDeployer
     {
         final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         final List<AnnotatedType<?>> newAt = new LinkedList<AnnotatedType<?>>();
-        manager.fireLifecycleEvent(new AfterTypeDiscoveryImpl(
-                webBeansContext,
-                newAt,
-                webBeansContext.getInterceptorsManager().getPrioritizedInterceptors(),
-                webBeansContext.getDecoratorsManager().getPrioritizedDecorators(),
-                webBeansContext.getAlternativesManager().getPrioritizedAlternatives()));
+        final List<Class<?>> interceptors = webBeansContext.getInterceptorsManager().getPrioritizedInterceptors();
+        final List<Class<?>> decorators = webBeansContext.getDecoratorsManager().getPrioritizedDecorators();
+        final List<Class<?>> alternatives = webBeansContext.getAlternativesManager().getPrioritizedAlternatives();
+
+        // match AfterTypeDiscovery expected order (1, 2, 3...)
+        Collections.reverse(interceptors);
+        Collections.reverse(decorators);
+        Collections.reverse(alternatives);
+        manager.fireLifecycleEvent(new AfterTypeDiscoveryImpl(webBeansContext, newAt,
+                interceptors, decorators, alternatives));
+        // reverse to keep "selection" order - decorator and interceptors considers it in their sorting.
+        // NOTE: from here priorityClass.getSorted() MUST NOT be recomputed (ie no priorityClass.add(...))
+        Collections.reverse(alternatives);
+
         // we do not need to set back the sortedAlternatives to the AlternativesManager as the API
         // and all layers in between use a mutable List. Not very elegant but spec conform.
 
