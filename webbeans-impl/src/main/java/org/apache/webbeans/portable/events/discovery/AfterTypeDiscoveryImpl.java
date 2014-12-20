@@ -34,14 +34,17 @@ public class AfterTypeDiscoveryImpl implements AfterTypeDiscovery, ExtensionAwar
     private final List<Class<?>> sortedAlternatives;
     private final List<Class<?>> sortedInterceptors;
     private final List<Class<?>> sortedDecorators;
+    private final List<AnnotatedType<?>> newAt;
     private Object extension;
 
     public AfterTypeDiscoveryImpl(WebBeansContext webBeansContext,
+                                  List<AnnotatedType<?>> newAt,
                                   List<Class<?>> sortedInterceptors,
                                   List<Class<?>> sortedDecorators,
                                   List<Class<?>> sortedAlternatives)
     {
         this.webBeansContext = webBeansContext;
+        this.newAt = newAt;
         this.sortedAlternatives = sortedAlternatives;
         this.sortedInterceptors = sortedInterceptors;
         this.sortedDecorators = sortedDecorators;
@@ -68,8 +71,8 @@ public class AfterTypeDiscoveryImpl implements AfterTypeDiscovery, ExtensionAwar
     @Override
     public void addAnnotatedType(AnnotatedType<?> type, String id)
     {
-        //X TODO evaluate and file Extension
         webBeansContext.getBeanManagerImpl().addAdditionalAnnotatedType(extension, type, id);
+        newAt.add(type);
     }
 
     @Override

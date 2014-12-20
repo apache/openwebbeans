@@ -110,6 +110,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -228,11 +229,11 @@ public class BeansDeployer
                 List<AnnotatedType<?>> annotatedTypes = annotatedTypesFromClassPath(scanner);
 
                 //Deploy additional Annotated Types
-                addAdditionalAnnotatedTypes(annotatedTypes);
+                addAdditionalAnnotatedTypes(webBeansContext.getBeanManagerImpl().getAdditionalAnnotatedTypes(), annotatedTypes);
 
                 registerAlternativesDecoratorsAndInterceptorsWithPriority(annotatedTypes);
 
-                fireAfterTypeDiscoveryEvent();
+                addAdditionalAnnotatedTypes(fireAfterTypeDiscoveryEvent(), annotatedTypes);
 
                 // Handle Specialization
                 removeSpecializedTypes(annotatedTypes);
@@ -586,11 +587,13 @@ public class BeansDeployer
     /**
      * Fires event after bean discovery.
      */
-    private void fireAfterTypeDiscoveryEvent()
+    private final List<AnnotatedType<?>> fireAfterTypeDiscoveryEvent()
     {
         final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
+        final List<AnnotatedType<?>> newAt = new LinkedList<AnnotatedType<?>>();
         manager.fireLifecycleEvent(new AfterTypeDiscoveryImpl(
                 webBeansContext,
+                newAt,
                 webBeansContext.getInterceptorsManager().getPrioritizedInterceptors(),
                 webBeansContext.getDecoratorsManager().getPrioritizedDecorators(),
                 webBeansContext.getAlternativesManager().getPrioritizedAlternatives()));
@@ -599,6 +602,7 @@ public class BeansDeployer
 
         webBeansContext.getWebBeansUtil().inspectErrorStack(
             "There are errors that are added by AfterTypeDiscovery event observers. Look at logs for further details");
+        return newAt;
     }
 
     /**
@@ -943,14 +947,11 @@ public class BeansDeployer
      * Process any AnnotatedTypes which got added by BeforeBeanDiscovery#addAnnotatedType
      * @param annotatedTypes
      */
-    private void addAdditionalAnnotatedTypes(List<AnnotatedType<?>> annotatedTypes)
+    private void addAdditionalAnnotatedTypes(Collection<AnnotatedType<?>> toDeploy, List<AnnotatedType<?>> annotatedTypes)
     {
         BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
 
-
-        Collection<AnnotatedType<?>> additionalAnnotatedTypes = beanManager.getAdditionalAnnotatedTypes();
-
-        for (AnnotatedType<?> annotatedType : additionalAnnotatedTypes)
+        for (AnnotatedType<?> annotatedType : toDeploy)
         {
             // Fires ProcessAnnotatedType
             ProcessSyntheticAnnotatedTypeImpl<?> processAnnotatedEvent = !annotatedType.getJavaClass().isAnnotation() ?
