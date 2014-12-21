@@ -34,10 +34,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
-import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.EjbInterceptorBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
@@ -289,15 +287,7 @@ public class InterceptorsManager
     public void addCdiInterceptor(Interceptor interceptor)
     {
         cdiInterceptors.add(interceptor);
-        if (interceptor instanceof PassivationCapable)
-        {
-            OwbBean<?> owbBean = (OwbBean<?>)interceptor;
-            if(owbBean.isPassivationCapable())
-            {
-                beanManager.addPassivationInfo(interceptor);
-            }
-
-        }
+        beanManager.addPassivationInfo(interceptor);
     }
 
 
