@@ -62,13 +62,13 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.BaseProducerProducer;
-import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessSyntheticAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
 import org.apache.webbeans.portable.events.discovery.AfterTypeDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
+import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
 import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.JNDIService;
@@ -865,11 +865,12 @@ public class BeansDeployer
                     // Fires ProcessAnnotatedType
                     if (!annotatedType.getJavaClass().isAnnotation())
                     {
-                        ProcessAnnotatedTypeImpl<?> processAnnotatedEvent = webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
+                        GProcessAnnotatedType processAnnotatedEvent = webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
                         if (!processAnnotatedEvent.isVeto())
                         {
                             annotatedTypes.add(processAnnotatedEvent.getAnnotatedType());
                         }
+                        processAnnotatedEvent.setAfter();
                     }
                     else
                     {
@@ -1195,7 +1196,7 @@ public class BeansDeployer
                     annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
                 }
 
-                ProcessAnnotatedTypeImpl<?> processAnnotatedEvent =
+                GProcessAnnotatedType processAnnotatedEvent =
                         webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
 
                 // if veto() is called
@@ -1205,6 +1206,7 @@ public class BeansDeployer
                 }
 
                 annotatedType = processAnnotatedEvent.getAnnotatedType();
+                processAnnotatedEvent.setAfter();
 
                 Set<Annotation> annTypeAnnotations = annotatedType.getAnnotations();
                 if (annTypeAnnotations != null)
