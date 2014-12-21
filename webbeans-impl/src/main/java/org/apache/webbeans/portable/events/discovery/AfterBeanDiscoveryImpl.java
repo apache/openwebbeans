@@ -57,11 +57,17 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     private static final Logger logger = WebBeansLoggerFacade.getLogger(AfterBeanDiscoveryImpl.class);
     private final WebBeansContext webBeansContext;
     private Object extension;
+    private boolean started;
 
     public AfterBeanDiscoveryImpl(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
         beanManager = this.webBeansContext.getBeanManagerImpl();
+    }
+
+    public void setStarted()
+    {
+        started = true;
     }
 
     /**
@@ -70,6 +76,11 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @Override
     public void addBean(Bean<?> bean)
     {
+        if (started)
+        {
+            throw new IllegalStateException("Don't call AfterBeanDiscovery.addBean(bean) after the event is fired");
+        }
+
         AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(bean.getBeanClass());
 
         //Fire Event
@@ -171,6 +182,10 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @Override
     public void addContext(Context context)
     {
+        if (started)
+        {
+            throw new IllegalStateException("Don't call AfterBeanDiscovery.addContext(...) after the event is fired");
+        }
         beanManager.addContext(context);
 
     }
@@ -181,6 +196,10 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @Override
     public void addDefinitionError(Throwable t)
     {
+        if (started)
+        {
+            throw new IllegalStateException("Don't call AfterBeanDiscovery.addBean(bean) after the event is fired");
+        }
         beanManager.getErrorStack().pushError(t);
     }
 
@@ -190,6 +209,10 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @Override
     public void addObserverMethod(ObserverMethod<?> observerMethod)
     {
+        if (started)
+        {
+            throw new IllegalStateException("Don't call AfterBeanDiscovery.addObserverMethod(...) after the event is fired");
+        }
         ProcessObserverMethod<?, ?> event = new GProcessObservableMethod(null,observerMethod);
         beanManager.fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         beanManager.getNotificationManager().addObserver(observerMethod, observerMethod.getObservedType());
@@ -200,6 +223,10 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
      */
     public <T> AnnotatedType<T> getAnnotatedType(Class<T> type, String id)
     {
+        if (started)
+        {
+            throw new IllegalStateException("Don't call AfterBeanDiscovery.getAnnotatedType(...) after the event is fired");
+        }
         return (AnnotatedType<T>) beanManager.getAdditionalAnnotatedType(type, id);
     }
 
@@ -208,6 +235,10 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
      */
     public <T> Iterable<AnnotatedType<T>> getAnnotatedTypes(Class<T> type)
     {
+        if (started)
+        {
+            throw new IllegalStateException("Don't call AfterBeanDiscovery.getAnnotatedTypes(...) after the event is fired");
+        }
         return beanManager.getAnnotatedTypes(type);
     }
 

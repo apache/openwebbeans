@@ -36,6 +36,7 @@ import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
 import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
 import org.apache.webbeans.component.creation.ProducerMethodBeansBuilder;
+import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
@@ -579,10 +580,13 @@ public class BeansDeployer
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         manager.setAfterBeanDiscoveryFired(true);
-        manager.fireLifecycleEvent(new AfterBeanDiscoveryImpl(webBeansContext));
+        final AfterBeanDiscoveryImpl event = new AfterBeanDiscoveryImpl(webBeansContext);
+        manager.fireLifecycleEvent(event);
 
         webBeansContext.getWebBeansUtil().inspectErrorStack(
                 "There are errors that are added by AfterBeanDiscovery event observers. Look at logs for further details");
+
+        event.setStarted();
     }
     
     /**
@@ -1447,6 +1451,7 @@ public class BeansDeployer
 
                 final Set<ObserverMethod<?>> observerMethods;
                 final AnnotatedType<T> beanAnnotatedType = bean.getAnnotatedType();
+                final boolean ignoreProducer = AnnotatedTypeWrapper.class.isInstance(beanAnnotatedType);
                 if(bean.isEnabled())
                 {
                     observerMethods = new ObserverMethodsBuilder<T>(webBeansContext, beanAnnotatedType).defineObserverMethods(bean);
@@ -1457,8 +1462,10 @@ public class BeansDeployer
                 }
 
                 final WebBeansContext wbc = bean.getWebBeansContext();
-                Set<ProducerFieldBean<?>> producerFields = new ProducerFieldBeansBuilder(wbc, beanAnnotatedType).defineProducerFields(bean);
-                Set<ProducerMethodBean<?>> producerMethods = new ProducerMethodBeansBuilder(wbc, beanAnnotatedType).defineProducerMethods(bean, producerFields);
+                Set<ProducerFieldBean<?>> producerFields =
+                        ignoreProducer ? Collections.emptySet() : new ProducerFieldBeansBuilder(wbc, beanAnnotatedType).defineProducerFields(bean);
+                Set<ProducerMethodBean<?>> producerMethods =
+                        ignoreProducer ? Collections.emptySet() : new ProducerMethodBeansBuilder(wbc, beanAnnotatedType).defineProducerMethods(bean, producerFields);
 
                 ManagedBean<T> managedBean = (ManagedBean<T>)bean;
                 Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods =
