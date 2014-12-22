@@ -112,6 +112,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -220,12 +221,6 @@ public class BeansDeployer
                 //Fire Event
                 fireBeforeBeanDiscoveryEvent();
                 
-                //Deploy bean from XML. Also configures deployments, interceptors, decorators.
-                deployFromXML(scanner);
-                
-                //Checking stereotype conditions
-                checkStereoTypes(scanner);
-                
                 //Configure Default Beans
                 configureDefaultBeans();
 
@@ -238,13 +233,20 @@ public class BeansDeployer
 
                 addAdditionalAnnotatedTypes(fireAfterTypeDiscoveryEvent(), annotatedTypes);
 
+                Map<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedTypePreProcessing = getBeanAttributes(annotatedTypes);
+                annotatedTypes.clear(); // shouldn't be used anymore, view is now annotatedTypePreProcessing
+
+                //Deploy bean from XML. Also configures deployments, interceptors, decorators.
+                deployFromXML(scanner, annotatedTypePreProcessing);
+
+                //Checking stereotype conditions
+                checkStereoTypes(scanner);
+
                 // Handle Specialization
-                removeSpecializedTypes(annotatedTypes);
+                removeSpecializedTypes(annotatedTypePreProcessing.keySet());
 
                 // create beans from the discovered AnnotatedTypes
-                deployFromAnnotatedTypes(annotatedTypes);
-
-                webBeansContext.getAlternativesManager().failIfSomeAlternativeIsNotResolved();
+                deployFromAnnotatedTypes(annotatedTypePreProcessing);
 
                 //X TODO configure specialized producer beans.
                 webBeansContext.getWebBeansUtil().configureProducerMethodSpecializations();
@@ -302,6 +304,39 @@ public class BeansDeployer
             //esp. because #addInternalBean might have been called already and would cause an exception in the next run
             deployed = true;
         }
+    }
+
+    private Map<AnnotatedType<?>, AnnotatedTypeData<?>> getBeanAttributes(final List<AnnotatedType<?>> annotatedTypes)
+    {
+        final Map<AnnotatedType<?>, AnnotatedTypeData<?>> result = new IdentityHashMap<AnnotatedType<?>, AnnotatedTypeData<?>>(annotatedTypes.size());
+        final Iterator<AnnotatedType<?>> iterator = annotatedTypes.iterator();
+        while (iterator.hasNext())
+        {
+            final AnnotatedType<?> at = iterator.next();
+            final Class beanClass = at.getJavaClass();
+            final boolean isEjb = discoverEjb && EJBWebBeansConfigurator.isSessionBean(beanClass, webBeansContext);
+            try
+            {
+                if(isEjb || (ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(at)) && isValidManagedBean(at))
+                {
+                    final BeanAttributesImpl tBeanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(at).build();
+                    final BeanAttributes<?> beanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(at, at.getJavaClass(), tBeanAttributes);
+                    if (beanAttributes != null)
+                    {
+                        result.put(at, new AnnotatedTypeData(beanAttributes, isEjb));
+                    }
+                }
+                else
+                {
+                    iterator.remove();
+                }
+            }
+            catch (final NoClassDefFoundError ncdfe)
+            {
+                logger.info("Skipping deployment of Class " + beanClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
+            }
+        }
+        return result;
     }
 
     private void validateDisposeParameters()
@@ -1000,26 +1035,26 @@ public class BeansDeployer
      * @param annotatedTypes the AnnotatedTypes which got discovered so far and are not vetoed
      * @throws ClassNotFoundException if class not found
      */
-    protected void deployFromAnnotatedTypes(List<AnnotatedType<?>> annotatedTypes) throws ClassNotFoundException
+    protected void deployFromAnnotatedTypes(Map<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedTypes) throws ClassNotFoundException
     {
         logger.fine("Deploying configurations from class files has started.");
 
         // Start from the class
-        for(AnnotatedType<?> annotatedType : annotatedTypes)
+        for(Map.Entry<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedType : annotatedTypes.entrySet())
         {
             try
             {
-                deploySingleAnnotatedType(annotatedType);
+                deploySingleAnnotatedType(annotatedType.getKey(), annotatedType.getValue());
             }
             catch (NoClassDefFoundError ncdfe)
             {
-                logger.info("Skipping deployment of Class " + annotatedType.getJavaClass() + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
+                logger.info("Skipping deployment of Class " + annotatedType.getKey().getJavaClass() + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
             }
 
             // if the implClass already gets processed as part of the
             // standard BDA scanning, then we don't need to 'additionally'
             // deploy it anymore.
-            webBeansContext.getBeanManagerImpl().removeAdditionalAnnotatedType(annotatedType);
+            webBeansContext.getBeanManagerImpl().removeAdditionalAnnotatedType(annotatedType.getKey());
 
         }
 
@@ -1032,18 +1067,18 @@ public class BeansDeployer
      * Common helper method used to deploy annotated types discovered through
      * scanning or during beforeBeanDiscovery.
      * 
-     * @param annotatedType the AnnotatedType representing the bean to be deployed
+     * @param annotatedTypeData the AnnotatedType representing the bean to be deployed with their already computed data
      */
-    private void deploySingleAnnotatedType(AnnotatedType annotatedType)
+    private void deploySingleAnnotatedType(AnnotatedType annotatedType, AnnotatedTypeData annotatedTypeData)
     {
 
         Class beanClass = annotatedType.getJavaClass();
 
         // EJBs can be defined so test them really before going for a ManagedBean
-        if (discoverEjb && EJBWebBeansConfigurator.isSessionBean(beanClass, webBeansContext))
+        if (annotatedTypeData.isEjb)
         {
             logger.log(Level.FINE, "Found Enterprise Bean with class name : [{0}]", beanClass.getName());
-            defineEnterpriseWebBean((Class<Object>) beanClass, annotatedType);
+            defineEnterpriseWebBean((Class<Object>) beanClass, annotatedType, annotatedTypeData.beanAttributes);
         }
         else
         {
@@ -1052,7 +1087,7 @@ public class BeansDeployer
                 if((ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(annotatedType))
                         && isValidManagedBean(annotatedType))
                 {
-                    defineManagedBean(annotatedType);
+                    defineManagedBean(annotatedType, annotatedTypeData.beanAttributes);
                 }
             }
             catch (NoClassDefFoundError ncdfe)
@@ -1095,7 +1130,7 @@ public class BeansDeployer
      *
      * @throws WebBeansDeploymentException if a problem occurs
      */
-    protected void deployFromXML(ScannerService scanner) throws WebBeansDeploymentException
+    protected void deployFromXML(ScannerService scanner, Map<AnnotatedType<?>, AnnotatedTypeData<?>> preProcessing) throws WebBeansDeploymentException
     {
         logger.fine("Deploying configurations from XML files has started.");
 
@@ -1112,14 +1147,14 @@ public class BeansDeployer
 
             configureDecorators(url, beanArchiveInformation.getDecorators());
             configureInterceptors(url, beanArchiveInformation.getInterceptors());
-            configureAlternatives(url, beanArchiveInformation.getAlternativeClasses(), false);
-            configureAlternatives(url, beanArchiveInformation.getAlternativeStereotypes(), true);
+            configureAlternatives(url, beanArchiveInformation.getAlternativeClasses(), false, preProcessing);
+            configureAlternatives(url, beanArchiveInformation.getAlternativeStereotypes(), true, preProcessing);
         }
 
         logger.fine("Deploying configurations from XML has ended successfully.");
     }
 
-    private void configureAlternatives(URL bdaLocation, List<String> alternatives, boolean isStereotype)
+    private void configureAlternatives(URL bdaLocation, List<String> alternatives, boolean isStereotype, Map<AnnotatedType<?>, AnnotatedTypeData<?>> preProcessing)
     {
         // the alternatives in this beans.xml
         // this gets used to detect multiple definitions of the
@@ -1143,14 +1178,34 @@ public class BeansDeployer
             }
             else
             {
-                AlternativesManager manager = WebBeansContext.getInstance().getAlternativesManager();
+                AlternativesManager manager = webBeansContext.getAlternativesManager();
                 if (isStereotype)
                 {
                     manager.addXmlStereoTypeAlternative(clazz);
                 }
                 else
                 {
-                    manager.addXmlClazzAlternative(clazz);
+                    if (AnnotationUtil.hasClassAnnotation(clazz, Alternative.class) ||
+                            AnnotationUtil.hasMetaAnnotation(clazz.getAnnotations(), Alternative.class))
+                    {
+                        manager.addXmlClazzAlternative(clazz);
+                    }
+                    else
+                    {
+                        AnnotatedType annotatedType = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(clazz);
+                        if (annotatedType != null)
+                        {
+                            AnnotatedTypeData data = preProcessing.get(annotatedType);
+                            if (data != null && data.beanAttributes.isAlternative())
+                            {
+                                manager.addXmlClazzAlternative(clazz);
+                            }
+                            else
+                            {
+                                throw new WebBeansConfigurationException("Given alternative class : " + clazz.getName() + " is not decorated wih @Alternative" );
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -1275,7 +1330,7 @@ public class BeansDeployer
      * Checks specialization on classes and remove any AnnotatedType which got 'disabled' by having a sub-class with &#064;Specializes.
      * @param annotatedTypes the annotatedTypes which got picked up during scanning. All 'disabled' annotatedTypes will be removed.
      */
-    private void removeSpecializedTypes(List<AnnotatedType<?>> annotatedTypes)
+    private void removeSpecializedTypes(Collection<AnnotatedType<?>> annotatedTypes)
     {
         logger.fine("Checking Specialization constraints has started.");
         
@@ -1385,7 +1440,7 @@ public class BeansDeployer
      * Defines and configures managed bean.
      * @param <T> type info
      */
-    protected <T> void defineManagedBean(AnnotatedType<T> annotatedType)
+    protected <T> void defineManagedBean(AnnotatedType<T> annotatedType, BeanAttributes<T> attributes)
     {   
         //Fires ProcessInjectionTarget event for Java EE components instances
         //That supports injections but not managed beans
@@ -1402,21 +1457,7 @@ public class BeansDeployer
         }
 
         {
-
-            final BeanAttributesImpl<T> tBeanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
-            final BeanAttributes<T> beanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(
-                    annotatedType, annotatedType.getJavaClass(),
-                    tBeanAttributes);
-            if (beanAttributes == null)
-            {
-                return;
-            }
-            if (!tBeanAttributes.isAlternative() && beanAttributes.isAlternative())
-            {
-                webBeansContext.getAlternativesManager().onProgrammicAlternative(annotatedType.getJavaClass());
-            }
-
-            ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, beanAttributes);
+            ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, attributes);
 
             if(WebBeansUtil.isDecorator(annotatedType))
             {
@@ -1425,7 +1466,7 @@ public class BeansDeployer
                     logger.log(Level.FINE, "Found Managed Bean Decorator with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
 
-                DecoratorBeanBuilder<T> dbb = new DecoratorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
+                DecoratorBeanBuilder<T> dbb = new DecoratorBeanBuilder<T>(webBeansContext, annotatedType, attributes);
                 if (dbb.isDecoratorEnabled())
                 {
                     dbb.defineDecoratorRules();
@@ -1440,7 +1481,7 @@ public class BeansDeployer
                     logger.log(Level.FINE, "Found Managed Bean Interceptor with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
 
-                CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
+                CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType, attributes);
                 if (ibb.isInterceptorEnabled())
                 {
                     ibb.defineCdiInterceptorRules();
@@ -1566,10 +1607,22 @@ public class BeansDeployer
      * @param <T> bean class type
      * @param clazz bean class
      */
-    protected <T> void defineEnterpriseWebBean(Class<T> clazz, AnnotatedType<T> annotatedType)
+    protected <T> void defineEnterpriseWebBean(Class<T> clazz, AnnotatedType<T> annotatedType, BeanAttributes<T> attributes)
     {
-        InjectionTargetBean<T> bean = (InjectionTargetBean<T>) EJBWebBeansConfigurator.defineEjbBean(clazz, annotatedType,
-                                                                                                     webBeansContext);
+        InjectionTargetBean<T> bean = (InjectionTargetBean<T>) EJBWebBeansConfigurator.defineEjbBean(
+                clazz, annotatedType, attributes, webBeansContext);
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(bean);
+    }
+
+    private static class AnnotatedTypeData<T>
+    {
+        private final BeanAttributes<T> beanAttributes;
+        private final boolean isEjb;
+
+        public AnnotatedTypeData(final BeanAttributes<T> beanAttributes, final boolean isEjb)
+        {
+            this.beanAttributes = beanAttributes;
+            this.isEjb = isEjb;
+        }
     }
 }

@@ -20,6 +20,7 @@ package org.apache.webbeans.config;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanAttributes;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.plugins.PluginLoader;
@@ -60,7 +61,7 @@ public final class EJBWebBeansConfigurator
      * @param clazz bean class
      * @return ejb bean
      */
-    public static <T> Bean<T> defineEjbBean(Class<T> clazz, AnnotatedType<T> annotatedType,
+    public static <T> Bean<T> defineEjbBean(Class<T> clazz, AnnotatedType<T> annotatedType, BeanAttributes<T> attributes,
                                             WebBeansContext webBeansContext)
     {
         PluginLoader loader = webBeansContext.getPluginLoader();
@@ -71,7 +72,7 @@ public final class EJBWebBeansConfigurator
             throw new IllegalStateException("There is no provided EJB plugin. Unable to define session bean for class : " + clazz.getName());
         }
         
-        return ejbPlugin.defineSessionBean(clazz, annotatedType);
+        return ejbPlugin.defineSessionBean(clazz, attributes, annotatedType);
     }
     
 }

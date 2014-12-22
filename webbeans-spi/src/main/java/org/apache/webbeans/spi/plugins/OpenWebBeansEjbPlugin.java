@@ -21,6 +21,7 @@ package org.apache.webbeans.spi.plugins;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanAttributes;
 import java.lang.reflect.Method;
 
 /**
@@ -52,7 +53,7 @@ public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
      * @param clazz session bean class
      * @param annotatedType processed annotated type
      */
-    public <T> Bean<T> defineSessionBean(Class<T> clazz, AnnotatedType<T> annotatedType);
+    public <T> Bean<T> defineSessionBean(Class<T> clazz, BeanAttributes<T> attributes, AnnotatedType<T> annotatedType);
 
     public <T> Bean<T> defineNewSessionBean(Class<T> clazz);
 

@@ -55,9 +55,6 @@ public class AlternativesManager
 
     private final WebBeansContext webBeansContext;
 
-    // should always be empty at runtime, mainly used for BeanAttribute#isAlternative() checks
-    private final Set<Class<?>> potentialProgrammaticAlternatives = new HashSet<Class<?>>();
-
     /**
      * All the stereotypes which are configured via XML &lt;class&gt;
      */
@@ -74,19 +71,6 @@ public class AlternativesManager
     public AlternativesManager(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-    }
-
-    public void onProgrammicAlternative(final Class<?> clazz)
-    {
-        potentialProgrammaticAlternatives.remove(clazz);
-    }
-
-    public void failIfSomeAlternativeIsNotResolved()
-    {
-        if (!potentialProgrammaticAlternatives.isEmpty())
-        {
-            throw new WebBeansConfigurationException("Specified alternatives: " + potentialProgrammaticAlternatives + " are not annotated with @Alternative");
-        }
     }
 
     /**
@@ -126,15 +110,7 @@ public class AlternativesManager
      */
     public void addXmlClazzAlternative(Class<?> alternative)
     {
-        if (AnnotationUtil.hasClassAnnotation(alternative, Alternative.class) ||
-            AnnotationUtil.hasMetaAnnotation(alternative.getAnnotations(), Alternative.class))
-        {
-            configuredAlternatives.add(alternative);
-        }
-        else
-        {
-            potentialProgrammaticAlternatives.add(alternative);
-        }
+        configuredAlternatives.add(alternative);
     }
 
     /**

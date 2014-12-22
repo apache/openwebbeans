@@ -24,10 +24,10 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 
-import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.ejb.common.util.EjbValidator;
 import org.apache.webbeans.portable.AbstractEjbInjectionTarget;
@@ -44,9 +44,9 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>>
 {
     protected final WebBeansContext webBeansContext;
     protected final AnnotatedType<T> annotatedType;
-    protected final BeanAttributesImpl<T> beanAttributes;
+    protected final BeanAttributes<T> beanAttributes;
 
-    public EjbBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
+    public EjbBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributes<T> beanAttributes)
     {
         Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
         Asserts.assertNotNull(annotatedType, "annotated type may not be null");

@@ -25,6 +25,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,7 +59,7 @@ public class SpecializationUtil
     }
 
 
-    public void removeDisabledTypes(List<AnnotatedType<?>> annotatedTypes)
+    public void removeDisabledTypes(Collection<AnnotatedType<?>> annotatedTypes)
     {
         if (annotatedTypes != null && !annotatedTypes.isEmpty())
         {
@@ -96,7 +97,7 @@ public class SpecializationUtil
 
                     AnnotatedType<?> superType = getAnnotatedTypeForClass(annotatedTypes, superClass);
 
-                    if (!webBeansUtil.isConstructorOk(superType))
+                    if (superType == null || !webBeansUtil.isConstructorOk(superType))
                     {
                         throw new WebBeansDeploymentException(new InconsistentSpecializationException("@Specializes class " + specialClass.getName()
                                 + " does not extend a bean with a valid bean constructor"));
@@ -139,7 +140,7 @@ public class SpecializationUtil
         }
     }
 
-    private boolean containsAllSuperclassTypes(AnnotatedType<?> annotatedType, Class<?> superClass, List<AnnotatedType<?>> annotatedTypes)
+    private boolean containsAllSuperclassTypes(AnnotatedType<?> annotatedType, Class<?> superClass, Collection<AnnotatedType<?>> annotatedTypes)
     {
         Typed typed = annotatedType.getAnnotation(Typed.class);
         if (typed != null)
@@ -168,7 +169,7 @@ public class SpecializationUtil
         return true;
     }
 
-    private AnnotatedType<?> getAnnotatedTypeForClass(List<AnnotatedType<?>> annotatedTypes, Class<?> clazz)
+    private AnnotatedType<?> getAnnotatedTypeForClass(Collection<AnnotatedType<?>> annotatedTypes, Class<?> clazz)
     {
         for (AnnotatedType<?> annotatedType : annotatedTypes)
         {
