@@ -20,6 +20,7 @@ package org.apache.webbeans.config;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractProducerBean;
+import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.BuiltInOwbBean;
 import org.apache.webbeans.component.CdiInterceptorBean;
 import org.apache.webbeans.component.DecoratorBean;
@@ -243,6 +244,7 @@ public class BeansDeployer
                 // create beans from the discovered AnnotatedTypes
                 deployFromAnnotatedTypes(annotatedTypes);
 
+                webBeansContext.getAlternativesManager().failIfSomeAlternativeIsNotResolved();
 
                 //X TODO configure specialized producer beans.
                 webBeansContext.getWebBeansUtil().configureProducerMethodSpecializations();
@@ -1401,12 +1403,17 @@ public class BeansDeployer
 
         {
 
+            final BeanAttributesImpl<T> tBeanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
             final BeanAttributes<T> beanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(
                     annotatedType, annotatedType.getJavaClass(),
-                    BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build());
+                    tBeanAttributes);
             if (beanAttributes == null)
             {
                 return;
+            }
+            if (!tBeanAttributes.isAlternative() && beanAttributes.isAlternative())
+            {
+                webBeansContext.getAlternativesManager().onProgrammicAlternative(annotatedType.getJavaClass());
             }
 
             ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, beanAttributes);

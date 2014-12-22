@@ -69,7 +69,7 @@ public abstract class AbstractOwbBean<T>
     /**
      * cached value for {@link #isAlternative()}
      */
-    private Boolean isAlternative = null;
+    protected Boolean isAlternative = null;
 
     /**
      * This string will be used for passivating the Bean.

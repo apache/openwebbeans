@@ -72,6 +72,7 @@ public class InjectionTargetBean<T> extends AbstractOwbBean<T> implements Serial
         this.annotatedType = annotatedType;
         injectionTarget = factory.createInjectionTarget(this);
         setEnabled(true);
+        this.isAlternative = beanAttributes.isAlternative();
     }
 
     // call it only if you know what you do, basically only useful when creating a bean manually and not using child classes

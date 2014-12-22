@@ -55,6 +55,9 @@ public class AlternativesManager
 
     private final WebBeansContext webBeansContext;
 
+    // should always be empty at runtime, mainly used for BeanAttribute#isAlternative() checks
+    private final Set<Class<?>> potentialProgrammaticAlternatives = new HashSet<Class<?>>();
+
     /**
      * All the stereotypes which are configured via XML &lt;class&gt;
      */
@@ -68,14 +71,23 @@ public class AlternativesManager
 
     private final PriorityClasses priorityAlternatives = new PriorityClasses();
 
-
-
     public AlternativesManager(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
     }
 
+    public void onProgrammicAlternative(final Class<?> clazz)
+    {
+        potentialProgrammaticAlternatives.remove(clazz);
+    }
 
+    public void failIfSomeAlternativeIsNotResolved()
+    {
+        if (!potentialProgrammaticAlternatives.isEmpty())
+        {
+            throw new WebBeansConfigurationException("Specified alternatives: " + potentialProgrammaticAlternatives + " are not annotated with @Alternative");
+        }
+    }
 
     /**
      * This methods gets called while scanning the various beans.xml files.
@@ -99,7 +111,7 @@ public class AlternativesManager
             
             if(!ok)
             {
-                throw new WebBeansConfigurationException("Given stereotype class : " + alternative.getName() + " is not annotated with @Alternative" );
+                throw new WebBeansConfigurationException("Given stereotype class : " + alternative.getName() + " is not an annotation" );
             }
         }
         else
@@ -121,7 +133,7 @@ public class AlternativesManager
         }
         else
         {
-            throw new WebBeansConfigurationException("Given class : " + alternative.getName() + " is not annotated with @Alternative");
+            potentialProgrammaticAlternatives.add(alternative);
         }
     }
 
