@@ -235,9 +235,9 @@ public class BeansDeployer
 
                 SpecializationUtil specializationUtil = new SpecializationUtil(webBeansContext);
 
-                specializationUtil.removeDisabledTypes(annotatedTypes, true);
+                specializationUtil.removeDisabledTypes(annotatedTypes, null, true);
 
-                Map<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedTypePreProcessing = getBeanAttributes(annotatedTypes);
+                final Map<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedTypePreProcessing = getBeanAttributes(annotatedTypes);
                 annotatedTypes.clear(); // shouldn't be used anymore, view is now annotatedTypePreProcessing
 
                 //Deploy bean from XML. Also configures deployments, interceptors, decorators.
@@ -247,7 +247,18 @@ public class BeansDeployer
                 checkStereoTypes(scanner);
 
                 // Handle Specialization
-                specializationUtil.removeDisabledTypes(annotatedTypePreProcessing.keySet(), false);
+                specializationUtil.removeDisabledTypes(
+                        annotatedTypePreProcessing.keySet(),
+                        new SpecializationUtil.BeanAttributesProvider()
+                        {
+                            @Override
+                            public <T> BeanAttributes get(final AnnotatedType<T> at)
+                            {
+                                final AnnotatedTypeData<?> data = annotatedTypePreProcessing.get(at);
+                                return data == null ? null : data.beanAttributes;
+                            }
+                        },
+                        false);
 
                 // create beans from the discovered AnnotatedTypes
                 deployFromAnnotatedTypes(annotatedTypePreProcessing);

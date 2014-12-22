@@ -22,6 +22,7 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanAttributes;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -59,9 +60,12 @@ public class SpecializationUtil
     /**
      *
      * @param annotatedTypes all annotatypes
+     * @param attributeProvider if not null provides bean attributes to be able to validate types contains superclass
      * @param notSpecializationOnly first pass/2nd pass. First one removes only root beans, second one handles inheritance even in @Spe
      */
-    public void removeDisabledTypes(Collection<AnnotatedType<?>> annotatedTypes, boolean notSpecializationOnly)
+    public void removeDisabledTypes(Collection<AnnotatedType<?>> annotatedTypes,
+                                    BeanAttributesProvider attributeProvider,
+                                    boolean notSpecializationOnly)
     {
         if (annotatedTypes != null && !annotatedTypes.isEmpty())
         {
@@ -79,6 +83,15 @@ public class SpecializationUtil
                 {
                     Class<?> specialClass = annotatedType.getJavaClass();
                     Class<?> superClass = specialClass.getSuperclass();
+                    if (attributeProvider != null)
+                    {
+                        BeanAttributes<?> ba = attributeProvider.get(annotatedType);
+                        if (ba == null || !ba.getTypes().contains(superClass))
+                        {
+                            throw new WebBeansDeploymentException(new InconsistentSpecializationException("@Specializes class " + specialClass.getName()
+                                    + " does not extend a bean with a valid bean constructor - removed with ProcessBeanAttribute"));
+                        }
+                    }
 
                     if(superClass.equals(Object.class))
                     {
@@ -214,5 +227,10 @@ public class SpecializationUtil
             return annotationClasses;
         }
         return Collections.emptySet();
+    }
+
+    public static interface BeanAttributesProvider
+    {
+        <T> BeanAttributes<T> get(AnnotatedType<T> at);
     }
 }
