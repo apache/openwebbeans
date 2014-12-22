@@ -27,7 +27,7 @@ import javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType;
  *
  * @param <X> bean class info
  */
-public class ProcessSyntheticAnnotatedTypeImpl<X> implements ProcessSyntheticAnnotatedType<X>
+public class ProcessSyntheticAnnotatedTypeImpl<X> extends EventBase implements ProcessSyntheticAnnotatedType<X>
 {
 
     private Extension source;
@@ -55,6 +55,7 @@ public class ProcessSyntheticAnnotatedTypeImpl<X> implements ProcessSyntheticAnn
     @Override
     public Extension getSource()
     {
+        checkState();
         return source;
     }
 
@@ -64,6 +65,7 @@ public class ProcessSyntheticAnnotatedTypeImpl<X> implements ProcessSyntheticAnn
     @Override
     public AnnotatedType<X> getAnnotatedType()
     {
+        checkState();
         return annotatedType;
     }
 
@@ -73,6 +75,7 @@ public class ProcessSyntheticAnnotatedTypeImpl<X> implements ProcessSyntheticAnn
     @Override
     public void setAnnotatedType(AnnotatedType<X> type)
     {
+        checkState();
         annotatedType = type;
         modifiedAnnotatedType = true;
     }
@@ -93,6 +96,7 @@ public class ProcessSyntheticAnnotatedTypeImpl<X> implements ProcessSyntheticAnn
     @Override
     public void veto()
     {
+        checkState();
         veto = true;
     }
 

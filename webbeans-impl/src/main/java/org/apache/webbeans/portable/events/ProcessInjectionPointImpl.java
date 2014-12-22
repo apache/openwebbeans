@@ -30,7 +30,7 @@ import javax.enterprise.inject.spi.ProcessInjectionPoint;
  * @param <T> bean class
  * @param <X> declared type
  */
-public class ProcessInjectionPointImpl<T, X> implements ProcessInjectionPoint<T, X>
+public class ProcessInjectionPointImpl<T, X> extends EventBase implements ProcessInjectionPoint<T, X>
 {
 
     private InjectionPoint injectionPoint;
@@ -48,6 +48,7 @@ public class ProcessInjectionPointImpl<T, X> implements ProcessInjectionPoint<T,
     @Override
     public InjectionPoint getInjectionPoint()
     {
+        checkState();
         return injectionPoint;
     }
 
@@ -57,6 +58,7 @@ public class ProcessInjectionPointImpl<T, X> implements ProcessInjectionPoint<T,
     @Override
     public void setInjectionPoint(InjectionPoint injectionPoint)
     {
+        checkState();
         this.injectionPoint = injectionPoint;
     }
 
@@ -66,6 +68,7 @@ public class ProcessInjectionPointImpl<T, X> implements ProcessInjectionPoint<T,
     @Override
     public void addDefinitionError(Throwable t)
     {
+        checkState();
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
     }
 }

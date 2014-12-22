@@ -36,14 +36,13 @@ import org.junit.Test;
 public class ProcessInjectionTargetTest extends AbstractUnitTest
 {
     @Test
-    public void testInjectionTargetIsValid() throws Exception
-    {
+    public void testInjectionTargetIsValid() throws Exception {
         InjectionTargetExtension injectionTargetExtension = new InjectionTargetExtension();
         addExtension(injectionTargetExtension);
         startContainer(SomeBean.class, SomeOtherBean.class);
 
-        Assert.assertNotNull(injectionTargetExtension.getProcessInjectionTarget());
-        InjectionTarget injectionTarget = injectionTargetExtension.getProcessInjectionTarget().getInjectionTarget();
+        Assert.assertNotNull(injectionTargetExtension.getInjectionTarget());
+        InjectionTarget injectionTarget = injectionTargetExtension.getInjectionTarget();
         Assert.assertNotNull(injectionTarget);
         Assert.assertNotNull(injectionTarget.getInjectionPoints());
         Assert.assertEquals(1, injectionTarget.getInjectionPoints().size());
@@ -51,17 +50,16 @@ public class ProcessInjectionTargetTest extends AbstractUnitTest
 
     public static class InjectionTargetExtension implements Extension
     {
-        private ProcessInjectionTarget processInjectionTarget;
+        private InjectionTarget injectionTarget;
 
 
         public void observePit(@Observes ProcessInjectionTarget<SomeBean> pit)
         {
-            this.processInjectionTarget = pit;
+            this.injectionTarget = pit.getInjectionTarget();
         }
 
-        public ProcessInjectionTarget getProcessInjectionTarget()
-        {
-            return processInjectionTarget;
+        public InjectionTarget getInjectionTarget() {
+            return injectionTarget;
         }
     }
 

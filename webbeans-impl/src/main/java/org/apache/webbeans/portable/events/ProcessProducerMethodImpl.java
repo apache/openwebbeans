@@ -53,6 +53,7 @@ public class ProcessProducerMethodImpl<X,T> extends ProcessBeanImpl<T> implement
     @Override
     public AnnotatedParameter<X> getAnnotatedDisposedParameter()
     {
+        checkState();
         return annotatedDisposedParameter;
     }
 
@@ -62,6 +63,7 @@ public class ProcessProducerMethodImpl<X,T> extends ProcessBeanImpl<T> implement
     @Override
     public AnnotatedMethod<X> getAnnotatedProducerMethod()
     {
+        checkState();
         return annotatedProducerMethod;
     }
     

@@ -22,6 +22,7 @@ import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.NamedLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.portable.events.generics.GProcessInjectionPoint;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 
@@ -133,7 +134,9 @@ public class InjectionPointFactory
 
         if (fireEvent)
         {
-            injectionPoint = webBeansContext.getWebBeansUtil().fireProcessInjectionPointEvent(injectionPoint).getInjectionPoint();
+            final GProcessInjectionPoint event = webBeansContext.getWebBeansUtil().fireProcessInjectionPointEvent(injectionPoint);
+            injectionPoint = event.getInjectionPoint();
+            event.setStarted();
         }
 
         return injectionPoint;

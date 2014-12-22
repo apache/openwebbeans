@@ -56,6 +56,7 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
     @Override
     public String getEjbName()
     {
+        checkState();
         return ejbName;
     }
     
@@ -65,6 +66,7 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
     @Override
     public SessionBeanType getSessionBeanType()
     {
+        checkState();
         return type;
     }
 
@@ -74,6 +76,7 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
     @Override
     public AnnotatedType<Object> getAnnotatedBeanClass()
     {
+        checkState();
         return annotatedBeanClass;
     }
 

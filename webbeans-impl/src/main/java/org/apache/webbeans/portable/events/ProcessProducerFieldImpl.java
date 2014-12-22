@@ -50,6 +50,7 @@ public class ProcessProducerFieldImpl<X,T> extends ProcessBeanImpl<T> implements
     @Override
     public AnnotatedField<X> getAnnotatedProducerField()
     {
+        checkState();
         return annotatedField;
     }
 
@@ -58,6 +59,7 @@ public class ProcessProducerFieldImpl<X,T> extends ProcessBeanImpl<T> implements
      */
     public AnnotatedParameter<X> getAnnotatedDisposedParameter()
     {
+        checkState();
         return annotatedParameter;
     }
 }

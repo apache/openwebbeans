@@ -31,14 +31,14 @@ import org.apache.webbeans.config.WebBeansContext;
  *
  * @param <X> bean class info
  */
-public  class ProcessBeanImpl<X> implements ProcessBean<X>
+public  class ProcessBeanImpl<X> extends EventBase implements ProcessBean<X>
 {
     /**Annotated instance. Can be AnnotatedType, AnnotatedMethod or AnnotatedField*/
     private final Annotated annotated;
     
     /**ManagedBean, SessionBean, ProducerMethodBean, ProducerFieldBean*/
     private final Bean<X> bean;
-    
+
     protected ProcessBeanImpl(Bean<X> bean, Annotated annotated)
     {
         this.bean = bean;
@@ -51,6 +51,7 @@ public  class ProcessBeanImpl<X> implements ProcessBean<X>
     @Override
     public void addDefinitionError(Throwable t)
     {
+        checkState();
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
     }
 
@@ -60,6 +61,7 @@ public  class ProcessBeanImpl<X> implements ProcessBean<X>
     @Override
     public Annotated getAnnotated()
     {
+        checkState();
         return annotated;
     }
 
@@ -69,6 +71,7 @@ public  class ProcessBeanImpl<X> implements ProcessBean<X>
     @Override
     public Bean<X> getBean()
     {
+        checkState();
         return bean;
     }
 

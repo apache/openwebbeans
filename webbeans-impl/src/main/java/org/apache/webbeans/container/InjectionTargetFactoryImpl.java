@@ -23,6 +23,7 @@ import javax.enterprise.inject.spi.InjectionTargetFactory;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
 import org.apache.webbeans.util.Asserts;
 
 import javax.annotation.PostConstruct;
@@ -64,7 +65,10 @@ public class InjectionTargetFactoryImpl<T> implements InjectionTargetFactory<T>
         {
             ManagedBean.class.cast(bean).setOriginalInjectionTarget(injectionTarget);
         }
-        return webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, annotatedType).getInjectionTarget();
+        final GProcessInjectionTarget event = webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, annotatedType);
+        final InjectionTarget it = event.getInjectionTarget();
+        event.setStarted();
+        return it;
     }
 
     public Set<InjectionPoint> createInjectionPoints(Bean<T> bean)

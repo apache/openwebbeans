@@ -31,7 +31,7 @@ import org.apache.webbeans.config.WebBeansContext;
  *
  * @param <X> bean class info
  */
-public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
+public class ProcessInjectionTargetImpl<X> extends EventBase implements ProcessInjectionTarget<X>
 {
     /**Annotated type instance that is used by container to read meta-data*/
     private final AnnotatedType<X> annotatedType;
@@ -56,29 +56,37 @@ public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addDefinitionError(Throwable t)
     {
+        checkState();
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
     }
 
+    @Override
     public AnnotatedType<X> getAnnotatedType()
     {
+        checkState();
         return annotatedType;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public InjectionTarget<X> getInjectionTarget()
     {
+        checkState();
         return injectionTarget;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setInjectionTarget(InjectionTarget<X> injectionTarget)
     {
+        checkState();
         this.injectionTarget = injectionTarget;
         set = true;
     }

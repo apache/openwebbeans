@@ -26,7 +26,7 @@ import javax.enterprise.inject.spi.ProcessAnnotatedType;
  * 
  * @param <X> bean class info
  */
-public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
+public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnnotatedType<X>
 {
     /**Annotated Type*/
     private AnnotatedType<X> annotatedType = null;
@@ -57,6 +57,7 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
     @Override
     public AnnotatedType<X> getAnnotatedType()
     {
+        checkState();
         return annotatedType;
     }
 
@@ -66,6 +67,7 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
     @Override
     public void setAnnotatedType(AnnotatedType<X> type)
     {
+        checkState();
         annotatedType = type;
         modifiedAnnotatedType = true;
     }

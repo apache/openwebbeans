@@ -25,45 +25,26 @@ import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 @SuppressWarnings("unchecked")
 public class GProcessAnnotatedType extends ProcessAnnotatedTypeImpl implements GenericBeanEvent
 {
-    private boolean after = false;
-
     public GProcessAnnotatedType(AnnotatedType annotatedType )
     {
         super(annotatedType);
     }
 
-    public void setAfter()
-    {
-        this.after = true;
-    }
-
     @Override
     public AnnotatedType getAnnotatedType()
     {
-        if (after)
-        {
-            throw new IllegalStateException("Can't call ProcessAnnotatedType.getAnnotatedType() after the event");
-        }
         return super.getAnnotatedType();
     }
 
     @Override
     public void setAnnotatedType(AnnotatedType type)
     {
-        if (after)
-        {
-            throw new IllegalStateException("Can't call ProcessAnnotatedType.setAnnotatedType(at) after the event");
-        }
         super.setAnnotatedType(type);
     }
 
     @Override
     public void veto()
     {
-        if (after)
-        {
-            throw new IllegalStateException("Can't call ProcessAnnotatedType.veto() after the event");
-        }
         super.veto();
     }
 

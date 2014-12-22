@@ -570,7 +570,9 @@ public class BeansDeployer
     private void fireBeforeBeanDiscoveryEvent()
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        manager.fireLifecycleEvent(new BeforeBeanDiscoveryImpl(webBeansContext));
+        BeforeBeanDiscoveryImpl event = new BeforeBeanDiscoveryImpl(webBeansContext);
+        manager.fireLifecycleEvent(event);
+        event.setStarted();
     }
     
     /**
@@ -604,11 +606,13 @@ public class BeansDeployer
         Collections.reverse(interceptors);
         Collections.reverse(decorators);
         Collections.reverse(alternatives);
-        manager.fireLifecycleEvent(new AfterTypeDiscoveryImpl(webBeansContext, newAt,
-                interceptors, decorators, alternatives));
+        final AfterTypeDiscoveryImpl event = new AfterTypeDiscoveryImpl(webBeansContext, newAt,
+                interceptors, decorators, alternatives);
+        manager.fireLifecycleEvent(event);
         // reverse to keep "selection" order - decorator and interceptors considers it in their sorting.
         // NOTE: from here priorityClass.getSorted() MUST NOT be recomputed (ie no priorityClass.add(...))
         Collections.reverse(alternatives);
+        event.setStarted();
 
         // we do not need to set back the sortedAlternatives to the AlternativesManager as the API
         // and all layers in between use a mutable List. Not very elegant but spec conform.
@@ -623,14 +627,16 @@ public class BeansDeployer
      */
     private void fireAfterDeploymentValidationEvent()
     {
-        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
+        final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         manager.setAfterDeploymentValidationFired(true);
-        manager.fireLifecycleEvent(new AfterDeploymentValidationImpl(manager));
+        final AfterDeploymentValidationImpl event = new AfterDeploymentValidationImpl(manager);
+        manager.fireLifecycleEvent(event);
 
         webBeansContext.getWebBeansUtil().inspectErrorStack(
             "There are errors that are added by AfterDeploymentValidation event observers. Look at logs for further details");
 
         packageVetoCache.clear(); // no more needed, free the memory
+        event.setStarted();
     }
     
     /**
@@ -874,7 +880,7 @@ public class BeansDeployer
                         {
                             annotatedTypes.add(processAnnotatedEvent.getAnnotatedType());
                         }
-                        processAnnotatedEvent.setAfter();
+                        processAnnotatedEvent.setStarted();
                     }
                     else
                     {
@@ -963,8 +969,6 @@ public class BeansDeployer
      */
     private void addAdditionalAnnotatedTypes(Collection<AnnotatedType<?>> toDeploy, List<AnnotatedType<?>> annotatedTypes)
     {
-        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
-
         for (AnnotatedType<?> annotatedType : toDeploy)
         {
             // Fires ProcessAnnotatedType
@@ -980,7 +984,10 @@ public class BeansDeployer
                 }
                 annotatedTypes.add(changedAnnotatedType);
             }
-
+            if (processAnnotatedEvent != null)
+            {
+                processAnnotatedEvent.setStarted();
+            }
         }
     }
 
@@ -1210,7 +1217,7 @@ public class BeansDeployer
                 }
 
                 annotatedType = processAnnotatedEvent.getAnnotatedType();
-                processAnnotatedEvent.setAfter();
+                processAnnotatedEvent.setStarted();
 
                 Set<Annotation> annTypeAnnotations = annotatedType.getAnnotations();
                 if (annTypeAnnotations != null)
@@ -1384,7 +1391,7 @@ public class BeansDeployer
         if(webBeansContext.getWebBeansUtil().supportsJavaEeComponentInjections(beanClass))
         {
             //Fires ProcessInjectionTarget
-            webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEventForJavaEeComponents(beanClass);
+            webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEventForJavaEeComponents(beanClass).setStarted();
             webBeansContext.getWebBeansUtil().inspectErrorStack(
                 "There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
 
@@ -1510,6 +1517,7 @@ public class BeansDeployer
                 //Fires ProcessManagedBean
                 ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean, annotatedType);
                 beanManager.fireEvent(processBeanEvent, true);
+                processBeanEvent.setStarted();
                 webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessManagedBean event observers for " +
                         "managed beans. Look at logs for further details");
 

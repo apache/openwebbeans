@@ -32,7 +32,7 @@ import org.apache.webbeans.config.WebBeansContext;
  * @param <X> declared bean class
  * @param <T> event type
  */
-public class ProcessObserverMethodImpl<T,X> implements ProcessObserverMethod<T, X>
+public class ProcessObserverMethodImpl<T,X> extends EventBase implements ProcessObserverMethod<T, X>
 {
     /**Observer annotated method*/
     private final AnnotatedMethod<X> annotatedMethod;
@@ -52,6 +52,7 @@ public class ProcessObserverMethodImpl<T,X> implements ProcessObserverMethod<T, 
     @Override
     public void addDefinitionError(Throwable t)
     {
+        checkState();
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
     }
 
@@ -61,6 +62,7 @@ public class ProcessObserverMethodImpl<T,X> implements ProcessObserverMethod<T, 
     @Override
     public AnnotatedMethod<X> getAnnotatedMethod()
     {
+        checkState();
         return annotatedMethod;
     }
 
@@ -70,6 +72,7 @@ public class ProcessObserverMethodImpl<T,X> implements ProcessObserverMethod<T, 
     @Override
     public ObserverMethod<T> getObserverMethod()
     {
+        checkState();
         return observerMethod;
     }
 

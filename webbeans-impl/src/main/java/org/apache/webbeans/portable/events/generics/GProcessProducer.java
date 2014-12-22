@@ -35,12 +35,14 @@ public class GProcessProducer extends ProcessProducerImpl implements GenericProd
     @Override
     public Class<?> getBeanClass()
     {
+        checkState();
         return getAnnotatedMember().getDeclaringType().getJavaClass();
     }
 
     @Override
     public Class<?> getProducerOrObserverType()
     {
+        checkState();
         return ClassUtil.getClazz(getAnnotatedMember().getBaseType());
     }
 

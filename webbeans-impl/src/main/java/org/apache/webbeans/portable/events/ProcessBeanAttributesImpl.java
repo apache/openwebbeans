@@ -22,7 +22,7 @@ import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.ProcessBeanAttributes;
 
-public class ProcessBeanAttributesImpl<T> implements ProcessBeanAttributes<T>
+public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBeanAttributes<T>
 {
     private Annotated annotated;
     private BeanAttributes<T> attributes;
@@ -38,30 +38,35 @@ public class ProcessBeanAttributesImpl<T> implements ProcessBeanAttributes<T>
     @Override
     public Annotated getAnnotated()
     {
+        checkState();
         return annotated;
     }
 
     @Override
     public BeanAttributes<T> getBeanAttributes()
     {
+        checkState();
         return attributes;
     }
 
     @Override
     public void setBeanAttributes(final BeanAttributes<T> tBeanAttributes)
     {
+        checkState();
         attributes = tBeanAttributes;
     }
 
     @Override
     public void veto()
     {
+        checkState();
         veto = true;
     }
 
     @Override
     public void addDefinitionError(final Throwable throwable)
     {
+        checkState();
         definitionError = throwable;
     }
 

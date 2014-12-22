@@ -23,12 +23,13 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import java.util.List;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.events.EventBase;
 
 /**
  * OWB fires this event after all AnnotatedTypes from scanned classes
  * got picked up.
  */
-public class AfterTypeDiscoveryImpl implements AfterTypeDiscovery, ExtensionAware
+public class AfterTypeDiscoveryImpl extends EventBase implements AfterTypeDiscovery, ExtensionAware
 {
     private final WebBeansContext webBeansContext;
     private final List<Class<?>> sortedAlternatives;
@@ -53,24 +54,28 @@ public class AfterTypeDiscoveryImpl implements AfterTypeDiscovery, ExtensionAwar
     @Override
     public List<Class<?>> getAlternatives()
     {
+        checkState();
         return sortedAlternatives;
     }
 
     @Override
     public List<Class<?>> getInterceptors()
     {
+        checkState();
         return sortedInterceptors;
     }
 
     @Override
     public List<Class<?>> getDecorators()
     {
+        checkState();
         return sortedDecorators;
     }
 
     @Override
     public void addAnnotatedType(AnnotatedType<?> type, String id)
     {
+        checkState();
         webBeansContext.getBeanManagerImpl().addAdditionalAnnotatedType(extension, type, id);
         newAt.add(type);
     }

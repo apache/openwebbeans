@@ -47,6 +47,7 @@ public class ProcessManagedBeanImpl<X> extends ProcessBeanImpl<X> implements Pro
     @Override
     public AnnotatedType<X> getAnnotatedBeanClass()
     {
+        checkState();
         return annotatedBeanClass;
     }
 

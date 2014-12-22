@@ -86,6 +86,7 @@ import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.LazyInterceptorDefinedInjectionTarget;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
+import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -1189,7 +1190,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {
             throw new IllegalArgumentException(ie);
         }
-        return webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, type).getInjectionTarget();
+        GProcessInjectionTarget event = webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, type);
+        final InjectionTarget it = event.getInjectionTarget();
+        event.setStarted();
+        return it;
     }
 
     @Override

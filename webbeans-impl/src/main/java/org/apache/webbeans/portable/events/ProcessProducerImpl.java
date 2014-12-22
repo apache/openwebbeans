@@ -32,7 +32,7 @@ import org.apache.webbeans.config.WebBeansContext;
  * @param <X> bean class
  * @param <T> producer return type class
  */
-public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
+public class ProcessProducerImpl<X,T> extends EventBase implements ProcessProducer<X, T>
 {
     /**Annotated method or annotated field according to producer method or field*/
     private final AnnotatedMember<X> annotateMember;
@@ -52,6 +52,7 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     @Override
     public void addDefinitionError(Throwable t)
     {
+        checkState();
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
     }
 
@@ -61,6 +62,7 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     @Override
     public AnnotatedMember<X> getAnnotatedMember()
     {
+        checkState();
         return annotateMember;
     }
 
@@ -70,6 +72,7 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     @Override
     public Producer<T> getProducer()
     {
+        checkState();
         return producer;
     }
 
@@ -79,6 +82,7 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     @Override
     public void setProducer(Producer<T> producer)
     {
+        checkState();
         this.producer = producer;
     }
 }

@@ -16,45 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.portable.events.discovery;
+package org.apache.webbeans.portable.events;
 
-import javax.enterprise.inject.spi.AfterDeploymentValidation;
-
-import org.apache.webbeans.container.BeanManagerImpl;
-
-/**
- * Event that is fired by the container after it validates
- * deployment.
- * 
- * @version $Rev$ $Date$
- *
- */
-public class AfterDeploymentValidationImpl implements AfterDeploymentValidation
+public abstract class EventBase
 {
-    private final BeanManagerImpl beanManagerImpl;
     private boolean started;
-
-    public AfterDeploymentValidationImpl(BeanManagerImpl beanManagerImpl)
-    {
-        this.beanManagerImpl = beanManagerImpl;
-    }
 
     public void setStarted()
     {
         started = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addDeploymentProblem(Throwable t)
+    protected void checkState()
     {
         if (started)
         {
-            throw new IllegalStateException("Only call container eevnt methods in their lifecycle");
+            throw new IllegalStateException("only call container event methods in their correct lifecycle");
         }
-        beanManagerImpl.getErrorStack().pushError(t);
     }
-
 }

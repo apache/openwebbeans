@@ -1056,7 +1056,9 @@ public final class WebBeansUtil
         //Fires ProcessProducer
         webBeansContext.getBeanManagerImpl().fireEvent(processProducerEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducer event observers. Look at logs for further details");
-        return processProducerEvent.getProducer();
+        Producer prod = processProducerEvent.getProducer();
+        processProducerEvent.setStarted();
+        return prod;
     }
 
     public void fireProcessProducerMethodBeanEvent(Map<ProducerMethodBean<?>, AnnotatedMethod<?>> annotatedMethods, AnnotatedType<?> annotatedType)
@@ -1087,6 +1089,7 @@ public final class WebBeansUtil
 
             //Fires ProcessProducer
             webBeansContext.getBeanManagerImpl().fireEvent(processProducerMethodEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+            processProducerMethodEvent.setStarted();
         }
     }
 
@@ -1101,6 +1104,7 @@ public final class WebBeansUtil
 
             //Fires ProcessProducer
             webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+            event.setStarted();
         }
     }
 
@@ -1116,6 +1120,7 @@ public final class WebBeansUtil
 
             //Fire ProcessProducer
             webBeansContext.getBeanManagerImpl().fireEvent(processProducerFieldEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+            processProducerFieldEvent.setStarted();
         }
     }
 
@@ -1808,6 +1813,7 @@ public final class WebBeansUtil
         {
             beanAttributes = ba;
         }
+        event.setStarted();
         if (event.isVeto())
         {
             return null;
