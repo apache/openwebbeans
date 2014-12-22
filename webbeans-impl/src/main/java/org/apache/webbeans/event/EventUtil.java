@@ -73,6 +73,10 @@ public final class EventUtil
             ParameterizedType pt = (ParameterizedType)type;
             candidateClazz = (Class<?>)pt.getRawType();
         }
+        else
+        {
+            throw new IllegalArgumentException("Can't determine the type for " + type);
+        }
         
         if(!candidateClazz.equals(Event.class))
         {

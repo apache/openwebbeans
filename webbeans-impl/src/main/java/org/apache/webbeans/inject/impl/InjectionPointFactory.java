@@ -148,12 +148,20 @@ public class InjectionPointFactory
         return buildInjectionPoint(owner, annotField, true);
     }
 
-    public <X> InjectionPoint buildInjectionPoint(Bean<?> owner, AnnotatedParameter<X> parameter)
+    public <X> InjectionPoint buildInjectionPoint(Bean<?> owner, AnnotatedParameter<X> parameter, boolean fireEvent)
     {
         Asserts.assertNotNull(parameter, "parameter parameter can not be null");
         Set<Annotation> anns = parameter.getAnnotations();
         Annotation[] qualifierAnnots = webBeansContext.getAnnotationManager().getQualifierAnnotations(anns.toArray(new Annotation[anns.size()]));
-        return new InjectionPointImpl(owner, Arrays.asList(qualifierAnnots), parameter);
+        InjectionPointImpl injectionPoint = new InjectionPointImpl(owner, Arrays.asList(qualifierAnnots), parameter);
+        if (fireEvent)
+        {
+            GProcessInjectionPoint event = webBeansContext.getWebBeansUtil().fireProcessInjectionPointEvent(injectionPoint);
+            InjectionPoint ip = event.getInjectionPoint();
+            event.setStarted();
+            return ip;
+        }
+        return injectionPoint;
     }
 
     public <X> List<InjectionPoint> buildInjectionPoints(Bean<?> owner, AnnotatedCallable<X> callable)
@@ -174,7 +182,7 @@ public class InjectionPointFactory
             //@Observes is not injection point type for method parameters
             if (parameter.getAnnotation(Observes.class) == null)
             {
-                lists.add(buildInjectionPoint(owner, parameter));
+                lists.add(buildInjectionPoint(owner, parameter, true));
             }
         }
     }

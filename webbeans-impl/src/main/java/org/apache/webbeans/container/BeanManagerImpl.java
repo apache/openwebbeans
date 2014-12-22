@@ -86,6 +86,7 @@ import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.LazyInterceptorDefinedInjectionTarget;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
+import org.apache.webbeans.portable.events.generics.GProcessInjectionPoint;
 import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
@@ -786,7 +787,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public InjectionPoint createInjectionPoint(AnnotatedParameter<?> parameter)
     {
-        final InjectionPoint injectionPoint = webBeansContext.getInjectionPointFactory().buildInjectionPoint(null, parameter);
+        InjectionPoint injectionPoint = webBeansContext.getInjectionPointFactory().buildInjectionPoint(null, parameter, false);
         if (AnnotatedMethod.class.isInstance(parameter.getDeclaringCallable()))
         {
             try
@@ -798,6 +799,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 throw new IllegalArgumentException(e);
             }
         } // TODO else constructor rules are a bit different
+        final GProcessInjectionPoint event = webBeansContext.getWebBeansUtil().fireProcessInjectionPointEvent(injectionPoint);
+        injectionPoint = event.getInjectionPoint();
+        event.setStarted();
         return injectionPoint;
     }
 

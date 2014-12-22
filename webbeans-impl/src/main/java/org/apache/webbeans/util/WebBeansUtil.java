@@ -851,7 +851,7 @@ public final class WebBeansUtil
 
         Class<?> candidateClazz = ClassUtil.getClass(type);
 
-        if(!candidateClazz.isAssignableFrom(Instance.class))
+        if (!candidateClazz.isAssignableFrom(Instance.class) || Object.class == candidateClazz)
         {
             return false;
         }

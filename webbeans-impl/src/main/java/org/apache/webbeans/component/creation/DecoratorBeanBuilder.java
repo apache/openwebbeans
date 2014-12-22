@@ -20,7 +20,6 @@ package org.apache.webbeans.component.creation;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -167,11 +166,11 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
     {
         boolean found = false;
         InjectionPoint ipFound = null;
-        for(InjectionPoint ip : injectionPoints)
+        for (InjectionPoint ip : injectionPoints)
         {
-            if(ip.getAnnotated().isAnnotationPresent(Delegate.class))
+            if (ip.isDelegate())
             {
-                if(!found)
+                if (!found)
                 {
                     found = true;
                     ipFound = ip;
@@ -188,7 +187,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
         if(ipFound == null)
         {
             throw new WebBeansConfigurationException("Decorators must have a one @Delegate injection point." +
-                    "But the decorator bean : " + toString() + " has none");
+                        "But the decorator bean : " + toString() + " has none");
         }
 
         if(!(ipFound.getMember() instanceof Constructor))
@@ -196,7 +195,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
             AnnotatedElement element = (AnnotatedElement)ipFound.getMember();
             if(!element.isAnnotationPresent(Inject.class))
             {
-                String message = "Error in decorator : "+ toString() + ". The delegate injection point must be an injected field, " +
+                String message = "Error in decorator : " + annotatedType + ". The delegate injection point must be an injected field, " +
                         "initializer method parameter or bean constructor method parameter.";
 
                 throw new WebBeansConfigurationException(message);
