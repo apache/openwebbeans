@@ -46,20 +46,22 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
  */
 public class SpecializationUtil
 {
-    private final WebBeansContext webBeansContext;
     private final AlternativesManager alternativesManager;
     private final WebBeansUtil webBeansUtil;
 
 
     public SpecializationUtil(WebBeansContext webBeansContext)
     {
-        this.webBeansContext = webBeansContext;
         this.alternativesManager = webBeansContext.getAlternativesManager();
         this.webBeansUtil = webBeansContext.getWebBeansUtil();
     }
 
-
-    public void removeDisabledTypes(Collection<AnnotatedType<?>> annotatedTypes)
+    /**
+     *
+     * @param annotatedTypes all annotatypes
+     * @param notSpecializationOnly first pass/2nd pass. First one removes only root beans, second one handles inheritance even in @Spe
+     */
+    public void removeDisabledTypes(Collection<AnnotatedType<?>> annotatedTypes, boolean notSpecializationOnly)
     {
         if (annotatedTypes != null && !annotatedTypes.isEmpty())
         {
@@ -96,22 +98,29 @@ public class SpecializationUtil
                     }
 
                     AnnotatedType<?> superType = getAnnotatedTypeForClass(annotatedTypes, superClass);
+                    if (notSpecializationOnly)
+                    {
+                        if (superType != null && superType.getAnnotation(Specializes.class) != null)
+                        {
+                            continue;
+                        }
 
-                    if (superType == null || !webBeansUtil.isConstructorOk(superType))
-                    {
-                        throw new WebBeansDeploymentException(new InconsistentSpecializationException("@Specializes class " + specialClass.getName()
-                                + " does not extend a bean with a valid bean constructor"));
-                    }
+                        if (superType == null || !webBeansUtil.isConstructorOk(superType))
+                        {
+                            throw new WebBeansDeploymentException(new InconsistentSpecializationException("@Specializes class " + specialClass.getName()
+                                    + " does not extend a bean with a valid bean constructor"));
+                        }
 
-                    try
-                    {
-                        webBeansUtil.checkManagedBean(specialClass);
-                    }
-                    catch (WebBeansConfigurationException illegalBeanTypeException)
-                    {
-                        // this Exception gets thrown if the given class is not a valid bean type
-                        throw new WebBeansDeploymentException(new InconsistentSpecializationException("@Specializes class " + specialClass.getName()
-                                                                    + " does not extend a valid bean type", illegalBeanTypeException));
+                        try
+                        {
+                            webBeansUtil.checkManagedBean(specialClass);
+                        }
+                        catch (WebBeansConfigurationException illegalBeanTypeException)
+                        {
+                            // this Exception gets thrown if the given class is not a valid bean type
+                            throw new WebBeansDeploymentException(new InconsistentSpecializationException("@Specializes class " + specialClass.getName()
+                                    + " does not extend a valid bean type", illegalBeanTypeException));
+                        }
                     }
 
                     superClassList.add(superClass);
@@ -204,6 +213,6 @@ public class SpecializationUtil
 
             return annotationClasses;
         }
-        return Collections.EMPTY_SET;
+        return Collections.emptySet();
     }
 }

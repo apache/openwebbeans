@@ -233,6 +233,10 @@ public class BeansDeployer
 
                 addAdditionalAnnotatedTypes(fireAfterTypeDiscoveryEvent(), annotatedTypes);
 
+                SpecializationUtil specializationUtil = new SpecializationUtil(webBeansContext);
+
+                specializationUtil.removeDisabledTypes(annotatedTypes, true);
+
                 Map<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedTypePreProcessing = getBeanAttributes(annotatedTypes);
                 annotatedTypes.clear(); // shouldn't be used anymore, view is now annotatedTypePreProcessing
 
@@ -243,7 +247,7 @@ public class BeansDeployer
                 checkStereoTypes(scanner);
 
                 // Handle Specialization
-                removeSpecializedTypes(annotatedTypePreProcessing.keySet());
+                specializationUtil.removeDisabledTypes(annotatedTypePreProcessing.keySet(), false);
 
                 // create beans from the discovered AnnotatedTypes
                 deployFromAnnotatedTypes(annotatedTypePreProcessing);
@@ -1324,36 +1328,6 @@ public class BeansDeployer
     private String createConfigurationFailedMessage(URL bdaLocation)
     {
         return "WebBeans configuration defined in " + bdaLocation.toExternalForm() + " did fail. Reason is : ";
-    }
-
-    /**
-     * Checks specialization on classes and remove any AnnotatedType which got 'disabled' by having a sub-class with &#064;Specializes.
-     * @param annotatedTypes the annotatedTypes which got picked up during scanning. All 'disabled' annotatedTypes will be removed.
-     */
-    private void removeSpecializedTypes(Collection<AnnotatedType<?>> annotatedTypes)
-    {
-        logger.fine("Checking Specialization constraints has started.");
-        
-        try
-        {
-            SpecializationUtil specializationUtil = new SpecializationUtil(webBeansContext);
-            specializationUtil.removeDisabledTypes(annotatedTypes);
-        }
-        catch (DefinitionException e)
-        {
-            throw e;
-        }
-        catch (DeploymentException e)
-        {
-            throw e;
-        }
-        catch (Exception e)
-        {
-            throw new WebBeansDeploymentException(e);
-        }
-        
-
-        logger.fine("Checking Specialization constraints has ended.");
     }
 
     
