@@ -37,7 +37,6 @@ import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
 import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
 import org.apache.webbeans.component.creation.ProducerMethodBeansBuilder;
-import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
@@ -1059,7 +1058,7 @@ public class BeansDeployer
         {
             try
             {
-                deploySingleAnnotatedType(annotatedType.getKey(), annotatedType.getValue());
+                deploySingleAnnotatedType(annotatedType.getKey(), annotatedType.getValue(), annotatedTypes);
             }
             catch (NoClassDefFoundError ncdfe)
             {
@@ -1084,7 +1083,7 @@ public class BeansDeployer
      * 
      * @param annotatedTypeData the AnnotatedType representing the bean to be deployed with their already computed data
      */
-    private void deploySingleAnnotatedType(AnnotatedType annotatedType, AnnotatedTypeData annotatedTypeData)
+    private void deploySingleAnnotatedType(AnnotatedType annotatedType, AnnotatedTypeData annotatedTypeData, Map<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedTypes)
     {
 
         Class beanClass = annotatedType.getJavaClass();
@@ -1102,7 +1101,7 @@ public class BeansDeployer
                 if((ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(annotatedType))
                         && isValidManagedBean(annotatedType))
                 {
-                    defineManagedBean(annotatedType, annotatedTypeData.beanAttributes);
+                    defineManagedBean(annotatedType, annotatedTypeData.beanAttributes, annotatedTypes);
                 }
             }
             catch (NoClassDefFoundError ncdfe)
@@ -1425,7 +1424,7 @@ public class BeansDeployer
      * Defines and configures managed bean.
      * @param <T> type info
      */
-    protected <T> void defineManagedBean(AnnotatedType<T> annotatedType, BeanAttributes<T> attributes)
+    protected <T> void defineManagedBean(AnnotatedType<T> annotatedType, BeanAttributes<T> attributes, Map<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedTypes)
     {   
         //Fires ProcessInjectionTarget event for Java EE components instances
         //That supports injections but not managed beans
@@ -1491,7 +1490,8 @@ public class BeansDeployer
 
                 final Set<ObserverMethod<?>> observerMethods;
                 final AnnotatedType<T> beanAnnotatedType = bean.getAnnotatedType();
-                final boolean ignoreProducer = AnnotatedTypeWrapper.class.isInstance(beanAnnotatedType);
+                final AnnotatedType<T> defaultAt = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(beanAnnotatedType.getJavaClass());
+                final boolean ignoreProducer = defaultAt != beanAnnotatedType && annotatedTypes.containsKey(defaultAt);
                 if(bean.isEnabled())
                 {
                     observerMethods = new ObserverMethodsBuilder<T>(webBeansContext, beanAnnotatedType).defineObserverMethods(bean);

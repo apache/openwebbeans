@@ -158,7 +158,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
         {
             throw new IllegalStateException("Only call container eevnt methods in their lifecycle");
         }
-        beanManager.addAdditionalQualifier(annotatedType.getJavaClass());
+        beanManager.addAdditionalQualifier(annotatedType);
     }
 
     public void setExtension(final Object extension)

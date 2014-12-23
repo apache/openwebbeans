@@ -43,6 +43,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.UnproxyableResolutionException;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
@@ -655,9 +656,20 @@ public class InjectionResolver
                     Annotation qualifier = itQualifiers.next();
                     if (annot.annotationType().equals(qualifier.annotationType()))
                     {
-                        if (AnnotationUtil.isCdiAnnotationEqual(qualifier, annot))
+                        AnnotatedType<?> at = webBeansContext.getBeanManagerImpl().getAdditionalAnnotatedTypeQualifiers().get(qualifier.annotationType());
+                        if (at == null)
                         {
-                            i++;
+                            if (AnnotationUtil.isCdiAnnotationEqual(qualifier, annot))
+                            {
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            if (AnnotationUtil.isCdiAnnotationEqual(at, qualifier, annot))
+                            {
+                                i++;
+                            }
                         }
                     }
 

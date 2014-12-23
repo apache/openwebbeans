@@ -150,6 +150,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * event function.
      */
     private List<Class<? extends Annotation>> additionalQualifiers = new ArrayList<Class<? extends Annotation>>();
+    private Map<Class<?>, AnnotatedType<? extends Annotation>> additionalAnnotatedTypeQualifiers = new HashMap<Class<?>, AnnotatedType<? extends Annotation>>();
 
     /**
      * This list contains additional interceptor bindings which got set via the
@@ -1225,6 +1226,14 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             additionalQualifiers.add(qualifier);
         }
     }
+    public void addAdditionalQualifier(AnnotatedType<? extends Annotation> qualifier)
+    {
+        if (!additionalQualifiers.contains(qualifier))
+        {
+            additionalAnnotatedTypeQualifiers.put(qualifier.getJavaClass(), qualifier);
+            additionalQualifiers.add(qualifier.getJavaClass());
+        }
+    }
 
     public void addAdditionalInterceptorBindings(Class<? extends Annotation> interceptorBinding)
     {
@@ -1283,6 +1292,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public List<Class<? extends Annotation>> getAdditionalQualifiers()
     {
         return additionalQualifiers;
+    }
+
+    public Map<Class<?>, AnnotatedType<? extends Annotation>> getAdditionalAnnotatedTypeQualifiers()
+    {
+        return additionalAnnotatedTypeQualifiers;
     }
 
     public void addAdditionalScope(ExternalScope additionalScope)
