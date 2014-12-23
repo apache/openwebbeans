@@ -259,7 +259,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
      * @throws ProxyGenerationException
      */
     @Override
-    protected void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName)
+    protected void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName, Constructor<?> ignored)
             throws ProxyGenerationException
     {
         Constructor superDefaultCt;

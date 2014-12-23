@@ -19,6 +19,8 @@
 package org.apache.webbeans.portable;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -26,8 +28,11 @@ import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.inject.InjectableConstructor;
 
 public class AbstractDecoratorInjectionTarget<T> extends InjectionTargetImpl<T>
 {
@@ -50,11 +55,76 @@ public class AbstractDecoratorInjectionTarget<T> extends InjectionTargetImpl<T>
             classLoader = Thread.currentThread().getContextClassLoader();
         }
 
-        proxySubClass = webBeansContext.getSubclassProxyFactory().createImplementedSubclass(classLoader, classToProxy);
+        proxySubClass = webBeansContext.getSubclassProxyFactory().createImplementedSubclass(classLoader, annotatedType);
 
-        //X TODO what about @Inject constructors?
-        Constructor<T> ct = webBeansContext.getWebBeansUtil().getNoArgConstructor(proxySubClass);
-        return new AnnotatedConstructorImpl<T>(webBeansContext, ct, annotatedType);
+        Constructor<T> ct = (Constructor<T>) webBeansContext.getSecurityService().doPrivilegedGetDeclaredConstructors(proxySubClass)[0];
+        Constructor<T> parentCtor;
+        try
+        {
+            parentCtor = classToProxy.getConstructor(ct.getParameterTypes());
+        }
+        catch (final NoSuchMethodException e)
+        {
+            throw new IllegalStateException(e);
+        }
+        return new SubClassAnnotatedConstructorImpl<T>(webBeansContext, parentCtor, ct, annotatedType);
     }
 
+    @Override
+    protected SubClassAnnotatedConstructorImpl<T> getConstructor()
+    {
+        if (constructor == null)
+        {
+            constructor = createConstructor();
+        }
+        return (SubClassAnnotatedConstructorImpl<T>) constructor;
+    }
+
+    @Override
+    protected T newInstance(CreationalContextImpl<T> creationalContext)
+    {
+        return new AbstractDecoratorInjectableConstructor<T>(
+                getConstructor().parentConstructor, getConstructor().getJavaMember(), this, creationalContext).doInjection();
+    }
+
+    public static class SubClassAnnotatedConstructorImpl<T> extends AnnotatedConstructorImpl<T>
+    {
+        private final Constructor<T> parentConstructor;
+
+        public SubClassAnnotatedConstructorImpl(final WebBeansContext webBeansContext,
+                                                final Constructor<T> parentConstructor,
+                                                final Constructor<T> javaMember,
+                                                final AnnotatedType<T> declaringType)
+        {
+            super(webBeansContext, javaMember, declaringType);
+            this.parentConstructor = parentConstructor;
+        }
+    }
+
+    public static class AbstractDecoratorInjectableConstructor<T> extends InjectableConstructor<T>
+    {
+        private final Constructor<T> parent;
+
+        public AbstractDecoratorInjectableConstructor(final Constructor<T> parentConstructor,
+                                                      final Constructor<T> cons, final InjectionTarget<T> owner,
+                                                      final CreationalContextImpl<T> creationalContext)
+        {
+            super(cons, owner, creationalContext);
+            this.parent = parentConstructor;
+        }
+
+        @Override
+        protected List<InjectionPoint> getInjectionPoints(Member member)
+        {
+            List<InjectionPoint> injectionPoints = new ArrayList<InjectionPoint>();
+            for (InjectionPoint injectionPoint : owner.getInjectionPoints())
+            {
+                if (injectionPoint.getMember().equals(parent)) // we don't compare to the runtime subclass constructor
+                {
+                    injectionPoints.add(injectionPoint);
+                }
+            }
+            return injectionPoints;
+        }
+    }
 }

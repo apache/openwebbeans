@@ -35,7 +35,8 @@ public class SubclassProxyFactoryTest extends AbstractUnitTest
         startContainer();
 
         Class<? extends MyAbstractTestDecorator> subClass
-                = getWebBeansContext().getSubclassProxyFactory().createSubClass(this.getClass().getClassLoader(), MyAbstractTestDecorator.class);
+                = getWebBeansContext().getSubclassProxyFactory().createSubClass(
+                this.getClass().getClassLoader(), getBeanManager().createAnnotatedType(MyAbstractTestDecorator.class));
         Assert.assertNotNull(subClass);
 
         MyAbstractTestDecorator instance = subClass.newInstance();

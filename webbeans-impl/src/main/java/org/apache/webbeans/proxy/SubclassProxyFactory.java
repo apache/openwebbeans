@@ -31,6 +31,10 @@ import org.apache.xbean.asm5.MethodVisitor;
 import org.apache.xbean.asm5.Opcodes;
 import org.apache.xbean.asm5.Type;
 
+import javax.enterprise.inject.spi.AnnotatedConstructor;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.inject.Inject;
+
 /**
  * This factory creates subclasses for abstract classes.
  * This is being used for Abstract Decorators.
@@ -50,8 +54,9 @@ public class SubclassProxyFactory extends AbstractProxyFactory
     }
 
 
-    public <T> Class<T> createImplementedSubclass(ClassLoader classLoader, Class<T> classToProxy)
+    public <T> Class<T> createImplementedSubclass(ClassLoader classLoader, AnnotatedType<T> annotatedType)
     {
+        Class<T> classToProxy = annotatedType.getJavaClass();
         if (!Modifier.isAbstract(classToProxy.getModifiers()))
         {
             throw new WebBeansConfigurationException("Only abstract classes should get subclassed, not " + classToProxy);
@@ -64,7 +69,7 @@ public class SubclassProxyFactory extends AbstractProxyFactory
             return proxyClass;
         }
 
-        proxyClass = createSubClass(classLoader, classToProxy);
+        proxyClass = createSubClass(classLoader, annotatedType);
 
         return proxyClass;
     }
@@ -91,13 +96,14 @@ public class SubclassProxyFactory extends AbstractProxyFactory
 
     /**
      * @param classLoader to use for creating the class in
-     * @param classToProxy the class for which a subclass will get generated
+     * @param annotatedType the annotatedType for which a subclass will get generated
      * @param <T>
      * @return the proxy class
      */
-    public synchronized <T> Class<T> createSubClass(ClassLoader classLoader, Class<T> classToProxy)
+    public synchronized <T> Class<T> createSubClass(ClassLoader classLoader, AnnotatedType<T> annotatedType)
             throws ProxyGenerationException
     {
+        Class<T> classToProxy = annotatedType.getJavaClass();
         Class<T> clazz = tryToLoadClass(classLoader, classToProxy);
         if (clazz != null)
         {
@@ -109,19 +115,31 @@ public class SubclassProxyFactory extends AbstractProxyFactory
         List<Method> methods = ClassUtil.getNonPrivateMethods(classToProxy, true);
         Method[] businessMethods = methods.toArray(new Method[methods.size()]);
 
-        clazz = createProxyClass(classLoader, proxyClassName, classToProxy, businessMethods, new Method[0]);
+        Constructor<T> cons = null;
+        for (AnnotatedConstructor<T> c : annotatedType.getConstructors())
+        {
+            if (c.isAnnotationPresent(Inject.class))
+            {
+                cons = c.getJavaMember();
+                break;
+            }
+        }
+
+        clazz = createProxyClass(classLoader, proxyClassName, classToProxy, businessMethods, new Method[0], cons);
 
         return clazz;
     }
 
 
     @Override
-    protected void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName) throws ProxyGenerationException
+    protected void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName, Constructor<?> constructor)
+            throws ProxyGenerationException
     {
         try
         {
             Constructor superDefaultCt;
             String parentClassFileName;
+            String[] exceptions = null;
             if (classToProxy.isInterface())
             {
                 parentClassFileName = Type.getInternalName(Object.class);
@@ -130,13 +148,34 @@ public class SubclassProxyFactory extends AbstractProxyFactory
             else
             {
                 parentClassFileName = classFileName;
-                superDefaultCt = classToProxy.getConstructor(null);
+                if (constructor == null)
+                {
+                    superDefaultCt = classToProxy.getConstructor(null);
+                }
+                else
+                {
+                    superDefaultCt = constructor;
+
+                    Class<?>[] exceptionTypes = constructor.getExceptionTypes();
+                    exceptions = exceptionTypes.length == 0 ? null : new String[exceptionTypes.length];
+                    for (int i = 0; i < exceptionTypes.length; i++)
+                    {
+                        exceptions[i] = Type.getDescriptor(exceptionTypes[i]);
+                    }
+                }
             }
 
             final String descriptor = Type.getConstructorDescriptor(superDefaultCt);
-            final MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
+            final MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, exceptions);
             mv.visitCode();
             mv.visitVarInsn(Opcodes.ALOAD, 0);
+            if (constructor != null)
+            {
+                for (int i = 1; i <= constructor.getParameterTypes().length; i++)
+                {
+                    mv.visitVarInsn(Opcodes.ALOAD, i);
+                }
+            }
             mv.visitMethodInsn(Opcodes.INVOKESPECIAL, parentClassFileName, "<init>", descriptor, false);
 
             mv.visitInsn(Opcodes.RETURN);

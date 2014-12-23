@@ -304,7 +304,8 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
 
 
     @Override
-    protected void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName) throws ProxyGenerationException
+    protected void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName, Constructor<?> ignored)
+            throws ProxyGenerationException
     {
         try
         {

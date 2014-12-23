@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.proxy;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -105,7 +106,7 @@ public abstract class AbstractProxyFactory
      * @param classFileName
      * @throws ProxyGenerationException
      */
-    protected abstract void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName)
+    protected abstract void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName, Constructor<?> injectConstructor)
             throws ProxyGenerationException;
 
     /**
@@ -174,6 +175,12 @@ public abstract class AbstractProxyFactory
         return fixedClassName;
     }
 
+    protected <T> Class<T> createProxyClass(ClassLoader classLoader, String proxyClassName, Class<T> classToProxy,
+                                            Method[] interceptedMethods, Method[] nonInterceptedMethods)
+            throws ProxyGenerationException
+    {
+        return createProxyClass(classLoader, proxyClassName, classToProxy, interceptedMethods, nonInterceptedMethods, null);
+    }
 
     /**
      * @param classLoader to use for creating the class in
@@ -184,21 +191,21 @@ public abstract class AbstractProxyFactory
      * @return the proxy class
      */
      protected <T> Class<T> createProxyClass(ClassLoader classLoader, String proxyClassName, Class<T> classToProxy,
-                                                      Method[] interceptedMethods, Method[] nonInterceptedMethods)
+                                                      Method[] interceptedMethods, Method[] nonInterceptedMethods,
+                                                      Constructor<T> constructor)
             throws ProxyGenerationException
     {
         String proxyClassFileName = proxyClassName.replace('.', '/');
 
-        final byte[] proxyBytes = generateProxy(classLoader, classToProxy, proxyClassName, proxyClassFileName, interceptedMethods, nonInterceptedMethods);
+        final byte[] proxyBytes = generateProxy(
+                classLoader, classToProxy, proxyClassName, proxyClassFileName,
+                interceptedMethods, nonInterceptedMethods, constructor);
 
-        Class<T> clazz = defineAndLoadClass(classLoader, proxyClassName, proxyBytes);
-
-
-        return clazz;
+        return defineAndLoadClass(classLoader, proxyClassName, proxyBytes);
     }
 
     private byte[] generateProxy(ClassLoader classLoader, Class<?> classToProxy, String proxyClassName, String proxyClassFileName,
-                                 Method[] interceptedMethods, Method[] nonInterceptedMethods)
+                                 Method[] interceptedMethods, Method[] nonInterceptedMethods, Constructor<?> constructor)
             throws ProxyGenerationException
     {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
@@ -225,7 +232,7 @@ public abstract class AbstractProxyFactory
         cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC,
                 FIELD_BEAN_PASSIVATION_ID, Type.getDescriptor(String.class), null, null).visitEnd();
 
-        createConstructor(cw, proxyClassFileName, classToProxy, classFileName);
+        createConstructor(cw, proxyClassFileName, classToProxy, classFileName, constructor);
 
 
         if (nonInterceptedMethods != null)

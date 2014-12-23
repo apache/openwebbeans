@@ -53,7 +53,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public abstract class AbstractInjectable<T>
 {
 
-    private Producer<?> owner;
+    protected Producer<?> owner;
     
     protected final CreationalContextImpl<?> creationalContext;
     
