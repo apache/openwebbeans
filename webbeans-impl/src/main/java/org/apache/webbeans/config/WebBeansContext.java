@@ -453,4 +453,9 @@ public class WebBeansContext
     {
         return applicationBoundaryService;
     }
+
+    public boolean findMissingAnnotatedType(final Class<?> missing)
+    {
+        return false; // used in hierarchical WBC
+    }
 }

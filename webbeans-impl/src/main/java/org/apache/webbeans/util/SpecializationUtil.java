@@ -49,10 +49,11 @@ public class SpecializationUtil
 {
     private final AlternativesManager alternativesManager;
     private final WebBeansUtil webBeansUtil;
-
+    private final WebBeansContext webBeansContext;
 
     public SpecializationUtil(WebBeansContext webBeansContext)
     {
+        this.webBeansContext = webBeansContext;
         this.alternativesManager = webBeansContext.getAlternativesManager();
         this.webBeansUtil = webBeansContext.getWebBeansUtil();
     }
@@ -118,7 +119,7 @@ public class SpecializationUtil
                             continue;
                         }
 
-                        if (superType == null || !webBeansUtil.isConstructorOk(superType))
+                        if ((superType == null && !webBeansContext.findMissingAnnotatedType(superClass)) || (superType != null && !webBeansUtil.isConstructorOk(superType)))
                         {
                             throw new WebBeansDeploymentException(new InconsistentSpecializationException("@Specializes class " + specialClass.getName()
                                     + " does not extend a bean with a valid bean constructor"));
