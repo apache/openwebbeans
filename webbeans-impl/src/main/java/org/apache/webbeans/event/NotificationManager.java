@@ -463,7 +463,9 @@ public final class NotificationManager
         {
             if(checkEventTypeParameterForExtensions(beanClass, actualArgs[0])
                     && (secondParam == null || actualArgs.length == 1
-                            || checkEventTypeParameterForExtensions(secondParam, actualArgs[1])))
+                            || checkEventTypeParameterForExtensions(secondParam, actualArgs[1])
+                            || (ParameterizedType.class.isInstance(secondParam) && Class.class.isInstance(actualArgs[1])
+                                && ParameterizedType.class.cast(secondParam).getRawType() == actualArgs[1])))
             {
                 addToMatching(type, matching);   
             }
