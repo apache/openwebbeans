@@ -68,6 +68,7 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
 import org.apache.webbeans.portable.events.generics.GenericBeanEvent;
 import org.apache.webbeans.portable.events.generics.GenericProducerObserverEvent;
+import org.apache.webbeans.portable.events.generics.TwoParametersGenericBeanEvent;
 import org.apache.webbeans.spi.TransactionService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -309,7 +310,7 @@ public final class NotificationManager
         Set<Type> keySet = observers.keySet();
         for (Type type : keySet)
         {
-            Class<?> beanClass = null;
+            Class<?> beanClass;
             Class<?> observerClass = ClassUtil.getClazz(type);
             
             if(observerClass != null)
@@ -326,7 +327,12 @@ public final class NotificationManager
                             
                             if(ClassUtil.isParametrizedType(type))
                             {
-                                addToMatchingWithParametrizedForBeans(type, beanClass, matching);
+                                Type secondParam = null;
+                                if (TwoParametersGenericBeanEvent.class.isInstance(event))
+                                {
+                                    secondParam = TwoParametersGenericBeanEvent.class.cast(event).getInjectionType();
+                                }
+                                addToMatchingWithParametrizedForBeans(type, matching, beanClass, secondParam);
                             }
                             else
                             {
@@ -362,7 +368,7 @@ public final class NotificationManager
                         {
                             if(ClassUtil.isParametrizedType(type))
                             {
-                                addToMatchingWithParametrizedForBeans(type, beanClass, matching);
+                                addToMatchingWithParametrizedForBeans(type, matching, beanClass, null);
                             }
                             else
                             {
@@ -395,7 +401,7 @@ public final class NotificationManager
      * @return true if fired event class is assignable with 
      * given observer type argument.
      */
-    private boolean checkEventTypeParameterForExtensions(Class<?> beanClass, Type observerTypeActualArg)
+    private boolean checkEventTypeParameterForExtensions(Type beanClass, Type observerTypeActualArg)
     {
         if(ClassUtil.isTypeVariable(observerTypeActualArg))
         {
@@ -406,7 +412,7 @@ public final class NotificationManager
             {
                 Class<?> clazzTvBound = (Class<?>)tvBound;
                 
-                if(clazzTvBound.isAssignableFrom(beanClass))
+                if(Class.class.isInstance(beanClass) && clazzTvBound.isAssignableFrom(Class.class.cast(beanClass)))
                 {
                     return true;
                 }                    
@@ -420,7 +426,7 @@ public final class NotificationManager
         else if(observerTypeActualArg instanceof Class)
         {
             Class<?> observerClass = (Class<?>)observerTypeActualArg;
-            if(observerClass.isAssignableFrom(beanClass))
+            if(Class.class.isInstance(beanClass) && observerClass.isAssignableFrom(Class.class.cast(beanClass)))
             {
                 return true;
             }
@@ -439,7 +445,8 @@ public final class NotificationManager
         }        
     }
     
-    private <T> void addToMatchingWithParametrizedForBeans(Type type, Class<?> beanClass, Set<ObserverMethod<? super T>> matching)
+    private <T> void addToMatchingWithParametrizedForBeans(Type type, Set<ObserverMethod<? super T>> matching,
+                                                           Class<?> beanClass, Type secondParam)
     {
         ParameterizedType pt = (ParameterizedType)type;
         Type[] actualArgs = pt.getActualTypeArguments();
@@ -454,7 +461,9 @@ public final class NotificationManager
         }
         else
         {
-            if(checkEventTypeParameterForExtensions(beanClass, actualArgs[0]))
+            if(checkEventTypeParameterForExtensions(beanClass, actualArgs[0])
+                    && (secondParam == null || actualArgs.length == 1
+                            || checkEventTypeParameterForExtensions(secondParam, actualArgs[1])))
             {
                 addToMatching(type, matching);   
             }

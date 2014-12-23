@@ -22,9 +22,10 @@ import org.apache.webbeans.portable.events.ProcessInjectionPointImpl;
 
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.InjectionPoint;
+import java.lang.reflect.Type;
 
 
-public class GProcessInjectionPoint extends ProcessInjectionPointImpl implements GenericBeanEvent
+public class GProcessInjectionPoint extends ProcessInjectionPointImpl implements TwoParametersGenericBeanEvent
 {
 
     public GProcessInjectionPoint(InjectionPoint injectionPoint)
@@ -47,6 +48,16 @@ public class GProcessInjectionPoint extends ProcessInjectionPointImpl implements
             }
         }
 
+        return null;
+    }
+
+    @Override
+    public Type getInjectionType()
+    {
+        if (getInjectionPoint() != null)
+        {
+            return getInjectionPoint().getType();
+        }
         return null;
     }
 }
