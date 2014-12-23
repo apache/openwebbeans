@@ -20,7 +20,6 @@ package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -84,28 +83,25 @@ public class ProducerFieldBeansBuilder<T>
                 {                    
                     //Check for valid resource annotation
                     //WebBeansUtil.checkForValidResources(annotatedField.getDeclaringType().getJavaClass(), field.getType(), field.getName(), anns);
-                    if(!Modifier.isStatic(field.getModifiers()))
-                    {
-                        ResourceReference<T, Annotation> resourceRef = new ResourceReference<T, Annotation>(annotatedType.getJavaClass(), field.getName(),
-                                                                                                            (Class<T>)field.getType(), resourceAnnotation);
-                        
-                        //Can not define EL name
-                        if(annotatedField.isAnnotationPresent(Named.class))
-                        {
-                            throw new WebBeansConfigurationException("Resource producer annotated field : " + annotatedField + " can not define EL name");
-                        }
+                    ResourceReference<T, Annotation> resourceRef = new ResourceReference<T, Annotation>(annotatedType.getJavaClass(), field.getName(),
+                                                                                                        (Class<T>)field.getType(), resourceAnnotation);
 
-                        final BeanAttributes<T> beanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(
-                                annotatedType, annotatedField.getJavaMember().getType(),
-                                BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)annotatedField).build());
-                        if (beanAttributes != null)
-                        {
-                            ResourceBeanBuilder<T, Annotation> resourceBeanCreator
-                                    = new ResourceBeanBuilder<T, Annotation>(bean, resourceRef, annotatedField, beanAttributes);
-                            ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
-                            resourceBean.setProducerField(field);
-                            producerBeans.add(resourceBean);
-                        }
+                    //Can not define EL name
+                    if(annotatedField.isAnnotationPresent(Named.class))
+                    {
+                        throw new WebBeansConfigurationException("Resource producer annotated field : " + annotatedField + " can not define EL name");
+                    }
+
+                    final BeanAttributes<T> beanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(
+                            annotatedType, annotatedField.getJavaMember().getType(),
+                            BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)annotatedField).build());
+                    if (beanAttributes != null)
+                    {
+                        ResourceBeanBuilder<T, Annotation> resourceBeanCreator
+                                = new ResourceBeanBuilder<T, Annotation>(bean, resourceRef, annotatedField, beanAttributes);
+                        ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
+                        resourceBean.setProducerField(field);
+                        producerBeans.add(resourceBean);
                     }
                 }
                 else
