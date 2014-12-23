@@ -414,5 +414,4 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
         }
     }
 
-
 }

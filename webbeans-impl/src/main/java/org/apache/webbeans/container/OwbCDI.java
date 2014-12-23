@@ -48,7 +48,7 @@ public class OwbCDI extends CDI<Object>
     @Override
     public BeanManager getBeanManager()
     {
-        return getWebBeansContext().getBeanManagerImpl();
+        return new InjectableBeanManager(getWebBeansContext().getBeanManagerImpl());
     }
 
     @Override
