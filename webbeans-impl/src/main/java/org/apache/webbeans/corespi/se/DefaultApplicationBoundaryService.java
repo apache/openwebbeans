@@ -30,7 +30,6 @@ public class DefaultApplicationBoundaryService implements ApplicationBoundarySer
 {
     private final ClassLoader appCL = BeanManager.class.getClassLoader();
 
-
     @Override
     public ClassLoader getApplicationClassLoader()
     {
@@ -40,7 +39,12 @@ public class DefaultApplicationBoundaryService implements ApplicationBoundarySer
     @Override
     public ClassLoader getBoundaryClassLoader(Class classToProxy)
     {
-        return classToProxy.getClassLoader();
+        ClassLoader classLoader = classToProxy.getClassLoader();
+        if (classLoader == null && classToProxy.isInterface())
+        {
+            return getApplicationClassLoader();
+        }
+        return classLoader;
     }
 
 }
