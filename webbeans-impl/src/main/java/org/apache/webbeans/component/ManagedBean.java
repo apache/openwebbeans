@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.component;
 
+import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
@@ -60,6 +61,7 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
         }
         CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>)creationalContext;
         Bean<T> oldBean = creationalContextImpl.putBean(this);
+        Contextual<T> oldContextual = creationalContextImpl.putContextual(this); // otherwise BeanMetaData is broken
         try
         {
             return super.create(creationalContext);
@@ -67,6 +69,7 @@ public class ManagedBean<T> extends InjectionTargetBean<T> implements Intercepte
         finally
         {
             creationalContextImpl.putBean(oldBean);
+            creationalContextImpl.putContextual(oldContextual);
         }
     }
 
