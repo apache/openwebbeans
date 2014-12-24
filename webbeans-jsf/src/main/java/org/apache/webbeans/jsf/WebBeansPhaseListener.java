@@ -21,6 +21,8 @@ package org.apache.webbeans.jsf;
 import javax.enterprise.context.BusyConversationException;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.NonexistentConversationException;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
@@ -102,18 +104,25 @@ public class WebBeansPhaseListener implements PhaseListener
             WebBeansContext webBeansContext = WebBeansContext.getInstance();
             ConversationManager conversationManager = webBeansContext.getConversationManager();
             Conversation conversation = conversationManager.getConversationBeanReference();
-            String cid = JSFUtil.getConversationId();
             ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-            if (conversation.isTransient())
+            String propagation = JSFUtil.getConversationPropagation();
+            boolean createNew = "none".equals(propagation);
+
+            if (createNew)
+            {
+                contextFactory.initConversationContext(getRequest(phaseEvent));
+            }
+            else if (conversation.isTransient())
             {
                 if (logger.isLoggable(Level.FINE))
                 {
                     logger.log(Level.FINE, "Creating a new transitional conversation with cid : [{0}]", conversation.getId());
                 }
-                contextFactory.initConversationContext(null);
+                contextFactory.initConversationContext(getRequest(phaseEvent));
 
                 //Not restore, throw exception
+                String cid = JSFUtil.getConversationId();
                 if(cid != null && !cid.equals(""))
                 {
                     throw new NonexistentConversationException("Propogated conversation with cid=" + cid + " is not restored. It creates a new transient conversation.");
@@ -130,9 +139,10 @@ public class WebBeansPhaseListener implements PhaseListener
                 ConversationImpl owbConversation = (ConversationImpl)conversation;
                 if(!owbConversation.getInUsed().compareAndSet(false, true))
                 {
-                    contextFactory.initConversationContext(null);
+                    contextFactory.initConversationContext(getRequest(phaseEvent));
                     //Throw Busy exception
-                    throw new BusyConversationException("Propogated conversation with cid=" + cid + " is used by other request. It creates a new transient conversation");
+                    throw new BusyConversationException(
+                            "Propogated conversation with cid=" + JSFUtil.getConversationId() + " is used by other request. It creates a new transient conversation");
                 }
                 else
                 {
@@ -141,6 +151,21 @@ public class WebBeansPhaseListener implements PhaseListener
                 }
             }
         }
+    }
+
+    // depend the lifecycle impl so give the request if we have it
+    private Object getRequest(final PhaseEvent phaseEvent)
+    {
+        final FacesContext facesContext = phaseEvent.getFacesContext();
+        if (facesContext != null)
+        {
+            final ExternalContext externalContext = facesContext.getExternalContext();
+            if (externalContext != null)
+            {
+                return externalContext.getRequest();
+            }
+        }
+        return null;
     }
 
     @Override

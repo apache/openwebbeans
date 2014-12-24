@@ -142,4 +142,14 @@ public final class JSFUtil
         return getJSFRequestParameter("cid");
     }
 
+    public static String getConversationPropagation()
+    {
+        final String conversationPropagation = getJSFRequestParameter("conversationPropagation");
+        if (conversationPropagation == null && "true".equalsIgnoreCase(getJSFRequestParameter("nocid"))) // compat
+        {
+            return "none";
+        }
+        return conversationPropagation;
+    }
+
 }
