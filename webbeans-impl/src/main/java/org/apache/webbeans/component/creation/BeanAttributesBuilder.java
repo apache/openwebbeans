@@ -33,6 +33,7 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.Stereotype;
+import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMember;
@@ -135,8 +136,41 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         }
         else
         {
-            Set<Type> types = annotated.getTypeClosure();
-            this.types.addAll(types);
+            Typed beanTypes = annotated.getAnnotation(Typed.class);
+            if (beanTypes != null)
+            {
+                Class<?>[] typedTypes = beanTypes.value();
+
+                //New api types
+                Set<Type> newTypes = new HashSet<Type>();
+                for (Class<?> type : typedTypes)
+                {
+                    Type foundType = null;
+
+                    for (Type apiType : annotated.getTypeClosure())
+                    {
+                        if(ClassUtil.getClazz(apiType) == type)
+                        {
+                            foundType = apiType;
+                            break;
+                        }
+                    }
+
+                    if(foundType == null)
+                    {
+                        throw new WebBeansConfigurationException("@Type values must be in bean api types of class: " + baseType);
+                    }
+
+                    newTypes.add(foundType);
+                }
+
+                this.types.addAll(newTypes);
+                this.types.add(Object.class);
+            }
+            else
+            {
+                this.types.addAll(annotated.getTypeClosure());
+            }
             Set<String> ignored = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
             if (!ignored.isEmpty())
             {
