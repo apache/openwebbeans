@@ -91,4 +91,6 @@ public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
     public Object getSessionBeanProxy(Bean<?> bean, Class<?> iface, CreationalContext<?> creationalContext);
 
     Method resolveViewMethod(Bean<?> component, Method declaredMethod);
+
+    <T> BeanAttributes<T> createBeanAttributes(AnnotatedType<T> type);
 }

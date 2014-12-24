@@ -1086,6 +1086,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     public <T> BeanAttributes<T> createBeanAttributes(AnnotatedType<T> type)
     {
+        final OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
+        if (ejbPlugin != null && ejbPlugin.isSessionBean(type.getJavaClass()))
+        {
+            return ejbPlugin.createBeanAttributes(type);
+        }
         return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(type).build();
     }
 
