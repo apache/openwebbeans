@@ -164,32 +164,9 @@ public abstract class AbstractProducer<T> implements Producer<T>
     {
         final CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>) creationalContext;
 
-        final Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<Interceptor<?>, Object>();
         final Contextual<T> oldContextual = creationalContextImpl.getContextual();
 
-        if (interceptorInfo != null)
-        {
-            // apply interceptorInfo
-
-            // create EJB-style interceptors
-            for (final Interceptor interceptorBean : interceptorInfo.getEjbInterceptors())
-            {
-                creationalContextImpl.putContextual(interceptorBean);
-                interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContext));
-            }
-
-            // create CDI-style interceptors
-            for (final Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
-            {
-                creationalContextImpl.putContextual(interceptorBean);
-                interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContext));
-            }
-            for (final Interceptor interceptorBean : interceptorInfo.getConstructorCdiInterceptors())
-            {
-                creationalContextImpl.putContextual(interceptorBean);
-                interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContext));
-            }
-        }
+        final Map<Interceptor<?>, Object> interceptorInstances = createInterceptorInstances(creationalContextImpl);
         creationalContextImpl.putContextual(oldContextual);
 
         T instance = produce(interceptorInstances, creationalContextImpl);
@@ -226,6 +203,35 @@ public abstract class AbstractProducer<T> implements Producer<T>
         }
 
         return instance;
+    }
+
+    protected Map<Interceptor<?>, Object> createInterceptorInstances(CreationalContextImpl<T> creationalContextImpl)
+    {
+        final Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<Interceptor<?>, Object>();
+        if (interceptorInfo != null)
+        {
+            // apply interceptorInfo
+
+            // create EJB-style interceptors
+            for (final Interceptor interceptorBean : interceptorInfo.getEjbInterceptors())
+            {
+                creationalContextImpl.putContextual(interceptorBean);
+                interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContextImpl));
+            }
+
+            // create CDI-style interceptors
+            for (final Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
+            {
+                creationalContextImpl.putContextual(interceptorBean);
+                interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContextImpl));
+            }
+            for (final Interceptor interceptorBean : interceptorInfo.getConstructorCdiInterceptors())
+            {
+                creationalContextImpl.putContextual(interceptorBean);
+                interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContextImpl));
+            }
+        }
+        return interceptorInstances;
     }
 
     protected List<Decorator<?>> filterDecorators(final T instance, final List<Decorator<?>> decorators)
