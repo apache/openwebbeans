@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 
@@ -144,9 +145,13 @@ public class ConversationImpl implements Conversation, Serializable
                 manager.addConversationContext(this, (ConversationContext) webBeansContext.getBeanManagerImpl().getContext(ConversationScoped.class));
                 
             }
-            catch(Exception e)
+            catch (ContextNotActiveException cnae)
             {
-                //TCK tests
+                throw cnae; // expected by TCKs so throwing it before next catch recreates it
+            }
+            catch (Exception e)
+            {
+                //TCK tests, TODO: old ones? remove it?
                 manager.addConversationContext(this, new ConversationContext());
             }            
         }
