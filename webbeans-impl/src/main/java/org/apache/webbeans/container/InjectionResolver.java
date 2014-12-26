@@ -142,7 +142,11 @@ public class InjectionResolver
         //Check for raw event type (10.3.2)
         if (type == Event.class)
         {
-            throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " needs to define type argument for javax.enterprise.event.Event");
+            throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " needs to define type argument for " + Event.class.getName());
+        }
+        if (type == Instance.class)
+        {
+            throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " needs to define type argument for " + Instance.class.getName());
         }
 
         // not that happy about this check here and at runtime but few TCKs test Weld behavior only...
