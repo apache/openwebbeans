@@ -35,6 +35,7 @@ import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
 import org.apache.webbeans.util.Asserts;
 
 /**
@@ -183,7 +184,11 @@ public class ConversationImpl implements Conversation, Serializable
             this.id = id;
             if (this.sessionId == null)
             {
-                this.sessionId = getSessionId();
+                OpenWebBeansWebPlugin web = webBeansContext.getPluginLoader().getWebPlugin();
+                if (web != null)
+                {
+                    this.sessionId = web.currentSessionId();
+                }
             }
             updateTimeOut();
             conversationManager.addConversationContext(this, (ConversationContext) webBeansContext.getBeanManagerImpl().getContext(ConversationScoped.class));
