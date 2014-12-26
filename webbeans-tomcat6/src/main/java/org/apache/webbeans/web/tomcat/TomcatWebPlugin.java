@@ -129,4 +129,9 @@ public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansWe
         return false;
     }
 
+    @Override
+    public String currentSessionId()
+    {
+        return null; // TODO
+    }
 }

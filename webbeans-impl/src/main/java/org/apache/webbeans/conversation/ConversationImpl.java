@@ -181,6 +181,10 @@ public class ConversationImpl implements Conversation, Serializable
         {
             isTransient = false;
             this.id = id;
+            if (this.sessionId == null)
+            {
+                this.sessionId = getSessionId();
+            }
             updateTimeOut();
             conversationManager.addConversationContext(this, (ConversationContext) webBeansContext.getBeanManagerImpl().getContext(ConversationScoped.class));
         }

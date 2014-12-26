@@ -133,7 +133,8 @@ public class ConversationManager
         while (it.hasNext())
         {
             conv = (ConversationImpl) it.next();
-            if (conv.getSessionId().equals(sessionId))
+            String cSId = conv.getSessionId(); // can be null when set manually -> javax.enterprise.context.Conversation.begin(java.lang.String)()
+            if (cSId != null && cSId.equals(sessionId))
             {
                 map.put(conv, conversations.remove(conv));
             }
