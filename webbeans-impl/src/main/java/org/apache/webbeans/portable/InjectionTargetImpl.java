@@ -135,7 +135,6 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         preDestroyInterceptors
             = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.PRE_DESTROY);
 
-        final Constructor<?> constructor = getConstructor().getJavaMember();
         final InterceptorResolutionService.BusinessMethodInterceptorInfo constructorInterceptorInfo =
                                 interceptorInfo.getConstructorInterceptorInfos().get(getConstructor().getJavaMember());
         final Interceptor<?>[] constructorEjbInterceptorArray = constructorInterceptorInfo == null ?
