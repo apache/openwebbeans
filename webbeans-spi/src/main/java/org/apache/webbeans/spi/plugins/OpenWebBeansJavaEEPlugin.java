@@ -29,6 +29,6 @@ package org.apache.webbeans.spi.plugins;
  *
  */
 public interface OpenWebBeansJavaEEPlugin extends OpenWebBeansPlugin
-{        
-    //Any future operations for java ee containers
+{
+    boolean isEEComponent(Class<?> impl);
 }

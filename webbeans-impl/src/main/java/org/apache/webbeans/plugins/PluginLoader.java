@@ -256,7 +256,7 @@ public class PluginLoader
                 return (OpenWebBeansJavaEEPlugin)plugin;
             }
         }
-        
+
         return null;        
     }
     

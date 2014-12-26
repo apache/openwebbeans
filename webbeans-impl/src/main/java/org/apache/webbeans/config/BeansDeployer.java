@@ -95,6 +95,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.Producer;
@@ -905,6 +906,16 @@ public class BeansDeployer
             {
                 if (isVetoed(implClass))
                 {
+                    if (isEEComponent(implClass))
+                    {
+                        // fire injection point events and forget
+                        AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(implClass);
+                        InjectionTarget<?> it = webBeansContext.getBeanManagerImpl().createInjectionTarget(annotatedType);
+                        for (final InjectionPoint ip : it.getInjectionPoints())
+                        {
+                            webBeansContext.getWebBeansUtil().fireProcessInjectionPointEvent(ip);
+                        }
+                    }
                     continue;
                 }
 
@@ -946,6 +957,12 @@ public class BeansDeployer
         }
 
         return annotatedTypes;
+    }
+
+    private boolean isEEComponent(final Class<?> impl)
+    {
+        OpenWebBeansJavaEEPlugin eePlugin = webBeansContext.getPluginLoader().getJavaEEPlugin();
+        return eePlugin != null && eePlugin.isEEComponent(impl);
     }
 
     private boolean isVetoed(final Class<?> implClass)
