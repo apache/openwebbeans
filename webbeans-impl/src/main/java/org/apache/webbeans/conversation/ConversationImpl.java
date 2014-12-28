@@ -143,7 +143,7 @@ public class ConversationImpl implements Conversation, Serializable
                 //Gets current conversation context instance.
                 //Each conversation has its own conversation context instance.
                 //Sets at the beginning of each JSF request.
-                manager.addConversationContext(this, (ConversationContext) webBeansContext.getBeanManagerImpl().getContext(ConversationScoped.class));
+                manager.addConversationContext(this, getOrStartConversationScope());
                 
             }
             catch (ContextNotActiveException cnae)
@@ -163,7 +163,22 @@ public class ConversationImpl implements Conversation, Serializable
             throw new IllegalStateException();
         }
     }
-    
+
+    private ConversationContext getOrStartConversationScope()
+    {
+        ConversationContext context = (ConversationContext) webBeansContext.getContextsService().getCurrentContext(ConversationScoped.class);
+        if (context == null)
+        {
+            webBeansContext.getContextsService().startContext(ConversationScoped.class, null);
+            context = (ConversationContext) webBeansContext.getContextsService().getCurrentContext(ConversationScoped.class);
+        }
+        if (!context.isActive())
+        {
+            context.setActive(true);
+        }
+        return context;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -191,7 +206,8 @@ public class ConversationImpl implements Conversation, Serializable
                 }
             }
             updateTimeOut();
-            conversationManager.addConversationContext(this, (ConversationContext) webBeansContext.getBeanManagerImpl().getContext(ConversationScoped.class));
+
+            conversationManager.addConversationContext(this, getOrStartConversationScope());
         }
     }
     
