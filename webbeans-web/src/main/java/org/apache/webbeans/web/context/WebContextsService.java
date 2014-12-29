@@ -173,7 +173,10 @@ public class WebContextsService extends AbstractContextsService
         
         //Destroy singleton context
         endContext(Singleton.class, destroyObject);
-        sharedSingletonContext.destroy();
+        if (sharedSingletonContext != null)
+        {
+            sharedSingletonContext.destroy();
+        }
 
         //Clear saved contexts related with 
         //this servlet context
@@ -438,7 +441,7 @@ public class WebContextsService extends AbstractContextsService
             ConversationImpl owbConversation = (ConversationImpl)conversation;
             owbConversation.updateTimeOut();
             //Other threads can now access propogated conversation.
-            owbConversation.setInUsed(false);
+            owbConversation.iDontUseItAnymore();
         }
     }
 

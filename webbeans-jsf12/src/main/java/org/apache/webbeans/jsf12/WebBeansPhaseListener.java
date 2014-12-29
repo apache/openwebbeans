@@ -83,7 +83,7 @@ public class WebBeansPhaseListener implements PhaseListener
                 ConversationImpl owbConversation = (ConversationImpl)conversation;
                 owbConversation.updateTimeOut();
                 //Other threads can now access propogated conversation.
-                owbConversation.setInUsed(false);                
+                owbConversation.iDontUseItAnymore();
             }            
         }
     }
@@ -133,7 +133,7 @@ public class WebBeansPhaseListener implements PhaseListener
 
                 //Conversation must be used by one thread at a time
                 ConversationImpl owbConversation = (ConversationImpl)conversation;
-                if(!owbConversation.getInUsed().compareAndSet(false, true))
+                if(owbConversation.iUseIt() > 1)
                 {
                     contextFactory.initConversationContext(null);
                     //Throw Busy exception
