@@ -77,6 +77,11 @@ public class ConversationManager
      */
     public boolean isConversationExistWithGivenId(String conversationId)
     {
+        if (conversationId == null)
+        {
+            return false;
+        }
+
         ConversationImpl conv = null;
         Set<Conversation> set = conversations.keySet();
         Iterator<Conversation> it = set.iterator();
@@ -84,7 +89,7 @@ public class ConversationManager
         while (it.hasNext())
         {
             conv = (ConversationImpl) it.next();
-            if (conv.getId().equals(conversationId))
+            if (conversationId.equals(conv.getId()))
             {
                 return true;
             }
