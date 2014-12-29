@@ -353,7 +353,10 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
             }
 
             final Type declaringClass = Type.getType(delegatedMethod.getDeclaringClass());
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, declaringClass.getInternalName(), delegatedMethod.getName(), methodDescriptor, false);
+            boolean isItf = delegatedMethod.getDeclaringClass().isInterface();
+            mv.visitMethodInsn(
+                    isItf ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKEVIRTUAL, declaringClass.getInternalName(),
+                    delegatedMethod.getName(), methodDescriptor, isItf);
 
             generateReturn(mv, delegatedMethod);
 
