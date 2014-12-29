@@ -232,9 +232,10 @@ public class ConversationImpl implements Conversation, Serializable
         check();
         if(!isTransient)
         {
-            isTransient = true;
-            iDontUseItAnymore();
             webBeansContext.getConversationManager().removeConversation(this);
+            iDontUseItAnymore();
+            id = null;
+            isTransient = true;
         }
         else
         {
