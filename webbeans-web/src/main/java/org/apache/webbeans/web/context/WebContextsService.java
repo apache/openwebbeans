@@ -434,6 +434,7 @@ public class WebContextsService extends AbstractContextsService
                 logger.log(Level.FINE, "Destroying the transient conversation context with cid : [{0}]", conversation.getId());
             }
             destroyConversationContext();
+            conversationManager.removeConversation(conversation); // in case end() was called
         }
         else
         {

@@ -184,7 +184,7 @@ public class ConversationManager
         while (it.hasNext())
         {
             conv = (ConversationImpl) it.next();
-            if (conv.getId().equals(conversationId) && conv.getSessionId().equals(sessionId))
+            if (conversationId.equals(conv.getId()) && conv.getSessionId().equals(sessionId))
             {
                 return conv;
             }
