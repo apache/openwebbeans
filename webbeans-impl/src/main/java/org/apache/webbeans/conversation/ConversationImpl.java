@@ -179,6 +179,10 @@ public class ConversationImpl implements Conversation, Serializable
             webBeansContext.getContextsService().startContext(ConversationScoped.class, null);
             context = (ConversationContext) webBeansContext.getContextsService().getCurrentContext(ConversationScoped.class);
         }
+        if (context == null)
+        {
+            throw new ContextNotActiveException(ConversationScoped.class.getName());
+        }
         if (!context.isActive())
         {
             context.setActive(true);
