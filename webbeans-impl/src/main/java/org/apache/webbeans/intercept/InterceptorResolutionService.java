@@ -27,6 +27,7 @@ import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -684,11 +685,41 @@ public class InterceptorResolutionService
      */
     private List<AnnotatedMethod> getInterceptableBusinessMethods(AnnotatedType annotatedType)
     {
-        List<Method> interceptableMethods = ClassUtil.getNonPrivateMethods(annotatedType.getJavaClass(), false);
+        Class<?> javaClass = annotatedType.getJavaClass();
+        List<Method> interceptableMethods = ClassUtil.getNonPrivateMethods(javaClass, false);
 
         List<AnnotatedMethod> interceptableAnnotatedMethods = new ArrayList<AnnotatedMethod>();
 
-        Set<AnnotatedMethod> annotatedMethods = (Set<AnnotatedMethod>)webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType);
+        AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
+        Set<AnnotatedMethod> annotatedMethods = (Set<AnnotatedMethod>) annotatedElementFactory.getFilteredAnnotatedMethods(annotatedType);
+        if (!javaClass.isAnnotation() && javaClass.isInterface())
+        {
+            Set<Type> types = new HashSet<Type>(annotatedType.getTypeClosure());
+            types.remove(javaClass);
+            types.remove(Object.class);
+
+            if (!types.isEmpty()) // AT only supports 1 parent and ignores interface inheritance so add it manually here
+            {
+                annotatedMethods = new HashSet<AnnotatedMethod>(annotatedMethods); // otherwise it is not mutable by default
+                for (Type c : types)
+                {
+                    if (!Class.class.isInstance(c))
+                    {
+                        continue;
+                    }
+                    Class parent = Class.class.cast(c);
+                    AnnotatedType at = annotatedElementFactory.getAnnotatedType(parent);
+                    if (at == null)
+                    {
+                        at = annotatedElementFactory.newAnnotatedType(parent);
+                    }
+                    if (at != null)
+                    {
+                        annotatedMethods.addAll((Set<AnnotatedMethod>) annotatedElementFactory.getFilteredAnnotatedMethods(at));
+                    }
+                }
+            }
+        }
         for (Method interceptableMethod : interceptableMethods)
         {
             for (AnnotatedMethod<?> annotatedMethod : annotatedMethods)

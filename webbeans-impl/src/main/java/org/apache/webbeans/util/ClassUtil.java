@@ -281,72 +281,89 @@ public final class ClassUtil
 
         Class<?> clazz = topClass;
 
-        while (clazz != null)
+        if (!clazz.isAnnotation() && clazz.isInterface())
         {
-            for (Method method : clazz.getDeclaredMethods())
+            addNonPrivateMethods(topClass, excludeFinalMethods, methodMap, allMethods, clazz);
+            for (final Class<?> parent : clazz.getInterfaces())
             {
-                if (method.isBridge())
-                {
-                    // we have no interest in generics bridge methods
-                    continue;
-                }
-
-                final int modifiers = method.getModifiers();
-
-                if (Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers))
-                {
-                    continue;
-                }
-                if (excludeFinalMethods && Modifier.isFinal(modifiers))
-                {
-                    continue;
-                }
-
-                if ("finalize".equals(method.getName()))
-                {
-                    // we do not proxy finalize()
-                    continue;
-                }
-
-                // check for package-private methods from a different package
-                if (!Modifier.isPublic(modifiers) && !Modifier.isProtected(modifiers))
-                {
-                    // private already got handled above, so we only had to check for not public nor protected
-                    // we cannot see those methods if they are not in the same package as the rootClazz
-                    if (!clazz.getPackage().getName().equals(topClass.getPackage().getName()))
-                    {
-                        continue;
-                    }
-
-                }
-
-                List<Method> methods = methodMap.get(method.getName());
-                if (methods == null)
-                {
-                    methods = new ArrayList<Method>();
-                    methods.add(method);
-                    allMethods.add(method);
-                    methodMap.put(method.getName(), methods);
-                }
-                else
-                {
-                    if (isOverridden(methods, method))
-                    {
-                        // method is overridden in superclass, so do nothing
-                    }
-                    else
-                    {
-                        // method is not overridden, so add it
-                        methods.add(method);
-                        allMethods.add(method);
-                    }
-                }
+                addNonPrivateMethods(topClass, excludeFinalMethods, methodMap, allMethods, parent);
             }
-
-            clazz = clazz.getSuperclass();
+        }
+        else
+        {
+            while (clazz != null)
+            {
+                addNonPrivateMethods(topClass, excludeFinalMethods, methodMap, allMethods, clazz);
+                clazz = clazz.getSuperclass();
+            }
         }
 
         return allMethods;
+    }
+
+    private static void addNonPrivateMethods(Class<?> topClass, boolean excludeFinalMethods,
+                                             Map<String, List<Method>> methodMap, List<Method> allMethods,
+                                             Class<?> clazz)
+    {
+        for (Method method : clazz.getDeclaredMethods())
+        {
+            if (method.isBridge())
+            {
+                // we have no interest in generics bridge methods
+                continue;
+            }
+
+            final int modifiers = method.getModifiers();
+
+            if (Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers))
+            {
+                continue;
+            }
+            if (excludeFinalMethods && Modifier.isFinal(modifiers))
+            {
+                continue;
+            }
+
+            if ("finalize".equals(method.getName()))
+            {
+                // we do not proxy finalize()
+                continue;
+            }
+
+            // check for package-private methods from a different package
+            if (!Modifier.isPublic(modifiers) && !Modifier.isProtected(modifiers))
+            {
+                // private already got handled above, so we only had to check for not public nor protected
+                // we cannot see those methods if they are not in the same package as the rootClazz
+                if (!clazz.getPackage().getName().equals(topClass.getPackage().getName()))
+                {
+                    continue;
+                }
+
+            }
+
+            List<Method> methods = methodMap.get(method.getName());
+            if (methods == null)
+            {
+                methods = new ArrayList<Method>();
+                methods.add(method);
+                allMethods.add(method);
+                methodMap.put(method.getName(), methods);
+            }
+            else
+            {
+                if (isOverridden(methods, method))
+                {
+                    // method is overridden in superclass, so do nothing
+                }
+                else
+                {
+                    // method is not overridden, so add it
+                    methods.add(method);
+                    allMethods.add(method);
+                }
+            }
+        }
     }
 
     /**
