@@ -89,7 +89,7 @@ public class ConversationManager
         while (it.hasNext())
         {
             conv = (ConversationImpl) it.next();
-            if (conversationId.equals(conv.getId()))
+            if (conversationId.equals(getId(conv)))
             {
                 return true;
             }
@@ -189,13 +189,19 @@ public class ConversationManager
         while (it.hasNext())
         {
             conv = (ConversationImpl) it.next();
-            if (conversationId.equals(conv.getId()) && conv.getSessionId().equals(sessionId))
+            if (conversationId.equals(getId(conv)) && conv.getSessionId().equals(sessionId))
             {
                 return conv;
             }
         }
 
         return null;
+    }
+
+    private String getId(ConversationImpl conv)
+    {
+        String id = conv.getId();
+        return id == null ? conv.getOldId() : id;
     }
 
     /**

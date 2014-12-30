@@ -56,6 +56,7 @@ public class ConversationImpl implements Conversation, Serializable
     
     /**Conversation id*/
     private String id;
+    private String oldId;
 
     /**Transient or not. Transient conversations are destroyed at the end of JSF request*/
     private boolean isTransient = true;
@@ -234,6 +235,7 @@ public class ConversationImpl implements Conversation, Serializable
         {
             // webBeansContext.getConversationManager().removeConversation(this); // needs to be done after the request, not here
             iDontUseItAnymore();
+            oldId = id; // keep it to destroy it after Servlet layer even if end() is called "early"
             id = null;
             isTransient = true;
         }
@@ -242,6 +244,11 @@ public class ConversationImpl implements Conversation, Serializable
             logger.log(Level.WARNING, OWBLogConst.WARN_0004, id);
             throw new IllegalStateException(toString() + " has already ended");
         }
+    }
+
+    public String getOldId()
+    {
+        return oldId;
     }
 
     public int iUseIt()
