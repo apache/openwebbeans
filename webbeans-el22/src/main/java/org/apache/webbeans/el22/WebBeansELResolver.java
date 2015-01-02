@@ -18,22 +18,22 @@
  */
 package org.apache.webbeans.el22;
 
-import java.beans.FeatureDescriptor;
-import java.lang.reflect.Type;
-import java.util.Iterator;
-import java.util.Set;
-
-import javax.el.ELContext;
-import javax.el.ELException;
-import javax.el.ELResolver;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.el.ELContextStore;
+
+import javax.el.ELContext;
+import javax.el.ELException;
+import javax.el.ELResolver;
+import javax.enterprise.context.Conversation;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import java.beans.FeatureDescriptor;
+import java.lang.reflect.Type;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * JSF or JSP expression language a.k.a EL resolver.
@@ -54,6 +54,8 @@ import org.apache.webbeans.el.ELContextStore;
  */
 public class WebBeansELResolver extends ELResolver
 {
+    private static final Javax JAVAX = new Javax();
+
     private WebBeansContext webBeansContext;
 
     public WebBeansELResolver()
@@ -137,6 +139,12 @@ public class WebBeansELResolver extends ELResolver
                 contextualInstance = getNormalScopedContextualInstance(beanManager, elContextStore, context, bean, beanName);
             }
         }
+        if (contextualInstance == null && "javax".equals(property)
+                && "true".equalsIgnoreCase(webBeansContext.getOpenWebBeansConfiguration().getProperty("openwebbeans.el.support-javax", "true")))
+        {
+            context.setPropertyResolved(true);
+            return JAVAX;
+        }
         return contextualInstance;
     }
 
@@ -214,4 +222,31 @@ public class WebBeansELResolver extends ELResolver
 
     }
 
+    public static class Javax
+    {
+        private static final Enterprise ENTERPRISE = new Enterprise();
+
+        public Enterprise getEnterprise()
+        {
+            return ENTERPRISE;
+        }
+    }
+
+    public static class Enterprise
+    {
+        private static final Context CONTEXT = new Context();
+
+        public Context getContext()
+        {
+            return CONTEXT;
+        }
+    }
+
+    public static class Context
+    {
+        public Conversation getConversation()
+        {
+            return WebBeansContext.currentInstance().getConversationManager().getConversationBeanReference();
+        }
+    }
 }
