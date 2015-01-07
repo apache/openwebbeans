@@ -57,10 +57,12 @@ public class WebBeansELResolver extends ELResolver
     private static final Javax JAVAX = new Javax();
 
     private WebBeansContext webBeansContext;
+    private boolean supportJavax;
 
     public WebBeansELResolver()
     {
         webBeansContext = WebBeansContext.getInstance();
+        supportJavax = "true".equalsIgnoreCase(webBeansContext.getOpenWebBeansConfiguration().getProperty("openwebbeans.el.support-javax", "true"));
     }
     
     /**
@@ -139,8 +141,7 @@ public class WebBeansELResolver extends ELResolver
                 contextualInstance = getNormalScopedContextualInstance(beanManager, elContextStore, context, bean, beanName);
             }
         }
-        if (contextualInstance == null && "javax".equals(property)
-                && "true".equalsIgnoreCase(webBeansContext.getOpenWebBeansConfiguration().getProperty("openwebbeans.el.support-javax", "true")))
+        if (contextualInstance == null && supportJavax && "javax".equals(property))
         {
             context.setPropertyResolved(true);
             return JAVAX;
