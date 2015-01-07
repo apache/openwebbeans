@@ -79,7 +79,18 @@ public class TransactionalEventNotifier
             {
                 throw new IllegalStateException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0007) + phase);
             }            
-        }        
+        }
+        else
+        {
+            if (observer instanceof OwbObserverMethod)
+            {
+                ((OwbObserverMethod<? super Object>)observer).notify(event, metadata);
+            }
+            else
+            {
+                observer.notify(event);
+            }
+        }
     }
     
     private static class AbstractSynchronization<T> implements Synchronization
