@@ -26,7 +26,6 @@ import org.apache.webbeans.el.ELContextStore;
 import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ELResolver;
-import javax.enterprise.context.Conversation;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -54,15 +53,11 @@ import java.util.Set;
  */
 public class WebBeansELResolver extends ELResolver
 {
-    private static final Javax JAVAX = new Javax();
-
     private WebBeansContext webBeansContext;
-    private boolean supportJavax;
 
     public WebBeansELResolver()
     {
         webBeansContext = WebBeansContext.getInstance();
-        supportJavax = "true".equalsIgnoreCase(webBeansContext.getOpenWebBeansConfiguration().getProperty("openwebbeans.el.support-javax", "true"));
     }
     
     /**
@@ -141,11 +136,6 @@ public class WebBeansELResolver extends ELResolver
                 contextualInstance = getNormalScopedContextualInstance(beanManager, elContextStore, context, bean, beanName);
             }
         }
-        if (contextualInstance == null && supportJavax && "javax".equals(property))
-        {
-            context.setPropertyResolved(true);
-            return JAVAX;
-        }
         return contextualInstance;
     }
 
@@ -221,33 +211,5 @@ public class WebBeansELResolver extends ELResolver
     public void setValue(ELContext arg0, Object arg1, Object arg2, Object arg3) throws ELException
     {
 
-    }
-
-    public static class Javax
-    {
-        private static final Enterprise ENTERPRISE = new Enterprise();
-
-        public Enterprise getEnterprise()
-        {
-            return ENTERPRISE;
-        }
-    }
-
-    public static class Enterprise
-    {
-        private static final Context CONTEXT = new Context();
-
-        public Context getContext()
-        {
-            return CONTEXT;
-        }
-    }
-
-    public static class Context
-    {
-        public Conversation getConversation()
-        {
-            return WebBeansContext.currentInstance().getConversationManager().getConversationBeanReference();
-        }
     }
 }
