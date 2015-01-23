@@ -29,7 +29,6 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.inject.Named;
 
-import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ResourceBean;
@@ -92,9 +91,7 @@ public class ProducerFieldBeansBuilder<T>
                         throw new WebBeansConfigurationException("Resource producer annotated field : " + annotatedField + " can not define EL name");
                     }
 
-                    final BeanAttributes<T> beanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(
-                            annotatedType, annotatedField.getJavaMember().getType(),
-                            BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)annotatedField).build());
+                    final BeanAttributes<T> beanAttributes = fireProcessBeanAttributes(annotatedField);
                     if (beanAttributes != null)
                     {
                         ResourceBeanBuilder<T, Annotation> resourceBeanCreator
@@ -106,7 +103,8 @@ public class ProducerFieldBeansBuilder<T>
                 }
                 else
                 {
-                    BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)annotatedField).build();
+                    BeanAttributes<T> beanAttributes = fireProcessBeanAttributes(annotatedField);
+
                     ProducerFieldBeanBuilder<T, ProducerFieldBean<T>> producerFieldBeanCreator
                         = new ProducerFieldBeanBuilder<T, ProducerFieldBean<T>>(bean, annotatedField, beanAttributes);
                     ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
@@ -119,12 +117,20 @@ public class ProducerFieldBeansBuilder<T>
 
                     webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean, producerFieldBean, anns);
                     WebBeansUtil.checkProducerGenericType(producerFieldBean, annotatedField.getJavaMember());
-                    
+
                     producerBeans.add(producerFieldBean);
                 }
             }
         }
-        
+
         return producerBeans;
+    }
+
+
+    private BeanAttributes<T> fireProcessBeanAttributes(AnnotatedField<? super T> annotatedField)
+    {
+        return webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(
+                annotatedField, annotatedField.getJavaMember().getType(),
+                BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes((AnnotatedField<T>)annotatedField).build());
     }
 }

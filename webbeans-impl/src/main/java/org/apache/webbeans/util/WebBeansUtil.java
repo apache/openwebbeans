@@ -93,6 +93,7 @@ import javax.enterprise.inject.Intercepted;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
+import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMember;
@@ -1782,7 +1783,7 @@ public final class WebBeansUtil
         return false;
     }
 
-    public <T> BeanAttributes<T> fireProcessBeanAttributes(final AnnotatedType<T> annotatedType, final Class<?> type, final BeanAttributes<T> ba)
+    public <T> BeanAttributes<T> fireProcessBeanAttributes(final Annotated annotatedType, final Class<?> type, final BeanAttributes<T> ba)
     {
         // we don't use bm stack since it is actually quite useless
         final ProcessBeanAttributesImpl event = new GProcessBeanAttributes(type, annotatedType, ba);

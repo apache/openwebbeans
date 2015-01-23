@@ -89,7 +89,7 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
 
                 final AnnotatedMethod<T> method = (AnnotatedMethod<T>) annotatedMethod;
                 final BeanAttributes<T> beanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(
-                        annotatedType, annotatedMethod.getJavaMember().getReturnType(),
+                        annotatedMethod, annotatedMethod.getJavaMember().getReturnType(),
                         BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(method).build());
                 if (beanAttributes != null)
                 {

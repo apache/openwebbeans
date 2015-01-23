@@ -24,6 +24,9 @@ import org.junit.Test;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessBeanAttributes;
 import javax.inject.Inject;
@@ -31,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ProcessBeanAttributesTest extends AbstractUnitTest
 {
@@ -46,12 +51,41 @@ public class ProcessBeanAttributesTest extends AbstractUnitTest
         assertEquals(1, processBeanAttributesExtension.producer.size());
     }
 
+    @Test
+    public void checkProducerMethod()
+    {
+        ProcessBeanAttributesExtension extension = new ProcessBeanAttributesExtension();
+        addExtension(extension);
+        startContainer(SomeOtherBean.class);
+
+        assertNotNull(extension.annotatedMethod);
+        assertTrue(extension.annotatedMethod instanceof AnnotatedMethod);
+        assertEquals("producer", ((AnnotatedMethod) extension.annotatedMethod).getJavaMember().getName());
+        assertEquals(String.class, ((AnnotatedMethod) extension.annotatedMethod).getJavaMember().getReturnType());
+    }
+
+    @Test
+    public void checkProducerField()
+    {
+        ProcessBeanAttributesExtension extension = new ProcessBeanAttributesExtension();
+        addExtension(extension);
+        startContainer(SomeOtherBean.class);
+
+        assertNotNull(extension.annotatedField);
+        assertTrue(extension.annotatedField instanceof AnnotatedField);
+        assertEquals("realMeaningOfLife", ((AnnotatedField) extension.annotatedField).getJavaMember().getName());
+        assertEquals(Integer.class, ((AnnotatedField) extension.annotatedField).getJavaMember().getType());
+
+    }
+
     public static class ProcessBeanAttributesExtension implements Extension
     {
         private Collection<ProcessBeanAttributes<?>> someBean = new ArrayList<ProcessBeanAttributes<?>>();
         private Collection<ProcessBeanAttributes<?>> someOtherBean = new ArrayList<ProcessBeanAttributes<?>>();
         private Collection<ProcessBeanAttributes<?>> producer = new ArrayList<ProcessBeanAttributes<?>>();
 
+        private Annotated annotatedMethod;
+        private Annotated annotatedField;
 
         public void someBean(@Observes ProcessBeanAttributes<SomeBean> pba)
         {
@@ -61,11 +95,17 @@ public class ProcessBeanAttributesTest extends AbstractUnitTest
         public void producer(@Observes ProcessBeanAttributes<String> pba)
         {
             producer.add(pba);
+            annotatedMethod = pba.getAnnotated();
         }
 
         public void otherBean(@Observes ProcessBeanAttributes<SomeOtherBean> pba)
         {
             someOtherBean.add(pba);
+        }
+
+        public void fieldProducer(@Observes ProcessBeanAttributes<Integer> pba)
+        {
+            annotatedField = pba.getAnnotated();
         }
     }
 
@@ -83,7 +123,11 @@ public class ProcessBeanAttributesTest extends AbstractUnitTest
     @RequestScoped
     public static class SomeOtherBean
     {
+        @Produces
+        protected Integer realMeaningOfLife = 30;
+
         private int meaningOfLife = 42;
+
 
         public int getMeaningOfLife()
         {
