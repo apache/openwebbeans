@@ -21,9 +21,12 @@ package org.apache.webbeans.component.creation;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanAttributes;
+import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.InterceptionType;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
@@ -33,6 +36,8 @@ import org.apache.webbeans.component.CdiInterceptorBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.ArrayUtil;
+
+import static java.util.Arrays.asList;
 
 /**
  * Bean builder for {@link org.apache.webbeans.component.InterceptorBean}s.
@@ -52,6 +57,7 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
         checkInterceptorConditions();
         defineInterceptorMethods();
         defineInterceptorBindings();
+        validateTarget();
 
         // make sure that CDI interceptors do not have any Producer methods or a method with @Observes
         validateNoProducerOrObserverMethod(annotatedType);
@@ -59,6 +65,30 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
         // make sure that CDI interceptors do not have a Disposes method
         validateNoDisposerWithoutProducer(webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType),
                 Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
+    }
+
+    private void validateTarget()
+    {
+        final boolean isLifecycleOnly = ( // spec seems to be more strict but breaks apps + does it really makes sense?
+                        interceptionMethods.containsKey(InterceptionType.POST_CONSTRUCT)
+                        || interceptionMethods.containsKey(InterceptionType.PRE_DESTROY))
+                            &&
+                        !(interceptionMethods.containsKey(InterceptionType.AROUND_INVOKE)
+                        || interceptionMethods.containsKey(InterceptionType.AROUND_TIMEOUT)
+                        || interceptionMethods.containsKey(InterceptionType.AROUND_CONSTRUCT));
+        if (isLifecycleOnly && interceptorBindings != null)
+        {
+            for (Annotation a : interceptorBindings)
+            {
+                Target target = a.annotationType().getAnnotation(Target.class);
+                if (target == null || !asList(target.value()).equals(asList(ElementType.TYPE)))
+                {
+                    throw new DefinitionException(
+                            a.annotationType().getName() + " doesn't have strictly @Target(TYPE) but has lifecycle methods. " +
+                                    "Interceptor: " + annotatedType.getJavaClass().getName());
+                }
+            }
+        }
     }
 
     @Override

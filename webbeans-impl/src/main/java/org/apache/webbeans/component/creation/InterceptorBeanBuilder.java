@@ -62,7 +62,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
     private final Class<? extends Annotation> prePassivateClass;
     private final Class<? extends Annotation> postActivateClass;
 
-    private Map<InterceptionType, Method[]> interceptionMethods;
+    protected Map<InterceptionType, Method[]> interceptionMethods;
 
     protected InterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributes<T> beanAttributes)
     {
