@@ -313,13 +313,13 @@ public final class ClassUtil
                 temp.add(method);
             }
         }
-	
+
         for (Method method : temp)
         {
-			if (allMethods.contains(method))
-			{
-				continue;
-			}
+            if (allMethods.contains(method))
+            {
+                continue;
+            }
 
             if (method.isBridge())
             {
