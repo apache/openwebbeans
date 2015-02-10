@@ -259,8 +259,22 @@ public final class ClassUtil
 
         while (clazz != null)
         {
+            List<Method> temp = new ArrayList<Method>(Arrays.asList(clazz.getMethods()));
             for (Method method : clazz.getDeclaredMethods())
             {
+                if (!temp.contains(method))
+                {
+                    temp.add(method);
+                }
+            }
+
+            for (Method method : temp)
+            {
+                if (allMethods.contains(method))
+                {
+                    continue;
+                }
+
                 if (method.isBridge())
                 {
                     // we have no interest in generics bridge methods

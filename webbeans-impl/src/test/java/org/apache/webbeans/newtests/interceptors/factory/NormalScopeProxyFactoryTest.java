@@ -38,6 +38,7 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Set;
+import org.apache.webbeans.newtests.interceptors.factory.beans.PartialBeanClass;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -207,6 +208,40 @@ public class NormalScopeProxyFactoryTest extends AbstractUnitTest
 
     }
 
+    @Test
+    public void textPartialBeanProxyCreation() throws Exception
+    {
+        NormalScopeProxyFactory pf = new NormalScopeProxyFactory(new WebBeansContext());
+
+        // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
+        ClassLoader classLoader = new URLClassLoader(new URL[0]);
+
+        Class<PartialBeanClass> proxyClass = pf.createProxyClass(classLoader, PartialBeanClass.class);
+        Assert.assertNotNull(proxyClass);
+
+        PartialBeanClass internalInstance = new PartialBeanClass()
+        {
+            @Override
+            public String willFail2()
+            {
+                return "";
+            }
+
+            @Override
+            public String willFail()
+            {
+                return "";
+            }
+        };
+
+        TestContextualInstanceProvider provider = new TestContextualInstanceProvider(internalInstance);
+
+        PartialBeanClass proxy = pf.createProxyInstance(proxyClass, provider);
+
+        proxy.willFail();
+        proxy.willFail2();
+        proxy.willFail3();
+    }
 
     /**
      * Test if protected and package scope methods are proxied as well.
