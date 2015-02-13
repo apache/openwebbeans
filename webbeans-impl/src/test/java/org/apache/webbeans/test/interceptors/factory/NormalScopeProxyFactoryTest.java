@@ -39,6 +39,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Set;
 import org.apache.webbeans.test.interceptors.factory.beans.PartialBeanClass;
+import org.apache.webbeans.test.interceptors.factory.beans.PartialBeanInterface;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -209,7 +210,7 @@ public class NormalScopeProxyFactoryTest extends AbstractUnitTest
     }
 
     @Test
-    public void textPartialBeanProxyCreation() throws Exception
+    public void testPartialBeanProxyCreation() throws Exception
     {
         NormalScopeProxyFactory pf = new NormalScopeProxyFactory(new WebBeansContext());
 
@@ -241,6 +242,32 @@ public class NormalScopeProxyFactoryTest extends AbstractUnitTest
         proxy.willFail();
         proxy.willFail2();
         proxy.willFail3();
+    }
+    
+    @Test
+    public void testPartialBeanProxyCreation2() throws Exception
+    {
+        NormalScopeProxyFactory pf = new NormalScopeProxyFactory(new WebBeansContext());
+
+        // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
+        ClassLoader classLoader = new URLClassLoader(new URL[0]);
+
+        Class<PartialBeanInterface> proxyClass = pf.createProxyClass(classLoader, PartialBeanInterface.class);
+        Assert.assertNotNull(proxyClass);
+
+        PartialBeanInterface internalInstance = new PartialBeanInterface()
+        {
+            @Override
+            public Object test(Object e) {
+                return e;
+            }
+        };
+
+        TestContextualInstanceProvider provider = new TestContextualInstanceProvider(internalInstance);
+
+        PartialBeanInterface proxy = pf.createProxyInstance(proxyClass, provider);
+
+        proxy.test(new Object());
     }
 
     /**
