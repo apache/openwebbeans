@@ -24,6 +24,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -189,14 +191,53 @@ public abstract class AbstractProxyFactory
     {
         String proxyClassFileName = proxyClassName.replace('.', '/');
 
-        final byte[] proxyBytes = generateProxy(classLoader, classToProxy, proxyClassName, proxyClassFileName, interceptedMethods, nonInterceptedMethods);
-
+        final byte[] proxyBytes = generateProxy(classLoader,
+                classToProxy,
+                proxyClassName,
+                proxyClassFileName,
+                sortOutDuplicateMethods(interceptedMethods),
+                sortOutDuplicateMethods(nonInterceptedMethods));
+        
         Class<T> clazz = defineAndLoadClass(classLoader, proxyClassName, proxyBytes);
 
 
         return clazz;
     }
 
+    private Method[] sortOutDuplicateMethods(Method[] methods)
+    {
+        if (methods == null || methods.length == 0)
+        {
+            return null;
+        }
+
+        ArrayList<Method> duplicates = new ArrayList<Method>();
+
+        for (Method outer : methods)
+        {
+            for (Method inner : methods)
+            {
+                if (inner != outer
+                        && hasSameSignature(outer, inner)
+                        && !(duplicates.contains(outer) || duplicates.contains(inner)))
+                {
+                    duplicates.add(inner);
+                }
+            }
+        }
+
+        ArrayList<Method> outsorted = new ArrayList<Method>(Arrays.asList(methods));
+        outsorted.removeAll(duplicates);
+        return outsorted.toArray(new Method[outsorted.size()]);
+    }
+
+    private boolean hasSameSignature(Method a, Method b)
+    {
+        return a.getName().equals(b.getName())
+                && a.getReturnType().equals(b.getReturnType())
+                && Arrays.equals(a.getParameterTypes(), b.getParameterTypes());
+    }
+     
     private byte[] generateProxy(ClassLoader classLoader, Class<?> classToProxy, String proxyClassName, String proxyClassFileName,
                                  Method[] interceptedMethods, Method[] nonInterceptedMethods)
             throws ProxyGenerationException
