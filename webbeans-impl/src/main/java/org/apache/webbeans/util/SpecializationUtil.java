@@ -40,6 +40,7 @@ import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 
 /**
  * This class contains a few helpers for handling
@@ -50,12 +51,14 @@ public class SpecializationUtil
     private final AlternativesManager alternativesManager;
     private final WebBeansUtil webBeansUtil;
     private final WebBeansContext webBeansContext;
+    private final OpenWebBeansEjbPlugin ejbPlugin;
 
     public SpecializationUtil(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
         this.alternativesManager = webBeansContext.getAlternativesManager();
         this.webBeansUtil = webBeansContext.getWebBeansUtil();
+        this.ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
     }
 
     /**
@@ -84,6 +87,11 @@ public class SpecializationUtil
                 {
                     Class<?> specialClass = annotatedType.getJavaClass();
                     Class<?> superClass = specialClass.getSuperclass();
+                    if (ejbPlugin != null && ejbPlugin.isSessionBean(superClass) && !ejbPlugin.isSessionBean(specialClass))
+                    {
+                        throw new WebBeansConfigurationException(specialClass + " specializes and EJB " + superClass + ". That's forbidden.");
+                    }
+
                     if (attributeProvider != null)
                     {
                         BeanAttributes<?> ba = attributeProvider.get(annotatedType);
