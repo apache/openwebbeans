@@ -801,9 +801,6 @@ public class BeansDeployer
                         }
                     }
 
-                    //Check passivation scope
-                    checkPassivationScope(bean);
-
                     //Bean injection points
                     Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
 
@@ -812,6 +809,9 @@ public class BeansDeployer
                     {
                         webBeansContext.getWebBeansUtil().validate(injectionPoints, bean);
                     }
+
+                    //Check passivation scope
+                    checkPassivationScope(bean);
                 }
                 catch (RuntimeException e)
                 {
