@@ -134,6 +134,44 @@
                 </methods>
             </class>
 
+            <!-- CDITCK-466 -->
+            <class name="org.jboss.cdi.tck.tests.extensions.lifecycle.bbd.broken.passivatingScope.AddingPassivatingScopeTest">
+                <methods>
+                    <exclude name=".*"/>
+                </methods>
+            </class>
+
+            <!-- CDITCK-467 -->
+            <class name="org.jboss.cdi.tck.tests.event.fires.FireEventTest">
+                <methods>
+                    <exclude name="testDuplicateBindingsToFireEventFails"/>
+                </methods>
+            </class>
+            <class name="org.jboss.cdi.tck.tests.event.select.SelectEventTest">
+                <methods>
+                    <exclude name=".*DuplicateBindingType"/>
+                </methods>
+            </class>
+            <class name="org.jboss.cdi.tck.tests.event.resolve.binding.DuplicateBindingTypesWhenResolvingTest">
+                <methods>
+                    <exclude name=".*"/>
+                </methods>
+            </class>
+            <class name="org.jboss.cdi.tck.tests.lookup.dynamic.DynamicLookupTest">
+                <methods>
+                    <exclude name="testDuplicateBindingsThrowsException"/>
+                </methods>
+            </class>
+            <class name="org.jboss.cdi.tck.tests.extensions.bean.bytype.BeanByTypeTest">
+                <methods>
+                    <exclude name="testSameBindingTwice"/>
+                </methods>
+            </class>
+            <class name="org.jboss.cdi.tck.tests.interceptors.definition.InterceptorDefinitionTest">
+                <methods>
+                    <exclude name="testSameBindingTypesToResolveInterceptorsFails"/>
+                </methods>
+            </class>
         </classes>
 
 

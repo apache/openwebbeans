@@ -124,8 +124,11 @@
     <profiles>
         <profile>
             <id>tck</id>
-            <dependencies>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
 
+            <dependencies>
                 <dependency>
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>openwebbeans-porting</artifactId>
