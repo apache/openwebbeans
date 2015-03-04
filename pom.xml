@@ -83,7 +83,7 @@
         <myfaces.version>2.0.7</myfaces.version>
         <xbean.version>4.1</xbean.version>
         <arquillian.version>1.1.2.Final</arquillian.version>
-        <cdi.tck.version>1.2.2.Final</cdi.tck.version>
+        <cdi.tck.version>1.2.4.Final</cdi.tck.version>
     </properties>
     
     <mailingLists>
@@ -289,7 +289,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
-                    <arguments>-Papache-release -Ptck -Pjsr330-tck</arguments>
+                    <arguments>-Papache-release -Ptck</arguments>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
             </plugin>
@@ -499,6 +499,7 @@
         <module>webbeans-porting</module>
         <module>webbeans-arquillian</module>
         <module>samples</module>
+        <module>atinject-tck</module>
         <module>webbeans-tck</module>
         <module>distribution</module>
         <module>webbeans-doc</module>
@@ -801,13 +802,6 @@
                 </plugins>
             </reporting>
 
-        </profile>
-
-        <profile>
-            <id>jsr330-tck</id>
-            <modules>
-                <module>atinject-tck</module>
-            </modules>
         </profile>
 
         <profile>
