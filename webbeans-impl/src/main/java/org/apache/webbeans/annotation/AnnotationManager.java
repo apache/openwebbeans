@@ -24,7 +24,6 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 
-import javax.enterprise.inject.spi.DefinitionException;
 
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ArrayUtil;
@@ -811,7 +810,7 @@ public final class AnnotationManager
         {
             if(AnnotationUtil.hasMethodAnnotation(method, Named.class))
             {
-                throw new DefinitionException("Specialized method : " + method.getName() + " in class : "
+                throw new WebBeansConfigurationException("Specialized method : " + method.getName() + " in class : "
                         + component.getReturnType().getName() + " may not define @Named annotation");
             }
         }

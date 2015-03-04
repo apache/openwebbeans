@@ -27,6 +27,7 @@ import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -205,7 +206,7 @@ public class InterceptorResolutionService
 
         if ((interceptedBean || decorators.size() > 0) && Modifier.isFinal(annotatedType.getJavaClass().getModifiers()))
         {
-            throw new WebBeansConfigurationException("Cannot apply Decorators or Interceptors on a final class: "
+            throw new WebBeansDeploymentException("Cannot apply Decorators or Interceptors on a final class: "
                                                      + annotatedType.getJavaClass().getName());
         }
 
@@ -225,7 +226,7 @@ public class InterceptorResolutionService
 
             if (!proxyable)
             {
-                throw new DeploymentException("Intercepted Bean " + annotatedType.getBaseType() + " must be proxyable");
+                throw new WebBeansDeploymentException("Intercepted Bean " + annotatedType.getBaseType() + " must be proxyable");
             }
         }
 
@@ -460,7 +461,7 @@ public class InterceptorResolutionService
             {
                 if (isUnproxyable(annotatedMethod))
                 {
-                    throw new WebBeansConfigurationException(annotatedMethod + " is not proxyable, but an Decorator got defined on it!");
+                    throw new WebBeansDeploymentException(annotatedMethod + " is not proxyable, but an Decorator got defined on it!");
                 }
 
                 appliedDecorators.put(decorator, decoratingMethod);

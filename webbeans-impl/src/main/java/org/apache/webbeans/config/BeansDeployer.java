@@ -46,6 +46,7 @@ import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.event.OwbObserverMethod;
+import org.apache.webbeans.exception.helper.DescriptiveException;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -301,13 +302,9 @@ public class BeansDeployer
             // the tck expects a DeploymentException, but it really should be a DefinitionException, see i.e. https://issues.jboss.org/browse/CDITCK-346
             throw new DeploymentException(e);
         }
-        catch (WebBeansConfigurationException e)
-        {
-            throw new DeploymentException(e);
-        }
         catch (IllegalArgumentException e)
         {
-            throw new DefinitionException(e);
+            throw new WebBeansConfigurationException(e);
         }
         catch (Exception e)
         {
@@ -370,7 +367,7 @@ public class BeansDeployer
                     {
                         webBeansUtil.validate(disposalIPs, bean);
                     }
-                } // else?
+                }
             }
         }
     }
@@ -385,9 +382,8 @@ public class BeansDeployer
         {
             if (decorator.getDecoratedTypes().isEmpty())
             {
-                throw new DefinitionException("Decorator must implement at least one interface (java.io.Serializeable will be ignored)");
+                throw new WebBeansConfigurationException("Decorator must implement at least one interface (java.io.Serializeable will be ignored)");
             }
-
         }
     }
 
@@ -441,7 +437,7 @@ public class BeansDeployer
                         {
                             if (!GenericsUtil.isAssignableFrom(true, false, pt1, pt2))
                             {
-                                throw new DefinitionException("Generic error matching " + api + " and " + t);
+                                throw new WebBeansConfigurationException("Generic error matching " + api + " and " + t);
                             }
                         }
                     }
@@ -637,7 +633,7 @@ public class BeansDeployer
         final AfterBeanDiscoveryImpl event = new AfterBeanDiscoveryImpl(webBeansContext);
         manager.fireLifecycleEvent(event);
 
-        webBeansContext.getWebBeansUtil().inspectErrorStack(
+        webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack(
                 "There are errors that are added by AfterBeanDiscovery event observers. Look at logs for further details");
 
         event.setStarted();
@@ -669,8 +665,8 @@ public class BeansDeployer
         // we do not need to set back the sortedAlternatives to the AlternativesManager as the API
         // and all layers in between use a mutable List. Not very elegant but spec conform.
 
-        webBeansContext.getWebBeansUtil().inspectErrorStack(
-            "There are errors that are added by AfterTypeDiscovery event observers. Look at logs for further details");
+        webBeansContext.getWebBeansUtil().inspectDeploymentErrorStack(
+                "There are errors that are added by AfterTypeDiscovery event observers. Look at logs for further details");
         return newAt;
     }
 
@@ -684,8 +680,8 @@ public class BeansDeployer
         final AfterDeploymentValidationImpl event = new AfterDeploymentValidationImpl(manager);
         manager.fireLifecycleEvent(event);
 
-        webBeansContext.getWebBeansUtil().inspectErrorStack(
-            "There are errors that are added by AfterDeploymentValidation event observers. Look at logs for further details");
+        webBeansContext.getWebBeansUtil().inspectDeploymentErrorStack(
+                "There are errors that are added by AfterDeploymentValidation event observers. Look at logs for further details");
 
         packageVetoCache.clear(); // no more needed, free the memory
         event.setStarted();
@@ -746,81 +742,92 @@ public class BeansDeployer
             Stack<String> beanNames = new Stack<String>();
             for (Bean<?> bean : beans)
             {
-                if (bean instanceof OwbBean && !((OwbBean)bean).isEnabled())
+                try
                 {
-                    // we skip disabled beans
-                    continue;
-                }
 
-                //don't validate the cdi-api
-                if (bean.getBeanClass().getName().startsWith(JAVAX_ENTERPRISE_PACKAGE))
-                {
-                    if (BuiltInOwbBean.class.isInstance(bean))
+                    if (bean instanceof OwbBean && !((OwbBean) bean).isEnabled())
                     {
-                        final Class<?> proxyable = BuiltInOwbBean.class.cast(bean).proxyableType();
-                        if (proxyable != null)
+                        // we skip disabled beans
+                        continue;
+                    }
+
+                    //don't validate the cdi-api
+                    if (bean.getBeanClass().getName().startsWith(JAVAX_ENTERPRISE_PACKAGE))
+                    {
+                        if (BuiltInOwbBean.class.isInstance(bean))
                         {
-                            final AbstractProducer producer = AbstractProducer.class.cast(OwbBean.class.cast(bean).getProducer());
-                            final AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(proxyable);
-                            producer.defineInterceptorStack(bean, annotatedType, webBeansContext);
+                            final Class<?> proxyable = BuiltInOwbBean.class.cast(bean).proxyableType();
+                            if (proxyable != null)
+                            {
+                                final AbstractProducer producer = AbstractProducer.class.cast(OwbBean.class.cast(bean).getProducer());
+                                final AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(proxyable);
+                                producer.defineInterceptorStack(bean, annotatedType, webBeansContext);
+                            }
+                        }
+                        continue;
+                    }
+
+                    String beanName = bean.getName();
+                    if (beanName != null)
+                    {
+                        beanNames.push(beanName);
+                    }
+
+                    if (bean instanceof OwbBean && !(bean instanceof Interceptor) && !(bean instanceof Decorator))
+                    {
+                        AbstractProducer<T> producer = null;
+
+                        OwbBean<T> owbBean = (OwbBean<T>) bean;
+                        if (ManagedBean.class.isInstance(bean)) // in this case don't use producer which can be wrapped
+                        {
+                            producer = ManagedBean.class.cast(bean).getOriginalInjectionTarget();
+                        }
+                        if (producer == null && owbBean.getProducer() instanceof AbstractProducer)
+                        {
+                            producer = (AbstractProducer<T>) owbBean.getProducer();
+                        }
+                        if (producer != null)
+                        {
+                            AnnotatedType<T> annotatedType;
+                            if (owbBean instanceof InjectionTargetBean)
+                            {
+                                annotatedType = ((InjectionTargetBean<T>) owbBean).getAnnotatedType();
+                            }
+                            else
+                            {
+                                annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(owbBean.getReturnType());
+                            }
+                            producer.defineInterceptorStack(owbBean, annotatedType, webBeansContext);
                         }
                     }
-                    continue;
+
+                    //Check passivation scope
+                    checkPassivationScope(bean);
+
+                    //Bean injection points
+                    Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
+
+                    //Check injection points
+                    if (injectionPoints != null)
+                    {
+                        webBeansContext.getWebBeansUtil().validate(injectionPoints, bean);
+                    }
+                }
+                catch (RuntimeException e)
+                {
+                    if (e instanceof DescriptiveException)
+                    {
+                        ((DescriptiveException) e).addInformation("Problem while validating bean " + bean);
+                    }
+                    throw e;
                 }
 
-                String beanName = bean.getName();
-                if(beanName != null)
-                {
-                    beanNames.push(beanName);
-                }
-                
-                if (bean instanceof OwbBean && !(bean instanceof Interceptor) && !(bean instanceof Decorator))
-                {
-                    AbstractProducer<T> producer = null;
-
-                    OwbBean<T> owbBean = (OwbBean<T>)bean;
-                    if (ManagedBean.class.isInstance(bean)) // in this case don't use producer which can be wrapped
-                    {
-                        producer = ManagedBean.class.cast(bean).getOriginalInjectionTarget();
-                    }
-                    if (producer == null && owbBean.getProducer() instanceof AbstractProducer)
-                    {
-                        producer = (AbstractProducer<T>)owbBean.getProducer();
-                    }
-                    if (producer != null)
-                    {
-                        AnnotatedType<T> annotatedType;
-                        if (owbBean instanceof InjectionTargetBean)
-                        {
-                            annotatedType = ((InjectionTargetBean<T>)owbBean).getAnnotatedType();
-                        }
-                        else
-                        {
-                            annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(owbBean.getReturnType());
-                        }
-                        producer.defineInterceptorStack(owbBean, annotatedType, webBeansContext);
-                    }
-                }
-                
-                //Check passivation scope
-                checkPassivationScope(bean);
-                                
-                //Bean injection points
-                Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
-                                
-                //Check injection points
-                if(injectionPoints != null)
-                {
-                    webBeansContext.getWebBeansUtil().validate(injectionPoints, bean);
-                }
             }
-            
             //Validate Bean names
             validateBeanNames(beanNames);
-            
+
             //Clear Names
             beanNames.clear();
-
         }
         
     }
@@ -875,7 +882,7 @@ public class BeansDeployer
                         {
                             if(part.equals(other))
                             {
-                                throw new WebBeansConfigurationException("EL name of one bean is of the form x.y, where y is a valid bean EL name, and " +
+                                throw new WebBeansDeploymentException("EL name of one bean is of the form x.y, where y is a valid bean EL name, and " +
                                         "x is the EL name of the other bean for the bean name : " + beanName);
                             }                        
                         }
@@ -1196,7 +1203,7 @@ public class BeansDeployer
         {
             if (alternativesInFile.contains(alternativeName))
             {
-                throw new WebBeansConfigurationException(createConfigurationFailedMessage(bdaLocation) + "Given alternative : " + alternativeName
+                throw new WebBeansDeploymentException(createConfigurationFailedMessage(bdaLocation) + "Given alternative : " + alternativeName
                         + " is already added as @Alternative" );
             }
             alternativesInFile.add(alternativeName);
@@ -1205,7 +1212,7 @@ public class BeansDeployer
 
             if (clazz == null)
             {
-                throw new WebBeansConfigurationException(createConfigurationFailedMessage(bdaLocation) + "Alternative: " + alternativeName + " not found");
+                throw new WebBeansDeploymentException(createConfigurationFailedMessage(bdaLocation) + "Alternative: " + alternativeName + " not found");
             }
             else
             {
@@ -1233,7 +1240,7 @@ public class BeansDeployer
                             }
                             else
                             {
-                                throw new WebBeansConfigurationException("Given alternative class : " + clazz.getName() + " is not decorated wih @Alternative" );
+                                throw new WebBeansDeploymentException("Given alternative class : " + clazz.getName() + " is not decorated wih @Alternative" );
                             }
                         }
                     }
@@ -1252,7 +1259,7 @@ public class BeansDeployer
 
             if (clazz == null)
             {
-                throw new WebBeansConfigurationException(createConfigurationFailedMessage(bdaLocation) + "Decorator class : " +
+                throw new WebBeansDeploymentException(createConfigurationFailedMessage(bdaLocation) + "Decorator class : " +
                         decorator + " not found");
             }
             else
@@ -1260,7 +1267,7 @@ public class BeansDeployer
                 if ((scannerService.isBDABeansXmlScanningEnabled() && !scannerService.getBDABeansXmlScanner().addDecorator(clazz, bdaLocation.toExternalForm())) ||
                         decoratorsInFile.contains(clazz))
                 {
-                    throw new WebBeansConfigurationException(createConfigurationFailedMessage(bdaLocation) + "Decorator class : " +
+                    throw new WebBeansDeploymentException(createConfigurationFailedMessage(bdaLocation) + "Decorator class : " +
                             decorator + " is already defined");
                 }
 
@@ -1283,7 +1290,7 @@ public class BeansDeployer
 
             if (clazz == null)
             {
-                throw new WebBeansConfigurationException(createConfigurationFailedMessage(bdaLocation) + "Interceptor class : " +
+                throw new WebBeansDeploymentException(createConfigurationFailedMessage(bdaLocation) + "Interceptor class : " +
                         interceptor + " not found");
             }
             else
@@ -1320,14 +1327,14 @@ public class BeansDeployer
                 if (AnnotationUtil.hasAnnotation(classAnnotations, javax.interceptor.Interceptor.class) &&
                         !webBeansContext.getAnnotationManager().hasInterceptorBindingMetaAnnotation(classAnnotations))
                 {
-                    throw new WebBeansConfigurationException(createConfigurationFailedMessage(bdaLocation) + "Interceptor class : "
+                    throw new WebBeansDeploymentException(createConfigurationFailedMessage(bdaLocation) + "Interceptor class : "
                             + interceptor + " must have at least one @InterceptorBinding");
                 }
 
                 // check if the interceptor got defined twice in this beans.xml
                 if (interceptorsInFile.contains(clazz))
                 {
-                    throw new WebBeansConfigurationException(createConfigurationFailedMessage(bdaLocation) + "Interceptor class : "
+                    throw new WebBeansDeploymentException(createConfigurationFailedMessage(bdaLocation) + "Interceptor class : "
                             + interceptor + " already defined in this beans.xml file!");
                 }
                 interceptorsInFile.add(clazz);
@@ -1379,7 +1386,7 @@ public class BeansDeployer
             {
                 if(!(beanObj instanceof AbstractProducerBean))
                 {
-                    throw new WebBeansConfigurationException("Passivation scoped defined bean must be passivation capable, " +
+                    throw new WebBeansDeploymentException("Passivation scoped defined bean must be passivation capable, " +
                             "but bean : " + beanObj.toString() + " is not passivation capable");
                 }
             }
@@ -1450,8 +1457,8 @@ public class BeansDeployer
         {
             //Fires ProcessInjectionTarget
             webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEventForJavaEeComponents(beanClass).setStarted();
-            webBeansContext.getWebBeansUtil().inspectErrorStack(
-                "There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
+            webBeansContext.getWebBeansUtil().inspectDeploymentErrorStack(
+                    "There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
 
             //Checks that not contains @Inject InjectionPoint
             webBeansContext.getAnnotationManager().checkInjectionPointForInjectInjectionPoint(beanClass);
@@ -1531,7 +1538,7 @@ public class BeansDeployer
                 for(ProducerMethodBean<?> producerMethod : producerMethods)
                 {
                     AnnotatedMethod<?> method = webBeansContext.getAnnotatedElementFactory().newAnnotatedMethod(producerMethod.getCreatorMethod(), annotatedType);
-                    webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducer event observers for "
+                    webBeansContext.getWebBeansUtil().inspectDeploymentErrorStack("There are errors that are added by ProcessProducer event observers for "
                             + "ProducerMethods. Look at logs for further details");
 
                     annotatedMethods.put(producerMethod, method);
@@ -1542,7 +1549,7 @@ public class BeansDeployer
 
                 for(ProducerFieldBean<?> producerField : producerFields)
                 {
-                    webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducer event observers for"
+                    webBeansContext.getWebBeansUtil().inspectDeploymentErrorStack("There are errors that are added by ProcessProducer event observers for"
                             + " ProducerFields. Look at logs for further details");
 
                     annotatedFields.put(producerField,
@@ -1568,22 +1575,22 @@ public class BeansDeployer
                 ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean, annotatedType);
                 beanManager.fireEvent(processBeanEvent, true);
                 processBeanEvent.setStarted();
-                webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessManagedBean event observers for " +
+                webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessManagedBean event observers for " +
                         "managed beans. Look at logs for further details");
 
                 //Fires ProcessProducerMethod
                 webBeansContext.getWebBeansUtil().fireProcessProducerMethodBeanEvent(annotatedMethods, annotatedType);
-                webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducerMethod event observers for " +
+                webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessProducerMethod event observers for " +
                         "producer method beans. Look at logs for further details");
 
                 //Fires ProcessProducerField
                 webBeansContext.getWebBeansUtil().fireProcessProducerFieldBeanEvent(annotatedFields);
-                webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducerField event observers for " +
+                webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessProducerField event observers for " +
                         "producer field beans. Look at logs for further details");
 
                 //Fire ObservableMethods
                 webBeansContext.getWebBeansUtil().fireProcessObservableMethodBeanEvent(observerMethodsMap);
-                webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessObserverMethod event observers for " +
+                webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessObserverMethod event observers for " +
                         "observer methods. Look at logs for further details");
 
                 if(!webBeansContext.getWebBeansUtil().isAnnotatedTypeDecoratorOrInterceptor(annotatedType))

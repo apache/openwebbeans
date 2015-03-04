@@ -102,7 +102,7 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
             if (Bean.class.equals(ClassUtil.getClass(type)) &&
                 !annotatedMember.getBaseType().equals(ClassUtil.getActualTypeArguments(type)[0]))
             {
-                throw new DefinitionException("Type parameter of the injected bean must be the same as the return type. Producer method: " + annotatedMember);
+                throw new WebBeansConfigurationException("Type parameter of the injected bean must be the same as the return type. Producer method: " + annotatedMember);
             }
         }
     }

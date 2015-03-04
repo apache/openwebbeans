@@ -42,7 +42,6 @@ import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.WithAnnotations;
@@ -53,6 +52,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -174,7 +174,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     {
         if (annotatedObservesParameter.getAnnotation(WithAnnotations.class) != null)
         {
-            throw new DefinitionException("@WithAnnotations must only be used for ProcessAnnotatedType events");
+            throw new WebBeansConfigurationException("@WithAnnotations must only be used for ProcessAnnotatedType events");
         }
     }
 

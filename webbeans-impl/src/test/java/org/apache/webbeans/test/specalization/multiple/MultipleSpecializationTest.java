@@ -81,7 +81,7 @@ public class MultipleSpecializationTest extends AbstractUnitTest
 
         Assert.assertNotNull(occuredException);
         Assert.assertEquals(WebBeansConfigurationException.class.getName(), occuredException.getClass().getName());
-        Assert.assertEquals(DefinitionException.class.getName(), occuredException.getCause().getClass().getName());
+        Assert.assertTrue(occuredException.getCause() instanceof DefinitionException);
         
         shutDownContainer();
     }

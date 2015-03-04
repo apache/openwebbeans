@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.xbean.asm5.ClassWriter;
@@ -106,7 +107,7 @@ public abstract class AbstractProxyFactory
      * @param cw
      * @param classToProxy
      * @param classFileName
-     * @throws ProxyGenerationException
+     * @throws org.apache.webbeans.exception.ProxyGenerationException
      */
     protected abstract void createConstructor(ClassWriter cw, String proxyClassFileName, Class<?> classToProxy, String classFileName, Constructor<?> injectConstructor)
             throws ProxyGenerationException;

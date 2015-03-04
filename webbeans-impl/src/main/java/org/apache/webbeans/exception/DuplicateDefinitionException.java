@@ -16,13 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.exception.definition;
+package org.apache.webbeans.exception;
 
 import javax.enterprise.inject.spi.DefinitionException;
+import org.apache.webbeans.exception.helper.DescriptiveException;
+import org.apache.webbeans.exception.helper.ExceptionMessageBuilder;
 
-public class DuplicateDefinitionException extends DefinitionException
+public class DuplicateDefinitionException extends DefinitionException implements DescriptiveException
 {
     private static final long serialVersionUID = 2312285271502063304L;
+
+    private ExceptionMessageBuilder msg = new ExceptionMessageBuilder();
+
 
     public DuplicateDefinitionException(String message)
     {
@@ -37,6 +42,24 @@ public class DuplicateDefinitionException extends DefinitionException
     public DuplicateDefinitionException(String message, Throwable e)
     {
         super(message, e);
+    }
+
+    @Override
+    public void addInformation(String additionalInformation)
+    {
+        msg.addInformation(additionalInformation);
+    }
+
+    @Override
+    public String getMessage()
+    {
+        return msg.getAdditionalInformation(super.getMessage());
+    }
+
+    @Override
+    public String getLocalizedMessage()
+    {
+        return msg.getAdditionalInformation(super.getLocalizedMessage());
     }
 
 }

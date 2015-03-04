@@ -21,7 +21,6 @@ package org.apache.webbeans.component.creation;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.InterceptionType;
 
 import java.lang.annotation.Annotation;
@@ -83,7 +82,7 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
                 Target target = a.annotationType().getAnnotation(Target.class);
                 if (target == null || !asList(target.value()).equals(asList(ElementType.TYPE)))
                 {
-                    throw new DefinitionException(
+                    throw new WebBeansConfigurationException(
                             a.annotationType().getName() + " doesn't have strictly @Target(TYPE) but has lifecycle methods. " +
                                     "Interceptor: " + annotatedType.getJavaClass().getName());
                 }

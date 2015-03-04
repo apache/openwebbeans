@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.xml;
 
-import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -120,7 +119,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
     {
         if (beansXmlUrl == null)
         {
-            throw new DefinitionException("beans.xml URL must be given!");
+            throw new WebBeansConfigurationException("beans.xml URL must be given!");
         }
 
         if (!beansXmlLocation.endsWith(".xml"))

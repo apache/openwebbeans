@@ -20,6 +20,7 @@ package org.apache.webbeans.proxy;
 
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.Asserts;

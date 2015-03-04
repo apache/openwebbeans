@@ -38,7 +38,7 @@ import org.apache.webbeans.test.interceptors.factory.beans.ClassMultiIntercepted
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
-import org.apache.webbeans.proxy.ProxyGenerationException;
+import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.test.component.intercept.webbeans.ActionInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;

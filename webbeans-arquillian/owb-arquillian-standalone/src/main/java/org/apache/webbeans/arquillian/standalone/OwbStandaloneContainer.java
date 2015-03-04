@@ -20,7 +20,6 @@ package org.apache.webbeans.arquillian.standalone;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
@@ -116,14 +115,7 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
         originalLoader.set(parentLoader);
         Thread.currentThread().setContextClassLoader(new OwbSWClassLoader(parentLoader, archive, useOnlyArchiveResources, useOnlyArchiveResourcesExcludes));
 
-        try
-        {
-            lifecycle.startApplication(null);
-        }
-        catch (WebBeansDeploymentException e)
-        {
-            throw new DeploymentException(e.getMessage(), e);
-        }
+        lifecycle.startApplication(null);
 
         // finally make the BeanManager available to Arquillian, but only if the boot succeeded
         beanManagerProducer.set(lifecycle.getBeanManager());

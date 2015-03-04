@@ -39,7 +39,7 @@ import javax.enterprise.inject.spi.PassivationCapable;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerMethodBean;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
 import org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
 import org.apache.webbeans.portable.InjectionTargetImpl;
@@ -209,7 +209,7 @@ public class DeploymentValidationService
         if (!isPassivationCapable(dependentBean))
         {
             String type = dependentBean instanceof Interceptor? "Interceptor ": "Decorator "; 
-            throw new WebBeansConfigurationException(
+            throw new WebBeansDeploymentException(
                     "Passivation capable beans must satisfy passivation capable dependencies. " +
                     "Bean : " + bean.toString() + " does not satisfy. " + type + dependentBean.toString() + " is not passivation capable");
         }
@@ -229,7 +229,7 @@ public class DeploymentValidationService
                     {
                         continue;
                     }
-                    throw new WebBeansConfigurationException(
+                    throw new WebBeansDeploymentException(
                             "Passivation capable beans must satisfy passivation capable dependencies. " +
                             "Bean : " + bean.toString() + " does not satisfy. Details about the Injection-point: " +
                                     injectionPoint.toString());

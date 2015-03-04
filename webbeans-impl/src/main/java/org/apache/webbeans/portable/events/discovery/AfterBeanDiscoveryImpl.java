@@ -24,7 +24,6 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
-import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
@@ -35,6 +34,7 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
@@ -163,7 +163,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
             }
             if (!found)
             {
-                throw new DefinitionException("Decorators must have a one @Delegate injection point. " +
+                throw new WebBeansConfigurationException("Decorators must have a one @Delegate injection point. " +
                         "But the decorator bean : " + managedBean.toString() + " has more than one");
             }
 

@@ -29,7 +29,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.util.Asserts;
 
 
@@ -111,7 +111,7 @@ public final class InterceptorUtil
         //Simple webbeans
         if(Modifier.isFinal(clazz.getModifiers()) && hasClassInterceptors)
         {
-            throw new WebBeansConfigurationException("Final Simple class with name : " + clazz.getName() + " can not define any InterceptorBindings");
+            throw new WebBeansDeploymentException("Final Simple class with name : " + clazz.getName() + " can not define any InterceptorBindings");
         }
 
         Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(clazz);
@@ -123,7 +123,7 @@ public final class InterceptorUtil
             {
                 if (hasClassInterceptors)
                 {
-                    throw new WebBeansConfigurationException("Simple web bean class : " + clazz.getName()
+                    throw new WebBeansDeploymentException("Simple web bean class : " + clazz.getName()
                                                              + " can not define non-static, non-private final methods. "
                                                              + "Because it is annotated with at least one @InterceptorBinding");
                 }
@@ -132,7 +132,7 @@ public final class InterceptorUtil
                     if (annotationManager.hasInterceptorBindingMetaAnnotation(
                         method.getDeclaredAnnotations()))
                     {
-                        throw new WebBeansConfigurationException("Method : " + method.getName() + "in simple web bean class : "
+                        throw new WebBeansDeploymentException("Method : " + method.getName() + "in simple web bean class : "
                                                                  + clazz.getName()
                                                                  + " can not be defined as non-static, non-private and final. "
                                                                  + "Because it is annotated with at least one @InterceptorBinding");

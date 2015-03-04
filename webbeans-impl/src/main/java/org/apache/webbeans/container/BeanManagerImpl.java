@@ -78,7 +78,7 @@ import org.apache.webbeans.decorator.DecoratorComparator;
 import org.apache.webbeans.event.EventMetadataImpl;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
+import org.apache.webbeans.exception.DuplicateDefinitionException;
 
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;

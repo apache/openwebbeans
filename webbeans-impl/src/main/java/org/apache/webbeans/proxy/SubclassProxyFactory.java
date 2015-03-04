@@ -24,6 +24,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.xbean.asm5.ClassWriter;

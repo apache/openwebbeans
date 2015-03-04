@@ -30,6 +30,7 @@ import java.lang.reflect.Type;
 
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.GenericsUtil;
@@ -69,13 +70,13 @@ public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?
         Type type = annotatedMember.getBaseType();
         if (type instanceof GenericArrayType)
         {
-            throw new DefinitionException("Produced Type must not be a GenericArrayType");
+            throw new WebBeansConfigurationException("Produced Type must not be a GenericArrayType");
         }
         else if (ClassUtil.isParametrizedType(type))
         {
             if (GenericsUtil.containsWildcardType(type))
             {
-                throw new DefinitionException("Produced type must not be a WildcardType");
+                throw new WebBeansConfigurationException("Produced type must not be a WildcardType");
             }
             else if (!Dependent.class.equals(beanAttributes.getScope()))
             {
@@ -83,7 +84,7 @@ public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?
                 ParameterizedType parameterizedType = GenericsUtil.getParameterizedType(type);
                 if (GenericsUtil.containTypeVariable(parameterizedType.getActualTypeArguments()))
                 {
-                    throw new DefinitionException("Produced ParametrizedType must be @Dependent-Scope");
+                    throw new WebBeansConfigurationException("Produced ParametrizedType must be @Dependent-Scope");
                 }
             }
         }

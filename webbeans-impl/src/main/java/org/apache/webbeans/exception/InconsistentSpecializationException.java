@@ -16,13 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.exception.inject;
+package org.apache.webbeans.exception;
 
 import javax.enterprise.inject.spi.DefinitionException;
+import org.apache.webbeans.exception.helper.DescriptiveException;
+import org.apache.webbeans.exception.helper.ExceptionMessageBuilder;
 
-public class InconsistentSpecializationException extends DefinitionException
+public class InconsistentSpecializationException extends DefinitionException implements DescriptiveException
 {
     private static final long serialVersionUID = 5398575103682514128L;
+
+    private ExceptionMessageBuilder msg = new ExceptionMessageBuilder();
 
     public InconsistentSpecializationException(String message)
     {
@@ -37,6 +41,24 @@ public class InconsistentSpecializationException extends DefinitionException
     public InconsistentSpecializationException(String message, Throwable e)
     {
         super(message, e);
+    }
+
+    @Override
+    public void addInformation(String additionalInformation)
+    {
+        msg.addInformation(additionalInformation);
+    }
+
+    @Override
+    public String getMessage()
+    {
+        return msg.getAdditionalInformation(super.getMessage());
+    }
+
+    @Override
+    public String getLocalizedMessage()
+    {
+        return msg.getAdditionalInformation(super.getLocalizedMessage());
     }
 
 }

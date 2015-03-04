@@ -25,7 +25,6 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
@@ -232,8 +231,6 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
 
     /**
      * Checks recursive, if the ParameterizedTypes are equal
-     *
-     * @throws DefinitionException
      */
     private void checkParametrizedType()
     {
@@ -251,7 +248,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
             Type[] arguments = ClassUtil.getActualTypeArguments(interfaceType);
             if (arguments.length != delegeteTypes.length)
             {
-                throw new DefinitionException("Decorator: " + toString() + " Number of TypeArguments must match - Decorated Type:  " + arguments.length +
+                throw new WebBeansConfigurationException("Decorator: " + toString() + " Number of TypeArguments must match - Decorated Type:  " + arguments.length +
                                               " Delegate Type: " + delegeteTypes.length);
             }
 
@@ -259,7 +256,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
             {
                 if (!delegeteTypes[i].equals(arguments[i]))
                 {
-                    throw new DefinitionException("Decorator: " + toString() + " delegate attribute must match decorated type: " + delegeteTypes[i]);
+                    throw new WebBeansConfigurationException("Decorator: " + toString() + " delegate attribute must match decorated type: " + delegeteTypes[i]);
                 }
             }
         }

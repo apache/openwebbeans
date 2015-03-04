@@ -45,7 +45,6 @@ import javax.enterprise.inject.New;
 import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.InjectionPoint;
 import java.lang.annotation.Annotation;
@@ -160,7 +159,7 @@ public class InjectionResolver
             }
             catch (final UnproxyableResolutionException ure)
             {
-                throw new DeploymentException(ure);
+                throw new WebBeansDeploymentException(ure);
             }
         }
     }
@@ -506,14 +505,14 @@ public class InjectionResolver
     /**
      * Verify that we have a legal Type at the injection point.
      * CDI can basically only handle Class and ParameterizedType injection points atm.
-     * @throws DefinitionException on TypeVariable, WildcardType and GenericArrayType
+     * @throws WebBeansConfigurationException on TypeVariable, WildcardType and GenericArrayType
      * @throws IllegalArgumentException if the type is not yet supported by the spec.
      */
     private void validateInjectionPointType(Type injectionPointType)
     {
         if (injectionPointType instanceof TypeVariable || injectionPointType instanceof WildcardType || injectionPointType instanceof GenericArrayType)
         {
-            throw new DefinitionException("Injection point cannot define Type Variable " + injectionPointType);
+            throw new WebBeansConfigurationException("Injection point cannot define Type Variable " + injectionPointType);
         }
 
         if (!(injectionPointType instanceof Class) &&

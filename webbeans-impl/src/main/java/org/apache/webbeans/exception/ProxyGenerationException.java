@@ -16,13 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.proxy;
+package org.apache.webbeans.exception;
+
+import org.apache.webbeans.exception.helper.DescriptiveException;
+import org.apache.webbeans.exception.helper.ExceptionMessageBuilder;
 
 /**
  * Exceptions which might happen during proxy creation.
  */
-public class ProxyGenerationException extends RuntimeException
+public class ProxyGenerationException extends RuntimeException implements DescriptiveException
 {
+    private ExceptionMessageBuilder msg = new ExceptionMessageBuilder();
+
     public ProxyGenerationException()
     {
         super();
@@ -42,5 +47,24 @@ public class ProxyGenerationException extends RuntimeException
     {
         super(message, cause);
     }
+
+    @Override
+    public void addInformation(String additionalInformation)
+    {
+        msg.addInformation(additionalInformation);
+    }
+
+    @Override
+    public String getMessage()
+    {
+        return msg.getAdditionalInformation(super.getMessage());
+    }
+
+    @Override
+    public String getLocalizedMessage()
+    {
+        return msg.getAdditionalInformation(super.getLocalizedMessage());
+    }
+
 }
 

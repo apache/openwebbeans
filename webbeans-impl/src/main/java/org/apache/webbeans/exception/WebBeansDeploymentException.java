@@ -19,17 +19,20 @@
 package org.apache.webbeans.exception;
 
 import javax.enterprise.inject.spi.DeploymentException;
+import org.apache.webbeans.exception.helper.DescriptiveException;
+import org.apache.webbeans.exception.helper.ExceptionMessageBuilder;
 
 /**
  * Exception that is thrown by the web beans container at the deployment time.
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-public class WebBeansDeploymentException extends DeploymentException
+public class WebBeansDeploymentException extends DeploymentException implements DescriptiveException
 {
 
     private static final long serialVersionUID = 1863095663133791175L;
+
+    private ExceptionMessageBuilder msg = new ExceptionMessageBuilder();
 
     public WebBeansDeploymentException(Throwable e)
     {
@@ -45,4 +48,23 @@ public class WebBeansDeploymentException extends DeploymentException
     {
         super(message, e);
     }
+
+    @Override
+    public void addInformation(String additionalInformation)
+    {
+        msg.addInformation(additionalInformation);
+    }
+
+    @Override
+    public String getMessage()
+    {
+        return msg.getAdditionalInformation(super.getMessage());
+    }
+
+    @Override
+    public String getLocalizedMessage()
+    {
+        return msg.getAdditionalInformation(super.getLocalizedMessage());
+    }
+
 }

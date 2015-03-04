@@ -32,7 +32,6 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
@@ -110,7 +109,7 @@ public class ObserverMethodsBuilder<T>
                         && qualifiers != null && ip.getQualifiers().size() == 1
                         && Default.class == qualifiers.iterator().next().annotationType())
                 {
-                    throw new DefinitionException(ip + " is not an observer parameter");
+                    throw new WebBeansConfigurationException(ip + " is not an observer parameter");
                 }
             }
         }

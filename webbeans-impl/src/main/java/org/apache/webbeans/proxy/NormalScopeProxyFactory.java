@@ -35,6 +35,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 import org.apache.webbeans.util.ClassUtil;

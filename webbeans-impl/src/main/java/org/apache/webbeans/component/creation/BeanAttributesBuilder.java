@@ -53,7 +53,6 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import javax.enterprise.inject.spi.DefinitionException;
 
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -600,7 +599,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
                     Class<? super C> superclass = annotatedToSpecialize.getJavaClass().getSuperclass();
                     if (superclass.equals(Object.class))
                     {
-                        throw new DefinitionException("@Specialized Class : " + getAnnotated().getJavaClass().getName()
+                        throw new WebBeansConfigurationException("@Specialized Class : " + getAnnotated().getJavaClass().getName()
                                 + " must not directly extend Object.class");
                     }
                     annotatedToSpecialize = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(superclass);
@@ -618,7 +617,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
                 // TODO XXX We have to check stereotypes here, too
                 if (getAnnotated().getJavaClass().isAnnotationPresent(Named.class))
                 {
-                    throw new DefinitionException("@Specialized Class : " + getAnnotated().getJavaClass().getName()
+                    throw new WebBeansConfigurationException("@Specialized Class : " + getAnnotated().getJavaClass().getName()
                             + " may not explicitly declare a bean name");
                 }
             }
@@ -740,7 +739,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
                 // TODO XXX We have to check stereotypes here, too
                 if (getAnnotated().isAnnotationPresent(Named.class))
                 {
-                    throw new DefinitionException("@Specialized Producer method : " + getAnnotated().getJavaMember().getName()
+                    throw new WebBeansConfigurationException("@Specialized Producer method : " + getAnnotated().getJavaMember().getName()
                             + " may not explicitly declare a bean name");
                 }
             }

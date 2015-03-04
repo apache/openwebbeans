@@ -19,11 +19,11 @@
 package org.apache.webbeans.event;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.portable.events.discovery.ExtensionAware;
 
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.WithAnnotations;
 import java.lang.reflect.InvocationTargetException;
@@ -52,7 +52,7 @@ public class ContainerEventObserverMethodImpl<T> extends ObserverMethodImpl<T>
             }
             else
             {
-                throw new DefinitionException("WithAnnotations must only be used for ProcessAnnotatedType");
+                throw new WebBeansConfigurationException("WithAnnotations must only be used for ProcessAnnotatedType");
             }
         }
         else

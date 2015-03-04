@@ -35,7 +35,6 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProducerFactory;
 import javax.inject.Inject;
@@ -200,7 +199,7 @@ public abstract class BaseProducerFactory<P> implements ProducerFactory<P>
             || AnnotationUtil.hasAnnotatedMethodParameterAnnotation(annotatedMethod, Observes.class)
             || annotatedMethod.isAnnotationPresent(Produces.class))
         {
-            throw new DefinitionException("Error in definining disposal method of annotated method : " + annotatedMethod
+            throw new WebBeansConfigurationException("Error in definining disposal method of annotated method : " + annotatedMethod
                     + ". Disposal methods  can not be annotated with" + " @Initializer/@Destructor/@Produces annotation or has a parameter annotated with @Observes.");
         }
 
@@ -210,12 +209,12 @@ public abstract class BaseProducerFactory<P> implements ProducerFactory<P>
             if (type.equals(InjectionPoint.class))
             {
 
-                throw new DefinitionException("Error in definining disposal method of annotated method : " + annotatedMethod
+                throw new WebBeansConfigurationException("Error in definining disposal method of annotated method : " + annotatedMethod
                     + ". Disposal methods must not have an InjectionPoint.");
             }
             else if (Bean.class.isAssignableFrom(ClassUtil.getClass(type)))
             {
-                throw new DefinitionException("Error in defining disposal method of annoted method: " + annotatedMethod +
+                throw new WebBeansConfigurationException("Error in defining disposal method of annoted method: " + annotatedMethod +
                         ". Disposal methods must not have a Bean parameter.");
             }
         }

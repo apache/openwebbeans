@@ -38,9 +38,9 @@ import java.util.Set;
 
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 
-import javax.enterprise.inject.spi.DefinitionException;
 
 /**
  * Utility classes with respect to the class operations.
@@ -813,7 +813,7 @@ public final class ClassUtil
             Type[] bounds = wildcardType.getUpperBounds();
             if (bounds.length > 1)
             {
-                throw new DefinitionException("Illegal use of wild card type with more than one upper bound: " + wildcardType);
+                throw new WebBeansConfigurationException("Illegal use of wild card type with more than one upper bound: " + wildcardType);
             }
             else if (bounds.length == 0)
             {
@@ -829,7 +829,7 @@ public final class ClassUtil
             TypeVariable<?> typeVariable = (TypeVariable<?>)type;
             if (typeVariable.getBounds().length > 1)
             {
-                throw new DefinitionException("Illegal use of type variable with more than one bound: " + typeVariable);
+                throw new WebBeansConfigurationException("Illegal use of type variable with more than one bound: " + typeVariable);
             }
             else
             {
@@ -846,7 +846,7 @@ public final class ClassUtil
         }
         else
         {
-            throw new DefinitionException("Unsupported type " + type);
+            throw new WebBeansConfigurationException("Unsupported type " + type);
         }
     }
 

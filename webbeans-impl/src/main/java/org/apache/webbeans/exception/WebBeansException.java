@@ -18,11 +18,15 @@
  */
 package org.apache.webbeans.exception;
 
-public class WebBeansException extends RuntimeException
+import org.apache.webbeans.exception.helper.DescriptiveException;
+import org.apache.webbeans.exception.helper.ExceptionMessageBuilder;
+
+public class WebBeansException extends RuntimeException implements DescriptiveException
 {
 
     private static final long serialVersionUID = -3721839220664165557L;
     private Throwable cause;
+    private ExceptionMessageBuilder msg = new ExceptionMessageBuilder();
 
     public WebBeansException(String message)
     {
@@ -45,6 +49,24 @@ public class WebBeansException extends RuntimeException
     public Throwable getCause()
     {
         return cause;
+    }
+
+    @Override
+    public void addInformation(String additionalInformation)
+    {
+        msg.addInformation(additionalInformation);
+    }
+
+    @Override
+    public String getMessage()
+    {
+        return msg.getAdditionalInformation(super.getMessage());
+    }
+
+    @Override
+    public String getLocalizedMessage()
+    {
+        return msg.getAdditionalInformation(super.getLocalizedMessage());
     }
 
 }

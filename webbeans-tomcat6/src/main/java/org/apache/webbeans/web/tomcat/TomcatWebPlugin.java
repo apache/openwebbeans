@@ -30,7 +30,7 @@ import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.HttpSessionListener;
 
-import javax.enterprise.inject.spi.DefinitionException;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
@@ -86,7 +86,7 @@ public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansWe
                 ServletRequestListener.class.isAssignableFrom(clazz) ||
                 ServletRequestAttributeListener.class.isAssignableFrom(clazz) )
         {
-            throw new DefinitionException("Given class  : " + clazz.getName() + " is not managed bean");
+            throw new WebBeansConfigurationException("Given class  : " + clazz.getName() + " is not managed bean");
         }
     }
     

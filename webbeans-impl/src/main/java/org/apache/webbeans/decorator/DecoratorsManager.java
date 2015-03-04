@@ -33,7 +33,7 @@ import javax.enterprise.inject.spi.Decorator;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.GenericsUtil;
@@ -128,7 +128,7 @@ public class DecoratorsManager
             //Validate decorator classes
             if(!decoratorClazz.isAnnotationPresent(javax.decorator.Decorator.class) && !containsCustomDecoratorClass(decoratorClazz))
             {
-                throw new WebBeansConfigurationException("Given class : " + decoratorClazz + " is not a decorator class");
+                throw new WebBeansDeploymentException("Given class : " + decoratorClazz + " is not a decorator class");
             }   
         }                
     }

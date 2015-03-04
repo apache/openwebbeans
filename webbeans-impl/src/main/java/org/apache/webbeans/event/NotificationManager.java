@@ -63,6 +63,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
@@ -625,7 +626,14 @@ public final class NotificationManager
 
                 if (isLifecycleEvent)
                 {
-                    throw new WebBeansConfigurationException("Error while sending SystemEvent to a CDI Extension! " + event.toString(), e);
+                    if (event instanceof AfterDeploymentValidation)
+                    {
+                        throw new WebBeansDeploymentException("Error while sending SystemEvent to a CDI Extension! " + event.toString(), e);
+                    }
+                    else
+                    {
+                        throw new WebBeansConfigurationException("Error while sending SystemEvent to a CDI Extension! " + event.toString(), e);
+                    }
                 }
                 
                 if (!RuntimeException.class.isAssignableFrom(exc.getClass()))

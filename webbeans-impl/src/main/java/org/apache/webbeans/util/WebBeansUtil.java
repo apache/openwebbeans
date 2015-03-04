@@ -55,11 +55,11 @@ import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.config.OwbWildcardTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.AnnotatedTypeWrapper;
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 
 
+import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AbstractProducer;
@@ -104,7 +104,6 @@ import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.BeforeShutdown;
-import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -688,7 +687,7 @@ public final class WebBeansUtil
                     Class superClass = b.getBeanClass().getSuperclass();
                     if (classesDisabledDueToSpecialization.contains(superClass))
                     {
-                        throw new DeploymentException("Multiple specializations for the same producer method got detected for type"
+                        throw new WebBeansDeploymentException("Multiple specializations for the same producer method got detected for type"
                                 + b.toString());
                     }
                     classesDisabledDueToSpecialization.add(superClass);
@@ -764,7 +763,7 @@ public final class WebBeansUtil
                         {
                             if (disabledProducerMethods.contains(superMethod))
                             {
-                                throw new DefinitionException("Multiple specializations for the same producer method got detected for type"
+                                throw new WebBeansConfigurationException("Multiple specializations for the same producer method got detected for type"
                                         + pbean.toString());
                             }
                             disabledProducerMethods.add(superMethod);
@@ -1056,7 +1055,7 @@ public final class WebBeansUtil
         GProcessProducer processProducerEvent = new GProcessProducer(producer, annotatedMember);
         //Fires ProcessProducer
         webBeansContext.getBeanManagerImpl().fireEvent(processProducerEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-        webBeansContext.getWebBeansUtil().inspectErrorStack("There are errors that are added by ProcessProducer event observers. Look at logs for further details");
+        webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessProducer event observers. Look at logs for further details");
         Producer prod = processProducerEvent.getProducer();
         processProducerEvent.setStarted();
         return prod;
@@ -1292,17 +1291,33 @@ public final class WebBeansUtil
         return ((OwbBean) bean).isDependent();
     }
 
-    public void inspectErrorStack(String logMessage)
+    public void inspectDefinitionErrorStack(String logMessage)
     {
-        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        //Looks for errors
-        ErrorStack stack = manager.getErrorStack();
+        ErrorStack stack = webBeansContext.getBeanManagerImpl().getErrorStack();
         try
         {
             if(stack.hasErrors())
             {
                 stack.logErrors();
                 throw new WebBeansConfigurationException(logMessage);
+            }
+        }
+        finally
+        {
+            stack.clear();
+        }
+
+    }
+
+    public void inspectDeploymentErrorStack(String logMessage)
+    {
+        ErrorStack stack = webBeansContext.getBeanManagerImpl().getErrorStack();
+        try
+        {
+            if(stack.hasErrors())
+            {
+                stack.logErrors();
+                throw new WebBeansDeploymentException(logMessage);
             }
         }
         finally
@@ -1511,7 +1526,8 @@ public final class WebBeansUtil
 
         if(Modifier.isFinal(clazz.getModifiers()) && hasClassInterceptors)
         {
-            throw new WebBeansConfigurationException("Final managed bean class with name : " + clazz.getName() + " can not define any InterceptorBindings");
+            // spec section 3.15 unproxyable bean types -> Deployment Error
+            throw new WebBeansDeploymentException("Final managed bean class with name : " + clazz.getName() + " can not define any InterceptorBindings");
         }
 
         Set<AnnotatedMethod<? super X>> methods = webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(type);
@@ -1523,14 +1539,16 @@ public final class WebBeansUtil
             {
                 if (hasClassInterceptors)
                 {
-                    throw new WebBeansConfigurationException("Maanged bean class : " + clazz.getName()
+                    // spec section 3.15 unproxyable bean types -> Deployment Error
+                    throw new WebBeansDeploymentException("Maanged bean class : " + clazz.getName()
                                                     + " can not define non-static, non-private final methods. Because it is annotated with at least one @InterceptorBinding");
                 }
 
                 if (annotationManager.hasInterceptorBindingMetaAnnotation(
                     AnnotationUtil.asArray(methodA.getAnnotations())))
                 {
-                    throw new WebBeansConfigurationException("Method : " + method.getName() + "in managed bean class : " + clazz.getName()
+                    // spec section 3.15 unproxyable bean types -> Deployment Error
+                    throw new WebBeansDeploymentException("Method : " + method.getName() + "in managed bean class : " + clazz.getName()
                                                     + " can not be defined as non-static, non-private and final . Because it is annotated with at least one @InterceptorBinding");
                 }
             }
@@ -1624,7 +1642,7 @@ public final class WebBeansUtil
                     Type[] types = ClassUtil.getActualTypeArguments(injectionPoint.getType());
                     if (types.length != 1 || !GenericsUtil.isAssignableFrom(false, AbstractProducerBean.class.isInstance(bean), bean.getBeanClass(), types[0]))
                     {
-                        throw new DefinitionException("injected bean parameter must be " + rawType);
+                        throw new WebBeansConfigurationException("injected bean parameter must be " + rawType);
                     }
                 }
 
@@ -1648,7 +1666,7 @@ public final class WebBeansUtil
 
                             if (!methodDeclared)
                             {
-                                throw new DefinitionException("Decorator must not declare abstract methods which is not declared in any Decorated type.");
+                                throw new WebBeansConfigurationException("Decorator must not declare abstract methods which is not declared in any Decorated type.");
                             }
                         }
                     }
@@ -1684,14 +1702,14 @@ public final class WebBeansUtil
                     && javax.enterprise.inject.spi.Decorator.class == ParameterizedType.class.cast(injectionPoint.getType()).getRawType()
                     && !isDecorator)
             {
-                throw new DefinitionException("@Inject Decorator<X> only supported in decorators");
+                throw new WebBeansConfigurationException("@Inject Decorator<X> only supported in decorators");
             }
             if (injectionPoint.getQualifiers().contains(DefaultLiteral.INSTANCE)
                     && ParameterizedType.class.isInstance(injectionPoint.getType())
                     && Interceptor.class == ParameterizedType.class.cast(injectionPoint.getType()).getRawType()
                     && !isInterceptor)
             {
-                throw new DefinitionException("@Inject Interceptor<X> only supported in interceptors");
+                throw new WebBeansConfigurationException("@Inject Interceptor<X> only supported in interceptors");
             }
         }
     }
@@ -1793,12 +1811,12 @@ public final class WebBeansUtil
         }
         catch (final Exception e)
         {
-            throw new DefinitionException("event ProcessBeanAttributes thrown an exception for " + annotatedType, e);
+            throw new WebBeansConfigurationException("event ProcessBeanAttributes thrown an exception for " + annotatedType, e);
         }
 
         if (event.getDefinitionError() != null)
         {
-            throw new DefinitionException(event.getDefinitionError());
+            throw new WebBeansConfigurationException(event.getDefinitionError());
         }
 
         final BeanAttributes<T> beanAttributes;
@@ -1807,7 +1825,7 @@ public final class WebBeansUtil
             beanAttributes = event.getAttributes();
             if (!webBeansContext.getBeanManagerImpl().isScope(beanAttributes.getScope()))
             {
-                throw new DefinitionException(beanAttributes.getScope() + " is not a scope");
+                throw new WebBeansConfigurationException(beanAttributes.getScope() + " is not a scope");
             }
         }
         else
@@ -1839,7 +1857,7 @@ public final class WebBeansUtil
                     final Type beanType = pt.getActualTypeArguments()[0];
                     if (!GenericsUtil.isAssignableFrom(false, AbstractProducerBean.class.isInstance(bean), beanClass, beanType))
                     {
-                        throw new DefinitionException("@Inject Bean<X> can only be done in X, found " + beanType + " and " + beanClass);
+                        throw new WebBeansConfigurationException("@Inject Bean<X> can only be done in X, found " + beanType + " and " + beanClass);
                     }
                 }
             }
@@ -1855,12 +1873,12 @@ public final class WebBeansUtil
             if (types.length != 1 ||
                     !((javax.enterprise.inject.spi.Decorator) bean).getDecoratedTypes().contains(types[0]))
             {
-                throw new DefinitionException("ParametrizedType must be a DecoratedType");
+                throw new WebBeansConfigurationException("ParametrizedType must be a DecoratedType");
             }
         }
         else
         {
-            throw new DefinitionException(injectionPoint.getBean().getBeanClass() + " must be a Decorator");
+            throw new WebBeansConfigurationException(injectionPoint.getBean().getBeanClass() + " must be a Decorator");
         }
     }
 
@@ -1874,12 +1892,12 @@ public final class WebBeansUtil
                     ((WildcardType) types[0]).getLowerBounds().length > 0 ||
                     !(((WildcardType) types[0]).getUpperBounds().length == 1 && Object.class.equals(((WildcardType) types[0]).getUpperBounds()[0])))
             {
-                throw new DefinitionException("Type parameter for interceptor " + bean.getBeanClass() + " must be an unbound wildcard");
+                throw new WebBeansConfigurationException("Type parameter for interceptor " + bean.getBeanClass() + " must be an unbound wildcard");
             }
         }
         else
         {
-            throw new DefinitionException(bean.getBeanClass() + " must be an Interceptor");
+            throw new WebBeansConfigurationException(bean.getBeanClass() + " must be an Interceptor");
         }
     }
 

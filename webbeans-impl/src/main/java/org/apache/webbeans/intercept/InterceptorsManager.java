@@ -40,8 +40,9 @@ import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.EjbInterceptorBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
 import javax.annotation.Priority;
+
+import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.PriorityClasses;
@@ -352,7 +353,7 @@ public class InterceptorsManager
             if(!annotatedType.isAnnotationPresent(javax.interceptor.Interceptor.class) &&
                !containsCustomInterceptorClass(interceptorClass))
             {
-                throw new WebBeansConfigurationException("Given class : " + interceptorClass + " is not a interceptor class");
+                throw new WebBeansDeploymentException("Given class : " + interceptorClass + " is not a interceptor class");
             }   
         }
     }
