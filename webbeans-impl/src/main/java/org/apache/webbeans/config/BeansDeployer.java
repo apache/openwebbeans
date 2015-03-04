@@ -56,7 +56,6 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.DefinitionException;
-import javax.enterprise.inject.spi.DeploymentException;
 
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorsManager;
@@ -291,16 +290,16 @@ public class BeansDeployer
         }
         catch (UnsatisfiedResolutionException e)
         {
-            throw new DeploymentException(e);
+            throw new WebBeansDeploymentException(e);
         }
         catch (AmbiguousResolutionException e)
         {
-            throw new DeploymentException(e);
+            throw new WebBeansDeploymentException(e);
         }
         catch (UnproxyableResolutionException e)
         {
             // the tck expects a DeploymentException, but it really should be a DefinitionException, see i.e. https://issues.jboss.org/browse/CDITCK-346
-            throw new DeploymentException(e);
+            throw new WebBeansDeploymentException(e);
         }
         catch (IllegalArgumentException e)
         {

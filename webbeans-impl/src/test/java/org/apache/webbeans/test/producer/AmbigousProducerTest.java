@@ -27,6 +27,8 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import javax.enterprise.inject.spi.DeploymentException;
+
+import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
@@ -48,7 +50,7 @@ public class AmbigousProducerTest extends AbstractUnitTest
         }
         catch (WebBeansConfigurationException e)
         {
-            Assert.assertEquals(DeploymentException.class, e.getCause().getClass());
+            Assert.assertEquals(WebBeansDeploymentException.class, e.getCause().getClass());
             Assert.assertEquals(AmbiguousResolutionException.class, e.getCause().getCause().getClass());
         }
         shutDownContainer();       

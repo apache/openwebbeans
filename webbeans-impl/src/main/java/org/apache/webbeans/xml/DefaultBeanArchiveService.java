@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.xml;
 
-import javax.enterprise.inject.spi.DeploymentException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
@@ -32,6 +31,7 @@ import java.util.logging.Logger;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BeanArchiveService;
@@ -141,7 +141,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         }
         catch (Exception e)
         {
-            throw new DeploymentException("Error while parsing the beans.xml file " + beansXmlLocation, e);
+            throw new WebBeansDeploymentException("Error while parsing the beans.xml file " + beansXmlLocation, e);
         }
         finally
         {
@@ -151,7 +151,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
             }
             catch (IOException ioe)
             {
-                throw new DeploymentException("Error while closing the input stream!", ioe);
+                throw new WebBeansDeploymentException("Error while closing the input stream!", ioe);
             }
         }
     }

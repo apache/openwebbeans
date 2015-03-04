@@ -20,7 +20,7 @@ package org.apache.webbeans.container;
 
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
-import javax.enterprise.inject.spi.DeploymentException;
+import org.apache.webbeans.exception.WebBeansDeploymentException;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -162,7 +162,7 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
         Bean<T> b = (Bean<T>) WebBeansContext.currentInstance().getBeanManagerImpl().getPassivationCapableBean(id);
         if (b == null)
         {
-            throw new DeploymentException("cannot deserialize Bean with PassivationCapable id=" + id);
+            throw new WebBeansDeploymentException("cannot deserialize Bean with PassivationCapable id=" + id);
         }
         if (b instanceof SerializableBean)
         {
