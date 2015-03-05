@@ -141,6 +141,7 @@ public class ConversationImpl implements Conversation, Serializable
         {
             isTransient = false;
             id = Integer.toString(conversationIdGenerator.incrementAndGet());
+            ensureSessionId();
             iUseIt();
             updateTimeOut();
 
@@ -210,20 +211,25 @@ public class ConversationImpl implements Conversation, Serializable
             isTransient = false;
             this.id = id;
             iUseIt();
-            if (this.sessionId == null)
-            {
-                OpenWebBeansWebPlugin web = webBeansContext.getPluginLoader().getWebPlugin();
-                if (web != null)
-                {
-                    this.sessionId = web.currentSessionId();
-                }
-            }
+            ensureSessionId();
             updateTimeOut();
 
             conversationManager.addConversationContext(this, getOrStartConversationScope());
         }
     }
-    
+
+    private void ensureSessionId()
+    {
+        if (this.sessionId == null)
+        {
+            OpenWebBeansWebPlugin web = webBeansContext.getPluginLoader().getWebPlugin();
+            if (web != null)
+            {
+                this.sessionId = web.currentSessionId();
+            }
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
