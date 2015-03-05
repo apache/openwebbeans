@@ -99,6 +99,7 @@ public class ProducerFieldBeansBuilder<T>
                         ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
                         resourceBean.setProducerField(field);
                         producerBeans.add(resourceBean);
+                        webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean, resourceBean, anns);
                     }
                 }
                 else
