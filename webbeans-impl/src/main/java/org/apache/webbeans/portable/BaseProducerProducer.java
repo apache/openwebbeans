@@ -44,6 +44,7 @@ public abstract class BaseProducerProducer<T, P> extends AbstractProducer<T>
     protected Method disposalMethod;
     protected Set<InjectionPoint> disposalIPs;
     protected boolean isAnyDisposal;
+    protected AnnotatedMethod<? super P> disposerMethod;
 
     public BaseProducerProducer(Bean<P> owner,
                                 AnnotatedMethod<? super P> disposerMethod,
@@ -83,6 +84,12 @@ public abstract class BaseProducerProducer<T, P> extends AbstractProducer<T>
                 }
             }
         }
+        this.disposerMethod = disposerMethod;
+    }
+
+    public AnnotatedMethod<? super P> getDisposerMethod()
+    {
+        return disposerMethod;
     }
 
     @Override

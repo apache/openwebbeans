@@ -64,6 +64,7 @@ import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.portable.InjectionTargetImpl;
+import org.apache.webbeans.portable.ProducerFieldProducer;
 import org.apache.webbeans.portable.events.ProcessBeanAttributesImpl;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
@@ -98,6 +99,7 @@ import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanAttributes;
@@ -1115,7 +1117,18 @@ public final class WebBeansUtil
             ProducerFieldBean<?> bean = beanEntry.getKey();
             AnnotatedField<?> field = beanEntry.getValue();
 
-            GProcessProducerField processProducerFieldEvent = new GProcessProducerField(bean, field, null);
+            Producer<?> producer = bean.getProducer();
+            AnnotatedParameter<?> param = null;
+            if (ProducerFieldProducer.class.isInstance(producer))
+            {
+                ProducerFieldProducer fieldProducer = ProducerFieldProducer.class.cast(producer);
+                AnnotatedMethod<?> dm = fieldProducer.getDisposerMethod();
+                if (dm != null && dm.getParameters() != null && !dm.getParameters().isEmpty())
+                {
+                    param = dm.getParameters().iterator().next();
+                }
+            }
+            GProcessProducerField processProducerFieldEvent = new GProcessProducerField(bean, field, param);
 
             //Fire ProcessProducer
             webBeansContext.getBeanManagerImpl().fireEvent(processProducerFieldEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
