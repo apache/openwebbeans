@@ -55,7 +55,7 @@ public class ConversationProducer extends InjectionTargetImpl<ConversationImpl>
 
         //If conversation id is not null, this means that
         //conversation is propogated
-        if (conversationId != null)
+        if (sessionId != null && conversationId != null) // sId can be null as well on invalid requests but we want a transient conv
         {
             //Gets propogated conversation
             conversation = webBeansContext.getConversationManager().getPropogatedConversation(conversationId, sessionId);
