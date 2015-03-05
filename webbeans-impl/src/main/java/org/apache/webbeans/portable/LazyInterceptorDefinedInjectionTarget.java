@@ -19,6 +19,7 @@
 package org.apache.webbeans.portable;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -26,11 +27,15 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import java.lang.annotation.Annotation;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class LazyInterceptorDefinedInjectionTarget<T> extends InjectionTargetImpl<T>
 {
+    private volatile boolean init;
+
     public LazyInterceptorDefinedInjectionTarget(final AnnotatedType<T> annotatedType,
                                                  final Set<InjectionPoint> injectionPoints,
                                                  final WebBeansContext webBeansContext,
@@ -40,16 +45,45 @@ public class LazyInterceptorDefinedInjectionTarget<T> extends InjectionTargetImp
         super(annotatedType, injectionPoints, webBeansContext, postConstructMethods, preDestroyMethods);
     }
 
-    @Override // TODO: this is not thread safe
+    @Override
     public T produce(final CreationalContext<T> creationalContext)
     {
-        interceptorInfo = null;
-        proxyClass = null;
-        final CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>) creationalContext;
-        final Bean<T> bean = creationalContextImpl.getBean();
-        if (bean != null)
+        if (!init)
         {
-            defineInterceptorStack(bean, annotatedType, webBeansContext);
+            synchronized (this)
+            {
+                if (!init)
+                {
+                    final CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>) creationalContext;
+                    Bean<T> bean = creationalContextImpl.getBean();
+                    if (bean == null) // try to find it
+                    {
+                        final BeanManagerImpl bm = webBeansContext.getBeanManagerImpl();
+                        final Set<Annotation> annotations = new HashSet<Annotation>();
+                        for (final Annotation a : annotatedType.getAnnotations())
+                        {
+                            if (bm.isQualifier(a.annotationType()))
+                            {
+                                annotations.add(a);
+                            }
+                        }
+                        try
+                        {
+                            final Set<Bean<?>> beans = bm.getBeans(annotatedType.getJavaClass(), annotations.toArray(new Annotation[annotations.size()]));
+                            bean = (Bean<T>) bm.resolve(beans);
+                        }
+                        catch (final Exception e)
+                        {
+                            // no-op: whatever can be thrown we don't want it
+                        }
+                    }
+                    if (bean != null)
+                    {
+                        defineInterceptorStack(bean, annotatedType, webBeansContext);
+                    }
+                    init = true;
+                }
+            }
         }
         return super.produce(creationalContext);
     }
