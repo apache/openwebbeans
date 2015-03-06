@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.test.component.portable;
+package org.apache.webbeans.test.portable.events.beans;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Default;

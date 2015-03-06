@@ -26,6 +26,8 @@ import junit.framework.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.portable.events.beans.Apple;
 import org.apache.webbeans.test.portable.events.extensions.AppleExtension;
+import org.apache.webbeans.test.portable.events.extensions.MessageReceiverExtension;
+import org.apache.webbeans.test.portable.events.extensions.MessageSenderExtension;
 import org.apache.webbeans.test.portable.events.extensions.NotAppleExtnsion;
 import org.apache.webbeans.test.portable.events.extensions.RawTypeExtension;
 import org.apache.webbeans.test.portable.events.extensions.TypeVariableExtension;
@@ -153,6 +155,15 @@ public class PortableEventTest extends AbstractUnitTest
         Assert.assertFalse(WrongWildcardExtension.CALLED);
         
         shutDownContainer();
+    }
+
+    @Test
+    public void testCustomMessagesInExtensions()
+    {
+        addExtension(new MessageSenderExtension());
+        addExtension(new MessageReceiverExtension());
+
+        startContainer();
     }
 
 }

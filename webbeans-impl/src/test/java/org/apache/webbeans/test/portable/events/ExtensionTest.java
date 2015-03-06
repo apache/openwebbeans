@@ -16,9 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.test.unittests.portable.events;
+package org.apache.webbeans.test.portable.events;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -31,8 +30,8 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.apache.webbeans.test.component.library.BookShop;
-import org.apache.webbeans.test.component.portable.events.MyExtension;
 import org.apache.webbeans.test.component.producer.primitive.PrimitiveProducer;
+import org.apache.webbeans.test.portable.events.extensions.MyExtension;
 import org.junit.Test;
 
 /**
@@ -59,8 +58,6 @@ public class ExtensionTest extends AbstractUnitTest
         
         startContainer(classes);
 
-        getWebBeansContext().getContextFactory().initApplicationContext(null);
-
         Bean<MyExtension> extension = (Bean<MyExtension>) getBeanManager().getBeans(MyExtension.class, new DefaultLiteral()).iterator().next();
         
         MyExtension ext = (MyExtension) getBeanManager().getReference(extension, MyExtension.class, getBeanManager().createCreationalContext(extension));
@@ -79,7 +76,7 @@ public class ExtensionTest extends AbstractUnitTest
         //Fire shut down
         BeanManagerImpl.class.cast(getBeanManager()).fireEvent(new BeforeShutdownImpl(), true);
 
-        getWebBeansContext().getContextFactory().destroyApplicationContext(null);
+        shutDownContainer();
 
         Assert.assertNotNull(MyExtension.beforeShutdownEvent);
     }

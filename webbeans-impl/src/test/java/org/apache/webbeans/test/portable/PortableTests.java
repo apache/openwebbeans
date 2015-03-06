@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.test.unittests.portable;
+package org.apache.webbeans.test.portable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -45,7 +45,7 @@ import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.inject.parametrized.Dao;
 import org.apache.webbeans.test.component.library.Book;
-import org.apache.webbeans.test.component.portable.PortableType1;
+import org.apache.webbeans.test.portable.events.beans.PortableType1;
 import org.apache.webbeans.test.xml.annot.BindingType1;
 import org.apache.webbeans.test.xml.annot.BindingType2;
 import org.junit.Test;
