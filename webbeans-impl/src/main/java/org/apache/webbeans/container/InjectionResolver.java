@@ -454,12 +454,7 @@ public class InjectionResolver
 
         resolvedComponents = new HashSet<Bean<?>>();
 
-        boolean returnAll = false;
-
-        if (injectionPointType.equals(Object.class) && currentQualifier)
-        {
-            returnAll = true;
-        }
+        boolean returnAll = injectionPointType.equals(Object.class) && currentQualifier;
 
         for (Bean<?> component : webBeansContext.getBeanManagerImpl().getBeans())
         {
@@ -479,8 +474,7 @@ public class InjectionResolver
                 for (Type componentApiType : component.getTypes())
                 {
 
-                    if (GenericsUtil.satisfiesDependency(isDelegate, AbstractProducerBean.class.isInstance(component),
-                            injectionPointType, componentApiType))
+                    if (ClassUtil.isRawClassEquals(injectionPointType, componentApiType))
                     {
                         resolvedComponents.add(component);
                         break;
@@ -489,13 +483,50 @@ public class InjectionResolver
             }
         }
 
-        // Look for qualifiers
-        resolvedComponents = findByQualifier(resolvedComponents, injectionPointType, qualifiers);
+        if (!returnAll)
+        {
+            // Look for qualifiers
+            resolvedComponents = findByQualifier(resolvedComponents, injectionPointType, qualifiers);
+
+            // have an additional round of checks for assignability of parameterized types.
+            resolvedComponents = findByParameterizedType(resolvedComponents, injectionPointType, isDelegate);
+        }
 
         resolvedBeansByType.put(cacheKey, resolvedComponents);
         if (logger.isLoggable(Level.FINE))
         {
             logger.log(Level.FINE, "DEBUG_ADD_BYTYPE_CACHE_BEANS", cacheKey);
+        }
+
+        return resolvedComponents;
+    }
+
+    private Set<Bean<?>> findByParameterizedType(Set<Bean<?>> allComponents, Type injectionPointType, boolean isDelegate)
+    {
+        Bean<?> rawProducerBean = null;
+
+        Set<Bean<?>> resolvedComponents = new HashSet<Bean<?>>();
+        for (Bean<?> component : allComponents)
+        {
+            boolean isProducer = AbstractProducerBean.class.isInstance(component);
+            for (Type componentApiType : component.getTypes())
+            {
+
+                if (GenericsUtil.satisfiesDependency(isDelegate, isProducer, injectionPointType, componentApiType))
+                {
+                    resolvedComponents.add(component);
+                    break;
+                }
+                else if (isProducer && componentApiType instanceof Class && ClassUtil.isRawClassEquals(injectionPointType, componentApiType))
+                {
+                   rawProducerBean = component;
+                }
+            }
+        }
+
+        if (resolvedComponents.isEmpty() && rawProducerBean != null)
+        {
+            resolvedComponents.add(rawProducerBean);
         }
 
         return resolvedComponents;

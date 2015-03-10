@@ -141,7 +141,7 @@
                 </methods>
             </class>
 
-            <!-- CDITCK-467 -->
+            <!-- CDI-514 (issue got moved from original CDITC -->
             <class name="org.jboss.cdi.tck.tests.event.fires.FireEventTest">
                 <methods>
                     <exclude name="testDuplicateBindingsToFireEventFails"/>
@@ -170,6 +170,14 @@
             <class name="org.jboss.cdi.tck.tests.interceptors.definition.InterceptorDefinitionTest">
                 <methods>
                     <exclude name="testSameBindingTypesToResolveInterceptorsFails"/>
+                </methods>
+            </class>
+
+
+            <!-- CDI-517 -->
+            <class name="org.jboss.cdi.tck.tests.lookup.typesafe.resolution.parameterized.raw.RawBeanTypeParameterizedRequiredTypeTest">
+                <methods>
+                    <exclude name="testNotAssignableTypeParams"/>
                 </methods>
             </class>
         </classes>

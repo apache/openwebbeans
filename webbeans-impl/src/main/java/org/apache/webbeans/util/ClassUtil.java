@@ -570,7 +570,7 @@ public final class ClassUtil
      * @param rhs right hand side class
      * @return true if rhs is assignable to lhs
      */
-    public static boolean isClassAssignable(Class<?> lhs, Class<?> rhs)
+    public static boolean isClassAssignableFrom(Class<?> lhs, Class<?> rhs)
     {
         Asserts.assertNotNull(lhs, "lhs parameter can not be null");
         Asserts.assertNotNull(rhs, "rhs parameter can not be null");
@@ -677,90 +677,6 @@ public final class ClassUtil
         }
          
         return true;
-    }
-    
-    /**
-     * Checking bean type and required type.
-     * <p>
-     * Required type is class and bean type is
-     * a type variable.
-     * </p>
-     * @param beanTypeArg bean type 
-     * @param requiredTypeArg required type
-     * @return true if condition satisfy
-     */
-    public static boolean checkRequiredTypeIsClassAndBeanTypeIsVariable(Type beanTypeArg, Type requiredTypeArg)
-    {
-        Class<?> clazzRequiredType = (Class<?>)requiredTypeArg;
-        
-        TypeVariable<?> tvBeanTypeArg = (TypeVariable<?>)beanTypeArg;
-        //TODO respect other bounds
-        Type tvBound = tvBeanTypeArg.getBounds()[0];
-        
-        if(tvBound instanceof Class)
-        {
-            Class<?> clazzTvBound = (Class<?>)tvBound;
-            
-            if(clazzTvBound != Object.class)
-            {
-                if(!clazzTvBound.isAssignableFrom(clazzRequiredType))
-                {
-                    return false;
-                }                                    
-            }            
-        }
-        
-        return true;
-    }
-
-    public static boolean checkRequiredTypeIsParameterizedAndBeanTypeIsVariable(Type beanTypeArg, Type requiredTypeArg)
-    {
-        ParameterizedType requiredType = (ParameterizedType)requiredTypeArg;
-        //TODO respect parameters of required type
-        return checkRequiredTypeIsClassAndBeanTypeIsVariable(beanTypeArg, requiredType.getRawType());
-    }
-    
-    public static boolean checkRequiredTypeIsTypeVariableAndBeanTypeIsClass(Type beanTypeArg, Type requiredTypeArg)
-    {
-        Class<?> clazzBeanType = (Class<?>)beanTypeArg;
-        
-        TypeVariable<?> tvRequiredTypeArg = (TypeVariable<?>)requiredTypeArg;
-        Type tvBound = tvRequiredTypeArg.getBounds()[0];
-        
-        if(tvBound instanceof Class)
-        {
-            Class<?> clazzTvBound = (Class<?>)tvBound;
-            
-            if(clazzTvBound.isAssignableFrom(clazzBeanType))
-            {
-                return true;
-            }                    
-        }
-        
-        return false;
-    }
-    
-
-    public static boolean checkBeanTypeAndRequiredIsTypeVariable(Type beanTypeArg, Type requiredTypeArg)
-    {
-        TypeVariable<?> tvBeanTypeArg = (TypeVariable<?>)beanTypeArg;
-        Type tvBeanBound = tvBeanTypeArg.getBounds()[0];
-        
-        TypeVariable<?> tvRequiredTypeArg = (TypeVariable<?>)requiredTypeArg;
-        Type tvRequiredBound = tvRequiredTypeArg.getBounds()[0];
-        
-        if(tvBeanBound instanceof Class && tvRequiredBound instanceof Class)
-        {
-            Class<?> clazzTvBeanBound = (Class<?>)tvBeanBound;
-            Class<?> clazzTvRequiredBound = (Class<?>)tvRequiredBound;
-            
-            if(clazzTvBeanBound.isAssignableFrom(clazzTvRequiredBound))
-            {
-                return true;
-            }                    
-        }
-        
-        return false;
     }
 
     /**
@@ -943,5 +859,38 @@ public final class ClassUtil
     private static boolean isSuperClass(Class<?> superClass, Class<?> subClass)
     {
         return superClass.isAssignableFrom(subClass) && !superClass.equals(subClass);
+    }
+
+    public static boolean isRawClassEquals(Type ipType, Type apiType)
+    {
+        Class ipClass = getRawPrimitiveType(ipType);
+        Class apiClass  = getRawPrimitiveType(apiType);
+
+        if (ipClass == null || apiClass == null)
+        {
+            // we found some illegal types
+            return false;
+        }
+
+        return ipClass.equals(apiClass);
+    }
+
+    private static Class getRawPrimitiveType(Type type)
+    {
+        if (type instanceof Class)
+        {
+            if (((Class) type).isPrimitive())
+            {
+                return getPrimitiveWrapper((Class) type);
+            }
+            return (Class) type;
+        }
+
+        if (type instanceof ParameterizedType)
+        {
+            return getRawPrimitiveType(((ParameterizedType) type).getRawType());
+        }
+
+        return null;
     }
 }

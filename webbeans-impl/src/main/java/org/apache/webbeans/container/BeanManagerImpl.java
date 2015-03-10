@@ -701,7 +701,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         if(beanType != null && beanType != Object.class)
         {
             final boolean isProducer = AbstractProducerBean.class.isInstance(bean);
-            if(!isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean, isProducer) &&
+            if(!isProducer && // we have different rules for producers
+               !isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean, isProducer) &&
                !GenericsUtil.satisfiesDependency(false, isProducer, beanType, bean.getBeanClass()))
             {
                 throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
@@ -890,7 +891,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 if (newBean && ClassUtil.isParametrizedType(givenType))
                 {
                     Class<?> requiredType = ClassUtil.getClass(givenType);
-                    if (ClassUtil.isClassAssignable(requiredType, ClassUtil.getClass(beanApiType)))
+                    if (ClassUtil.isClassAssignableFrom(requiredType, ClassUtil.getClass(beanApiType)))
                     {
                         return true;
                     }

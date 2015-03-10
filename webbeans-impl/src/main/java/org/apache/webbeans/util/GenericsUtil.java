@@ -127,7 +127,7 @@ public final class GenericsUtil
 
     private static boolean isAssignableFrom(Class<?> injectionPointType, Class<?> beanType)
     {
-        return ClassUtil.isClassAssignable(injectionPointType, beanType);
+        return ClassUtil.isClassAssignableFrom(injectionPointType, beanType);
     }
 
     private static boolean isAssignableFrom(boolean isDelegateOrEvent, Class<?> injectionPointType, TypeVariable<?> beanType)

@@ -55,7 +55,9 @@ public class ProducerFieldComponentTest extends AbstractUnitTest
     {
         startContainer(ProducerFieldDefinitionParameterized.class, ProducerFieldInjectedWrongType.class);
 
-        getInstance(ProducerFieldInjectedWrongType.class);
+        ProducerFieldInjectedWrongType instance = getInstance(ProducerFieldInjectedWrongType.class);
+        instance.getMyList();
+
     }
     
     @Test(expected = WebBeansConfigurationException.class)

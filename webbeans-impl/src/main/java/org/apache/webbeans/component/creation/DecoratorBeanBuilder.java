@@ -239,7 +239,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
 
         for (Type interfaceType : interfaceTypes)
         {
-            if (!ClassUtil.isClassAssignable(ClassUtil.getClass(delegateType), ClassUtil.getClass(interfaceType)))
+            if (!ClassUtil.isClassAssignableFrom(ClassUtil.getClass(delegateType), ClassUtil.getClass(interfaceType)))
             {
                 // only check the interface from the decorated type
                 continue;

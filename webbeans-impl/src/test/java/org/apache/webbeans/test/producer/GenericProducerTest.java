@@ -36,9 +36,9 @@ public class GenericProducerTest extends AbstractUnitTest
     private Injected injected;
 
     @Test
-    public void check()
+    public void checkParameterizedProducerMethod()
     {
-        startContainer(asList(TheProducer.class, Injected.class), Collections.<String>emptyList(), true);
+        startContainer(asList(TheParameterizedProducer.class, Injected.class), Collections.<String>emptyList(), true);
         assertNotNull(injected);
         assertNotNull(injected.getGauge());
         assertNotNull(injected.getGauge().getValue());
@@ -48,37 +48,80 @@ public class GenericProducerTest extends AbstractUnitTest
         assertEquals(1L, injected.getGauge2().getValue().longValue());
     }
 
-    public static class TheProducer
+    /**
+     * This was explicitly specified to work in CDI-1.0.
+     * We need it for backward compatibility!
+     */
+    @Test
+    public void checkRawProducerMethod()
+    {
+        startContainer(asList(TheRawProducer.class, Injected.class), Collections.<String>emptyList(), true);
+        assertNotNull(injected);
+        assertNotNull(injected.getGauge());
+        assertNotNull(injected.getGauge().getValue());
+        assertEquals("ok", injected.getGauge().getValue());
+        assertNotNull(injected.getGauge2());
+        assertNotNull(injected.getGauge2().getValue());
+        assertEquals(1L, injected.getGauge2().getValue().longValue());
+    }
+
+    /**
+     * This was explicitly specified to work in CDI-1.0.
+     * We need it for backward compatibility!
+     */
+    @Test
+    public void checkMixedProducerMethods()
+    {
+        startContainer(asList(TheRawProducer.class, TheParameterizedProducer.class, Injected.class), Collections.<String>emptyList(), true);
+        assertNotNull(injected);
+        assertNotNull(injected.getGauge());
+        assertNotNull(injected.getGauge().getValue());
+        assertEquals("ok", injected.getGauge().getValue());
+        assertNotNull(injected.getGauge2());
+        assertNotNull(injected.getGauge2().getValue());
+        assertEquals(1L, injected.getGauge2().getValue().longValue());
+    }
+
+    public static class TheParameterizedProducer
     {
         @Produces
-        public <T> Gauge<T> gaugeProducer()
+        public <T, X> Gauge<T, X> gaugeProducer()
         {
-            return new Gauge<T>();
+            return new Gauge<T, X>();
+        }
+    }
+
+    public static class TheRawProducer
+    {
+        @Produces
+        public Gauge gaugeProducer()
+        {
+            return new Gauge();
         }
     }
 
     public static class Injected
     {
         @Inject
-        private Gauge<String> gauge;
+        private Gauge<String, Integer> gauge;
 
         @Inject
-        private Gauge<Long> gauge2;
+        private Gauge<Long, Integer> gauge2;
 
-        public Gauge<String> getGauge()
+        public Gauge<String, Integer> getGauge()
         {
             gauge.value = "ok";
             return gauge;
         }
 
-        public Gauge<Long> getGauge2()
+        public Gauge<Long, Integer> getGauge2()
         {
             gauge2.value = 1L;
             return gauge2;
         }
     }
 
-    public static class Gauge<T>
+    public static class Gauge<T, X>
     {
         private T value;
 
@@ -87,4 +130,7 @@ public class GenericProducerTest extends AbstractUnitTest
             return value;
         }
     }
+
+
+
 }
