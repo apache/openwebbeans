@@ -71,6 +71,8 @@ public class ContextLifecycleListener implements LifecycleListener, ServletConte
 
                         context.addApplicationListener(TomcatSecurityFilter.class.getName());
                         context.addApplicationEventListener(this);
+
+                        context.addContainerListener(new TomcatContainerListener());
                     }
                 }
             }
