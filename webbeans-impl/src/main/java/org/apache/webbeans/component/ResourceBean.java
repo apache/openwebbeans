@@ -20,30 +20,24 @@ package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
 
-import org.apache.webbeans.portable.ProviderBasedProducerFactory;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.BeanAttributes;
+import javax.enterprise.inject.spi.ProducerFactory;
 
 public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
 {
-    
+
     private ResourceReference<X,T> resourceReference = null;
 
     public ResourceBean(InjectionTargetBean<?> ownerComponent,
                         ResourceReference<X, T> resourceReference,
                         BeanAttributes<X> beanAttributes,
-                        Class<X> beanClass)
+                        Class<X> beanClass,
+                        ProducerFactory<X> producerFactory)
     {
-        super(ownerComponent,
-              beanAttributes,
-              beanClass,
-              new ProviderBasedProducerFactory<X>(!Dependent.class.equals(beanAttributes.getScope()),
-                      new ResourceProvider<X>(resourceReference, ownerComponent.getWebBeansContext()),
-                                                       beanClass,
-                                                       ownerComponent.getWebBeansContext()));
+        super(ownerComponent, beanAttributes, beanClass, producerFactory);
         this.resourceReference = resourceReference;
     }
     
@@ -55,6 +49,8 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
     /**
      * Called after deserialization to get a new instance for some type of resource bean instance that are
      * not serializable.
+     *
+     * TODO: broken if producer is wrapped but surely better than actually serializing
      * 
      * @return a new instance of this resource bean.
      */

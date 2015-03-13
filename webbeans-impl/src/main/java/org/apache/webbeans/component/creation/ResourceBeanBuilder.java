@@ -20,11 +20,13 @@ package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.BeanAttributes;
 
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ResourceBean;
+import org.apache.webbeans.component.ResourceProvider;
 import org.apache.webbeans.spi.api.ResourceReference;
 
 public class ResourceBeanBuilder<T, R extends Annotation> extends ProducerFieldBeanBuilder<T, ResourceBean<T, R>>
@@ -41,6 +43,13 @@ public class ResourceBeanBuilder<T, R extends Annotation> extends ProducerFieldB
     @Override
     protected <X> ResourceBean<T, R> createBean(InjectionTargetBean<X> owner, Class<T> beanClass)
     {
-        return new ResourceBean<T, R>(owner, resourceRef, beanAttributes, beanClass);
+        return new ResourceBean<T, R>(
+                owner, resourceRef, beanAttributes, beanClass,
+                new ResourceProducerFactory(
+                        !Dependent.class.equals(beanAttributes.getScope()),
+                        owner,
+                        new ResourceProvider<T>(resourceRef, owner.getWebBeansContext()), beanClass, owner.getWebBeansContext(),
+                        annotatedMember,
+                        resourceRef));
     }
 }

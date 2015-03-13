@@ -35,7 +35,7 @@ import java.util.Set;
 
 public class FieldProducerFactory<P> extends BaseProducerFactory<P>
 {
-    private AnnotatedField<? super P> producerField;
+    protected AnnotatedField<? super P> producerField;
 
     public FieldProducerFactory(AnnotatedField<? super P> producerField, Bean<P> parent, WebBeansContext webBeansContext)
     {

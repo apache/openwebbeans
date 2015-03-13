@@ -29,11 +29,12 @@ import org.apache.webbeans.util.Asserts;
 public class ProviderBasedProducerFactory<P> implements ProducerFactory<P>
 {
 
-    private Provider<?> provider;
     private Class<?> providerType;
-    private WebBeansContext webBeansContext;
     private boolean proxy;
-    
+
+    protected Provider<?> provider;
+    protected WebBeansContext webBeansContext;
+
     public ProviderBasedProducerFactory(boolean proxy, Provider<?> provider, Class<?> providerType, WebBeansContext context)
     {
         Asserts.assertNotNull(provider);
