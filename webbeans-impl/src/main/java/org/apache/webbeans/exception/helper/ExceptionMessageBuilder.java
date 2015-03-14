@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.exception.helper;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +26,10 @@ import java.util.List;
 /**
  * Helper for {@link DescriptiveException}.
  */
-public class ExceptionMessageBuilder
+public class ExceptionMessageBuilder implements Serializable
 {
+    private static final long serialVersionUID = 4391880458753108617L;
+
     private List<String> additionalInformations;
 
     public void addInformation(String additionalInformation)
