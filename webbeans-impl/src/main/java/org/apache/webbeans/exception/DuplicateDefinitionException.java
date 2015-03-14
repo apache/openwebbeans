@@ -22,6 +22,8 @@ import javax.enterprise.inject.spi.DefinitionException;
 import org.apache.webbeans.exception.helper.DescriptiveException;
 import org.apache.webbeans.exception.helper.ExceptionMessageBuilder;
 
+import java.io.ObjectStreamException;
+
 public class DuplicateDefinitionException extends DefinitionException implements DescriptiveException
 {
     private static final long serialVersionUID = 2312285271502063304L;
@@ -62,4 +64,8 @@ public class DuplicateDefinitionException extends DefinitionException implements
         return msg.getAdditionalInformation(super.getLocalizedMessage());
     }
 
+    private Object writeReplace() throws ObjectStreamException
+    {
+        return new DefinitionException(getMessage(), getCause());
+    }
 }

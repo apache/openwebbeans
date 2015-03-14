@@ -22,6 +22,8 @@ import javax.enterprise.inject.spi.DefinitionException;
 import org.apache.webbeans.exception.helper.DescriptiveException;
 import org.apache.webbeans.exception.helper.ExceptionMessageBuilder;
 
+import java.io.ObjectStreamException;
+
 /**
  * Exception that is thrown by the web beans container at the intialization
  * time. This is the OWB implementation of the DefinitionException.
@@ -69,4 +71,8 @@ public class WebBeansConfigurationException extends DefinitionException implemen
         return msg.getAdditionalInformation(super.getLocalizedMessage());
     }
 
+    private Object writeReplace() throws ObjectStreamException
+    {
+        return new DefinitionException(getMessage(), getCause());
+    }
 }

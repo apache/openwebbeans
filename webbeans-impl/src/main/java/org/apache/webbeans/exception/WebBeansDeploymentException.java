@@ -22,6 +22,8 @@ import javax.enterprise.inject.spi.DeploymentException;
 import org.apache.webbeans.exception.helper.DescriptiveException;
 import org.apache.webbeans.exception.helper.ExceptionMessageBuilder;
 
+import java.io.ObjectStreamException;
+
 /**
  * Exception that is thrown by the web beans container at the deployment time.
  * 
@@ -67,4 +69,8 @@ public class WebBeansDeploymentException extends DeploymentException implements 
         return msg.getAdditionalInformation(super.getLocalizedMessage());
     }
 
+    private Object writeReplace() throws ObjectStreamException
+    {
+        return new DeploymentException(getMessage(), getCause());
+    }
 }

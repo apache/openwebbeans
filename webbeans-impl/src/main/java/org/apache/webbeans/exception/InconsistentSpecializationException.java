@@ -22,6 +22,8 @@ import javax.enterprise.inject.spi.DefinitionException;
 import org.apache.webbeans.exception.helper.DescriptiveException;
 import org.apache.webbeans.exception.helper.ExceptionMessageBuilder;
 
+import java.io.ObjectStreamException;
+
 public class InconsistentSpecializationException extends DefinitionException implements DescriptiveException
 {
     private static final long serialVersionUID = 5398575103682514128L;
@@ -61,4 +63,8 @@ public class InconsistentSpecializationException extends DefinitionException imp
         return msg.getAdditionalInformation(super.getLocalizedMessage());
     }
 
+    private Object writeReplace() throws ObjectStreamException
+    {
+        return new DefinitionException(getMessage(), getCause());
+    }
 }
