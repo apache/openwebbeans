@@ -79,6 +79,11 @@ public class ObserversComponentTest extends TestContext
         ComponentWithObserves1 instance = getManager().getInstance(component);
 
         Assert.assertEquals("Gurkan", instance.getUserName());
+
+        // multiple invocations on the same private observer method. See OWB-1043
+        event = new LoggedInEvent("Mark");
+        getManager().fireEvent(event, anns);
+        Assert.assertEquals("Mark", instance.getUserName());
     }
 
     @Test
