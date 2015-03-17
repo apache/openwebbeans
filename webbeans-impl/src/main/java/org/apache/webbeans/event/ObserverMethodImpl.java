@@ -108,6 +108,13 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     
     /** the transaction phase */
     private final TransactionPhase phase;
+
+    /**
+     * Whether the observer method is private.
+     * If so we need to call the observer directly on the
+     * contextual instance and not on the proxy.
+     */
+    private boolean isPrivate = false;
     
     /**Annotated method*/
     private AnnotatedMethod<T> annotatedMethod = null;
@@ -132,10 +139,9 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
      */
     public ObserverMethodImpl(InjectionTargetBean<?> bean, Method observerMethod, boolean ifExist)
     {
-        this.bean = bean;
-        this.observerMethod = observerMethod;
         this.ifExist = ifExist;
-
+        this.bean = bean;
+        setObserverMethod(observerMethod);
         Annotation[] qualifiers =
             getWebBeansContext().getAnnotationManager().getMethodFirstParameterQualifierWithGivenAnnotation(
                 observerMethod, Observes.class);
@@ -164,7 +170,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                                  Annotation[] qualifiers, Type observedEventType)
     {
         this.bean = bean;
-        this.observerMethod = observerMethod;
+        setObserverMethod(observerMethod);
         this.ifExist = ifExist;
         observedQualifiers = new HashSet<Annotation>(qualifiers.length);
         for (Annotation qualifier : qualifiers)
@@ -213,12 +219,6 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         ObserverParams[] obargs = null;
         try
         {
-            boolean isPrivateMethod = !observerMethod.isAccessible();
-            if (isPrivateMethod)
-            {
-                bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(observerMethod, true);
-            }
-
             obargs = new ObserverParams[methodArgsMap.size()];
             obargs = methodArgsMap.toArray(obargs);
             Object[] args = new Object[obargs.length];
@@ -260,7 +260,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
 
                 creationalContext = manager.createCreationalContext(component);
 
-                if (isPrivateMethod)
+                if (isPrivate)
                 {
                     // since private methods cannot be intercepted, we can just call them directly
                     // so we get the contextual instance directly from the context because we do not
@@ -577,5 +577,9 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     public void setObserverMethod(Method m)
     {
         observerMethod = m;
+
+        isPrivate = Modifier.isPrivate(observerMethod.getModifiers());
+        // we need to set the accessible flag for all private and protected methods
+        bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(observerMethod, true);
     }
 }

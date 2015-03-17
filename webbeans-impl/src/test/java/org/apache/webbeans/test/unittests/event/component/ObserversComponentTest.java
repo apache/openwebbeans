@@ -69,15 +69,16 @@ public class ObserversComponentTest extends TestContext
         WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
         LoggedInEvent event = new LoggedInEvent("Gurkan");
-
-        Annotation[] anns = new Annotation[1];
-        anns[0] = new AnyLiteral();        
-
-        getManager().fireEvent(event, anns);
+        getManager().fireEvent(event, new AnyLiteral());
 
         ComponentWithObserves1 instance = getManager().getInstance(component);
 
         Assert.assertEquals("Gurkan", instance.getUserName());
+
+
+        event = new LoggedInEvent("Mark");
+        getManager().fireEvent(event, new AnyLiteral());
+        Assert.assertEquals("Mark", instance.getUserName());
     }
 
     @Test

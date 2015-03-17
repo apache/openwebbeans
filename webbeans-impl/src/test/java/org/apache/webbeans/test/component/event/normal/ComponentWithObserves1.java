@@ -32,7 +32,7 @@ public class ComponentWithObserves1
 
     private String userNameWithMember;
 
-    public void afterLoggedIn(@Observes @Any LoggedInEvent event)
+    private void afterLoggedIn(@Observes @Any LoggedInEvent event)
     {
         this.userName = event.getUserName();
     }
