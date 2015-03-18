@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.test.unittests.event.component;
+package org.apache.webbeans.svtest.unittests.event.component;
 
 import javax.enterprise.util.AnnotationLiteral;
 
@@ -57,6 +57,10 @@ public class ObserversComponentTest extends AbstractUnitTest
         ComponentWithObserves1 instance = getInstance(ComponentWithObserves1.class);
 
         Assert.assertEquals("Gurkan", instance.getUserName());
+
+        event = new LoggedInEvent("Mark");
+        getBeanManager().fireEvent(event, AnyLiteral.INSTANCE);
+        Assert.assertEquals("Mark", instance.getUserName());
     }
 
     @Test
