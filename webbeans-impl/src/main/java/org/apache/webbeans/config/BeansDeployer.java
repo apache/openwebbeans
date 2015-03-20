@@ -1140,7 +1140,14 @@ public class BeansDeployer
         final WebBeansUtil webBeansUtil = webBeansContext.getWebBeansUtil();
 
         // done separately to be able to swallow the logging when not relevant and avoid to pollute logs
-        if (!webBeansUtil.isConstructorOk(type))
+        try
+        {
+            if (!webBeansUtil.isConstructorOk(type))
+            {
+                return false;
+            }
+        }
+        catch (final TypeNotPresentException cnfe)
         {
             return false;
         }
