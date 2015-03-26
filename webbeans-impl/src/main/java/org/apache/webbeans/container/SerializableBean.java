@@ -185,7 +185,7 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
             return bean.equals(((SerializableBean<?>)other).getBean());
         }
         
-        return super.equals(other);
+        return bean.equals(other) || super.equals(other);
     }
 
     /**

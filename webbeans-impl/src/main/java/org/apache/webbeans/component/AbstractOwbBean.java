@@ -21,6 +21,7 @@ package org.apache.webbeans.component;
 import javax.enterprise.inject.spi.BeanAttributes;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.SerializableBean;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
@@ -429,5 +430,17 @@ public abstract class AbstractOwbBean<T>
     public boolean isDependent()
     {
         return getScope().equals(Dependent.class);
+    }
+
+    @Override
+    public boolean equals(Object o)  // symmetry for serializable beans otherwise Map are broken, hashcode if fine
+    {
+        return o == this || (SerializableBean.class.isInstance(o) && SerializableBean.class.cast(o).equals(this));
+    }
+
+    @Override
+    public int hashCode() // defined for checkstyle
+    {
+        return super.hashCode();
     }
 }
