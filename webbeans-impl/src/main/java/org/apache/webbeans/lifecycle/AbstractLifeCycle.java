@@ -229,7 +229,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     {
         //Do nothing as default
     }
-        
+
     protected void afterStartApplication(Object startupObject)
     {
         //Do nothing as default

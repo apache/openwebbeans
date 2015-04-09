@@ -21,6 +21,7 @@ package org.apache.webbeans.test.contexts.session.tests;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 
 import junit.framework.Assert;
@@ -73,6 +74,13 @@ public class SessionContextTest extends AbstractUnitTest
         classes.add(CircularDependentScopedBean.class);
         classes.add(CircularApplicationScopedBean.class);
 
+        AppScopedBean.appContextInitializedEvent.clear();
+        AppScopedBean.appContextDestroyedEvent.clear();
+        AppScopedBean.sessionContextInitializedEvent.clear();
+        AppScopedBean.sessionContextDestroyedEvent.clear();
+        AppScopedBean.requestContextInitializedEvent.clear();
+        AppScopedBean.requestContextDestroyedEvent.clear();
+
         startContainer(classes);
         
         AppScopedBean appBeanInstance = getInstance(AppScopedBean.class);
@@ -82,12 +90,28 @@ public class SessionContextTest extends AbstractUnitTest
         
         // now we reset the session Context so we should get a new contextual instance.
         getWebBeansContext().getContextsService().endContext(SessionScoped.class, null);
+        getWebBeansContext().getContextsService().endContext(RequestScoped.class, null);
+        getWebBeansContext().getContextsService().startContext(RequestScoped.class, null);
         getWebBeansContext().getContextsService().startContext(SessionScoped.class, null);
-        
+
         PersonalDataBean pdb2 = appBeanInstance.getPdb().getInstance();
         Assert.assertNotNull(pdb2);
         
         // pdb1 and pdb2 are in different sessions, so they must not be the same instance!
         Assert.assertTrue(pdb1 != pdb2);
+
+        Assert.assertEquals(1, AppScopedBean.appContextInitializedEvent.size());
+        Assert.assertEquals(2, AppScopedBean.sessionContextInitializedEvent.size());
+        Assert.assertEquals(1, AppScopedBean.sessionContextDestroyedEvent.size());
+        Assert.assertEquals(2, AppScopedBean.requestContextInitializedEvent.size());
+        Assert.assertEquals(1, AppScopedBean.requestContextDestroyedEvent.size());
+
+        shutDownContainer();
+        Assert.assertEquals(2, AppScopedBean.requestContextDestroyedEvent.size());
+        Assert.assertEquals(2, AppScopedBean.sessionContextDestroyedEvent.size());
+
+        // looks weird at a first glance but thats how it is defined in the spec.
+        // the @Destroyed(ApplicationScoped.class) gets only fired AFTER the ApplicationContext gets destroyed...
+        Assert.assertEquals(0, AppScopedBean.appContextDestroyedEvent.size());
     }
 }

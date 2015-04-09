@@ -26,6 +26,7 @@ import javax.inject.Singleton;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import org.apache.webbeans.annotation.InitializedLiteral;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -50,19 +51,27 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
     @Override
     public void beforeStartApplication(Object object)
     {
+        webBeansContext.getContextsService().startContext(Singleton.class, null);
+        webBeansContext.getContextsService().startContext(ApplicationScoped.class, null);
+    }
+
+    @Override
+    protected void afterStartApplication(Object startupObject)
+    {
+        // the ApplicationContext is already started, but we fire the event again as the userland beans are only available now
+        webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
+
         webBeansContext.getContextsService().startContext(RequestScoped.class, null);
         webBeansContext.getContextsService().startContext(SessionScoped.class, null);
         webBeansContext.getContextsService().startContext(ConversationScoped.class, null);
-        webBeansContext.getContextsService().startContext(ApplicationScoped.class, null);
-        webBeansContext.getContextsService().startContext(Singleton.class, null);
     }
 
     @Override
     public void beforeStopApplication(Object endObject)
     {
         webBeansContext.getContextsService().endContext(RequestScoped.class, null);
-        webBeansContext.getContextsService().endContext(SessionScoped.class, null);
         webBeansContext.getContextsService().endContext(ConversationScoped.class, null);
+        webBeansContext.getContextsService().endContext(SessionScoped.class, null);
         webBeansContext.getContextsService().endContext(ApplicationScoped.class, null);
         webBeansContext.getContextsService().endContext(Singleton.class, null);
 

@@ -19,14 +19,62 @@
 package org.apache.webbeans.test.contexts.session.common;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Destroyed;
+import javax.enterprise.context.Initialized;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 @ApplicationScoped
 public class AppScopedBean {
     
     private @Inject PersonalDataBean pdb;
 
+    public static List<Object> appContextInitializedEvent = new ArrayList<Object>();
+    public static List<Object> appContextDestroyedEvent = new ArrayList<Object>();
+
+    public static List<Object> sessionContextInitializedEvent = new ArrayList<Object>();
+    public static List<Object> sessionContextDestroyedEvent = new ArrayList<Object>();
+
+    public static List<Object> requestContextInitializedEvent = new ArrayList<Object>();
+    public static List<Object> requestContextDestroyedEvent = new ArrayList<Object>();
+
     public PersonalDataBean getPdb() {
         return pdb;
     }
+
+    public void appContextInitialized(@Observes @Initialized(ApplicationScoped.class) Object payload)
+    {
+        appContextInitializedEvent.add(payload);
+    }
+
+    public void appContextDestroyed(@Observes @Destroyed(ApplicationScoped.class) Object payload)
+    {
+        appContextDestroyedEvent.add(payload);
+    }
+
+    public void sessionContextInitialized(@Observes @Initialized(SessionScoped.class) Object payload)
+    {
+        sessionContextInitializedEvent.add(payload);
+    }
+
+    public void sessionContextDestroyed(@Observes @Destroyed(SessionScoped.class) Object payload)
+    {
+        sessionContextDestroyedEvent.add(payload);
+    }
+
+    public void requestContextInitialized(@Observes @Initialized(RequestScoped.class) Object payload)
+    {
+        requestContextInitializedEvent.add(payload);
+    }
+
+    public void requestContextDestroyed(@Observes @Destroyed(RequestScoped.class) Object payload)
+    {
+        requestContextDestroyedEvent.add(payload);
+    }
+
+    
 }
