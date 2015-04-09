@@ -568,7 +568,8 @@ public class InjectionResolver
         {
             for (Bean<? extends X> bean: beans)
             {
-                if (alternativeClazz.equals(bean.getBeanClass()))
+                final Class<?> type = OwbBean.class.isInstance(bean) ? OwbBean.class.cast(bean) .getReturnType() : bean.getBeanClass();
+                if (alternativeClazz.equals(type))
                 {
                     return new SingleItemSet<Bean<? extends X>>(bean);
                 }

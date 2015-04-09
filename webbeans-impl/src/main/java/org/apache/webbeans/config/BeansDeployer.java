@@ -1541,6 +1541,8 @@ public class BeansDeployer
                 Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods =
                         new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>();
 
+                final Priority priority = annotatedType.getAnnotation(Priority.class);
+
                 for(ProducerMethodBean<?> producerMethod : producerMethods)
                 {
                     AnnotatedMethod<?> method = webBeansContext.getAnnotatedElementFactory().newAnnotatedMethod(producerMethod.getCreatorMethod(), annotatedType);
@@ -1548,6 +1550,10 @@ public class BeansDeployer
                             + "ProducerMethods. Look at logs for further details");
 
                     annotatedMethods.put(producerMethod, method);
+                    if (priority != null)
+                    {
+                        webBeansContext.getAlternativesManager().addPriorityClazzAlternative(method.getJavaMember().getReturnType(), priority);
+                    }
                 }
 
                 Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields =
@@ -1562,6 +1568,10 @@ public class BeansDeployer
                             webBeansContext.getAnnotatedElementFactory().newAnnotatedField(
                                     producerField.getCreatorField(),
                                     webBeansContext.getAnnotatedElementFactory().newAnnotatedType(producerField.getBeanClass())));
+                    if (priority != null)
+                    {
+                        webBeansContext.getAlternativesManager().addPriorityClazzAlternative(producerField.getCreatorField().getType(), priority);
+                    }
                 }
 
                 Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap =
