@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.web.context;
 
+import org.apache.webbeans.annotation.DestroyedLiteral;
+import org.apache.webbeans.annotation.InitializedLiteral;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.AbstractContextsService;
@@ -363,23 +365,26 @@ public class WebContextsService extends AbstractContextsService
                 
                 //Init thread local singleton context
                 initSingletonContext(event.getServletContext());
-            }            
+
+                webBeansContext.getBeanManagerImpl().fireEvent(request, InitializedLiteral.INSTANCE_REQUEST_SCOPED);
+            }
         }
         else
         {
-                //Init thread local application context
-                initApplicationContext(null);
+            //Init thread local application context
+            initApplicationContext(null);
 
-                //Init thread local singleton context
-                initSingletonContext(null);
+            //Init thread local singleton context
+            initSingletonContext(null);
+            webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_REQUEST_SCOPED);
         }
     }
     
     /**
      * Destroys the request context and all of its components. 
-     * @param request http servlet request object
+     * @param requestEvent http servlet request object
      */
-    private void destroyRequestContext(ServletRequestEvent request)
+    private void destroyRequestContext(ServletRequestEvent requestEvent)
     {
         // cleanup open conversations first
         if (supportsConversation)
@@ -409,6 +414,10 @@ public class WebContextsService extends AbstractContextsService
         requestContexts.remove();
 
         RequestScopedBeanInterceptorHandler.removeThreadLocals();
+
+        Object payload = requestEvent != null && requestEvent.getServletRequest() != null ? requestEvent.getServletRequest() : new Object();
+
+        webBeansContext.getBeanManagerImpl().fireEvent(payload, DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
     }
 
     private void cleanupConversations()
@@ -460,6 +469,7 @@ public class WebContextsService extends AbstractContextsService
             // this is handy if you create asynchronous tasks or
             // batches which use a 'admin' user.
             currentSessionContext = new SessionContext();
+            webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_SESSION_SCOPED);
         }
         else
         {
@@ -473,6 +483,7 @@ public class WebContextsService extends AbstractContextsService
             {
                 currentSessionContext = new SessionContext();
                 sessionCtxManager.addNewSessionContext(sessionId, currentSessionContext);
+                webBeansContext.getBeanManagerImpl().fireEvent(session, InitializedLiteral.INSTANCE_SESSION_SCOPED);
             }
         }
 
@@ -550,6 +561,8 @@ public class WebContextsService extends AbstractContextsService
         {
             sharedApplicationContext = newApplicationContext;
         }
+
+        webBeansContext.getBeanManagerImpl().fireEvent(servletContext != null ? servletContext : new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
     }
 
     /**
@@ -628,6 +641,8 @@ public class WebContextsService extends AbstractContextsService
         webBeansContext.getBeanManagerImpl().clearCacheProxies();
 
         classLoaderToServletContextMapping.remove(WebBeansUtil.getCurrentClassLoader());
+
+        webBeansContext.getBeanManagerImpl().fireEvent(servletContext != null ? servletContext : new Object(), DestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
     }
     
     /**
@@ -664,6 +679,8 @@ public class WebContextsService extends AbstractContextsService
         {
             sharedSingletonContext = newSingletonContext;
         }
+
+        webBeansContext.getBeanManagerImpl().fireEvent(servletContext != null ? servletContext : new Object(), InitializedLiteral.INSTANCE_SINGLETON_SCOPED);
     }
     
     /**
@@ -700,6 +717,8 @@ public class WebContextsService extends AbstractContextsService
         }
 
         classLoaderToServletContextMapping.remove(WebBeansUtil.getCurrentClassLoader());
+
+        webBeansContext.getBeanManagerImpl().fireEvent(servletContext != null ? servletContext : new Object(), DestroyedLiteral.INSTANCE_SINGLETON_SCOPED);
     }
 
     /**
@@ -721,7 +740,8 @@ public class WebContextsService extends AbstractContextsService
             {
                 conversationContexts.get().setActive(true);
             }
-            
+
+            webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_SINGLETON_SCOPED);
         }
         else
         {
@@ -740,6 +760,7 @@ public class WebContextsService extends AbstractContextsService
         if (context != null)
         {
             context.destroy();
+            webBeansContext.getBeanManagerImpl().fireEvent(new Object(), DestroyedLiteral.INSTANCE_SINGLETON_SCOPED);
         }
 
         conversationContexts.set(null);
