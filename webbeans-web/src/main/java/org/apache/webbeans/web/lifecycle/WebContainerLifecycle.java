@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.web.lifecycle;
 
+import org.apache.webbeans.annotation.InitializedLiteral;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
@@ -144,6 +145,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         ServletContext servletContext = (ServletContext)(startupObject);
         servletContext.setAttribute(BeanManager.class.getName(), getBeanManager());
 
+        webBeansContext.getBeanManagerImpl().fireEvent(servletContext != null ? servletContext : new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
     }
 
     @Override

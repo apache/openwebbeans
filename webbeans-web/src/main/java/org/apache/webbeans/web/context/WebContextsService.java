@@ -497,34 +497,36 @@ public class WebContextsService extends AbstractContextsService
     /**
      * Destroys the session context and all of its components at the end of the
      * session. 
-     * @param session http session object
+     * @param session http session object. Can be {@code null} for non-http SessionContexts. Such a context only lives for one thread.
      */
     private void destroySessionContext(HttpSession session)
     {
+        //Get current session context from ThreadLocal
+        SessionContext context = sessionContexts.get();
+
         if (session != null)
         {
-            //Get current session context
-            SessionContext context = sessionContexts.get();
-
             if (context == null)
             {
                 initSessionContext(session);
                 context = sessionContexts.get();
             }
 
-            //Destroy context
-            if (context != null)
-            {
-                context.destroy();
-            }
-
-            //Clear thread locals
-            sessionContexts.set(null);
-            sessionContexts.remove();
-
             //Remove session from manager
             sessionCtxManager.removeSessionContextWithSessionId(session.getId());
         }
+
+        //Destroy context
+        if (context != null)
+        {
+            context.destroy();
+            webBeansContext.getBeanManagerImpl().fireEvent(session, DestroyedLiteral.INSTANCE_SESSION_SCOPED);
+        }
+
+        //Clear thread locals
+        sessionContexts.set(null);
+        sessionContexts.remove();
+
     }
 
     /**

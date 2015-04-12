@@ -18,13 +18,16 @@
  */
 package org.apache.webbeans.samples.tomcat;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.Date;
 
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-public class CurrentDateProvider
+@SessionScoped // just to test @Initialized(SessionScoped.class)
+public class CurrentDateProvider implements Serializable
 {
     private @Inject Principal principal;
     

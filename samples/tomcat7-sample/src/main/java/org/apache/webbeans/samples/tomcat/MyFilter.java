@@ -48,7 +48,7 @@ public class MyFilter implements Filter
 
     @Override
     @SuppressWarnings("unchecked")
-    public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain arg2) throws IOException, ServletException
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException
     {
         Set<Bean<?>> beans = manager.getBeans(CurrentDateProvider.class);
         log.info("Total found beans : " + beans.size());
@@ -57,7 +57,7 @@ public class MyFilter implements Filter
         
         log.info("Current time is : " + instance.getCurrentDate());
         
-        arg2.doFilter(arg0, arg1);
+        filterChain.doFilter(request, response);
         
     }
 
