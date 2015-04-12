@@ -31,6 +31,23 @@ under the License.
     <packaging>war</packaging>
     <name>Tomcat 7 Sample</name>
 
+    <!--
+     How to start the sample.
+
+     Either direct from the sources:
+     $> mvn clean install tomcat7:run
+
+     Or take the packaged war and deploy it to tomcat7.
+     You also have to add some OWB libraries to tomcats lib folder
+     (See the tomcat7-maven-plugin dependencies below for a full list).
+     Don't forget to add the tomcat7 listener. See the samples context.xml file.
+
+     When you open the webapp under
+     http://localhost:8080/tomcat7-sample
+     then use admin/admin as username/password to login.
+     See the provided tomcat-users.xml to change it.
+    -->
+
     <properties>
         <deploy.skip>true</deploy.skip>
     </properties>
@@ -50,12 +67,22 @@ under the License.
             <artifactId>geronimo-jcdi_1.1_spec</artifactId>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-atinject_1.0_spec</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-interceptor_1.2_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-annotation_1.2_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -64,6 +91,7 @@ under the License.
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
                 <configuration>
                     <tomcatUsers>${project.basedir}/src/main/tomcat/tomcat-users.xml</tomcatUsers>
                     <contextFile>${project.basedir}/src/main/tomcat/context.xml</contextFile>
@@ -193,6 +221,11 @@ under the License.
                         <groupId>org.apache.geronimo.specs</groupId>
                         <artifactId>geronimo-interceptor_1.2_spec</artifactId>
                         <version>${geronimo_interceptor.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.geronimo.specs</groupId>
+                        <artifactId>geronimo-annotation_1.2_spec</artifactId>
+                        <version>${geronimo_annotation.version}</version>
                     </dependency>
 
                 </dependencies>
