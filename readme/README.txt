@@ -1,44 +1,36 @@
 -------------------------------
-Apache OpenWebBeans 1.2.1
+Apache OpenWebBeans 1.5.0
 -------------------------------
 Welcome!
 
 Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.2.1 release of Apache OpenWebBeans.
+This document is based on the 1.5.0 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
 --------------------------------
-OpenWebBeans is an Apache License V 2.0 licensed implementation of the JSR-299,
-Contexts and Dependency Injection for the Java EE platform.
+OpenWebBeans is an Apache License V 2.0 licensed implementation of the JSR-346,
+Contexts and Dependency Injection for the Java EE platform 1.2.
 
-It also already incorporates some features which are part of JSR-346 (CDI-1.1)
-but doesn't need API changes as we still use the JCDI-1.0 API. The
-incorporated CDI-1.1 features are mostly parts which are not well
-defined in the CDI-1.0 specification, like Serialisation checks, etc.
+CDI-1.2 is a maintenance release of CDI-1.1 and backward compatible to
+JSR-299 CDI-1.0.
 
 Our project's web page can be found at:
 http://openwebbeans.apache.org
 
-The projects WIKI page can be found at:
-https://cwiki.apache.org/confluence/display/OWB/Index
-
-
 
 --------------------------------
-OpenWebBeans 1.2.1 Release Features
+OpenWebBeans 1.5.0 Release Features
 --------------------------------
 
-- The 1.2.1 release supports the following features
+- The 1.5.0 release supports the following features
 -----------------------------------
 * Managed Beans Support
-* Session Beans Support (via Embeddable OpenEJB container in Tomcat)
 * Producer Method Support
 * Producer Field Support
 * Java EE Resource Injection Support
-* JMS OpenWebBeans Support(OWB Specific)
 * Inheritance, Stereotype Inheritances
 * Specialization Support
 * Event Support
@@ -49,16 +41,8 @@ OpenWebBeans 1.2.1 Release Features
 * Passivation Capability of Beans
 * @Alternative support
 * OSGi environment support with an own plugable bundle ClassPath scanner
-* vastly improved Interceptor performance
 * plugable SecurityManager integration doubles speed if no SecurityManager is being used
-* improved Serialization handling
-* improved CreationalContext handling
-* revised internal logging
-* upgrade to JPA-2 and JSF-2 support
 * support for direct CDI usage in tomcat-6 and tomcat-7 environments
-* optional lenient lifecycle interceptor checking
-* automatically detect if BeanManager#isInUse()
-* improved Serialization checks from the CDI-1.1 specification
 
 
 
@@ -68,15 +52,148 @@ Noteable differences to CDI spec behaviour
 In a few special cases Apache OpenWebBeans might behave a little bit different than
 other CDI implementations. This is to some degree caused by the JSR-299 spec being
 not clear about some special topics so we needed to interpret the wording on our own.
-This mainly concerns the area of section 12.1 Bean Archives (BDA) which doesn't work
+This mainly concerns the area of section 5 and 12.1 Bean Archives (BDA) which doesn't work
 out when it comes to OSGi containers and likes.
 In Apache OpenWebBeans, a settings configured in a beans.xml file of a BDA is not
 only effective for this very bean archive but for the whole BeanManager in control
 of the Application. This is especially the case for <alternatives> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
-for the whole Application. This behaviour will most likely also be the default behaviour
-in the CDI-1.1 JSR-346 specification.
+for the whole Application.
 
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.5.0
+-------------------------------------------
+
+
+Bug
+
+    [OWB-642] - Method WebBeansUtil.configureProducerMethodSpecializations is unreliable
+    [OWB-679] - StereoTypeManager is completely unused -> remove or fix.
+    [OWB-737] - @specializes @alternative child class disables super class even when not enabled when using stereotypes
+    [OWB-745] - Fixes usage of java.lang.Class and java.lang.reflect.Method
+    [OWB-746] - Having a Decorator with a constructor- or method-injection-point for the delegate leads to an exception if no corresponding field is available
+    [OWB-747] - Cleanup OwbBean interface
+    [OWB-799] - arquillian adapter uses archive:// url which can be slow because of host resolution
+    [OWB-809] - addBeans does not invalidate resolvedComponents cache in InjectionResolver
+    [OWB-810] - (public or protected) Observer methods don't get intercepted in the first firing of the event
+    [OWB-811] - (public or protected) Observer methods don't get intercepted in the first firing of the event
+    [OWB-816] - OWB does not correctly serialize/deserialize InstanceImpl
+    [OWB-853] - CLONE - "Could NOT lazily initialize session context because of null RequestContext" always occur on session expire
+    [OWB-860] - Type variable not bound in generic bean type
+    [OWB-873] - NoSuchMethodException if no constructor with an empty parameter list is present AND the bean has @Decorator beans
+    [OWB-910] - @PreDestroy causes ContextNotActiveException
+    [OWB-912] - Weird Behavior with @Specializes and @Inject @Any
+    [OWB-913] - o.a.webbeans.web.tomcat.TomcatInstanceManager should implement the new method in o.a.tomcat.InstanceManager introduced with Tomcat 7.0.47
+    [OWB-922] - Instance#select() rules are wrong
+    [OWB-929] - implicit filter in InstanceImpl#iterator
+    [OWB-930] - NotificationManager#disableOverriddenObservers removes wrong observers
+    [OWB-934] - Contextual#destroy not invoked for custom implementations
+    [OWB-938] - NoClassDefFoundError not caught when checking if a bean is a managed one or not in WebBeanUtils (isValidManagedBean)
+    [OWB-943] - pick up @NormalScope scopes, interceptors and decorators in implicit bean archives
+    [OWB-945] - Decorators are not applied on methods which use parameterized type from super interface
+    [OWB-950] - rework ConcurrentHashMap usages to avoid java 8 issues
+    [OWB-954] - implement AfterTypeDiscovery
+    [OWB-955] - rework AlternativesManager to fit CDI 1.1 needs.
+    [OWB-957] - interceptor proxies blow up if you have more than 127 methods in a class
+    [OWB-958] - our @Specializes code is based on classes and not on AnnotatedTypes
+    [OWB-960] - Proxying varargs methods not working
+    [OWB-965] - Create index to tomcat-sample
+    [OWB-966] - upgrade Arquillian to 1.1.2.Final
+    [OWB-967] - implement ProcessSyntheticAnnotatedType
+    [OWB-968] - GenericUtils create infinite loop when parsing Enums
+    [OWB-969] - BeanManager#createAnnotatedType should not reflect changes done by Extensions
+    [OWB-970] - AbstractDecoratorInjectionTarget doesn't use right classloader to proxy classes (uses container classloader)
+    [OWB-971] - Interceptors and Decorators must not define producer nor disposal methods
+    [OWB-973] - Download page hash and sig links don't work
+    [OWB-974] - All beans handed over to passivating contexts need to be serializable
+    [OWB-975] - our Arquillian connector starts the ApplicationContext twice
+    [OWB-976] - move cdi-1.1 BeanManager featurs from AbstractBeanManager to BeanManagerImpl
+    [OWB-979] - method are considered overriden if java rules are respected but annotations are the same too
+    [OWB-983] - sample/tomcat7-sample doesn't run with 'mvn tomcat7:run'
+    [OWB-985] - support tomcat 7.0.54
+    [OWB-988] - Move PrincipalBean from owb-ee-common to owb-impl
+    [OWB-992] - Decorator generic delegate attribute must be same with decorated type
+    [OWB-993] - OwbTypeVariableImpl needs to implements new methods of JDK-1.8 TypeVariable
+    [OWB-994] - Container must throw DefinitionException on Bean definition errors
+    [OWB-995] - BeanManager must throw Exception if some methods are called before LifecycleEvents
+    [OWB-996] - implement @WithAnnotations
+    [OWB-997] - implement @WithAnnotations
+    [OWB-1001] - Container must fire ProcessInjectionPoint
+    [OWB-1002] - Container must detected definition errors for Decorators
+    [OWB-1003] - Decorators and Interceptors can not be applied to BeanManager
+    [OWB-1005] - Container must throw DefinitionException if a Decorator or Interceptor has Producer or Observer methods
+    [OWB-1006] - A Decorator must implement at least one interface
+    [OWB-1007] - DefinitionError must be detected if @Decorated is injected into a bean instance other than a decorator
+    [OWB-1008] - Decorators must not declare abstract methods which are not declared in implemented interfaces
+    [OWB-1009] - adapt validation of interceptors to specification 1.2
+    [OWB-1010] - Interceptor bindings of bean class replaces Interceptor bindings in stereotypes
+    [OWB-1011] - Intercepted Beans must be proxyable
+    [OWB-1012] - adapt validation of producers as specified in spec 1.2
+    [OWB-1013] - Race condition in Instance injection
+    [OWB-1014] - Validate injection of bean metadata in Producers
+    [OWB-1015] - Container must detect DeplyomentError for Unproxyable bean types
+    [OWB-1016] - java.net.MalformedURLException: WEB-INF/beans.xml
+    [OWB-1019] - implement passivation check rules as defined in CDI-140 and CDI-153
+    [OWB-1022] - InjectionPoint validated to early?
+    [OWB-1023] - We should throw an IllegalArgumentException if BeanManager#validate parameter is null
+    [OWB-1024] - DecoratorBeanBuilder : Number of TypeArguments must match - Decorated Type: 2 Delegate Type: 1
+    [OWB-1030] - Lookup of InjectionPoint does not work
+    [OWB-1037] - CLONE - NormalScoped ASM proxies broken in some cases for partial beans
+    [OWB-1039] - improve exception handling during deployment
+    [OWB-1041] - Session id changes in tomcat integration are not propagated to session context manager
+    [OWB-1042] - dependent producer resolution needs to consider raw types
+    [OWB-1045] - WebContextsService#destroySession
+
+Improvement
+
+    [OWB-652] - Introduce HierarchicBeanManager
+    [OWB-755] - Move the instance creation into Producer.produce
+    [OWB-763] - move our remaining tests from TestContext to AbstractUnitTest
+    [OWB-798] - expensive check in EventUtil#checkEventBindings
+    [OWB-820] - cleanup of el resolvers
+    [OWB-932] - skip validation of the cdi-api
+    [OWB-937] - unify startup detection
+    [OWB-972] - Define an Application Boundary SPI
+    [OWB-987] - improve getReference type handling
+    [OWB-1004] - Enable repeating qualifiers with binding attributes
+    [OWB-1020] - evaluate class interceptors and use them if there is no special method interceptor
+    [OWB-1031] - improve error message if injection point validation fails
+
+New Feature
+
+    [OWB-752] - upgrade jcdi to CDI-1.1
+    [OWB-814] - Implement CDI-268
+    [OWB-815] - Implement EventMetadata
+    [OWB-928] - implement CDI-1.1 beans.xml scanning
+    [OWB-931] - NormalScopeProxyFactory classloader usage
+    [OWB-942] - CLONE owb-1.2- Signal or handle differently final methods
+    [OWB-977] - ProcessBeanAttributes
+    [OWB-978] - @Vetoed
+    [OWB-980] - Support @WithAnnotations in ProcessAnnotatedType event
+    [OWB-1021] - simple stackoverflow protection for TypeVariable
+    [OWB-1029] - Use OWB on GoogleAppEngine
+
+Task
+
+    [OWB-770] - Implement new Lifecycle events
+    [OWB-782] - Create AnnotatedTypeService SPI interface
+    [OWB-826] - Implement CDI-58
+    [OWB-843] - Implement utility-methods in BeanManager
+    [OWB-847] - cleanup of SubclassProxyFactory
+    [OWB-925] - move OWB trunk to CDI-1.1
+    [OWB-926] - retire the OWB-CdiTest project
+    [OWB-927] - retire the OWB-CdiTest project
+    [OWB-936] - Check proxy generation works well with java 7
+    [OWB-944] - upgrade to asm5
+    [OWB-951] - Implement AlterableContext
+    [OWB-1025] - add handling for @Initialized and @Destroyed
+
+
+
+
+Older Releases:
 
 -------------------------------------------
 Release Notes - OpenWebBeans - Version 1.2.1
@@ -86,8 +203,8 @@ Bug
 
     [OWB-626] - Conversation Scope isn't accessible after RENDER_RESPONSE phase
     [OWB-642] - Method WebBeansUtil.configureProducerMethodSpecializations is unreliable
-    [OWB-654] - manual lookups of beans with generics fail
     [OWB-675] - Alternative resolving does not take Qualifiers into consideration
+    [OWB-654] - manual lookups of beans with generics fail
     [OWB-679] - StereoTypeManager is completely unused -> remove or fix.
     [OWB-745] - Fixes usage of java.lang.Class and java.lang.reflect.Method
     [OWB-774] - missing deployment hints
@@ -1125,40 +1242,6 @@ Configuration Names and Their Default Values :
 
 
 ---------------------------------------------
-EJB Support via Embeddable OpenEJB Container in Tomcat 6.X
----------------------------------------------
-
-Configuration Steps:
---------------------------------------------
-1* Download Tomcat 6.X version
-2* Configure OpenEJB. Look at URL http://openejb.apache.org/tomcat.html for installation.
-3* Copy JSR-330 API to Tomcat /lib folder.
-4* Copy JSR-299 API to Tomcat /lib folder
-5* Put all dependent libraries of the OpenWebBeans OpenEJB Plugin
-   - openwebbeans-ejb
-   - openwebbeans-impl and its dependencies
-
-You could look at ejb-sample.war for "WEB-INF/lib" libraries as an example to develop custom applications.
-The source of this project is also available.
-
-To use EJB functionality, you will use OpenEJB collapse-ear support. In this configuration,
-your EJB beans live within your "war" bundle.
-
-How to Develop EJB Applications
----------------------------------------------
-1* Add "META-INF/openwebbeans.properties" into your application classpath.
-2* Add "org.apache.webbeans.spi.deployer.useEjbMetaDataDiscoveryService=true" to use EJB functionality.
-   So OWB container looks for EJBs.
-3* Add "org.apache.webbeans.resource.spi.ResourceService=org.apache.webbeans.ejb.resource.OpenEjbResourceInjectionService to
-use OpenEJB Resource injections.
-4* Add "openwebbeans-ejb", plugin into your web application classpath. 
-5* If you want to use other plugins, add respective plugins into your application classpath. For example, if you wish to use
-JSF framework, you add "openwebbeans-jsf" plugin.
-6* Add OWB related interceptor into your EJB Beans. This is called "org.apache.webbeans.ejb.interceptor.OpenWebBeansEjbInterceptor"
-This is needed for OWB injections.
-7* Update your application's "web.xml" to add OWB specific configuration.
-
----------------------------------------------
 How to Run Samples
 ---------------------------------------------
 
@@ -1173,14 +1256,7 @@ Look at "Compile and Run Samples via Jetty&Tomcat Plugin" section.
 It can be run in the jetty web container via maven jetty plugin from source. 
 Look at "Compile and Run Samples via Jetty&Tomcat Plugin" section.
 
-3) "EJB Sample Application" : Shows the usage of EJBs with embeddable OpenEJB in Tomcat. Firstly
-configure OpenEJB with Tomcat as explained above.
-Look at "Compile and Run Samples via Jetty&Tomcat Plugin" section.
-
-4) "EJB Telephone Application" : Shows the usage of OpenEJB resource injection service.
-Look at "Compile and Run Samples via Jetty&Tomcat Plugin" section.
-
-5) "JMS Injection Sample" : Show JMS injections. JMS injection currently uses
+3) "JMS Injection Sample" : Show JMS injections. JMS injection currently uses
    ConnectionFactory as JMS connection factory jndi name. You can change this
    via configuration file. Look above explanation for how to configure JMS jndi. Also,
    JMS injection requires to use of a JMS provider. Generally Java EE servers contains
@@ -1188,28 +1264,28 @@ Look at "Compile and Run Samples via Jetty&Tomcat Plugin" section.
    So you have to create a queue destination in your JMS provider with name "queue/A" to run example. 
    If you want to change queue jndi name, then look at source and change it from "WEB-INF/beans.xml" file.
 
-6) "Conversation Sample" : Shows usage of JSF conversations.
+4) "Conversation Sample" : Shows usage of JSF conversations.
 It can be run in the jetty web container via maven jetty plugin from source.
 Look at "Compile and Run Samples via Jetty&Tomcat Plugin" section.
 
-7) "JSF2 Sample" : Shows usage of JSF2 Ajax.
+5) "JSF2 Sample" : Shows usage of JSF2 Ajax.
 It can be run in the jetty web container via maven jetty plugin from source.
 Look at "Compile and Run Samples via Jetty&Tomcat Plugin" section. It requires
 to use JSF2 runtime.
 
 
-8) "Standalone Sample" : Shows usage of OpenWebBeans in Standalone Swing Application.
+6) "Standalone Sample" : Shows usage of OpenWebBeans in Standalone Swing Application.
 Look at "OpenWebBeans in Java SE" section.
 
 Configuring and Running the Applications:
 --------------------------------------------
-See section Compile and Run Samples via Jetty&Tomcat Plugin.
+See section Compile and Run Samples via Tomcat Plugin.
 
 --------------------------------------------
 Maven Install and Package From the Source
 --------------------------------------------
 
-Maven Version : Apache Maven 2.2.1 or later
+Maven Version : Apache Maven 3.2.1 or later
 
 First you have to download the "source" version of the OpenWebBeans project that
 contains the all source code of the OpenWebBeans.
@@ -1338,6 +1414,7 @@ You can reach the OpenWebBeans web page at
 http://openwebbeans.apache.org
 ---------------------------------------
 
+Enjoy!
+
 Your Apache OpenWebBeans Team
 
-Enjoy!
