@@ -145,6 +145,7 @@ Bug
     [OWB-1041] - Session id changes in tomcat integration are not propagated to session context manager
     [OWB-1042] - dependent producer resolution needs to consider raw types
     [OWB-1045] - WebContextsService#destroySession
+    [OWB-1046] - Starting transient conversation fails with jetty
 
 Improvement
 
