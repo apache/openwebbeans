@@ -151,7 +151,6 @@ Improvement
     [OWB-652] - Introduce HierarchicBeanManager
     [OWB-755] - Move the instance creation into Producer.produce
     [OWB-763] - move our remaining tests from TestContext to AbstractUnitTest
-    [OWB-798] - expensive check in EventUtil#checkEventBindings
     [OWB-820] - cleanup of el resolvers
     [OWB-932] - skip validation of the cdi-api
     [OWB-937] - unify startup detection

@@ -288,23 +288,23 @@ public class WebContextsService extends AbstractContextsService
     @Override
     public void startContext(Class<? extends Annotation> scopeType, Object startParameter) throws ContextException
     {
-        if(scopeType.equals(RequestScoped.class))
+        if (scopeType.equals(RequestScoped.class))
         {
             initRequestContext((ServletRequestEvent)startParameter);
         }
-        else if(scopeType.equals(SessionScoped.class))
+        else if (scopeType.equals(SessionScoped.class))
         {
             initSessionContext((HttpSession)startParameter);
         }
-        else if(scopeType.equals(ApplicationScoped.class))
+        else if (scopeType.equals(ApplicationScoped.class))
         {
             initApplicationContext((ServletContext)startParameter);
         }
-        else if(supportsConversation && scopeType.equals(ConversationScoped.class))
+        else if (supportsConversation && scopeType.equals(ConversationScoped.class))
         {
-            initConversationContext((ConversationContext)startParameter);
+            initConversationContext(startParameter);
         }
-        else if(scopeType.equals(Dependent.class))
+        else if (scopeType.equals(Dependent.class))
         {
             //Do nothing
         }
@@ -320,12 +320,12 @@ public class WebContextsService extends AbstractContextsService
     @Override
     public boolean supportsContext(Class<? extends Annotation> scopeType)
     {
-        if(scopeType.equals(RequestScoped.class) ||
-                scopeType.equals(SessionScoped.class) ||
-                scopeType.equals(ApplicationScoped.class) ||
-                scopeType.equals(Dependent.class) ||
-                scopeType.equals(Singleton.class) ||
-                (scopeType.equals(ConversationScoped.class) && supportsConversation))
+        if (scopeType.equals(RequestScoped.class) ||
+            scopeType.equals(SessionScoped.class) ||
+            scopeType.equals(ApplicationScoped.class) ||
+            scopeType.equals(Dependent.class) ||
+            scopeType.equals(Singleton.class) ||
+            (scopeType.equals(ConversationScoped.class) && supportsConversation))
         {
             return true;
         }
@@ -365,6 +365,8 @@ public class WebContextsService extends AbstractContextsService
                 
                 //Init thread local singleton context
                 initSingletonContext(event.getServletContext());
+
+                initConversationContext(request);
 
                 webBeansContext.getBeanManagerImpl().fireEvent(request, InitializedLiteral.INSTANCE_REQUEST_SCOPED);
             }
@@ -725,15 +727,24 @@ public class WebContextsService extends AbstractContextsService
 
     /**
      * Initialize conversation context.
-     * @param context context
+     * @param startObject either a ServletRequest or a ConversationContext
      */
-    private void initConversationContext(ConversationContext context)
+    private void initConversationContext(Object startObject)
     {
-        if (context == null)
+
+        if (startObject != null && startObject instanceof ConversationContext)
+        {
+            ConversationContext context = (ConversationContext) startObject;
+            context.setActive(true);
+            conversationContexts.set(context);
+        }
+        else
         {
             if(conversationContexts.get() == null)
             {
                 ConversationContext newContext = new ConversationContext();
+                webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_CONVERSATION_SCOPED);
+
                 newContext.setActive(true);
                 
                 conversationContexts.set(newContext);
@@ -742,13 +753,6 @@ public class WebContextsService extends AbstractContextsService
             {
                 conversationContexts.get().setActive(true);
             }
-
-            webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_SINGLETON_SCOPED);
-        }
-        else
-        {
-            context.setActive(true);
-            conversationContexts.set(context);
         }
     }
 
