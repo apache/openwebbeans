@@ -28,7 +28,7 @@ import org.apache.webbeans.container.SerializableBeanVault;
  */
 public class CustomAlterablePassivatingContextImpl extends CustomPassivatingContextImpl implements AlterableContext
 {
-    CustomAlterablePassivatingContextImpl(SerializableBeanVault sbv, AlterableContext context)
+    public CustomAlterablePassivatingContextImpl(SerializableBeanVault sbv, AlterableContext context)
     {
         super(sbv, context);
     }

@@ -20,6 +20,7 @@ package org.apache.webbeans.test.portable;
 
 import java.util.Set;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.PassivationCapable;
 
@@ -66,7 +67,7 @@ public class ExtensionTest extends AbstractUnitTest
         startContainer(ExternalTestScopedBean.class);
 
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        webBeansContext.getContextFactory().initApplicationContext(null);
+        webBeansContext.getContextsService().startContext(ApplicationScoped.class, null);
 
         @SuppressWarnings("unchecked")
         Bean<ExternalTestScopedBean> bean = (Bean<ExternalTestScopedBean>) getBeanManager().getBeans(ExternalTestScopedBean.class, 
@@ -82,7 +83,7 @@ public class ExtensionTest extends AbstractUnitTest
         //Fire shut down
         BeanManagerImpl.class.cast(getBeanManager()).fireEvent(new BeforeShutdownImpl(), true);
 
-        webBeansContext.getContextFactory().destroyApplicationContext(null);
+        webBeansContext.getContextsService().endContext(ApplicationScoped.class, null);
 
         shutDownContainer();
     }

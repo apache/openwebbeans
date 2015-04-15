@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.AnnotationLiteral;
@@ -30,6 +31,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import junit.framework.Assert;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.decorators.multiple.Decorator1;
 import org.apache.webbeans.test.decorators.multiple.Decorator2;
@@ -132,10 +134,11 @@ public class DecoratorAndInterceptorStackTests extends AbstractUnitTest
         @Override
         public void run()
         {
+            ContextsService contextsService = WebBeansContext.currentInstance().getContextsService();
             try
             {
                 // this starts the RequestContext for this very thread
-                WebBeansContext.currentInstance().getContextFactory().initRequestContext(null);
+                contextsService.startContext(RequestScoped.class, null);
 
                 for (int i=0; i < 10; i++)
                 {
@@ -147,6 +150,7 @@ public class DecoratorAndInterceptorStackTests extends AbstractUnitTest
                 log.log(Level.SEVERE, "Error while executing Decorators in parallel!", e);
                 failed = true;
             }
+            contextsService.endContext(RequestScoped.class, null);
         }
 
         public boolean isFailed()

@@ -28,10 +28,13 @@ import java.util.logging.Logger;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.el22.WebBeansELResolver;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.spi.ContextsService;
 import org.junit.Assert;
 import org.junit.Test;
 
 import javax.el.ELContext;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 
 public class ELPerformanceTest extends AbstractUnitTest
 {
@@ -94,8 +97,9 @@ public class ELPerformanceTest extends AbstractUnitTest
         @Override
         public void run()
         {
-            WebBeansContext.currentInstance().getContextFactory().initRequestContext(null);
-            WebBeansContext.currentInstance().getContextFactory().initSessionContext(null);
+            ContextsService contextsService = WebBeansContext.currentInstance().getContextsService();
+            contextsService.startContext(RequestScoped.class, null);
+            contextsService.startContext(SessionScoped.class, null);
 
             try
             {
@@ -114,8 +118,8 @@ public class ELPerformanceTest extends AbstractUnitTest
             }
             finally
             {
-                WebBeansContext.currentInstance().getContextFactory().destroyRequestContext(null);
-                WebBeansContext.currentInstance().getContextFactory().destroySessionContext(null);
+                contextsService.endContext(RequestScoped.class, null);
+                contextsService.endContext(SessionScoped.class, null);
             }
         }
     }

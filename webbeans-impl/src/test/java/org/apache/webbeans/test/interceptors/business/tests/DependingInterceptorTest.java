@@ -22,12 +22,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.interceptors.beans.ApplicationScopedBean;
 import org.apache.webbeans.test.interceptors.beans.DependentScopedBean;
@@ -80,9 +81,9 @@ public class DependingInterceptorTest extends AbstractUnitTest
 
         TransactionInterceptor.ECHO = false;
 
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        webBeansContext.getContextFactory().destroyRequestContext(null);
-        webBeansContext.getContextFactory().initRequestContext(null);
+        ContextsService contextsService = getWebBeansContext().getContextsService();
+        contextsService.endContext(RequestScoped.class, null);
+        contextsService.startContext(RequestScoped.class, null);
 
         CreationalContext<RequestScopedBean> ctx2 = getBeanManager().createCreationalContext(bean);
         Object reference2 = getBeanManager().getReference(bean, RequestScopedBean.class, ctx2);

@@ -22,12 +22,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.interceptors.business.common.WithInheritedBindingTypeBean;
 import org.apache.webbeans.test.interceptors.common.SecureInterceptor;
@@ -73,9 +75,9 @@ public class WithInheritedBindingTypeTest extends AbstractUnitTest
         Assert.assertTrue(TransactionInterceptor.ECHO);
         Assert.assertTrue(SecureInterceptor.ECHO);
 
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        webBeansContext.getContextFactory().destroyRequestContext(null);
-        webBeansContext.getContextFactory().initRequestContext(null);
+        ContextsService contextsService = WebBeansContext.currentInstance().getContextsService();
+        contextsService.endContext(RequestScoped.class, null);
+        contextsService.startContext(RequestScoped.class, null);
 
         reference = getBeanManager().getReference(bean, WithInheritedBindingTypeBean.class, ctx);
         beanInstance = (WithInheritedBindingTypeBean)reference;
