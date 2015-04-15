@@ -30,6 +30,7 @@ import java.io.ObjectOutputStream;
 
 /**
  * Container provided failover and passivation service.
+ * @deprecated in the future we will simply store all SessionScoped stuff in the native http session. This will render this service useless.
  */
 public interface FailOverService
 {
