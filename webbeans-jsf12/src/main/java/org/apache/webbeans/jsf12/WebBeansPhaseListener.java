@@ -20,17 +20,18 @@ package org.apache.webbeans.jsf12;
 
 import javax.enterprise.context.BusyConversationException;
 import javax.enterprise.context.Conversation;
+import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.NonexistentConversationException;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.spi.ContextsService;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,6 +51,10 @@ public class WebBeansPhaseListener implements PhaseListener
 
     private Boolean owbApplication = null;
 
+    private WebBeansContext webBeansContext = WebBeansContext.getInstance();
+    private ConversationManager conversationManager = webBeansContext.getConversationManager();
+    private ContextsService contextsService = webBeansContext.getContextsService();
+
     /**
      * {@inheritDoc}
      */
@@ -64,10 +69,7 @@ public class WebBeansPhaseListener implements PhaseListener
         if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE) ||
                 phaseEvent.getFacesContext().getResponseComplete())
         {
-            WebBeansContext webBeansContext = WebBeansContext.getInstance();
-            ConversationManager conversationManager = webBeansContext.getConversationManager();
             Conversation conversation = conversationManager.getConversationBeanReference();
-            ContextFactory contextFactory = webBeansContext.getContextFactory();
 
             if (conversation.isTransient())
             {
@@ -75,7 +77,7 @@ public class WebBeansPhaseListener implements PhaseListener
                 {
                     logger.log(Level.FINE, "Destroying the conversation context with cid : [{0}]", conversation.getId());
                 }
-                contextFactory.destroyConversationContext();
+                contextsService.endContext(ConversationScoped.class, null);
             }
             else
             {
@@ -108,7 +110,6 @@ public class WebBeansPhaseListener implements PhaseListener
             ConversationManager conversationManager = webBeansContext.getConversationManager();
             Conversation conversation = conversationManager.getConversationBeanReference();
             String cid = JSFUtil.getConversationId();
-            ContextFactory contextFactory = webBeansContext.getContextFactory();
 
             if (conversation.isTransient())
             {
@@ -116,7 +117,7 @@ public class WebBeansPhaseListener implements PhaseListener
                 {
                     logger.log(Level.FINE, "Creating a new transitional conversation with cid : [{0}]", conversation.getId());
                 }
-                contextFactory.initConversationContext(null);
+                contextsService.startContext(ConversationScoped.class, null);
 
                 //Not restore, throw exception
                 if(cid != null && !cid.equals(""))
@@ -135,14 +136,14 @@ public class WebBeansPhaseListener implements PhaseListener
                 ConversationImpl owbConversation = (ConversationImpl)conversation;
                 if(owbConversation.iUseIt() > 1)
                 {
-                    contextFactory.initConversationContext(null);
+                    contextsService.startContext(ConversationScoped.class, null);
                     //Throw Busy exception
                     throw new BusyConversationException("Propogated conversation with cid=" + cid + " is used by other request. It creates a new transient conversation");
                 }
                 else
                 {
                     ConversationContext conversationContext = conversationManager.getConversationContext(conversation);
-                    contextFactory.initConversationContext(conversationContext);
+                    contextsService.startContext(ConversationScoped.class, conversationContext);
                 }
             }
         }

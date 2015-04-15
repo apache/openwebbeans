@@ -23,7 +23,6 @@ import javax.enterprise.context.RequestScoped;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.AbstractContext;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.RequestContext;
 import org.jboss.cdi.tck.spi.Contexts;
 
@@ -34,16 +33,16 @@ public class ContextsImpl implements Contexts<AbstractContext>
     public AbstractContext getRequestContext()
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        RequestContext ctx =  (RequestContext)contextFactory.getStandardContext(RequestScoped.class);
+        RequestContext ctx =  (RequestContext)webBeansContext.getBeanManagerImpl().getContext(RequestScoped.class);
         
         if(ctx == null)
         {
-            contextFactory.initRequestContext(null);
+            webBeansContext.getContextsService().startContext(RequestScoped.class, null);
+            ctx =  (RequestContext)webBeansContext.getBeanManagerImpl().getContext(RequestScoped.class);
         }
         
-        return (AbstractContext) contextFactory.getStandardContext(RequestScoped.class);
+        return ctx;
     }
 
     @Override
@@ -63,9 +62,8 @@ public class ContextsImpl implements Contexts<AbstractContext>
     public AbstractContext getDependentContext()
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        return (AbstractContext) contextFactory.getStandardContext(Dependent.class);
+        return (AbstractContext) webBeansContext.getBeanManagerImpl().getContext(Dependent.class);
     }
 
     @Override

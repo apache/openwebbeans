@@ -18,13 +18,17 @@
  */
 package org.apache.webbeans.web.lifecycle.test;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import java.util.Properties;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.corespi.se.DefaultScannerService;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
+import org.apache.webbeans.spi.ContextsService;
 
 /**
  * Ease the writing of the tests. Simulates container
@@ -49,11 +53,11 @@ public class EnterpriseTestLifeCycle extends StandaloneLifeCycle
         this.mockHttpSession = new MockHttpSession();
         this.servletContextEvent = new MockServletContextEvent();
         WebBeansContext webBeansContext = getWebBeansContext();
-        ContextFactory contextFactory = webBeansContext.getContextFactory();
-        contextFactory.initRequestContext(null);
-        contextFactory.initSessionContext(mockHttpSession);
-        contextFactory.initConversationContext(null);
-        contextFactory.initApplicationContext(this.servletContextEvent.getServletContext());
+        ContextsService contextsService = webBeansContext.getContextsService();
+        contextsService.startContext(RequestScoped.class, null);
+        contextsService.startContext(SessionScoped.class, mockHttpSession);
+        contextsService.startContext(ConversationScoped.class, null);
+        contextsService.startContext(ApplicationScoped.class, this.servletContextEvent.getServletContext());
     }
     
     @Override
@@ -66,11 +70,11 @@ public class EnterpriseTestLifeCycle extends StandaloneLifeCycle
     public void beforeStopApplication(Object endObject)
     {
         WebBeansContext webBeansContext = getWebBeansContext();
-        ContextFactory contextFactory = webBeansContext.getContextFactory();
-        contextFactory.destroyRequestContext(null);
-        contextFactory.destroySessionContext(this.mockHttpSession);
-        contextFactory.destroyConversationContext();
-        contextFactory.destroyApplicationContext(this.servletContextEvent.getServletContext());
+        ContextsService contextsService = webBeansContext.getContextsService();
+        contextsService.endContext(RequestScoped.class, null);
+        contextsService.endContext(SessionScoped.class, this.mockHttpSession);
+        contextsService.endContext(ConversationScoped.class, null);
+        contextsService.endContext(ApplicationScoped.class, this.servletContextEvent.getServletContext());
 
         //Comment out for OWB-502
         //ContextFactory.cleanUpContextFactory();

@@ -21,6 +21,7 @@ package org.apache.webbeans.test.interceptors.business.tests;
 import junit.framework.Assert;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.interceptors.beans.ApplicationScopedBean;
 import org.apache.webbeans.test.interceptors.beans.DependentScopedBean;
@@ -28,6 +29,7 @@ import org.apache.webbeans.test.interceptors.beans.RequestScopedBean;
 import org.apache.webbeans.test.interceptors.common.TransactionInterceptor;
 import org.junit.Test;
 
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import java.util.ArrayList;
@@ -119,9 +121,10 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
         {
             try
             {
+                ContextsService contextsService = WebBeansContext.currentInstance().getContextsService();
                 for (int req = 0; req < 5; req++)
                 {
-                    WebBeansContext.currentInstance().getContextFactory().initRequestContext(null);
+                    contextsService.startContext(RequestScoped.class, null);
 
                     Set<Bean<?>> beans = getBeanManager().getBeans(RequestScopedBean.class);
                     Assert.assertNotNull(beans);
@@ -146,7 +149,7 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
                         beanInstance1.getMyService().getJ();
                     }
 
-                    WebBeansContext.currentInstance().getContextFactory().destroyRequestContext(null);
+                    contextsService.endContext(RequestScoped.class, null);
                 }
             }
             catch (Exception e)

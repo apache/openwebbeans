@@ -38,6 +38,7 @@ import javax.el.ExpressionFactory;
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
@@ -73,6 +74,8 @@ import org.apache.webbeans.component.creation.MethodProducerFactory;
 import org.apache.webbeans.component.third.PassivationCapableThirdpartyBeanImpl;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.CustomAlterablePassivatingContextImpl;
+import org.apache.webbeans.context.CustomPassivatingContextImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DecoratorComparator;
 import org.apache.webbeans.event.EventMetadataImpl;
@@ -416,11 +419,33 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public BeanManager addContext(Context context)
     {
-        addContext(context.getScope(), webBeansContext.getContextFactory().getCustomContext(context));
+        addContext(context.getScope(), wrapCustomContext(context));
 
         return this;
 
     }
+
+    /**
+     * If the context is passivating then we need to wrap it into a version which
+     * uses the {@link SerializableBeanVault }
+     */
+    public Context wrapCustomContext(Context context)
+    {
+        if (isPassivatingScope(context.getScope()))
+        {
+            if (context instanceof AlterableContext)
+            {
+                return new CustomAlterablePassivatingContextImpl(webBeansContext.getSerializableBeanVault(), (AlterableContext) context);
+            }
+            else
+            {
+                return new CustomPassivatingContextImpl(webBeansContext.getSerializableBeanVault(), context);
+            }
+        }
+
+        return context;
+    }
+
 
     /**
      * {@inheritDoc}

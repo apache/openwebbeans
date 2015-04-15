@@ -34,7 +34,7 @@ public class CustomPassivatingContextImpl implements Context
     protected final Context context;
 
 
-    CustomPassivatingContextImpl(SerializableBeanVault sbv, Context context)
+    public CustomPassivatingContextImpl(SerializableBeanVault sbv, Context context)
     {
         this.sbv = sbv;
         this.context = context;

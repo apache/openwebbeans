@@ -141,7 +141,7 @@ public class SerializationTest extends AbstractUnitTest
         
         // first we need to actually create a few instances
 
-        Context sessionContext = webBeansContext.getContextFactory().getStandardContext(SessionScoped.class);
+        Context sessionContext = webBeansContext.getBeanManagerImpl().getContext(SessionScoped.class);
         Assert.assertNotNull(sessionContext);
         byte[] ba = serializeObject(sessionContext);
         Assert.assertNotNull(ba);

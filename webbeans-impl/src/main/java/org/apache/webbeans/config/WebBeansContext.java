@@ -28,7 +28,6 @@ import java.util.Properties;
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.SerializableBeanVault;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.decorator.DecoratorsManager;
@@ -69,7 +68,6 @@ public class WebBeansContext
     private final Map<Class<?>, Object> serviceMap = new HashMap<Class<?>, Object>();
 
     private final WebBeansUtil webBeansUtil = new WebBeansUtil(this);
-    private final ContextFactory contextFactory = new ContextFactory(this);
     private final AlternativesManager alternativesManager = new AlternativesManager(this);
     private final AnnotatedElementFactory annotatedElementFactory = new AnnotatedElementFactory(this);
     private final BeanManagerImpl beanManagerImpl = new BeanManagerImpl(this);
@@ -241,12 +239,6 @@ public class WebBeansContext
     public WebBeansUtil getWebBeansUtil()
     {
         return webBeansUtil;
-    }
-
-    @Deprecated
-    public ContextFactory getContextFactory()
-    {
-        return contextFactory;
     }
 
     public AnnotationManager getAnnotationManager()
