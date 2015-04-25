@@ -20,19 +20,13 @@ package org.apache.webbeans.web.tomcat7;
 
 import org.apache.catalina.ContainerEvent;
 import org.apache.catalina.ContainerListener;
-import org.apache.catalina.Context;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.SessionContext;
-import org.apache.webbeans.spi.ContextsService;
-import org.apache.webbeans.web.context.SessionContextManager;
-import org.apache.webbeans.web.context.WebContextsService;
 
 /**
  * Container listener that propagates the change of a session id (e. g. during an authentication through the container)
  * to the session context manager. Otherwise a new session context for the same session is created, because the session
  * id is used to identify the session context. <br/> Adapted from OpenEJB tomee/tomee-catalina and updated.
  *
- * @version $Rev$ $Date$
+ * @deprecated we do not use the sessionId anymore since owb-1.5.1, so we do not need any sessionId change listener
  */
 public class TomcatContainerListener implements ContainerListener
 {
@@ -40,29 +34,7 @@ public class TomcatContainerListener implements ContainerListener
     @Override
     public void containerEvent(ContainerEvent containerEvent)
     {
-        if (Context.CHANGE_SESSION_ID_EVENT.equals(containerEvent.getType())
-                && (containerEvent.getData() instanceof String[]))
-        {
-            String[] ids = (String[]) containerEvent.getData();
-
-            if (ids.length >= 2)
-            {
-                WebBeansContext webBeansContext = WebBeansContext.currentInstance();
-                ContextsService contextsService = webBeansContext.getContextsService();
-
-                if (contextsService instanceof WebContextsService)
-                {
-                    WebContextsService webContextsService = (WebContextsService) contextsService;
-                    SessionContextManager sessionContextManager = webContextsService.getSessionContextManager();
-
-                    SessionContext sessionContext = sessionContextManager.getSessionContextWithSessionId(ids[0]);
-                    if (sessionContext != null)
-                    {
-                        sessionContextManager.removeSessionContextWithSessionId(ids[0]);
-                        sessionContextManager.addNewSessionContext(ids[1], sessionContext);
-                    }
-                }
-            }
-        }
+        // nothing to do anymore.
+        // we do not use the sessionId anymore since owb-1.5.1
     }
 }

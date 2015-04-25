@@ -23,7 +23,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContainerLifecycle;
-import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.web.context.WebContextsService;
 import org.apache.webbeans.web.util.ServletCompatibilityUtil;
@@ -61,7 +60,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     /**Manages the container lifecycle*/
     protected ContainerLifecycle lifeCycle = null;
 
-    protected FailOverService failoverService = null;
     private WebBeansContext webBeansContext;
 
     /**
@@ -70,7 +68,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     public WebBeansConfigurationListener()
     {
         webBeansContext = WebBeansContext.getInstance();
-        failoverService = webBeansContext.getService(FailOverService.class);
     }
 
     /**

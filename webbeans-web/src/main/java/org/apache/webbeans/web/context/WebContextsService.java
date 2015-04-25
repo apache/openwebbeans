@@ -33,8 +33,6 @@ import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.spi.FailOverService;
-import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.web.intercept.RequestScopedBeanInterceptorHandler;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -51,10 +49,8 @@ import javax.servlet.ServletRequestEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.lang.annotation.Annotation;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -67,6 +63,8 @@ public class WebContextsService extends AbstractContextsService
     /**Logger instance*/
     private static final Logger logger = WebBeansLoggerFacade.getLogger(WebContextsService.class);
 
+    private static final String OWB_SESSION_CONTEXT_ATTRIBUTE = "OPENWEBBEANS_SESSION_CONTEXT";
+
     /**Current request context*/
     private static ThreadLocal<RequestContext> requestContexts = null;
 
@@ -74,7 +72,7 @@ public class WebContextsService extends AbstractContextsService
     private static ThreadLocal<SessionContext> sessionContexts = null;
 
     /**
-     * This applicationContext will be used for all non servlet-request threads
+     * A single applicationContext
      */
     private ApplicationContext sharedApplicationContext ;
 
@@ -86,24 +84,11 @@ public class WebContextsService extends AbstractContextsService
     /**Current dependent context*/
     private static DependentContext dependentContext;
 
-    /**Current application contexts*/
-    private static Map<ServletContext, ApplicationContext> currentApplicationContexts = new ConcurrentHashMap<ServletContext, ApplicationContext>();
-    
-    /**Current singleton contexts*/
-    private static Map<ServletContext, SingletonContext> currentSingletonContexts = new ConcurrentHashMap<ServletContext, SingletonContext>();
-
-    private static Map<ClassLoader, ServletContext> classLoaderToServletContextMapping = new ConcurrentHashMap<ClassLoader, ServletContext>();
-
-    /**Session context manager*/
-    private final SessionContextManager sessionCtxManager = new SessionContextManager();
-
     /**Conversation context manager*/
     private final ConversationManager conversationManager;
 
     private boolean supportsConversation = false;
     
-    protected FailOverService failoverService = null;
-
     private WebBeansContext webBeansContext;
 
     /**Initialize thread locals*/
@@ -136,16 +121,10 @@ public class WebContextsService extends AbstractContextsService
     {
         this.webBeansContext = webBeansContext;
         supportsConversation =  webBeansContext.getOpenWebBeansConfiguration().supportsConversation();
-        failoverService = webBeansContext.getService(FailOverService.class);
         conversationManager = webBeansContext.getConversationManager();
 
         sharedApplicationContext = new ApplicationContext();
         sharedApplicationContext.setActive(true);
-    }
-
-    public SessionContextManager getSessionContextManager()
-    {
-        return sessionCtxManager;
     }
 
     /**
@@ -180,11 +159,6 @@ public class WebContextsService extends AbstractContextsService
             sharedSingletonContext.destroy();
         }
 
-        //Clear saved contexts related with 
-        //this servlet context
-        currentApplicationContexts.clear();
-        currentSingletonContexts.clear();
-        
         //Thread local values to null
         requestContexts.set(null);
         sessionContexts.set(null);
@@ -252,13 +226,7 @@ public class WebContextsService extends AbstractContextsService
         }
         else if(scopeType.equals(ApplicationScoped.class))
         {
-            ServletContext servletContext = classLoaderToServletContextMapping.get(WebBeansUtil.getCurrentClassLoader());
-
-            if (servletContext == null)
-            {
-                return null;
-            }
-            return currentApplicationContexts.get(servletContext);
+            return sharedApplicationContext;
         }
         else if(supportsConversation && scopeType.equals(ConversationScoped.class))
         {
@@ -270,13 +238,7 @@ public class WebContextsService extends AbstractContextsService
         }
         else if (scopeType.equals(Singleton.class))
         {
-            ServletContext servletContext = classLoaderToServletContextMapping.get(WebBeansUtil.getCurrentClassLoader());
-
-            if (servletContext == null)
-            {
-                return null;
-            }
-            return currentSingletonContexts.get(servletContext);
+            return sharedSingletonContext;
         }
 
         return null;
@@ -359,12 +321,6 @@ public class WebContextsService extends AbstractContextsService
                 {
                     initSessionContext(session);    
                 }
-                            
-                //Init thread local application context
-                initApplicationContext(event.getServletContext());
-                
-                //Init thread local singleton context
-                initSingletonContext(event.getServletContext());
 
                 initConversationContext(request);
 
@@ -373,11 +329,6 @@ public class WebContextsService extends AbstractContextsService
         }
         else
         {
-            //Init thread local application context
-            initApplicationContext(null);
-
-            //Init thread local singleton context
-            initSingletonContext(null);
             webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_REQUEST_SCOPED);
         }
     }
@@ -411,15 +362,18 @@ public class WebContextsService extends AbstractContextsService
             elStore.destroyELContextStore();
         }
 
+        Object payload = requestEvent != null && requestEvent.getServletRequest() != null ? requestEvent.getServletRequest() : new Object();
+        webBeansContext.getBeanManagerImpl().fireEvent(payload, DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
+
         //Clear thread locals
+        conversationContexts.set(null);
+        conversationContexts.remove();
+        sessionContexts.set(null);
+        sessionContexts.remove();
         requestContexts.set(null);
         requestContexts.remove();
 
         RequestScopedBeanInterceptorHandler.removeThreadLocals();
-
-        Object payload = requestEvent != null && requestEvent.getServletRequest() != null ? requestEvent.getServletRequest() : new Object();
-
-        webBeansContext.getBeanManagerImpl().fireEvent(payload, DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
     }
 
     private void cleanupConversations()
@@ -458,7 +412,8 @@ public class WebContextsService extends AbstractContextsService
     }
 
     /**
-     * Creates the session context at the session start. 
+     * Creates the session context at the session start.
+     * Or assign a
      * @param session http session object
      */
     private void initSessionContext(HttpSession session)
@@ -475,22 +430,30 @@ public class WebContextsService extends AbstractContextsService
         }
         else
         {
-            String sessionId = session.getId();
+            // we need to get it latest here to make sure we work on the same instance
+            currentSessionContext = (SessionContext) session.getAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE);
 
-            //Current context
-            currentSessionContext = sessionCtxManager.getSessionContextWithSessionId(sessionId);
-
-            //No current context
             if (currentSessionContext == null)
             {
-                currentSessionContext = new SessionContext();
-                sessionCtxManager.addNewSessionContext(sessionId, currentSessionContext);
-                webBeansContext.getBeanManagerImpl().fireEvent(session, InitializedLiteral.INSTANCE_SESSION_SCOPED);
+                // no current context, so lets create a new one
+                synchronized (OWB_SESSION_CONTEXT_ATTRIBUTE)
+                {
+                    currentSessionContext = (SessionContext) session.getAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE);
+                    if (currentSessionContext == null)
+                    {
+                        currentSessionContext = new SessionContext();
+                        //Activate
+                        currentSessionContext.setActive(true);
+                        webBeansContext.getBeanManagerImpl().fireEvent(session, InitializedLiteral.INSTANCE_SESSION_SCOPED);
+                    }
+                }
             }
+
+            // we do that in any case.
+            // This is needed to trigger delta-replication on most servers
+            session.setAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE, currentSessionContext);
         }
 
-        //Activate
-        currentSessionContext.setActive(true);
 
         //Set thread local
         sessionContexts.set(currentSessionContext);
@@ -513,9 +476,6 @@ public class WebContextsService extends AbstractContextsService
                 initSessionContext(session);
                 context = sessionContexts.get();
             }
-
-            //Remove session from manager
-            sessionCtxManager.removeSessionContextWithSessionId(session.getId());
         }
 
         //Destroy context
@@ -537,12 +497,7 @@ public class WebContextsService extends AbstractContextsService
      */
     private void initApplicationContext(ServletContext servletContext)
     {
-        if (servletContext != null && currentApplicationContexts.containsKey(servletContext))
-        {
-            return;
-        }
-
-        if (sharedApplicationContext != null && servletContext == null)
+        if (sharedApplicationContext != null)
         {
             return;
         }
@@ -550,23 +505,11 @@ public class WebContextsService extends AbstractContextsService
         ApplicationContext newApplicationContext = new ApplicationContext();
         newApplicationContext.setActive(true);
 
-        if (servletContext != null)
-        {
-            currentApplicationContexts.put(servletContext, newApplicationContext);
-
-            ClassLoader currentClassLoader = WebBeansUtil.getCurrentClassLoader();
-            if (!classLoaderToServletContextMapping.containsKey(currentClassLoader))
-            {
-                classLoaderToServletContextMapping.put(currentClassLoader, servletContext);
-            }
-        }
-
         if (sharedApplicationContext == null)
         {
             sharedApplicationContext = newApplicationContext;
+            webBeansContext.getBeanManagerImpl().fireEvent(servletContext != null ? servletContext : new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
         }
-
-        webBeansContext.getBeanManagerImpl().fireEvent(servletContext != null ? servletContext : new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
     }
 
     /**
@@ -578,73 +521,17 @@ public class WebContextsService extends AbstractContextsService
     {
         //look for thread local
         //this can be set by initRequestContext
-        ApplicationContext context = null;
-        
-        //Looking the context from saved context
-        //This is used in real web applications
-        if(servletContext != null)
-        {
-            context = currentApplicationContexts.get(servletContext);   
-        }
-        
-        //using in tests
-        if(context == null)
-        {
-            context = this.sharedApplicationContext;
-        }
-        
+        ApplicationContext context = sharedApplicationContext;
+        sharedSingletonContext = null;
+
         //Destroy context
         if(context != null)
         {
             context.destroy();
         }
-        
-        //Remove from saved contexts
-        if(servletContext != null)
-        {
-            currentApplicationContexts.remove(servletContext);   
-        }
-        
-        //destroyDependents all sessions
-        Collection<SessionContext> allSessionContexts = sessionCtxManager.getAllSessionContexts().values();
-        if (allSessionContexts != null && allSessionContexts.size() > 0)
-        {
-            for (SessionContext sessionContext : allSessionContexts)
-            {
-                sessionContexts.set(sessionContext);
-                
-                sessionContext.destroy();
-
-                sessionContexts.set(null);
-                sessionContexts.remove();
-            }
-
-            //Clear map
-            allSessionContexts.clear();
-        }
-        
-        //destroyDependents all conversations
-        Collection<ConversationContext> allConversationContexts = conversationManager.getAllConversationContexts().values();
-        if (allConversationContexts != null && allConversationContexts.size() > 0)
-        {
-            for (ConversationContext conversationContext : allConversationContexts) 
-            {
-                conversationContexts.set(conversationContext);
-                
-                conversationContext.destroy();
-
-                conversationContexts.set(null);
-                conversationContexts.remove();
-            }
-
-            //Clear conversations
-            allConversationContexts.clear();
-        }
 
         // this is needed to get rid of ApplicationScoped beans which are cached inside the proxies...
         webBeansContext.getBeanManagerImpl().clearCacheProxies();
-
-        classLoaderToServletContextMapping.remove(WebBeansUtil.getCurrentClassLoader());
 
         webBeansContext.getBeanManagerImpl().fireEvent(servletContext != null ? servletContext : new Object(), DestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
     }
@@ -655,29 +542,13 @@ public class WebContextsService extends AbstractContextsService
      */
     private void initSingletonContext(ServletContext servletContext)
     {
-        if (servletContext != null && currentSingletonContexts.containsKey(servletContext))
-        {
-            return;
-        }
-
-        if (currentSingletonContexts != null && servletContext == null)
+        if (sharedSingletonContext != null)
         {
             return;
         }
 
         SingletonContext newSingletonContext = new SingletonContext();
         newSingletonContext.setActive(true);
-
-        if (servletContext != null)
-        {
-            currentSingletonContexts.put(servletContext, newSingletonContext);
-
-            ClassLoader currentClassLoader = WebBeansUtil.getCurrentClassLoader();
-            if (!classLoaderToServletContextMapping.containsKey(currentClassLoader))
-            {
-                classLoaderToServletContextMapping.put(currentClassLoader, servletContext);
-            }
-        }
 
         if (sharedSingletonContext == null)
         {
@@ -693,34 +564,12 @@ public class WebContextsService extends AbstractContextsService
      */
     private void destroySingletonContext(ServletContext servletContext)
     {
-        SingletonContext context = null;
+        SingletonContext context = sharedSingletonContext;
 
-        //look for saved context
-        if(servletContext != null)
-        {
-            context = currentSingletonContexts.get(servletContext);
-        }
-        
-        //using in tests
-        if(context == null)
-        {
-            context = this.sharedSingletonContext;
-        }        
-        
-        //context is not null
-        //destroyDependents it
-        if(context != null)
+        if (context != null)
         {
             context.destroy();
         }
-
-        //remove it from saved contexts
-        if(servletContext != null)
-        {
-            currentSingletonContexts.remove(servletContext);   
-        }
-
-        classLoaderToServletContextMapping.remove(WebBeansUtil.getCurrentClassLoader());
 
         webBeansContext.getBeanManagerImpl().fireEvent(servletContext != null ? servletContext : new Object(), DestroyedLiteral.INSTANCE_SINGLETON_SCOPED);
     }
@@ -828,7 +677,10 @@ public class WebContextsService extends AbstractContextsService
         return conversationContexts.get();
     }
 
-    private Context lazyStartSessionContext()
+    /**
+     * Try to lazily start the sessionContext
+     */
+    private void lazyStartSessionContext()
     {
 
         if (logger.isLoggable(Level.FINE))
@@ -836,7 +688,6 @@ public class WebContextsService extends AbstractContextsService
             logger.log(Level.FINE, ">lazyStartSessionContext");
         }
 
-        Context webContext = null;
         Context context = getCurrentContext(RequestScoped.class);
         if (context instanceof ServletRequestContext)
         {
@@ -846,12 +697,8 @@ public class WebContextsService extends AbstractContextsService
             { // this could be null if there is no active request context
                 try
                 {
-                    HttpSession currentSession = servletRequest.getSession();
+                    HttpSession currentSession = servletRequest.getSession(true);
                     initSessionContext(currentSession);
-                    if (failoverService != null && failoverService.isSupportFailOver())
-                    {
-                        failoverService.sessionIsInUse(currentSession);
-                    }
 
                     if (logger.isLoggable(Level.FINE))
                     {
@@ -873,12 +720,6 @@ public class WebContextsService extends AbstractContextsService
         {
             logger.log(Level.WARNING, "Could NOT lazily initialize session context because of "+context+" RequestContext");
         }
-
-        if (logger.isLoggable(Level.FINE))
-        {
-            logger.log(Level.FINE, "<lazyStartSessionContext "+ webContext);
-        }
-        return webContext;
     }
 
 

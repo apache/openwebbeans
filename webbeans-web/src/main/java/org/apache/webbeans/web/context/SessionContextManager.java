@@ -31,6 +31,7 @@ import org.apache.webbeans.util.Asserts;
  * </p>
  * @version $Rev$ $Date$
  *
+ * @deprecated This is NOT being used anymore by OWB! We just keep it for binary backward compat with TomEE! We can remove it once TomEE switches to real sessions.
  */
 public class SessionContextManager
 {
