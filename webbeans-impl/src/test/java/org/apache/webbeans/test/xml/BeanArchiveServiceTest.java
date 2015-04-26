@@ -20,18 +20,25 @@ package org.apache.webbeans.test.xml;
 
 
 import javax.enterprise.inject.spi.DeploymentException;
+import java.io.File;
 import java.net.URL;
 
 import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.BeanArchiveService.BeanArchiveInformation;
 import org.apache.webbeans.spi.BeanArchiveService.BeanDiscoveryMode;
 import org.apache.webbeans.xml.DefaultBeanArchiveService;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.Assert;
+import org.junit.rules.TemporaryFolder;
 
 
 public class BeanArchiveServiceTest
 {
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void testNotExistingBeansXml() throws Exception
     {
@@ -52,6 +59,16 @@ public class BeanArchiveServiceTest
         Assert.assertTrue(bai.getAlternativeStereotypes().isEmpty());
         Assert.assertTrue(bai.getDecorators().isEmpty());
         Assert.assertTrue(bai.getInterceptors().isEmpty());
+    }
+
+    @Test
+    public void testEmptyZeroSizeBeansXml() throws Exception
+    {
+        File emptyBeansXml = tempFolder.newFile("beans.xml");
+        BeanArchiveService bas = new DefaultBeanArchiveService();
+        BeanArchiveInformation beanArchiveInformation = bas.getBeanArchiveInformation(emptyBeansXml.toURI().toURL());
+        Assert.assertNotNull(beanArchiveInformation);
+        Assert.assertEquals(BeanDiscoveryMode.ALL, beanArchiveInformation.getBeanDiscoveryMode());
     }
 
     @Test

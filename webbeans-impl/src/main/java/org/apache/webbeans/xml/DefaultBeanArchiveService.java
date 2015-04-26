@@ -22,6 +22,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -176,45 +177,59 @@ public class DefaultBeanArchiveService implements BeanArchiveService
      * Read the information from the given beans.xml and fill it into a
      * BeanArchiveInformation instance.
      */
-    protected BeanArchiveInformation readBeansXml(InputStream xmlStream) throws IOException
+    protected BeanArchiveInformation readBeansXml(InputStream xmlStreamIn) throws IOException
     {
         DefaultBeanArchiveInformation bdaInfo = createBeanArchiveInformation();
 
-        if (xmlStream != null && xmlStream.available() == 0)
+        if (xmlStreamIn != null)
         {
-            // an empty beans.xml will be treated as ALL for backward compat with CDI-1.0
-            bdaInfo.setBeanDiscoveryMode(BeanDiscoveryMode.ALL);
-        }
-        else if (xmlStream != null && xmlStream.available() > 0)
-        {
-            //Get root element of the XML document
-            Element webBeansRoot = getBeansRootElement(xmlStream);
-            if (webBeansRoot != null)
+            PushbackInputStream xmlStream = new PushbackInputStream(xmlStreamIn);
+
+            // try to read from the stream
+            int firstVal = xmlStream.read();
+            if (firstVal < 0)
             {
-                if (!"beans".equalsIgnoreCase(webBeansRoot.getLocalName()))
+                // this means the stream is empty
+                bdaInfo.setBeanDiscoveryMode(BeanDiscoveryMode.ALL);
+            }
+            else
+            {
+                // put the first byte back on the stream so we can properly parse the XML.
+                xmlStream.unread(firstVal);
+
+                //Get root element of the XML document
+                Element webBeansRoot = getBeansRootElement(xmlStream);
+                if (webBeansRoot == null)
                 {
-                    throw new WebBeansConfigurationException("beans.xml must have a <beans> root element, but has: " + webBeansRoot.getLocalName());
+                    bdaInfo.setBeanDiscoveryMode(BeanDiscoveryMode.ALL);
+                }
+                else
+                {
+                    if (!"beans".equalsIgnoreCase(webBeansRoot.getLocalName()))
+                    {
+                        throw new WebBeansConfigurationException("beans.xml must have a <beans> root element, but has: " + webBeansRoot.getLocalName());
+                    }
+
+                    bdaInfo.setVersion(getTrimmedAttribute(webBeansRoot, "version"));
+
+                    String beanDiscoveryMode = getTrimmedAttribute(webBeansRoot, "bean-discovery-mode");
+                    bdaInfo.setBeanDiscoveryMode(beanDiscoveryMode != null ? BeanDiscoveryMode.valueOf(beanDiscoveryMode.toUpperCase()) : null);
+
+                    readBeanChildren(bdaInfo, webBeansRoot);
                 }
 
-                bdaInfo.setVersion(getTrimmedAttribute(webBeansRoot, "version"));
 
-                String beanDiscoveryMode = getTrimmedAttribute(webBeansRoot, "bean-discovery-mode");
-                bdaInfo.setBeanDiscoveryMode(beanDiscoveryMode != null ? BeanDiscoveryMode.valueOf(beanDiscoveryMode.toUpperCase()) : null);
-
-                readBeanChildren(bdaInfo, webBeansRoot);
-            }
+                if (bdaInfo.getVersion() != null && !"1.0".equals(bdaInfo.getVersion()) && bdaInfo.getBeanDiscoveryMode() == null)
+                {
+                    throw new WebBeansConfigurationException("beans.xml with version 1.1 and higher must declare a bean-discovery-mode!");
+                }
 
 
-            if (bdaInfo.getVersion() != null && !"1.0".equals(bdaInfo.getVersion()) && bdaInfo.getBeanDiscoveryMode() == null)
-            {
-                throw new WebBeansConfigurationException("beans.xml with version 1.1 and higher must declare a bean-discovery-mode!");
-            }
-
-
-            if (bdaInfo.getBeanDiscoveryMode() == null)
-            {
-                // an empty beans.xml file lead to backward compat mode with CDI-1.1.
-                bdaInfo.setBeanDiscoveryMode(BeanDiscoveryMode.ALL);
+                if (bdaInfo.getBeanDiscoveryMode() == null)
+                {
+                    // an empty beans.xml file lead to backward compat mode with CDI-1.1.
+                    bdaInfo.setBeanDiscoveryMode(BeanDiscoveryMode.ALL);
+                }
             }
         }
 
