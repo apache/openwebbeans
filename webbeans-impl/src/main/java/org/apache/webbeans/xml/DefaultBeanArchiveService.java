@@ -180,8 +180,12 @@ public class DefaultBeanArchiveService implements BeanArchiveService
     {
         DefaultBeanArchiveInformation bdaInfo = createBeanArchiveInformation();
 
-
-        if (xmlStream.available() > 0)
+        if (xmlStream != null && xmlStream.available() == 0)
+        {
+            // an empty beans.xml will be treated as ALL for backward compat with CDI-1.0
+            bdaInfo.setBeanDiscoveryMode(BeanDiscoveryMode.ALL);
+        }
+        else if (xmlStream != null && xmlStream.available() > 0)
         {
             //Get root element of the XML document
             Element webBeansRoot = getBeansRootElement(xmlStream);
