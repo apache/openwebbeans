@@ -128,17 +128,8 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         if(getWebBeansContext().getOpenWebBeansConfiguration().isJspApplication())
         {
             logger.log(Level.FINE, "Application is configured as JSP. Adding EL Resolver.");
-            
-            JspFactory factory = JspFactory.getDefaultFactory();
-            if (factory != null) 
-            {
-                JspApplicationContext applicationCtx = factory.getJspApplicationContext((ServletContext)(startupObject));
-                applicationCtx.addELResolver(resolver);                
-            }            
-            else
-            {
-                logger.log(Level.FINE, "Default JSPFactroy instance has not found");
-            }
+
+            setJspELFactory((ServletContext) startupObject, resolver);
         }
 
         // Add BeanManager to the 'javax.enterprise.inject.spi.BeanManager' servlet context attribute
@@ -233,7 +224,36 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         
         throw new IllegalArgumentException("ServletContextEvent object but found null");
     }
-    
+
+    private void setJspELFactory(ServletContext startupObject, ELResolver resolver)
+    {
+        JspFactory factory = JspFactory.getDefaultFactory();
+        if (factory == null)
+        {
+            try
+            {
+                Class.forName("org.apache.jasper.compiler.JspRuntimeContext");
+                factory = JspFactory.getDefaultFactory();
+            }
+            catch (Exception e)
+            {
+                // ignore
+            }
+
+        }
+
+        if (factory != null)
+        {
+            JspApplicationContext applicationCtx = factory.getJspApplicationContext(startupObject);
+            applicationCtx.addELResolver(resolver);
+        }
+        else
+        {
+            logger.log(Level.FINE, "Default JSPFactroy instance has not found");
+        }
+    }
+
+
     /**
      * Conversation cleaner thread, that
      * clears unused conversations.
