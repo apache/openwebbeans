@@ -209,20 +209,43 @@ public class DefaultContextsService extends AbstractContextsService
     @Override
     public void destroy(Object destroyObject)
     {
-        requestContext.set(null);
-        sessionContext.set(null);
-        conversationContext.set(null);
+        RequestContext requestCtx = requestContext.get();
+        if (requestCtx != null)
+        {
+            requestCtx.destroy();
+            requestContext.set(null);
+            requestContext.remove();
+        }
+
+        SessionContext sessionCtx = sessionContext.get();
+        if (sessionCtx != null)
+        {
+            sessionCtx.destroy();
+            sessionContext.set(null);
+            sessionContext.remove();
+        }
+
+        ConversationContext conversationCtx = conversationContext.get();
+        if (conversationCtx != null)
+        {
+            conversationCtx.destroy();
+            conversationContext.set(null);
+            conversationContext.remove();
+        }
+
+        SingletonContext singletonCtx = singletonContext.get();
+        if (singletonCtx != null)
+        {
+            singletonCtx.destroy();
+            singletonContext.set(null);
+            singletonContext.remove();
+        }
+
         dependentContext.set(null);
-        singletonContext.set(null);
-        
-        requestContext.remove();
-        sessionContext.remove();
-        conversationContext.remove();
         dependentContext.remove();
-        singletonContext.remove();
     }
-    
-    
+
+
     private Context getCurrentApplicationContext()
     {        
         return applicationContext;
@@ -266,9 +289,15 @@ public class DefaultContextsService extends AbstractContextsService
     
     private void startApplicationContext(Object instance)
     {
+        if (applicationContext != null)
+        {
+            // applicationContext is already started
+            return;
+        }
+
         ApplicationContext ctx = new ApplicationContext();
         ctx.setActive(true);
-        
+
         applicationContext = ctx;
 
         // We do ALSO send the @Initialized(ApplicationScoped.class) at this location but this is WAY to early for userland apps

@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.config.BeansDeployer;
@@ -158,9 +157,6 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             //Sub-classes operations            
             beforeStopApplication(endObject);
 
-            //Set up the thread local for Application scoped as listeners will be App scoped.
-            contextsService.startContext(ApplicationScoped.class, endObject);
-            
             //Fire shut down
             beanManager.fireLifecycleEvent(new BeforeShutdownImpl());
             
