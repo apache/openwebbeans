@@ -29,17 +29,17 @@ import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.context.SingletonContext;
-import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.web.intercept.RequestScopedBeanInterceptorHandler;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.BusyConversationException;
 import javax.enterprise.context.ContextException;
-import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.context.NonexistentConversationException;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
@@ -49,8 +49,6 @@ import javax.servlet.ServletRequestEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.lang.annotation.Annotation;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -89,7 +87,6 @@ public class WebContextsService extends AbstractContextsService
 
     private boolean supportsConversation = false;
     
-    private WebBeansContext webBeansContext;
 
     /**Initialize thread locals*/
     static
@@ -119,8 +116,8 @@ public class WebContextsService extends AbstractContextsService
      */
     public WebContextsService(WebBeansContext webBeansContext)
     {
-        this.webBeansContext = webBeansContext;
-        supportsConversation =  webBeansContext.getOpenWebBeansConfiguration().supportsConversation();
+        super(webBeansContext);
+        supportsConversation = webBeansContext.getOpenWebBeansConfiguration().supportsConversation();
         conversationManager = webBeansContext.getConversationManager();
 
         sharedApplicationContext = new ApplicationContext();
@@ -193,11 +190,6 @@ public class WebContextsService extends AbstractContextsService
         }
         else if(supportsConversation && scopeType.equals(ConversationScoped.class))
         {
-            if (endParameters != null && endParameters instanceof HttpSession)
-            {
-                destoryAllConversationsForSession((HttpSession) endParameters);
-            }
-
             destroyConversationContext();
         }
         else if(scopeType.equals(Dependent.class))
@@ -319,10 +311,8 @@ public class WebContextsService extends AbstractContextsService
                 
                 if(session != null)
                 {
-                    initSessionContext(session);    
+                    initSessionContext(session);
                 }
-
-                initConversationContext(request);
 
                 webBeansContext.getBeanManagerImpl().fireEvent(request, InitializedLiteral.INSTANCE_REQUEST_SCOPED);
             }
@@ -378,37 +368,7 @@ public class WebContextsService extends AbstractContextsService
 
     private void cleanupConversations()
     {
-        ConversationContext conversationContext = getConversationContext();
-
-        if (conversationContext == null)
-        {
-            return;
-        }
-
-        Conversation conversation = conversationManager.getConversationBeanReference();
-
-        if (conversation == null)
-        {
-            return;
-        }
-
-        if (conversation.isTransient())
-        {
-            if (logger.isLoggable(Level.FINE))
-            {
-                logger.log(Level.FINE, "Destroying the transient conversation context with cid : [{0}]", conversation.getId());
-            }
-            destroyConversationContext();
-            conversationManager.removeConversation(conversation); // in case end() was called
-        }
-        else
-        {
-            //Conversation must be used by one thread at a time
-            ConversationImpl owbConversation = (ConversationImpl)conversation;
-            owbConversation.updateTimeOut();
-            //Other threads can now access propogated conversation.
-            owbConversation.iDontUseItAnymore();
-        }
+        cleanupConversations(conversationContexts.get());
     }
 
     /**
@@ -580,28 +540,17 @@ public class WebContextsService extends AbstractContextsService
      */
     private void initConversationContext(Object startObject)
     {
+        if (conversationContexts.get() != null)
+        {
+            return;
+        }
 
         if (startObject != null && startObject instanceof ConversationContext)
         {
+            //X TODO check if this branch is still needed
             ConversationContext context = (ConversationContext) startObject;
             context.setActive(true);
             conversationContexts.set(context);
-        }
-        else
-        {
-            if(conversationContexts.get() == null)
-            {
-                ConversationContext newContext = new ConversationContext();
-                webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_CONVERSATION_SCOPED);
-
-                newContext.setActive(true);
-                
-                conversationContexts.set(newContext);
-            }
-            else
-            {
-                conversationContexts.get().setActive(true);
-            }
         }
     }
 
@@ -622,26 +571,6 @@ public class WebContextsService extends AbstractContextsService
         conversationContexts.remove();
     }
 
-    /**
-     * Workaround for OWB-841
-     *
-     * @param session The current {@link HttpSession}
-     */
-    private void destoryAllConversationsForSession(HttpSession session)
-    {
-        Map<Conversation, ConversationContext> conversations =
-                conversationManager.getAndRemoveConversationMapWithSessionId(session.getId());
-
-        for (Entry<Conversation, ConversationContext> entry : conversations.entrySet())
-        {
-            conversationContexts.set(entry.getValue());
-
-            entry.getValue().destroy();
-            
-            conversationContexts.set(null);
-            conversationContexts.remove();
-        }
-    }
     
     /**
      * Get current request ctx.
@@ -674,7 +603,30 @@ public class WebContextsService extends AbstractContextsService
      */
     private  ConversationContext getConversationContext()
     {
-        return conversationContexts.get();
+        ConversationContext conversationContext = conversationContexts.get();
+        if (conversationContext == null)
+        {
+            conversationContext = conversationManager.getConversationContext();
+            conversationContexts.set(conversationContext);
+
+            // check for busy and non-existing conversations
+            String conversationId = webBeansContext.getConversationService().getConversationId();
+            if (conversationId != null && conversationContext.getConversation().isTransient())
+            {
+                throw new NonexistentConversationException("Propogated conversation with cid=" + conversationId +
+                        " cannot be restored. It creates a new transient conversation.");
+            }
+
+            if (conversationContext.getConversation().iUseIt() > 1)
+            {
+                //Throw Busy exception
+                throw new BusyConversationException("Propogated conversation with cid=" + conversationId +
+                        " is used by other request. It creates a new transient conversation");
+            }
+
+        }
+
+        return conversationContext;
     }
 
     /**
@@ -718,7 +670,8 @@ public class WebContextsService extends AbstractContextsService
         }
         else
         {
-            logger.log(Level.WARNING, "Could NOT lazily initialize session context because of "+context+" RequestContext");
+            initSessionContext(null);
+            logger.log(Level.FINE, "Starting a non-web backed SessionContext");
         }
     }
 

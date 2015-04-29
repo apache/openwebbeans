@@ -34,8 +34,4 @@ under the License.
         <view-handler>org.apache.webbeans.jsf.ConversationAwareViewHandler</view-handler>
     </application>
 
-    <lifecycle>
-        <phase-listener>org.apache.webbeans.jsf.WebBeansPhaseListener</phase-listener>
-    </lifecycle>
-
 </faces-config>

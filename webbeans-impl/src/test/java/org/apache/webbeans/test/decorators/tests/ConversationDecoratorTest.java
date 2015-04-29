@@ -29,6 +29,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import junit.framework.Assert;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.conversation.DefaultConversationService;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.decorators.common.ConversationDecorator;
 import org.apache.webbeans.spi.ConversationService;
@@ -39,23 +40,7 @@ import org.junit.Test;
 public class ConversationDecoratorTest extends AbstractUnitTest
 {
     public static final String PACKAGE_NAME = ConversationDecoratorTest.class.getPackage().getName();
-    
-    public static class DummyConversationService implements ConversationService
-    {
 
-        @Override
-        public String getConversationId()
-        {
-            return null;
-        }
-
-        @Override
-        public String getConversationSessionId()
-        {
-            return null;
-        }
-        
-    }
     
     @Test
     public void testConversationDecorator()
@@ -67,11 +52,11 @@ public class ConversationDecoratorTest extends AbstractUnitTest
         xmls.add(getXmlPath(PACKAGE_NAME, "ConversationDecoratorTest"));
         
         startContainer(classes,xmls);
-        
+        WebBeansContext.getInstance().getOpenWebBeansConfiguration().setProperty("org.apache.webbeans.spi.ConversationService", DefaultConversationService.class.getName());
+
         Bean<?> bean = getBeanManager().getBeans(Conversation.class , new AnnotationLiteral<Default>(){}).iterator().next();
         Object instance = getBeanManager().getReference(bean, Conversation.class, getBeanManager().createCreationalContext(bean));
 
-        WebBeansContext.getInstance().getOpenWebBeansConfiguration().setProperty("org.apache.webbeans.spi.ConversationService", DummyConversationService.class.getName());
 
         Assert.assertTrue(instance instanceof Conversation);
         Conversation conversation = (Conversation)instance;

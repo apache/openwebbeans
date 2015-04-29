@@ -18,39 +18,45 @@
  */
 package org.apache.webbeans.conversation;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.Conversation;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
+import org.apache.webbeans.annotation.DestroyedLiteral;
+import org.apache.webbeans.annotation.InitializedLiteral;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ConversationContext;
+import org.apache.webbeans.context.RequestContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.spi.ContextsService;
+import org.apache.webbeans.spi.ConversationService;
 
 /**
  * Manager for the conversations.
  * Each conversation is related with conversation id and session id.
- * 
+ *
+ *
  * @version $Rev$ $Date$
  *
  */
 public class ConversationManager
 {
-    /**Current conversations*/
-    private final ConcurrentMap<Conversation, ConversationContext> conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
-    private final WebBeansContext webBeansContext;
     private final static Logger logger = WebBeansLoggerFacade.getLogger(ConversationManager.class);
+
+
+    private final WebBeansContext webBeansContext;
+    private final ContextsService contextsService;
 
     /**
      * Creates new conversation manager
@@ -58,20 +64,48 @@ public class ConversationManager
     public ConversationManager(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
+        this.contextsService = webBeansContext.getContextsService();
+
+        // we need to register this for serialisation in clusters
+        webBeansContext.getBeanManagerImpl().addInternalBean(ConversationStorageBean.INSTANCE);
+    }
+
+
+    /**
+     * This method shall only get called from the ContextsService.
+     * It will create a new ConversationContext if there is no long running Conversation already running.
+     * @return the ConversationContext which is valid for the whole request.
+     */
+    public ConversationContext getConversationContext()
+    {
+        ConversationService conversationService = webBeansContext.getConversationService();
+
+        String conversationId = conversationService.getConversationId();
+        if (conversationId != null && conversationId.length() > 0)
+        {
+            Set<ConversationContext> conversationContexts = getConversations(false);
+            if (conversationContexts != null)
+            {
+                for (ConversationContext conversationContext : conversationContexts)
+                {
+                    if (conversationId.equals(conversationContext.getConversation().getId()))
+                    {
+                        return conversationContext;
+                    }
+                }
+            }
+        }
+
+        ConversationContext conversationContext = new ConversationContext(webBeansContext);
+        conversationContext.setActive(true);
+
+        webBeansContext.getBeanManagerImpl().fireEvent(getLifecycleEventPayload(conversationContext), InitializedLiteral.INSTANCE_CONVERSATION_SCOPED);
+
+        return conversationContext;
     }
 
     /**
-     * Adds new conversation context.
-     * @param conversation new conversation
-     * @param context new context
-     */
-    public void addConversationContext(Conversation conversation, ConversationContext context)
-    {
-        conversations.put(conversation, context);
-    }
-    
-    /**
-     * Check conversation id exists.
+     * Check if a conversation with the given id exists in the session context.
      * @param conversationId conversation id
      * @return true if this conversation exist
      */
@@ -82,154 +116,21 @@ public class ConversationManager
             return false;
         }
 
-        ConversationImpl conv = null;
-        Set<Conversation> set = conversations.keySet();
-        Iterator<Conversation> it = set.iterator();
-
-        while (it.hasNext())
+        Set<ConversationContext> conversationContexts = getConversations(false);
+        if (conversationContexts == null)
         {
-            conv = (ConversationImpl) it.next();
-            if (conversationId.equals(getId(conv)))
+            return false;
+        }
+
+        for (ConversationContext conversationContext : conversationContexts)
+        {
+            if (conversationId.equals(conversationContext.getConversation().getId()))
             {
                 return true;
             }
         }
-        
+
         return false;
-    }
-    
-    /**
-     * Return all conversation/context associated with sessionid.
-     * 
-     * @param sessionId
-     * @return
-     */
-    public Map<Conversation, ConversationContext> getConversationMapWithSessionId(String sessionId) 
-    {
-        Asserts.assertNotNull(sessionId,"sessionId parameter can not be null");
-        Set<Conversation> set = conversations.keySet();
-        Iterator<Conversation> it = set.iterator();
-        ConversationImpl conv = null;
-        Map<Conversation, ConversationContext> map = new HashMap<Conversation, ConversationContext>();
-        while (it.hasNext())
-        {
-            conv = (ConversationImpl) it.next();
-            if (conv.getSessionId().equals(sessionId))
-            {
-                map.put(conv, conversations.get(conv));
-            }
-        }
-        return map;
-    }
-    
-    /**
-     * Return all conversation/context associated with sessionid.
-     * 
-     * @param sessionId
-     * @return
-     */
-    public Map<Conversation, ConversationContext> getAndRemoveConversationMapWithSessionId(String sessionId) 
-    {
-        Asserts.assertNotNull(sessionId,"sessionId parameter can not be null");
-        Set<Conversation> set = conversations.keySet();
-        Iterator<Conversation> it = set.iterator();
-        ConversationImpl conv = null;
-        Map<Conversation, ConversationContext> map = new HashMap<Conversation, ConversationContext>();
-        while (it.hasNext())
-        {
-            conv = (ConversationImpl) it.next();
-            String cSId = conv.getSessionId(); // can be null when set manually -> javax.enterprise.context.Conversation.begin(java.lang.String)()
-            if (cSId != null && cSId.equals(sessionId))
-            {
-                map.put(conv, conversations.remove(conv));
-            }
-        }
-        return map;
-    }
-    
-    /**
-     * Remove given conversation.
-     * @param conversation conversation instance
-     * @return context
-     */
-    public ConversationContext removeConversation(Conversation conversation)
-    {
-        Asserts.assertNotNull(conversation, "conversation can not be null");
-
-        return conversations.remove(conversation);
-    }
-
-    /**
-     * Gets conversation's context instance.
-     * @param conversation conversation instance
-     * @return conversation related context
-     */
-    public ConversationContext getConversationContext(Conversation conversation)
-    {
-        Asserts.assertNotNull(conversation, "conversation can not be null");
-
-        return conversations.get(conversation);
-    }
-
-    /**
-     * Gets conversation with id and session id.
-     * @param conversationId conversation id
-     * @param sessionId session id
-     * @return conversation
-     */
-    public ConversationImpl getPropogatedConversation(String conversationId, String sessionId)
-    {
-        Asserts.assertNotNull(conversationId, "conversationId parameter can not be null");
-        Asserts.assertNotNull(sessionId,"sessionId parameter can not be null");
-
-        ConversationImpl conv;
-        Set<Conversation> set = conversations.keySet();
-        Iterator<Conversation> it = set.iterator();
-
-        while (it.hasNext())
-        {
-            conv = (ConversationImpl) it.next();
-            if (conversationId.equals(getId(conv)) && conv.getSessionId().equals(sessionId))
-            {
-                return conv;
-            }
-        }
-
-        return null;
-    }
-
-    private String getId(ConversationImpl conv)
-    {
-        String id = conv.getId();
-        return id == null ? conv.getOldId() : id;
-    }
-
-    /**
-     * Destroy conversations with given session id.
-     * @param sessionId session id
-     */
-    @Deprecated
-    public void destroyConversationContextWithSessionId(String sessionId)
-    {
-        Asserts.assertNotNull(sessionId, "sessionId parameter can not be null");
-
-        ConversationImpl conv;
-        Set<Conversation> set = conversations.keySet();
-        Iterator<Conversation> it = set.iterator();
-
-        while (it.hasNext())
-        {
-            conv = (ConversationImpl) it.next();
-            if (conv.getSessionId().equals(sessionId))
-            {
-                ConversationContext ctx = getConversationContext(conv);
-                if (ctx != null) 
-                {
-                    ctx.destroy();
-                }
-                it.remove();
-            }
-        }
     }
 
     /**
@@ -247,41 +148,101 @@ public class ConversationManager
     }
 
     /**
-     * Destroy unactive conversations.
+     * Destroy inactive (timed out) and transient conversations.
      */
-    public void destroyWithRespectToTimout()
+    public void destroyUnrequiredConversations()
     {
-        ConversationImpl conv = null;
-        Set<Conversation> set = conversations.keySet();
-        Iterator<Conversation> it = set.iterator();
-
-        while (it.hasNext())
+        Set<ConversationContext> conversationContexts = getConversations(false);
+        if (conversationContexts == null)
         {
-            conv = (ConversationImpl) it.next();
-            long timeout = conv.getTimeout();
+            return;
+        }
 
-            if (timeout != 0L)
+        Iterator<ConversationContext> convIt = conversationContexts.iterator();
+        while (convIt.hasNext())
+        {
+            ConversationContext conversationContext = convIt.next();
+
+            ConversationImpl conv = conversationContext.getConversation();
+            if (conv.isTransient() || conversationTimedOut(conv))
             {
-                if ((System.currentTimeMillis() - conv.getActiveTime()) > timeout)
-                {
-                    ConversationContext ctx = getConversationContext(conv);
-                    if (ctx != null) 
-                    {
-                        if(logger.isLoggable(Level.INFO))
-                        {
-                            logger.log(Level.INFO, OWBLogConst.INFO_0011, conv.getId());
-                        }
-                        ctx.destroy();
-                    }
-
-                    it.remove();
-                }
+                destroyConversationContext(conversationContext);
+                convIt.remove();
             }
         }
     }
-    
-    public Map<Conversation, ConversationContext> getAllConversationContexts()
+
+    private boolean conversationTimedOut(ConversationImpl conv)
     {
-        return conversations;
+        long timeout = conv.getTimeout();
+        if (timeout != 0L && (System.currentTimeMillis() - conv.getLastAccessTime()) > timeout)
+        {
+            logger.log(Level.FINE, OWBLogConst.INFO_0011, conv.getId());
+            return true;
+        }
+
+        return false;
     }
+
+    /**
+     * Destroy the given ConversationContext and fire the proper
+     * &#064;Destroyed event with the correct payload.
+     */
+    public void destroyConversationContext(ConversationContext ctx)
+    {
+        ctx.destroy();
+        webBeansContext.getBeanManagerImpl().fireEvent(getLifecycleEventPayload(ctx), DestroyedLiteral.INSTANCE_CONVERSATION_SCOPED);
+    }
+
+    private Object getLifecycleEventPayload(ConversationContext ctx)
+    {
+        Object payLoad = null;
+        if (ctx.getConversation().getId() != null)
+        {
+            payLoad = ctx.getConversation().getId();
+        }
+
+        if (payLoad == null)
+        {
+            RequestContext requestContext = (RequestContext) contextsService.getCurrentContext(RequestScoped.class);
+            if (requestContext != null)
+            {
+                payLoad = requestContext.getRequestObject();
+            }
+        }
+
+        if (payLoad == null)
+        {
+            payLoad = new Object();
+        }
+        return payLoad;
+    }
+
+
+    /**
+     * @param create whether a session and the map in there shall get created or not
+     * @return the conversation Map from the current session
+     */
+    private Set<ConversationContext> getConversations(boolean create)
+    {
+        Set<ConversationContext> conversationContexts = null;
+        Context sessionContext = contextsService.getCurrentContext(SessionScoped.class);
+        if (sessionContext != null)
+        {
+            if (!create)
+            {
+                conversationContexts = sessionContext.get(ConversationStorageBean.INSTANCE);
+            }
+            else
+            {
+                CreationalContextImpl<Set<ConversationContext>> creationalContext
+                        = webBeansContext.getBeanManagerImpl().createCreationalContext(ConversationStorageBean.INSTANCE);
+
+                conversationContexts = sessionContext.get(ConversationStorageBean.INSTANCE, creationalContext);
+            }
+        }
+
+        return conversationContexts;
+    }
+
 }

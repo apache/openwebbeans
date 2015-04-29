@@ -47,7 +47,22 @@ public class RequestContext extends AbstractContext
     public void setComponentInstanceMap()
     {
         componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
+    }
 
+    /**
+     * The base object for the current RequestContext.
+     * For a synthetic 'request' this is null. For a real http ServletRequest
+     * this is the HttpServletRequest.
+     * This is what gets used as payload for various
+     * {@link javax.enterprise.context.Initialized} and
+     * {@link javax.enterprise.context.Destroyed} events.
+     *
+     * This can be overloaded in web requests.
+     * @return the ServletRequest or {@code null} for other kind of requests‚
+     */
+    public Object getRequestObject()
+    {
+        return null;
     }
 
 }

@@ -23,10 +23,19 @@ import java.lang.annotation.Annotation;
 import javax.enterprise.context.ContextException;
 import javax.enterprise.context.spi.Context;
 
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.conversation.ConversationImpl;
+import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.spi.ContextsService;
 
 public abstract class AbstractContextsService implements ContextsService
 {
+    protected final WebBeansContext webBeansContext;
+
+    protected AbstractContextsService(WebBeansContext webBeansContext)
+    {
+        this.webBeansContext = webBeansContext;
+    }
 
     @Override
     public void destroy(Object destroyObject)
@@ -90,5 +99,28 @@ public abstract class AbstractContextsService implements ContextsService
             }
         }        
     }
-    
+
+    protected void cleanupConversations(ConversationContext conversationCtx)
+    {
+        if (conversationCtx == null)
+        {
+            return;
+        }
+
+        ConversationManager conversationManager = webBeansContext.getConversationManager();
+
+        ConversationImpl conversation = conversationCtx.getConversation();
+        if (!conversation.isTransient())
+        {
+            //Conversation must be used by one thread at a time
+            conversation.updateLastAccessTime();
+            //Other threads can now access propagated conversation.
+            conversation.iDontUseItAnymore();
+        }
+
+        // and now destroy all timed-out and transient conversations
+        conversationManager.destroyUnrequiredConversations();
+    }
+
+
 }

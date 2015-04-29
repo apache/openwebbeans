@@ -18,68 +18,60 @@
  */
 package org.apache.webbeans.conversation;
 
-import java.io.ObjectStreamException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.BusyConversationException;
-import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.Conversation;
-import javax.enterprise.context.ConversationScoped;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
-import org.apache.webbeans.util.Asserts;
 
 /**
  * Implementation of the {@link Conversation} interface.
- * @version $Rev$ $Date$
- *
  */
 public class ConversationImpl implements Conversation, Serializable
 {
-    /**
-     * 
-     */
     private static final long serialVersionUID = 8511063860333431722L;
 
-    /**Logger instance*/
-    private final static Logger logger = WebBeansLoggerFacade.getLogger(ConversationImpl.class);
-    
-    /**Conversation id*/
-    private String id;
-    private String oldId;
+    /**
+     * Logger instance
+     */
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(ConversationImpl.class);
 
-    /**Transient or not. Transient conversations are destroyed at the end of JSF request*/
+    /**
+     * Conversation id
+     */
+    private String id;
+
+    /**
+     * Transient or not. Transient conversations are destroyed at the end of the request
+     */
     private boolean isTransient = true;
 
-    /**Default timeout is 30mins*/
+    /**
+     * Default timeout is 30mins
+     */
     private long timeout;
 
-    /**Id of the session that this conversation is created*/
-    private String sessionId;
-
-    /**Active duration of the conversation*/
-    private long activeTime = 0L;
-    
-    /**Generating ids*/
-    private static AtomicInteger conversationIdGenerator = new AtomicInteger(0);
-    
     /**
-     This instance is under used and by which threads, Atomicinteger would be great but then contract of ContextsService but be enhanced to
-     be compatible wih WBPhaseListeners. Using thread allow to call iUseIt() multiple times.
-     String to be serializable.
-     TODO: serialization should be done manually to use the manager otherwise all is broken
+     * Active duration of the conversation
      */
-    private Set<Long> threadsUsingIt = new HashSet<Long>();
+    private long lastAccessTime = 0L;
+
+    /**
+     * This instance is under used and by which threads, Atomicinteger would be great but then contract of ContextsService but be enhanced to
+     * be compatible wih WBPhaseListeners. Using thread allow to call iUseIt() multiple times.
+     * String to be serializable.
+     * TODO: serialization should be done manually to use the manager otherwise all is broken
+     */
+    private transient Set<Long> threadsUsingIt = new HashSet<Long>();
 
     private transient WebBeansContext webBeansContext;
 
@@ -97,99 +89,21 @@ public class ConversationImpl implements Conversation, Serializable
         try
         {
             timeout = Long.parseLong(this.webBeansContext.getOpenWebBeansConfiguration().
-                    getProperty(OpenWebBeansConfiguration.CONVERSATION_TIMEOUT_INTERVAL, "1800000"));   
+                    getProperty(OpenWebBeansConfiguration.CONVERSATION_TIMEOUT_INTERVAL, "1800000"));
         }
-        catch(NumberFormatException e)
+        catch (NumberFormatException e)
         {
             timeout = 30 * 60 * 1000;
         }
     }
 
-    /**
-     * Creates a new conversation instance. Id is not
-     * set until conversation is begin.
-     * @param sessionId
-     * @param webBeansContext
-     */
-    public ConversationImpl(String sessionId, WebBeansContext webBeansContext)
-    {
-        Asserts.assertNotNull(sessionId);
-
-        this.webBeansContext = webBeansContext;
-
-        try
-        {
-            timeout = Long.parseLong(this.webBeansContext.getOpenWebBeansConfiguration().
-                    getProperty(OpenWebBeansConfiguration.CONVERSATION_TIMEOUT_INTERVAL, "1800000"));   
-        }
-        catch(NumberFormatException e)
-        {
-            timeout = 30 * 60 * 1000;
-        }
-        
-        this.sessionId = sessionId;
-    }
-    
     /**
      * {@inheritDoc}
      */
     @Override
     public void begin()
     {
-        //Transient state
-        if(isTransient)
-        {
-            isTransient = false;
-            id = Integer.toString(conversationIdGenerator.incrementAndGet());
-            ensureSessionId();
-            iUseIt();
-            updateTimeOut();
-
-            //Conversation manager
-            ConversationManager manager = webBeansContext.getConversationManager();
-            try
-            {
-                //Gets current conversation context instance.
-                //Each conversation has its own conversation context instance.
-                //Sets at the beginning of each JSF request.
-                manager.addConversationContext(this, getOrStartConversationScope());
-                
-            }
-            catch (ContextNotActiveException cnae)
-            {
-                throw cnae; // expected by TCKs so throwing it before next catch recreates it
-            }
-            catch (Exception e)
-            {
-                //TCK tests, TODO: old ones? remove it?
-                manager.addConversationContext(this, new ConversationContext());
-            }            
-        }
-        //Already started conversation.
-        else
-        {
-            logger.log(Level.WARNING, OWBLogConst.WARN_0003, id);
-            throw new IllegalStateException();
-        }
-    }
-
-    private ConversationContext getOrStartConversationScope()
-    {
-        ConversationContext context = (ConversationContext) webBeansContext.getContextsService().getCurrentContext(ConversationScoped.class);
-        if (context == null)
-        {
-            webBeansContext.getContextsService().startContext(ConversationScoped.class, null);
-            context = (ConversationContext) webBeansContext.getContextsService().getCurrentContext(ConversationScoped.class);
-        }
-        if (context == null)
-        {
-            throw new ContextNotActiveException(ConversationScoped.class.getName());
-        }
-        if (!context.isActive())
-        {
-            context.setActive(true);
-        }
-        return context;
+        begin(null);
     }
 
     /**
@@ -198,35 +112,33 @@ public class ConversationImpl implements Conversation, Serializable
     @Override
     public void begin(String id)
     {
-        //Look at other conversation, that may collate with this is
-        final ConversationManager conversationManager = webBeansContext.getConversationManager();
-        if(conversationManager.isConversationExistWithGivenId(id))
+        if (id == null)
         {
-            throw new IllegalArgumentException("Conversation with id=" + id + " is already exist!");
+            id = webBeansContext.getConversationService().generateConversationId();
         }
-        
+        else
+        {
+            //Look at other conversation, that may collate with this is
+            final ConversationManager conversationManager = webBeansContext.getConversationManager();
+            if (conversationManager.isConversationExistWithGivenId(id))
+            {
+                throw new IllegalArgumentException("Conversation with id=" + id + " already exists!");
+            }
+        }
+
         //Transient state
-        if(isTransient)
+        if (isTransient)
         {
             isTransient = false;
             this.id = id;
             iUseIt();
-            ensureSessionId();
-            updateTimeOut();
-
-            conversationManager.addConversationContext(this, getOrStartConversationScope());
+            updateLastAccessTime();
         }
-    }
-
-    private void ensureSessionId()
-    {
-        if (this.sessionId == null)
+        else
         {
-            OpenWebBeansWebPlugin web = webBeansContext.getPluginLoader().getWebPlugin();
-            if (web != null)
-            {
-                this.sessionId = web.currentSessionId();
-            }
+            //Already started conversation.
+            logger.log(Level.WARNING, OWBLogConst.WARN_0003, id);
+            throw new IllegalStateException();
         }
     }
 
@@ -236,12 +148,10 @@ public class ConversationImpl implements Conversation, Serializable
     @Override
     public void end()
     {
-        check();
-        if(!isTransient)
+        checkThreadUsage();
+        if (!isTransient)
         {
-            // webBeansContext.getConversationManager().removeConversation(this); // needs to be done after the request, not here
             iDontUseItAnymore();
-            oldId = id; // keep it to destroy it after Servlet layer even if end() is called "early"
             id = null;
             isTransient = true;
         }
@@ -250,11 +160,6 @@ public class ConversationImpl implements Conversation, Serializable
             logger.log(Level.WARNING, OWBLogConst.WARN_0004, id);
             throw new IllegalStateException(toString() + " has already ended");
         }
-    }
-
-    public String getOldId()
-    {
-        return oldId;
     }
 
     public int iUseIt()
@@ -275,10 +180,10 @@ public class ConversationImpl implements Conversation, Serializable
             threadsUsingIt.remove(thread);
         }
     }
-    
+
     /**
      * {@inheritDoc}
-     */    
+     */
     @Override
     public String getId()
     {
@@ -287,30 +192,30 @@ public class ConversationImpl implements Conversation, Serializable
 
     /**
      * {@inheritDoc}
-     */    
+     */
     @Override
     public long getTimeout()
     {
-        check();
+        checkThreadUsage();
         return timeout;
     }
 
     /**
      * {@inheritDoc}
-     */    
+     */
     @Override
     public boolean isTransient()
     {
-        check();
+        checkThreadUsage();
         return isTransient;
     }
 
-    private synchronized void check()
+    private synchronized void checkThreadUsage()
     {
         if (threadsUsingIt.size() > 1)
         {
             throw new BusyConversationException(
-                    "Propogated conversation with sessionid/cid=" + sessionId + "/" + id + " is used by other request.");
+                    "Propogated conversation with sessionid/cid=" + id + " is used by other request.");
         }
     }
 
@@ -320,132 +225,41 @@ public class ConversationImpl implements Conversation, Serializable
     @Override
     public void setTimeout(long milliseconds)
     {
-        check();
+        checkThreadUsage();
         timeout = milliseconds;
     }
 
     /**
-     * Gets session id.
-     * @return conversation session id
+     * @return the timestamp when this Conversation got accessed the last time
      */
-    public String getSessionId()
+    public long getLastAccessTime()
     {
-        return sessionId;
+        return lastAccessTime;
     }
-
-    /**
-     * @return the creationTime
-     */
-    public long getActiveTime()
-    {
-        return activeTime;
-    }
-
 
     /**
      * Update conversation timeout value.
+     * Basically a 'touch' for the access time
      */
-    public void updateTimeOut()
+    public void updateLastAccessTime()
     {
-        activeTime = System.currentTimeMillis();
+        lastAccessTime = System.currentTimeMillis();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode()
-    {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((sessionId == null) ? 0 : sessionId.hashCode());
-        return result;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-        {
-            return true;
-        }
-
-        if (obj == null)
-        {
-            return false;
-        }
-
-        if (getClass() != obj.getClass())
-        {
-            return false;
-        }
-
-        final ConversationImpl other = (ConversationImpl) obj;
-        if (id == null)
-        {
-            if (other.id != null)
-            {
-                return false;
-            }
-        }
-        else if (!id.equals(other.id))
-        {
-            return false;
-        }
-        if (sessionId == null)
-        {
-            if (other.sessionId != null)
-            {
-                return false;
-            }
-        }
-        else if (!sessionId.equals(other.sessionId))
-        {
-            return false;
-        }
-        
-        return true;
-    }
-    
     @Override
     public String toString()
     {
         return "Conversation with id [ " + id + " ]";
     }
 
-    private Object writeReplace() throws ObjectStreamException
+
+    /**
+     * Initialize a few fields on deserialisation
+     */
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
     {
-        Serialization serialization = new Serialization();
-        serialization.setId(id);
-        serialization.setSessionId(sessionId);
-        return serialization;
-    }
-
-    public static class Serialization implements Serializable
-    {
-        private String sessionId;
-        private String id;
-
-        public void setSessionId(String sessionId)
-        {
-            this.sessionId = sessionId;
-        }
-
-        public void setId(String id)
-        {
-            this.id = id;
-        }
-
-        Object  readResolve() throws ObjectStreamException
-        {
-            return WebBeansContext.currentInstance().getConversationManager().getPropogatedConversation(id, sessionId);
-        }
+        in.defaultReadObject();
+        webBeansContext = WebBeansContext.currentInstance();
+        threadsUsingIt = new HashSet<Long>();
     }
 }
-

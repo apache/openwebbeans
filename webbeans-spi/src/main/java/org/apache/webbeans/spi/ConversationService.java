@@ -25,16 +25,20 @@ package org.apache.webbeans.spi;
 public interface ConversationService
 {
     /**
-     * Gets the current conversation id or null
+     * Gets the current propagated conversation id or {@code null}
      * if there is no conversation.
+     *
      * @return the current conversation id
      */
-    public String getConversationId();
-    
+    String getConversationId();
+
     /**
-     * Gets the session id of the current session.
-     * @return the session id of the current user session
+     * Generate a new conversation Id which is unique for a certain session.
+     * We need to do this via a pluggable Service as it makes a huge difference whether
+     * the id has to be unique on a single JVM or on multiple of them.
+     * If we have a ServletSession then we only have to be unique per Session
+     * and thus can make the handling much easier.
      */
-    public String getConversationSessionId();
+    String generateConversationId();
 
 }

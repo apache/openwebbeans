@@ -21,9 +21,11 @@ package org.apache.webbeans.corespi.se;
 import java.lang.annotation.Annotation;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.BusyConversationException;
 import javax.enterprise.context.ContextException;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.context.NonexistentConversationException;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
@@ -40,6 +42,7 @@ import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.context.SingletonContext;
 
+
 public class DefaultContextsService extends AbstractContextsService
 {
     private static ThreadLocal<RequestContext> requestContext = null;
@@ -55,6 +58,8 @@ public class DefaultContextsService extends AbstractContextsService
     private static ThreadLocal<DependentContext> dependentContext = null;
 
 
+    private final boolean supportsConversation;
+
     static
     {
         requestContext = new ThreadLocal<RequestContext>();
@@ -64,11 +69,10 @@ public class DefaultContextsService extends AbstractContextsService
         singletonContext = new ThreadLocal<SingletonContext>();
     }
 
-    private final WebBeansContext webBeansContext;
-
     public DefaultContextsService(WebBeansContext webBeansContext)
     {
-        this.webBeansContext = webBeansContext;
+        super(webBeansContext);
+        this.supportsConversation = webBeansContext.getOpenWebBeansConfiguration().supportsConversation();
     }
 
     /**
@@ -127,7 +131,7 @@ public class DefaultContextsService extends AbstractContextsService
         {
             return getCurrentApplicationContext();
         }
-        else if(scopeType.equals(ConversationScoped.class))
+        else if(scopeType.equals(ConversationScoped.class) && supportsConversation)
         {
             return getCurrentConversationContext();
         }
@@ -253,8 +257,30 @@ public class DefaultContextsService extends AbstractContextsService
 
     
     private Context getCurrentConversationContext()
-    {        
-        return conversationContext.get();
+    {
+        ConversationContext conversationCtx = conversationContext.get();
+        if (conversationCtx == null)
+        {
+            conversationCtx = webBeansContext.getConversationManager().getConversationContext();
+            conversationContext.set(conversationCtx);
+
+            // check for busy and non-existing conversations
+            String conversationId = webBeansContext.getConversationService().getConversationId();
+            if (conversationId != null && conversationCtx.getConversation().isTransient())
+            {
+                throw new NonexistentConversationException("Propogated conversation with cid=" + conversationId +
+                        " cannot be restored. It creates a new transient conversation.");
+            }
+
+            if (conversationCtx.getConversation().iUseIt() > 1)
+            {
+                //Throw Busy exception
+                throw new BusyConversationException("Propogated conversation with cid=" + conversationId +
+                        " is used by other request. It creates a new transient conversation");
+            }
+        }
+
+        return conversationCtx;
     }
 
     
@@ -309,11 +335,9 @@ public class DefaultContextsService extends AbstractContextsService
     
     private void startConversationContext(Object object)
     {
-        ConversationContext ctx = new ConversationContext();
-        ctx.setActive(true);
-        
+        ConversationContext ctx = webBeansContext.getConversationManager().getConversationContext();
+
         conversationContext.set(ctx);
-        webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_CONVERSATION_SCOPED);
     }
 
     
@@ -372,12 +396,20 @@ public class DefaultContextsService extends AbstractContextsService
 
         conversationContext.set(null);
         conversationContext.remove();
-        webBeansContext.getBeanManagerImpl().fireEvent(new Object(), DestroyedLiteral.INSTANCE_CONVERSATION_SCOPED);
     }
 
     
     private void stopRequestContext(Object instance)
-    {        
+    {
+        // cleanup open conversations first
+        if (supportsConversation)
+        {
+            cleanupConversations();
+            conversationContext.set(null);
+            conversationContext.remove();
+        }
+
+
         if(requestContext.get() != null)
         {
             requestContext.get().destroy();   
@@ -412,6 +444,11 @@ public class DefaultContextsService extends AbstractContextsService
         singletonContext.set(null);
         singletonContext.remove();
         webBeansContext.getBeanManagerImpl().fireEvent(new Object(), DestroyedLiteral.INSTANCE_SINGLETON_SCOPED);
+    }
+
+    private void cleanupConversations()
+    {
+        cleanupConversations(conversationContext.get());
     }
 
 }

@@ -25,6 +25,7 @@ import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestLifeCycle;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
 import org.apache.webbeans.spi.ContainerLifecycle;
+import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -257,7 +258,7 @@ public abstract class AbstractUnitTest
      * 
      * @param ext the {@link Extension} which should get loaded
      */
-    public void addExtension(Extension ext) {
+    protected void addExtension(Extension ext) {
         this.extensions.add(ext);
     }
 
@@ -267,7 +268,7 @@ public abstract class AbstractUnitTest
      * This has the same effect as adding it to the
      * &lt;interceptors&gt; section in beans.xml.
      */
-    public void addInterceptor(Class interceptorClass)
+    protected void addInterceptor(Class interceptorClass)
     {
         interceptors.add(interceptorClass);
     }
@@ -278,8 +279,25 @@ public abstract class AbstractUnitTest
      * This has the same effect as adding it to the
      * &lt;interceptors&gt; section in beans.xml.
      */
-    public void addDecorator(Class decoratorClass)
+    protected void addDecorator(Class decoratorClass)
     {
         decorators.add(decoratorClass);
+    }
+
+    protected void restartContext(Class<? extends Annotation> scopeType)
+    {
+        ContextsService contextsService = webBeansContext.getContextsService();
+        contextsService.endContext(scopeType, null);
+        contextsService.startContext(scopeType, null);
+    }
+
+    protected void startContext(Class<? extends Annotation> scopeType)
+    {
+        webBeansContext.getContextsService().startContext(scopeType, null);
+    }
+
+    protected void endContext(Class<? extends Annotation> scopeType)
+    {
+        webBeansContext.getContextsService().endContext(scopeType, null);
     }
 }

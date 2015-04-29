@@ -32,28 +32,41 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.spi.Contextual;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.BeanInstanceBag;
+import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
- * Conversation context implementation. 
+ * Conversation context implementation.
+ * This reflects THE current Conversation (there can only be one active at a time for a thread).
+ * It should not be confused with the Map of conversationId -> Conversation
+ * which we internally store in the SessionContext.
  */
 public class ConversationContext extends AbstractContext implements Externalizable
 {
     private static final long serialVersionUID = -576054696008715282L;
 
+    private ConversationImpl conversation;
+
     /*
     * Constructor
     */
-    public ConversationContext()
+    public ConversationContext(WebBeansContext webBeansContext)
     {
         super(ConversationScoped.class);
+        this.conversation = new ConversationImpl(webBeansContext);
     }
 
     @Override
     public void setComponentInstanceMap()
     {
         componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
+    }
+
+    public ConversationImpl getConversation()
+    {
+        return conversation;
     }
 
     @Override

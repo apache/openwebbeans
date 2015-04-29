@@ -20,23 +20,30 @@ package org.apache.webbeans.portable;
 
 import java.util.Collections;
 
+import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.conversation.ConversationImpl;
-import org.apache.webbeans.spi.ConversationService;
+import org.apache.webbeans.spi.ContextsService;
 
+/**
+ * Producer for {@code &#064;Inject Conversation;}
+ */
 public class ConversationProducer extends InjectionTargetImpl<ConversationImpl>
 {
 
-    private WebBeansContext webBeansContext;
-    
+    private final ContextsService contextsService;
+
+
     public ConversationProducer(AnnotatedType<ConversationImpl> annotatedType, WebBeansContext webBeansContext)
     {
         super(annotatedType, Collections.<InjectionPoint>emptySet(), webBeansContext, null, null);
-        this.webBeansContext = webBeansContext;
+        this.contextsService = webBeansContext.getContextsService();
     }
     
     /**
@@ -45,36 +52,12 @@ public class ConversationProducer extends InjectionTargetImpl<ConversationImpl>
     @Override
     protected ConversationImpl newInstance(CreationalContextImpl<ConversationImpl> creationalContext)
     {
-        ConversationImpl conversation = null;
-        //Gets conversation service
-        ConversationService conversationService = webBeansContext.getService(ConversationService.class);
-        //Gets conversation id
-        String conversationId = conversationService.getConversationId();       
-        //Gets session id that conversation is created
-        String sessionId = conversationService.getConversationSessionId();
-
-        //If conversation id is not null, this means that
-        //conversation is propogated
-        if (sessionId != null && conversationId != null) // sId can be null as well on invalid requests but we want a transient conv
+        Context currentContext = contextsService.getCurrentContext(ConversationScoped.class);
+        if (currentContext != null && currentContext instanceof ConversationContext)
         {
-            //Gets propogated conversation
-            conversation = webBeansContext.getConversationManager().getPropogatedConversation(conversationId, sessionId);
-        }
-        
-        if (conversation == null)
-        {
-            if(sessionId != null)
-            {
-                conversation = new ConversationImpl(conversationService.getConversationSessionId(), webBeansContext);
-            }
-            else
-            {
-                //Used in Tests
-                conversation = new ConversationImpl(webBeansContext);
-            }
-            
+            return ((ConversationContext) currentContext).getConversation();
         }
 
-        return conversation;
+        return null;
     }
 }

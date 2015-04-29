@@ -40,6 +40,12 @@ public class ServletRequestContext extends RequestContext
         super();
     }
 
+    @Override
+    public Object getRequestObject()
+    {
+        return getServletRequest();
+    }
+
     public HttpServletRequest getServletRequest()
     {
         if (active)

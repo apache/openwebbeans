@@ -269,7 +269,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         @Override
         public void run()
         {
-            WebBeansContext.getInstance().getConversationManager().destroyWithRespectToTimout();
+            WebBeansContext.getInstance().getConversationManager().destroyUnrequiredConversations();
 
         }
     }

@@ -16,25 +16,43 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openwebbeans.tck.conversation;
+package org.apache.webbeans.jsf;
+
+import javax.servlet.http.HttpSession;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.webbeans.spi.ConversationService;
 
-public class TckConversationService implements ConversationService
+public class JsfConversationService implements ConversationService
 {
-    private final AtomicInteger conversationIdCounter = new AtomicInteger(0);
+    private static final String ATTRIBUTE_NAME_CONVERSATION_ID_COUNTER = "owb_coversationId_counter";
+
+    private AtomicInteger conversationIdCounter = new AtomicInteger(0);
+
 
     @Override
     public String getConversationId()
     {
-        return "tck-conversation";
+        return JSFUtil.getConversationId();
     }
 
     @Override
     public String generateConversationId()
     {
-        return "cid-" + conversationIdCounter.incrementAndGet();
+        HttpSession session = JSFUtil.getSession();
+        if(session != null)
+        {
+            AtomicInteger convIdCounter = (AtomicInteger) session.getAttribute(ATTRIBUTE_NAME_CONVERSATION_ID_COUNTER);
+            if (convIdCounter == null)
+            {
+                convIdCounter = new AtomicInteger(0);
+                session.setAttribute(ATTRIBUTE_NAME_CONVERSATION_ID_COUNTER, convIdCounter);
+            }
+
+            return Long.toString(convIdCounter.incrementAndGet());
+        }
+        
+        return "inMem_" + conversationIdCounter.incrementAndGet();
     }
 }

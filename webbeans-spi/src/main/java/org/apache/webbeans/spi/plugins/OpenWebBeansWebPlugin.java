@@ -26,6 +26,7 @@ package org.apache.webbeans.spi.plugins;
  * and register it via META-INF/services/org.apache.webbeans.plugins.OpenWebBeansWebPlugin
  * @version $Rev$ $Date$
  *
+ * @deprecated we don't like the sessionId in any map anymore as this changes _way_ too often
  */
 public interface OpenWebBeansWebPlugin extends OpenWebBeansPlugin
 {

@@ -38,6 +38,9 @@ import javax.servlet.http.HttpSessionListener;
  * If you have a container with &lt; Servlet-2.5 then use
  * {@link WebBeansConfigurationFilter} and {@link WebBeansConfigurationHttpSessionListener}
  * instead.
+ *
+ * @see BeginWebBeansConfigurationListener
+ * @see EndWebBeansConfigurationListener
  */
 public class WebBeansConfigurationListener implements ServletContextListener, ServletRequestListener, HttpSessionListener
 {

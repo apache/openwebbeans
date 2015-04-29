@@ -16,31 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.jsf12;
+package org.apache.webbeans.conversation;
 
-import javax.servlet.http.HttpSession;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.webbeans.spi.ConversationService;
 
+/**
+ * We do not support Conversation propagation in JavaSE yet.
+ */
 public class DefaultConversationService implements ConversationService
 {
+    /**
+     * For SE we only need one single counter as there is no
+     * serialisation anyway.
+     */
+    private AtomicInteger conversationIdCounter = new AtomicInteger(0);
 
     @Override
     public String getConversationId()
     {
-        return JSFUtil.getConversationId();
-    }
-
-    @Override
-    public String getConversationSessionId()
-    {
-        HttpSession session = JSFUtil.getSession();
-        if(session != null)
-        {
-            return session.getId();
-        }
-        
         return null;
     }
 
+    @Override
+    public String generateConversationId()
+    {
+        return Long.toString(conversationIdCounter.incrementAndGet());
+    }
 }

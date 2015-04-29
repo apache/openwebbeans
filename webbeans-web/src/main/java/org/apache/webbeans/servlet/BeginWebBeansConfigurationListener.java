@@ -37,7 +37,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.web.util.ServletCompatibilityUtil;
 
 /**
- * As the ordering of servlet listener invocations is the same for all
+ * As the ordering of servlet listener invocations on some containers is the same for all
  * *Initialized events (e.g. contextInitialized, requestInitialized)
  * and for all *Destroyed events (e.g. contextDestroyed, requestDestroyed)
  * we need a different listener for start and end events.
