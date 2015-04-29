@@ -48,6 +48,7 @@ import org.apache.webbeans.service.DefaultLoaderService;
 import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.ApplicationBoundaryService;
 import org.apache.webbeans.spi.ContextsService;
+import org.apache.webbeans.spi.ConversationService;
 import org.apache.webbeans.spi.LoaderService;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.SecurityService;
@@ -71,7 +72,6 @@ public class WebBeansContext
     private final AlternativesManager alternativesManager = new AlternativesManager(this);
     private final AnnotatedElementFactory annotatedElementFactory = new AnnotatedElementFactory(this);
     private final BeanManagerImpl beanManagerImpl = new BeanManagerImpl(this);
-    private final ConversationManager conversationManager = new ConversationManager(this);
     private final CreationalContextFactory creationalContextFactory = new CreationalContextFactory(this);
     private final DecoratorsManager decoratorsManager = new DecoratorsManager(this);
     private final ExtensionLoader extensionLoader = new ExtensionLoader(this);
@@ -93,6 +93,8 @@ public class WebBeansContext
     private final DeploymentValidationService deploymentValidationService = new DeploymentValidationService(this);
     private ScannerService scannerService;
     private ContextsService contextsService;
+    private final ConversationManager conversationManager;
+    private ConversationService conversationService = null;
     private final ApplicationBoundaryService applicationBoundaryService;
 
 
@@ -140,6 +142,7 @@ public class WebBeansContext
         securityService = getService(SecurityService.class);
         applicationBoundaryService = getService(ApplicationBoundaryService.class);
         beanArchiveService = getService(BeanArchiveService.class);
+        conversationManager = new ConversationManager(this);
 
         // Allow the WebBeansContext itself to be looked up
         managerMap.put(getClass(), this);
@@ -161,6 +164,7 @@ public class WebBeansContext
         managerMap.put(SerializableBeanVault.class, serializableBeanVault);
         managerMap.put(StereoTypeManager.class, stereoTypeManager);
         managerMap.put(InterceptorResolutionService.class, interceptorResolutionService);
+
     }
 
     public static WebBeansContext getInstance()
@@ -355,6 +359,17 @@ public class WebBeansContext
     {
         return beanArchiveService;
     }
+
+    public ConversationService getConversationService()
+    {
+        if (conversationService == null)
+        {
+            conversationService = getService(ConversationService.class);
+        }
+
+        return conversationService;
+    }
+
 
     private Object get(String singletonName)
     {

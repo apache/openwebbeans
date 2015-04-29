@@ -169,48 +169,21 @@ public class OpenWebBeansConfiguration
             properties = System.getProperties();
         }
         
-        String value = properties.getProperty(CONVERSATION_PERIODIC_DELAY);
-        setPropertyFromSystemProperty(CONVERSATION_PERIODIC_DELAY, value);        
-        
-        value = properties.getProperty(USE_EJB_DISCOVERY);
-        setPropertyFromSystemProperty(USE_EJB_DISCOVERY, value);
-
-        value = properties.getProperty(CONTAINER_LIFECYCLE);
-        setPropertyFromSystemProperty(CONTAINER_LIFECYCLE, value);
-
-        value = properties.getProperty(APPLICATION_IS_JSP);
-        setPropertyFromSystemProperty(APPLICATION_IS_JSP, value);
-
-        value = properties.getProperty(TRANSACTION_SERVICE);
-        setPropertyFromSystemProperty(TRANSACTION_SERVICE, value);
-
-        value = properties.getProperty(VALIDATOR_SERVICE);
-        setPropertyFromSystemProperty(VALIDATOR_SERVICE, value);
-
-        value = properties.getProperty(SECURITY_SERVICE);
-        setPropertyFromSystemProperty(SECURITY_SERVICE, value);
-
-        value = properties.getProperty(RESOURCE_INJECTION_SERVICE);
-        setPropertyFromSystemProperty(RESOURCE_INJECTION_SERVICE, value);
-
-        value = properties.getProperty(CONVERSATION_SERVICE);
-        setPropertyFromSystemProperty(CONVERSATION_SERVICE, value);
-
-        value = properties.getProperty(CONTEXTS_SERVICE);
-        setPropertyFromSystemProperty(CONTEXTS_SERVICE, value);
-
-        value = properties.getProperty(SCANNER_SERVICE);
-        setPropertyFromSystemProperty(SCANNER_SERVICE, value);
-
-        value = properties.getProperty(JNDI_SERVICE);
-        setPropertyFromSystemProperty(JNDI_SERVICE, value);
-        
-        value = properties.getProperty(EL_ADAPTOR_CLASS);
-        setPropertyFromSystemProperty(EL_ADAPTOR_CLASS, value);
-
-        value = properties.getProperty(USE_BDA_BEANSXML_SCANNER);
-        setPropertyFromSystemProperty(USE_BDA_BEANSXML_SCANNER, value);
-
+        setPropertyFromSystemProperty(properties, CONVERSATION_PERIODIC_DELAY);
+        setPropertyFromSystemProperty(properties, USE_EJB_DISCOVERY);
+        setPropertyFromSystemProperty(properties, CONTAINER_LIFECYCLE);
+        setPropertyFromSystemProperty(properties, APPLICATION_IS_JSP);
+        setPropertyFromSystemProperty(properties, TRANSACTION_SERVICE);
+        setPropertyFromSystemProperty(properties, VALIDATOR_SERVICE);
+        setPropertyFromSystemProperty(properties, SECURITY_SERVICE);
+        setPropertyFromSystemProperty(properties, RESOURCE_INJECTION_SERVICE);
+        setPropertyFromSystemProperty(properties, CONVERSATION_SERVICE);
+        setPropertyFromSystemProperty(properties, CONTEXTS_SERVICE);
+        setPropertyFromSystemProperty(properties, SCANNER_SERVICE);
+        setPropertyFromSystemProperty(properties, JNDI_SERVICE);
+        setPropertyFromSystemProperty(properties, EL_ADAPTOR_CLASS);
+        setPropertyFromSystemProperty(properties, USE_BDA_BEANSXML_SCANNER);
+        setPropertyFromSystemProperty(properties, APPLICATION_SUPPORTS_CONVERSATION);
     }
 
     private Properties doPrivilegedGetSystemProperties()
@@ -229,6 +202,12 @@ public class OpenWebBeansConfiguration
     }
 
      
+    private void setPropertyFromSystemProperty(Properties systemProperties, String key)
+    {
+        String value = systemProperties.getProperty(key);
+        setPropertyFromSystemProperty(key, value);
+    }
+    
     private void setPropertyFromSystemProperty(String key, String value)
     {
         if(value != null)
