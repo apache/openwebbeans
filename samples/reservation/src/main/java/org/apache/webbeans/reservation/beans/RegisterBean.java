@@ -18,13 +18,10 @@
  */
 package org.apache.webbeans.reservation.beans;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.webbeans.reservation.bindings.ApplicationLog;
@@ -35,29 +32,18 @@ import org.apache.webbeans.reservation.util.JSFUtility;
 @RequestScoped
 public class RegisterBean
 {
-    private @Inject @ApplicationLog Log logger;
-    
-    private String name;
-    
-    private String surname;
-    
-    private Integer age;
-    
-    private String userName;
-    
-    private String password;
-    
-    private boolean admin;
-    
     private @Inject @Default RegisterController personController;
-    
-    private @Inject @Default BeanManager manager; 
-    
-    public RegisterBean()
-    {
-        
-    }
-    
+    private @Inject @ApplicationLog Log logger;
+
+    private String name;
+    private String surname;
+    private Integer age;
+    private String userName;
+    private String password;
+
+    private boolean admin;
+
+
     public String register()
     {   
         
@@ -71,14 +57,6 @@ public class RegisterBean
 
     }
 
-    @PostConstruct
-    public void init()
-    {
-        Bean<?> bean = manager.getBeans("logger").iterator().next();
-        
-        logger = (Log)manager.getReference(bean, null, manager.createCreationalContext(bean));
-    }
-    
     
     /**
      * @return the name

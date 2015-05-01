@@ -20,26 +20,22 @@ package org.apache.webbeans.web.lifecycle;
 
 import org.apache.webbeans.annotation.InitializedLiteral;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.lifecycle.AbstractLifeCycle;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
-import org.apache.webbeans.web.context.WebContextsService;
 import org.apache.webbeans.web.util.ServletCompatibilityUtil;
 
 import javax.el.ELResolver;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.jsp.JspApplicationContext;
 import javax.servlet.jsp.JspFactory;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 /**
@@ -106,22 +102,6 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     @Override
     protected void afterStartApplication(final Object startupObject)
     {
-        String strDelay = getWebBeansContext().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.CONVERSATION_PERIODIC_DELAY,"150000");
-        long delay = Long.parseLong(strDelay);
-
-        service = Executors.newScheduledThreadPool(1, new ThreadFactory()
-        {            
-            @Override
-            public Thread newThread(Runnable runable)
-            {
-              Thread t = new Thread(runable, "OwbConversationCleaner-"
-                  + ServletCompatibilityUtil.getServletInfo((ServletContext) (startupObject)));
-                t.setDaemon(true);
-                return t;                
-            }
-        });
-        service.scheduleWithFixedDelay(new ConversationCleaner(), delay, delay, TimeUnit.MILLISECONDS);
-
         ELAdaptor elAdaptor = getWebBeansContext().getService(ELAdaptor.class);
         ELResolver resolver = elAdaptor.getOwbELResolver();
         //Application is configured as JSP
@@ -135,8 +115,16 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         // Add BeanManager to the 'javax.enterprise.inject.spi.BeanManager' servlet context attribute
         ServletContext servletContext = (ServletContext)(startupObject);
         servletContext.setAttribute(BeanManager.class.getName(), getBeanManager());
+        if (webBeansContext.getBeanManagerImpl().getNotificationManager().hasLifecycleObserver(InitializedLiteral.INSTANCE_APPLICATION_SCOPED))
+        {
+            // we need to temporarily start the ReqeustContext
+            webBeansContext.getContextsService().startContext(RequestScoped.class, null);
 
-        webBeansContext.getBeanManagerImpl().fireEvent(servletContext != null ? servletContext : new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
+            webBeansContext.getBeanManagerImpl().fireEvent(servletContext != null ? servletContext : new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
+
+            // shut down the RequestContext again
+            webBeansContext.getContextsService().endContext(RequestScoped.class, null);
+        }
     }
 
     @Override
@@ -199,7 +187,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
      */
     private void cleanupShutdownThreadLocals()
     {
-        WebContextsService.removeThreadLocals();
+        contextsService.removeThreadLocals();
     }
     
     /**

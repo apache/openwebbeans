@@ -45,7 +45,7 @@ public class JSFSecurityPhaseListener implements PhaseListener
             User user = null;
             try
             {
-                tracker = (SessionTracker)context.getApplication().evaluateExpressionGet(context, "#{sessionTracker}", SessionTracker.class);
+                tracker = context.getApplication().evaluateExpressionGet(context, "#{sessionTracker}", SessionTracker.class);
                 user = tracker.getUser();
                 
             }

@@ -24,7 +24,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContainerLifecycle;
-import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.web.context.WebContextsService;
 import org.apache.webbeans.web.util.ServletCompatibilityUtil;
@@ -39,8 +38,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -66,9 +63,9 @@ public class WebBeansConfigurationFilter implements Filter
     /**Manages the container lifecycle*/
     protected ContainerLifecycle lifeCycle = null;
 
-    protected FailOverService failoverService = null;
     private WebBeansContext webBeansContext;
     private ServletContext servletContext;
+    private WebContextsService webContextsService;
 
     /**
      * Default constructor
@@ -76,7 +73,7 @@ public class WebBeansConfigurationFilter implements Filter
     public WebBeansConfigurationFilter()
     {
         webBeansContext = WebBeansContext.getInstance();
-        failoverService = webBeansContext.getService(FailOverService.class);
+        webContextsService = (WebContextsService) webBeansContext.getContextsService();
     }
 
     /**
@@ -177,20 +174,6 @@ public class WebBeansConfigurationFilter implements Filter
             logger.log(Level.FINE, "Destroying a request : [{0}]", request.getRemoteAddr());
         }
 
-        if (failoverService != null &&
-                failoverService.isSupportFailOver())
-        {
-            if(request instanceof HttpServletRequest)
-            {
-                HttpServletRequest httpRequest = (HttpServletRequest)request;
-                HttpSession session = httpRequest.getSession(false);
-                if (session != null)
-                {
-                    failoverService.sessionIsIdle(session);
-                }
-            }
-        }
-
         // clean up the EL caches after each request
         ELContextStore elStore = ELContextStore.getInstance(false);
         if (elStore != null)
@@ -224,7 +207,6 @@ public class WebBeansConfigurationFilter implements Filter
      */
     private void cleanupRequestThreadLocals()
     {
-        // TODO maybe there are more to cleanup
-        WebContextsService.removeThreadLocals();
+        webContextsService.removeThreadLocals();
     }
 }

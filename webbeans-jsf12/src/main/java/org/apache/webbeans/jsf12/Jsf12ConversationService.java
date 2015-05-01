@@ -34,7 +34,12 @@ public class Jsf12ConversationService implements ConversationService
     @Override
     public String getConversationId()
     {
-        return JSFUtil.getConversationId();
+        String conversationId = JSFUtil.getConversationId();
+        if (conversationId == null || conversationId.length() == 0)
+        {
+            return null;
+        }
+        return conversationId;
     }
 
     @Override

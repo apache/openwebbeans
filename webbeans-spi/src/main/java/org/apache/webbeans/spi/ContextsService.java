@@ -107,4 +107,18 @@ public interface ContextsService
      * @param scopeType scope type
      */    
     public void deActivateContext(Class<? extends Annotation> scopeType);
+
+    /**
+     * Whenever a thread ends we need to remove any ThreadLocals from the ContextsService
+     */
+    public void removeThreadLocals();
+
+    /**
+     * This method can be used to disable conversation support in core CDI.
+     * This is needed as the spec defines that a user can define it's
+     * own Conversation handling by providing a Filter with the name
+     * "CDI Conversation Filter".
+     * @param supportConversations whether converstaions should be supported
+     */
+    public void setSupportConversations(boolean supportConversations);
 }

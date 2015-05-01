@@ -46,4 +46,8 @@ under the License.
     <login-config>
         <auth-method>BASIC</auth-method>
     </login-config>
+
+    <listener>
+        <listener-class>org.apache.webbeans.servlet.WebBeansConfigurationListener</listener-class>
+    </listener>
 </web-app>

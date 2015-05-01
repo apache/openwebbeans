@@ -35,7 +35,8 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContainerLifecycle;
-import org.apache.webbeans.web.context.WebContextsService;
+import org.apache.webbeans.spi.ContextsService;
+
 
 /**
  * This listener should be the last in the invocation chain.
@@ -50,6 +51,7 @@ public class EndWebBeansConfigurationListener implements ServletContextListener,
 
     private WebBeansContext webBeansContext;
     private ContainerLifecycle lifeCycle;
+    private ContextsService contextsService;
 
     /**
      * Default constructor
@@ -72,6 +74,7 @@ public class EndWebBeansConfigurationListener implements ServletContextListener,
     {
         // this must return the booted OWB container as the BeginWebBeansConfigurationListener did already run
         this.lifeCycle = webBeansContext.getService(ContainerLifecycle.class);
+        contextsService = webBeansContext.getContextsService();
     }
 
     /**
@@ -80,7 +83,10 @@ public class EndWebBeansConfigurationListener implements ServletContextListener,
     @Override
     public void contextDestroyed(ServletContextEvent event)
     {
-        lifeCycle.stopApplication(event);
+        if (lifeCycle != null)
+        {
+            lifeCycle.stopApplication(event);
+        }
 
         // just to be sure that we didn't lazily create anything...
         cleanupRequestThreadLocals();
@@ -161,7 +167,11 @@ public class EndWebBeansConfigurationListener implements ServletContextListener,
      */
     private void cleanupRequestThreadLocals()
     {
-        WebContextsService.removeThreadLocals();
+        if (contextsService != null)
+        {
+            contextsService.removeThreadLocals();
+        }
     }
 
 }
+

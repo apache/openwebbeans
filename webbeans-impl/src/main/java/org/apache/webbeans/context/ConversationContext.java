@@ -49,9 +49,15 @@ public class ConversationContext extends AbstractContext implements Externalizab
 
     private ConversationImpl conversation;
 
-    /*
-    * Constructor
-    */
+    // for serialisation
+    public ConversationContext()
+    {
+        this(WebBeansContext.currentInstance());
+    }
+
+    /**
+     * Constructor
+     */
     public ConversationContext(WebBeansContext webBeansContext)
     {
         super(ConversationScoped.class);

@@ -32,9 +32,14 @@ public abstract class AbstractContextsService implements ContextsService
 {
     protected final WebBeansContext webBeansContext;
 
+    protected boolean supportsConversation = false;
+
+
     protected AbstractContextsService(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
+        supportsConversation = webBeansContext.getOpenWebBeansConfiguration().supportsConversation();
+
     }
 
     @Override
@@ -122,5 +127,15 @@ public abstract class AbstractContextsService implements ContextsService
         conversationManager.destroyUnrequiredConversations();
     }
 
+    @Override
+    public void removeThreadLocals()
+    {
+        // no ThreadLocals to clean up by default
+    }
 
+    @Override
+    public void setSupportConversations(boolean supportConversations)
+    {
+        this.supportsConversation = supportConversations;
+    }
 }

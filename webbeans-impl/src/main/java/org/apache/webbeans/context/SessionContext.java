@@ -44,9 +44,21 @@ public class SessionContext extends AbstractContext implements Serializable, Ext
 {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Whether this is a synthetic SessionContext or a 'real', means backed
+     * by a real servlet session
+     */
+    private boolean syntheticSession = false;
+
     public SessionContext()
     {
         super(SessionScoped.class);
+    }
+
+    public SessionContext(boolean syntheticSession)
+    {
+        super(SessionScoped.class);
+        this.syntheticSession = syntheticSession;
     }
 
     @Override

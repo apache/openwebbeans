@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.TransactionPhase;
@@ -83,6 +84,13 @@ public final class NotificationManager
     private final Map<Type, Set<ObserverMethod<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverMethod<?>>>();
     private final WebBeansContext webBeansContext;
 
+    /**
+     * Contains information whether certain Initialized and Destroyed events have observer methods.
+     */
+    private final ConcurrentMap<Annotation, Boolean> hasLifecycleEventObservers = new ConcurrentHashMap<Annotation, Boolean>();
+
+
+
     public static final Set<Class> CONTAINER_EVENT_CLASSES = new HashSet<Class>();
     static {
         CONTAINER_EVENT_CLASSES.add(AfterBeanDiscovery.class);
@@ -107,6 +115,31 @@ public final class NotificationManager
     public NotificationManager(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
+    }
+
+    /**
+     *
+     * @param lifecycleEvent e.g. {@link org.apache.webbeans.annotation.DestroyedLiteral#INSTANCE_REQUEST_SCOPED}
+     * @return whether the given Initialized or Destroyed event has observer methods.
+     */
+    public boolean hasLifecycleObserver(Annotation lifecycleEvent)
+    {
+        Boolean hasObserver = hasLifecycleEventObservers.get(lifecycleEvent);
+        if (hasObserver == null)
+        {
+            hasObserver = Boolean.FALSE;
+            for (ObserverMethod<?> observerMethod : getObserverMethods())
+            {
+                if (observerMethod.getObservedQualifiers().contains(lifecycleEvent))
+                {
+                    hasObserver = Boolean.TRUE;
+                    break;
+                }
+            }
+            hasLifecycleEventObservers.putIfAbsent(lifecycleEvent, hasObserver);
+        }
+
+        return hasObserver;
     }
     
     public List<ObserverMethod<?>> getObserverMethods()

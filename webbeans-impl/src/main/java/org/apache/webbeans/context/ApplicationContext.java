@@ -48,7 +48,5 @@ public class ApplicationContext extends AbstractContext
     public void destroy(Contextual<?> contextual)
     {
         super.destroy(contextual);
-
-        // and now we also need to
     }
 }

@@ -39,7 +39,6 @@ import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.ConversationService;
 
 /**
@@ -56,7 +55,6 @@ public class ConversationManager
 
 
     private final WebBeansContext webBeansContext;
-    private final ContextsService contextsService;
 
     /**
      * Creates new conversation manager
@@ -64,7 +62,6 @@ public class ConversationManager
     public ConversationManager(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-        this.contextsService = webBeansContext.getContextsService();
 
         // we need to register this for serialisation in clusters
         webBeansContext.getBeanManagerImpl().addInternalBean(ConversationStorageBean.INSTANCE);
@@ -80,10 +77,11 @@ public class ConversationManager
     {
         ConversationService conversationService = webBeansContext.getConversationService();
 
+        Set<ConversationContext> conversationContexts = getConversations(true);
+
         String conversationId = conversationService.getConversationId();
         if (conversationId != null && conversationId.length() > 0)
         {
-            Set<ConversationContext> conversationContexts = getConversations(false);
             if (conversationContexts != null)
             {
                 for (ConversationContext conversationContext : conversationContexts)
@@ -98,6 +96,7 @@ public class ConversationManager
 
         ConversationContext conversationContext = new ConversationContext(webBeansContext);
         conversationContext.setActive(true);
+        conversationContexts.add(conversationContext);
 
         webBeansContext.getBeanManagerImpl().fireEvent(getLifecycleEventPayload(conversationContext), InitializedLiteral.INSTANCE_CONVERSATION_SCOPED);
 
@@ -204,7 +203,7 @@ public class ConversationManager
 
         if (payLoad == null)
         {
-            RequestContext requestContext = (RequestContext) contextsService.getCurrentContext(RequestScoped.class);
+            RequestContext requestContext = (RequestContext) webBeansContext.getContextsService().getCurrentContext(RequestScoped.class);
             if (requestContext != null)
             {
                 payLoad = requestContext.getRequestObject();
@@ -226,7 +225,7 @@ public class ConversationManager
     private Set<ConversationContext> getConversations(boolean create)
     {
         Set<ConversationContext> conversationContexts = null;
-        Context sessionContext = contextsService.getCurrentContext(SessionScoped.class);
+        Context sessionContext = webBeansContext.getContextsService().getCurrentContext(SessionScoped.class);
         if (sessionContext != null)
         {
             if (!create)

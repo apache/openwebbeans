@@ -84,11 +84,9 @@ public class UserReservationBean implements Serializable
         try
         {
             date = new SimpleDateFormat("dd/MM/yyyy").parse(getReservationDate());
-            
         }
         catch(Exception e)
         {
-            
             JSFUtility.addErrorMessage("Please give a date with dd/MM/yyyy", "");
             return null;
         }
