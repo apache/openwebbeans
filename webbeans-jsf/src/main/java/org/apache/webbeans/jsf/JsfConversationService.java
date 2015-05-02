@@ -18,18 +18,18 @@
  */
 package org.apache.webbeans.jsf;
 
-import javax.servlet.http.HttpSession;
 
-import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.webbeans.spi.ConversationService;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.web.context.WebConversationService;
 
-public class JsfConversationService implements ConversationService
+public class JsfConversationService extends WebConversationService
 {
-    private static final String ATTRIBUTE_NAME_CONVERSATION_ID_COUNTER = "owb_coversationId_counter";
 
-    private AtomicInteger conversationIdCounter = new AtomicInteger(0);
-
+    public JsfConversationService(WebBeansContext webBeansContext)
+    {
+        super(webBeansContext);
+    }
 
     @Override
     public String getConversationId()
@@ -37,27 +37,19 @@ public class JsfConversationService implements ConversationService
         String conversationId = JSFUtil.getConversationId();
         if (conversationId == null || conversationId.length() == 0)
         {
+            // try to get the conversationId from the servlet
+            conversationId = super.getConversationId();
+        }
+        if (conversationId == null || conversationId.length() == 0)
+        {
+            return null;
+        }
+        if ("none".equals(JSFUtil.getConversationPropagation()))
+        {
+            // explicit 'blocking' of conversationPropagation
             return null;
         }
         return conversationId;
     }
 
-    @Override
-    public String generateConversationId()
-    {
-        HttpSession session = JSFUtil.getSession();
-        if(session != null)
-        {
-            AtomicInteger convIdCounter = (AtomicInteger) session.getAttribute(ATTRIBUTE_NAME_CONVERSATION_ID_COUNTER);
-            if (convIdCounter == null)
-            {
-                convIdCounter = new AtomicInteger(0);
-                session.setAttribute(ATTRIBUTE_NAME_CONVERSATION_ID_COUNTER, convIdCounter);
-            }
-
-            return Long.toString(convIdCounter.incrementAndGet());
-        }
-        
-        return "inMem_" + conversationIdCounter.incrementAndGet();
-    }
 }
