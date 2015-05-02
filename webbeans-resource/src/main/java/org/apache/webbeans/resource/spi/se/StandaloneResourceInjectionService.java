@@ -43,7 +43,6 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -183,17 +182,6 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
     @Override
     public <T> void writeExternal(Bean<T> bean, T actualResource, ObjectOutput out) throws IOException
     {
-        // try fail over service to serialize the resource object
-        FailOverService failoverService = webBeansContext.getService(FailOverService.class);
-        if (failoverService != null)
-        {
-            Object ret = failoverService.handleResource(bean, actualResource, null, out);
-            if (ret != FailOverService.NOT_HANDLED)
-            {
-                return;
-            }
-        }
-
         // default behavior
         if (actualResource instanceof Serializable)
         {
@@ -216,16 +204,6 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
             ClassNotFoundException
     {
         T actualResource = null;
-        // try fail over service to serialize the resource object
-        FailOverService failoverService = webBeansContext.getService(FailOverService.class);
-        if (failoverService != null)
-        {
-            actualResource = (T) failoverService.handleResource(bean, actualResource, in, null);
-            if (actualResource != FailOverService.NOT_HANDLED)
-            {
-                return actualResource;
-            }
-        }
 
         // default behavior
         actualResource = (T) in.readObject();
