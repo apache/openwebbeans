@@ -61,7 +61,7 @@ public class WebContextsService extends AbstractContextsService
     /**Logger instance*/
     private static final Logger logger = WebBeansLoggerFacade.getLogger(WebContextsService.class);
 
-    private static final String OWB_SESSION_CONTEXT_ATTRIBUTE = "OPENWEBBEANS_SESSION_CONTEXT";
+    private static final String OWB_SESSION_CONTEXT_ATTRIBUTE_NAME = "openWebBeansSessionContext";
 
     /**Current request context*/
     protected static ThreadLocal<RequestContext> requestContexts = null;
@@ -416,20 +416,20 @@ public class WebContextsService extends AbstractContextsService
         else
         {
             // we need to get it latest here to make sure we work on the same instance
-            currentSessionContext = (SessionContext) session.getAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE);
+            currentSessionContext = (SessionContext) session.getAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME);
 
             if (currentSessionContext == null)
             {
                 // no current context, so lets create a new one
-                synchronized (OWB_SESSION_CONTEXT_ATTRIBUTE)
+                synchronized (OWB_SESSION_CONTEXT_ATTRIBUTE_NAME)
                 {
-                    currentSessionContext = (SessionContext) session.getAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE);
+                    currentSessionContext = (SessionContext) session.getAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME);
                     if (currentSessionContext == null)
                     {
                         currentSessionContext = new SessionContext();
                         currentSessionContext.setActive(true);
                         webBeansContext.getBeanManagerImpl().fireEvent(session, InitializedLiteral.INSTANCE_SESSION_SCOPED);
-                        session.setAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE, currentSessionContext);
+                        session.setAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME, currentSessionContext);
                     }
                 }
             }
@@ -437,7 +437,7 @@ public class WebContextsService extends AbstractContextsService
             {
                 // we do that in any case.
                 // This is needed to trigger delta-replication on most servers
-                session.setAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE, currentSessionContext);
+                session.setAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME, currentSessionContext);
             }
         }
 
