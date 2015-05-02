@@ -110,8 +110,6 @@ public class SessionContextTest extends AbstractUnitTest
         Assert.assertEquals(2, AppScopedBean.requestContextDestroyedEvent.size());
         Assert.assertEquals(2, AppScopedBean.sessionContextDestroyedEvent.size());
 
-        // looks weird at a first glance but thats how it is defined in the spec.
-        // the @Destroyed(ApplicationScoped.class) gets only fired AFTER the ApplicationContext gets destroyed...
-        Assert.assertEquals(0, AppScopedBean.appContextDestroyedEvent.size());
+        Assert.assertEquals(1, AppScopedBean.appContextDestroyedEvent.size());
     }
 }

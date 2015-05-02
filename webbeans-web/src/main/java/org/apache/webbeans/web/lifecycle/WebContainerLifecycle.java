@@ -21,6 +21,7 @@ package org.apache.webbeans.web.lifecycle;
 import org.apache.webbeans.annotation.InitializedLiteral;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.lifecycle.AbstractLifeCycle;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -29,13 +30,16 @@ import org.apache.webbeans.spi.adaptor.ELAdaptor;
 import org.apache.webbeans.web.util.ServletCompatibilityUtil;
 
 import javax.el.ELResolver;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.jsp.JspApplicationContext;
 import javax.servlet.jsp.JspFactory;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
 
 /**
@@ -51,9 +55,6 @@ import java.util.logging.Level;
  */
 public final class WebContainerLifecycle extends AbstractLifeCycle
 {
-    /**Manages unused conversations*/
-    private ScheduledExecutorService service = null;
-
 
     /**
      * Creates a new lifecycle instance and initializes
@@ -140,10 +141,19 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     @Override
     protected void beforeStopApplication(Object stopObject)
     {
-        if(service != null)
+        webBeansContext.getContextsService().endContext(RequestScoped.class, null);
+        webBeansContext.getContextsService().endContext(ConversationScoped.class, null);
+        webBeansContext.getContextsService().endContext(SessionScoped.class, null);
+        webBeansContext.getContextsService().endContext(ApplicationScoped.class, null);
+        webBeansContext.getContextsService().endContext(Singleton.class, null);
+
+        // clean up the EL caches after each request
+        ELContextStore elStore = ELContextStore.getInstance(false);
+        if (elStore != null)
         {
-            service.shutdownNow();
+            elStore.destroyELContextStore();
         }
+
     }
 
     /**

@@ -129,7 +129,7 @@ public class DefaultContextsService extends AbstractContextsService
         }
         else if(scopeType.equals(ApplicationScoped.class))
         {
-            return getCurrentApplicationContext();
+            return applicationContext;
         }
         else if(scopeType.equals(ConversationScoped.class) && supportsConversation)
         {
@@ -247,15 +247,16 @@ public class DefaultContextsService extends AbstractContextsService
 
         dependentContext.set(null);
         dependentContext.remove();
+
+        if (applicationContext != null)
+        {
+            applicationContext.destroy();
+            applicationContext.destroySystemBeans();
+        }
     }
 
 
-    private Context getCurrentApplicationContext()
-    {        
-        return applicationContext;
-    }
 
-    
     private Context getCurrentConversationContext()
     {
         ConversationContext conversationCtx = conversationContext.get();
@@ -378,7 +379,6 @@ public class DefaultContextsService extends AbstractContextsService
         if(applicationContext != null)
         {
             applicationContext.destroy();
-            applicationContext = null;
 
             // this is needed to get rid of ApplicationScoped beans which are cached inside the proxies...
             WebBeansContext.currentInstance().getBeanManagerImpl().clearCacheProxies();

@@ -18,11 +18,14 @@
  */
 package org.apache.webbeans.context;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.Contextual;
 
+import org.apache.webbeans.component.BuiltInOwbBean;
 import org.apache.webbeans.context.creational.BeanInstanceBag;
 
 /**
@@ -44,9 +47,36 @@ public class ApplicationContext extends AbstractContext
         componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
     }
 
+
+    /**
+     * By default a Context destroys all it's Contextual Instances.
+     * But for the ApplicationContext we only need to destroy custom beans and _not_ Extensions and internal beans
+     */
     @Override
-    public void destroy(Contextual<?> contextual)
+    public void destroy()
     {
-        super.destroy(contextual);
+        Set<Contextual<?>> keySet = new HashSet<Contextual<?>>(componentInstanceMap.keySet());
+        for (Contextual<?> contextual: keySet)
+        {
+            if (contextual instanceof BuiltInOwbBean)
+            {
+                // we do NOT yet dextroy our internal beans as we probably need them for BeforeShutdown still.
+                continue;
+            }
+
+            destroy(contextual);
+        }
     }
+
+    /**
+     * This method should only get called at container shutdown.
+     * It will destroy the Extensions as well
+     */
+    public void destroySystemBeans()
+    {
+        super.destroy();
+        setActive(false);
+    }
+
+
 }

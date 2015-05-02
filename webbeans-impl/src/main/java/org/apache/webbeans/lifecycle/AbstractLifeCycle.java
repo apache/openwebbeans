@@ -159,10 +159,9 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
 
             //Fire shut down
             beanManager.fireLifecycleEvent(new BeforeShutdownImpl());
-            
-            //Destroys context
+
             contextsService.destroy(endObject);
-            
+
             //Unbind BeanManager
             jndiService.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);
 
