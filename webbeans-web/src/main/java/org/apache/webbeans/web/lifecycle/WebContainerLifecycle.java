@@ -251,24 +251,4 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         }
     }
 
-
-    /**
-     * Conversation cleaner thread, that
-     * clears unused conversations.
-     *
-     */
-    private static class ConversationCleaner implements Runnable
-    {
-        public ConversationCleaner()
-        {
-
-        }
-
-        @Override
-        public void run()
-        {
-            WebBeansContext.getInstance().getConversationManager().destroyUnrequiredConversations();
-
-        }
-    }
 }
