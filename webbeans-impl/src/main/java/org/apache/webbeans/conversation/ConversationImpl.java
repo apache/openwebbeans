@@ -65,6 +65,8 @@ public class ConversationImpl implements Conversation, Serializable
      */
     private long lastAccessTime = 0L;
 
+    private transient Throwable problemDuringCreation = null;
+
     /**
      * This instance is under used and by which threads, Atomicinteger would be great but then contract of ContextsService but be enhanced to
      * be compatible wih WBPhaseListeners. Using thread allow to call iUseIt() multiple times.
@@ -252,6 +254,15 @@ public class ConversationImpl implements Conversation, Serializable
         return "Conversation with id [ " + id + " ]";
     }
 
+    public Throwable getProblemDuringCreation()
+    {
+        return problemDuringCreation;
+    }
+
+    public void setProblemDuringCreation(Throwable problemDuringCreation)
+    {
+        this.problemDuringCreation = problemDuringCreation;
+    }
 
     /**
      * Initialize a few fields on deserialisation

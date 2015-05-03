@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.servlet;
 
-import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
@@ -129,7 +128,6 @@ public class EndWebBeansConfigurationListener implements ServletContextListener,
         boolean mustDestroy = ensureRequestScope();
 
         this.lifeCycle.getContextService().endContext(SessionScoped.class, event.getSession());
-        this.lifeCycle.getContextService().endContext(ConversationScoped.class, event.getSession());
 
         if (mustDestroy)
         {

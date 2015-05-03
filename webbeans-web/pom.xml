@@ -44,6 +44,13 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <!-- we actually only need that in the ITs, but that way it's easier for the IDE -->
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.2.1</version>
+            <scope>${httpclient.version}</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.xbean</groupId>

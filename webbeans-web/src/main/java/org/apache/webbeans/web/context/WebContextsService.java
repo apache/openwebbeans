@@ -63,8 +63,15 @@ public class WebContextsService extends AbstractContextsService
 
     private static final String OWB_SESSION_CONTEXT_ATTRIBUTE_NAME = "openWebBeansSessionContext";
 
+    /**
+     * This request attribute gets set when an illegal conversation id or busy conversation access
+     * gets discovered. In that case we need to throw an Exception and provide
+     * a fresh transient conversation. This attribute gets set when exactly that happens.
+     */
+    private static final String OWB_REQUEST_TRANSIENT_CONVERSATION_ATTRIBUTE_NAME = "org.apache.webbeans.web.transient_conversation";
+
     /**Current request context*/
-    protected static ThreadLocal<RequestContext> requestContexts = null;
+    protected static ThreadLocal<ServletRequestContext> requestContexts = null;
 
     /**Current session context*/
     protected static ThreadLocal<SessionContext> sessionContexts = null;
@@ -90,7 +97,7 @@ public class WebContextsService extends AbstractContextsService
     /**Initialize thread locals*/
     static
     {
-        requestContexts = new ThreadLocal<RequestContext>();
+        requestContexts = new ThreadLocal<ServletRequestContext>();
         sessionContexts = new ThreadLocal<SessionContext>();
         conversationContexts = new ThreadLocal<ConversationContext>();
 
@@ -237,7 +244,7 @@ public class WebContextsService extends AbstractContextsService
         {
             return applicationContext;
         }
-        else if(supportsConversation && scopeType.equals(ConversationScoped.class))
+        else if(scopeType.equals(ConversationScoped.class))
         {
             return getConversationContext(true);
         }
@@ -346,7 +353,7 @@ public class WebContextsService extends AbstractContextsService
         // cleanup open conversations first
         if (supportsConversation)
         {
-            cleanupConversations();
+            cleanupConversations(conversationContexts.get());
         }
 
         //Get context
@@ -386,11 +393,6 @@ public class WebContextsService extends AbstractContextsService
         RequestScopedBeanInterceptorHandler.removeThreadLocals();
     }
 
-
-    private void cleanupConversations()
-    {
-        cleanupConversations(conversationContexts.get());
-    }
 
     /**
      * Creates the session context at the session start.
@@ -473,6 +475,11 @@ public class WebContextsService extends AbstractContextsService
         // Destroy context
         if (context != null)
         {
+            if (supportsConversation)
+            {
+                //X TODO get all conversations stored in the Session and mark them as transient
+                //X TODO also set the current conversation (if any) to transient
+            }
             context.destroy();
             webBeansContext.getBeanManagerImpl().fireEvent(payload != null ? payload : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
         }
@@ -616,9 +623,9 @@ public class WebContextsService extends AbstractContextsService
      * Get current request ctx.
      * @return request context
      */
-    public RequestContext getRequestContext(boolean create)
+    public ServletRequestContext getRequestContext(boolean create)
     {
-        RequestContext requestContext = requestContexts.get();
+        ServletRequestContext requestContext = requestContexts.get();
         if (requestContext == null && create)
         {
             initRequestContext(null);
@@ -658,19 +665,47 @@ public class WebContextsService extends AbstractContextsService
             String conversationId = webBeansContext.getConversationService().getConversationId();
             if (conversationId != null && conversationContext.getConversation().isTransient())
             {
-                throw new NonexistentConversationException("Propogated conversation with cid=" + conversationId +
-                        " cannot be restored. It creates a new transient conversation.");
+                if (markAsTemporaryTransientConversation())
+                {
+                    throw new NonexistentConversationException("Propogated conversation with cid=" + conversationId +
+                            " cannot be restored. It creates a new transient conversation.");
+                }
             }
 
             if (conversationContext.getConversation().iUseIt() > 1)
             {
-                //Throw Busy exception
-                throw new BusyConversationException("Propogated conversation with cid=" + conversationId +
-                        " is used by other request. It creates a new transient conversation");
+                if (markAsTemporaryTransientConversation())
+                {
+                    //Throw Busy exception
+                    throw new BusyConversationException("Propogated conversation with cid=" + conversationId +
+                            " is used by other request. It creates a new transient conversation");
+                }
             }
         }
 
         return conversationContext;
+    }
+
+    /**
+     * Remember for this request that a fresh transient conversation got created.
+     * @return {@code false} if this request already got marked previously, {@code true} if we are the first to set the marker
+     */
+    private boolean markAsTemporaryTransientConversation()
+    {
+        HttpServletRequest servletRequest = requestContexts.get().getServletRequest();
+        if (servletRequest != null)
+        {
+            String marker  = (String) servletRequest.getAttribute(OWB_REQUEST_TRANSIENT_CONVERSATION_ATTRIBUTE_NAME);
+            if (marker != null)
+            {
+                return false;
+            }
+
+            // if not then we need to mark it
+            servletRequest.setAttribute(OWB_REQUEST_TRANSIENT_CONVERSATION_ATTRIBUTE_NAME, "true");
+        }
+
+        return true;
     }
 
     /**
