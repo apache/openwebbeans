@@ -82,7 +82,7 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.2.1</version>
-            <scope>test</scope>
+            <scope>${httpclient.version}</scope>
         </dependency>
 
     </dependencies>
@@ -235,7 +235,7 @@
                     <path>/${project.build.finalName}</path>
                     <addContextWarDependencies>true</addContextWarDependencies>
                     <port>${tomcat.port.it}</port>
-                    <fork>${tomcat.fork}</fork> <!-- true is needed for IT, but if we want to start it we do not want to fork -->
+                    <fork>${tomcat.fork}</fork> <!-- true is needed for IT, but if we want to debug it we do not want to fork -->
                 </configuration>
                 <executions>
                     <execution>

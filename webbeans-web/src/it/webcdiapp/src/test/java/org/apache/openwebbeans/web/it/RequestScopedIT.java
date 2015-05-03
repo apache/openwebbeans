@@ -30,21 +30,24 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class RequestScopedIT
+public class RequestScopedIT extends OwbITBase
 {
-    public static final String BASE_URL = "http://localhost:8089/webbeanswebCdiApp";
 
     @Test
     public void testRequestScoped() throws Exception
     {
         DefaultHttpClient client = new DefaultHttpClient();
-        HttpGet jspGet = new HttpGet(BASE_URL + "/index.jsp");
 
+        HttpGet resetGet = new HttpGet(getPageUrl("/check?reset=true"));
+        HttpResponse response = client.execute(resetGet);
+        resetGet.releaseConnection();
+
+        HttpGet jspGet = new HttpGet(getPageUrl("/index.jsp"));
         checkResponse(client.execute(jspGet));
         jspGet.releaseConnection();
 
-        HttpGet checkGet = new HttpGet(BASE_URL + "/check");
-        HttpResponse response = client.execute(checkGet);
+        HttpGet checkGet = new HttpGet(getPageUrl("/check"));
+        response = client.execute(checkGet);
         checkResponse(response);
 
         HttpEntity httpEntity = response.getEntity();
