@@ -262,7 +262,7 @@ public class DefaultContextsService extends AbstractContextsService
         ConversationContext conversationCtx = conversationContext.get();
         if (conversationCtx == null)
         {
-            conversationCtx = webBeansContext.getConversationManager().getConversationContext();
+            conversationCtx = webBeansContext.getConversationManager().getConversationContext(getCurrentSessionContext());
             conversationContext.set(conversationCtx);
 
             // check for busy and non-existing conversations
@@ -336,7 +336,7 @@ public class DefaultContextsService extends AbstractContextsService
     
     private void startConversationContext(Object object)
     {
-        ConversationContext ctx = webBeansContext.getConversationManager().getConversationContext();
+        ConversationContext ctx = webBeansContext.getConversationManager().getConversationContext(getCurrentSessionContext());
 
         conversationContext.set(ctx);
     }

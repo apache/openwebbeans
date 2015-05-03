@@ -19,8 +19,11 @@
 package org.apache.webbeans.context;
 
 import java.lang.annotation.Annotation;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.enterprise.context.ContextException;
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -59,6 +62,13 @@ public abstract class AbstractContextsService implements ContextsService
     {
         
         return null;
+    }
+
+    @Override
+    public Context getCurrentContext(Class<? extends Annotation> scopeType, boolean createIfNotExists)
+    {
+        // by default behaves the same
+        return getCurrentContext(scopeType);
     }
 
     @Override
@@ -105,28 +115,6 @@ public abstract class AbstractContextsService implements ContextsService
         }        
     }
 
-    protected void cleanupConversations(ConversationContext conversationCtx)
-    {
-        if (conversationCtx == null)
-        {
-            return;
-        }
-
-        ConversationManager conversationManager = webBeansContext.getConversationManager();
-
-        ConversationImpl conversation = conversationCtx.getConversation();
-        if (!conversation.isTransient())
-        {
-            //Conversation must be used by one thread at a time
-            conversation.updateLastAccessTime();
-            //Other threads can now access propagated conversation.
-            conversation.iDontUseItAnymore();
-        }
-
-        // and now destroy all timed-out and transient conversations
-        conversationManager.destroyUnrequiredConversations();
-    }
-
     @Override
     public void removeThreadLocals()
     {
@@ -138,4 +126,66 @@ public abstract class AbstractContextsService implements ContextsService
     {
         this.supportsConversation = supportConversations;
     }
+
+    protected void destroyAllBut(ConversationContext currentConversationCtx)
+    {
+        Context sessionContext = getCurrentContext(SessionScoped.class, false);
+        ConversationManager conversationManager = webBeansContext.getConversationManager();
+        Set<ConversationContext> sessionConversations = conversationManager.getSessionConversations(sessionContext, false);
+        if (sessionConversations != null)
+        {
+            for (ConversationContext conversationCtx : sessionConversations)
+            {
+                if (conversationCtx != currentConversationCtx)
+                {
+                    conversationManager.destroyConversationContext(conversationCtx);
+                }
+            }
+        }
+
+        if (currentConversationCtx != null && !currentConversationCtx.getConversation().isTransient())
+        {
+            currentConversationCtx.getConversation().end();
+        }
+
+
+    }
+
+
+    /**
+     * Destroy inactive (timed out) and transient conversations.
+     * This also will store the currentConversationContext into the session if it is long-running.
+     */
+    public void cleanupConversations(ConversationContext currentConversationContext)
+    {
+        Context sessionContext = getCurrentContext(SessionScoped.class,
+                currentConversationContext != null && !currentConversationContext.getConversation().isTransient());
+        if (sessionContext != null)
+        {
+            ConversationManager conversationManager = webBeansContext.getConversationManager();
+            Set<ConversationContext> conversationContexts = conversationManager.getSessionConversations(sessionContext, false);
+            if (conversationContexts != null)
+            {
+                Iterator<ConversationContext> convIt = conversationContexts.iterator();
+                while (convIt.hasNext())
+                {
+                    ConversationContext conversationContext = convIt.next();
+
+                    ConversationImpl conv = conversationContext.getConversation();
+                    if (conv.isTransient() || conversationManager.conversationTimedOut(conv))
+                    {
+                        conversationManager.destroyConversationContext(conversationContext);
+                        convIt.remove();
+                    }
+                    else
+                    {
+                        conv.iDontUseItAnymore();
+                    }
+                }
+            }
+        }
+
+    }
+
+
 }

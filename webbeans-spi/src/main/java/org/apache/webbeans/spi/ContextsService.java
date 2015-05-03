@@ -63,6 +63,20 @@ public interface ContextsService
     public Context getCurrentContext(Class<? extends Annotation> scopeType);
     
     /**
+     * Gets current context with given scope type with
+     * respect to the current thread of execution.
+     * <p>
+     * If there is not current context, it will try to create one if {@code createIfNotExists} is set.
+     * This is mostly usefull for the SessionContext. If there is no HttpSession <em>yet</em> and the
+     * {@code createIfNotExists} is set to {@code false} then we do not create the HttpSession.
+     * </p>
+     * @param scopeType context scope type
+     * @param createIfNotExists whether to create a new context if the underlying storage is not yet initialized
+     * @return current context with given scope type
+     */
+    public Context getCurrentContext(Class<? extends Annotation> scopeType, boolean createIfNotExists);
+
+    /**
      * If container supports the given scope type it returns
      * true, otherwise it return false.
      * @param scopeType scope type

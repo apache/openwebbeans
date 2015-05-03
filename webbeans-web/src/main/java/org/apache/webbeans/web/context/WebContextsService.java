@@ -477,8 +477,9 @@ public class WebContextsService extends AbstractContextsService
         {
             if (supportsConversation)
             {
-                //X TODO get all conversations stored in the Session and mark them as transient
-                //X TODO also set the current conversation (if any) to transient
+                // get all conversations stored in the Session and destroy them
+                // also set the current conversation (if any) to transient
+                destroyAllBut(getConversationContext(true));
             }
             context.destroy();
             webBeansContext.getBeanManagerImpl().fireEvent(payload != null ? payload : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
@@ -658,7 +659,7 @@ public class WebContextsService extends AbstractContextsService
         ConversationContext conversationContext = conversationContexts.get();
         if (conversationContext == null && create)
         {
-            conversationContext = conversationManager.getConversationContext();
+            conversationContext = conversationManager.getConversationContext(getSessionContext(true));
             conversationContexts.set(conversationContext);
 
             // check for busy and non-existing conversations
@@ -687,6 +688,7 @@ public class WebContextsService extends AbstractContextsService
     }
 
     /**
+     * TODO probably not needed anymore
      * Remember for this request that a fresh transient conversation got created.
      * @return {@code false} if this request already got marked previously, {@code true} if we are the first to set the marker
      */

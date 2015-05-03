@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.conversation;
 
-import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,11 +72,11 @@ public class ConversationManager
      * It will create a new ConversationContext if there is no long running Conversation already running.
      * @return the ConversationContext which is valid for the whole request.
      */
-    public ConversationContext getConversationContext()
+    public ConversationContext getConversationContext(Context sessionContext)
     {
         ConversationService conversationService = webBeansContext.getConversationService();
 
-        Set<ConversationContext> conversationContexts = getConversations(true);
+        Set<ConversationContext> conversationContexts = getSessionConversations(sessionContext, true);
 
         String conversationId = conversationService.getConversationId();
         if (conversationId != null && conversationId.length() > 0)
@@ -114,8 +113,14 @@ public class ConversationManager
         {
             return false;
         }
+        Context sessionContext = webBeansContext.getContextsService().getCurrentContext(SessionScoped.class, false);
+        if (sessionContext == null)
 
-        Set<ConversationContext> conversationContexts = getConversations(false);
+        {
+            return false;
+        }
+
+        Set<ConversationContext> conversationContexts = getSessionConversations(sessionContext, false);
         if (conversationContexts == null)
         {
             return false;
@@ -135,8 +140,8 @@ public class ConversationManager
     /**
      * Gets conversation instance from conversation bean.
      * @return conversation instance
+     * @deprecated is in
      */
-    @SuppressWarnings("unchecked")
     public Conversation getConversationBeanReference()
     {
         BeanManager beanManager = webBeansContext.getBeanManagerImpl();
@@ -146,32 +151,8 @@ public class ConversationManager
         return conversation;
     }
 
-    /**
-     * Destroy inactive (timed out) and transient conversations.
-     */
-    public void destroyUnrequiredConversations()
-    {
-        Set<ConversationContext> conversationContexts = getConversations(false);
-        if (conversationContexts == null)
-        {
-            return;
-        }
 
-        Iterator<ConversationContext> convIt = conversationContexts.iterator();
-        while (convIt.hasNext())
-        {
-            ConversationContext conversationContext = convIt.next();
-
-            ConversationImpl conv = conversationContext.getConversation();
-            if (conv.isTransient() || conversationTimedOut(conv))
-            {
-                destroyConversationContext(conversationContext);
-                convIt.remove();
-            }
-        }
-    }
-
-    private boolean conversationTimedOut(ConversationImpl conv)
+    public boolean conversationTimedOut(ConversationImpl conv)
     {
         long timeout = conv.getTimeout();
         if (timeout != 0L && (System.currentTimeMillis() - conv.getLastAccessTime()) > timeout)
@@ -222,10 +203,9 @@ public class ConversationManager
      * @param create whether a session and the map in there shall get created or not
      * @return the conversation Map from the current session
      */
-    private Set<ConversationContext> getConversations(boolean create)
+    public Set<ConversationContext> getSessionConversations(Context sessionContext, boolean create)
     {
         Set<ConversationContext> conversationContexts = null;
-        Context sessionContext = webBeansContext.getContextsService().getCurrentContext(SessionScoped.class);
         if (sessionContext != null)
         {
             if (!create)

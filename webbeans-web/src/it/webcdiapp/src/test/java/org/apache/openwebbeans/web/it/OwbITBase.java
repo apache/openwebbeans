@@ -152,7 +152,6 @@ public class OwbITBase
         Assert.assertNotNull(response);
 
         int statusCode = response.getStatusLine().getStatusCode();
-        Assert.assertEquals(expectedHttpCode, statusCode);
 
         HttpEntity httpEntity = response.getEntity();
         Assert.assertNotNull(httpEntity);
@@ -181,6 +180,7 @@ public class OwbITBase
         String content = sb.toString();
         log.info("  status=" + statusCode + " content: " + content);
 
+        Assert.assertEquals(expectedHttpCode, statusCode);
         getRequest.releaseConnection();
         return content;
     }
