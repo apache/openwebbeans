@@ -485,9 +485,6 @@ public class WebContextsService extends AbstractContextsService
         // Clear thread locals
         sessionContexts.set(null);
         sessionContexts.remove();
-
-        // note that this does _not_ set it to inactive and _not_ destroy Extensions and internal Beans
-        applicationContext.destroy();
     }
 
     /**
