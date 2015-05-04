@@ -27,10 +27,12 @@ import java.util.logging.Logger;
 
 import javax.enterprise.context.BusyConversationException;
 import javax.enterprise.context.Conversation;
+import javax.enterprise.context.ConversationScoped;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 /**
@@ -65,7 +67,7 @@ public class ConversationImpl implements Conversation, Serializable
      */
     private long lastAccessTime = 0L;
 
-    private transient Throwable problemDuringCreation = null;
+    private transient RuntimeException problemDuringCreation = null;
 
     /**
      * This instance is under used and by which threads, Atomicinteger would be great but then contract of ContextsService but be enhanced to
@@ -110,6 +112,8 @@ public class ConversationImpl implements Conversation, Serializable
 
     /**
      * {@inheritDoc}
+     *
+     * This will also put the current ConversationContext into the SessionContext
      */
     @Override
     public void begin(String id)
@@ -117,15 +121,6 @@ public class ConversationImpl implements Conversation, Serializable
         if (id == null)
         {
             id = webBeansContext.getConversationService().generateConversationId();
-        }
-        else
-        {
-            //Look at other conversation, that may collate with this is
-            final ConversationManager conversationManager = webBeansContext.getConversationManager();
-            if (conversationManager.isConversationExistWithGivenId(id))
-            {
-                throw new IllegalArgumentException("Conversation with id=" + id + " already exists!");
-            }
         }
 
         //Transient state
@@ -142,10 +137,17 @@ public class ConversationImpl implements Conversation, Serializable
             logger.log(Level.WARNING, OWBLogConst.WARN_0003, id);
             throw new IllegalStateException();
         }
+
+        // now store this conversation in the SessionContext
+        final ConversationManager conversationManager = webBeansContext.getConversationManager();
+        ConversationContext conversationContext = (ConversationContext) webBeansContext.getContextsService().getCurrentContext(ConversationScoped.class);
+        conversationManager.addToConversationStorage(conversationContext, id);
     }
 
     /**
      * {@inheritDoc}
+     *
+     * This will also remove the current ConversationContext from the SessionContext
      */
     @Override
     public void end()
@@ -162,6 +164,11 @@ public class ConversationImpl implements Conversation, Serializable
             logger.log(Level.WARNING, OWBLogConst.WARN_0004, id);
             throw new IllegalStateException(toString() + " has already ended");
         }
+
+        // now store this conversation in the SessionContext
+        final ConversationManager conversationManager = webBeansContext.getConversationManager();
+        ConversationContext conversationContext = (ConversationContext) webBeansContext.getContextsService().getCurrentContext(ConversationScoped.class);
+        conversationManager.removeConversationFromStorage(conversationContext);
     }
 
     public int iUseIt()
@@ -254,12 +261,12 @@ public class ConversationImpl implements Conversation, Serializable
         return "Conversation with id [ " + id + " ]";
     }
 
-    public Throwable getProblemDuringCreation()
+    public RuntimeException getProblemDuringCreation()
     {
         return problemDuringCreation;
     }
 
-    public void setProblemDuringCreation(Throwable problemDuringCreation)
+    public void setProblemDuringCreation(RuntimeException problemDuringCreation)
     {
         this.problemDuringCreation = problemDuringCreation;
     }

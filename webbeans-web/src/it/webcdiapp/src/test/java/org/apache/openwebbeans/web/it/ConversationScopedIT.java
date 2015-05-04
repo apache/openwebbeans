@@ -18,6 +18,7 @@
  */
 package org.apache.openwebbeans.web.it;
 
+import javax.enterprise.context.NonexistentConversationException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -28,7 +29,7 @@ public class ConversationScopedIT extends OwbITBase
 {
 
     @Test
-    public void testRequestScoped() throws Exception
+    public void testStandardConversation() throws Exception
     {
         DefaultHttpClient client = new DefaultHttpClient();
 
@@ -97,6 +98,70 @@ public class ConversationScopedIT extends OwbITBase
 
     }
 
+
+
+    @Test
+    public void testSessionInvalidationDuringConversation() throws Exception
+    {
+        DefaultHttpClient client = new DefaultHttpClient();
+
+        // GET http://localhost:8089/webbeanswebCdiApp/conversation/info etc
+
+        ConversationInfo previousInfo;
+        {
+            String content = httpGet(client, "conversation/info", HttpServletResponse.SC_OK);
+            ConversationInfo info = assertConversationInfo(content, "null", true, "empty", null);
+            previousInfo = info;
+        }
+
+        {
+            // once again, we like to make sure we really get different instances
+            String content = httpGet(client, "conversation/info", HttpServletResponse.SC_OK);
+            ConversationInfo info = assertConversationInfo(content, "null", true, "empty", null);
+            Assert.assertTrue(!info.instanceHash.equals(previousInfo.instanceHash));
+        }
+
+        {
+            // now we begin the transaction
+            String content = httpGet(client, "conversation/begin", HttpServletResponse.SC_OK);
+            ConversationInfo info = assertConversationInfo(content, null, false, "empty", null);
+            Assert.assertTrue(!info.instanceHash.equals(previousInfo.instanceHash));
+            Assert.assertTrue(!"null".equals(info.cid));
+            previousInfo = info;
+        }
+
+        {
+            // let's look what we got.
+            String content = httpGet(client, "conversation/info?cid=" + previousInfo.cid, HttpServletResponse.SC_OK);
+            ConversationInfo info = assertConversationInfo(content, previousInfo.cid, false, "empty", previousInfo.instanceHash);
+            previousInfo = info;
+        }
+
+        {
+            // and set a value
+            String content = httpGet(client, "conversation/set?cid=" + previousInfo.cid + "&content=full", HttpServletResponse.SC_OK);
+            ConversationInfo info = assertConversationInfo(content, previousInfo.cid, false, "full", previousInfo.instanceHash);
+            previousInfo = info;
+        }
+        String oldCid = previousInfo.cid;
+
+        {
+            // and now we invalidate the session
+            // For the first request we should STILL get the old values as per spec
+            // the Conversation only gets destroyed at the end of the Request
+            // But the Conversation got ended (now is transient) and the cid is null
+            String content = httpGet(client, "conversation/invalidateSession?cid=" + previousInfo.cid, HttpServletResponse.SC_OK);
+            ConversationInfo info = assertConversationInfo(content, "null", true, "full", previousInfo.instanceHash);
+            previousInfo = info;
+        }
+
+
+        {
+            // and look again with the same
+            String content = httpGet(client, "conversation/info?cid=" + oldCid, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            Assert.assertTrue(content.contains(NonexistentConversationException.class.getName()));
+        }
+    }
 
 
     private ConversationInfo assertConversationInfo(String content, String expectedCid, boolean expectedIsTransient, String expectedValue, Object expectedInstanceHash)

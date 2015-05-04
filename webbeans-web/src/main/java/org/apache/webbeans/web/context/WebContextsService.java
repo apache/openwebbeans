@@ -35,11 +35,9 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.web.intercept.RequestScopedBeanInterceptorHandler;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.BusyConversationException;
 import javax.enterprise.context.ContextException;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.NonexistentConversationException;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
@@ -62,13 +60,6 @@ public class WebContextsService extends AbstractContextsService
     private static final Logger logger = WebBeansLoggerFacade.getLogger(WebContextsService.class);
 
     private static final String OWB_SESSION_CONTEXT_ATTRIBUTE_NAME = "openWebBeansSessionContext";
-
-    /**
-     * This request attribute gets set when an illegal conversation id or busy conversation access
-     * gets discovered. In that case we need to throw an Exception and provide
-     * a fresh transient conversation. This attribute gets set when exactly that happens.
-     */
-    private static final String OWB_REQUEST_TRANSIENT_CONVERSATION_ATTRIBUTE_NAME = "org.apache.webbeans.web.transient_conversation";
 
     /**Current request context*/
     protected static ThreadLocal<ServletRequestContext> requestContexts = null;
@@ -246,7 +237,7 @@ public class WebContextsService extends AbstractContextsService
         }
         else if(scopeType.equals(ConversationScoped.class))
         {
-            return getConversationContext(true);
+            return getConversationContext(true, false);
         }
         else if(scopeType.equals(Dependent.class))
         {
@@ -353,7 +344,7 @@ public class WebContextsService extends AbstractContextsService
         // cleanup open conversations first
         if (supportsConversation)
         {
-            cleanupConversations(conversationContexts.get());
+            destroyOutdatedConversations(conversationContexts.get());
         }
 
         //Get context
@@ -479,16 +470,17 @@ public class WebContextsService extends AbstractContextsService
             {
                 // get all conversations stored in the Session and destroy them
                 // also set the current conversation (if any) to transient
-                destroyAllBut(getConversationContext(true));
+                ConversationContext currentConversationContext = getConversationContext(true, true);
+                if (currentConversationContext != null && !currentConversationContext.getConversation().isTransient())
+                {
+                    // an active conversation will now be set to transient
+                    // note that ConversationImpl#end() also removes the conversation from the Session
+                    currentConversationContext.getConversation().end();
+                }
             }
             context.destroy();
             webBeansContext.getBeanManagerImpl().fireEvent(payload != null ? payload : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
         }
-
-        // As the Conversations get stored inside the SessionContext we now also
-        // did destroy the ConversationContext implicitly
-        conversationContexts.set(null);
-        conversationContexts.remove();
 
         // Clear thread locals
         sessionContexts.set(null);
@@ -607,7 +599,7 @@ public class WebContextsService extends AbstractContextsService
             return;
         }
 
-        ConversationContext context = getConversationContext(false);
+        ConversationContext context = getConversationContext(false, true);
 
         if (context != null)
         {
@@ -654,7 +646,7 @@ public class WebContextsService extends AbstractContextsService
      * Get current conversation ctx.
      * @return conversation context
      */
-    public  ConversationContext getConversationContext(boolean create)
+    public  ConversationContext getConversationContext(boolean create, boolean ignoreProblems)
     {
         ConversationContext conversationContext = conversationContexts.get();
         if (conversationContext == null && create)
@@ -662,53 +654,16 @@ public class WebContextsService extends AbstractContextsService
             conversationContext = conversationManager.getConversationContext(getSessionContext(true));
             conversationContexts.set(conversationContext);
 
-            // check for busy and non-existing conversations
-            String conversationId = webBeansContext.getConversationService().getConversationId();
-            if (conversationId != null && conversationContext.getConversation().isTransient())
+            if (!ignoreProblems && conversationContext.getConversation().getProblemDuringCreation() != null)
             {
-                if (markAsTemporaryTransientConversation())
-                {
-                    throw new NonexistentConversationException("Propogated conversation with cid=" + conversationId +
-                            " cannot be restored. It creates a new transient conversation.");
-                }
-            }
-
-            if (conversationContext.getConversation().iUseIt() > 1)
-            {
-                if (markAsTemporaryTransientConversation())
-                {
-                    //Throw Busy exception
-                    throw new BusyConversationException("Propogated conversation with cid=" + conversationId +
-                            " is used by other request. It creates a new transient conversation");
-                }
+                throw conversationContext.getConversation().getProblemDuringCreation();
             }
         }
 
         return conversationContext;
     }
 
-    /**
-     * TODO probably not needed anymore
-     * Remember for this request that a fresh transient conversation got created.
-     * @return {@code false} if this request already got marked previously, {@code true} if we are the first to set the marker
-     */
-    private boolean markAsTemporaryTransientConversation()
-    {
-        HttpServletRequest servletRequest = requestContexts.get().getServletRequest();
-        if (servletRequest != null)
-        {
-            String marker  = (String) servletRequest.getAttribute(OWB_REQUEST_TRANSIENT_CONVERSATION_ATTRIBUTE_NAME);
-            if (marker != null)
-            {
-                return false;
-            }
 
-            // if not then we need to mark it
-            servletRequest.setAttribute(OWB_REQUEST_TRANSIENT_CONVERSATION_ATTRIBUTE_NAME, "true");
-        }
-
-        return true;
-    }
 
     /**
      * Try to lazily start the sessionContext

@@ -145,7 +145,6 @@ public class DefaultContextsService extends AbstractContextsService
         }
 
         return null;
-
     }
 
 
@@ -404,7 +403,7 @@ public class DefaultContextsService extends AbstractContextsService
         // cleanup open conversations first
         if (supportsConversation)
         {
-            cleanupConversations();
+            destroyOutdatedConversations(conversationContext.get());
             conversationContext.set(null);
             conversationContext.remove();
         }
@@ -445,12 +444,6 @@ public class DefaultContextsService extends AbstractContextsService
         singletonContext.remove();
         webBeansContext.getBeanManagerImpl().fireEvent(new Object(), DestroyedLiteral.INSTANCE_SINGLETON_SCOPED);
     }
-
-    private void cleanupConversations()
-    {
-        cleanupConversations(conversationContext.get());
-    }
-
 
 
 }

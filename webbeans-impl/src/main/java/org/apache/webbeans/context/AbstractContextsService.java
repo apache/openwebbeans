@@ -127,39 +127,12 @@ public abstract class AbstractContextsService implements ContextsService
         this.supportsConversation = supportConversations;
     }
 
-    protected void destroyAllBut(ConversationContext currentConversationCtx)
+    /**
+     * Destroy inactive (timed out) conversations.
+     */
+    public void destroyOutdatedConversations(ConversationContext currentConversationContext)
     {
         Context sessionContext = getCurrentContext(SessionScoped.class, false);
-        ConversationManager conversationManager = webBeansContext.getConversationManager();
-        Set<ConversationContext> sessionConversations = conversationManager.getSessionConversations(sessionContext, false);
-        if (sessionConversations != null)
-        {
-            for (ConversationContext conversationCtx : sessionConversations)
-            {
-                if (conversationCtx != currentConversationCtx)
-                {
-                    conversationManager.destroyConversationContext(conversationCtx);
-                }
-            }
-        }
-
-        if (currentConversationCtx != null && !currentConversationCtx.getConversation().isTransient())
-        {
-            currentConversationCtx.getConversation().end();
-        }
-
-
-    }
-
-
-    /**
-     * Destroy inactive (timed out) and transient conversations.
-     * This also will store the currentConversationContext into the session if it is long-running.
-     */
-    public void cleanupConversations(ConversationContext currentConversationContext)
-    {
-        Context sessionContext = getCurrentContext(SessionScoped.class,
-                currentConversationContext != null && !currentConversationContext.getConversation().isTransient());
         if (sessionContext != null)
         {
             ConversationManager conversationManager = webBeansContext.getConversationManager();
@@ -172,19 +145,23 @@ public abstract class AbstractContextsService implements ContextsService
                     ConversationContext conversationContext = convIt.next();
 
                     ConversationImpl conv = conversationContext.getConversation();
-                    if (conv.isTransient() || conversationManager.conversationTimedOut(conv))
+                    if (conversationManager.conversationTimedOut(conv))
                     {
                         conversationManager.destroyConversationContext(conversationContext);
                         convIt.remove();
-                    }
-                    else
-                    {
-                        conv.iDontUseItAnymore();
                     }
                 }
             }
         }
 
+        if (currentConversationContext != null)
+        {
+            currentConversationContext.getConversation().iDontUseItAnymore();
+            if (currentConversationContext.getConversation().isTransient())
+            {
+                currentConversationContext.destroy();
+            }
+        }
     }
 
 

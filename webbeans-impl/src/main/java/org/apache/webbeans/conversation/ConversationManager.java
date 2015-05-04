@@ -22,7 +22,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.enterprise.context.BusyConversationException;
 import javax.enterprise.context.Conversation;
+import javax.enterprise.context.NonexistentConversationException;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
@@ -39,6 +41,7 @@ import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ConversationService;
+import org.apache.webbeans.util.Asserts;
 
 /**
  * Manager for the conversations.
@@ -76,8 +79,9 @@ public class ConversationManager
     {
         ConversationService conversationService = webBeansContext.getConversationService();
 
-        Set<ConversationContext> conversationContexts = getSessionConversations(sessionContext, true);
+        Set<ConversationContext> conversationContexts = getSessionConversations(sessionContext, false);
 
+        RuntimeException problem = null;
         String conversationId = conversationService.getConversationId();
         if (conversationId != null && conversationId.length() > 0)
         {
@@ -87,15 +91,26 @@ public class ConversationManager
                 {
                     if (conversationId.equals(conversationContext.getConversation().getId()))
                     {
+                        if (conversationContext.getConversation().iUseIt() > 1)
+                        {
+                            problem =  new BusyConversationException("Propogated conversation with cid=" +
+                                    conversationContext.getConversation().getId() +
+                                    " is used by other request. It creates a new transient conversation");
+                            conversationContext.getConversation().setProblemDuringCreation(problem);
+                        }
+
                         return conversationContext;
                     }
                 }
             }
+
+            problem = new NonexistentConversationException("Propogated conversation with cid=" + conversationId +
+                " cannot be restored. Will create a new transient conversation.");
         }
 
         ConversationContext conversationContext = new ConversationContext(webBeansContext);
         conversationContext.setActive(true);
-        conversationContexts.add(conversationContext);
+        conversationContext.getConversation().setProblemDuringCreation(problem);
 
         webBeansContext.getBeanManagerImpl().fireEvent(getLifecycleEventPayload(conversationContext), InitializedLiteral.INSTANCE_CONVERSATION_SCOPED);
 
@@ -103,44 +118,45 @@ public class ConversationManager
     }
 
     /**
-     * Check if a conversation with the given id exists in the session context.
-     * @param conversationId conversation id
-     * @return true if this conversation exist
+     * Add the given ConversationContext to the SessionContext.
+     * This method usually will get called at {@link Conversation#begin()}.
      */
-    public boolean isConversationExistWithGivenId(String conversationId)
+    public void addToConversationStorage(ConversationContext conversationContext, String conversationId)
     {
-        if (conversationId == null)
-        {
-            return false;
-        }
-        Context sessionContext = webBeansContext.getContextsService().getCurrentContext(SessionScoped.class, false);
-        if (sessionContext == null)
+        Asserts.assertNotNull(conversationId, "conversationId must be set");
+        Context sessionContext = webBeansContext.getContextsService().getCurrentContext(SessionScoped.class);
+        Set<ConversationContext> sessionConversations = getSessionConversations(sessionContext, true);
 
+        // check whether this conversation already exists
+        for (ConversationContext sessionConversation : sessionConversations)
         {
-            return false;
-        }
-
-        Set<ConversationContext> conversationContexts = getSessionConversations(sessionContext, false);
-        if (conversationContexts == null)
-        {
-            return false;
-        }
-
-        for (ConversationContext conversationContext : conversationContexts)
-        {
-            if (conversationId.equals(conversationContext.getConversation().getId()))
+            if (conversationId.equals(sessionConversation.getConversation().getId()))
             {
-                return true;
+                throw new IllegalArgumentException("Conversation with id=" + conversationId + " already exists!");
             }
         }
 
-        return false;
+        // if not, then simply add this conversation
+        sessionConversations.add(conversationContext);
     }
+
+    /**
+     * Remove the given ConversationContext from the SessionContext storage.
+     * This method usually will get called at {@link Conversation#end()} or during cleanup.
+     * Not that this does <b>not</b> destroy the ConversationContext!
+     * @return {@code true} if the conversationContext got removed
+     */
+    public boolean removeConversationFromStorage(ConversationContext conversationContext)
+    {
+        Context sessionContext = webBeansContext.getContextsService().getCurrentContext(SessionScoped.class);
+        Set<ConversationContext> sessionConversations = getSessionConversations(sessionContext, true);
+        return sessionConversations.remove(conversationContext);
+    }
+
 
     /**
      * Gets conversation instance from conversation bean.
      * @return conversation instance
-     * @deprecated is in
      */
     public Conversation getConversationBeanReference()
     {
