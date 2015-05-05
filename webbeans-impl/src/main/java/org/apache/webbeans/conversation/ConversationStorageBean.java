@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ConversationContext;
 
 /**
@@ -49,9 +50,15 @@ public class ConversationStorageBean implements Bean<Set<ConversationContext>>, 
     @Override
     public void destroy(Set<ConversationContext> instance, CreationalContext<Set<ConversationContext>> context)
     {
+        if (instance == null || instance.size() == 0)
+        {
+            return;
+        }
+
+        ConversationManager conversationManager = WebBeansContext.currentInstance().getConversationManager();
         for (ConversationContext conversationContext : instance)
         {
-            conversationContext.destroy();
+            conversationManager.destroyConversationContext(conversationContext);
         }
     }
 
