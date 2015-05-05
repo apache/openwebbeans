@@ -476,7 +476,7 @@ public class WebContextsService extends AbstractContextsService
         }
 
         // Destroy context
-        if (context != null)
+        if (context != null && context.isActive())
         {
             if (supportsConversation)
             {
