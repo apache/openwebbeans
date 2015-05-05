@@ -289,6 +289,8 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
                                 "/sisu-inject-",
                                 "/aether-",
                                 "/plexus-",
+                                "/maven-",
+                                "/guava-",
                                 "/openwebbeans-"))
         {
             final int i = path.indexOf(p);
