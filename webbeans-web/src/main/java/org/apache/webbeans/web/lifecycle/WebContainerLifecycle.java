@@ -223,7 +223,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         throw new IllegalArgumentException("ServletContextEvent object but found null");
     }
 
-    private void setJspELFactory(ServletContext startupObject, ELResolver resolver)
+    protected void setJspELFactory(ServletContext startupObject, ELResolver resolver)
     {
         JspFactory factory = JspFactory.getDefaultFactory();
         if (factory == null)
