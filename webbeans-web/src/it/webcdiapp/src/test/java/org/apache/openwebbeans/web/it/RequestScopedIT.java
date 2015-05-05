@@ -18,17 +18,13 @@
  */
 package org.apache.openwebbeans.web.it;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.HttpGet;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 public class RequestScopedIT extends OwbITBase
 {
@@ -38,47 +34,19 @@ public class RequestScopedIT extends OwbITBase
     {
         DefaultHttpClient client = new DefaultHttpClient();
 
-        HttpGet resetGet = new HttpGet(getPageUrl("/check?reset=true"));
-        HttpResponse response = client.execute(resetGet);
-        resetGet.releaseConnection();
+        // GET http://localhost:8089/webbeanswebCdiApp/check
 
-        HttpGet jspGet = new HttpGet(getPageUrl("/index.jsp"));
-        checkResponse(client.execute(jspGet));
-        jspGet.releaseConnection();
+        String response = httpGet(client, "/check/reset", HttpServletResponse.SC_OK);
+        response = httpGet(client, "/index.jsp", HttpServletResponse.SC_OK);
+        response = httpGet(client, "/check", HttpServletResponse.SC_OK);
+        Assert.assertEquals("2,2", response);
 
-        HttpGet checkGet = new HttpGet(getPageUrl("/check"));
-        response = client.execute(checkGet);
-        checkResponse(response);
-
-        HttpEntity httpEntity = response.getEntity();
-        Assert.assertNotNull(httpEntity);
-
-        InputStream content = null;
-        try
-        {
-            content = httpEntity.getContent();
-            Assert.assertNotNull(content);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(content));
-            String result = bufferedReader.readLine();
-            Assert.assertNotNull(result);
-            Assert.assertEquals("2,2", result);
-        }
-        finally {
-            if (content != null)
-            {
-                content.close();
-            }
-        }
-
-
-        checkGet.releaseConnection();
-    }
-
-    private void checkResponse(HttpResponse response)
-    {
+        response = httpGet(client, "/check/events", HttpServletResponse.SC_OK);
         Assert.assertNotNull(response);
-        Assert.assertNotNull(response.getStatusLine());
-        Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+
+        // application and session still running
+        // for the session we got 2 full requests + 1 end after the reset + 1 start before the info gets rendered in the last request
+        Assert.assertEquals("application:1/0\nsession:1/0\nrequest:3/3", response);
     }
 
 }

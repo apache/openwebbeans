@@ -161,6 +161,7 @@ public class ConversationScopedIT extends OwbITBase
             String content = httpGet(client, "conversation/info?cid=" + oldCid, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             Assert.assertTrue(content.contains(NonexistentConversationException.class.getName()));
         }
+
     }
 
 

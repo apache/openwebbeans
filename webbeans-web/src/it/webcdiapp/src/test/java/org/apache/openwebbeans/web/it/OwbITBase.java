@@ -182,6 +182,6 @@ public class OwbITBase
 
         Assert.assertEquals(expectedHttpCode, statusCode);
         getRequest.releaseConnection();
-        return content;
+        return content.trim();
     }
 }

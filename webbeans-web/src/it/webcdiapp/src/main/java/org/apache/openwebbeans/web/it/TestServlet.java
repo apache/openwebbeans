@@ -18,6 +18,7 @@
  */
 package org.apache.openwebbeans.web.it;
 
+import org.apache.openwebbeans.web.it.beans.ContextEventCounter;
 import org.apache.openwebbeans.web.it.beans.RequestScopedBean;
 
 import javax.servlet.ServletException;
@@ -27,24 +28,33 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(urlPatterns = "/check")
+@WebServlet(urlPatterns = "/check/*")
 public class TestServlet extends HttpServlet
 {
     private static final long serialVersionUID = -8232635534522251153L;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        if (req.getParameter("reset") != null)
+        String uri = request.getRequestURI();
+        String action = uri.substring(uri.lastIndexOf('/') + 1);
+
+        response.setContentType("text/plain");
+        response.setStatus(HttpServletResponse.SC_OK);
+
+        if ("reset".equals(action))
         {
             RequestScopedBean.resetCounter();
+            ContextEventCounter.resetCounter();
+        }
+        else if ("events".equals(action))
+        {
+            response.getWriter().append(ContextEventCounter.info());
         }
         else
         {
-            resp.setContentType("text/plain");
-            resp.setStatus(HttpServletResponse.SC_OK);
 
-            resp.getWriter().append(RequestScopedBean.info());
+            response.getWriter().append(RequestScopedBean.info());
         }
     }
 }

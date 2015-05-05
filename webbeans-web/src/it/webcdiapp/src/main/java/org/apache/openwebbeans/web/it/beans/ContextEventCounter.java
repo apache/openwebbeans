@@ -1,0 +1,90 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.openwebbeans.web.it.beans;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Destroyed;
+import javax.enterprise.context.Initialized;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Observes;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
+
+@Singleton
+public class ContextEventCounter
+{
+    
+    public static List<Object> appContextInitializedEvent = new ArrayList<Object>();
+    public static List<Object> appContextDestroyedEvent = new ArrayList<Object>();
+
+    public static List<Object> sessionContextInitializedEvent = new ArrayList<Object>();
+    public static List<Object> sessionContextDestroyedEvent = new ArrayList<Object>();
+
+    public static List<Object> requestContextInitializedEvent = new ArrayList<Object>();
+    public static List<Object> requestContextDestroyedEvent = new ArrayList<Object>();
+
+
+    public void appContextInitialized(@Observes @Initialized(ApplicationScoped.class) Object payload)
+    {
+        appContextInitializedEvent.add(payload);
+    }
+
+    public void appContextDestroyed(@Observes @Destroyed(ApplicationScoped.class) Object payload)
+    {
+        appContextDestroyedEvent.add(payload);
+    }
+
+    public void sessionContextInitialized(@Observes @Initialized(SessionScoped.class) Object payload)
+    {
+        sessionContextInitializedEvent.add(payload);
+    }
+
+    public void sessionContextDestroyed(@Observes @Destroyed(SessionScoped.class) Object payload)
+    {
+        sessionContextDestroyedEvent.add(payload);
+    }
+
+    public void requestContextInitialized(@Observes @Initialized(RequestScoped.class) Object payload)
+    {
+        requestContextInitializedEvent.add(payload);
+    }
+
+    public void requestContextDestroyed(@Observes @Destroyed(RequestScoped.class) Object payload)
+    {
+        requestContextDestroyedEvent.add(payload);
+    }
+
+    public static void resetCounter()
+    {
+        sessionContextInitializedEvent.clear();
+        sessionContextDestroyedEvent.clear();
+        requestContextInitializedEvent.clear();
+        requestContextDestroyedEvent.clear();
+    }
+
+    public static String info()
+    {
+        return "application:" + appContextInitializedEvent.size() + "/" + appContextDestroyedEvent.size() + "\n" +
+               "session:" + sessionContextInitializedEvent.size() + "/" + sessionContextDestroyedEvent.size() + "\n" +
+               "request:" + requestContextInitializedEvent.size() + "/" + requestContextDestroyedEvent.size();
+    }
+    
+}

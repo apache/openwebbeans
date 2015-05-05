@@ -126,13 +126,13 @@ public class WebContextsService extends AbstractContextsService
      */
     @Override
     public void init(Object initializeObject)
-    {        
-        //Start application context
-        startContext(ApplicationScoped.class, initializeObject);
-        
+    {
         //Start signelton context
         startContext(Singleton.class, initializeObject);
-    }    
+
+        //Start application context
+        startContext(ApplicationScoped.class, initializeObject);
+    }
     
     /**
      * {@inheritDoc}
