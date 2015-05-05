@@ -217,6 +217,17 @@ public class WebContextsService extends AbstractContextsService
         }
     }
 
+    @Override
+    public Context getCurrentContext(Class<? extends Annotation> scopeType, boolean createIfNotExists)
+    {
+        if(scopeType.equals(SessionScoped.class))
+        {
+            return getSessionContext(createIfNotExists);
+        }
+
+        return super.getCurrentContext(scopeType, createIfNotExists);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -341,21 +352,22 @@ public class WebContextsService extends AbstractContextsService
      */
     protected void destroyRequestContext(Object endObject)
     {
-        // cleanup open conversations first
+        //Get context
+        RequestContext context = getRequestContext(true);
+
+        if (context == null)
+        {
+            return;
+        }
+
+            // cleanup open conversations first
         if (supportsConversation)
         {
             destroyOutdatedConversations(conversationContexts.get());
         }
 
-        //Get context
-        RequestContext context = getRequestContext(false);
+        context.destroy();
 
-        //Destroy context
-        if (context != null)
-        {
-            context.destroy();
-        }
-        
         // clean up the EL caches after each request
         ELContextStore elStore = ELContextStore.getInstance(false);
         if (elStore != null)
