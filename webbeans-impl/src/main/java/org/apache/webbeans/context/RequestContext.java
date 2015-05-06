@@ -27,13 +27,17 @@ import org.apache.webbeans.context.creational.BeanInstanceBag;
 
 /**
  * Request context implementation.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
+ *
  */
 public class RequestContext extends AbstractContext
 {
     private static final long serialVersionUID = -1030240915163272268L;
+
+    /**
+     * If a Session gets destroyed in a HttpRequest then we store the session away
+     * and only destroy it at the end of the request.
+     */
+    private SessionContext propagatedSessionContext;
 
     /*
     * Constructor
@@ -63,6 +67,19 @@ public class RequestContext extends AbstractContext
     public Object getRequestObject()
     {
         return null;
+    }
+
+    public void setPropagatedSessionContext(SessionContext propagatedSessionContext)
+    {
+        this.propagatedSessionContext = propagatedSessionContext;
+    }
+
+    /**
+     * @return the SessionContext to get destroyed at the end of the request or {@code null} otherwise
+     */
+    public SessionContext getPropagatedSessionContext()
+    {
+        return propagatedSessionContext;
     }
 
 }

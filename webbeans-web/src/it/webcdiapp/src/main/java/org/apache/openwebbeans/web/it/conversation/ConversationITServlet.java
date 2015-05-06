@@ -36,13 +36,16 @@ public class ConversationITServlet extends HttpServlet
     private static final Logger log = Logger.getLogger(ConversationITServlet.class.getName());
 
     private ConversationalShoppingCart shoppingCart;
+    private SessionUser sessionUser;
 
 
     @Override
     public void init() throws ServletException
     {
         shoppingCart = CDI.current().select(ConversationalShoppingCart.class).get();
+        sessionUser = CDI.current().select(SessionUser.class).get();
     }
+
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -79,14 +82,20 @@ public class ConversationITServlet extends HttpServlet
         {
             shoppingCart.getConversation().end();
         }
+        // user actions
+        else if ("setUser".equals(action))
+        {
+            String name = request.getParameter("name");
+            sessionUser.setName(name);
+        }
         else
         {
             response.getWriter().append("error - unknown command");
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
-        String msg = shoppingCart.toString();
-        log.info("action = " + action + " shoppingCart=" + shoppingCart);
+        String msg = shoppingCart.toString() + "/" + sessionUser.toString();
+        log.info("action = " + action + " shoppingCart=" + shoppingCart + " user=" + sessionUser);
         response.getWriter().append(msg);
         response.setStatus(HttpServletResponse.SC_OK);
     }

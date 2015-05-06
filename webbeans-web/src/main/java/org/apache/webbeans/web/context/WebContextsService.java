@@ -61,6 +61,11 @@ public class WebContextsService extends AbstractContextsService
 
     private static final String OWB_SESSION_CONTEXT_ATTRIBUTE_NAME = "openWebBeansSessionContext";
 
+    /**
+     * TODO implement later: optional immediate destroy
+     */
+    private final boolean destroySessionImmediately = false;
+
     /**Current request context*/
     protected static ThreadLocal<ServletRequestContext> requestContexts = null;
 
@@ -353,7 +358,7 @@ public class WebContextsService extends AbstractContextsService
     protected void destroyRequestContext(Object endObject)
     {
         //Get context
-        RequestContext context = getRequestContext(true);
+        ServletRequestContext context = getRequestContext(true);
 
         if (context == null)
         {
@@ -364,6 +369,20 @@ public class WebContextsService extends AbstractContextsService
         if (supportsConversation)
         {
             destroyOutdatedConversations(conversationContexts.get());
+        }
+
+        if (context.getPropagatedSessionContext() != null)
+        {
+            context.destroy();
+
+            Object payload = null;
+            if (context.getServletRequest() != null)
+            {
+                payload = context.getServletRequest().getSession();
+            }
+
+            webBeansContext.getBeanManagerImpl().fireEvent(payload != null ? payload : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
+
         }
 
         context.destroy();
@@ -460,43 +479,39 @@ public class WebContextsService extends AbstractContextsService
     {
         // Get current session context from ThreadLocal
         SessionContext context = sessionContexts.get();
-
-        Object payload = null;
-
+        HttpSession session = null;
         if (endObject != null && endObject instanceof HttpSession)
         {
-            HttpSession session = (HttpSession) endObject;
+            session = (HttpSession) endObject;
             if (context == null)
             {
                 // init in this case only attaches the existing session to the ThreadLocal
                 initSessionContext(session);
                 context = sessionContexts.get();
             }
-            payload = session;
         }
 
         // Destroy context
         if (context != null && context.isActive())
         {
-            if (supportsConversation)
+
+            if (destroySessionImmediately)
             {
-                // get all conversations stored in the Session and destroy them
-                // also set the current conversation (if any) to transient
-                ConversationContext currentConversationContext = getConversationContext(true, true);
-                if (currentConversationContext != null && !currentConversationContext.getConversation().isTransient())
-                {
-                    // an active conversation will now be set to transient
-                    // note that ConversationImpl#end() also removes the conversation from the Session
-                    currentConversationContext.getConversation().end();
-                }
+                context.destroy();
+                webBeansContext.getBeanManagerImpl().fireEvent(session != null ? session : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
+
+                // Clear thread locals
+                sessionContexts.set(null);
+                sessionContexts.remove();
             }
-            context.destroy();
-            webBeansContext.getBeanManagerImpl().fireEvent(payload != null ? payload : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
+            else
+            {
+                // we need to mark the conversation to get destroyed at the end of the request
+                ServletRequestContext requestContext = getRequestContext(true);
+                requestContext.setPropagatedSessionContext(context);
+            }
         }
 
-        // Clear thread locals
-        sessionContexts.set(null);
-        sessionContexts.remove();
     }
 
     /**
