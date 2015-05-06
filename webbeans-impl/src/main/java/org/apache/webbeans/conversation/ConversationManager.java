@@ -33,7 +33,6 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DestroyedLiteral;
-import org.apache.webbeans.annotation.InitializedLiteral;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ConversationContext;
@@ -112,8 +111,6 @@ public class ConversationManager
         conversationContext.setActive(true);
         conversationContext.getConversation().setProblemDuringCreation(problem);
 
-        webBeansContext.getBeanManagerImpl().fireEvent(getLifecycleEventPayload(conversationContext), InitializedLiteral.INSTANCE_CONVERSATION_SCOPED);
-
         return conversationContext;
     }
 
@@ -190,7 +187,7 @@ public class ConversationManager
         webBeansContext.getBeanManagerImpl().fireEvent(getLifecycleEventPayload(ctx), DestroyedLiteral.INSTANCE_CONVERSATION_SCOPED);
     }
 
-    private Object getLifecycleEventPayload(ConversationContext ctx)
+    public Object getLifecycleEventPayload(ConversationContext ctx)
     {
         Object payLoad = null;
         if (ctx.getConversation().getId() != null)

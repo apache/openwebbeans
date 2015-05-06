@@ -53,4 +53,32 @@ public class ConversationScopedTest extends AbstractUnitTest
         }
     }
 
+
+    @Test
+    public void testConversationEvents()
+    {
+        try
+        {
+            ConversationScopedInitBean.gotStarted = false;
+            EndConversationObserver.endConversationCalled = false;
+
+            System.setProperty(OpenWebBeansConfiguration.APPLICATION_SUPPORTS_CONVERSATION, "true");
+            startContainer(ConversationScopedInitBean.class, EndConversationObserver.class);
+
+            ConversationScopedInitBean instance = getInstance(ConversationScopedInitBean.class);
+            instance.ping();
+
+            Assert.assertTrue(ConversationScopedInitBean.gotStarted);
+
+            shutDownContainer();
+
+            Assert.assertTrue(EndConversationObserver.endConversationCalled);
+        }
+        finally
+        {
+            System.clearProperty(OpenWebBeansConfiguration.APPLICATION_SUPPORTS_CONVERSATION);
+        }
+    }
+
+
 }

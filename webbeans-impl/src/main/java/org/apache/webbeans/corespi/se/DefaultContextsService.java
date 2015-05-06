@@ -41,6 +41,7 @@ import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.context.SingletonContext;
+import org.apache.webbeans.conversation.ConversationManager;
 
 
 public class DefaultContextsService extends AbstractContextsService
@@ -315,9 +316,15 @@ public class DefaultContextsService extends AbstractContextsService
     
     private void startConversationContext(Object object)
     {
-        ConversationContext ctx = webBeansContext.getConversationManager().getConversationContext(getCurrentSessionContext());
-
+        ConversationManager conversationManager = webBeansContext.getConversationManager();
+        ConversationContext ctx = conversationManager.getConversationContext(getCurrentSessionContext());
+        ctx.setActive(true);
         conversationContext.set(ctx);
+
+        if (ctx.getConversation().isTransient())
+        {
+            webBeansContext.getBeanManagerImpl().fireEvent(conversationManager.getLifecycleEventPayload(ctx), InitializedLiteral.INSTANCE_CONVERSATION_SCOPED);
+        }
     }
 
     

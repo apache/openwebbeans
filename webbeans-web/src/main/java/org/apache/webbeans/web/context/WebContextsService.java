@@ -654,6 +654,13 @@ public class WebContextsService extends AbstractContextsService
                 conversationContext = conversationManager.getConversationContext(sessionContext);
                 conversationContexts.set(conversationContext);
 
+                if (conversationContext.getConversation().isTransient())
+                {
+                    webBeansContext.getBeanManagerImpl().fireEvent(conversationManager.getLifecycleEventPayload(conversationContext),
+                            InitializedLiteral.INSTANCE_CONVERSATION_SCOPED);
+                }
+
+
                 if (!ignoreProblems && conversationContext.getConversation().getProblemDuringCreation() != null)
                 {
                     throw conversationContext.getConversation().getProblemDuringCreation();
