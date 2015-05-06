@@ -100,10 +100,11 @@ public abstract class AbstractContextsService implements ContextsService
      */
     public void destroyOutdatedConversations(ConversationContext currentConversationContext)
     {
+        ConversationManager conversationManager = null;
         Context sessionContext = getCurrentContext(SessionScoped.class, false);
         if (sessionContext != null && sessionContext.isActive())
         {
-            ConversationManager conversationManager = webBeansContext.getConversationManager();
+            conversationManager = webBeansContext.getConversationManager();
             Set<ConversationContext> conversationContexts = conversationManager.getSessionConversations(sessionContext, false);
             if (conversationContexts != null)
             {
@@ -127,7 +128,8 @@ public abstract class AbstractContextsService implements ContextsService
             currentConversationContext.getConversation().iDontUseItAnymore();
             if (currentConversationContext.getConversation().isTransient())
             {
-                currentConversationContext.destroy();
+                conversationManager = conversationManager != null ? conversationManager : webBeansContext.getConversationManager();
+                conversationManager.destroyConversationContext(currentConversationContext);
             }
         }
     }
