@@ -230,7 +230,7 @@ public class WebContextsService extends AbstractContextsService
             return getSessionContext(createIfNotExists);
         }
 
-        return super.getCurrentContext(scopeType, createIfNotExists);
+        return super.getCurrentContext(scopeType);
     }
 
     /**
@@ -305,25 +305,6 @@ public class WebContextsService extends AbstractContextsService
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean supportsContext(Class<? extends Annotation> scopeType)
-    {
-        if (scopeType.equals(RequestScoped.class) ||
-            scopeType.equals(SessionScoped.class) ||
-            scopeType.equals(ApplicationScoped.class) ||
-            scopeType.equals(Dependent.class) ||
-            scopeType.equals(Singleton.class) ||
-            (scopeType.equals(ConversationScoped.class) && supportsConversation))
-        {
-            return true;
-        }
-        
-        return false;
-    }
-    
     /**
      * Initialize requext context with the given request object.
      * @param startupObject http servlet request event or system specific payload
@@ -419,8 +400,7 @@ public class WebContextsService extends AbstractContextsService
 
     /**
      * Creates the session context at the session start.
-     * Or assign a
-     * @param startupObject HttpSession object or other startup
+     * @param startupObject HttpSession object
      */
     protected void initSessionContext(Object startupObject)
     {
@@ -428,17 +408,7 @@ public class WebContextsService extends AbstractContextsService
 
         HttpSession session = startupObject instanceof HttpSession ? (HttpSession) startupObject : null;
 
-        if (session == null)
-        {
-            // no session -> create a dummy SessionContext
-            // this is handy if you create asynchronous tasks or
-            // batches which use a 'admin' user.
-            currentSessionContext = new SessionContext();
-            currentSessionContext.setActive(true);
-
-            webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_SESSION_SCOPED);
-        }
-        else
+        if (session != null)
         {
             // we need to get it latest here to make sure we work on the same instance
             currentSessionContext = (SessionContext) session.getAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME);
@@ -464,11 +434,9 @@ public class WebContextsService extends AbstractContextsService
                 // This is needed to trigger delta-replication on most servers
                 session.setAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME, currentSessionContext);
             }
+            //Set thread local
+            sessionContexts.set(currentSessionContext);
         }
-
-
-        //Set thread local
-        sessionContexts.set(currentSessionContext);
     }
 
     /**
@@ -653,15 +621,17 @@ public class WebContextsService extends AbstractContextsService
     }
 
     /**
-     * Get current session ctx.
+     * Get current session ctx or lazily create one.
      * @return session context
+     * @param forceCreate if {@code true} we will force creating a session if not yet exists.
+     *                    if {@code false} we will only create a SessionContext if a HttpSession already exists
      */
-    public SessionContext getSessionContext(boolean create)
+    public SessionContext getSessionContext(boolean forceCreate)
     {
         SessionContext context = sessionContexts.get();
-        if (null == context && create)
+        if (null == context)
         {
-            lazyStartSessionContext();
+            lazyStartSessionContext(forceCreate);
             context = sessionContexts.get();
         }
 
@@ -672,17 +642,22 @@ public class WebContextsService extends AbstractContextsService
      * Get current conversation ctx.
      * @return conversation context
      */
-    public  ConversationContext getConversationContext(boolean create, boolean ignoreProblems)
+    public ConversationContext getConversationContext(boolean create, boolean ignoreProblems)
     {
         ConversationContext conversationContext = conversationContexts.get();
-        if (conversationContext == null && create)
+        if (conversationContext == null)
         {
-            conversationContext = conversationManager.getConversationContext(getSessionContext(true));
-            conversationContexts.set(conversationContext);
+            SessionContext sessionContext = getSessionContext(create);
 
-            if (!ignoreProblems && conversationContext.getConversation().getProblemDuringCreation() != null)
+            if (sessionContext != null)
             {
-                throw conversationContext.getConversation().getProblemDuringCreation();
+                conversationContext = conversationManager.getConversationContext(sessionContext);
+                conversationContexts.set(conversationContext);
+
+                if (!ignoreProblems && conversationContext.getConversation().getProblemDuringCreation() != null)
+                {
+                    throw conversationContext.getConversation().getProblemDuringCreation();
+                }
             }
         }
 
@@ -692,9 +667,13 @@ public class WebContextsService extends AbstractContextsService
 
 
     /**
-     * Try to lazily start the sessionContext
+     * Try to lazily start the sessionContext.
+     * First we try to find a real HttpSession and create the SessionContext in there.
+     * If this is not possible and the {@param allowSynthecticSession} is {@code true} then
+     * we will
+     * @param createSession if {@code false} then we will only create a SessionContext if a HttpSession already exists
      */
-    private void lazyStartSessionContext()
+    private void lazyStartSessionContext(boolean createSession)
     {
 
         if (logger.isLoggable(Level.FINE))
@@ -702,21 +681,21 @@ public class WebContextsService extends AbstractContextsService
             logger.log(Level.FINE, ">lazyStartSessionContext");
         }
 
-        RequestContext context = getRequestContext(true);
-        if (context == null)
+        ServletRequestContext requestContext = getRequestContext(true);
+        if (requestContext == null)
         {
             logger.log(Level.WARNING, "Could NOT lazily initialize session context because NO active request context");
         }
 
-        if (context instanceof ServletRequestContext)
+        HttpServletRequest servletRequest = requestContext.getServletRequest();
+        // this could be null if there is no active request context
+        if (servletRequest != null)
         {
-            ServletRequestContext requestContext = (ServletRequestContext) context;
-            HttpServletRequest servletRequest = requestContext.getServletRequest();
-            if (null != servletRequest)
-            { // this could be null if there is no active request context
-                try
+            try
+            {
+                HttpSession currentSession = servletRequest.getSession(createSession);
+                if (currentSession != null)
                 {
-                    HttpSession currentSession = servletRequest.getSession(true);
                     initSessionContext(currentSession);
 
                     if (logger.isLoggable(Level.FINE))
@@ -726,35 +705,11 @@ public class WebContextsService extends AbstractContextsService
 
                     return;
                 }
-                catch (Exception e)
-                {
-                    logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0013, e));
-                }
             }
-        }
-
-        // in any other case
-        initSessionContext(null);
-        logger.log(Level.FINE, "Starting a non-web backed SessionContext");
-    }
-
-
-    /**
-     * This might be needed when you aim to start a new thread in a WebApp.
-     * @param scopeType
-     */
-    @Override
-    public void activateContext(Class<? extends Annotation> scopeType)
-    {
-        if (scopeType.equals(SessionScoped.class))
-        {
-            // getSessionContext() implicitely creates and binds the SessionContext
-            // to the current Thread if it doesn't yet exist.
-            getSessionContext(true).setActive(true);
-        }
-        else
-        {
-            super.activateContext(scopeType);
+            catch (Exception e)
+            {
+                logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0013, e));
+            }
         }
     }
 
