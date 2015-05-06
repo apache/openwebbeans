@@ -20,6 +20,7 @@ package org.apache.webbeans.portable;
 
 import java.util.Collections;
 
+import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -57,7 +58,10 @@ public class ConversationProducer extends InjectionTargetImpl<ConversationImpl>
         {
             return ((ConversationContext) currentContext).getConversation();
         }
-
-        return null;
+        else
+        {
+            throw new ContextNotActiveException("WebBeans context with scope type annotation @ConversationScoped"
+                    + " does not exist within current thread");
+        }
     }
 }
