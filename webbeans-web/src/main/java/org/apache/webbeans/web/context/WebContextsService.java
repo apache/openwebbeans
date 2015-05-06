@@ -373,7 +373,8 @@ public class WebContextsService extends AbstractContextsService
 
         if (context.getPropagatedSessionContext() != null)
         {
-            context.destroy();
+            SessionContext sessionContext = context.getPropagatedSessionContext();
+            sessionContext.destroy();
 
             Object payload = null;
             if (context.getServletRequest() != null)
@@ -497,7 +498,8 @@ public class WebContextsService extends AbstractContextsService
             // we need to mark the conversation to get destroyed at the end of the request
             ServletRequestContext requestContext = getRequestContext(true);
 
-            if (destroySessionImmediately || requestContext == null)
+            if (destroySessionImmediately || requestContext == null
+                    || requestContext.getServletRequest() == null || requestContext.getServletRequest().getSession() == null)
             {
                 context.destroy();
                 webBeansContext.getBeanManagerImpl().fireEvent(session != null ? session : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
