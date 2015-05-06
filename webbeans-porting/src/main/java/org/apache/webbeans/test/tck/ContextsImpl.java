@@ -34,15 +34,9 @@ public class ContextsImpl implements Contexts<AbstractContext>
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
 
-        RequestContext ctx =  (RequestContext)webBeansContext.getBeanManagerImpl().getContext(RequestScoped.class);
-        
-        if(ctx == null)
-        {
-            webBeansContext.getContextsService().startContext(RequestScoped.class, null);
-            ctx =  (RequestContext)webBeansContext.getBeanManagerImpl().getContext(RequestScoped.class);
-        }
-        
-        return ctx;
+        RequestContext currentContext = (RequestContext) webBeansContext.getContextsService().getCurrentContext(RequestScoped.class);
+
+        return currentContext;
     }
 
     @Override
