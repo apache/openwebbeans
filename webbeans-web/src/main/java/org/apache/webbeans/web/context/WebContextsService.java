@@ -494,8 +494,10 @@ public class WebContextsService extends AbstractContextsService
         // Destroy context
         if (context != null && context.isActive())
         {
+            // we need to mark the conversation to get destroyed at the end of the request
+            ServletRequestContext requestContext = getRequestContext(true);
 
-            if (destroySessionImmediately)
+            if (destroySessionImmediately || requestContext == null)
             {
                 context.destroy();
                 webBeansContext.getBeanManagerImpl().fireEvent(session != null ? session : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
@@ -506,8 +508,6 @@ public class WebContextsService extends AbstractContextsService
             }
             else
             {
-                // we need to mark the conversation to get destroyed at the end of the request
-                ServletRequestContext requestContext = getRequestContext(true);
                 requestContext.setPropagatedSessionContext(context);
             }
         }
