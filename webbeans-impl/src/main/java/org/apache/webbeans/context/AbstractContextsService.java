@@ -84,38 +84,6 @@ public abstract class AbstractContextsService implements ContextsService
     }
 
     @Override
-    public boolean supportsContext(Class<? extends Annotation> scopeType)
-    {        
-        return false;
-    }
-    
-    @Override
-    public void activateContext(Class<? extends Annotation> scopeType)
-    {
-        if(supportsContext(scopeType))
-        {
-            Context context = getCurrentContext(scopeType);
-            if(context instanceof AbstractContext)
-            {
-                ((AbstractContext)context).setActive(true);
-            }
-        }
-    }
-    
-    @Override
-    public void deActivateContext(Class<? extends Annotation> scopeType)
-    {
-        if(supportsContext(scopeType))
-        {
-            Context context = getCurrentContext(scopeType);
-            if(context instanceof AbstractContext)
-            {
-                ((AbstractContext)context).setActive(false);
-            }
-        }        
-    }
-
-    @Override
     public void removeThreadLocals()
     {
         // no ThreadLocals to clean up by default

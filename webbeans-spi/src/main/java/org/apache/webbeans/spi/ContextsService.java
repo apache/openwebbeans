@@ -43,13 +43,13 @@ public interface ContextsService
      * Initialize container contexts service.
      * @param initializeObject any initialize object
      */
-    public void init(Object initializeObject);
+    void init(Object initializeObject);
     
     /**
      * Destroys container contexts service.
      * @param destroyObject any destroy parameter
      */
-    public void destroy(Object destroyObject);
+    void destroy(Object destroyObject);
     
     /**
      * Gets current context with given scope type with
@@ -60,7 +60,7 @@ public interface ContextsService
      * @param scopeType context scope type
      * @return current context with given scope type
      */
-    public Context getCurrentContext(Class<? extends Annotation> scopeType);
+    Context getCurrentContext(Class<? extends Annotation> scopeType);
     
     /**
      * Gets current context with given scope type with
@@ -74,16 +74,8 @@ public interface ContextsService
      * @param createIfNotExists whether to create a new context if the underlying storage is not yet initialized
      * @return current context with given scope type
      */
-    public Context getCurrentContext(Class<? extends Annotation> scopeType, boolean createIfNotExists);
+    Context getCurrentContext(Class<? extends Annotation> scopeType, boolean createIfNotExists);
 
-    /**
-     * If container supports the given scope type it returns
-     * true, otherwise it return false.
-     * @param scopeType scope type
-     * @return true if container supports given scope type false otherwise
-     */
-    public boolean supportsContext(Class<? extends Annotation> scopeType);
-    
     /**
      * Starts the context with the given scope type. If 
      * given scope type is not supported, there is no action.
@@ -92,7 +84,7 @@ public interface ContextsService
      * @throws ContextException if any exception thrown by starting context,
      *         it is wrapped inside {@link ContextException} and thrown.
      */
-    public void startContext(Class<? extends Annotation> scopeType, Object startParameter) throws ContextException;
+    void startContext(Class<? extends Annotation> scopeType, Object startParameter) throws ContextException;
     
     /**
      * Ends the context with the given scope type. If 
@@ -102,30 +94,12 @@ public interface ContextsService
      * @param scopeType scope type
      * @param endParameters any end parameter
      */
-    public void endContext(Class<? extends Annotation> scopeType, Object endParameters);
-    
-    /**
-     * Activate the context with the given scope type. If 
-     * given scope type is not supported, there is no action.
-     * Any exception thrown by the operation is catched and 
-     * logged by the container.
-     * @param scopeType scope type
-     */
-    public void activateContext(Class<? extends Annotation> scopeType);
-    
-    /**
-     * Deactivates the context with the given scope type. If 
-     * given scope type is not supported, there is no action.
-     * Any exception thrown by the operation is catched and 
-     * logged by the container.
-     * @param scopeType scope type
-     */    
-    public void deActivateContext(Class<? extends Annotation> scopeType);
+    void endContext(Class<? extends Annotation> scopeType, Object endParameters);
 
     /**
      * Whenever a thread ends we need to remove any ThreadLocals from the ContextsService
      */
-    public void removeThreadLocals();
+    void removeThreadLocals();
 
     /**
      * This method can be used to disable conversation support in core CDI.
@@ -134,5 +108,5 @@ public interface ContextsService
      * "CDI Conversation Filter".
      * @param supportConversations whether converstaions should be supported
      */
-    public void setSupportConversations(boolean supportConversations);
+    void setSupportConversations(boolean supportConversations);
 }

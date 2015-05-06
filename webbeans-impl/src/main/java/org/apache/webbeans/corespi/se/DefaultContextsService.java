@@ -82,32 +82,29 @@ public class DefaultContextsService extends AbstractContextsService
     public void endContext(Class<? extends Annotation> scopeType, Object endParameters)
     {
         
-        if(supportsContext(scopeType))
+        if(scopeType.equals(RequestScoped.class))
         {
-            if(scopeType.equals(RequestScoped.class))
-            {
-                stopRequestContext(endParameters);
-            }
-            else if(scopeType.equals(SessionScoped.class))
-            {
-                stopSessionContext(endParameters);
-            }
-            else if(scopeType.equals(ApplicationScoped.class))
-            {
-                stopApplicationContext(endParameters);
-            }
-            else if(scopeType.equals(ConversationScoped.class))
-            {
-                stopConversationContext(endParameters);
-            }
-            else if(scopeType.equals(Dependent.class))
-            {
-                //Do nothing
-            }
-            else
-            {
-                stopSingletonContext(endParameters);
-            }
+            stopRequestContext(endParameters);
+        }
+        else if(scopeType.equals(SessionScoped.class))
+        {
+            stopSessionContext(endParameters);
+        }
+        else if(scopeType.equals(ApplicationScoped.class))
+        {
+            stopApplicationContext(endParameters);
+        }
+        else if(scopeType.equals(ConversationScoped.class))
+        {
+            stopConversationContext(endParameters);
+        }
+        else if(scopeType.equals(Dependent.class))
+        {
+            //Do nothing
+        }
+        else if(scopeType.equals(Singleton.class))
+        {
+            stopSingletonContext(endParameters);
         }
 
     }
@@ -191,23 +188,6 @@ public class DefaultContextsService extends AbstractContextsService
             throw new ContextException(e);
         }        
     }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean supportsContext(Class<? extends Annotation> scopeType)
-    {
-        
-        return scopeType.equals(RequestScoped.class) ||
-               scopeType.equals(SessionScoped.class) ||
-               scopeType.equals(ApplicationScoped.class) ||
-               scopeType.equals(ConversationScoped.class) ||
-               scopeType.equals(Dependent.class) ||
-               scopeType.equals(Singleton.class);
-    }
-
 
     @Override
     public void destroy(Object destroyObject)
