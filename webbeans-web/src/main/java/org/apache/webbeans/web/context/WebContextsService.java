@@ -452,7 +452,7 @@ public class WebContextsService extends AbstractContextsService
         if (endObject != null && endObject instanceof HttpSession)
         {
             session = (HttpSession) endObject;
-            if (context == null)
+            if (context == null && session.getAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME) != null)
             {
                 // init in this case only attaches the existing session to the ThreadLocal
                 initSessionContext(session);
