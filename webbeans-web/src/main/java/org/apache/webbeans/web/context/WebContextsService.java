@@ -47,6 +47,7 @@ import javax.servlet.ServletRequestEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.lang.annotation.Annotation;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -449,11 +450,20 @@ public class WebContextsService extends AbstractContextsService
         // Get current session context from ThreadLocal
         SessionContext context = sessionContexts.get();
         HttpSession session = null;
+
+        // whether the session is destroyed because it is expired
+        boolean sessionIsExpiring = false;
+
         if (endObject != null && endObject instanceof HttpSession)
         {
             session = (HttpSession) endObject;
             if (context == null && session.getAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME) != null)
             {
+                if (!destroySessionImmediately)
+                {
+                    sessionIsExpiring = sessionIsExpiring(session);
+                }
+                
                 // init in this case only attaches the existing session to the ThreadLocal
                 initSessionContext(session);
                 context = sessionContexts.get();
@@ -466,8 +476,9 @@ public class WebContextsService extends AbstractContextsService
             // we need to mark the conversation to get destroyed at the end of the request
             ServletRequestContext requestContext = getRequestContext(true);
 
-            if (destroySessionImmediately || requestContext == null
-                    || requestContext.getServletRequest() == null || requestContext.getServletRequest().getSession() == null)
+            if (destroySessionImmediately
+                    || requestContext == null || requestContext.getServletRequest() == null || requestContext.getServletRequest().getSession() == null
+                    || sessionIsExpiring)
             {
                 context.destroy();
                 webBeansContext.getBeanManagerImpl().fireEvent(session != null ? session : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
@@ -482,6 +493,24 @@ public class WebContextsService extends AbstractContextsService
             }
         }
 
+    }
+
+
+    /**
+     * @return {@code true} if the sessino is currently expiring or has already expired
+     */
+    protected boolean sessionIsExpiring(HttpSession session)
+    {
+        int maxInactiveInterval = session.getMaxInactiveInterval();
+        if (maxInactiveInterval > 0)
+        {
+            long inactiveSince = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - session.getLastAccessedTime());
+            if (inactiveSince >= maxInactiveInterval)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
