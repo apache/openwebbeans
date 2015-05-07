@@ -56,6 +56,7 @@ public class ConversationManager
 
 
     private final WebBeansContext webBeansContext;
+    private final ConversationStorageBean conversationStorageBean;
 
     /**
      * Creates new conversation manager
@@ -64,8 +65,8 @@ public class ConversationManager
     {
         this.webBeansContext = webBeansContext;
 
-        // we need to register this for serialisation in clusters
-        webBeansContext.getBeanManagerImpl().addInternalBean(ConversationStorageBean.INSTANCE);
+        conversationStorageBean = new ConversationStorageBean(webBeansContext);
+        webBeansContext.getBeanManagerImpl().addInternalBean(conversationStorageBean);
     }
 
 
@@ -223,14 +224,14 @@ public class ConversationManager
         {
             if (!create)
             {
-                conversationContexts = sessionContext.get(ConversationStorageBean.INSTANCE);
+                conversationContexts = sessionContext.get(conversationStorageBean);
             }
             else
             {
                 CreationalContextImpl<Set<ConversationContext>> creationalContext
-                        = webBeansContext.getBeanManagerImpl().createCreationalContext(ConversationStorageBean.INSTANCE);
+                        = webBeansContext.getBeanManagerImpl().createCreationalContext(conversationStorageBean);
 
-                conversationContexts = sessionContext.get(ConversationStorageBean.INSTANCE, creationalContext);
+                conversationContexts = sessionContext.get(conversationStorageBean, creationalContext);
             }
         }
 

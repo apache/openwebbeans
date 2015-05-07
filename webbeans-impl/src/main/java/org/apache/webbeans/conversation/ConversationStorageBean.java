@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.PassivationCapable;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -34,12 +35,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ConversationContext;
 
+
 /**
  * Bean used to create the map of conversations in a session
  */
-public class ConversationStorageBean implements Bean<Set<ConversationContext>>, PassivationCapable
+public class ConversationStorageBean implements Bean<Set<ConversationContext>>, PassivationCapable, Serializable
 {
-    public static final ConversationStorageBean INSTANCE = new ConversationStorageBean();
+    private static final String OWB_INTERNAL_CONVERSATION_STORAGE_BEAN_PASSIVATION_ID = "OwbInternalConversationStorageBean";
+    private final transient WebBeansContext webBeansContext;
+
+    public ConversationStorageBean()
+    {
+        webBeansContext = WebBeansContext.currentInstance();
+    }
+
+    public ConversationStorageBean(WebBeansContext webBeansContext)
+    {
+        this.webBeansContext = webBeansContext;
+    }
 
     @Override
     public Set<ConversationContext> create(CreationalContext<Set<ConversationContext>> creationalContext)
@@ -55,7 +68,7 @@ public class ConversationStorageBean implements Bean<Set<ConversationContext>>, 
             return;
         }
 
-        ConversationManager conversationManager = WebBeansContext.currentInstance().getConversationManager();
+        ConversationManager conversationManager = webBeansContext.getConversationManager();
         for (ConversationContext conversationContext : instance)
         {
             conversationManager.destroyConversationContext(conversationContext);
@@ -119,6 +132,29 @@ public class ConversationStorageBean implements Bean<Set<ConversationContext>>, 
     @Override
     public String getId()
     {
-        return "OwbInternalConversationStorageBean";
+        return OWB_INTERNAL_CONVERSATION_STORAGE_BEAN_PASSIVATION_ID;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        ConversationStorageBean that = (ConversationStorageBean) o;
+
+        return getId().equals(that.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getId().hashCode();
     }
 }
