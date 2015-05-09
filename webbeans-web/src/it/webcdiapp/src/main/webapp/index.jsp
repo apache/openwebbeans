@@ -32,6 +32,8 @@ Name from RequestScopedBean: <c:out value="${requestScopedBean.name}" />
 <br />
 
 Current instance: <c:out value="${requestScopedBean.requestInstanceCount}"/>
+<br/>
+Meaning of Life: <c:out value="${requestScopedBean.meaningOfLife}"/>
 
 </body>
 </html>

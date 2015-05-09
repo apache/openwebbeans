@@ -22,6 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Initialized;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 @RequestScoped
@@ -31,6 +32,8 @@ public class RequestScopedBean
 
     private static int requestInstanceCounter = 0;
     private static int requestContextCounter = 0;
+
+    private @Inject NonAnnotatedDependentBean nonAnnotatedBean;
 
     private String name = "Super name";
 
@@ -71,5 +74,10 @@ public class RequestScopedBean
     public static String info()
     {
         return String.valueOf(requestInstanceCounter) + ',' + String.valueOf(requestContextCounter);
+    }
+
+    public int getMeaningOfLife()
+    {
+        return nonAnnotatedBean.meaningOfLife();
     }
 }

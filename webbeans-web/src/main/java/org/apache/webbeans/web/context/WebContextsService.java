@@ -463,7 +463,7 @@ public class WebContextsService extends AbstractContextsService
                 {
                     sessionIsExpiring = sessionIsExpiring(session);
                 }
-                
+
                 // init in this case only attaches the existing session to the ThreadLocal
                 initSessionContext(session);
                 context = sessionContexts.get();
