@@ -91,6 +91,8 @@ public class WebScannerService extends AbstractMetaDataDiscovery
         {
             addWebBeansXmlLocation(url);
 
+            logger.info("Adding information from WEB-INF/beans.xml");
+
             // the deployment URL already was part of the classpath
             // so no need to do anything else
         }
