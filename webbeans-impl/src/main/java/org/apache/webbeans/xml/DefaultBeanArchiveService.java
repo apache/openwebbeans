@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -47,8 +49,8 @@ import org.w3c.dom.NodeList;
  */
 public class DefaultBeanArchiveService implements BeanArchiveService
 {
-    public static final String WEB_INF_BEANS_XML = "WEB-INF/beans.xml";
-    public static final String WEB_INF_CLASSES = "WEB-INF/classes";
+    private static final String WEB_INF_BEANS_XML = "WEB-INF/beans.xml";
+    private static final String WEB_INF_CLASSES = "WEB-INF/classes/";
 
     private static final Logger logger = WebBeansLoggerFacade.getLogger(BeanArchiveService.class);
 
@@ -73,13 +75,6 @@ public class DefaultBeanArchiveService implements BeanArchiveService
 
             String strippedBeanArchiveUrl = stripProtocol(beanArchiveLocation);
 
-            if (strippedBeanArchiveUrl.contains(WEB_INF_BEANS_XML))
-            {
-                // this is a very special case for beans.xml in a WAR file
-                // in this case we are looking for the WEB-INF/classes URL
-                strippedBeanArchiveUrl = strippedBeanArchiveUrl.replace(WEB_INF_BEANS_XML, WEB_INF_CLASSES);
-            }
-
             for (Map.Entry<String, BeanArchiveInformation> entry : beanArchiveInformations.entrySet())
             {
                 if (stripProtocol(entry.getKey()).startsWith(strippedBeanArchiveUrl))
@@ -91,6 +86,21 @@ public class DefaultBeanArchiveService implements BeanArchiveService
 
         }
 
+        if (bdaInfo == null && beanArchiveLocation.contains(WEB_INF_CLASSES))
+        {
+            // this is a very special case for beans.xml in a WAR file
+            // in this case we need to merge the 2 BDAs from WEB-INF/classes/META-INF/beans.xml and WEB-INF/beans.xml
+            // this requires the WEB-INF/beans.xml being parsed first (which is usually the case)
+
+            // first we read the BeanArchiveInformation from the WEB-INF/classes directory.
+            bdaInfo = readBeansXml(beanArchiveUrl, beanArchiveLocation);
+
+            // next we merge in the BDAInfo from WEB-INF/beans.xml
+            bdaInfo = mergeWithWebInfBeansXml(bdaInfo);
+            beanArchiveInformations.put(beanArchiveLocation, bdaInfo);
+            registeredBeanArchives.add(beanArchiveUrl);
+        }
+
         if (bdaInfo == null)
         {
             // if we still did not find anything, then this is a 'new' bean archive
@@ -100,6 +110,70 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         }
 
         return bdaInfo;
+    }
+
+    /**
+     * Merge the BDA info from webInfClasses with the one from WEB-INF/beans.xml
+     */
+    private BeanArchiveInformation mergeWithWebInfBeansXml(BeanArchiveInformation bdaWebClasses)
+    {
+        BeanArchiveInformation bdaWebInf = null;
+        for (Map.Entry<String, BeanArchiveInformation> entry : beanArchiveInformations.entrySet())
+        {
+            if (entry.getKey().endsWith("WEB-INF/beans.xml"))
+            {
+                bdaWebInf = entry.getValue();
+                break;
+            }
+        }
+
+        if (bdaWebInf == null)
+        {
+            // no merge needed
+            return bdaWebClasses;
+        }
+
+        // means we need to merge them
+        DefaultBeanArchiveInformation mergedBdaInfo = new DefaultBeanArchiveInformation();
+
+        mergedBdaInfo.setBeanDiscoveryMode(BeanDiscoveryMode.max(bdaWebClasses.getBeanDiscoveryMode(), bdaWebInf.getBeanDiscoveryMode()));
+
+        mergedBdaInfo.setVersion(bdaWebClasses.getVersion() != null ? bdaWebClasses.getVersion() : bdaWebInf.getVersion());
+
+        mergedBdaInfo.setExcludedClasses(mergeLists(bdaWebClasses.getExcludedClasses(), bdaWebInf.getExcludedClasses()));
+        mergedBdaInfo.setExcludedPackages(mergeLists(bdaWebClasses.getExcludedPackages(), bdaWebInf.getExcludedPackages()));
+
+        mergedBdaInfo.setInterceptors(mergeLists(bdaWebClasses.getInterceptors(), bdaWebInf.getInterceptors()));
+        mergedBdaInfo.setDecorators(mergeLists(bdaWebClasses.getDecorators(), bdaWebInf.getDecorators()));
+        mergedBdaInfo.getAlternativeClasses().addAll(mergeLists(bdaWebClasses.getAlternativeClasses(), bdaWebInf.getAlternativeClasses()));
+        mergedBdaInfo.getAlternativeStereotypes().addAll(mergeLists(bdaWebClasses.getAlternativeStereotypes(), bdaWebInf.getAlternativeStereotypes()));
+
+        return mergedBdaInfo;
+    }
+
+    private List<String> mergeLists(List<String> list1, List<String> list2)
+    {
+        if (list1 == null || list1.isEmpty())
+        {
+            return list2;
+        }
+
+        if (list2 == null)
+        {
+            return null;
+        }
+
+        List<String> mergedList = new ArrayList<String>(list1);
+
+        for (String val : list2)
+        {
+            if (!mergedList.contains(val))
+            {
+                mergedList.add(val);
+            }
+        }
+
+        return mergedList;
     }
 
     @Override

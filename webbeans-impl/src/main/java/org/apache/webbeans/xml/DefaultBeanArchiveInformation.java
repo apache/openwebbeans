@@ -168,4 +168,24 @@ public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArc
 
         excludedPackages.add(packageName);
     }
+
+    public List<String> getExcludedClasses()
+    {
+        return excludedClasses;
+    }
+
+    public void setExcludedClasses(List<String> excludedClasses)
+    {
+        this.excludedClasses = excludedClasses;
+    }
+
+    public List<String> getExcludedPackages()
+    {
+        return excludedPackages;
+    }
+
+    public void setExcludedPackages(List<String> excludedPackages)
+    {
+        this.excludedPackages = excludedPackages;
+    }
 }

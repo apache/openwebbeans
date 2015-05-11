@@ -45,7 +45,7 @@ public interface BeanArchiveService
          * will get picked up as &#064;Dependent scoped beans.
          * This is basically the backward compatible mode to CDI-1.0.
          */
-        ALL,
+        ALL(10),
 
         /**
          * Only classes with a 'bean defining annotation' will get
@@ -53,12 +53,53 @@ public interface BeanArchiveService
          * A 'bean defining annotation' is any CDI or atinject Scope annotation
          * as well as Stereotypes (the later only since CDI-1.2)
          */
-        ANNOTATED,
+        ANNOTATED(5),
 
         /**
          * Ignore all classes in this BDA when it comes to beans scanning.
          */
-        NONE
+        NONE(2);
+
+        /**
+         * used for internal sorting. higher ordinal means more scanning
+         */
+        private final int ordinal;
+
+        BeanDiscoveryMode(int ordinal)
+        {
+            this.ordinal = ordinal;
+        }
+
+        public int getOrdinal()
+        {
+            return ordinal;
+        }
+
+        public static BeanDiscoveryMode getByOrdinal(int ordinal)
+        {
+            for (BeanDiscoveryMode beanDiscoveryMode : values())
+            {
+                if (beanDiscoveryMode.getOrdinal() == ordinal)
+                {
+                    return beanDiscoveryMode;
+                }
+            }
+            return null;
+        }
+
+        public static BeanDiscoveryMode max(BeanDiscoveryMode bdmA, BeanDiscoveryMode bdmB)
+        {
+            if (bdmA == null)
+            {
+                return bdmB;
+            }
+            if (bdmB == null)
+            {
+                return bdmA;
+            }
+
+            return getByOrdinal(Math.max(bdmA.getOrdinal(), bdmB.getOrdinal()));
+        }
     }
 
     /**
@@ -109,6 +150,10 @@ public interface BeanArchiveService
          *          in a &lt;alternatives&gt;&lt;stereotype&gt; section or an empty List.
          */
         List<String> getAlternativeStereotypes();
+
+
+        List<String> getExcludedClasses();
+        List<String> getExcludedPackages();
     }
 
 
