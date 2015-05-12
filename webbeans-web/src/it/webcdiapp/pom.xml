@@ -233,7 +233,6 @@
                 <version>2.0</version>
                 <configuration>
                     <path>/${project.build.finalName}</path>
-                    <addContextWarDependencies>true</addContextWarDependencies>
                     <port>${tomcat.port.it}</port>
                     <fork>${tomcat.fork}</fork> <!-- true is needed for IT, but if we want to debug it we do not want to fork -->
                 </configuration>
@@ -242,7 +241,7 @@
                         <id>start-tomcat</id>
                         <phase>pre-integration-test</phase>
                         <goals>
-                            <goal>run-war-only</goal>
+                            <goal>run</goal>
                         </goals>
                     </execution>
                     <execution>
