@@ -231,7 +231,7 @@ public class WebContextsService extends AbstractContextsService
             return getSessionContext(createIfNotExists);
         }
 
-        return super.getCurrentContext(scopeType);
+        return getCurrentContext(scopeType);
     }
 
     /**
