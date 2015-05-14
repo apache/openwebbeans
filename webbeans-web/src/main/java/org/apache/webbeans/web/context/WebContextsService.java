@@ -340,7 +340,7 @@ public class WebContextsService extends AbstractContextsService
     protected void destroyRequestContext(Object endObject)
     {
         //Get context
-        ServletRequestContext context = getRequestContext(true);
+        ServletRequestContext context = getRequestContext(false);
 
         if (context == null)
         {
