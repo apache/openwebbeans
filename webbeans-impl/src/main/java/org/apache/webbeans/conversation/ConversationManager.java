@@ -168,7 +168,17 @@ public class ConversationManager
 
     public boolean conversationTimedOut(ConversationImpl conv)
     {
-        long timeout = conv.getTimeout();
+        long timeout = 0L;
+        try
+        {
+            timeout = conv.getTimeout();
+        }
+        catch (BusyConversationException bce)
+        {
+            // if the Conversation is concurrently used by another thread then it is surely not timed out
+            return false;
+        }
+
         if (timeout != 0L && (System.currentTimeMillis() - conv.getLastAccessTime()) > timeout)
         {
             logger.log(Level.FINE, OWBLogConst.INFO_0011, conv.getId());
