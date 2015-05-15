@@ -126,7 +126,7 @@ public class WebContextsService extends AbstractContextsService
     protected void configureEagerSessionInitialisation(WebBeansContext webBeansContext)
     {
         String val = webBeansContext.getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.EAGER_SESSION_INITIALISATION);
-        if ("false".equalsIgnoreCase(val))
+        if (val == null || val.isEmpty() || "false".equalsIgnoreCase(val))
         {
             eagerSessionInitialisation = Boolean.FALSE;
             logger.fine("EagerSessionInitialisation is configured to FALSE (Session will get created lazily on first use)");
