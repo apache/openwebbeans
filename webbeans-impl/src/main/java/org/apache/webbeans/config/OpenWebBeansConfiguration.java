@@ -23,6 +23,7 @@ import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -35,10 +36,12 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
  * 
  * The algorithm is easy:
  * <ul>
- * <li>Load all properties you can find with the name (META-INF/openwebbeans/openwebbeans.properties),
- * <li>Sort them via configuration.ordinal in ascending order,
- * <li>Overload them as we do already,
- * <li>Use the sorted list of properties.
+ * <li>Load all properties you can find with the name (META-INF/openwebbeans/openwebbeans.properties),</li>
+ * <li>Sort the property files via their configuration.ordinal in ascending order,</li>
+ * <li>Overload them in a loop,</li>
+ * <li><Overload them via System.getProperties/li>
+ * <li><Overload them via System.getenv/li>
+ * <li>Use the final list of properties.</li>
  * </ul>
  */
 public class OpenWebBeansConfiguration
@@ -116,6 +119,7 @@ public class OpenWebBeansConfiguration
      * alternatives are enabled in the beans.xml of a given BDA. For an
      * application containing jar1 and jar2, this implies that an interceptor
      * enabled in the beans.xml of jar1 is not automatically enabled in jar2
+     * @deprecated as spec section 5 and 12 contradict each other and the BDA per jar handling is broken anyway
      **/
     public static final String USE_BDA_BEANSXML_SCANNER = "org.apache.webbeans.useBDABeansXMLScanner";
 
@@ -147,75 +151,9 @@ public class OpenWebBeansConfiguration
     public OpenWebBeansConfiguration()
     {
         parseConfiguration();
-        
-        logger.fine("Overriding properties from System properties");
-        
-        //Look for System properties
-        loadFromSystemProperties();        
-    }
-    
-    /**
-     * Load from system properties
-     */
-    private void loadFromSystemProperties()
-    {
-        Properties properties;
-        if(System.getSecurityManager() != null)
-        {
-            properties = doPrivilegedGetSystemProperties();
-        }
-        else
-        {
-            properties = System.getProperties();
-        }
-        
-        setPropertyFromSystemProperty(properties, CONVERSATION_PERIODIC_DELAY);
-        setPropertyFromSystemProperty(properties, USE_EJB_DISCOVERY);
-        setPropertyFromSystemProperty(properties, CONTAINER_LIFECYCLE);
-        setPropertyFromSystemProperty(properties, APPLICATION_IS_JSP);
-        setPropertyFromSystemProperty(properties, TRANSACTION_SERVICE);
-        setPropertyFromSystemProperty(properties, VALIDATOR_SERVICE);
-        setPropertyFromSystemProperty(properties, SECURITY_SERVICE);
-        setPropertyFromSystemProperty(properties, RESOURCE_INJECTION_SERVICE);
-        setPropertyFromSystemProperty(properties, CONVERSATION_SERVICE);
-        setPropertyFromSystemProperty(properties, CONTEXTS_SERVICE);
-        setPropertyFromSystemProperty(properties, SCANNER_SERVICE);
-        setPropertyFromSystemProperty(properties, JNDI_SERVICE);
-        setPropertyFromSystemProperty(properties, EL_ADAPTOR_CLASS);
-        setPropertyFromSystemProperty(properties, USE_BDA_BEANSXML_SCANNER);
-        setPropertyFromSystemProperty(properties, APPLICATION_SUPPORTS_CONVERSATION);
     }
 
-    private Properties doPrivilegedGetSystemProperties()
-    {
-        return AccessController.doPrivileged(
-                new PrivilegedAction<Properties>()
-                    {
-                        @Override
-                        public Properties run()
-                        {
-                            return System.getProperties();
-                        }
 
-                    }
-                );
-    }
-
-     
-    private void setPropertyFromSystemProperty(Properties systemProperties, String key)
-    {
-        String value = systemProperties.getProperty(key);
-        setPropertyFromSystemProperty(key, value);
-    }
-    
-    private void setPropertyFromSystemProperty(String key, String value)
-    {
-        if(value != null)
-        {
-            setProperty(key, value);
-        }
-    }
-    
     /**
      * (re)read the configuration from the resources in the classpath.
      * @see #DEFAULT_CONFIG_PROPERTIES_NAME
@@ -224,15 +162,61 @@ public class OpenWebBeansConfiguration
     public synchronized void parseConfiguration() throws WebBeansConfigurationException
     {
         Properties newConfigProperties = PropertyLoader.getProperties(DEFAULT_CONFIG_PROPERTIES_NAME);
-        configProperties.clear();
 
+        overrideWithGlobalSettings(newConfigProperties);
+
+        configProperties.clear();
         // set the new one as perfect fit.
         if(newConfigProperties != null)
         {
             configProperties.putAll(newConfigProperties);
         }
+
     }
-    
+
+    private void overrideWithGlobalSettings(Properties configProperties)
+    {
+        logger.fine("Overriding properties from System and Env properties");
+
+        Properties systemProperties;
+        if(System.getSecurityManager() != null)
+        {
+            systemProperties = doPrivilegedGetSystemProperties();
+        }
+        else
+        {
+            systemProperties = System.getProperties();
+        }
+
+        Map<String, String> systemEnvironment = System.getenv();
+
+        for (Map.Entry property : configProperties.entrySet())
+        {
+            String key = (String) property.getKey();
+            String value = (String) property.getValue();
+
+            value = systemProperties.getProperty(key) != null ? systemProperties.getProperty(key) : value;
+            value = systemEnvironment.get(key) != null ? systemEnvironment.get(key) : value;
+
+            configProperties.put(key, value);
+        }
+    }
+
+    private Properties doPrivilegedGetSystemProperties()
+    {
+        return AccessController.doPrivileged(
+                new PrivilegedAction<Properties>()
+                {
+                    @Override
+                    public Properties run()
+                    {
+                        return System.getProperties();
+                    }
+
+                }
+        );
+    }
+
 
     /**
      * Gets property.
