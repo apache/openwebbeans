@@ -130,6 +130,21 @@ public class OpenWebBeansConfiguration
      */
     public static final String IGNORED_INTERFACES = "org.apache.webbeans.ignoredDecoratorInterfaces";
 
+    /**
+     * By default we do _not_ force session creation in our WebBeansConfigurationListener. We only create the
+     * Session if we really need the SessionContext. E.g. when we create a Contextual Instance in it.
+     * Sometimes this creates a problem as the HttpSession can only be created BEFORE anything got written back
+     * to the client.
+     * With this configuration you can choose between 3 settings
+     * <ul>
+     *     <li>&quot;true&quot; the Session will <u>always</u> eagerly be created at the begin of a request</li>
+     *     <li>&quot;false&quot; the Session will <u>never</u> eagerly be created but only lazily when the first &#064;SessionScoped bean gets used</li>
+     *     <li>any other value will be interpreted as Java regular expression for request URIs which need eager Session initialization</li>
+     * </ul>
+     */
+    public static final String EAGER_SESSION_INITIALISATION = "org.apache.webbeans.web.eagerSessionInitialisation";
+
+
     private Set<String> ignoredInterfaces;
 
     /**

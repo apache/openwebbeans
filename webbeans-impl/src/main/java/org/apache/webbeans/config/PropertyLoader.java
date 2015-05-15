@@ -210,14 +210,7 @@ public class PropertyLoader
         Properties mergedProperties = new Properties();
         for (Properties p : sortedProperties)
         {
-            for (Map.Entry<?,?> entry : p.entrySet())
-            {
-                String key = (String) entry.getKey();
-                String value = (String) entry.getValue();
-
-                // simply overwrite the old properties with the new ones.
-                mergedProperties.setProperty(key, value);
-            }
+            mergedProperties.putAll(p);
         }
 
         return mergedProperties;

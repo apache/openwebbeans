@@ -21,6 +21,7 @@ package org.apache.webbeans.web.context;
 import org.apache.webbeans.annotation.DestroyedLiteral;
 import org.apache.webbeans.annotation.InitializedLiteral;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.AbstractContextsService;
 import org.apache.webbeans.context.ApplicationContext;
@@ -50,6 +51,8 @@ import java.lang.annotation.Annotation;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Web container {@link org.apache.webbeans.spi.ContextsService}
@@ -89,6 +92,9 @@ public class WebContextsService extends AbstractContextsService
     /**Conversation context manager*/
     protected final ConversationManager conversationManager;
 
+    protected Boolean eagerSessionInitialisation = null;
+    protected Pattern eagerSessionPattern = null;
+
 
 
     /**Initialize thread locals*/
@@ -113,6 +119,28 @@ public class WebContextsService extends AbstractContextsService
 
         applicationContext = new ApplicationContext();
         applicationContext.setActive(true);
+
+        configureEagerSessionInitialisation(webBeansContext);
+    }
+
+    protected void configureEagerSessionInitialisation(WebBeansContext webBeansContext)
+    {
+        String val = webBeansContext.getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.EAGER_SESSION_INITIALISATION);
+        if ("false".equalsIgnoreCase(val))
+        {
+            eagerSessionInitialisation = Boolean.FALSE;
+            logger.fine("EagerSessionInitialisation is configured to FALSE (Session will get created lazily on first use)");
+        }
+        else if ("true".equalsIgnoreCase(val))
+        {
+            eagerSessionInitialisation = Boolean.TRUE;
+            logger.fine("EagerSessionInitialisation is configured to TRUE (Session will get created at the beginning of a request)");
+        }
+        else
+        {
+            logger.fine("EagerSessionInitialisation used for all URIs with RegExp " + val);
+            eagerSessionPattern = Pattern.compile(val);
+        }
     }
 
     /**
@@ -328,11 +356,27 @@ public class WebContextsService extends AbstractContextsService
             if (request != null)
             {
                 payload = request;
+
+                if (shouldEagerlyInitializeSession(request))
+                {
+                    request.getSession(true);
+                }
             }
         }
         webBeansContext.getBeanManagerImpl().fireEvent(payload != null ? payload : new Object(), InitializedLiteral.INSTANCE_REQUEST_SCOPED);
     }
-    
+
+    protected boolean shouldEagerlyInitializeSession(HttpServletRequest request)
+    {
+        if (eagerSessionPattern != null)
+        {
+            String requestURI = request.getRequestURI();
+            Matcher matcher = eagerSessionPattern.matcher(requestURI);
+            return matcher.matches();
+        }
+        return eagerSessionInitialisation;
+    }
+
     /**
      * Destroys the request context and all of its components. 
      * @param endObject http servlet request object or other payload
