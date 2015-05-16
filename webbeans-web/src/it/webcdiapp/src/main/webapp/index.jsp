@@ -35,5 +35,9 @@ Current instance: <c:out value="${requestScopedBean.requestInstanceCount}"/>
 <br/>
 Meaning of Life: <c:out value="${requestScopedBean.meaningOfLife}"/>
 
+<br/>
+SessionScoped Counter: <c:out value="${sessionScopedCounter.count}"/>
+
+
 </body>
 </html>

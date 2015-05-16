@@ -44,6 +44,7 @@ public class TestServlet extends HttpServlet
 
         if ("reset".equals(action))
         {
+            request.getSession().invalidate();
             RequestScopedBean.resetCounter();
             ContextEventCounter.resetCounter();
         }

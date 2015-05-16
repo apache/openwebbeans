@@ -19,6 +19,7 @@
 package org.apache.openwebbeans.web.it.beans;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.Initialized;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
@@ -34,6 +35,7 @@ public class RequestScopedBean
     private static int requestContextCounter = 0;
 
     private @Inject NonAnnotatedDependentBean nonAnnotatedBean;
+    private @Inject SessionScopedCounter sessionScopedCounter;
 
     private String name = "Super name";
 
@@ -69,11 +71,19 @@ public class RequestScopedBean
     public void onRequestInit(@Observes @Initialized(RequestScoped.class) Object payload)
     {
         requestContextCounter++;
+        try
+        {
+            sessionScopedCounter.increment();
+        }
+        catch (ContextNotActiveException cnae)
+        {
+            // ignore if on app startup.
+        }
     }
 
     public static String info()
     {
-        return String.valueOf(requestInstanceCounter) + ',' + String.valueOf(requestContextCounter);
+        return String.valueOf(requestInstanceCounter) + "," + String.valueOf(requestContextCounter);
     }
 
     public int getMeaningOfLife()

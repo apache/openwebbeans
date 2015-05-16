@@ -46,7 +46,7 @@ public class RequestScopedIT extends OwbITBase
 
         // application and session still running
         // for the session we got 2 full requests + 1 end after the reset + 1 start before the info gets rendered in the last request
-        Assert.assertEquals("application:1/0\nsession:1/0\nrequest:3/3", response);
+        Assert.assertEquals("application:1/0\nsession:1/1\nrequest:3/3", response);
     }
 
 }

@@ -478,6 +478,7 @@ public class WebContextsService extends AbstractContextsService
                 // we do that in any case.
                 // This is needed to trigger delta-replication on most servers
                 session.setAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME, currentSessionContext);
+                currentSessionContext.setActive(true);
             }
             //Set thread local
             sessionContexts.set(currentSessionContext);
