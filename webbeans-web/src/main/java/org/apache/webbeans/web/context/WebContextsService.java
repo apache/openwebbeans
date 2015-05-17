@@ -70,12 +70,6 @@ public class WebContextsService extends AbstractContextsService
      */
     private final boolean destroySessionImmediately = false;
 
-    /**Current request context*/
-    protected static ThreadLocal<ServletRequestContext> requestContexts = null;
-
-    /**Current session context*/
-    protected static ThreadLocal<SessionContext> sessionContexts = null;
-
     /**
      * A single applicationContext
      */
@@ -83,11 +77,17 @@ public class WebContextsService extends AbstractContextsService
 
     protected SingletonContext singletonContext;
 
+    /**Current request context*/
+    protected ThreadLocal<ServletRequestContext> requestContexts = null;
+
+    /**Current session context*/
+    protected ThreadLocal<SessionContext> sessionContexts = null;
+
     /**Current conversation context*/
-    protected static ThreadLocal<ConversationContext> conversationContexts = null;
+    protected ThreadLocal<ConversationContext> conversationContexts = null;
     
     /**Current dependent context*/
-    protected static DependentContext dependentContext;
+    protected DependentContext dependentContext;
 
     /**Conversation context manager*/
     protected final ConversationManager conversationManager;
@@ -96,18 +96,6 @@ public class WebContextsService extends AbstractContextsService
     protected Pattern eagerSessionPattern = null;
 
 
-
-    /**Initialize thread locals*/
-    static
-    {
-        requestContexts = new ThreadLocal<ServletRequestContext>();
-        sessionContexts = new ThreadLocal<SessionContext>();
-        conversationContexts = new ThreadLocal<ConversationContext>();
-
-        //Dependent context is always active
-        dependentContext = new DependentContext();
-        dependentContext.setActive(true);
-    }
 
     /**
      * Creates a new instance.
@@ -119,6 +107,14 @@ public class WebContextsService extends AbstractContextsService
 
         applicationContext = new ApplicationContext();
         applicationContext.setActive(true);
+
+        requestContexts = new ThreadLocal<ServletRequestContext>();
+        sessionContexts = new ThreadLocal<SessionContext>();
+        conversationContexts = new ThreadLocal<ConversationContext>();
+
+        //Dependent context is always active
+        dependentContext = new DependentContext();
+        dependentContext.setActive(true);
 
         configureEagerSessionInitialisation(webBeansContext);
     }

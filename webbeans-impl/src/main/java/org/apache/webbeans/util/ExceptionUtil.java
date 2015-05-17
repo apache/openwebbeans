@@ -25,12 +25,32 @@ public abstract class ExceptionUtil
         // prevent instantiation
     }
 
+    /**
+     * Throws the given Exception as RuntimeException
+     * @return null; this is just for IDEs to allow them detect the end of the control flow
+     */
     public static RuntimeException throwAsRuntimeException(Throwable throwable)
     {
         //Attention: helper which allows to use a trick to throw
         // a catched checked exception without a wrapping exception
         new ExceptionHelper<RuntimeException>().throwException(throwable);
         return null; //not needed due to the helper trick, but it's easier for using it
+    }
+
+
+    /**
+     * This is for debugging/logging purpose only!
+     * @return The stack trace of the current Thread.
+     */
+    public static String currentStack()
+    {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        StringBuilder sb = new StringBuilder(500);
+        for (StackTraceElement ste : stackTrace)
+        {
+            sb.append("  ").append(ste.getClassName()).append("#").append(ste.getMethodName()).append(":").append(ste.getLineNumber()).append('\n');
+        }
+        return sb.toString();
     }
 
     @SuppressWarnings({ "unchecked" })
