@@ -21,6 +21,7 @@ package org.apache.webbeans.test.contexts;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.SerializableBean;
+import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.contexts.serialize.AppScopedBean;
 import org.apache.webbeans.test.contexts.serialize.SessScopedBean;
@@ -138,15 +139,18 @@ public class SerializationTest extends AbstractUnitTest
         // and now we are keen and try to serialize the whole passivatable Contexts!
         PersonalDataBean pdb = getInstance(PersonalDataBean.class);
         pdb.business();
-        
-        // first we need to actually create a few instances
+
+        Bean<PersonalDataBean> pdbBean = getBean(PersonalDataBean.class);
 
         Context sessionContext = webBeansContext.getBeanManagerImpl().getContext(SessionScoped.class);
         Assert.assertNotNull(sessionContext);
+        Assert.assertNotNull(sessionContext.get(pdbBean));
         byte[] ba = serializeObject(sessionContext);
         Assert.assertNotNull(ba);
         Context sessContext2 = (Context) deSerializeObject(ba);
         Assert.assertNotNull(sessContext2);
+        ((SessionContext) sessContext2).setActive(true);
+        Assert.assertNotNull(sessContext2.get(pdbBean));
     }
 
     @Test
