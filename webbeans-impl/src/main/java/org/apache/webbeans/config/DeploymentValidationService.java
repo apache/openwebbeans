@@ -243,7 +243,7 @@ public class DeploymentValidationService
         return bean instanceof OwbBean? ((OwbBean<?>)bean).isPassivationCapable(): bean instanceof PassivationCapable;
     }
 
-    public static interface BeanInterceptorInfoProvider
+    public interface BeanInterceptorInfoProvider
     {
         BeanInterceptorInfo interceptorInfo();
     }

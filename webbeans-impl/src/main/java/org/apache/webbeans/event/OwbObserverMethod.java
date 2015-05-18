@@ -32,11 +32,11 @@ public interface OwbObserverMethod<T> extends ObserverMethod<T>
     /**
      * Returns the {@link InjectionPoint}s for the parameters of this observer method.
      */
-    public Set<InjectionPoint> getInjectionPoints();
+    Set<InjectionPoint> getInjectionPoints();
 
     /**
      * will actually call the underlying observer method with the specified event metadata
      */
-    public void notify(T event, EventMetadata metadata);    
+    void notify(T event, EventMetadata metadata);
 
 }

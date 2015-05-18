@@ -27,5 +27,5 @@ package org.apache.webbeans.component;
  */
 public interface EnterpriseBeanMarker
 {
-    public boolean isPassivationCapable();
+    boolean isPassivationCapable();
 }

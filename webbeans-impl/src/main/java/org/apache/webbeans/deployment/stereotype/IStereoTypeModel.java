@@ -34,38 +34,38 @@ public interface IStereoTypeModel
      * its class name.
      * @return the name
      */
-    public String getName();
+    String getName();
 
     /**
      * Sets name.
      * @param name the name to set
      */
-    public void setName(String name);
+    void setName(String name);
 
     /**
      * Gets default deployment type.
      * @return the defaultDeploymentType
      */
-    public Annotation getDefaultDeploymentType();
+    Annotation getDefaultDeploymentType();
 
     /**
      * Sets default deployment type.
      * @return the defaultScopeType
      */
-    public Annotation getDefaultScopeType();
+    Annotation getDefaultScopeType();
 
     /**
      * Returns set of interceptor binding that are
      * definen by the stereotype.
      * @return set of interceptor bindings.
      */
-    public Set<Annotation> getInterceptorBindingTypes();
+    Set<Annotation> getInterceptorBindingTypes();
 
     /**
      * Returns a set of inherited stereotypes.
      * @return set of inherited stereotypes.
      */
-    public Set<Annotation> getInheritedStereoTypes();
+    Set<Annotation> getInheritedStereoTypes();
 
     boolean isNamed();
 }

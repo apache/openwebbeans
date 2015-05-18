@@ -238,7 +238,7 @@ public class SpecializationUtil
         return Collections.emptySet();
     }
 
-    public static interface BeanAttributesProvider
+    public interface BeanAttributesProvider
     {
         <T> BeanAttributes<T> get(AnnotatedType<T> at);
     }

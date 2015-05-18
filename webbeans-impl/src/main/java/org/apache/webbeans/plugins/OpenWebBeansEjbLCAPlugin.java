@@ -26,9 +26,9 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
  */
 public interface OpenWebBeansEjbLCAPlugin extends OpenWebBeansPlugin
 {
-    public Class<? extends Annotation> getPrePassivateClass();
+    Class<? extends Annotation> getPrePassivateClass();
 
-    public Class<? extends Annotation> getPostActivateClass();
+    Class<? extends Annotation> getPostActivateClass();
     
-    public Class<? extends Annotation> getAroundTimeoutClass();
+    Class<? extends Annotation> getAroundTimeoutClass();
 }

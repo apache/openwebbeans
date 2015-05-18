@@ -25,7 +25,7 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
 public interface OpenWebBeansJmsPlugin extends OpenWebBeansPlugin
 {
-    public Bean<?> getJmsBean(JMSModel jmsModel);
+    Bean<?> getJmsBean(JMSModel jmsModel);
     
-    public Object getJmsBeanProxy(Bean<?> bean, Class<?> iface);        
+    Object getJmsBeanProxy(Bean<?> bean, Class<?> iface);
 }

@@ -20,7 +20,7 @@ package org.apache.webbeans.portable.events.generics;
 
 public interface GenericProducerObserverEvent
 {
-    public Class<?> getBeanClass();
+    Class<?> getBeanClass();
     
-    public Class<?> getProducerOrObserverType();
+    Class<?> getProducerOrObserverType();
 }

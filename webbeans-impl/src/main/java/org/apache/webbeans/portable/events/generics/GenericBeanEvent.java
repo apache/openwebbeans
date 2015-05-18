@@ -28,5 +28,5 @@ public interface GenericBeanEvent
      * @param eventClass the class of event we are treating this event as
      * @return the generic type parameter of this event considered as an "eventClass"
      */
-    public Class<?> getBeanClassFor(Class<?> eventClass);
+    Class<?> getBeanClassFor(Class<?> eventClass);
 }

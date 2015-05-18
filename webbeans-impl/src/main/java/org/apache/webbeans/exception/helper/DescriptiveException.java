@@ -32,5 +32,5 @@ public interface DescriptiveException
      * Add some additional information to the message.
      * @param additionalInformation
      */
-    public void addInformation(String additionalInformation);
+    void addInformation(String additionalInformation);
 }

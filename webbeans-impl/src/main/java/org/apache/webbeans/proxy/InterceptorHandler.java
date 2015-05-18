@@ -34,5 +34,5 @@ public interface InterceptorHandler
      * @param args original invocation parameters
      * @return the return value of the intercepted methos
      */
-    public Object invoke(Method method, Object[] args);
+    Object invoke(Method method, Object[] args);
 }

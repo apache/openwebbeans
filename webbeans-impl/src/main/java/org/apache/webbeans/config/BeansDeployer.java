@@ -377,7 +377,7 @@ public class BeansDeployer
      */
     private void validateDecoratorDecoratedTypes()
     {
-        for (Decorator decorator : webBeansContext.getDecoratorsManager().getDecorators())
+        for (Decorator decorator : decoratorsManager.getDecorators())
         {
             if (decorator.getDecoratedTypes().isEmpty())
             {
@@ -389,7 +389,7 @@ public class BeansDeployer
     // avoid delegate implementing Foo<A> and decorator implementing Foo<B> with no link between A and B
     private void validateDecoratorGenericTypes()
     {
-        for (final Decorator<?> decorator : webBeansContext.getDecoratorsManager().getDecorators())
+        for (final Decorator<?> decorator : decoratorsManager.getDecorators())
         {
             final Type type = decorator.getDelegateType();
 
@@ -432,12 +432,10 @@ public class BeansDeployer
                     {
                         final ParameterizedType pt2 = ParameterizedType.class.cast(t);
 
-                        if (pt1.getRawType() == pt2.getRawType())
+                        if (pt1.getRawType() == pt2.getRawType() &&
+                            !GenericsUtil.isAssignableFrom(true, false, pt1, pt2))
                         {
-                            if (!GenericsUtil.isAssignableFrom(true, false, pt1, pt2))
-                            {
-                                throw new WebBeansConfigurationException("Generic error matching " + api + " and " + t);
-                            }
+                            throw new WebBeansConfigurationException("Generic error matching " + api + " and " + t);
                         }
                     }
                 }
@@ -468,7 +466,6 @@ public class BeansDeployer
     private void registerAlternativesDecoratorsAndInterceptorsWithPriority(List<AnnotatedType<?>> annotatedTypes)
     {
         AlternativesManager alternativesManager = webBeansContext.getAlternativesManager();
-        InterceptorsManager interceptorsManager = webBeansContext.getInterceptorsManager();
 
         for (AnnotatedType<?> annotatedType : annotatedTypes)
         {
@@ -645,8 +642,8 @@ public class BeansDeployer
     {
         final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         final List<AnnotatedType<?>> newAt = new LinkedList<AnnotatedType<?>>();
-        final List<Class<?>> interceptors = webBeansContext.getInterceptorsManager().getPrioritizedInterceptors();
-        final List<Class<?>> decorators = webBeansContext.getDecoratorsManager().getPrioritizedDecorators();
+        final List<Class<?>> interceptors = interceptorsManager.getPrioritizedInterceptors();
+        final List<Class<?>> decorators = decoratorsManager.getPrioritizedDecorators();
         final List<Class<?>> alternatives = webBeansContext.getAlternativesManager().getPrioritizedAlternatives();
 
         // match AfterTypeDiscovery expected order (1, 2, 3...)
@@ -693,11 +690,11 @@ public class BeansDeployer
     {
         logger.fine("Validation of injection points has started.");
 
-        webBeansContext.getDecoratorsManager().validateDecoratorClasses();
-        webBeansContext.getInterceptorsManager().validateInterceptorClasses();
+        decoratorsManager.validateDecoratorClasses();
+        interceptorsManager.validateInterceptorClasses();
 
         //Adding decorators to validate
-        Set<Decorator<?>> decorators = webBeansContext.getDecoratorsManager().getDecorators();
+        Set<Decorator<?>> decorators = decoratorsManager.getDecorators();
 
         logger.fine("Validation of the decorator's injection points has started.");
         
@@ -705,7 +702,7 @@ public class BeansDeployer
         validate(decorators);
         
         //Adding interceptors to validate
-        List<javax.enterprise.inject.spi.Interceptor<?>> interceptors = webBeansContext.getInterceptorsManager().getCdiInterceptors();
+        List<javax.enterprise.inject.spi.Interceptor<?>> interceptors = interceptorsManager.getCdiInterceptors();
         
         logger.fine("Validation of the interceptor's injection points has started.");
         
@@ -1485,7 +1482,7 @@ public class BeansDeployer
                 {
                     dbb.defineDecoratorRules();
                     DecoratorBean<T> decorator = dbb.getBean();
-                    webBeansContext.getDecoratorsManager().addDecorator(decorator);
+                    decoratorsManager.addDecorator(decorator);
                 }
             }
             else if(WebBeansUtil.isCdiInterceptor(annotatedType))
@@ -1500,15 +1497,15 @@ public class BeansDeployer
                 {
                     ibb.defineCdiInterceptorRules();
                     CdiInterceptorBean<T> interceptor = ibb.getBean();
-                    webBeansContext.getInterceptorsManager().addCdiInterceptor(interceptor);
+                    interceptorsManager.addCdiInterceptor(interceptor);
                 }
             }
             else
             {
                 InjectionTargetBean<T> bean = managedBeanCreator.getBean();
 
-                if (webBeansContext.getDecoratorsManager().containsCustomDecoratorClass(annotatedType.getJavaClass()) ||
-                        webBeansContext.getInterceptorsManager().containsCustomInterceptorClass(annotatedType.getJavaClass()))
+                if (decoratorsManager.containsCustomDecoratorClass(annotatedType.getJavaClass()) ||
+                    interceptorsManager.containsCustomInterceptorClass(annotatedType.getJavaClass()))
                 {
                     return; //TODO discuss this case (it was ignored before)
                 }
