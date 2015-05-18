@@ -178,12 +178,13 @@ public class OpenWebBeansConfiguration
     {
         Properties newConfigProperties = PropertyLoader.getProperties(DEFAULT_CONFIG_PROPERTIES_NAME);
 
-        overrideWithGlobalSettings(newConfigProperties);
-
         configProperties.clear();
+
         // set the new one as perfect fit.
         if(newConfigProperties != null)
         {
+            overrideWithGlobalSettings(newConfigProperties);
+
             configProperties.putAll(newConfigProperties);
         }
 
