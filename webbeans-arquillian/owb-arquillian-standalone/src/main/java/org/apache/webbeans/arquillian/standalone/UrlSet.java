@@ -58,7 +58,7 @@ public class UrlSet implements Set<URL>
     @Override
     public boolean contains(Object o)
     {
-        if (o instanceof URL && o != null)
+        if (o instanceof URL)
         {
             return urlMap.containsKey(((URL) o).toExternalForm());
         }
