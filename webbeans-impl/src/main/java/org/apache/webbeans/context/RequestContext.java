@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.context;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.Contextual;
@@ -50,7 +50,7 @@ public class RequestContext extends AbstractContext
     @Override
     public void setComponentInstanceMap()
     {
-        componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
+        componentInstanceMap = new HashMap<Contextual<?>, BeanInstanceBag<?>>();
     }
 
     /**

@@ -63,23 +63,24 @@ public abstract class AbstractContext implements AlterableContext, Serializable
     protected Class<? extends Annotation> scopeType;
 
     @SuppressWarnings("unchecked")
-    private <T> void createContextualBag(Contextual<T> contextual, CreationalContext<T> creationalContext)
+    private <T> BeanInstanceBag<T> createContextualBag(Contextual<T> contextual, CreationalContext<T> creationalContext)
     {
         BeanInstanceBag<T> bag = new BeanInstanceBag<T>(creationalContext);
         
         if(componentInstanceMap instanceof ConcurrentMap)
         {
-            T exist = (T) ((ConcurrentMap) componentInstanceMap).putIfAbsent(contextual, bag);
-            //no instance
-            if(exist == null)
+            BeanInstanceBag<?> existingBag = ((ConcurrentMap<Contextual<?>, BeanInstanceBag<?>>) componentInstanceMap).putIfAbsent(contextual, bag);
+            if (existingBag != null)
             {
-                componentInstanceMap.put(contextual, bag);
+                bag = (BeanInstanceBag<T>) existingBag;
             }
         }
         else
         {
             componentInstanceMap.put(contextual, bag);
-        }                
+        }
+
+        return bag;
     }
     
     /**
@@ -136,8 +137,7 @@ public abstract class AbstractContext implements AlterableContext, Serializable
         BeanInstanceBag<T> bag = (BeanInstanceBag<T>)componentInstanceMap.get(contextual);
         if(bag == null)
         {
-            createContextualBag(contextual, creationalContext);
-            bag = (BeanInstanceBag<T>)componentInstanceMap.get(contextual);
+            bag = createContextualBag(contextual, creationalContext);
         }
 
         //Look for instance
