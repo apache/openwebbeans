@@ -156,13 +156,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private Map<Class<?>, AnnotatedType<? extends Annotation>> additionalAnnotatedTypeQualifiers = new HashMap<Class<?>, AnnotatedType<? extends Annotation>>();
 
     /**
-     * This list contains additional interceptor bindings which got set via the
-     * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addInterceptorBinding(Class, java.lang.annotation.Annotation...)}
-     * event function.
-     */
-    private List<Class<? extends Annotation>> additionalInterceptorBindings = new ArrayList<Class<? extends Annotation>>();
-
-    /**
      * This list contains additional scopes which got set via the
      * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addScope(Class, boolean, boolean)} event function.
      */
@@ -1256,20 +1249,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             additionalQualifiers.add(qualifier);
         }
     }
+
     public void addAdditionalQualifier(AnnotatedType<? extends Annotation> qualifier)
     {
-        if (!additionalQualifiers.contains(qualifier))
+        if (qualifier != null && !additionalQualifiers.contains(qualifier.getJavaClass()))
         {
             additionalAnnotatedTypeQualifiers.put(qualifier.getJavaClass(), qualifier);
             additionalQualifiers.add(qualifier.getJavaClass());
-        }
-    }
-
-    public void addAdditionalInterceptorBindings(Class<? extends Annotation> interceptorBinding)
-    {
-        if (!additionalInterceptorBindings.contains(interceptorBinding))
-        {
-            additionalInterceptorBindings.add(interceptorBinding);
         }
     }
 
