@@ -63,7 +63,7 @@ public class DecoratorsManager
 
     public void addEnabledDecorator(Class<?> decoratorClazz)
     {
-        Asserts.assertNotNull(decoratorClazz, "decoratorClazz parameter can not be emtpy");
+        Asserts.assertNotNull(decoratorClazz, "decoratorClazz parameter");
         if (!enabledDecorators.contains(decoratorClazz))
         {
             enabledDecorators.add(decoratorClazz);
@@ -72,8 +72,8 @@ public class DecoratorsManager
 
     public int compare(Class<?> src, Class<?> target)
     {
-        Asserts.assertNotNull(src, "src parameter can not be  null");
-        Asserts.assertNotNull(target, "target parameter can not be null");
+        Asserts.assertNotNull(src, "src parameter");
+        Asserts.assertNotNull(target, "target parameter");
 
         final int p1 = priorityDecorators.getSorted().indexOf(src);
         final int p2 = priorityDecorators.getSorted().indexOf(target);

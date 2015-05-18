@@ -63,7 +63,7 @@ public final class JSFUtil
 
     public static String getRedirectViewIdWithCid(String redirectId, String cid)
     {
-        Asserts.assertNotNull(redirectId, "redirectId parameter can not be null");        
+        Asserts.assertNotNull(redirectId, "redirectId");
 
         StringBuffer buffer = new StringBuffer(redirectId);
         int index = buffer.lastIndexOf("/");        

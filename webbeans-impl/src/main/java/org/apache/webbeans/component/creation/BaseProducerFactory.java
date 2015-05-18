@@ -54,7 +54,7 @@ public abstract class BaseProducerFactory<P> implements ProducerFactory<P>
 
     public BaseProducerFactory(Bean<P> parent, WebBeansContext webBeansContext)
     {
-        Asserts.assertNotNull(webBeansContext, "WebBeansContext may not be null");
+        Asserts.assertNotNull(webBeansContext, "WebBeansContext");
         this.parent = parent;
         this.webBeansContext = webBeansContext;
     }

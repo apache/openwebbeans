@@ -59,8 +59,8 @@ public class ObserverMethodsBuilder<T>
      */
     public ObserverMethodsBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
-        Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
-        Asserts.assertNotNull(annotatedType, "annotated type may not be null");
+        Asserts.assertNotNull(webBeansContext, "WebBeansContext");
+        Asserts.assertNotNull(annotatedType, "annotated type");
         this.webBeansContext = webBeansContext;
         this.annotatedType = annotatedType;
     }
@@ -119,7 +119,7 @@ public class ObserverMethodsBuilder<T>
 
     private void checkObserverMethodConditions(AbstractOwbBean<?> bean, AnnotatedParameter<?> annotatedParameter)
     {
-        Asserts.assertNotNull(annotatedParameter, "annotatedParameter can not be null");
+        Asserts.assertNotNull(annotatedParameter, "annotatedParameter");
         
         AnnotatedMethod<?> annotatedMethod = (AnnotatedMethod<?>)annotatedParameter.getDeclaringCallable();
 

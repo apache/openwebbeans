@@ -210,7 +210,7 @@ public final class WebBeansUtil
      */
     public static void checkProducerGenericType(Bean<?> bean,Member member)
     {
-        Asserts.assertNotNull(bean,"Bean is null");
+        Asserts.assertNotNull(bean,"Bean");
 
         Type type;
 
@@ -437,7 +437,7 @@ public final class WebBeansUtil
      */
     public <T> NewManagedBean<T> createNewComponent(OwbBean<T> bean, Class<T> type)
     {
-        Asserts.assertNotNull(bean, "bean may not be null");
+        Asserts.assertNotNull(bean, "bean");
         if (!EnumSet.of(WebBeansType.MANAGED, WebBeansType.ENTERPRISE, WebBeansType.PRODUCERMETHOD, WebBeansType.PRODUCERFIELD).contains(bean.getWebBeansType()))
         {
             throw new WebBeansConfigurationException("@New annotation on type : " + bean.getBeanClass()
@@ -1184,8 +1184,8 @@ public final class WebBeansUtil
 
     public static boolean isAlternative(AnnotatedType<?> beanType, Set<Class<? extends Annotation>> stereotypes)
     {
-        Asserts.assertNotNull(beanType, "bean type can not be null");
-        Asserts.assertNotNull(stereotypes, "stereotypes can not be null");
+        Asserts.assertNotNull(beanType, "bean type");
+        Asserts.assertNotNull(stereotypes, "stereotypes");
 
         boolean alternative = false;
 
@@ -1213,8 +1213,8 @@ public final class WebBeansUtil
 
     public void setBeanEnableFlagForProducerBean(InjectionTargetBean<?> parent, AbstractProducerBean<?> producer, Annotation[] annotations)
     {
-        Asserts.assertNotNull(parent, "parent can not be null");
-        Asserts.assertNotNull(producer, "producer can not be null");
+        Asserts.assertNotNull(parent, "parent");
+        Asserts.assertNotNull(producer, "producer");
         Set<Class<? extends Annotation>> stereotypes = producer.getStereotypes();
 
         boolean alternative = false;

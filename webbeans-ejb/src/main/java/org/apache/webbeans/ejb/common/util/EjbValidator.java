@@ -60,7 +60,7 @@ public final class EjbValidator
      */
     public static void validateEjbScopeType(BaseEjbBean<?> ejbBean)
     {
-        Asserts.assertNotNull(ejbBean, "Session Bean can not be null");
+        Asserts.assertNotNull(ejbBean, "Session Bean");
 
         if (ejbBean.getScope() == null)
         {
@@ -96,7 +96,7 @@ public final class EjbValidator
      */
     public static void validateDecoratorOrInterceptor(Class<?> ejbClass)
     {
-        Asserts.assertNotNull(ejbClass, "ejbClass parameter can not be null");
+        Asserts.assertNotNull(ejbClass, "ejbClass");
 
         if (AnnotationUtil.hasClassAnnotation(ejbClass, Decorator.class))
         {
@@ -117,8 +117,8 @@ public final class EjbValidator
      */
     public static void validateGenericBeanType(Class<?> ejbClass, Class<? extends Annotation> scopeType)
     {
-        Asserts.assertNotNull(ejbClass, "ejbClass parameter can not be null");
-        Asserts.assertNotNull(ejbClass, "scopeType parameter can not be null");
+        Asserts.assertNotNull(ejbClass, "ejbClass");
+        Asserts.assertNotNull(ejbClass, "scopeType");
         
         if (ejbClass.getTypeParameters().length > 0)
         {

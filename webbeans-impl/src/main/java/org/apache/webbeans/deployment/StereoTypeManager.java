@@ -51,7 +51,7 @@ public class StereoTypeManager
      */
     public void addStereoTypeModel(IStereoTypeModel model)
     {
-        Asserts.assertNotNull(model, "model parameter can not be null");
+        Asserts.assertNotNull(model, "model parameter");
 
         stereoTypeMap.put(model.getName(), model);
     }
@@ -63,7 +63,7 @@ public class StereoTypeManager
      */
     public IStereoTypeModel getStereoTypeModel(String modelName)
     {
-        Asserts.assertNotNull(modelName, "modelName parameter can not be null");
+        Asserts.assertNotNull(modelName, "modelName parameter");
 
         if (stereoTypeMap.containsKey(modelName))
         {

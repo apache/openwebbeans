@@ -187,7 +187,7 @@ public final class AnnotationManager
      */
     public boolean hasInterceptorBindingMetaAnnotation(Annotation[] anns)
     {
-        Asserts.assertNotNull(anns, "anns parameter can not be null");
+        Asserts.assertNotNull(anns, "anns");
 
         for (Annotation ann : anns)
         {
@@ -219,7 +219,7 @@ public final class AnnotationManager
      */
     public Annotation[] getInterceptorBindingMetaAnnotations(Annotation[] anns)
     {
-        Asserts.assertNotNull(anns, "anns parameter can not be null");
+        Asserts.assertNotNull(anns, "anns");
         List<Annotation> interAnns = new ArrayList<Annotation>();
 
         for (final Annotation ann : anns)
@@ -283,7 +283,7 @@ public final class AnnotationManager
     public <X> Annotation[] getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(
             AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
     {
-        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
+        Asserts.assertNotNull(annotatedMethod, "annotatedMethod");
         Asserts.nullCheckForClass(clazz);
 
         List<Annotation> list = new ArrayList<Annotation>();
@@ -319,7 +319,7 @@ public final class AnnotationManager
      */
     public Annotation[] getMethodFirstParameterQualifierWithGivenAnnotation(Method method, Class<? extends Annotation> clazz)
     {
-        Asserts.assertNotNull(method, "Method argument can not be null");
+        Asserts.assertNotNull(method, "Method");
         Asserts.nullCheckForClass(clazz);
 
         Annotation[][] parameterAnns = method.getParameterAnnotations();
@@ -370,7 +370,7 @@ public final class AnnotationManager
      */
     public Set<Annotation> getQualifierAnnotations(Collection<Annotation> annotations)
     {
-        Asserts.assertNotNull(annotations, "Annotations argument can not be null");
+        Asserts.assertNotNull(annotations, "annotations");
 
         if (annotations.isEmpty())
         {
@@ -503,7 +503,7 @@ public final class AnnotationManager
 
     public boolean hasStereoTypeMetaAnnotation(Set<Class<? extends Annotation>> anns)
     {
-        Asserts.assertNotNull(anns, "anns parameter can not be null");
+        Asserts.assertNotNull(anns, "anns");
 
         for (Class<? extends Annotation> ann : anns)
         {
@@ -518,7 +518,7 @@ public final class AnnotationManager
 
     public boolean hasStereoTypeMetaAnnotation(Annotation[] anns)
     {
-        Asserts.assertNotNull(anns, "anns parameter can not be null");
+        Asserts.assertNotNull(anns, "anns");
 
         for (Annotation ann : anns)
         {
@@ -533,7 +533,7 @@ public final class AnnotationManager
 
     public Annotation[] getStereotypeMetaAnnotations(Annotation[] anns)
     {
-        Asserts.assertNotNull(anns, "anns parameter can not be null");
+        Asserts.assertNotNull(anns, "anns");
         List<Annotation> interAnns = new ArrayList<Annotation>();
 
         for (Annotation ann : anns)
@@ -559,7 +559,7 @@ public final class AnnotationManager
      */
     public Set<Class<? extends Annotation>> getStereotypeMetaAnnotations(Set<Class<? extends Annotation>> stereotypes)
     {
-        Asserts.assertNotNull(stereotypes, "anns parameter can not be null");
+        Asserts.assertNotNull(stereotypes, "anns");
         Set<Class<? extends Annotation>> interAnns = new HashSet<Class<? extends Annotation>>();
 
         for (Class<? extends Annotation> ann : stereotypes)
@@ -591,7 +591,7 @@ public final class AnnotationManager
      */
     public Set<Class<? extends Annotation>> getStereotypes(Set<Class<? extends Annotation>> anns)
     {
-        Asserts.assertNotNull(anns, "bean parameter can not be null");
+        Asserts.assertNotNull(anns, "bean");
         if (hasStereoTypeMetaAnnotation(anns))
         {
             return getStereotypeMetaAnnotations(anns);
@@ -752,9 +752,9 @@ public final class AnnotationManager
     public Annotation[] checkForNewQualifierForDeployment(Type type, Class<?> clazz, String name,
                                                                  Annotation[] annotations)
     {
-        Asserts.assertNotNull(type, "Type argument can not be null");
+        Asserts.assertNotNull(type, "Type argument");
         Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(annotations, "Annotations argument can not be null");
+        Asserts.assertNotNull(annotations, "Annotations argument");
 
         Annotation[] as = getQualifierAnnotations(annotations);
         for (Annotation a : annotations)
@@ -784,9 +784,9 @@ public final class AnnotationManager
                                                             Method method,
                                                             Method superMethod)
     {
-        Asserts.assertNotNull(component,"component parameter can not be null");
-        Asserts.assertNotNull(method,"method parameter can not be null");
-        Asserts.assertNotNull(superMethod,"superMethod parameter can not be null");
+        Asserts.assertNotNull(component,"component");
+        Asserts.assertNotNull(method,"method");
+        Asserts.assertNotNull(superMethod,"superMethod");
 
         boolean hasName = false;
         if(AnnotationUtil.hasMethodAnnotation(superMethod, Named.class))

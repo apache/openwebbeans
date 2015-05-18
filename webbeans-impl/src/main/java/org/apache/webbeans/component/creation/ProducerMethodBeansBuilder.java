@@ -54,8 +54,8 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
      */
     public ProducerMethodBeansBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
-        Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
-        Asserts.assertNotNull(annotatedType, "annotated type may not be null");
+        Asserts.assertNotNull(webBeansContext, "WebBeansContext");
+        Asserts.assertNotNull(annotatedType, "annotated type");
         this.webBeansContext = webBeansContext;
         this.annotatedType = annotatedType;
     }
@@ -135,7 +135,7 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
      */
     private void checkProducerMethodForDeployment(AnnotatedMethod<? super T> annotatedMethod)
     {
-        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
+        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument");
 
         if (annotatedMethod.isAnnotationPresent(Inject.class) || 
                 annotatedMethod.isAnnotationPresent(Disposes.class) ||  

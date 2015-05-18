@@ -168,7 +168,7 @@ public final class AnnotatedElementFactory
      */
     public <X> AnnotatedType<X> newAnnotatedType(Class<X> annotatedClass)
     {
-        Asserts.assertNotNull(annotatedClass, "annotatedClass is null");
+        Asserts.assertNotNull(annotatedClass, "annotatedClass");
         ConcurrentMap<String, AnnotatedType<X>> annotatedTypes = getAnnotatedTypeCache(annotatedClass);
         AnnotatedType<X> annotatedType = annotatedTypes.get(OWB_DEFAULT_KEY);
         if(annotatedType == null)
@@ -228,8 +228,8 @@ public final class AnnotatedElementFactory
     @SuppressWarnings("unchecked")
     public <X> AnnotatedConstructor<X> newAnnotatedConstructor(Constructor<X> constructor, AnnotatedType<X> declaringClass)
     {
-        Asserts.assertNotNull(constructor, "constructor is null");
-        Asserts.assertNotNull(declaringClass, "declaringClass is null");
+        Asserts.assertNotNull(constructor, "constructor");
+        Asserts.assertNotNull(declaringClass, "declaringClass");
         
         AnnotatedConstructorImpl<X> annConstructor;
         if(annotatedConstructorCache.containsKey(constructor))
@@ -260,8 +260,8 @@ public final class AnnotatedElementFactory
     @SuppressWarnings("unchecked")
     public <X> AnnotatedField<X> newAnnotatedField(Field field, AnnotatedType<X> declaringClass)
     {
-        Asserts.assertNotNull(field, "field is null");
-        Asserts.assertNotNull(declaringClass, "declaringClass is null");
+        Asserts.assertNotNull(field, "field");
+        Asserts.assertNotNull(declaringClass, "declaringClass");
         
         AnnotatedFieldImpl<X> annotField;
         if(annotatedFieldCache.containsKey(field))
@@ -292,8 +292,8 @@ public final class AnnotatedElementFactory
     @SuppressWarnings("unchecked")
     public <X> AnnotatedMethod<X> newAnnotatedMethod(Method method, AnnotatedType<X> declaringType)
     {
-        Asserts.assertNotNull(method, "method is null");
-        Asserts.assertNotNull(declaringType, "declaringType is null");
+        Asserts.assertNotNull(method, "method");
+        Asserts.assertNotNull(declaringType, "declaringType");
         
         AnnotatedMethodImpl<X> annotMethod;
         if(annotatedMethodCache.containsKey(method))
@@ -319,7 +319,7 @@ public final class AnnotatedElementFactory
      */
     public <T> Set<AnnotatedMethod<? super T>> getFilteredAnnotatedMethods(AnnotatedType<T> annotatedType)
     {
-        Asserts.assertNotNull(annotatedType, "annotatedType is null");
+        Asserts.assertNotNull(annotatedType, "annotatedType");
 
         Set<AnnotatedMethod<?>> methods = annotatedMethodsOfTypeCache.get(annotatedType);
         if (methods != null)

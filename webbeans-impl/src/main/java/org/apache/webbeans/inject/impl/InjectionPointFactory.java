@@ -105,7 +105,7 @@ public class InjectionPointFactory
 
     public <X> InjectionPoint buildInjectionPoint(Bean<?> owner, AnnotatedField<X> annotField, boolean fireEvent)
     {
-        Asserts.assertNotNull(annotField, "annotField parameter can not be null");
+        Asserts.assertNotNull(annotField, "annotField");
 
         Annotation[] annots = AnnotationUtil.asArray(annotField.getAnnotations());
         Annotation[] qualifierAnnots = webBeansContext.getAnnotationManager().getQualifierAnnotations(annots);
@@ -150,7 +150,7 @@ public class InjectionPointFactory
 
     public <X> InjectionPoint buildInjectionPoint(Bean<?> owner, AnnotatedParameter<X> parameter, boolean fireEvent)
     {
-        Asserts.assertNotNull(parameter, "parameter parameter can not be null");
+        Asserts.assertNotNull(parameter, "annotatedParameter");
         Set<Annotation> anns = parameter.getAnnotations();
         Annotation[] qualifierAnnots = webBeansContext.getAnnotationManager().getQualifierAnnotations(anns.toArray(new Annotation[anns.size()]));
         InjectionPointImpl injectionPoint = new InjectionPointImpl(owner, Arrays.asList(qualifierAnnots), parameter);
@@ -173,8 +173,6 @@ public class InjectionPointFactory
 
     private <X> void buildInjectionPoints(Bean<?> owner, AnnotatedCallable<X> callable, Collection<InjectionPoint> lists)
     {
-        Asserts.assertNotNull(callable, "callable parameter can not be null");
-
         List<AnnotatedParameter<X>> parameters = callable.getParameters();
 
         for (AnnotatedParameter<?> parameter : parameters)

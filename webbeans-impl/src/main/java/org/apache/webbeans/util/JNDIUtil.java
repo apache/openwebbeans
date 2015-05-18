@@ -45,8 +45,8 @@ public final class JNDIUtil
 
     public static void bind(String name, Object object)
     {
-        Asserts.assertNotNull(name, "name parameter can not be null");
-        Asserts.assertNotNull(object, "object parameter can not be null");
+        Asserts.assertNotNull(name, "name");
+        Asserts.assertNotNull(object, "object");
 
         try
         {
@@ -79,7 +79,7 @@ public final class JNDIUtil
 
     public static void unbind(String name)
     {
-        Asserts.assertNotNull(name, "name parameter can not be null");
+        Asserts.assertNotNull(name, "name");
 
         try
         {
@@ -96,7 +96,7 @@ public final class JNDIUtil
     @SuppressWarnings("unchecked")
     public static <T> T lookup(String name, Class<? extends T> expectedClass) throws WebBeansException
     {
-        Asserts.assertNotNull(name, "name parameter can not be null");
+        Asserts.assertNotNull(name, "name");
 
         try
         {

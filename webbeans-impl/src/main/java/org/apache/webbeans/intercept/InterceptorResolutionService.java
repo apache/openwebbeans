@@ -88,9 +88,9 @@ public class InterceptorResolutionService
 
     public <T> BeanInterceptorInfo  calculateInterceptorInfo(Set<Type> beanTypes, Set<Annotation> qualifiers, AnnotatedType<T> annotatedType)
     {
-        Asserts.assertNotNull(beanTypes, "beanTypes must not be null!");
-        Asserts.assertNotNull(qualifiers, "qualifiers must not be null!");
-        Asserts.assertNotNull(annotatedType, "AnnotatedType must not be null!");
+        Asserts.assertNotNull(beanTypes, "beanTypes");
+        Asserts.assertNotNull(qualifiers, "qualifiers");
+        Asserts.assertNotNull(annotatedType, "AnnotatedType");
 
         List<AnnotatedMethod> interceptableAnnotatedMethods = getInterceptableBusinessMethods(annotatedType);
 

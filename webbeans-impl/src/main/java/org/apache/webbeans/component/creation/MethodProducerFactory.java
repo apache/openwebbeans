@@ -37,7 +37,7 @@ public class MethodProducerFactory<P> extends BaseProducerFactory<P>
     public MethodProducerFactory(AnnotatedMethod<? super P> producerMethod, Bean<P> parent, WebBeansContext webBeansContext)
     {
         super(parent, webBeansContext);
-        Asserts.assertNotNull(producerMethod, "producer method may not be null");
+        Asserts.assertNotNull(producerMethod, "producer method");
         this.producerMethod = producerMethod;
         defineDisposalMethod();
     }

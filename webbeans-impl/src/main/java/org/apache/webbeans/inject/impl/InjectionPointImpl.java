@@ -88,7 +88,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
      */
     InjectionPointImpl(Bean<?> bean)
     {
-        Asserts.assertNotNull(bean, "bean may not be null");
+        Asserts.assertNotNull(bean, "bean");
         this.ownerBean = bean;
         this.injectionType = bean.getBeanClass();
         this.qualifierAnnotations = bean.getQualifiers() == null ?
@@ -110,7 +110,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         {
             throw new IllegalArgumentException("member is null");
         }
-        Asserts.assertNotNull(qualifiers, "qualifiers may not be null");
+        Asserts.assertNotNull(qualifiers, "qualifiers");
         this.ownerBean = ownerBean;
         injectionType = type;
         qualifierAnnotations = Collections.unmodifiableSet(new HashSet<Annotation>(qualifiers));

@@ -20,7 +20,6 @@ package org.apache.webbeans.context.creational;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.enterprise.context.spi.Contextual;
@@ -189,8 +188,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      */
     public <K> void addDependent(Contextual<K> dependent, Object instance)
     {
-        Asserts.assertNotNull(dependent,"dependent parameter cannot be null");
-
         if(instance != null)
         {
             DependentCreationalContext<K> dependentCreational = new DependentCreationalContext<K>(dependent);

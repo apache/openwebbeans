@@ -50,7 +50,7 @@ public class ProducerMethodProducer<T, P> extends BaseProducerProducer<T, P>
                                   WebBeansContext webBeansContext)
     {
         super(owner, disposerMethod, points, disposalIPs, webBeansContext);
-        Asserts.assertNotNull(producerMethod, "method may not be null");
+        Asserts.assertNotNull(producerMethod, "producerMethod");
         if (!producerMethod.isStatic())
         {
             if (owner == null)

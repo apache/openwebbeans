@@ -340,7 +340,7 @@ public class InjectionResolver
     @SuppressWarnings("unchecked")
     public Set<Bean<?>> implResolveByName(String name)
     {
-        Asserts.assertNotNull(name, "name parameter can not be null");
+        Asserts.assertNotNull(name, "name parameter");
 
         String cacheKey = name;
         Set<Bean<?>> resolvedComponents = resolvedBeansByName.get(cacheKey);

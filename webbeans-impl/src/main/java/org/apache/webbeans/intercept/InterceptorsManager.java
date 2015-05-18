@@ -154,8 +154,8 @@ public class InterceptorsManager
      */
     public int compareCdiInterceptors(Class<?> src, Class<?> target)
     {
-        Asserts.assertNotNull(src, "src parameter can not be  null");
-        Asserts.assertNotNull(target, "target parameter can not be null");
+        Asserts.assertNotNull(src, "src");
+        Asserts.assertNotNull(target, "target");
 
         final int p1 = priorityInterceptors.getSorted().indexOf(src);
         final int p2 = priorityInterceptors.getSorted().indexOf(target);

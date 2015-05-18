@@ -68,7 +68,7 @@ public class InjectionTargetBean<T> extends AbstractOwbBean<T> implements Serial
             InjectionTargetFactory<T> factory)
     {
         super(webBeansContext, webBeansType, beanAttributes, beanClass, false);
-        Asserts.assertNotNull(annotatedType, "AnnotatedType may not be null");
+        Asserts.assertNotNull(annotatedType, "AnnotatedType");
         this.annotatedType = annotatedType;
         injectionTarget = factory.createInjectionTarget(this);
         setEnabled(true);

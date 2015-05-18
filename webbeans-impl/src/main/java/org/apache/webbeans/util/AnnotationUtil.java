@@ -128,7 +128,7 @@ public final class AnnotationUtil
 
     public static <X> boolean hasAnnotatedMethodParameterAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
     {
-        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
+        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument");
         Asserts.nullCheckForClass(clazz);
 
         List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
@@ -181,8 +181,8 @@ public final class AnnotationUtil
      */
     public static boolean isCdiAnnotationEqual(final AnnotatedType<?> at, final Annotation annotation1, final Annotation annotation2)
     {
-        Asserts.assertNotNull(annotation1, "annotation1 argument can not be null");
-        Asserts.assertNotNull(annotation2, "annotation2 argument can not be null");
+        Asserts.assertNotNull(annotation1, "annotation1 argument");
+        Asserts.assertNotNull(annotation2, "annotation2 argument");
 
         Class<?> qualifier1AnnotationType = at.getJavaClass();
 
@@ -202,8 +202,16 @@ public final class AnnotationUtil
 
     public static boolean isCdiAnnotationEqual(Annotation annotation1, Annotation annotation2)
     {
-        Asserts.assertNotNull(annotation1, "annotation1 argument can not be null");
-        Asserts.assertNotNull(annotation2, "annotation2 argument can not be null");
+        if (annotation1 == null && annotation2 == null)
+        {
+            return true;
+        }
+
+        if (annotation1 == null && annotation2 != null || annotation1 != null && annotation2 == null)
+
+        {
+            return false;
+        }
 
         Class<? extends Annotation> qualifier1AnnotationType
                 = annotation1.annotationType();
@@ -234,7 +242,10 @@ public final class AnnotationUtil
      */
     public static int getCdiAnnotationHashCode(Annotation annotation)
     {
-        Asserts.assertNotNull(annotation, "annotation argument can not be null");
+        if (annotation == null)
+        {
+            return 0;
+        }
 
         int hashCode = 0;
 
@@ -425,7 +436,7 @@ public final class AnnotationUtil
     public static boolean hasClassAnnotation(Class<?> clazz, Class<? extends Annotation> annotation)
     {
         Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(annotation, "Annotation argument can not be null");
+        Asserts.assertNotNull(annotation, "Annotation");
 
         try
         {
@@ -446,9 +457,6 @@ public final class AnnotationUtil
 
     public static boolean hasMetaAnnotation(Annotation[] anns, Class<? extends Annotation> metaAnnotation)
     {
-        Asserts.assertNotNull(anns, "Anns argument can not be null");
-        Asserts.assertNotNull(metaAnnotation, "MetaAnnotation argument can not be null");
-
         for (Annotation annot : anns)
         {
             if (annot.annotationType().isAnnotationPresent(metaAnnotation))
@@ -475,8 +483,6 @@ public final class AnnotationUtil
     @SuppressWarnings("unchecked")
     public static <T extends Annotation> T getAnnotation(Annotation[] anns, Class<T> annotation)
     {
-        Asserts.assertNotNull(anns, "anns argument can not be null");
-        Asserts.assertNotNull(annotation, "annotation argument can not be null");
         for (Annotation annot : anns)
         {
             if (annot.annotationType().equals(annotation))
@@ -499,8 +505,6 @@ public final class AnnotationUtil
     {
         List<Annotation> annots = new ArrayList<Annotation>();
         Annotation[] result;
-        Asserts.assertNotNull(anns, "Anns argument can not be null");
-        Asserts.assertNotNull(metaAnnotation, "MetaAnnotation argument can not be null");
 
         for (Annotation annot : anns)
         {

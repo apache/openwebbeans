@@ -66,7 +66,7 @@ public class DefaultSingletonService implements SingletonService<WebBeansContext
      */
     public void clearInstances(ClassLoader classLoader)
     {
-        Asserts.assertNotNull(classLoader, "classloader is null");
+        Asserts.assertNotNull(classLoader, "classloader");
         synchronized (singletonMap)
         {
             singletonMap.remove(classLoader);

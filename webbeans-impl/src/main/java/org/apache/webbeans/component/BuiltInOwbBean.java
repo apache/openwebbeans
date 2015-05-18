@@ -47,7 +47,7 @@ public abstract class BuiltInOwbBean<T> extends AbstractOwbBean<T>
             ProducerFactory<T> producerFactory)
     {
         super(webBeansContext, webBeansType, beanAttributes, returnType, nullable);
-        Asserts.assertNotNull(producerFactory, "ProducerFactory may not be null");
+        Asserts.assertNotNull(producerFactory, "ProducerFactory");
         producer = producerFactory.createProducer(this);
     }
     

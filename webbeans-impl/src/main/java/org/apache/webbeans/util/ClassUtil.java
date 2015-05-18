@@ -220,7 +220,6 @@ public final class ClassUtil
     public static Object callInstanceMethod(Method method, Object instance, Object[] args)
     {
         Asserts.nullCheckForMethod(method);
-        Asserts.assertNotNull(instance, "instance parameter can not be null");
 
         try
         {
@@ -472,8 +471,6 @@ public final class ClassUtil
      */
     public static boolean isParametrizedType(Type type)
     {
-        Asserts.assertNotNull(type, "type parameter can not be null");
-
         return type instanceof ParameterizedType;
     }
     
@@ -486,14 +483,14 @@ public final class ClassUtil
      */    
     public static boolean isWildCardType(Type type)
     {
-        Asserts.assertNotNull(type, "type parameter can not be null");
+        Asserts.assertNotNull(type, "type");
         
         return type instanceof WildcardType;
     }
     
     public static boolean isUnboundedTypeVariable(Type type)
     {
-        Asserts.assertNotNull(type, "type parameter can not be null");
+        Asserts.assertNotNull(type, "type");
         
         if (type instanceof TypeVariable)
         {
@@ -540,7 +537,7 @@ public final class ClassUtil
      */    
     public static boolean isTypeVariable(Type type)
     {
-        Asserts.assertNotNull(type, "type parameter can not be null");
+        Asserts.assertNotNull(type, "type");
 
         return type instanceof TypeVariable;
     }
@@ -572,8 +569,8 @@ public final class ClassUtil
      */
     public static boolean isClassAssignableFrom(Class<?> lhs, Class<?> rhs)
     {
-        Asserts.assertNotNull(lhs, "lhs parameter can not be null");
-        Asserts.assertNotNull(rhs, "rhs parameter can not be null");
+        Asserts.assertNotNull(lhs, "lhs");
+        Asserts.assertNotNull(rhs, "rhs");
 
         if(lhs.isPrimitive())
         {
@@ -689,7 +686,7 @@ public final class ClassUtil
      */
     public static Type[] getActualTypeArguments(Type type)
     {
-        Asserts.assertNotNull(type, "type parameter can not be null");
+        Asserts.assertNotNull(type, "type");
 
         if (type instanceof ParameterizedType)
         {
@@ -775,7 +772,7 @@ public final class ClassUtil
      */
     public static boolean checkParametrizedType(ParameterizedType pType)
     {
-        Asserts.assertNotNull(pType, "pType argument can not be null");
+        Asserts.assertNotNull(pType, "pType");
         
         Type[] types = pType.getActualTypeArguments();
 

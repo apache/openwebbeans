@@ -54,7 +54,7 @@ public class EventImpl<T> implements Event<T>, Serializable
      */
     public EventImpl(EventMetadata metadata, WebBeansContext webBeansContext)
     {
-        Asserts.assertNotNull(metadata, "event metadata may not be null");
+        Asserts.assertNotNull(metadata, "event metadata");
         this.metadata = wrapMetadata(metadata);
         this.webBeansContext = webBeansContext;
     }

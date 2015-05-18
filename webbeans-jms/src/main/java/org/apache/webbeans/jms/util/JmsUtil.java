@@ -55,7 +55,7 @@ public final class JmsUtil
 
     public static boolean isJmsResourceClass(Class<?> clazz)
     {
-        Asserts.assertNotNull(clazz,"clazz parameter can not be null");
+        Asserts.assertNotNull(clazz,"clazz parameter");
         
         if(ConnectionFactory.class.isAssignableFrom(clazz) ||
                 Connection.class.isAssignableFrom(clazz) || 

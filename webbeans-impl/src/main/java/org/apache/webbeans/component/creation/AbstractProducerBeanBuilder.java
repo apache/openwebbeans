@@ -44,9 +44,9 @@ public abstract class AbstractProducerBeanBuilder<T, A extends AnnotatedMember<?
 
     public AbstractProducerBeanBuilder(InjectionTargetBean<?> parent, A annotated, BeanAttributes<T> beanAttributes)
     {
-        Asserts.assertNotNull(parent, "webBeansContext may not be null");
-        Asserts.assertNotNull(annotated, "annotated may not be null");
-        Asserts.assertNotNull(beanAttributes, "beanAttributes may not be null");
+        Asserts.assertNotNull(parent, "webBeansContext");
+        Asserts.assertNotNull(annotated, "annotated");
+        Asserts.assertNotNull(beanAttributes, "beanAttributes");
         this.parent = parent;
         annotatedMember = annotated;
         this.beanAttributes = beanAttributes;

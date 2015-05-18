@@ -55,8 +55,8 @@ public class ProducerFieldBeansBuilder<T>
      */
     public ProducerFieldBeansBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
-        Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
-        Asserts.assertNotNull(annotatedType, "annotated type may not be null");
+        Asserts.assertNotNull(webBeansContext, "WebBeansContext");
+        Asserts.assertNotNull(annotatedType, "annotated type");
         this.webBeansContext = webBeansContext;
         this.annotatedType = annotatedType;
     }

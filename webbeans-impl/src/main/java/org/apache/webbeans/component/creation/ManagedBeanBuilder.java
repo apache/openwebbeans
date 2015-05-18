@@ -48,9 +48,9 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
      */
     public ManagedBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributes<T> beanAttributes)
     {
-        Asserts.assertNotNull(webBeansContext, "webBeansContext may not be null");
-        Asserts.assertNotNull(annotatedType, "annotated type may not be null");
-        Asserts.assertNotNull(beanAttributes, "beanAttributes may not be null");
+        Asserts.assertNotNull(webBeansContext, "WebBeansContext");
+        Asserts.assertNotNull(annotatedType, "annotated type");
+        Asserts.assertNotNull(beanAttributes, "beanAttributes");
         this.webBeansContext = webBeansContext;
         this.annotatedType = annotatedType;
         this.beanAttributes = beanAttributes;

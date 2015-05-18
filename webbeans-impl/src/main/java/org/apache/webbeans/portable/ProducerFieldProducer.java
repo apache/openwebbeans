@@ -53,7 +53,7 @@ public class ProducerFieldProducer<T, P> extends BaseProducerProducer<T, P>
         {
             throw new IllegalArgumentException("owner may not be null");
         }
-        Asserts.assertNotNull(producerField, "field may not be null");
+        Asserts.assertNotNull(producerField, "producerField");
         this.producerField = producerField;
     }
 

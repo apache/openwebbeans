@@ -121,7 +121,7 @@ public class ConversationManager
      */
     public void addToConversationStorage(ConversationContext conversationContext, String conversationId)
     {
-        Asserts.assertNotNull(conversationId, "conversationId must be set");
+        Asserts.assertNotNull(conversationId, "conversationId");
         Context sessionContext = webBeansContext.getContextsService().getCurrentContext(SessionScoped.class);
         Set<ConversationContext> sessionConversations = getSessionConversations(sessionContext, true);
 

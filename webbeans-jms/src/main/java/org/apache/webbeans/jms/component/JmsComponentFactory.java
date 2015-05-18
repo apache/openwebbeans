@@ -56,7 +56,7 @@ public final class JmsComponentFactory
     
     public <T> JmsBean<T> getJmsComponent(WebBeansContext webBeansContext, JMSModel model)
     {
-        Asserts.assertNotNull(model,"model parameter can not be null");
+        Asserts.assertNotNull(model,"model parameter");
         
         Set<Type> apiTypes = new HashSet<Type>();
         Set<Annotation> qualifiers = new HashSet<Annotation>();

@@ -40,7 +40,7 @@ public class FieldProducerFactory<P> extends BaseProducerFactory<P>
     public FieldProducerFactory(AnnotatedField<? super P> producerField, Bean<P> parent, WebBeansContext webBeansContext)
     {
         super(parent, webBeansContext);
-        Asserts.assertNotNull(producerField, "producer method may not be null");
+        Asserts.assertNotNull(producerField, "producer method");
 
         if (producerField.isAnnotationPresent(Inject.class))
         {

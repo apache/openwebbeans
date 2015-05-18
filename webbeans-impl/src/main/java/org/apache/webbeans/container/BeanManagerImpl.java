@@ -289,7 +289,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public Context getContext(Class<? extends Annotation> scopeType)
     {
-        Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
+        Asserts.assertNotNull(scopeType, "scopeType");
 
         Context standardContext = webBeansContext.getContextsService().getCurrentContext(scopeType);
 
@@ -525,8 +525,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     private void addContext(Class<? extends Annotation> scopeType, javax.enterprise.context.spi.Context context)
     {
-        Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
-        Asserts.assertNotNull(context, "context parameter can not be null");
+        Asserts.assertNotNull(scopeType, "scopeType");
+        Asserts.assertNotNull(context, "context");
 
         List<Context> contextList = contextMap.get(scopeType);
 
@@ -605,7 +605,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public Set<Bean<?>> getBeans(String name)
     {
-        Asserts.assertNotNull(name, "name parameter can not be null");
+        Asserts.assertNotNull(name, "name");
 
         return injectionResolver.implResolveByName(name);
     }
@@ -623,7 +623,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> ownerCreationalContext)
     {
-        Asserts.assertNotNull(injectionPoint, "injectionPoint parameter can not be null");
+        Asserts.assertNotNull(injectionPoint, "injectionPoint");
 
         //Injected instance
         Object instance = null;
@@ -702,7 +702,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public Object getReference(Bean<?> bean, Type beanType, CreationalContext<?> creationalContext)
     {
-        Asserts.assertNotNull(bean, "bean parameter can not be null");
+        Asserts.assertNotNull(bean, "bean parameter");
 
         Context context = null;
         Object instance = null;

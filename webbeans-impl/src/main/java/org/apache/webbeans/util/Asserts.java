@@ -41,13 +41,13 @@ public final class Asserts
      * Check the object is null or not
      * 
      * @param obj null check object
-     * @param message exception message
+     * @param parameterName name of parameter which may not be null
      */
-    public static void assertNotNull(Object obj, String message)
+    public static void assertNotNull(Object obj, String parameterName)
     {
         if (obj == null)
         {
-            throw new NullPointerException(message);
+            throw new NullPointerException(parameterName + " may not be null");
         }
     }
 
@@ -71,7 +71,7 @@ public final class Asserts
      */
     public static void nullCheckForClass(Class<?> clazz)
     {
-        Asserts.assertNotNull(clazz, "clazz argument can not be null");
+        Asserts.assertNotNull(clazz, "clazz argument");
     }
 
     /**

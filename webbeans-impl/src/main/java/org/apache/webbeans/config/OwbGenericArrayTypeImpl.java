@@ -21,7 +21,6 @@ package org.apache.webbeans.config;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 
-import org.apache.webbeans.util.Asserts;
 
 public class OwbGenericArrayTypeImpl implements GenericArrayType
 {
@@ -30,7 +29,6 @@ public class OwbGenericArrayTypeImpl implements GenericArrayType
     
     public OwbGenericArrayTypeImpl(Type componentType)
     {
-        Asserts.assertNotNull(componentType, "component type may not be null");
         this.componentType = componentType;
     }
 
