@@ -99,14 +99,12 @@ public class DefaultContextsService extends AbstractContextsService
         {
             stopConversationContext(endParameters);
         }
-        else if(scopeType.equals(Dependent.class))
-        {
-            //Do nothing
-        }
         else if(scopeType.equals(Singleton.class))
         {
             stopSingletonContext(endParameters);
         }
+
+        // do nothing for Dependent.class
 
     }
 
@@ -170,14 +168,13 @@ public class DefaultContextsService extends AbstractContextsService
             {
                 startConversationContext(startParameter);
             }
-            else if(scopeType.equals(Dependent.class))
-            {
-                //Do nothing
-            }
             else if(scopeType.equals(Singleton.class))
             {
                 startSingletonContext(startParameter);
             }
+
+            // do nothing for Dependent.class
+
         }
         catch(Exception e)
         {
