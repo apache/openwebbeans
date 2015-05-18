@@ -435,7 +435,7 @@ public abstract class AbstractOwbBean<T>
     @Override
     public boolean equals(Object o)  // symmetry for serializable beans otherwise Map are broken, hashcode if fine
     {
-        return o == this || (SerializableBean.class.isInstance(o) && SerializableBean.class.cast(o).equals(this));
+        return o == this || (o instanceof SerializableBean && ((SerializableBean) o).getBean().equals(this));
     }
 
     @Override
