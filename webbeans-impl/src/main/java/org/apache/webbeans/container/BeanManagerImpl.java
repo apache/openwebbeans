@@ -623,16 +623,15 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> ownerCreationalContext)
     {
-        Asserts.assertNotNull(injectionPoint, "injectionPoint");
-
-        //Injected instance
-        Object instance = null;
-
         //Injection point is null
         if(injectionPoint == null)
         {
             return null;
         }
+
+        //Injected instance
+        Object instance = null;
+
 
         //Find the injection point Bean
         Bean<Object> injectedBean = (Bean<Object>)injectionResolver.getInjectionPointBean(injectionPoint);
