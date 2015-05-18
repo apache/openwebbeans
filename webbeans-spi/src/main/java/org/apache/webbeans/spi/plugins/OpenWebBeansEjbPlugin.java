@@ -37,7 +37,7 @@ public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
      * @param clazz class definition
      * @return true if class is an ejb class false otherwise
      */
-    public boolean isSessionBean(Class<?> clazz);
+    boolean isSessionBean(Class<?> clazz);
 
     /**
      * return true is clazz is an impl class or business interface of an EJB
@@ -45,7 +45,7 @@ public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
      * @param clazz class definition
      * @return true is clazz denotes an EJB
      */
-    public boolean isNewSessionBean(Class<?> clazz);
+    boolean isNewSessionBean(Class<?> clazz);
 
     /**
      * Configures session bean and adds it into the container.
@@ -53,9 +53,9 @@ public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
      * @param clazz session bean class
      * @param annotatedType processed annotated type
      */
-    public <T> Bean<T> defineSessionBean(Class<T> clazz, BeanAttributes<T> attributes, AnnotatedType<T> annotatedType);
+    <T> Bean<T> defineSessionBean(Class<T> clazz, BeanAttributes<T> attributes, AnnotatedType<T> annotatedType);
 
-    public <T> Bean<T> defineNewSessionBean(Class<T> clazz);
+    <T> Bean<T> defineNewSessionBean(Class<T> clazz);
 
     /**
      * Returns true if given class is singleton session bean, false otherwise.
@@ -63,23 +63,23 @@ public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
      * @param clazz session bean class
      * @return true if given class is singleton session bean, false otherwise
      */
-    public boolean isSingletonBean(Class<?> clazz);
+    boolean isSingletonBean(Class<?> clazz);
 
     /**
      * Returns true if given class is stateless session bean, false otherwise.
      * 
      * @param clazz session bean class
      * @return true if given class is singleton session bean, false otherwise
-     */    
-    public boolean isStatelessBean(Class<?> clazz);
+     */
+    boolean isStatelessBean(Class<?> clazz);
 
     /**
      * Returns true if given class is stateful session bean, false otherwise.
      * 
      * @param clazz session bean class
      * @return true if given class is singleton session bean, false otherwise
-     */    
-    public boolean isStatefulBean(Class<?> clazz);
+     */
+    boolean isStatefulBean(Class<?> clazz);
 
     /**
      * Returns session bean proxy.
@@ -88,7 +88,7 @@ public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
      * @param iface interface
      * @return session bean proxy
      */
-    public Object getSessionBeanProxy(Bean<?> bean, Class<?> iface, CreationalContext<?> creationalContext);
+    Object getSessionBeanProxy(Bean<?> bean, Class<?> iface, CreationalContext<?> creationalContext);
 
     Method resolveViewMethod(Bean<?> component, Method declaredMethod);
 

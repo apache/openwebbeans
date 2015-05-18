@@ -41,12 +41,12 @@ public interface ScannerService
      * required by the implementation.
      * @param object initialization object
      */
-    public void init(Object object);
+    void init(Object object);
     
     /**
      * Perform the actual class scanning.
      */
-    public void scan();
+    void scan();
 
 
     /**
@@ -54,7 +54,7 @@ public interface ScannerService
      * scan is not needed anymore and the ScannerService might free up
      * resources.
      */
-    public void release();
+    void release();
 
     
     /**
@@ -64,14 +64,14 @@ public interface ScannerService
      * or the base URL for the JAR if it is an 'implicit bean archive'.
      * @return the URL of the beans.xml files.
      */
-    public Set<URL> getBeanXmls();
+    Set<URL> getBeanXmls();
     
     /**
      * Gets beans classes that are found in the
      * deployment archives. 
      * @return bean classes
      */
-    public Set<Class<?>> getBeanClasses();
+    Set<Class<?>> getBeanClasses();
 
     /**
      * Indicates if BDABeansXmlScanner is available. This method 
@@ -81,7 +81,7 @@ public interface ScannerService
      * @return T - BDABeansXmlScanner is available and enabled;
      * F - No BDABeansXmlScanner is available or it is disabled
      */
-    public boolean isBDABeansXmlScanningEnabled();    
+    boolean isBDABeansXmlScanningEnabled();
     
     /**
      * Gets BDABeansXMLScanner used to determine the beans.xml 
@@ -91,5 +91,5 @@ public interface ScannerService
      * contained in an application.
      * @return null or reference to BDABeansXMLScanner
      */
-    public BDABeansXmlScanner getBDABeansXmlScanner();
+    BDABeansXmlScanner getBDABeansXmlScanner();
 }

@@ -33,12 +33,12 @@ public interface SingletonService<T>
      * @param key instance key
      * @return instance
      */
-    public T get(Object key);
+    T get(Object key);
     
     /**
      * Any clean activity.
      * @param key instance key
      */
-    public void clear(Object key);
+    void clear(Object key);
     
 }

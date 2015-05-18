@@ -34,19 +34,19 @@ public interface TransactionService
      * Get {@link TransactionManager} instance from container. 
      * @return the TransactionManager or <code>null</code> if none is registered.
      */
-    public TransactionManager getTransactionManager();
+    TransactionManager getTransactionManager();
 
     /**
      * Get the transaction context of the calling thread
      * @return the Transaction or <code>null</code> if no TransactionManager is used.
      */
-    public Transaction getTransaction();
+    Transaction getTransaction();
     
     /**
      * Gets user transaction instance.
      * @return user transaction object
      */
-    public UserTransaction getUserTransaction();
+    UserTransaction getUserTransaction();
     
     /**
      * Register transaction synch.
@@ -54,7 +54,7 @@ public interface TransactionService
      * @param observer observer 
      * @param event event
      */
-    public void registerTransactionSynchronization(TransactionPhase phase,
-                                                   ObserverMethod<? super Object> observer,
-                                                   Object event) throws Exception;
+    void registerTransactionSynchronization(TransactionPhase phase,
+                                            ObserverMethod<? super Object> observer,
+                                            Object event) throws Exception;
 }

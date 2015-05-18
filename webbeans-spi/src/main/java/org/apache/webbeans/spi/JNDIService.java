@@ -29,11 +29,11 @@ package org.apache.webbeans.spi;
 public interface JNDIService
 {
     /**JMS Connection Factory JNDI Name*/
-    public static final String JMS_CONNECTION_FACTORY_JNDI_KEY
+    String JMS_CONNECTION_FACTORY_JNDI_KEY
             = "org.apache.webbeans.spi.JNDIService.jmsConnectionFactoryJndi";
     
     /**Default value*/
-    public static final String JMS_CONNECTION_FACTORY_JNDI_DEFAULT_VALUE = "ConnectionFactory";
+    String JMS_CONNECTION_FACTORY_JNDI_DEFAULT_VALUE = "ConnectionFactory";
     
     /**
      * Bind the object with the given name to the JNDI environment
@@ -42,14 +42,14 @@ public interface JNDIService
      * @param object
      * @throws WebBeansException on any internal error
      */
-    public abstract void bind(String name, Object object);
+    void bind(String name, Object object);
 
     /**
      * Unbind and free the object with the given name from the JNDI environment
      * @param name
      * @throws WebBeansException on any internal error
      */
-    public abstract void unbind(String name);
+    void unbind(String name);
 
     /**
      * Get the object bound to the given name from the JNDI context.   
@@ -58,6 +58,6 @@ public interface JNDIService
      * @return the bound object or <code>null</code> if nothing bound.
      * @throws WebBeansException on any internal error
      */
-    public abstract <T> T lookup(String name, Class<? extends T> expectedClass);
+    <T> T lookup(String name, Class<? extends T> expectedClass);
 
 }

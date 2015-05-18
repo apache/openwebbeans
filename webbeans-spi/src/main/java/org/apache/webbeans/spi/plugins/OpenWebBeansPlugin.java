@@ -41,7 +41,7 @@ public interface OpenWebBeansPlugin
      * initialise the plugin.
      * This is called once after the very plugin has been loaded.
      */
-    public void startUp();
+    void startUp();
 
     /**
      * At shutdown, the plugin must release all locked resources.
@@ -49,7 +49,7 @@ public interface OpenWebBeansPlugin
      * This is usually the case when the WebApplication gets stopped.
      * @throws WebBeansConfigurationException
      */
-    public void shutDown();
+    void shutDown();
     
 
     /**
@@ -58,7 +58,7 @@ public interface OpenWebBeansPlugin
      * @param clazz the class to check
      * @throws WebBeansConfigurationException if the given clazz cannot be used as simple web bean.
      */
-    public void isManagedBean(Class<?> clazz);
+    void isManagedBean(Class<?> clazz);
     
     /**
      * Returns true if plugin provides given service implementation
@@ -66,7 +66,7 @@ public interface OpenWebBeansPlugin
      * @param serviceClass any service class
      * @return true if plugin provides given service implementation
      */
-    public boolean supportService(Class<?> serviceClass);
+    boolean supportService(Class<?> serviceClass);
     
     /**
      * Returns true if given class supports injections,
@@ -74,7 +74,7 @@ public interface OpenWebBeansPlugin
      * @param targetClass any target class
      * @return true if given class supports injections
      */
-    public boolean supportsJavaEeComponentInjections(Class<?> targetClass);
+    boolean supportsJavaEeComponentInjections(Class<?> targetClass);
     
     
     /**
@@ -83,5 +83,5 @@ public interface OpenWebBeansPlugin
      * @param serviceClass service class
      * @return service
      */
-    public <T> T getSupportedService(Class<T> serviceClass);
+    <T> T getSupportedService(Class<T> serviceClass);
 }

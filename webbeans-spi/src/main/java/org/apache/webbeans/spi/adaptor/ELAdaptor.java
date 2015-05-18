@@ -29,7 +29,7 @@ import javax.el.ExpressionFactory;
  */
 public interface ELAdaptor
 {
-    public ELResolver getOwbELResolver();
+    ELResolver getOwbELResolver();
 
-    public ExpressionFactory getOwbWrappedExpressionFactory(ExpressionFactory expressionFactory);
+    ExpressionFactory getOwbWrappedExpressionFactory(ExpressionFactory expressionFactory);
 }

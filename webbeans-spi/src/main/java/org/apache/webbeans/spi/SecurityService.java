@@ -45,72 +45,72 @@ public interface SecurityService
      * Gets the current caller identity.
      * @return current caller identity or <code>null</code> if none provided.
      */
-    public Principal getCurrentPrincipal();
+    Principal getCurrentPrincipal();
 
     /**
      * @see Class#getDeclaredConstructor(Class[])
      */
-    public <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes);
+    <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes);
 
     /**
      * @see Class#getDeclaredConstructor(Class[])
      */
-    public <T> Constructor<T> doPrivilegedGetConstructor(Class<T> clazz, Class<?>... parameterTypes);
+    <T> Constructor<T> doPrivilegedGetConstructor(Class<T> clazz, Class<?>... parameterTypes);
 
     /**
      * @see Class#getDeclaredConstructors()
      */
-    public <T> Constructor<?>[] doPrivilegedGetDeclaredConstructors(Class<T> clazz);
+    <T> Constructor<?>[] doPrivilegedGetDeclaredConstructors(Class<T> clazz);
 
     /**
      * @see Class#getDeclaredMethod(String, Class[])
      */
-    public <T> Method doPrivilegedGetDeclaredMethod(Class<T> clazz, String name, Class<?>... parameterTypes);
+    <T> Method doPrivilegedGetDeclaredMethod(Class<T> clazz, String name, Class<?>... parameterTypes);
 
     /**
      * @see Class#getDeclaredMethods()
      */
-    public <T> Method[] doPrivilegedGetDeclaredMethods(Class<T> clazz);
+    <T> Method[] doPrivilegedGetDeclaredMethods(Class<T> clazz);
 
     /**
      * @see Class#getDeclaredField(String)
      */
-    public <T> Field doPrivilegedGetDeclaredField(Class<T> clazz, String name);
+    <T> Field doPrivilegedGetDeclaredField(Class<T> clazz, String name);
 
     /**
      * @see Class#getDeclaredFields()
      */
-    public <T> Field[] doPrivilegedGetDeclaredFields(Class<T> clazz);
+    <T> Field[] doPrivilegedGetDeclaredFields(Class<T> clazz);
 
     /**
      * @see AccessibleObject#setAccessible(boolean)
      */
-    public void doPrivilegedSetAccessible(AccessibleObject obj, boolean flag);
+    void doPrivilegedSetAccessible(AccessibleObject obj, boolean flag);
 
     /**
      * @see AccessibleObject#isAccessible()
      */
-    public boolean doPrivilegedIsAccessible(AccessibleObject obj);
+    boolean doPrivilegedIsAccessible(AccessibleObject obj);
 
     /**
      * @see Class#newInstance()
      */
-    public <T> T doPrivilegedObjectCreate(Class<T> clazz)
+    <T> T doPrivilegedObjectCreate(Class<T> clazz)
     throws PrivilegedActionException, IllegalAccessException, InstantiationException;
 
     /**
      * @see Class#
      */
-    public void doPrivilegedSetSystemProperty(String propertyName, String value);
+    void doPrivilegedSetSystemProperty(String propertyName, String value);
 
     /**
      * @see System#getProperty(String, String)
      */
-    public String doPrivilegedGetSystemProperty(String propertyName, String defaultValue);
+    String doPrivilegedGetSystemProperty(String propertyName, String defaultValue);
 
     /**
      * @see System#getProperties()
      */
-    public Properties doPrivilegedGetSystemProperties();
+    Properties doPrivilegedGetSystemProperties();
 
 }

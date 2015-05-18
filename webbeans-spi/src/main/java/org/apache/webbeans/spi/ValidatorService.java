@@ -32,11 +32,11 @@ public interface ValidatorService
      * Gets default validator factory instance.
      * @return validator factory
      */
-    public ValidatorFactory getDefaultValidatorFactory();
+    ValidatorFactory getDefaultValidatorFactory();
     
     /**
      * Gets validator of default validator factory.
      * @return validator
      */
-    public Validator getDefaultValidator();
+    Validator getDefaultValidator();
 }

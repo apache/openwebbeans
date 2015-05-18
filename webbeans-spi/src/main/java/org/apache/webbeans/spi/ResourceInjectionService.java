@@ -48,7 +48,7 @@ public interface ResourceInjectionService
      * </p>
      * @param managedBeanInstance managed bean instance
      */
-    public void injectJavaEEResources(Object managedBeanInstance);
+    void injectJavaEEResources(Object managedBeanInstance);
     
     /**
      * Gets resource for the given resource reference.
@@ -70,7 +70,7 @@ public interface ResourceInjectionService
      * @param resourceReference
      * @return resource for the given resource reference
      */
-    public <X,T extends Annotation> X getResourceReference(ResourceReference<X,T> resourceReference); 
+    <X,T extends Annotation> X getResourceReference(ResourceReference<X, T> resourceReference);
     
     /**
      * Any clear functionality.
@@ -79,17 +79,17 @@ public interface ResourceInjectionService
      * may clear its caches or any other useful functionality.
      * </p>
      */
-    public void clear();
+    void clear();
 
     /**
      * delegation of serialization behavior
      */
-    public <T> void writeExternal(Bean<T> bean, T actualResource, ObjectOutput out) throws IOException;
+    <T> void writeExternal(Bean<T> bean, T actualResource, ObjectOutput out) throws IOException;
 
     /**
      * delegation of serialization behavior
      */
-    public <T> T readExternal(Bean<T> bean, ObjectInput out) throws IOException,
+    <T> T readExternal(Bean<T> bean, ObjectInput out) throws IOException,
             ClassNotFoundException;
         
 }

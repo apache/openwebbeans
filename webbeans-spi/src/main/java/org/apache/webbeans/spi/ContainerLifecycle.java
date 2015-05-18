@@ -43,7 +43,7 @@ public interface ContainerLifecycle
      * </p>
      * @param properties any properties
      */
-    public void initApplication(Properties properties);
+    void initApplication(Properties properties);
     
     /**
      * Starts container. It discovers all beans
@@ -70,7 +70,7 @@ public interface ContainerLifecycle
      *
      * @param startupObject any startup object.
      */
-    public void startApplication(Object startupObject);
+    void startApplication(Object startupObject);
         
     /**
      * <p>
@@ -84,14 +84,14 @@ public interface ContainerLifecycle
      * </p>
      * @param endObject any object provided by application implementor. This can be a ServletContext, etc
      */
-    public void stopApplication(Object endObject);
+    void stopApplication(Object endObject);
     
     /**
      * Get the underlying {@link BeanManager} instance for the current application.
      * There is 1-1 correspondence between a bean manager and a deployed (web-) application.
      * @return deployment {@link BeanManager} instance
      */
-    public BeanManager getBeanManager();
+    BeanManager getBeanManager();
     
     /**
      * Gets container's context service implementation.
@@ -99,5 +99,5 @@ public interface ContainerLifecycle
      *
      * @return container contexts service
      */
-    public ContextsService getContextService();
+    ContextsService getContextService();
 }

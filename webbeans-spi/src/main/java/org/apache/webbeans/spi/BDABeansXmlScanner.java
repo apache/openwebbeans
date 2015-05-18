@@ -34,8 +34,8 @@ public interface BDABeansXmlScanner
      * @return T - Interceptor class successfully stored; F - Interceptor class
      *         already exists and was not stored.
      */
-    public boolean addInterceptor(Class<?> interceptorClass,
-            String beansXMLFilePath);
+    boolean addInterceptor(Class<?> interceptorClass,
+                           String beansXMLFilePath);
     
     /**
      * 
@@ -43,7 +43,7 @@ public interface BDABeansXmlScanner
      * @return a non-null set of Interceptors defined by the specified
      *         beansXMLFilePath
      */
-    public Set<Class<?>> getInterceptors(String beansXMLFilePath);
+    Set<Class<?>> getInterceptors(String beansXMLFilePath);
     
     /**
      * 
@@ -51,7 +51,7 @@ public interface BDABeansXmlScanner
      * @return a non-null set of Decorators defined by the specified
      *         beansXMLFilePath
      */
-    public Set<Class<?>> getDecorators(String beansXMLFilePath);
+    Set<Class<?>> getDecorators(String beansXMLFilePath);
     
     /**
      * Stores the beans.xml a Decorator class is defined in
@@ -59,7 +59,7 @@ public interface BDABeansXmlScanner
      * @return T - Decorator class successfully stored; F - Decorator class
      *         already exists and was not stored.
      */
-    public boolean addDecorator(Class<?> decoratorClass, String beansXMLFilePath);
+    boolean addDecorator(Class<?> decoratorClass, String beansXMLFilePath);
     
     /**
      * Stores the beans.xml an Alternative class is defined in
@@ -67,8 +67,8 @@ public interface BDABeansXmlScanner
      * @return T - Alternative class successfully stored; F - Alternative class
      *         already exists and was not stored.
      */
-    public boolean addAlternative(Class<?> alternativeClass,
-            String beansXMLFilePath);
+    boolean addAlternative(Class<?> alternativeClass,
+                           String beansXMLFilePath);
     
     /**
      * Stores the beans.xml a Stereotype class is defined in
@@ -76,8 +76,8 @@ public interface BDABeansXmlScanner
      * @return T - Stereotype class successfully stored; F - Stereotype class
      *         already exists and was not stored.
      */
-    public boolean addStereoType(Class<? extends Annotation> stereoTypeClass,
-            String beansXMLFilePath);
+    boolean addStereoType(Class<? extends Annotation> stereoTypeClass,
+                          String beansXMLFilePath);
     
     /**
      * 
@@ -85,7 +85,7 @@ public interface BDABeansXmlScanner
      * @return a non-null set of Alternatives defined by the specified
      *         beansXMLFilePath
      */
-    public Set<Class<?>> getAlternatives(String beansXMLFilePath);
+    Set<Class<?>> getAlternatives(String beansXMLFilePath);
     
     /**
      * 
@@ -93,7 +93,7 @@ public interface BDABeansXmlScanner
      * @return a non-null set of Stereotypes defined by the specified
      *         beansXMLFilePath
      */
-    public Set<Class<? extends Annotation>> getStereotypes(
+    Set<Class<? extends Annotation>> getStereotypes(
             String beansXMLFilePath);
     
     /**
@@ -103,7 +103,7 @@ public interface BDABeansXmlScanner
      * @return A String representing the file path to the beans.xml of the
      *         specified class's BDA
      */
-    public String getBeansXml(Class<?> class1);
+    String getBeansXml(Class<?> class1);
     
     /**
      * 
@@ -112,6 +112,6 @@ public interface BDABeansXmlScanner
      * @param beansXmlFilePath
      *            - file path to beans.xml of BDA
      */
-    public void setBeansXml(Class<?> class1, String beansXmlFilePath);
+    void setBeansXml(Class<?> class1, String beansXmlFilePath);
 
 }
