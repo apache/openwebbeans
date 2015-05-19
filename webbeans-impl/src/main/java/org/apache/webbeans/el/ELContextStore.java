@@ -20,7 +20,6 @@ package org.apache.webbeans.el;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -67,7 +66,7 @@ public class ELContextStore
     /**
      * The same Expression must get same instances of &#064;Dependent beans
      */
-    private Map<Bean<?>, CreationalStore> dependentObjects = new HashMap<Bean<?>, CreationalStore>();
+    private Map<Bean<?>, CreationalStore<?>> dependentObjects = new HashMap<Bean<?>, CreationalStore<?>>();
     private Map<String, Bean<?>> beanNameToDependentBeanMapping = new HashMap<String, Bean<?>>();
 
     /**
@@ -102,13 +101,13 @@ public class ELContextStore
         return null;
     }
 
-    private static class CreationalStore
+    private static class CreationalStore<T>
     {
-        private Object object;
+        private T object;
         
-        private CreationalContext<?> creational;
+        private CreationalContext<T> creational;
         
-        public CreationalStore(Object object, CreationalContext<?> creational)
+        public CreationalStore(T object, CreationalContext<T> creational)
         {
             this.object = object;
             this.creational = creational;
@@ -117,7 +116,7 @@ public class ELContextStore
         /**
          * @return the object
          */
-        public Object getObject()
+        public T getObject()
         {
             return object;
         }
@@ -125,7 +124,7 @@ public class ELContextStore
         /**
          * @return the creational
          */
-        public CreationalContext<?> getCreational()
+        public CreationalContext<T> getCreational()
         {
             return creational;
         }
@@ -182,14 +181,12 @@ public class ELContextStore
     {
         if (dependentObjects.size() > 0)
         {
-            Set<Bean<?>> beans = dependentObjects.keySet();
-            for(Bean<?> bean : beans)
+            for (Map.Entry<Bean<?>, CreationalStore<?>> storeEntry : dependentObjects.entrySet())
             {
-                Bean<Object> o = (Bean<Object>)bean;
-                CreationalStore store = dependentObjects.get(bean);
-                o.destroy(store.getObject(), (CreationalContext<Object>)store.getCreational());
+                CreationalStore<?> store = storeEntry.getValue();
+                Bean contextual = storeEntry.getKey();
+                contextual.destroy(store.getObject(), store.getCreational());
             }
-
             dependentObjects.clear();
         }
         beanNameToDependentBeanMapping.clear();
