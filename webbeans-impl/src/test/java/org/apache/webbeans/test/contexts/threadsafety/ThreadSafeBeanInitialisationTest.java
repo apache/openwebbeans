@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  */
 public class ThreadSafeBeanInitialisationTest extends AbstractUnitTest
 {
-    private final static Logger log = Logger.getLogger(ThreadSafeBeanInitialisationTest.class.getName());
+    private static final Logger log = Logger.getLogger(ThreadSafeBeanInitialisationTest.class.getName());
 
 
     /**

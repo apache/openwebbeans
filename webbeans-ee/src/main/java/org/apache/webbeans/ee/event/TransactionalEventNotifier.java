@@ -139,7 +139,7 @@ public class TransactionalEventNotifier
         }
     }
 
-    private final static class BeforeCompletion extends AbstractSynchronization
+    private static final class BeforeCompletion extends AbstractSynchronization
     {
         private BeforeCompletion(ObserverMethod observer, Object event, EventMetadata metadata)
         {
@@ -153,7 +153,7 @@ public class TransactionalEventNotifier
         }
     }
 
-    private final static class AfterCompletion extends AbstractSynchronization
+    private static final class AfterCompletion extends AbstractSynchronization
     {
         private AfterCompletion(ObserverMethod observer, Object event, EventMetadata metadata)
         {
@@ -167,7 +167,7 @@ public class TransactionalEventNotifier
         }
     }
 
-    private final static class AfterCompletionSuccess extends AbstractSynchronization
+    private static final class AfterCompletionSuccess extends AbstractSynchronization
     {
         private AfterCompletionSuccess(ObserverMethod observer, Object event, EventMetadata metadata)
         {
@@ -184,7 +184,7 @@ public class TransactionalEventNotifier
         }
     }
 
-    private final static class AfterCompletionFailure extends AbstractSynchronization
+    private static final class AfterCompletionFailure extends AbstractSynchronization
     {
         private AfterCompletionFailure(ObserverMethod observer, Object event, EventMetadata metadata)
         {

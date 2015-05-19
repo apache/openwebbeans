@@ -78,7 +78,7 @@ import static org.apache.webbeans.util.InjectionExceptionUtil.throwAmbiguousReso
  */
 public class InjectionResolver
 {
-    private final static Logger logger = WebBeansLoggerFacade.getLogger(InjectionResolver.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(InjectionResolver.class);
 
     /**
      * Bean Manager

@@ -52,7 +52,7 @@ import org.apache.webbeans.util.Asserts;
  */
 public class ConversationManager
 {
-    private final static Logger logger = WebBeansLoggerFacade.getLogger(ConversationManager.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(ConversationManager.class);
 
 
     private final WebBeansContext webBeansContext;

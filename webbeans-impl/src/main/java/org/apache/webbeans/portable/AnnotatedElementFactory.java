@@ -51,7 +51,7 @@ public final class AnnotatedElementFactory
     public static final String OWB_DEFAULT_KEY = "OWB_DEFAULT_KEY";
 
     // Logger instance
-    private final static Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedElementFactory.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedElementFactory.class);
 
     /**
      * Cache of the initial AnnotatedTypes

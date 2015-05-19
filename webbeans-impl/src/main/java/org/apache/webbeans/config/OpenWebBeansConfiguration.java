@@ -47,10 +47,10 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 public class OpenWebBeansConfiguration
 {
     /**Logger instance*/
-    private final static Logger logger = WebBeansLoggerFacade.getLogger(OpenWebBeansConfiguration.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(OpenWebBeansConfiguration.class);
 
     /**Default configuration files*/
-    private final static String DEFAULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";
+    private static final String DEFAULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";
     
     /**Property of application*/
     private final Properties configProperties = new Properties();

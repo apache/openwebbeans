@@ -38,8 +38,8 @@ import javax.enterprise.context.SessionScoped;
 
 public class ELPerformanceTest extends AbstractUnitTest
 {
-    private final static int THREADS = 100;
-    private final static int ITERATIONS = 200;
+    private static final int THREADS = 100;
+    private static final int ITERATIONS = 200;
 
 
     private static Logger logger = WebBeansLoggerFacade.getLogger(ELPerformanceTest.class);

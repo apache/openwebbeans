@@ -43,7 +43,7 @@ import org.apache.xbean.asm5.Type;
  */
 public abstract class AbstractProxyFactory
 {
-    public final static int MAX_CLASSLOAD_TRIES = 10000;
+    public static final int MAX_CLASSLOAD_TRIES = 10000;
 
     /**
      * This is needed as the Modifier#VARARGS is not (yet) public.

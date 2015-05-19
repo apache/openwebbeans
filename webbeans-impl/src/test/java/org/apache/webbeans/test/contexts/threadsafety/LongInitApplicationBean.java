@@ -31,7 +31,7 @@ public class LongInitApplicationBean
 {
     private static int initCounter = 0;
 
-    private final static Logger log = Logger.getLogger(LongInitApplicationBean.class.getName());
+    private static final Logger log = Logger.getLogger(LongInitApplicationBean.class.getName());
 
     @PostConstruct
     public void init()

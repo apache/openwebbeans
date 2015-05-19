@@ -40,9 +40,9 @@ import java.util.logging.Logger;
  */
 public class PropertyLoader
 {
-    public final static int CONFIGURATION_ORDINAL_DEFAULT_VALUE = 100;
+    public static final int CONFIGURATION_ORDINAL_DEFAULT_VALUE = 100;
 
-    public final static String CONFIGURATION_ORDINAL_PROPERTY_NAME = "configuration.ordinal";
+    public static final String CONFIGURATION_ORDINAL_PROPERTY_NAME = "configuration.ordinal";
 
 
     private static final Logger logger = WebBeansLoggerFacade.getLogger(PropertyLoader.class);

@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  */
 public class ExtendedStandaloneResourceInjectionService extends StandaloneResourceInjectionService
 {
-    private final static Logger logger = WebBeansLoggerFacade.getLogger(ExtendedStandaloneResourceInjectionService.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(ExtendedStandaloneResourceInjectionService.class);
 
     private List<EjbResolver> ejbResolvers = new ArrayList<EjbResolver>();
 

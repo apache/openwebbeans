@@ -84,7 +84,7 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
 {
     /**Logger instance*/
-    private final static Logger logger = WebBeansLoggerFacade.getLogger(ObserverMethodImpl.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(ObserverMethodImpl.class);
 
     /**Observer owner bean that defines observer method*/
     private final AbstractOwbBean<?> bean;

@@ -53,7 +53,7 @@ import java.util.logging.Logger;
  */
 public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
 {
-    private final static Logger logger = WebBeansLoggerFacade.getLogger(InterceptorDecoratorProxyFactory.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(InterceptorDecoratorProxyFactory.class);
 
 
     /** the name of the field which stores the proxied instance */

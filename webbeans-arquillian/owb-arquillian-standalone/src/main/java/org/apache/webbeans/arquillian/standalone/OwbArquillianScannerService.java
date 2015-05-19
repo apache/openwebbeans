@@ -48,7 +48,7 @@ import java.util.Set;
 public class OwbArquillianScannerService implements ScannerService
 {
 
-    private final static String WEB_INF_CLASS_FOLDER = "/WEB-INF/classes/";
+    private static final String WEB_INF_CLASS_FOLDER = "/WEB-INF/classes/";
 
     private final boolean beansXmlBdaScanningEnabled;
     private final WebBeansContext webBeansContext;

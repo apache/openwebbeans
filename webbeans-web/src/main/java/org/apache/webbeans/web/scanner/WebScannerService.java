@@ -36,7 +36,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
 {
     public static final String WEB_INF_BEANS_XML = "/WEB-INF/beans.xml";
 
-    private final static Logger logger = WebBeansLoggerFacade.getLogger(WebScannerService.class);
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebScannerService.class);
 
     protected ServletContext servletContext = null;
     private BeanArchiveService beanArchiveService;
