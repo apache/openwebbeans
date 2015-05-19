@@ -256,11 +256,6 @@ public class StereoTypeModel implements IStereoTypeModel
             return false;   
         }
 
-        if(obj == null)
-        {
-            return false;
-        }
-        
         StereoTypeModel model = (StereoTypeModel) obj;
 
         return model.name.equals(name);
