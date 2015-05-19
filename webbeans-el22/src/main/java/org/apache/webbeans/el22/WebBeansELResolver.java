@@ -124,7 +124,7 @@ public class WebBeansELResolver extends ELResolver
         if(beans != null && !beans.isEmpty())
         {
             //Managed bean
-            Bean<Object> bean = (Bean<Object>)beans.iterator().next();
+            Bean<?> bean = beanManager.resolve(beans);
 
             if(bean.getScope().equals(Dependent.class))
             {
@@ -139,9 +139,9 @@ public class WebBeansELResolver extends ELResolver
         return contextualInstance;
     }
 
-    protected Object getNormalScopedContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context, Bean<Object> bean, String beanName)
+    protected Object getNormalScopedContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context, Bean<?> bean, String beanName)
     {
-        CreationalContext<Object> creationalContext = manager.createCreationalContext(bean);
+        CreationalContext<?> creationalContext = manager.createCreationalContext(bean);
         Object contextualInstance = manager.getReference(bean, Object.class, creationalContext);
         if (contextualInstance != null)
         {
@@ -154,7 +154,7 @@ public class WebBeansELResolver extends ELResolver
     }
 
 
-    protected Object getDependentContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context, Bean<Object> bean)
+    protected Object getDependentContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context, Bean<?> bean)
     {
         Object contextualInstance = store.getDependent(bean);
         if(contextualInstance != null)
@@ -165,7 +165,7 @@ public class WebBeansELResolver extends ELResolver
         else
         {
             // If no contextualInstance found on the store
-            CreationalContext<Object> creationalContext = manager.createCreationalContext(bean);
+            CreationalContext<?> creationalContext = manager.createCreationalContext(bean);
             contextualInstance = manager.getReference(bean, bestType(bean), creationalContext);
             if (contextualInstance != null)
             {
