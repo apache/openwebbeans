@@ -45,7 +45,6 @@ public final class OWBInjector
      */
     @SuppressWarnings("unchecked")
     public static void inject(BeanManager beanManager, Object instanceUnderInjection, CreationalContext<?> ownerCreationalContext)
-            throws Exception
     {
         CreationalContext<?> creationalContext = ownerCreationalContext;
         if(creationalContext == null)

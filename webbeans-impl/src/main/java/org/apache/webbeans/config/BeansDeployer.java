@@ -1069,7 +1069,7 @@ public class BeansDeployer
      * @param annotatedTypes the AnnotatedTypes which got discovered so far and are not vetoed
      * @throws ClassNotFoundException if class not found
      */
-    protected void deployFromAnnotatedTypes(Map<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedTypes) throws ClassNotFoundException
+    protected void deployFromAnnotatedTypes(Map<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedTypes)
     {
         logger.fine("Deploying configurations from class files has started.");
 

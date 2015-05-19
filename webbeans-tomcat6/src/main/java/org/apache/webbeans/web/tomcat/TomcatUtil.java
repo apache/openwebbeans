@@ -28,7 +28,7 @@ import javax.enterprise.inject.spi.Producer;
 
 public class TomcatUtil
 {
-    public static Object inject(Object object, ClassLoader loader) throws Exception
+    public static Object inject(Object object, ClassLoader loader)
     {
         final ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(loader);
@@ -46,7 +46,7 @@ public class TomcatUtil
         return new Instance(object, context);
     }
 
-    public static void destroy(Object injectorInstance, ClassLoader loader) throws Exception
+    public static void destroy(Object injectorInstance, ClassLoader loader)
     {
         final Instance instance = (TomcatUtil.Instance) injectorInstance;
         final ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();

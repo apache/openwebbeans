@@ -154,14 +154,7 @@ public abstract class AbstractUnitTest
 
     public void inject(final Object bean)
     {
-        try
-        {
-            OWBInjector.inject(getBeanManager(), bean, null);
-        }
-        catch (final Exception e)
-        {
-            throw new WebBeansConfigurationException(e);
-        }
+        OWBInjector.inject(getBeanManager(), bean, null);
     }
 
     protected ContainerLifecycle getLifecycle()

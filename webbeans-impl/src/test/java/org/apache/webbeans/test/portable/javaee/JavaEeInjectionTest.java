@@ -30,7 +30,7 @@ import org.junit.Test;
 public class JavaEeInjectionTest extends AbstractUnitTest
 {
     @Test
-    public void testInjectionTarget() throws Exception
+    public void testInjectionTarget()
     {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(SampleBean.class);
