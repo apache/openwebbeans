@@ -85,23 +85,23 @@ public class DefaultContextsService extends AbstractContextsService
         
         if(scopeType.equals(RequestScoped.class))
         {
-            stopRequestContext(endParameters);
+            stopRequestContext();
         }
         else if(scopeType.equals(SessionScoped.class))
         {
-            stopSessionContext(endParameters);
+            stopSessionContext();
         }
         else if(scopeType.equals(ApplicationScoped.class))
         {
-            stopApplicationContext(endParameters);
+            stopApplicationContext();
         }
         else if(scopeType.equals(ConversationScoped.class))
         {
-            stopConversationContext(endParameters);
+            stopConversationContext();
         }
         else if(scopeType.equals(Singleton.class))
         {
-            stopSingletonContext(endParameters);
+            stopSingletonContext();
         }
 
         // do nothing for Dependent.class
@@ -154,23 +154,23 @@ public class DefaultContextsService extends AbstractContextsService
         {
             if(scopeType.equals(RequestScoped.class))
             {
-                startRequestContext(startParameter);
+                startRequestContext();
             }
             else if(scopeType.equals(SessionScoped.class))
             {
-                startSessionContext(startParameter);
+                startSessionContext();
             }
             else if(scopeType.equals(ApplicationScoped.class))
             {
-                startApplicationContext(startParameter);
+                startApplicationContext();
             }
             else if(scopeType.equals(ConversationScoped.class))
             {
-                startConversationContext(startParameter);
+                startConversationContext();
             }
             else if(scopeType.equals(Singleton.class))
             {
-                startSingletonContext(startParameter);
+                startSingletonContext();
             }
 
             // do nothing for Dependent.class
@@ -290,7 +290,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void startApplicationContext(Object instance)
+    private void startApplicationContext()
     {
         if (applicationContext != null)
         {
@@ -310,7 +310,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void startConversationContext(Object object)
+    private void startConversationContext()
     {
         ConversationManager conversationManager = webBeansContext.getConversationManager();
         ConversationContext ctx = conversationManager.getConversationContext(getCurrentSessionContext());
@@ -324,7 +324,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void startRequestContext(Object instance)
+    private void startRequestContext()
     {
         
         RequestContext ctx = new RequestContext();
@@ -335,7 +335,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void startSessionContext(Object instance)
+    private void startSessionContext()
     {
         SessionContext ctx = new SessionContext();
         ctx.setActive(true);
@@ -345,7 +345,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void startSingletonContext(Object object)
+    private void startSingletonContext()
     {
         
         SingletonContext ctx = new SingletonContext();
@@ -356,7 +356,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void stopApplicationContext(Object object)
+    private void stopApplicationContext()
     {
         if(applicationContext != null)
         {
@@ -369,7 +369,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void stopConversationContext(Object object)
+    private void stopConversationContext()
     {
         if(conversationContext.get() != null)
         {
@@ -381,7 +381,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void stopRequestContext(Object instance)
+    private void stopRequestContext()
     {
         // cleanup open conversations first
         if (supportsConversation)
@@ -403,7 +403,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void stopSessionContext(Object instance)
+    private void stopSessionContext()
     {
         if(sessionContext.get() != null)
         {
@@ -416,7 +416,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void stopSingletonContext(Object object)
+    private void stopSingletonContext()
     {
         if(singletonContext.get() != null)
         {
