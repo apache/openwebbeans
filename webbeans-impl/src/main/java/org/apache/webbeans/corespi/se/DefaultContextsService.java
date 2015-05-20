@@ -176,13 +176,12 @@ public class DefaultContextsService extends AbstractContextsService
             // do nothing for Dependent.class
 
         }
-        catch(Exception e)
+        catch (ContextException ce)
         {
-            if(e instanceof ContextException)
-            {
-                throw (ContextException)e;
-            }
-            
+            throw ce;
+        }
+        catch (Exception e)
+        {
             throw new ContextException(e);
         }        
     }

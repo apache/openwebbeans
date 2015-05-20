@@ -869,13 +869,10 @@ public class BeansDeployer
                     }
                     else
                     {
-                        if(part != null)
+                        if(part != null && part.equals(other))
                         {
-                            if(part.equals(other))
-                            {
-                                throw new WebBeansDeploymentException("EL name of one bean is of the form x.y, where y is a valid bean EL name, and " +
-                                        "x is the EL name of the other bean for the bean name : " + beanName);
-                            }                        
+                            throw new WebBeansDeploymentException("EL name of one bean is of the form x.y, where y is a valid bean EL name, and " +
+                                    "x is the EL name of the other bean for the bean name : " + beanName);
                         }
                     }
                 }                
