@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.util;
 
+import org.apache.webbeans.exception.helper.DescriptiveException;
+
 public abstract class ExceptionUtil
 {
     private ExceptionUtil()
@@ -51,6 +53,16 @@ public abstract class ExceptionUtil
             sb.append("  ").append(ste.getClassName()).append("#").append(ste.getMethodName()).append(":").append(ste.getLineNumber()).append('\n');
         }
         return sb.toString();
+    }
+
+    public static RuntimeException addInformation(RuntimeException e, String additionalinfo)
+    {
+        if (e instanceof DescriptiveException)
+        {
+            ((DescriptiveException) e).addInformation(additionalinfo);
+        }
+
+        return e;
     }
 
     @SuppressWarnings({ "unchecked" })

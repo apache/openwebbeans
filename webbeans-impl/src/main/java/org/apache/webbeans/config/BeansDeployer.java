@@ -46,7 +46,6 @@ import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.event.OwbObserverMethod;
-import org.apache.webbeans.exception.helper.DescriptiveException;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -638,7 +637,7 @@ public class BeansDeployer
     /**
      * Fires event after bean discovery.
      */
-    private final List<AnnotatedType<?>> fireAfterTypeDiscoveryEvent()
+    private List<AnnotatedType<?>> fireAfterTypeDiscoveryEvent()
     {
         final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         final List<AnnotatedType<?>> newAt = new LinkedList<AnnotatedType<?>>();
@@ -811,11 +810,7 @@ public class BeansDeployer
                 }
                 catch (RuntimeException e)
                 {
-                    if (e instanceof DescriptiveException)
-                    {
-                        ((DescriptiveException) e).addInformation("Problem while validating bean " + bean);
-                    }
-                    throw e;
+                    throw ExceptionUtil.addInformation(e, "Problem while validating bean " + bean);
                 }
 
             }

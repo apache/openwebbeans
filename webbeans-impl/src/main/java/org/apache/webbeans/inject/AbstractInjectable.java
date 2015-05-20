@@ -89,7 +89,7 @@ public abstract class AbstractInjectable<T>
             {
                 if(injectedBean instanceof AbstractProducerBean)
                 {
-                    if((creationalContext.getBean() instanceof Bean) && beanManager.isPassivatingScope(((Bean<?>) creationalContext.getBean()).getScope()))
+                    if(beanManager.isPassivatingScope(creationalContext.getBean().getScope()))
                     {
                         dependentProducer = true;   
                     }
