@@ -52,6 +52,7 @@ public class CdiInterceptorBean<T> extends InterceptorBean<T> implements Passiva
     {
         super(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods);
         this.interceptorBindings = interceptorBindings;
+        this.setEnabled(enabled);
     }
 
     @Override
