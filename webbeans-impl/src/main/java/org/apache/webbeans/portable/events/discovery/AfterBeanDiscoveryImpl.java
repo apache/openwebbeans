@@ -56,7 +56,6 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
 
     private static final Logger logger = WebBeansLoggerFacade.getLogger(AfterBeanDiscoveryImpl.class);
     private final WebBeansContext webBeansContext;
-    private Object extension;
     private boolean started;
 
     public AfterBeanDiscoveryImpl(WebBeansContext webBeansContext)
@@ -242,8 +241,4 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         return beanManager.getAnnotatedTypes(type);
     }
 
-    public void setExtension(final Object extension)
-    {
-        this.extension = extension;
-    }
 }

@@ -796,20 +796,6 @@ public final class GenericsUtil
         }
     }
 
-    private static Type getRawType(Type[] types, Type actualType, Type declaringType)
-    {
-        Class<?>[] rawTypes = getRawTypes(types, actualType);
-        Class<?>[] classTypes = getClassTypes(rawTypes);
-        if (classTypes.length > 0)
-        {
-            return getMostSpecificType(classTypes, types);
-        }
-        else
-        {
-            return getMostSpecificType(rawTypes, types);
-        }
-    }
-
     private static <T> Class<T>[] getRawTypes(Type[] types)
     {
         return getRawTypes(types, null);
