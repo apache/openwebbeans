@@ -49,7 +49,6 @@ import org.w3c.dom.NodeList;
  */
 public class DefaultBeanArchiveService implements BeanArchiveService
 {
-    private static final String WEB_INF_BEANS_XML = "WEB-INF/beans.xml";
     private static final String WEB_INF_CLASSES = "WEB-INF/classes/";
 
     private static final Logger logger = WebBeansLoggerFacade.getLogger(BeanArchiveService.class);

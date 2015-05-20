@@ -30,13 +30,11 @@ import org.w3c.dom.NodeList;
  */
 public class ElementIterator implements Iterator<Element>
 {
-    private final Element parent;
     private final NodeList children;
     private int currentPosition = 0;
 
     public ElementIterator(Element parent)
     {
-        this.parent = parent;
         children = parent.getChildNodes();
     }
 
