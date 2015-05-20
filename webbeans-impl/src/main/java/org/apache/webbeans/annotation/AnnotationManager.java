@@ -392,9 +392,6 @@ public final class AnnotationManager
         {
             return DefaultLiteral.SET;
         }
-        ////////////////////////////////////////////////////////////////////////
-
-        Annotation[] a = new Annotation[set.size()];
 
         return set;
     }
