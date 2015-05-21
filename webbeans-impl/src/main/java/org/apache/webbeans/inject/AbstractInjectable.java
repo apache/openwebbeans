@@ -83,18 +83,10 @@ public abstract class AbstractInjectable<T>
         
         //Injection for dependent instance InjectionPoint fields
         boolean dependentProducer = false;
-        if(WebBeansUtil.isDependent(injectedBean))
+        if(WebBeansUtil.isDependent(injectedBean) && !injectionPoint.isTransient() && injectedBean instanceof AbstractProducerBean
+                    && creationalContext.getBean() != null && beanManager.isPassivatingScope(creationalContext.getBean().getScope()))
         {
-            if(!injectionPoint.isTransient())
-            {
-                if(injectedBean instanceof AbstractProducerBean)
-                {
-                    if(beanManager.isPassivatingScope(creationalContext.getBean().getScope()))
-                    {
-                        dependentProducer = true;   
-                    }
-                }
-            }
+            dependentProducer = true;
         }
         
         CreationalContext<?> injectionPointContext;
