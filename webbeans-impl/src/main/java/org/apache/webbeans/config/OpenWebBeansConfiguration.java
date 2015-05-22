@@ -177,6 +177,9 @@ public class OpenWebBeansConfiguration
     public synchronized void parseConfiguration() throws WebBeansConfigurationException
     {
         Properties newConfigProperties = PropertyLoader.getProperties(DEFAULT_CONFIG_PROPERTIES_NAME);
+        if(newConfigProperties == null){
+            newConfigProperties = PropertyLoader.getProperties("/" + DEFAULT_CONFIG_PROPERTIES_NAME);
+        }
 
         configProperties.clear();
 
