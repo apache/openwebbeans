@@ -48,8 +48,6 @@ public class EventImpl<T> implements Event<T>, Serializable
     /**
      * Creates a new event.
      * 
-     * @param injectedBindings event bindings
-     * @param eventType event type
      * @param webBeansContext
      */
     public EventImpl(EventMetadata metadata, WebBeansContext webBeansContext)
