@@ -321,6 +321,12 @@ public final class GenericsUtil
             {
                 return false;
             }
+            else if (isDelegateOrEvent && injectionPointTypeArgument instanceof Class && beanTypeArgument instanceof Class)
+            {
+                // if no wildcard type was given then we require a real exact match.
+                return injectionPointTypeArgument.equals(beanTypeArgument);
+
+            }
             else if (!isAssignableFrom(isDelegateOrEvent, false, injectionPointTypeArgument, beanTypeArgument))
             {
                 return false;
