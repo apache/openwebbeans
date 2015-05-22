@@ -20,5 +20,5 @@ package org.apache.webbeans.se.sample;
 
 public interface LoggerFactory
 {
-    public <T> T getLogger(Class<?> logger, Class<T> loggerType);
+    <T> T getLogger(Class<?> logger, Class<T> loggerType);
 }
