@@ -195,7 +195,8 @@ public class ConversationManager
     public void destroyConversationContext(ConversationContext ctx)
     {
         ctx.destroy();
-        webBeansContext.getBeanManagerImpl().fireEvent(getLifecycleEventPayload(ctx), DestroyedLiteral.INSTANCE_CONVERSATION_SCOPED);
+        webBeansContext.getBeanManagerImpl().fireEvent(
+            getLifecycleEventPayload(ctx), DestroyedLiteral.INSTANCE_CONVERSATION_SCOPED);
     }
 
     public Object getLifecycleEventPayload(ConversationContext ctx)
@@ -208,7 +209,8 @@ public class ConversationManager
 
         if (payLoad == null)
         {
-            RequestContext requestContext = (RequestContext) webBeansContext.getContextsService().getCurrentContext(RequestScoped.class);
+            RequestContext requestContext
+                = (RequestContext) webBeansContext.getContextsService().getCurrentContext(RequestScoped.class);
             if (requestContext != null)
             {
                 payLoad = requestContext.getRequestObject();

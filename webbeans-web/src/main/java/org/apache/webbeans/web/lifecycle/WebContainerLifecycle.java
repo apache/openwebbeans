@@ -118,12 +118,14 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         servletContext.setAttribute(BeanManager.class.getName(), getBeanManager());
 
         // fire @Initialized(ApplicationScoped.class) if any observer for it exists
-        if (webBeansContext.getBeanManagerImpl().getNotificationManager().hasLifecycleObserver(InitializedLiteral.INSTANCE_APPLICATION_SCOPED))
+        if (webBeansContext.getBeanManagerImpl().getNotificationManager().
+            hasContextLifecycleObserver(InitializedLiteral.INSTANCE_APPLICATION_SCOPED))
         {
             // we need to temporarily start the ReqeustContext
             webBeansContext.getContextsService().startContext(RequestScoped.class, null);
 
-            webBeansContext.getBeanManagerImpl().fireEvent(servletContext != null ? servletContext : new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
+            webBeansContext.getBeanManagerImpl().fireEvent(
+                servletContext != null ? servletContext : new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
 
             // shut down the RequestContext again
             webBeansContext.getContextsService().endContext(RequestScoped.class, null);

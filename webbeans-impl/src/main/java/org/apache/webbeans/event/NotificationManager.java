@@ -87,7 +87,7 @@ public final class NotificationManager
     /**
      * Contains information whether certain Initialized and Destroyed events have observer methods.
      */
-    private final ConcurrentMap<Annotation, Boolean> hasLifecycleEventObservers
+    private final ConcurrentMap<Annotation, Boolean> hasContextLifecycleEventObservers
         = new ConcurrentHashMap<Annotation, Boolean>();
 
     /**
@@ -132,7 +132,7 @@ public final class NotificationManager
     public void clearCaches()
     {
         observersByRawType.clear();
-        hasLifecycleEventObservers.clear();
+        hasContextLifecycleEventObservers.clear();
     }
 
     /**
@@ -140,9 +140,9 @@ public final class NotificationManager
      * @param lifecycleEvent e.g. {@link org.apache.webbeans.annotation.DestroyedLiteral#INSTANCE_REQUEST_SCOPED}
      * @return whether the given Initialized or Destroyed event has observer methods.
      */
-    public boolean hasLifecycleObserver(Annotation lifecycleEvent)
+    public boolean hasContextLifecycleObserver(Annotation lifecycleEvent)
     {
-        Boolean hasObserver = hasLifecycleEventObservers.get(lifecycleEvent);
+        Boolean hasObserver = hasContextLifecycleEventObservers.get(lifecycleEvent);
         if (hasObserver == null)
         {
             hasObserver = Boolean.FALSE;
@@ -154,7 +154,7 @@ public final class NotificationManager
                     break;
                 }
             }
-            hasLifecycleEventObservers.putIfAbsent(lifecycleEvent, hasObserver);
+            hasContextLifecycleEventObservers.putIfAbsent(lifecycleEvent, hasObserver);
         }
 
         return hasObserver;
