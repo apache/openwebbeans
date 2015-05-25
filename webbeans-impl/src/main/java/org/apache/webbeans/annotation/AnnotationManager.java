@@ -30,6 +30,7 @@ import org.apache.webbeans.util.ArrayUtil;
 import org.apache.webbeans.util.Asserts;
 
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.New;
@@ -398,6 +399,17 @@ public final class AnnotationManager
 
     public void checkQualifierConditions(Annotation... qualifierAnnots)
     {
+        if (qualifierAnnots == null || qualifierAnnots.length == 0)
+        {
+            return;
+        }
+
+        if (qualifierAnnots.length == 1)
+        {
+            // performance hack to avoid Set creation
+            checkQualifierConditions(qualifierAnnots[0]);
+        }
+
         Set<Annotation> annSet = ArrayUtil.asSet(qualifierAnnots);
 
         //check for duplicate annotations
@@ -425,6 +437,14 @@ public final class AnnotationManager
 
     private void checkQualifierConditions(Annotation ann)
     {
+        if (ann == DefaultLiteral.INSTANCE || ann == AnyLiteral.INSTANCE ||
+            ann.annotationType().equals(Default.class) || ann.annotationType().equals(Any.class) ||
+            ann.annotationType().equals(Named.class))
+        {
+            // special performance boost for some known Qualifiers
+            return;
+        }
+
         Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(ann.annotationType());
 
         for (Method method : methods)
