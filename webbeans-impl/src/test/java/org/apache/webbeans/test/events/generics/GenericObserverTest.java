@@ -53,6 +53,21 @@ public class GenericObserverTest extends AbstractUnitTest
         Assert.assertTrue(instance.isExtendsNumberObserved());
     }
 
+    @Test
+    public void testOwb1066()
+    {
+        startContainer(GenericEventBean1.class);
+
+        GenericEventBean1 instance = getInstance(GenericEventBean1.class);
+        instance.fireOwb1066_Event();
+
+        Assert.assertTrue(instance.isIntegerObserved());
+        Assert.assertFalse(instance.isUnintendedListObserved());
+        Assert.assertFalse(instance.isNumberObserved());
+        Assert.assertTrue(instance.isExtendsNumberObserved());
+    }
+
+
     @RequestScoped
     public static class GenericEventBean1
     {
@@ -67,6 +82,15 @@ public class GenericObserverTest extends AbstractUnitTest
         public void fireEvent()
         {
             List<Integer> list = new ArrayList<Integer>(Arrays.asList(1,2,3));
+            integerEvent.fire(list);
+        }
+
+        /**
+         * Test for OWB-1066. Previously created an endless loop
+         */
+        public void fireOwb1066_Event()
+        {
+            List<Integer> list = Arrays.asList(1,2,3);
             integerEvent.fire(list);
         }
 

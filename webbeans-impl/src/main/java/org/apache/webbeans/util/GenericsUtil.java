@@ -999,6 +999,10 @@ public final class GenericsUtil
                 {
                     subclass = iface;
                 }
+                else
+                {
+                    subclass = declaringClass.getSuperclass();
+                }
             }
             return getDirectSubclass(subclass, actualClass);
         }
