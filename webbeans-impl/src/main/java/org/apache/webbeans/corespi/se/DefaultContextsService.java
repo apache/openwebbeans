@@ -42,6 +42,8 @@ import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.context.SingletonContext;
 import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.intercept.RequestScopedBeanInterceptorHandler;
+import org.apache.webbeans.intercept.SessionScopedBeanInterceptorHandler;
 
 
 public class DefaultContextsService extends AbstractContextsService
@@ -193,6 +195,7 @@ public class DefaultContextsService extends AbstractContextsService
         if (requestCtx != null)
         {
             requestCtx.destroy();
+            RequestScopedBeanInterceptorHandler.removeThreadLocals();
             requestContext.set(null);
             requestContext.remove();
         }
@@ -201,6 +204,7 @@ public class DefaultContextsService extends AbstractContextsService
         if (sessionCtx != null)
         {
             sessionCtx.destroy();
+            SessionScopedBeanInterceptorHandler.removeThreadLocals();
             sessionContext.set(null);
             sessionContext.remove();
         }
@@ -406,6 +410,7 @@ public class DefaultContextsService extends AbstractContextsService
 
         requestContext.set(null);
         requestContext.remove();
+        RequestScopedBeanInterceptorHandler.removeThreadLocals();
         webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
             new Object(), DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
     }
@@ -420,6 +425,7 @@ public class DefaultContextsService extends AbstractContextsService
 
         sessionContext.set(null);
         sessionContext.remove();
+        SessionScopedBeanInterceptorHandler.removeThreadLocals();
         webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
             new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
     }

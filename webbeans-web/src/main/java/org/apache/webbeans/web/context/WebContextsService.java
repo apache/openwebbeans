@@ -33,8 +33,9 @@ import org.apache.webbeans.context.SingletonContext;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.event.NotificationManager;
+import org.apache.webbeans.intercept.SessionScopedBeanInterceptorHandler;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.web.intercept.RequestScopedBeanInterceptorHandler;
+import org.apache.webbeans.intercept.RequestScopedBeanInterceptorHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ContextException;
@@ -436,6 +437,10 @@ public class WebContextsService extends AbstractContextsService
                 payload != null ? payload : new Object(), DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
         }
 
+        // clean the proxy cache ThreadLocals
+        RequestScopedBeanInterceptorHandler.removeThreadLocals();
+        SessionScopedBeanInterceptorHandler.removeThreadLocals();
+
         //Clear thread locals
         conversationContexts.set(null);
         conversationContexts.remove();
@@ -548,6 +553,7 @@ public class WebContextsService extends AbstractContextsService
             }
         }
 
+        SessionScopedBeanInterceptorHandler.removeThreadLocals();
     }
 
 

@@ -16,9 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.web.intercept;
-
-import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
+package org.apache.webbeans.intercept;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -27,13 +25,13 @@ import java.util.HashMap;
 
 /**
  * <p>This is a {@link javax.inject.Provider} especially
- * made for &#064;RequestScoped beans used in web applications.</p>
+ * made for &#064;SessionScoped beans used in web applications.</p>
  * 
- * <p>Since there is only one single contextual instance of an &#064;RequestScoped bean per thread,
+ * <p>Since there is only one single contextual instance of an &#064;SessionScoped bean per thread,
  * we can simply cache this instance inside our bean. We only need to reload this instance
  * if it is null or if the thread ends.</p>
  */
-public class RequestScopedBeanInterceptorHandler extends NormalScopedBeanInterceptorHandler
+public class SessionScopedBeanInterceptorHandler extends NormalScopedBeanInterceptorHandler
 {
     /**default serial id*/
     private static final long serialVersionUID = 1L;
@@ -53,7 +51,7 @@ public class RequestScopedBeanInterceptorHandler extends NormalScopedBeanInterce
     /**
      * Creates a new handler.
      */
-    public RequestScopedBeanInterceptorHandler(BeanManager beanManager, Bean<?> bean)
+    public SessionScopedBeanInterceptorHandler(BeanManager beanManager, Bean<?> bean)
     {
         super(beanManager, bean);
     }

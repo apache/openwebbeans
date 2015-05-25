@@ -24,6 +24,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.Contextual;
 
 import org.apache.webbeans.context.creational.BeanInstanceBag;
+import org.apache.webbeans.intercept.RequestScopedBeanInterceptorHandler;
 
 /**
  * Request context implementation.
@@ -82,4 +83,11 @@ public class RequestContext extends AbstractContext
         return propagatedSessionContext;
     }
 
+
+    @Override
+    public void destroy(Contextual<?> contextual)
+    {
+        super.destroy(contextual);
+        RequestScopedBeanInterceptorHandler.removeThreadLocals();
+    }
 }

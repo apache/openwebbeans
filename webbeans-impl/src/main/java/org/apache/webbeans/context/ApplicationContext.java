@@ -64,7 +64,7 @@ public class ApplicationContext extends AbstractContext
                 continue;
             }
 
-            destroy(contextual);
+            destroyInstance(contextual);
         }
     }
 
