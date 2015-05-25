@@ -140,6 +140,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -1252,45 +1253,56 @@ public final class WebBeansUtil
         }
     }
 
+    private final static Set<Type> EXTENSION_BEAN_EVENT_TYPES = new HashSet<Type>(
+        Arrays.asList(new Class[]{
+            GProcessAnnotatedType.class,
+            GProcessSyntheticAnnotatedType.class,
+            GProcessInjectionPoint.class,
+            GProcessInjectionTarget.class,
+            GProcessBeanAttributes.class,
+            GProcessManagedBean.class,
+            GProcessSessionBean.class,
+            GProcessBean.class}));
     public static boolean isExtensionBeanEventType(Type type)
     {
-        return type.equals(GProcessAnnotatedType.class) ||
-               type.equals(GProcessSyntheticAnnotatedType.class) ||
-               type.equals(GProcessInjectionPoint.class) ||
-               type.equals(GProcessInjectionTarget.class) ||
-               type.equals(GProcessBeanAttributes.class) ||
-               type.equals(GProcessManagedBean.class) ||
-               type.equals(GProcessSessionBean.class) ||
-               type.equals(GProcessBean.class);
+        return EXTENSION_BEAN_EVENT_TYPES.contains(type);
     }
 
+    private final static Set<Type> DEFAULT_EXTENSION_BEAN_EVENT_TYPE = new HashSet<Type>(
+        Arrays.asList(new Class[]{
+            ProcessAnnotatedType.class,
+            ProcessSyntheticAnnotatedType.class,
+            ProcessInjectionPoint.class,
+            ProcessInjectionTarget.class,
+            ProcessBeanAttributes.class,
+            ProcessManagedBean.class,
+            ProcessBean.class,
+            ProcessSessionBean.class}));
     public static boolean isDefaultExtensionBeanEventType(Class<?> clazz)
     {
-        return clazz.equals(ProcessAnnotatedType.class) ||
-               clazz.equals(ProcessSyntheticAnnotatedType.class) ||
-               clazz.equals(ProcessInjectionPoint.class) ||
-               clazz.equals(ProcessInjectionTarget.class) ||
-               clazz.equals(ProcessBeanAttributes.class) ||
-               clazz.equals(ProcessManagedBean.class) ||
-               clazz.equals(ProcessBean.class) ||
-               clazz.equals(ProcessSessionBean.class);
+        return DEFAULT_EXTENSION_BEAN_EVENT_TYPE.contains(clazz);
     }
 
+    private final static Set<Type> EXTENSION_PRODUCER_OR_OBSERVER_EVENT_TYPE = new HashSet<Type>(
+        Arrays.asList(new Class[]{
+            GProcessProducer.class,
+            GProcessProducerField.class,
+            GProcessProducerMethod.class,
+            GProcessObservableMethod.class}));
     public static boolean isExtensionProducerOrObserverEventType(Type type)
     {
-        return type.equals(GProcessProducer.class) ||
-               type.equals(GProcessProducerField.class) ||
-               type.equals(GProcessProducerMethod.class) ||
-               type.equals(GProcessObservableMethod.class);
+        return EXTENSION_PRODUCER_OR_OBSERVER_EVENT_TYPE.contains(type);
     }
 
+    private final static Set<Type> DEFAULT_EXTENSION_PRODUCER_OR_OBSERVER_EVENT_TYPE = new HashSet<Type>(
+        Arrays.asList(new Class[]{
+            ProcessProducer.class,
+            ProcessProducerField.class,
+            ProcessProducerMethod.class,
+            ProcessObserverMethod.class}));
     public static boolean isDefaultExtensionProducerOrObserverEventType(Class<?> clazz)
     {
-        return clazz.equals(ProcessProducer.class) ||
-               clazz.equals(ProcessProducerField.class) ||
-               clazz.equals(ProcessProducerMethod.class) ||
-               clazz.equals(ProcessObserverMethod.class);
-
+        return DEFAULT_EXTENSION_PRODUCER_OR_OBSERVER_EVENT_TYPE.contains(clazz);
     }
 
     public static boolean isDependent(Bean<?> bean)
