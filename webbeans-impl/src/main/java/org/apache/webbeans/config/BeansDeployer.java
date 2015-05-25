@@ -278,6 +278,8 @@ public class BeansDeployer
                 validateDecoratorDecoratedTypes();
                 validateDecoratorGenericTypes();
 
+                webBeansContext.getBeanManagerImpl().getNotificationManager().clearCaches();
+
                 // fire event
                 fireAfterDeploymentValidationEvent();
 

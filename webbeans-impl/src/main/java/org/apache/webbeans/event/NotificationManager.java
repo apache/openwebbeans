@@ -25,6 +25,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,6 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.GenericsUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
-@SuppressWarnings("unchecked")
 public final class NotificationManager
 {
     private final Map<Type, Set<ObserverMethod<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverMethod<?>>>();
@@ -87,34 +87,52 @@ public final class NotificationManager
     /**
      * Contains information whether certain Initialized and Destroyed events have observer methods.
      */
-    private final ConcurrentMap<Annotation, Boolean> hasLifecycleEventObservers = new ConcurrentHashMap<Annotation, Boolean>();
+    private final ConcurrentMap<Annotation, Boolean> hasLifecycleEventObservers
+        = new ConcurrentHashMap<Annotation, Boolean>();
+
+    /**
+     * List of ObserverMethods cached by their raw types.
+     */
+    private final ConcurrentHashMap<Class<?>, Set<ObserverMethod<?>>> observersByRawType
+        = new ConcurrentHashMap<Class<?>, Set<ObserverMethod<?>>>();
 
 
 
-    public static final Set<Class> CONTAINER_EVENT_CLASSES = new HashSet<Class>();
-    static {
-        CONTAINER_EVENT_CLASSES.add(AfterBeanDiscovery.class);
-        CONTAINER_EVENT_CLASSES.add(AfterDeploymentValidation.class);
-        CONTAINER_EVENT_CLASSES.add(AfterTypeDiscovery.class);
-        CONTAINER_EVENT_CLASSES.add(BeforeBeanDiscovery.class);
-        CONTAINER_EVENT_CLASSES.add(BeforeShutdown.class);
-        CONTAINER_EVENT_CLASSES.add(ProcessAnnotatedType.class);
-        CONTAINER_EVENT_CLASSES.add(ProcessBean.class);
-        CONTAINER_EVENT_CLASSES.add(ProcessBeanAttributes.class);
-        CONTAINER_EVENT_CLASSES.add(ProcessInjectionPoint.class);
-        CONTAINER_EVENT_CLASSES.add(ProcessInjectionTarget.class);
-        CONTAINER_EVENT_CLASSES.add(ProcessManagedBean.class);
-        CONTAINER_EVENT_CLASSES.add(ProcessObserverMethod.class);
-        CONTAINER_EVENT_CLASSES.add(ProcessProducer.class);
-        CONTAINER_EVENT_CLASSES.add(ProcessProducerField.class);
-        CONTAINER_EVENT_CLASSES.add(ProcessProducerMethod.class);
-        CONTAINER_EVENT_CLASSES.add(ProcessSessionBeanImpl.class);
-        CONTAINER_EVENT_CLASSES.add(ProcessSyntheticAnnotatedType.class);
-    }
+    public static final Set<Class> CONTAINER_EVENT_CLASSES = new HashSet<Class>(
+        Arrays.asList(new Class[]{
+            AfterBeanDiscovery.class,
+            AfterDeploymentValidation.class,
+            AfterTypeDiscovery.class,
+            BeforeBeanDiscovery.class,
+            BeforeShutdown.class,
+            ProcessAnnotatedType.class,
+            ProcessBean.class,
+            ProcessBeanAttributes.class,
+            ProcessInjectionPoint.class,
+            ProcessInjectionTarget.class,
+            ProcessManagedBean.class,
+            ProcessObserverMethod.class,
+            ProcessProducer.class,
+            ProcessProducerField.class,
+            ProcessProducerMethod.class,
+            ProcessSessionBeanImpl.class,
+            ProcessSyntheticAnnotatedType.class,
+        }));
 
     public NotificationManager(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
+    }
+
+    /**
+     * This methods needs to get called after the container got started.
+     * This is to avoid that events which already got fired during bootstrap in Extensions
+     * will get cached and events from beans thus get ignored.
+     */
+    public void clearCaches()
+    {
+        observersByRawType.clear();
+        hasLifecycleEventObservers.clear();
     }
 
     /**
@@ -304,7 +322,18 @@ public final class NotificationManager
             return filterByExtensionEventType(event, declaredEventType);
         }
         Class<?> eventClass = event.getClass();
-        
+
+        // whether the fired event is a raw java class or a generic type
+        boolean isRawEvent = declaredEventType instanceof Class;
+        if (isRawEvent)
+        {
+            Set rawTypeObservers = observersByRawType.get(eventClass);
+            if (rawTypeObservers != null)
+            {
+                return rawTypeObservers;
+            }
+        }
+
         Set<ObserverMethod<? super T>> matching = new HashSet<ObserverMethod<? super T>>();
 
         Set<Type> eventTypes = GenericsUtil.getTypeClosure(declaredEventType, eventClass);
@@ -332,6 +361,12 @@ public final class NotificationManager
                     break;
                 }
             }
+        }
+
+        if (isRawEvent)
+        {
+            // cache the result
+            observersByRawType.putIfAbsent(eventClass, (Set) matching);
         }
         return matching;
     }
