@@ -74,7 +74,6 @@ import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansJavaEEPlugin;
-import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.ExceptionUtil;
@@ -533,17 +532,10 @@ public class BeansDeployer
         
         //REgister Provider Beans
         OpenWebBeansJavaEEPlugin beanEeProvider = webBeansContext.getPluginLoader().getJavaEEPlugin();
-        OpenWebBeansWebPlugin beanWebProvider = webBeansContext.getPluginLoader().getWebPlugin();
-        
+
         if(beanEeProvider != null)
         {
-            addDefaultBean(webBeansContext, "org.apache.webbeans.ee.beans.ValidatorBean");
-            addDefaultBean(webBeansContext, "org.apache.webbeans.ee.beans.ValidatorFactoryBean");
-            addDefaultBean(webBeansContext, "org.apache.webbeans.ee.beans.UserTransactionBean");
-        }
-        else if(beanWebProvider != null)
-        {
-            addDefaultBean(webBeansContext, "org.apache.webbeans.ee.common.beans.PrincipalBean");
+            beanEeProvider.registerEEBeans();
         }
             
     }
