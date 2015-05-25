@@ -177,8 +177,6 @@ public final class NotificationManager
 
     public <T> Set<ObserverMethod<? super T>> resolveObservers(T event, EventMetadataImpl metadata, boolean isLifecycleEvent)
     {
-        EventUtil.checkEventBindings(webBeansContext, metadata.getQualifiers());
-
         Type eventType = metadata.validatedType();
         Set<ObserverMethod<? super T>> observersMethods = filterByType(event, eventType, isLifecycleEvent);
 
@@ -189,9 +187,10 @@ public final class NotificationManager
             observersMethods = filterByWithAnnotations(observersMethods, ((ProcessAnnotatedType) event).getAnnotatedType());
         }
 
-        //this check for the TCK is only needed if no observer was found
-        if (observersMethods.isEmpty())
+        if (!isLifecycleEvent && observersMethods.isEmpty())
         {
+            //this check for the TCK is only needed if no observer was found
+            EventUtil.checkEventBindings(webBeansContext, metadata.getQualifiers());
             EventUtil.checkQualifierImplementations(metadata.getQualifiers());
         }
 
