@@ -36,6 +36,12 @@ public class ApplicationContext extends AbstractContext
 {
     private static final long serialVersionUID = -8254441824647652312L;
 
+    /**
+     * used to prevent us firing the Destroyed event twice.
+     * We cannot just use setActive(false) as this would trash &#064;BeforeShutdown
+     */
+    private boolean destroyed = false;
+
     public ApplicationContext()
     {
         super(ApplicationScoped.class);
@@ -66,6 +72,8 @@ public class ApplicationContext extends AbstractContext
 
             destroyInstance(contextual);
         }
+
+        destroyed = true;
     }
 
     /**
@@ -78,5 +86,11 @@ public class ApplicationContext extends AbstractContext
         setActive(false);
     }
 
-
+    /**
+     * @return @{code true} if custom beans already got destroyed
+     */
+    public boolean isDestroyed()
+    {
+        return destroyed;
+    }
 }

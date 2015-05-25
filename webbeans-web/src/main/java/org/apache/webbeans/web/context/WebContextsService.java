@@ -581,7 +581,7 @@ public class WebContextsService extends AbstractContextsService
      */
     protected void initApplicationContext(Object startupObject)
     {
-        if (applicationContext != null)
+        if (applicationContext != null && !applicationContext.isDestroyed())
         {
             applicationContext.setActive(true);
             return;
@@ -604,7 +604,7 @@ public class WebContextsService extends AbstractContextsService
     protected void destroyApplicationContext(Object endObject)
     {
         //Destroy context
-        if(applicationContext != null)
+        if(applicationContext != null && !applicationContext.isDestroyed())
         {
             applicationContext.destroy();
             // this is needed to get rid of ApplicationScoped beans which are cached inside the proxies...

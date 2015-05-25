@@ -296,7 +296,7 @@ public class DefaultContextsService extends AbstractContextsService
     
     private void startApplicationContext()
     {
-        if (applicationContext != null)
+        if (applicationContext != null && !applicationContext.isDestroyed())
         {
             // applicationContext is already started
             return;
@@ -368,7 +368,7 @@ public class DefaultContextsService extends AbstractContextsService
     
     private void stopApplicationContext()
     {
-        if(applicationContext != null)
+        if(applicationContext != null && !applicationContext.isDestroyed())
         {
             applicationContext.destroy();
 
