@@ -552,7 +552,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
 
         private BeanAttributesBuilderFactory(WebBeansContext webBeansContext)
         {
-            Asserts.assertNotNull(webBeansContext, "webBeansContext");
+            Asserts.assertNotNull(webBeansContext, Asserts.PARAM_NAME_WEBBEANSCONTEXT);
             this.webBeansContext = webBeansContext;
         }
         

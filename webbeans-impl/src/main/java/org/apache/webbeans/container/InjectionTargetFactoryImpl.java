@@ -46,7 +46,7 @@ public class InjectionTargetFactoryImpl<T> implements InjectionTargetFactory<T>
     public InjectionTargetFactoryImpl(AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
         Asserts.assertNotNull(annotatedType, "AnnotatedType");
-        Asserts.assertNotNull(webBeansContext, "WebBeansContext");
+        Asserts.assertNotNull(webBeansContext, Asserts.PARAM_NAME_WEBBEANSCONTEXT);
         this.annotatedType = annotatedType;
         this.webBeansContext = webBeansContext;
     }

@@ -28,6 +28,8 @@ import java.lang.reflect.Method;
  */
 public final class Asserts
 {
+    public static final String PARAM_NAME_WEBBEANSCONTEXT = "WebBeansContetx";
+    public static final String PARAM_NAME_ANNOTATION = "Annotation";
 
     /*
      * Private constructor

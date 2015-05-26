@@ -31,7 +31,7 @@ public class ExtensionBeanBuilder<T>
 
     public ExtensionBeanBuilder(WebBeansContext webBeansContext, Class<T> type)
     {
-        Asserts.assertNotNull(webBeansContext, "webBeansContext");
+        Asserts.assertNotNull(webBeansContext, Asserts.PARAM_NAME_WEBBEANSCONTEXT);
         Asserts.assertNotNull(type, "type");
         this.webBeansContext = webBeansContext;
         annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
