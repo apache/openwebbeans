@@ -576,7 +576,7 @@ public final class AnnotationManager
      */
     public Set<Class<? extends Annotation>> getStereotypeMetaAnnotations(Set<Class<? extends Annotation>> stereotypes)
     {
-        Asserts.assertNotNull(stereotypes, "anns");
+        Asserts.assertNotNull(stereotypes, Asserts.PARAM_NAME_ANNOTATION);
         Set<Class<? extends Annotation>> interAnns = new HashSet<Class<? extends Annotation>>();
 
         for (Class<? extends Annotation> ann : stereotypes)
@@ -608,7 +608,7 @@ public final class AnnotationManager
      */
     public Set<Class<? extends Annotation>> getStereotypes(Set<Class<? extends Annotation>> anns)
     {
-        Asserts.assertNotNull(anns, "bean");
+        Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
         if (hasStereoTypeMetaAnnotation(anns))
         {
             return getStereotypeMetaAnnotations(anns);
