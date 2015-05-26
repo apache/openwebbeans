@@ -35,7 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @SuppressWarnings("unchecked")
-public class TransactionalEventNotifier
+public final class TransactionalEventNotifier
 {
     private static final Logger logger = WebBeansLoggerFacade.getLogger(TransactionalEventNotifier.class);
 

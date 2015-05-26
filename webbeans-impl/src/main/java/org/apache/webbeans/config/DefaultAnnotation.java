@@ -29,7 +29,7 @@ import java.lang.reflect.Proxy;
  * The annotation literal gets filled with the default values.
  * TODO implement class caching!
  */
-public class DefaultAnnotation implements InvocationHandler, Annotation
+public final class DefaultAnnotation implements InvocationHandler, Annotation
 {
     
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];

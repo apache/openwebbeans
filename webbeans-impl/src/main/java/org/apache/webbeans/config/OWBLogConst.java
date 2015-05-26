@@ -22,7 +22,7 @@ package org.apache.webbeans.config;
  * import org.apache.webbeans.config.OWBLogConst;
  */
 
-public class OWBLogConst
+public final class OWBLogConst
 {
     private OWBLogConst()
     {
