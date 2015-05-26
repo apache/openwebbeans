@@ -188,7 +188,7 @@ public final class AnnotationManager
      */
     public boolean hasInterceptorBindingMetaAnnotation(Annotation[] anns)
     {
-        Asserts.assertNotNull(anns, "anns");
+        Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
 
         for (Annotation ann : anns)
         {
@@ -220,7 +220,7 @@ public final class AnnotationManager
      */
     public Annotation[] getInterceptorBindingMetaAnnotations(Annotation[] anns)
     {
-        Asserts.assertNotNull(anns, "anns");
+        Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
         List<Annotation> interAnns = new ArrayList<Annotation>();
 
         for (final Annotation ann : anns)
@@ -366,21 +366,21 @@ public final class AnnotationManager
     /**
      * Gets the array of qualifier annotations on the given array.
      *
-     * @param annotations annotation array
+     * @param anns annotation array
      * @return array containing qualifier anns
      */
-    public Set<Annotation> getQualifierAnnotations(Collection<Annotation> annotations)
+    public Set<Annotation> getQualifierAnnotations(Collection<Annotation> anns)
     {
-        Asserts.assertNotNull(annotations, "annotations");
+        Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
 
-        if (annotations.isEmpty())
+        if (anns.isEmpty())
         {
             return DefaultLiteral.SET;
         }
 
         Set<Annotation> set = new HashSet<Annotation>();
 
-        for (Annotation annot : annotations)
+        for (Annotation annot : anns)
         {
             if (isQualifierAnnotation(annot.annotationType()))
             {
@@ -520,7 +520,7 @@ public final class AnnotationManager
 
     public boolean hasStereoTypeMetaAnnotation(Set<Class<? extends Annotation>> anns)
     {
-        Asserts.assertNotNull(anns, "anns");
+        Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
 
         for (Class<? extends Annotation> ann : anns)
         {
@@ -535,7 +535,7 @@ public final class AnnotationManager
 
     public boolean hasStereoTypeMetaAnnotation(Annotation[] anns)
     {
-        Asserts.assertNotNull(anns, "anns");
+        Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
 
         for (Annotation ann : anns)
         {
@@ -550,7 +550,7 @@ public final class AnnotationManager
 
     public Annotation[] getStereotypeMetaAnnotations(Annotation[] anns)
     {
-        Asserts.assertNotNull(anns, "anns");
+        Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
         List<Annotation> interAnns = new ArrayList<Annotation>();
 
         for (Annotation ann : anns)
