@@ -113,9 +113,14 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
             setJspELFactory((ServletContext) startupObject, resolver);
         }
 
-        // Add BeanManager to the 'javax.enterprise.inject.spi.BeanManager' servlet context attribute
-        ServletContext servletContext = (ServletContext)(startupObject);
-        servletContext.setAttribute(BeanManager.class.getName(), getBeanManager());
+        ServletContext servletContext =  null;
+        if (startupObject instanceof ServletContext)
+        {
+            servletContext = (ServletContext)(startupObject);
+            
+            // Add BeanManager to the 'javax.enterprise.inject.spi.BeanManager' servlet context attribute
+            servletContext.setAttribute(BeanManager.class.getName(), getBeanManager());
+        }
 
         // fire @Initialized(ApplicationScoped.class) if any observer for it exists
         if (webBeansContext.getBeanManagerImpl().getNotificationManager().
