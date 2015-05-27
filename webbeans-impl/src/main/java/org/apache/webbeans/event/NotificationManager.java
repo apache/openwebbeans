@@ -344,15 +344,17 @@ public final class NotificationManager
 
         Set<Type> observedTypes = observers.keySet();
 
-        for (Type observedType : observedTypes)
+
+        for (Map.Entry<Type, Set<ObserverMethod<?>>> observerEntry : observers.entrySet())
         {
+            Type observedType = observerEntry.getKey();
             for (Type eventType : eventTypes)
             {
                 if ((ParameterizedType.class.isInstance(eventType) && Class.class.isInstance(observedType)
                         && GenericsUtil.isAssignableFrom(true, false, observedType, ParameterizedType.class.cast(eventType).getRawType()))
                     || GenericsUtil.isAssignableFrom(true, false, observedType, eventType))
                 {
-                    Set<ObserverMethod<?>> observerMethods = observers.get(observedType);
+                    Set<ObserverMethod<?>> observerMethods = observerEntry.getValue();
 
                     for (ObserverMethod<?> observerMethod : observerMethods)
                     {
