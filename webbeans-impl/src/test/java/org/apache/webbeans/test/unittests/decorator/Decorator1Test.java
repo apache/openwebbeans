@@ -38,6 +38,7 @@ import org.apache.webbeans.test.component.decorator.clean.Account;
 import org.apache.webbeans.test.component.decorator.clean.AccountComponent;
 import org.apache.webbeans.test.component.decorator.clean.LargeTransactionDecorator;
 import org.apache.webbeans.test.component.decorator.clean.ServiceDecorator;
+import org.apache.webbeans.test.component.decorator.clean.ServiceDecoratorWithCtInjectionPoint;
 import org.apache.webbeans.test.component.service.IService;
 import org.apache.webbeans.test.component.service.ServiceImpl1;
 import org.junit.Test;
@@ -99,6 +100,33 @@ public class Decorator1Test extends AbstractUnitTest
         Assert.assertEquals(1500, LargeTransactionDecorator.depositeAmount.intValue());
         Assert.assertEquals(3000, LargeTransactionDecorator.withDrawAmount.intValue());
 
+    }
+
+
+    @Test
+    public void testDecoratorWithCtDelegate()
+    {
+        addDecorator(ServiceDecoratorWithCtInjectionPoint.class);
+        addDecorator(LargeTransactionDecorator.class);
+
+        startContainer(ServiceDecoratorWithCtInjectionPoint.class, CheckWithCheckPayment.class, ServiceImpl1.class, Binding1.class);
+
+        ServiceDecoratorWithCtInjectionPoint.delegateAttr = null;
+        ServiceDecoratorWithCtInjectionPoint.ip = null;
+
+        ServiceImpl1 serviceImpl = getInstance(ServiceImpl1.class, new Annotation[]{new Binding1Literal()});
+        String s = serviceImpl.service();
+
+        Assert.assertEquals("ServiceDecoratorWithCtInjectionPoint", s);
+
+        Set<Type> apiTyeps = new HashSet<Type>();
+        apiTyeps.add(IService.class);
+
+        List<Decorator<?>> decs = getBeanManager().resolveDecorators(apiTyeps, new Annotation[]{new Binding1Literal()});
+        Assert.assertNotNull(decs);
+        Assert.assertTrue(decs.size() > 0);
+
+        Assert.assertEquals("ServiceImpl1", ServiceDecoratorWithCtInjectionPoint.delegateAttr);
     }
 
 }
