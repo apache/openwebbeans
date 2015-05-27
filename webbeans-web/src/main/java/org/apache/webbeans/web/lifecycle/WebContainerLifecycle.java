@@ -117,7 +117,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         if (startupObject instanceof ServletContext)
         {
             servletContext = (ServletContext)(startupObject);
-            
+
             // Add BeanManager to the 'javax.enterprise.inject.spi.BeanManager' servlet context attribute
             servletContext.setAttribute(BeanManager.class.getName(), getBeanManager());
         }

@@ -347,7 +347,7 @@ public class WebContextsService extends AbstractContextsService
 
         Object payload = null;
 
-        if(startupObject != null && startupObject instanceof ServletRequestEvent)
+        if(startupObject instanceof ServletRequestEvent)
         {
             HttpServletRequest request = (HttpServletRequest) ((ServletRequestEvent) startupObject).getServletRequest();
             requestContext.setServletRequest(request);
@@ -512,7 +512,7 @@ public class WebContextsService extends AbstractContextsService
         // whether the session is destroyed because it is expired
         boolean sessionIsExpiring = false;
 
-        if (endObject != null && endObject instanceof HttpSession)
+        if (endObject instanceof HttpSession)
         {
             session = (HttpSession) endObject;
             if (context == null && session.getAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME) != null)
@@ -610,7 +610,7 @@ public class WebContextsService extends AbstractContextsService
             // this is needed to get rid of ApplicationScoped beans which are cached inside the proxies...
             webBeansContext.getBeanManagerImpl().clearCacheProxies();
 
-            Object payload = endObject != null && endObject instanceof ServletContext ? endObject : new Object();
+            Object payload = endObject instanceof ServletContext ? endObject : new Object();
             webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
                 payload, DestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
         }
@@ -633,7 +633,7 @@ public class WebContextsService extends AbstractContextsService
             {
                 singletonContext = new SingletonContext();
                 singletonContext.setActive(true);
-                Object payLoad = startupObject != null && startupObject instanceof ServletContext
+                Object payLoad = startupObject instanceof ServletContext
                     ? (ServletContext) startupObject : new Object();
                 webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
                     payLoad, InitializedLiteral.INSTANCE_SINGLETON_SCOPED);
@@ -668,7 +668,7 @@ public class WebContextsService extends AbstractContextsService
             return;
         }
 
-        if (startObject != null && startObject instanceof ConversationContext)
+        if (startObject instanceof ConversationContext)
         {
             //X TODO check if this branch is still needed
             ConversationContext context = (ConversationContext) startObject;

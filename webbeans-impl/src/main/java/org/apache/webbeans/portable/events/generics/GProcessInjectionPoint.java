@@ -42,7 +42,7 @@ public class GProcessInjectionPoint extends ProcessInjectionPointImpl implements
             {
                 return getInjectionPoint().getBean().getBeanClass();
             }
-            else if (getInjectionPoint().getAnnotated() != null && getInjectionPoint().getAnnotated() instanceof AnnotatedMember)
+            else if (getInjectionPoint().getAnnotated() instanceof AnnotatedMember)
             {
                 return ((AnnotatedMember) getInjectionPoint().getAnnotated()).getDeclaringType().getJavaClass();
             }
