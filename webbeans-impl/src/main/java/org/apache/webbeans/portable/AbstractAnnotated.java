@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.enterprise.inject.spi.Annotated;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.GenericsUtil;
 
 /**
@@ -56,14 +57,9 @@ abstract class AbstractAnnotated implements Annotated
      */
     protected AbstractAnnotated(WebBeansContext webBeansContext, Type baseType)
     {
-        if (webBeansContext == null)
-        {
-            throw new NullPointerException("no WebBeansContext");
-        }
-        if (baseType == null)
-        {
-            throw new NullPointerException("no base type");
-        }
+        Asserts.assertNotNull(webBeansContext, Asserts.PARAM_NAME_WEBBEANSCONTEXT);
+        Asserts.assertNotNull(baseType, "base type");
+        
         this.baseType = baseType;
         this.webBeansContext = webBeansContext;
     }
