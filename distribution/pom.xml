@@ -40,32 +40,50 @@
 
     <properties>
         <skipReports>true</skipReports>
+        <noAssembly>true</noAssembly>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <skipAssembly>${noAssembly}</skipAssembly>
+                    <tarLongFileMode>gnu</tarLongFileMode>
+                    <descriptors>
+                        <descriptor>src/assembly/dist-binary.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <profiles>
         <profile>
+            <!-- for quickly building a local distrbution package -->
+            <id>build-dist</id>
+            <properties>
+                <noAssembly>false</noAssembly>
+            </properties>
+        </profile>
+
+        <profile>
             <id>apache-release</id>
+            <properties>
+                <noAssembly>false</noAssembly>
+            </properties>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.4</version>
-                        <configuration>
-                            <tarLongFileMode>gnu</tarLongFileMode>
-                            <descriptors>
-                                <descriptor>src/assembly/dist-binary.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-install-plugin</artifactId>
