@@ -97,6 +97,8 @@
         into this 'distribution' module.
     -->
     <dependencies>
+
+        <!-- spec APIs -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-atinject_1.0_spec</artifactId>
@@ -105,6 +107,30 @@
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jcdi_1.1_spec</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-interceptor_1.2_spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-annotation_1.2_spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-el_2.2_spec</artifactId>
+        </dependency>
+
+        <!-- scanner and ASM-->
+        <dependency>
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-finder-shaded</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-asm5-shaded</artifactId>
+        </dependency>
+
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>openwebbeans-impl</artifactId>
