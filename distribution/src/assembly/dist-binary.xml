@@ -49,18 +49,30 @@ under the License.
             <source>../samples/guess/src/main/webapp/WEB-INF/web.xml</source>
         </file>
 
-       <file>
-           <outputDirectory>config</outputDirectory>
-           <source>../webbeans-impl/src/main/resources/META-INF/openwebbeans/openwebbeans.properties</source>
-       </file>
+        <file>
+            <outputDirectory>config</outputDirectory>
+            <source>../webbeans-impl/src/main/resources/META-INF/openwebbeans/openwebbeans.properties</source>
+        </file>
     </files>
 
+    <fileSets>
+        <fileSet>
+            <outputDirectory>/</outputDirectory>
+            <directory>src/main/install_scripts</directory>
+            <includes>
+                <include>*.sh</include>
+                <include>*.bat</include>
+            </includes>
+        </fileSet>
+    </fileSets>
     <dependencySets>
 
         <dependencySet>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>org.apache.openwebbeans:openwebbeans-impl:jar:${project.version}</include>
+                <include>org.apache.openwebbeans:openwebbeans-impl:jar</include>
+                <include>org.apache.xbean:xbean-finder-shaded:jar</include>
+                <include>org.apache.xbean:xbean-asm5-shaded:jar</include>
             </includes>
         </dependencySet>
 
@@ -71,6 +83,7 @@ under the License.
                 <include>org.apache.geronimo.specs:geronimo-jcdi_1.1_spec:jar</include>
                 <include>org.apache.geronimo.specs:geronimo-interceptor_1.2_spec:jar</include>
                 <include>org.apache.geronimo.specs:geronimo-annotation_1.2_spec:jar</include>
+                <include>org.apache.geronimo.specs:geronimo-el_2.2_spec:jar</include>
             </includes>
         </dependencySet>
 
@@ -89,6 +102,7 @@ under the License.
                 <include>org.apache.openwebbeans:openwebbeans-resource</include>
                 <include>org.apache.openwebbeans:openwebbeans-osgi</include>
                 <include>org.apache.openwebbeans:openwebbeans-web</include>
+                <include>org.apache.openwebbeans:openwebbeans-tomcat6</include>
                 <include>org.apache.openwebbeans:openwebbeans-tomcat7</include>
             </includes>
 
