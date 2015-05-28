@@ -59,6 +59,7 @@ under the License.
         <fileSet>
             <outputDirectory>/</outputDirectory>
             <directory>src/main/install_scripts</directory>
+            <fileMode>0777</fileMode>
             <includes>
                 <include>*.sh</include>
                 <include>*.bat</include>
