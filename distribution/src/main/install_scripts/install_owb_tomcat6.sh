@@ -19,9 +19,7 @@
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# Install script for Apache OpenWebBeans to Tomcat7 and higher
-#
-# This script ALSO works with Tomcat8 and Tomcat9!
+# Install script for Apache OpenWebBeans to Tomcat6
 #
 # usage example:
 # First unzip the openwebbeans binary distribution file.
