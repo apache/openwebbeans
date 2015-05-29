@@ -127,7 +127,10 @@ public abstract class BaseProducerProducer<T, P> extends AbstractProducer<T>
             }
             finally
             {
-                parentCreationalContext.release();
+                if (parentCreationalContext != null)
+                {
+                    parentCreationalContext.release();
+                }
             }
         }
     }

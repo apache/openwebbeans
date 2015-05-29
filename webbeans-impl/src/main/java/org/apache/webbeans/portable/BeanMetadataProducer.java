@@ -31,11 +31,6 @@ public class BeanMetadataProducer<T> extends AbstractProducer<Contextual<T>>
     @Override
     protected Contextual<T> produce(Map<Interceptor<?>, ?> interceptors, CreationalContextImpl<Contextual<T>> creationalContext)
     {
-        if (!(creationalContext instanceof CreationalContextImpl))
-        {
-            // TODO What to do here?
-            throw new IllegalStateException("MetadataProducer does work only with CreationalContextImpl");
-        }
         CreationalContextImpl<T> contextImpl = (CreationalContextImpl<T>)creationalContext;
         return contextImpl.getBean();
     }
