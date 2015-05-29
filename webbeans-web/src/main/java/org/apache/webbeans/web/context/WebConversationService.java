@@ -24,7 +24,6 @@ import javax.servlet.http.HttpSession;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.ConversationService;
 
@@ -126,11 +125,7 @@ public class WebConversationService implements ConversationService
         ContextsService contextsService = webBeansContext.getContextsService();
         if (contextsService instanceof WebContextsService)
         {
-            RequestContext requestContext = ((WebContextsService) contextsService).getRequestContext(false);
-            if (requestContext instanceof ServletRequestContext)
-            {
-                return ((ServletRequestContext) requestContext).getServletRequest();
-            }
+            return ((WebContextsService) contextsService).getRequestContext(false).getServletRequest();
         }
 
         return null;
