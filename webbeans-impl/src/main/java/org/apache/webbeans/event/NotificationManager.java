@@ -342,9 +342,6 @@ public final class NotificationManager
             throw new IllegalArgumentException("event type may not contain unbound type variable: " + eventTypes);
         }
 
-        Set<Type> observedTypes = observers.keySet();
-
-
         for (Map.Entry<Type, Set<ObserverMethod<?>>> observerEntry : observers.entrySet())
         {
             Type observedType = observerEntry.getKey();
