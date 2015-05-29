@@ -237,6 +237,7 @@ public class WebContextsService extends AbstractContextsService
         else if(scopeType.equals(Dependent.class))
         {
             //Do nothing
+            return;
         }
         else if (scopeType.equals(Singleton.class))
         {
@@ -320,6 +321,7 @@ public class WebContextsService extends AbstractContextsService
         else if (scopeType.equals(Dependent.class))
         {
             //Do nothing
+            return;
         }
         else if (scopeType.equals(Singleton.class))
         {
