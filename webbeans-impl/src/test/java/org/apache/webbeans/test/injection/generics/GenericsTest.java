@@ -127,4 +127,11 @@ public class GenericsTest extends AbstractUnitTest
         Assert.assertNotNull(bazEnum);
         Assert.assertEquals(BazEnum.YES, bazEnum);
     }
+
+    @Test
+    public void testManualLookupsOfBeansWithGenerics() {
+        startContainer(MyBean.class, MyInterface.class, MyAbstract.class, StringBean.class, StringBeanAbstract.class);
+        MyBean instance = getInstance(MyBean.class);
+        instance.checkAll();
+    }
 }

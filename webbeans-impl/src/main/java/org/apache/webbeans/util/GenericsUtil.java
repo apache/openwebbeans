@@ -65,6 +65,48 @@ public final class GenericsUtil
         return false;
     }
 
+    public static boolean satisfiesDependencyRaw(boolean isDelegateOrEvent, boolean isProducer, Type injectionPointType, Type beanType)
+    {
+        if (beanType instanceof TypeVariable || beanType instanceof WildcardType || beanType instanceof GenericArrayType)
+        {
+            return isAssignableFrom(isDelegateOrEvent, isProducer, injectionPointType, beanType);
+        }
+        else
+        {
+            Type injectionPointRawType = injectionPointType instanceof ParameterizedType? ((ParameterizedType)injectionPointType).getRawType(): injectionPointType;
+            Type beanRawType = beanType instanceof ParameterizedType? ((ParameterizedType)beanType).getRawType(): beanType;
+
+            if  (ClassUtil.isSame(injectionPointRawType, beanRawType))
+            {
+                return isAssignableFrom(isDelegateOrEvent, isProducer, injectionPointRawType, beanRawType);
+            }
+            else
+            {
+                Class bean = (Class) beanType;
+                if (bean.getSuperclass() != null && ClassUtil.isRawClassEquals(injectionPointType, bean.getSuperclass()))
+                {
+                    return true;
+                }
+
+                Class<?>[] interfaces = bean.getInterfaces();
+                if (interfaces == null || interfaces.length == 0)
+                {
+                    return false;
+                }
+
+                for (Class<?> clazz : interfaces)
+                {
+                    if (ClassUtil.isRawClassEquals(injectionPointType, clazz))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     /**
      * 5.2.3 and 5.2.4
      */
