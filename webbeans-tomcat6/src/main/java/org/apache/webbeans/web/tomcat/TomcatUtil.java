@@ -70,7 +70,7 @@ public class TomcatUtil
         }
     }
 
-    private final static class Instance
+    private static final class Instance
     {
         private Object object;
         private CreationalContext<?> context;
