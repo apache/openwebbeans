@@ -29,11 +29,11 @@ under the License.
 
     <files>
         <file>
-            <source>../LICENSE</source>
+            <source>src/main/resources/LICENSE</source>
         </file>
 
         <file>
-            <source>../NOTICE</source>
+            <source>src/main/resources/NOTICE</source>
         </file>
 
         <file>
