@@ -23,11 +23,7 @@ under the License.
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
     <listener>
-        <listener-class>org.apache.webbeans.servlet.BeginWebBeansConfigurationListener</listener-class>
-    </listener>
-
-    <listener>
-        <listener-class>org.apache.webbeans.servlet.EndWebBeansConfigurationListener</listener-class>
+        <listener-class>org.apache.webbeans.servlet.WebBeansConfigurationListener</listener-class>
     </listener>
 
 </web-app>
