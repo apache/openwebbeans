@@ -79,10 +79,10 @@
         <geronimo_validation.version>1.1</geronimo_validation.version>
         <tomcat6.version>6.0.35</tomcat6.version>
         <tomcat7.version>7.0.85</tomcat7.version>
-        <xbean.version>4.6</xbean.version>
+        <openejb.version>4.7.5</openejb.version>
         <myfaces.version>1.2.9</myfaces.version>
         <myfaces2.version>2.2.3</myfaces2.version>
-        <xbean.version>4.1</xbean.version>
+        <xbean.version>4.6</xbean.version>
     </properties>
     
     <mailingLists>

@@ -58,6 +58,7 @@ public abstract class AbstractProxyFactory
 
     private static final Logger logger = WebBeansLoggerFacade.getLogger(AbstractProxyFactory.class);
 
+
     protected WebBeansContext webBeansContext;
 
     /**
@@ -67,6 +68,8 @@ public abstract class AbstractProxyFactory
      */
     private Object unsafe = null;
     private Method unsafeAllocateInstance = null;
+
+    private final int javaVersion;
 
 
     /**
@@ -315,12 +318,15 @@ public abstract class AbstractProxyFactory
     private int findJavaVersion(final Class<?> from)
     {
         final String resource = from.getName().replace('.', '/') + ".class";
-        try (final InputStream stream = from.getClassLoader().getResourceAsStream(resource))
+        final InputStream stream = from.getClassLoader().getResourceAsStream(resource);
+
+        if (stream == null)
         {
-            if (stream == null)
-            {
-                return javaVersion;
-            }
+            return javaVersion;
+        }
+
+        try
+        {
             final ClassReader reader = new ClassReader(stream);
             final VersionVisitor visitor = new VersionVisitor();
             reader.accept(visitor, SKIP_DEBUG);
@@ -332,6 +338,17 @@ public abstract class AbstractProxyFactory
         catch (final Exception e)
         {
             // no-op
+        }
+        finally
+        {
+            try
+            {
+                stream.close();
+            }
+            catch (Exception e)
+            {
+                // no-op
+            }
         }
         // mainly for JVM classes - outside the classloader, find to fallback on the JVM version
         return javaVersion;

@@ -67,7 +67,8 @@ public class TomcatInstanceManager implements InstanceManager
     }
 
     @Override
-    public Object newInstance(Class<?> aClass) throws IllegalAccessException, InvocationTargetException, NamingException, InstantiationException
+    public Object newInstance(Class<?> aClass) throws IllegalAccessException, InvocationTargetException, NamingException,
+            InstantiationException, NoSuchMethodException
     {
         // Creates a defaut instance
         Object object = this.processor.newInstance(aClass);
@@ -79,7 +80,8 @@ public class TomcatInstanceManager implements InstanceManager
     }
 
     @Override
-    public Object newInstance(String str) throws IllegalAccessException, InvocationTargetException, NamingException, InstantiationException, ClassNotFoundException
+    public Object newInstance(String str) throws IllegalAccessException, InvocationTargetException, NamingException,
+            InstantiationException, ClassNotFoundException, NoSuchMethodException
     {
         // Creates a defaut instance
         Object object = this.processor.newInstance(str);
@@ -98,7 +100,8 @@ public class TomcatInstanceManager implements InstanceManager
     }
 
     @Override
-    public Object newInstance(String str, ClassLoader cl) throws IllegalAccessException, InvocationTargetException, NamingException, InstantiationException, ClassNotFoundException
+    public Object newInstance(String str, ClassLoader cl) throws IllegalAccessException, InvocationTargetException, NamingException,
+            InstantiationException, ClassNotFoundException, NoSuchMethodException
     {
         // Creates a defaut instance
         Object object = this.processor.newInstance(str, cl);
