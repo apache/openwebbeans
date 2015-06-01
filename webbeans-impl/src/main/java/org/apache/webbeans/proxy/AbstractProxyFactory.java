@@ -55,6 +55,7 @@ public abstract class AbstractProxyFactory
 
     private static final Logger logger = WebBeansLoggerFacade.getLogger(AbstractProxyFactory.class);
 
+
     protected WebBeansContext webBeansContext;
 
     /**
@@ -64,6 +65,8 @@ public abstract class AbstractProxyFactory
      */
     private Object unsafe = null;
     private Method unsafeAllocateInstance = null;
+
+    private final int javaVersion;
 
 
     /**
@@ -77,8 +80,34 @@ public abstract class AbstractProxyFactory
     protected AbstractProxyFactory(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
+        javaVersion = determineJavaVersion();
         initializeUnsafe();
     }
+
+    private int determineJavaVersion()
+    {
+        String javaVersionProp = webBeansContext.getOpenWebBeansConfiguration().getGeneratorJavaVersion();
+        if (javaVersionProp != null)
+        {
+            if (javaVersionProp.startsWith("1.7"))
+            {
+                return Opcodes.V1_7;
+            }
+            else if (javaVersionProp.startsWith("1.8"))
+            {
+                return Opcodes.V1_8;
+            }
+            else if (javaVersionProp.startsWith("1.9"))
+            {
+                // TODO upgrade to Java9 as soon as ASM really supports it!
+                return Opcodes.V1_8;
+            }
+        }
+
+        // the fallback default is V1_6
+        return Opcodes.V1_6;
+    }
+
 
     protected ClassLoader getProxyClassLoader(Class<?> beanClass)
     {
@@ -249,7 +278,7 @@ public abstract class AbstractProxyFactory
                                  Method[] interceptedMethods, Method[] nonInterceptedMethods, Constructor<?> constructor)
             throws ProxyGenerationException
     {
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         String classFileName = classToProxy.getName().replace('.', '/');
 
         String[] interfaceNames = new String[]{Type.getInternalName(getMarkerInterface())};
@@ -261,7 +290,7 @@ public abstract class AbstractProxyFactory
             superClassName = Type.getInternalName(Object.class);
         }
 
-        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER + Opcodes.ACC_SYNTHETIC, proxyClassFileName, null, superClassName, interfaceNames);
+        cw.visit(javaVersion, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER + Opcodes.ACC_SYNTHETIC, proxyClassFileName, null, superClassName, interfaceNames);
         cw.visitSource(classFileName + ".java", null);
 
         createInstanceVariables(cw, classToProxy, classFileName);
