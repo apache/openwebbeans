@@ -410,7 +410,7 @@ public class WebContextsService extends AbstractContextsService
             Object payload = null;
             if (context.getServletRequest() != null)
             {
-                payload = context.getServletRequest().getSession();
+                payload = context.getServletRequest().getSession(false);
             }
 
             webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
@@ -537,9 +537,9 @@ public class WebContextsService extends AbstractContextsService
             ServletRequestContext requestContext = getRequestContext(true);
 
             if (destroySessionImmediately
-                    || requestContext == null || requestContext.getServletRequest() == null
-                || requestContext.getServletRequest().getSession() == null
-                    || sessionIsExpiring)
+                || requestContext == null || requestContext.getServletRequest() == null
+                || requestContext.getServletRequest().getSession(false) == null
+                || sessionIsExpiring)
             {
                 context.destroy();
                 webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
