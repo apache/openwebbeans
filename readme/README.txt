@@ -1,12 +1,12 @@
 -------------------------------
-Apache OpenWebBeans 1.6.0
+Apache OpenWebBeans 1.6.1
 -------------------------------
 Welcome!
 
 Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.6.0 release of Apache OpenWebBeans.
+This document is based on the 1.6.1 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -21,11 +21,14 @@ Our project's web page can be found at:
 http://openwebbeans.apache.org
 
 
+
+
+
 --------------------------------
-OpenWebBeans 1.6.0 Release Features
+OpenWebBeans 1.6.1 Release Features
 --------------------------------
 
-- The 1.6.0 release supports the following features
+- The 1.6.1 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -56,9 +59,24 @@ This mainly concerns the area of section 5 and 12.1 Bean Archives (BDA) which do
 out when it comes to OSGi containers and likes.
 In Apache OpenWebBeans, a settings configured in a beans.xml file of a BDA is not
 only effective for this very bean archive but for the whole BeanManager in control
-of the Application. This is especially the case for <alternatives> and
+of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.6.1
+-------------------------------------------
+
+Bug
+
+    [OWB-1082] - WebContext BeanManager not longer serializable
+    [OWB-1083] - WebContextsService errors when servlet session invalidated during request lifecycle
+
+Improvement
+
+    [OWB-1081] - check Reception.IF_EXISTS in case of an inactive context
+
 
 
 -------------------------------------------
