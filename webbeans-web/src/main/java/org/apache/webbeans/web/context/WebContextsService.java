@@ -410,7 +410,12 @@ public class WebContextsService extends AbstractContextsService
             Object payload = null;
             if (context.getServletRequest() != null)
             {
-                payload = context.getServletRequest().getSession(false);
+                payload = context.getHttpSession();
+                if (payload == null)
+                {
+                    // in tomcat it will be null if invalidate was called
+                    payload = context.getServletRequest().getSession(false);
+                }
             }
 
             webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
@@ -552,6 +557,9 @@ public class WebContextsService extends AbstractContextsService
             else
             {
                 requestContext.setPropagatedSessionContext(context);
+                // this is to be spec compliant but depending the servlet container
+                // it can be dangerous if sessions are pooled (ie you can fire a session used by another request)
+                requestContext.setHttpSession(session);
             }
         }
 

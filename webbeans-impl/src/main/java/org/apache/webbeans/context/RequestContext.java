@@ -40,6 +40,11 @@ public class RequestContext extends AbstractContext
      */
     private SessionContext propagatedSessionContext;
 
+    /**
+     * if propagatedSessionContext != null the event instance to use (http session can be no more accessible)
+     */
+    private Object httpSession;
+
     /*
     * Constructor
     */
@@ -83,6 +88,15 @@ public class RequestContext extends AbstractContext
         return propagatedSessionContext;
     }
 
+    public Object getHttpSession()
+    {
+        return httpSession;
+    }
+
+    public void setHttpSession(final Object httpSession)
+    {
+        this.httpSession = httpSession;
+    }
 
     @Override
     public void destroy(Contextual<?> contextual)
