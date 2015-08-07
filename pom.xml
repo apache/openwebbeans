@@ -29,7 +29,7 @@
     <artifactId>openwebbeans</artifactId>
     <name>Apache OpenWebBeans</name>
     <packaging>pom</packaging>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.2</version>
 
     <url>openwebbeans.apache.org</url>
 
@@ -46,9 +46,9 @@
     <inceptionYear>2008</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openwebbeans/trunk</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openwebbeans/trunk</developerConnection>
-        <url>https://svn.apache.org/repos/asf/openwebbeans/trunk</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openwebbeans/tags/openwebbeans-1.6.2</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openwebbeans/tags/openwebbeans-1.6.2</developerConnection>
+        <url>https://svn.apache.org/repos/asf/openwebbeans/tags/openwebbeans-1.6.2</url>
     </scm>
 
     <issueManagement>
