@@ -1,12 +1,12 @@
 -------------------------------
-Apache OpenWebBeans 1.6.1
+Apache OpenWebBeans 1.6.2
 -------------------------------
 Welcome!
 
 Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.6.1 release of Apache OpenWebBeans.
+This document is based on the 1.6.2 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -25,10 +25,10 @@ http://openwebbeans.apache.org
 
 
 --------------------------------
-OpenWebBeans 1.6.1 Release Features
+OpenWebBeans 1.6.2 Release Features
 --------------------------------
 
-- The 1.6.1 release supports the following features
+- The 1.6.2 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -62,6 +62,17 @@ only effective for this very bean archive but for the whole BeanManager in contr
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.6.2
+-------------------------------------------
+
+Bug
+
+    [OWB-948] - Type of @New bean does not respect parameter
+    [OWB-1084] - destory session event can used the wrong payload
+
 
 
 -------------------------------------------
