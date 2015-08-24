@@ -42,6 +42,8 @@ import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.context.SingletonContext;
 import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.intercept.RequestScopedBeanInterceptorHandler;
+import org.apache.webbeans.intercept.SessionScopedBeanInterceptorHandler;
 
 
 public class DefaultContextsService extends AbstractContextsService
@@ -193,6 +195,7 @@ public class DefaultContextsService extends AbstractContextsService
         if (requestCtx != null)
         {
             requestCtx.destroy();
+            RequestScopedBeanInterceptorHandler.removeThreadLocals();
             requestContext.set(null);
             requestContext.remove();
         }
@@ -201,6 +204,7 @@ public class DefaultContextsService extends AbstractContextsService
         if (sessionCtx != null)
         {
             sessionCtx.destroy();
+            SessionScopedBeanInterceptorHandler.removeThreadLocals();
             sessionContext.set(null);
             sessionContext.remove();
         }
@@ -292,7 +296,7 @@ public class DefaultContextsService extends AbstractContextsService
     
     private void startApplicationContext()
     {
-        if (applicationContext != null)
+        if (applicationContext != null && !applicationContext.isDestroyed())
         {
             // applicationContext is already started
             return;
@@ -303,10 +307,12 @@ public class DefaultContextsService extends AbstractContextsService
 
         applicationContext = ctx;
 
-        // We do ALSO send the @Initialized(ApplicationScoped.class) at this location but this is WAY to early for userland apps
+        // We do ALSO send the @Initialized(ApplicationScoped.class) at this
+        // location but this is WAY to early for userland apps
         // This also gets sent in the application startup code after AfterDeploymentValidation got fired.
         // see AbstractLifecycle#afterStartApplication
-        webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
+        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+            new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
     }
 
     
@@ -319,7 +325,8 @@ public class DefaultContextsService extends AbstractContextsService
 
         if (ctx.getConversation().isTransient())
         {
-            webBeansContext.getBeanManagerImpl().fireEvent(conversationManager.getLifecycleEventPayload(ctx), InitializedLiteral.INSTANCE_CONVERSATION_SCOPED);
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                conversationManager.getLifecycleEventPayload(ctx), InitializedLiteral.INSTANCE_CONVERSATION_SCOPED);
         }
     }
 
@@ -331,7 +338,8 @@ public class DefaultContextsService extends AbstractContextsService
         ctx.setActive(true);
         
         requestContext.set(ctx);
-        webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_REQUEST_SCOPED);
+        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+            new Object(), InitializedLiteral.INSTANCE_REQUEST_SCOPED);
     }
 
     
@@ -341,7 +349,8 @@ public class DefaultContextsService extends AbstractContextsService
         ctx.setActive(true);
         
         sessionContext.set(ctx);
-        webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_SESSION_SCOPED);
+        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+            new Object(), InitializedLiteral.INSTANCE_SESSION_SCOPED);
     }
 
     
@@ -352,19 +361,21 @@ public class DefaultContextsService extends AbstractContextsService
         ctx.setActive(true);
         
         singletonContext.set(ctx);
-        webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_SINGLETON_SCOPED);
+        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+            new Object(), InitializedLiteral.INSTANCE_SINGLETON_SCOPED);
     }
 
     
     private void stopApplicationContext()
     {
-        if(applicationContext != null)
+        if(applicationContext != null && !applicationContext.isDestroyed())
         {
             applicationContext.destroy();
 
             // this is needed to get rid of ApplicationScoped beans which are cached inside the proxies...
             WebBeansContext.currentInstance().getBeanManagerImpl().clearCacheProxies();
-            webBeansContext.getBeanManagerImpl().fireEvent(new Object(), DestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                new Object(), DestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
         }
     }
 
@@ -399,7 +410,9 @@ public class DefaultContextsService extends AbstractContextsService
 
         requestContext.set(null);
         requestContext.remove();
-        webBeansContext.getBeanManagerImpl().fireEvent(new Object(), DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
+        RequestScopedBeanInterceptorHandler.removeThreadLocals();
+        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+            new Object(), DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
     }
 
     
@@ -412,7 +425,9 @@ public class DefaultContextsService extends AbstractContextsService
 
         sessionContext.set(null);
         sessionContext.remove();
-        webBeansContext.getBeanManagerImpl().fireEvent(new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
+        SessionScopedBeanInterceptorHandler.removeThreadLocals();
+        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+            new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
     }
 
     
@@ -425,7 +440,8 @@ public class DefaultContextsService extends AbstractContextsService
 
         singletonContext.set(null);
         singletonContext.remove();
-        webBeansContext.getBeanManagerImpl().fireEvent(new Object(), DestroyedLiteral.INSTANCE_SINGLETON_SCOPED);
+        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+            new Object(), DestroyedLiteral.INSTANCE_SINGLETON_SCOPED);
     }
 
 

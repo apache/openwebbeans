@@ -33,7 +33,7 @@ under the License.
 
     <properties>
         <deploy.skip>false</deploy.skip>
-        <myfaces2.version>2.0.7</myfaces2.version>
+        <myfaces2.version>2.2.8</myfaces2.version>
     </properties>
 
     <build>

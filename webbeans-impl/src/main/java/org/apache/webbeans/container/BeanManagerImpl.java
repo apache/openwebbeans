@@ -460,6 +460,17 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
     /**
+     * Fire &#064;Initialized and &#064Destroyed events, but only IF any observers do exist.
+     */
+    public void fireContextLifecyleEvent(Object payload, Annotation lifecycleQualifier)
+    {
+        if (notificationManager.hasContextLifecycleObserver(lifecycleQualifier))
+        {
+            fireEvent(payload, lifecycleQualifier);
+        }
+    }
+
+    /**
      * Like {@link #fireEvent(Object, java.lang.annotation.Annotation...)} but intended for
      * internal CDI Container lifecycle events. The difference is that those
      * events must only be delivered to CDI Extensions and not to normal beans.
@@ -720,7 +731,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             final boolean isProducer = AbstractProducerBean.class.isInstance(bean);
             if(!isProducer && // we have different rules for producers
                !isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean, isProducer) &&
-               !GenericsUtil.satisfiesDependency(false, isProducer, beanType, bean.getBeanClass()))
+               !GenericsUtil.satisfiesDependency(false, isProducer, beanType, bean.getBeanClass()) &&
+               !GenericsUtil.satisfiesDependencyRaw(false, isProducer, beanType, bean.getBeanClass()))
             {
                 throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
             }

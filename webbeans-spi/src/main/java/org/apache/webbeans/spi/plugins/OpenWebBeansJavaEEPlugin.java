@@ -31,4 +31,10 @@ package org.apache.webbeans.spi.plugins;
 public interface OpenWebBeansJavaEEPlugin extends OpenWebBeansPlugin
 {
     boolean isEEComponent(Class<?> impl);
+
+    /**
+     * Gets invoked when the EE integration should register it's
+     * CDI Beans. E.g. ValidatorBean, PrincipalBean, etc
+     */
+    void registerEEBeans();
 }

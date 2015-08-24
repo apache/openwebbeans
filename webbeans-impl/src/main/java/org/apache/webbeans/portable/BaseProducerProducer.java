@@ -53,7 +53,7 @@ public abstract class BaseProducerProducer<T, P> extends AbstractProducer<T>
                                 WebBeansContext webBeansContext)
     {
         super(points);
-        Asserts.assertNotNull(webBeansContext, "WebBeansContext");
+        Asserts.assertNotNull(webBeansContext, Asserts.PARAM_NAME_WEBBEANSCONTEXT);
         this.owner = owner;
         this.webBeansContext = webBeansContext;
         this.disposalIPs = disposalIPs;
@@ -127,7 +127,10 @@ public abstract class BaseProducerProducer<T, P> extends AbstractProducer<T>
             }
             finally
             {
-                parentCreationalContext.release();
+                if (parentCreationalContext != null)
+                {
+                    parentCreationalContext.release();
+                }
             }
         }
     }

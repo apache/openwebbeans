@@ -195,14 +195,6 @@ public class DecoratorHandler implements InterceptorHandler, Externalizable
             {
                 interceptorInfo = ((AbstractProducer<?>)producer).getInterceptorInfo();
             }
-            else
-            {
-                // TODO
-            }
-        }
-        else
-        {
-            // TODO
         }
     }
 

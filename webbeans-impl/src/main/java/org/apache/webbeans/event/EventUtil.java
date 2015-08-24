@@ -36,7 +36,7 @@ public final class EventUtil
 {
     private EventUtil()
     {
-
+        // avoid construction for utility class
     }
 
     //expensive check needed by the TCK (EventBindingTypesTest#testFireEventWithNonRuntimeBindingTypeFails) - see OWB-798

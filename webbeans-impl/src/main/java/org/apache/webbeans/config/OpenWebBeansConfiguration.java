@@ -49,12 +49,6 @@ public class OpenWebBeansConfiguration
     /**Logger instance*/
     private static final Logger logger = WebBeansLoggerFacade.getLogger(OpenWebBeansConfiguration.class);
 
-    /**Default configuration files*/
-    private static final String DEFAULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";
-    
-    /**Property of application*/
-    private final Properties configProperties = new Properties();
-        
     /**Conversation periodic delay in ms.*/
     public static final String CONVERSATION_PERIODIC_DELAY = "org.apache.webbeans.conversation.Conversation.periodicDelay";
     
@@ -144,6 +138,23 @@ public class OpenWebBeansConfiguration
      */
     public static final String EAGER_SESSION_INITIALISATION = "org.apache.webbeans.web.eagerSessionInitialisation";
 
+    /**
+     * The Java Version to use for the generated proxy classes.
+     * If "auto" then we will pick the version of the current JVM.
+     * The default is set to "1.6" as some tools in jetty/tomcat/etc still
+     * cannot properly handle Java8 (mostly due to older Eclipse JDT versions).
+     */
+    public static final String GENERATOR_JAVA_VERSIN = "org.apache.webbeans.generator.javaVersion";
+
+
+    /**Default configuration files*/
+    private static final String DEFAULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";
+
+    private static final String AUTO_CONFIG = "auto";
+
+    /**Property of application*/
+    private final Properties configProperties = new Properties();
+
 
     private Set<String> ignoredInterfaces;
 
@@ -221,15 +232,15 @@ public class OpenWebBeansConfiguration
     private Properties doPrivilegedGetSystemProperties()
     {
         return AccessController.doPrivileged(
-                new PrivilegedAction<Properties>()
+            new PrivilegedAction<Properties>()
+            {
+                @Override
+                public Properties run()
                 {
-                    @Override
-                    public Properties run()
-                    {
-                        return System.getProperties();
-                    }
-
+                    return System.getProperties();
                 }
+
+            }
         );
     }
 
@@ -309,5 +320,16 @@ public class OpenWebBeansConfiguration
     public boolean supportsInterceptionOnProducers()
     {
         return "true".equals(getProperty(PRODUCER_INTERCEPTION_SUPPORT, "true"));
+    }
+
+    public String getGeneratorJavaVersion()
+    {
+        String generatorJavaVersion = getProperty(GENERATOR_JAVA_VERSIN);
+        if (generatorJavaVersion == null || AUTO_CONFIG.equals(generatorJavaVersion))
+        {
+            return System.getProperty("java.version");
+        }
+
+        return generatorJavaVersion;
     }
 }

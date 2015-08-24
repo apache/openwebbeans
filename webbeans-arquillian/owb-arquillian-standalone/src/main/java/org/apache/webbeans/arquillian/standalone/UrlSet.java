@@ -87,7 +87,7 @@ public class UrlSet implements Set<URL>
     @Override
     public boolean remove(Object o)
     {
-        if (o instanceof URL && o != null)
+        if (o instanceof URL)
         {
             return urlMap.remove(((URL) o).toExternalForm()) != null;
         }

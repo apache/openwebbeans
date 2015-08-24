@@ -113,17 +113,24 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
             setJspELFactory((ServletContext) startupObject, resolver);
         }
 
-        // Add BeanManager to the 'javax.enterprise.inject.spi.BeanManager' servlet context attribute
-        ServletContext servletContext = (ServletContext)(startupObject);
-        servletContext.setAttribute(BeanManager.class.getName(), getBeanManager());
+        ServletContext servletContext =  null;
+        if (startupObject instanceof ServletContext)
+        {
+            servletContext = (ServletContext)(startupObject);
+
+            // Add BeanManager to the 'javax.enterprise.inject.spi.BeanManager' servlet context attribute
+            servletContext.setAttribute(BeanManager.class.getName(), getBeanManager());
+        }
 
         // fire @Initialized(ApplicationScoped.class) if any observer for it exists
-        if (webBeansContext.getBeanManagerImpl().getNotificationManager().hasLifecycleObserver(InitializedLiteral.INSTANCE_APPLICATION_SCOPED))
+        if (webBeansContext.getBeanManagerImpl().getNotificationManager().
+            hasContextLifecycleObserver(InitializedLiteral.INSTANCE_APPLICATION_SCOPED))
         {
             // we need to temporarily start the ReqeustContext
             webBeansContext.getContextsService().startContext(RequestScoped.class, null);
 
-            webBeansContext.getBeanManagerImpl().fireEvent(servletContext != null ? servletContext : new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
+            webBeansContext.getBeanManagerImpl().fireEvent(
+                servletContext != null ? servletContext : new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
 
             // shut down the RequestContext again
             webBeansContext.getContextsService().endContext(RequestScoped.class, null);

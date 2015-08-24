@@ -16,19 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.spi.plugins;
+package org.apache.webbeans.test.injection.generics;
 
-/**
- * OpenWebBeans plugin point for Web Containers.
- * Currently there is no default implementation
- * for this plugin. Each web container that wants 
- * to support OpenWebBeans, implements this plugin
- * and register it via META-INF/services/org.apache.webbeans.plugins.OpenWebBeansWebPlugin
- * @version $Rev$ $Date$
- *
- * @deprecated we don't like the sessionId in any map anymore as this changes _way_ too often
- */
-public interface OpenWebBeansWebPlugin extends OpenWebBeansPlugin
+public interface MyInterface<T>
 {
-    String currentSessionId();
+    T getValue();
 }

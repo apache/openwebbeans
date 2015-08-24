@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  * greather than 100.</p>
  *
  */
-public class PropertyLoader
+public final class PropertyLoader
 {
     public static final int CONFIGURATION_ORDINAL_DEFAULT_VALUE = 100;
 

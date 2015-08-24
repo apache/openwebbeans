@@ -23,7 +23,7 @@ import javax.servlet.ServletContext;
 /**
  * This utility helps to be compatible with Servlet API 2.4
  */
-public class ServletCompatibilityUtil
+public final class ServletCompatibilityUtil
 {
 
     // avoid instantiation

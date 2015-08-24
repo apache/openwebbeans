@@ -33,7 +33,7 @@ import javax.servlet.http.HttpSessionListener;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
-import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
+import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
 /**
  * Tomcat plugin for OWB.
@@ -41,7 +41,7 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
  * @version $Rev: 940336 $ $Date: 2010-05-03 02:32:18 +0300 (Mon, 03 May 2010) $
  *
  */
-public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansWebPlugin
+public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansPlugin
 {
     //Security service implementation.
     private final TomcatSecurityService securityService = new TomcatSecurityService();
@@ -129,9 +129,4 @@ public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansWe
         return false;
     }
 
-    @Override
-    public String currentSessionId()
-    {
-        return null; // TODO
-    }
 }

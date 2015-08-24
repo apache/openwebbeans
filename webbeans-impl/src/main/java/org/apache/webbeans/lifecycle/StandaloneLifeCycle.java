@@ -58,8 +58,10 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
     @Override
     protected void afterStartApplication(Object startupObject)
     {
-        // the ApplicationContext is already started, but we fire the event again as the userland beans are only available now
-        webBeansContext.getBeanManagerImpl().fireEvent(new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
+        // the ApplicationContext is already started, but we fire
+        // the event again as the userland beans are only available now
+        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+            new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
 
         webBeansContext.getContextsService().startContext(RequestScoped.class, null);
         webBeansContext.getContextsService().startContext(SessionScoped.class, null);

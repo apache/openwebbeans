@@ -365,11 +365,7 @@ public final class ClassUtil
             }
             else
             {
-                if (isOverridden(methods, method))
-                {
-                    // method is overridden in superclass, so do nothing
-                }
-                else
+                if (!isOverridden(methods, method))
                 {
                     // method is not overridden, so add it
                     methods.add(method);

@@ -221,7 +221,10 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         {
             try
             {
-                xmlStream.close();
+                if (xmlStream != null)
+                {
+                    xmlStream.close();
+                }
             }
             catch (IOException ioe)
             {
@@ -454,7 +457,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
                     {
                         final String value = getTrimmedAttribute(condition, "value");
                         final String systProp = System.getProperty(getTrimmedAttribute(condition, "name"));
-                        if ((value == null && systProp == null) || !value.equals(systProp))
+                        if ((value == null && systProp == null) || !(value != null && value.equals(systProp)))
                         {
                             skip = true;
                             break;

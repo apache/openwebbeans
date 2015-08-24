@@ -145,7 +145,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         }
     }
 
-    abstract protected void configure();
+    protected abstract void configure();
 
     /**
      * Since CDI-1.1 this is actually more a 'findBdaBases' as it also

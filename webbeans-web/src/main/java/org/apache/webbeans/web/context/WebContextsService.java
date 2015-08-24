@@ -32,8 +32,10 @@ import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.context.SingletonContext;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.ELContextStore;
+import org.apache.webbeans.event.NotificationManager;
+import org.apache.webbeans.intercept.SessionScopedBeanInterceptorHandler;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.web.intercept.RequestScopedBeanInterceptorHandler;
+import org.apache.webbeans.intercept.RequestScopedBeanInterceptorHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ContextException;
@@ -96,6 +98,7 @@ public class WebContextsService extends AbstractContextsService
     protected Pattern eagerSessionPattern = null;
 
 
+    protected Boolean fireRequestLifecycleEvents = null;
 
     /**
      * Creates a new instance.
@@ -234,6 +237,7 @@ public class WebContextsService extends AbstractContextsService
         else if(scopeType.equals(Dependent.class))
         {
             //Do nothing
+            return;
         }
         else if (scopeType.equals(Singleton.class))
         {
@@ -317,6 +321,7 @@ public class WebContextsService extends AbstractContextsService
         else if (scopeType.equals(Dependent.class))
         {
             //Do nothing
+            return;
         }
         else if (scopeType.equals(Singleton.class))
         {
@@ -344,7 +349,7 @@ public class WebContextsService extends AbstractContextsService
 
         Object payload = null;
 
-        if(startupObject != null && startupObject instanceof ServletRequestEvent)
+        if(startupObject instanceof ServletRequestEvent)
         {
             HttpServletRequest request = (HttpServletRequest) ((ServletRequestEvent) startupObject).getServletRequest();
             requestContext.setServletRequest(request);
@@ -359,7 +364,11 @@ public class WebContextsService extends AbstractContextsService
                 }
             }
         }
-        webBeansContext.getBeanManagerImpl().fireEvent(payload != null ? payload : new Object(), InitializedLiteral.INSTANCE_REQUEST_SCOPED);
+        if (shouldFireRequestLifecycleEvents())
+        {
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                payload != null ? payload : new Object(), InitializedLiteral.INSTANCE_REQUEST_SCOPED);
+        }
     }
 
     protected boolean shouldEagerlyInitializeSession(HttpServletRequest request)
@@ -401,10 +410,16 @@ public class WebContextsService extends AbstractContextsService
             Object payload = null;
             if (context.getServletRequest() != null)
             {
-                payload = context.getServletRequest().getSession();
+                payload = context.getHttpSession();
+                if (payload == null)
+                {
+                    // in tomcat it will be null if invalidate was called
+                    payload = context.getServletRequest().getSession(false);
+                }
             }
 
-            webBeansContext.getBeanManagerImpl().fireEvent(payload != null ? payload : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                payload != null ? payload : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
 
         }
 
@@ -417,13 +432,21 @@ public class WebContextsService extends AbstractContextsService
             elStore.destroyELContextStore();
         }
 
-        Object payload = null;
-
-        if (endObject != null && endObject instanceof ServletRequestEvent)
+        if (shouldFireRequestLifecycleEvents())
         {
-            payload = ((ServletRequestEvent) endObject).getServletRequest();
+            Object payload = null;
+
+            if (endObject != null && endObject instanceof ServletRequestEvent)
+            {
+                payload = ((ServletRequestEvent) endObject).getServletRequest();
+            }
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                payload != null ? payload : new Object(), DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
         }
-        webBeansContext.getBeanManagerImpl().fireEvent(payload != null ? payload : new Object(), DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
+
+        // clean the proxy cache ThreadLocals
+        RequestScopedBeanInterceptorHandler.removeThreadLocals();
+        SessionScopedBeanInterceptorHandler.removeThreadLocals();
 
         //Clear thread locals
         conversationContexts.set(null);
@@ -464,7 +487,8 @@ public class WebContextsService extends AbstractContextsService
                     {
                         currentSessionContext = new SessionContext();
                         currentSessionContext.setActive(true);
-                        webBeansContext.getBeanManagerImpl().fireEvent(session, InitializedLiteral.INSTANCE_SESSION_SCOPED);
+                        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                            session, InitializedLiteral.INSTANCE_SESSION_SCOPED);
                         session.setAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME, currentSessionContext);
                     }
                 }
@@ -495,7 +519,7 @@ public class WebContextsService extends AbstractContextsService
         // whether the session is destroyed because it is expired
         boolean sessionIsExpiring = false;
 
-        if (endObject != null && endObject instanceof HttpSession)
+        if (endObject instanceof HttpSession)
         {
             session = (HttpSession) endObject;
             if (context == null && session.getAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME) != null)
@@ -518,11 +542,13 @@ public class WebContextsService extends AbstractContextsService
             ServletRequestContext requestContext = getRequestContext(true);
 
             if (destroySessionImmediately
-                    || requestContext == null || requestContext.getServletRequest() == null || requestContext.getServletRequest().getSession() == null
-                    || sessionIsExpiring)
+                || requestContext == null || requestContext.getServletRequest() == null
+                || requestContext.getServletRequest().getSession(false) == null
+                || sessionIsExpiring)
             {
                 context.destroy();
-                webBeansContext.getBeanManagerImpl().fireEvent(session != null ? session : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
+                webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                    session != null ? session : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
 
                 // Clear thread locals
                 sessionContexts.set(null);
@@ -531,9 +557,13 @@ public class WebContextsService extends AbstractContextsService
             else
             {
                 requestContext.setPropagatedSessionContext(context);
+                // this is to be spec compliant but depending the servlet container
+                // it can be dangerous if sessions are pooled (ie you can fire a session used by another request)
+                requestContext.setHttpSession(session);
             }
         }
 
+        SessionScopedBeanInterceptorHandler.removeThreadLocals();
     }
 
 
@@ -561,7 +591,7 @@ public class WebContextsService extends AbstractContextsService
      */
     protected void initApplicationContext(Object startupObject)
     {
-        if (applicationContext != null)
+        if (applicationContext != null && !applicationContext.isDestroyed())
         {
             applicationContext.setActive(true);
             return;
@@ -584,14 +614,15 @@ public class WebContextsService extends AbstractContextsService
     protected void destroyApplicationContext(Object endObject)
     {
         //Destroy context
-        if(applicationContext != null)
+        if(applicationContext != null && !applicationContext.isDestroyed())
         {
             applicationContext.destroy();
             // this is needed to get rid of ApplicationScoped beans which are cached inside the proxies...
             webBeansContext.getBeanManagerImpl().clearCacheProxies();
 
-            Object payload = endObject != null && endObject instanceof ServletContext ? endObject : new Object();
-            webBeansContext.getBeanManagerImpl().fireEvent(payload, DestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
+            Object payload = endObject instanceof ServletContext ? endObject : new Object();
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                payload, DestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
         }
     }
     
@@ -612,8 +643,10 @@ public class WebContextsService extends AbstractContextsService
             {
                 singletonContext = new SingletonContext();
                 singletonContext.setActive(true);
-                Object payLoad = startupObject != null && startupObject instanceof ServletContext ? (ServletContext) startupObject : new Object();
-                webBeansContext.getBeanManagerImpl().fireEvent(payLoad, InitializedLiteral.INSTANCE_SINGLETON_SCOPED);
+                Object payLoad = startupObject instanceof ServletContext
+                    ? (ServletContext) startupObject : new Object();
+                webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                    payLoad, InitializedLiteral.INSTANCE_SINGLETON_SCOPED);
             }
         }
     }
@@ -629,7 +662,8 @@ public class WebContextsService extends AbstractContextsService
             singletonContext.destroy();
             singletonContext = null;
             Object payload = endObject != null ? endObject : new Object();
-            webBeansContext.getBeanManagerImpl().fireEvent(payload, DestroyedLiteral.INSTANCE_SINGLETON_SCOPED);
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                payload, DestroyedLiteral.INSTANCE_SINGLETON_SCOPED);
         }
     }
 
@@ -644,7 +678,7 @@ public class WebContextsService extends AbstractContextsService
             return;
         }
 
-        if (startObject != null && startObject instanceof ConversationContext)
+        if (startObject instanceof ConversationContext)
         {
             //X TODO check if this branch is still needed
             ConversationContext context = (ConversationContext) startObject;
@@ -668,7 +702,8 @@ public class WebContextsService extends AbstractContextsService
         if (context != null)
         {
             context.destroy();
-            webBeansContext.getBeanManagerImpl().fireEvent(new Object(), DestroyedLiteral.INSTANCE_SINGLETON_SCOPED);
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                new Object(), DestroyedLiteral.INSTANCE_SINGLETON_SCOPED);
         }
 
         conversationContexts.set(null);
@@ -726,8 +761,9 @@ public class WebContextsService extends AbstractContextsService
 
                 if (conversationContext.getConversation().isTransient())
                 {
-                    webBeansContext.getBeanManagerImpl().fireEvent(conversationManager.getLifecycleEventPayload(conversationContext),
-                            InitializedLiteral.INSTANCE_CONVERSATION_SCOPED);
+                    webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                        conversationManager.getLifecycleEventPayload(conversationContext),
+                        InitializedLiteral.INSTANCE_CONVERSATION_SCOPED);
                 }
 
 
@@ -741,6 +777,18 @@ public class WebContextsService extends AbstractContextsService
         return conversationContext;
     }
 
+    protected boolean shouldFireRequestLifecycleEvents()
+    {
+        if (fireRequestLifecycleEvents == null)
+        {
+            NotificationManager notificationManager = webBeansContext.getBeanManagerImpl().getNotificationManager();
+            fireRequestLifecycleEvents
+                = notificationManager.hasContextLifecycleObserver(InitializedLiteral.INSTANCE_REQUEST_SCOPED) ||
+                  notificationManager.hasContextLifecycleObserver(DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
+        }
+
+        return fireRequestLifecycleEvents;
+    }
 
 
     /**

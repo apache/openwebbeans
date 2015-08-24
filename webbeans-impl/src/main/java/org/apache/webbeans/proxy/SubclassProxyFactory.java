@@ -247,11 +247,7 @@ public class SubclassProxyFactory extends AbstractProxyFactory
 
             // and finally invoke the target method on the provided Contextual Instance
             final Type declaringClass = Type.getType(delegatedMethod.getDeclaringClass());
-            if (abstractMethod)
-            {
-                // generate an empty return block
-            }
-            else
+            if (!abstractMethod)
             {
                 // invoke the method on the super class;
                 mv.visitMethodInsn(Opcodes.INVOKESPECIAL, declaringClass.getInternalName(), delegatedMethod.getName(), methodDescriptor, false);

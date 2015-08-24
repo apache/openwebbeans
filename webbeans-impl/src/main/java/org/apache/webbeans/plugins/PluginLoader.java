@@ -34,7 +34,6 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansJavaEEPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
-import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
 
 /**
  * <p>OpenWebBeans plugins are used to extend 'core' functionality of the injection
@@ -259,24 +258,6 @@ public class PluginLoader
 
         return null;        
     }
-    
-    public OpenWebBeansWebPlugin getWebPlugin()
-    {
-        if(!pluginsExist())
-        {
-            return null;
-        }
-        
-        for(OpenWebBeansPlugin plugin : plugins)
-        {
-            if(plugin instanceof OpenWebBeansWebPlugin)
-            {
-                return (OpenWebBeansWebPlugin)plugin;
-            }
-        }
-        
-        return null;        
-    }    
     
     private boolean pluginsExist()
     {

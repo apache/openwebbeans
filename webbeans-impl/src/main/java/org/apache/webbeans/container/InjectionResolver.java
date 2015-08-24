@@ -489,9 +489,16 @@ public class InjectionResolver
             resolvedComponents = findByQualifier(resolvedComponents, injectionPointType, qualifiers);
 
             // have an additional round of checks for assignability of parameterized types.
-            resolvedComponents = findByParameterizedType(resolvedComponents, injectionPointType, isDelegate);
+            Set<Bean<?>> byParameterizedType = findByParameterizedType(resolvedComponents, injectionPointType, isDelegate);
+            if (byParameterizedType.isEmpty())
+            {
+                resolvedComponents = findByBeanType(resolvedComponents, injectionPointType, isDelegate);
+            }
+            else
+            {
+                resolvedComponents = byParameterizedType;
+            }
         }
-
         resolvedBeansByType.put(cacheKey, resolvedComponents);
         if (logger.isLoggable(Level.FINE))
         {
@@ -499,6 +506,29 @@ public class InjectionResolver
         }
 
         return resolvedComponents;
+    }
+
+    private Set<Bean<?>> findByBeanType(Set<Bean<?>> allComponents, Type injectionPointType, boolean isDelegate)
+    {
+        Set<Bean<?>> resolved = new HashSet<Bean<?>>();
+        for (Bean<?> bean : allComponents)
+        {
+            boolean isProducer = AbstractProducerBean.class.isInstance(bean);
+            for (Type type : bean.getTypes())
+            {
+                if (GenericsUtil.satisfiesDependency(isDelegate, isProducer, injectionPointType, type))
+                {
+                    resolved.add(bean);
+                }
+
+                if (!ClassUtil.isParametrizedType(injectionPointType)
+                        && ClassUtil.isRawClassEquals(injectionPointType, type))
+                {
+                    resolved.add(bean);
+                }
+            }
+        }
+        return resolved;
     }
 
     private Set<Bean<?>> findByParameterizedType(Set<Bean<?>> allComponents, Type injectionPointType, boolean isDelegate)

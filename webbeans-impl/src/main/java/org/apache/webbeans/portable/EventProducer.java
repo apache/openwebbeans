@@ -79,15 +79,9 @@ public class EventProducer<T> extends AbstractProducer<Event<T>>
     protected Event<T> produce(Map<Interceptor<?>, ?> interceptors, CreationalContextImpl<Event<T>> creationalContext)
     {
         Event<T> instance = null;
-        InjectionPoint injectionPoint = null;
-        //TODO What should we do here if creationalContext is not instanceof CreationalContextImpl?
-        if (creationalContext instanceof CreationalContextImpl)
-        {
-            injectionPoint = ((CreationalContextImpl<Event<T>>)creationalContext).getInjectionPoint();
-        }
-
         Type eventType;
-        
+
+        InjectionPoint injectionPoint = creationalContext.getInjectionPoint();
         if(injectionPoint != null)
         {
             Type[] eventActualTypeArgs;
@@ -114,12 +108,8 @@ public class EventProducer<T> extends AbstractProducer<Event<T>>
             }           
             finally
             {
-                if (creationalContext instanceof CreationalContextImpl)
-                {
-                    ((CreationalContextImpl<Event<T>>)creationalContext).removeInjectionPoint();
-                }
+                creationalContext.removeInjectionPoint();
             }
-            
         }
                         
         return instance;

@@ -29,11 +29,11 @@ under the License.
 
     <files>
         <file>
-            <source>../LICENSE</source>
+            <source>src/main/resources/LICENSE</source>
         </file>
 
         <file>
-            <source>../NOTICE</source>
+            <source>src/main/resources/NOTICE</source>
         </file>
 
         <file>
@@ -49,141 +49,31 @@ under the License.
             <source>../samples/guess/src/main/webapp/WEB-INF/web.xml</source>
         </file>
 
-       <file>
-           <outputDirectory>config</outputDirectory>
-           <source>../webbeans-impl/src/main/resources/META-INF/openwebbeans/openwebbeans.properties</source>
-       </file>
+        <file>
+            <outputDirectory>config</outputDirectory>
+            <source>../webbeans-impl/src/main/resources/META-INF/openwebbeans/openwebbeans.properties</source>
+        </file>
     </files>
 
-   <fileSets>
+    <fileSets>
         <fileSet>
-            <directory>../samples/guess</directory>
-            <useDefaultExcludes>true</useDefaultExcludes>
-            <outputDirectory>samples/guess</outputDirectory>
-            <excludes>
-                <exclude>**/target/**</exclude>
-                <exclude>**/.classpath</exclude>
-                <exclude>**/.project</exclude>
-                <exclude>**/.settings/**</exclude>
-                <exclude>**/.git/**</exclude>
-                <exclude>**/.svn/**</exclude>
-                <exclude>**/.metadata/**</exclude>
-                <exclude>**/.gitignore</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>../samples/reservation</directory>
-            <useDefaultExcludes>true</useDefaultExcludes>
-            <outputDirectory>samples/reservation</outputDirectory>
-            <excludes>
-                <exclude>**/target/**</exclude>
-                <exclude>**/.classpath</exclude>
-                <exclude>**/.project</exclude>
-                <exclude>**/.settings/**</exclude>
-                <exclude>**/.git/**</exclude>
-                <exclude>**/.svn/**</exclude>
-                <exclude>**/.metadata/**</exclude>
-                <exclude>**/.gitignore</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>../samples/ejb-sample</directory>
-            <useDefaultExcludes>true</useDefaultExcludes>
-            <outputDirectory>samples/ejb-sample</outputDirectory>
-            <excludes>
-                <exclude>**/target/**</exclude>
-                <exclude>**/.classpath</exclude>
-                <exclude>**/.project</exclude>
-                <exclude>**/.settings/**</exclude>
-                <exclude>**/.git/**</exclude>
-                <exclude>**/.svn/**</exclude>
-                <exclude>**/.metadata/**</exclude>
-                <exclude>**/.gitignore</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>../samples/ejb-telephone</directory>
-            <useDefaultExcludes>true</useDefaultExcludes>
-            <outputDirectory>samples/ejb-telephone</outputDirectory>
-            <excludes>
-                <exclude>**/target/**</exclude>
-                <exclude>**/.classpath</exclude>
-                <exclude>**/.project</exclude>
-                <exclude>**/.settings/**</exclude>
-                <exclude>**/.git/**</exclude>
-                <exclude>**/.svn/**</exclude>
-                <exclude>**/.metadata/**</exclude>
-                <exclude>**/.gitignore</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>../samples/conversation-sample</directory>
-            <useDefaultExcludes>true</useDefaultExcludes>
-            <outputDirectory>samples/conversation-sample</outputDirectory>
-            <excludes>
-                <exclude>**/target/**</exclude>
-                <exclude>**/.classpath</exclude>
-                <exclude>**/.project</exclude>
-                <exclude>**/.settings/**</exclude>
-                <exclude>**/.git/**</exclude>
-                <exclude>**/.svn/**</exclude>
-                <exclude>**/.metadata/**</exclude>
-                <exclude>**/.gitignore</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>../samples/jms-sample</directory>
-            <useDefaultExcludes>true</useDefaultExcludes>
-            <outputDirectory>samples/jms-sample</outputDirectory>
-            <excludes>
-                <exclude>**/target/**</exclude>
-                <exclude>**/.classpath</exclude>
-                <exclude>**/.project</exclude>
-                <exclude>**/.settings/**</exclude>
-                <exclude>**/.git/**</exclude>
-                <exclude>**/.svn/**</exclude>
-                <exclude>**/.metadata/**</exclude>
-                <exclude>**/.gitignore</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>../samples/jsf2sample</directory>
-            <useDefaultExcludes>true</useDefaultExcludes>
-            <outputDirectory>samples/jsf2sample</outputDirectory>
-            <excludes>
-                <exclude>**/target/**</exclude>
-                <exclude>**/.classpath</exclude>
-                <exclude>**/.project</exclude>
-                <exclude>**/.settings/**</exclude>
-                <exclude>**/.git/**</exclude>
-                <exclude>**/.svn/**</exclude>
-                <exclude>**/.metadata/**</exclude>
-                <exclude>**/.gitignore</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>../samples/standalone-sample</directory>
-            <useDefaultExcludes>true</useDefaultExcludes>
-            <outputDirectory>samples/standalone-sample</outputDirectory>
-            <excludes>
-                <exclude>**/target/**</exclude>
-                <exclude>**/.classpath</exclude>
-                <exclude>**/.project</exclude>
-                <exclude>**/.settings/**</exclude>
-                <exclude>**/.git/**</exclude>
-                <exclude>**/.svn/**</exclude>
-                <exclude>**/.metadata/**</exclude>
-                <exclude>**/.gitignore</exclude>
-            </excludes>
+            <outputDirectory>/</outputDirectory>
+            <directory>src/main/install_scripts</directory>
+            <fileMode>0777</fileMode>
+            <includes>
+                <include>*.sh</include>
+                <include>*.bat</include>
+            </includes>
         </fileSet>
     </fileSets>
-
     <dependencySets>
 
         <dependencySet>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>org.apache.openwebbeans:openwebbeans-impl:jar:${project.version}</include>
+                <include>org.apache.openwebbeans:openwebbeans-impl:jar</include>
+                <include>org.apache.xbean:xbean-finder-shaded:jar</include>
+                <include>org.apache.xbean:xbean-asm5-shaded:jar</include>
             </includes>
         </dependencySet>
 
@@ -194,6 +84,7 @@ under the License.
                 <include>org.apache.geronimo.specs:geronimo-jcdi_1.1_spec:jar</include>
                 <include>org.apache.geronimo.specs:geronimo-interceptor_1.2_spec:jar</include>
                 <include>org.apache.geronimo.specs:geronimo-annotation_1.2_spec:jar</include>
+                <include>org.apache.geronimo.specs:geronimo-el_2.2_spec:jar</include>
             </includes>
         </dependencySet>
 
@@ -212,6 +103,7 @@ under the License.
                 <include>org.apache.openwebbeans:openwebbeans-resource</include>
                 <include>org.apache.openwebbeans:openwebbeans-osgi</include>
                 <include>org.apache.openwebbeans:openwebbeans-web</include>
+                <include>org.apache.openwebbeans:openwebbeans-tomcat6</include>
                 <include>org.apache.openwebbeans:openwebbeans-tomcat7</include>
             </includes>
 

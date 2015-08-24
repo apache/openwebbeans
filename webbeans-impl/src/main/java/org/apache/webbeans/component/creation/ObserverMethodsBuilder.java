@@ -59,7 +59,7 @@ public class ObserverMethodsBuilder<T>
      */
     public ObserverMethodsBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType)
     {
-        Asserts.assertNotNull(webBeansContext, "WebBeansContext");
+        Asserts.assertNotNull(webBeansContext, Asserts.PARAM_NAME_WEBBEANSCONTEXT);
         Asserts.assertNotNull(annotatedType, "annotated type");
         this.webBeansContext = webBeansContext;
         this.annotatedType = annotatedType;

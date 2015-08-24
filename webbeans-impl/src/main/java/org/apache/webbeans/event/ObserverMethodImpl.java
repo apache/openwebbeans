@@ -253,6 +253,10 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
                 }
                 catch (ContextNotActiveException cnae)
                 {
+                    if (ifExist)
+                    {
+                        return;
+                    }
                     // this may happen if we try to e.g. send an event to a @ConversationScoped bean from a ServletListener
                     logger.log(Level.INFO, OWBLogConst.INFO_0010, bean);
                     return;

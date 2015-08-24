@@ -279,14 +279,14 @@ public class JmsProxyHandler implements InvocationHandler
         {
             if(this.jmsObject != null)
             {
-                Method method = this.jmsObject.getClass().getMethod("close", new Class[]{});
+                Method method = this.jmsObject.getClass().getMethod("close");
                 
                 if(!method.isAccessible())
                 {
                     jmsComponent.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, true);
                 }
                 
-                method.invoke(this.jmsObject, new Object[]{});                
+                method.invoke(this.jmsObject);
             }
             
         }

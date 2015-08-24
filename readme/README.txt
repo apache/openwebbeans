@@ -1,12 +1,12 @@
 -------------------------------
-Apache OpenWebBeans 1.5.0
+Apache OpenWebBeans 1.6.2
 -------------------------------
 Welcome!
 
 Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.5.0 release of Apache OpenWebBeans.
+This document is based on the 1.6.2 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -21,11 +21,14 @@ Our project's web page can be found at:
 http://openwebbeans.apache.org
 
 
+
+
+
 --------------------------------
-OpenWebBeans 1.5.0 Release Features
+OpenWebBeans 1.6.2 Release Features
 --------------------------------
 
-- The 1.5.0 release supports the following features
+- The 1.6.2 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -42,7 +45,7 @@ OpenWebBeans 1.5.0 Release Features
 * @Alternative support
 * OSGi environment support with an own plugable bundle ClassPath scanner
 * plugable SecurityManager integration doubles speed if no SecurityManager is being used
-* support for direct CDI usage in tomcat-6 and tomcat-7 environments
+* support for direct CDI usage in tomcat-6, tomcat-7, tomcat-8 and other Servlet environments
 
 
 
@@ -56,9 +59,104 @@ This mainly concerns the area of section 5 and 12.1 Bean Archives (BDA) which do
 out when it comes to OSGi containers and likes.
 In Apache OpenWebBeans, a settings configured in a beans.xml file of a BDA is not
 only effective for this very bean archive but for the whole BeanManager in control
-of the Application. This is especially the case for <alternatives> and
+of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.6.2
+-------------------------------------------
+
+Bug
+
+    [OWB-948] - Type of @New bean does not respect parameter
+    [OWB-1084] - destory session event can used the wrong payload
+
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.6.1
+-------------------------------------------
+
+Bug
+
+    [OWB-1082] - WebContext BeanManager not longer serializable
+    [OWB-1083] - WebContextsService errors when servlet session invalidated during request lifecycle
+
+Improvement
+
+    [OWB-1081] - check Reception.IF_EXISTS in case of an inactive context
+
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.6.0
+-------------------------------------------
+
+Bug
+
+    [OWB-626] - Conversation Scope isn't accessible after RENDER_RESPONSE phase
+    [OWB-654] - manual lookups of beans with generics fail
+    [OWB-758] - session backed session context
+    [OWB-771] - Invocation​ContextImpl cleans target field if occurs an exception
+    [OWB-844] - [PERFORMANCE] OWB conversation.ConversationImpl.isTransient() needs improvement
+    [OWB-900] - Documentation Links are broken
+    [OWB-906] - Check failover for custom scopes -> e.g. JSF 2.2 ViewScope
+    [OWB-907] - ClassUtil fails with ArrayIndexOutOfBoundsException if WildcardType.getUpperBound() returns empty array
+    [OWB-933] - @Delegate with constructor injection fails
+    [OWB-986] - CreationalContextImpl.toString throws NullPointerException
+    [OWB-989] - Clean info issue on Sonar
+    [OWB-1035] - WebBeansELResolver broken in case of multiple beans
+    [OWB-1040] - Lifecycle events fired during bean discovery do not follow specification sequence
+    [OWB-1047] - Guess sample currently not working due to missing javax.annotation.Priority
+    [OWB-1056] - interceptor and annotations spec jars missing in distribution
+    [OWB-1059] - empty beans.xml file should result in BeanDiscoveryMode.ALL
+    [OWB-1061] - Surplus and missing @Initialized and @Destroyed events
+    [OWB-1062] - JspFactory.getDefault() returns null
+    [OWB-1064] - Split ApplicationContext destroyal for custom beans and CDI internal beans like Extensions
+    [OWB-1065] - Incorrect matching of parameterized events
+    [OWB-1066] - Stack overflow on firing parameterized event
+    [OWB-1067] - Download pages must link to KEYS file and describe how to use sigs
+    [OWB-1069] - Propagate SessionContext to end of request only if a manual Session.invalidate() was called
+    [OWB-1071] - WEB-INF/beans.xml is partly broken
+    [OWB-1076] - remove sample sources from our binary distribution
+    [OWB-1077] - create install scripts for our binary distribution
+
+Improvement
+
+    [OWB-609] - refactor conversation handling
+    [OWB-762] - improve error message for "duplicated" configs
+    [OWB-786] - available implementations of SecurityService need an improved error-handling
+    [OWB-798] - expensive check in EventUtil#checkEventBindings
+    [OWB-821] - reduce the number of string creations
+    [OWB-851] - improve registration of default ee-beans
+    [OWB-915] - re-visit tomcat modules
+    [OWB-1044] - Cache whether @Initialized and @Destroyed get used at all in an app
+    [OWB-1048] - Store @SessionScoped beans in real HttpSession if available
+    [OWB-1049] - Remove FailOver service and related handling
+    [OWB-1050] - Store the Map<conversationId, conversationContexts> in the SessionContext
+    [OWB-1051] - Use RequestScopedBeanInterceptorHandler by default
+    [OWB-1055] - Review splitting WebBeansConfigurationListener in Begin and End listeners
+    [OWB-1073] - improve OpenWebBeansConfiguration lookup handling
+    [OWB-1075] - improve annotation check
+    [OWB-1080] - Use the JVMs java version for our generated proxies
+
+New Feature
+
+    [OWB-1070] - eager session creation configuration
+    [OWB-1072] - CDI 1.2 spec requires a "CDI Conversation Filter" which eagerly touches the Conversation
+
+Task
+
+    [OWB-1060] - upgrade to latest apache-parent
+    [OWB-1068] - Remove ContextsService#activateContext and #deactivateContext
+    [OWB-1079] - upgrade ASM to 5.0.4
+
+Test
+
+    [OWB-1052] - improve our test coverage for the owb-web module
+    [OWB-1053] - improve event performance
 
 
 
@@ -990,8 +1088,8 @@ Test
 ----------------------------------------------
 Required Platform
 ----------------------------------------------
-Java Version : Java SE >= 5.0
-Java EE Must : Java EE >= 5.0
+Java Version : Java SE >= 1.6
+
 
 ---------------------------------------------
 How to Configure OpenWebBeans

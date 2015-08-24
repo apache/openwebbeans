@@ -66,7 +66,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 
     protected InterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributes<T> beanAttributes)
     {
-        Asserts.assertNotNull(webBeansContext, "webBeansContext");
+        Asserts.assertNotNull(webBeansContext, Asserts.PARAM_NAME_WEBBEANSCONTEXT);
         Asserts.assertNotNull(annotatedType, "annotated type");
         Asserts.assertNotNull(beanAttributes, "beanAttributes");
         this.webBeansContext = webBeansContext;

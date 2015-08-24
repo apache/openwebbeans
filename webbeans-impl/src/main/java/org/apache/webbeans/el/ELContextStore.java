@@ -42,7 +42,7 @@ import javax.enterprise.inject.spi.Bean;
  *  </li>
  * </ol>
  */
-public class ELContextStore
+public final class ELContextStore
 {
     private static ThreadLocal<ELContextStore> contextStores = new ThreadLocal<ELContextStore>();
 

@@ -234,7 +234,7 @@ public class OsgiMetaDataScannerService implements ScannerService
             {
                 URL jarURL = bundle.getEntry(jarName);
 
-                logger.info("adding the following beans.xml URL: " + jarURL.toExternalForm());
+                logger.info("adding the following beans.xml URL: " + jarURL != null ? jarURL.toExternalForm() : null);
 
                 beanXMLs.add(jarURL);
                 beanArchiveJarNames.add(jarName);

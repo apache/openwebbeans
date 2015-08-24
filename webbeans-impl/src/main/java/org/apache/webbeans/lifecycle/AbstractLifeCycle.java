@@ -30,6 +30,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.apache.webbeans.spi.ContainerLifecycle;
@@ -94,7 +95,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     @Override
     public BeanManager getBeanManager()
     {        
-        return beanManager;
+        return new InjectableBeanManager(beanManager);
     }
     
     @Override

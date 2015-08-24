@@ -166,6 +166,14 @@ public abstract class AbstractContext implements AlterableContext, Serializable
     @Override
     public void destroy(Contextual<?> contextual)
     {
+        destroyInstance(contextual);
+    }
+
+    /**
+     * Internal destroy method.
+     */
+    public void destroyInstance(Contextual<?> contextual)
+    {
         
         BeanInstanceBag<?> instance = componentInstanceMap.get(contextual);
         if (instance == null)
@@ -207,7 +215,7 @@ public abstract class AbstractContext implements AlterableContext, Serializable
         Set<Contextual<?>> keySet = new HashSet<Contextual<?>>(componentInstanceMap.keySet());
         for (Contextual<?> contextual: keySet)
         {
-            destroy(contextual);
+            destroyInstance(contextual);
         }
         setActive(false);
     }

@@ -24,6 +24,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.Contextual;
 
 import org.apache.webbeans.context.creational.BeanInstanceBag;
+import org.apache.webbeans.intercept.RequestScopedBeanInterceptorHandler;
 
 /**
  * Request context implementation.
@@ -38,6 +39,11 @@ public class RequestContext extends AbstractContext
      * and only destroy it at the end of the request.
      */
     private SessionContext propagatedSessionContext;
+
+    /**
+     * if propagatedSessionContext != null the event instance to use (http session can be no more accessible)
+     */
+    private Object httpSession;
 
     /*
     * Constructor
@@ -82,4 +88,20 @@ public class RequestContext extends AbstractContext
         return propagatedSessionContext;
     }
 
+    public Object getHttpSession()
+    {
+        return httpSession;
+    }
+
+    public void setHttpSession(final Object httpSession)
+    {
+        this.httpSession = httpSession;
+    }
+
+    @Override
+    public void destroy(Contextual<?> contextual)
+    {
+        super.destroy(contextual);
+        RequestScopedBeanInterceptorHandler.removeThreadLocals();
+    }
 }

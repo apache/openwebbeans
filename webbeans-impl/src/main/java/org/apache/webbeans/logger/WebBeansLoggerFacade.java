@@ -127,7 +127,7 @@ public final class WebBeansLoggerFacade
 
         if (WB_BUNDLE == null)
         {
-            throw new NullPointerException("ResourceBundle can not be null");
+            throw new IllegalStateException("ResourceBundle can not be null");
         }
         try
         {

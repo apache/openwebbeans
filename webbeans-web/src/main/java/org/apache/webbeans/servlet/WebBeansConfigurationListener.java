@@ -18,14 +18,26 @@
  */
 package org.apache.webbeans.servlet;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.el.ELContextStore;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.spi.ContainerLifecycle;
+import org.apache.webbeans.spi.ContextsService;
+import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.webbeans.web.util.ServletCompatibilityUtil;
 
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.spi.Context;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Initializing the beans container for using in an web application
@@ -39,14 +51,17 @@ import javax.servlet.http.HttpSessionListener;
  * {@link WebBeansConfigurationFilter} and {@link WebBeansConfigurationHttpSessionListener}
  * instead.
  *
- * @see BeginWebBeansConfigurationListener
- * @see EndWebBeansConfigurationListener
  */
 public class WebBeansConfigurationListener implements ServletContextListener, ServletRequestListener, HttpSessionListener
 {
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansConfigurationListener.class);
+
+
+    /**Manages the container lifecycle*/
+    protected ContainerLifecycle lifeCycle = null;
+
     private WebBeansContext webBeansContext;
-    private BeginWebBeansConfigurationListener beginWebBeansConfigurationListener;
-    private EndWebBeansConfigurationListener endWebBeansConfigurationListener;
+    private ContextsService contextsService;
 
     /**
      * Default constructor
@@ -54,49 +69,161 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     public WebBeansConfigurationListener()
     {
         webBeansContext = WebBeansContext.getInstance();
-        beginWebBeansConfigurationListener = new BeginWebBeansConfigurationListener(webBeansContext);
-        endWebBeansConfigurationListener = new EndWebBeansConfigurationListener(webBeansContext);
+        contextsService = webBeansContext.getContextsService();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void contextInitialized(ServletContextEvent event)
+    {
+        this.lifeCycle = webBeansContext.getService(ContainerLifecycle.class);
+
+        try
+        {
+            this.lifeCycle.startApplication(event);
+        }
+        catch (Exception e)
+        {
+            logger.log(Level.SEVERE,
+                WebBeansLoggerFacade.constructMessage(
+                    OWBLogConst.ERROR_0018,
+                    ServletCompatibilityUtil.getServletInfo(event.getServletContext())));
+            WebBeansUtil.throwRuntimeExceptions(e);
+        }
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void contextInitialized(ServletContextEvent sce)
+    public void requestInitialized(ServletRequestEvent event)
     {
-        beginWebBeansConfigurationListener.contextInitialized(sce);
+        try
+        {
+            if (logger.isLoggable(Level.FINE))
+            {
+                logger.log(Level.FINE, "Starting a new request : [{0}]", event == null ? "null" : event.getServletRequest().getRemoteAddr());
+            }
 
-        // for setting the lifecycle
-        endWebBeansConfigurationListener.contextInitialized(sce);
+            this.lifeCycle.getContextService().startContext(RequestScoped.class, event);
+
+            // we don't initialise the Session here but do it lazily if it gets requested
+            // the first time. See OWB-457
+        }
+        catch (Exception e)
+        {
+            logger.log(Level.SEVERE,
+                WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0019, event == null ? "null" : event.getServletRequest()));
+            WebBeansUtil.throwRuntimeExceptions(e);
+        }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void contextDestroyed(ServletContextEvent sce)
+    public void sessionCreated(HttpSessionEvent event)
     {
-        endWebBeansConfigurationListener.contextDestroyed(sce);
+        try
+        {
+            if (logger.isLoggable(Level.FINE))
+            {
+                logger.log(Level.FINE, "Starting a session with session id : [{0}]", event.getSession().getId());
+            }
+            this.lifeCycle.getContextService().startContext(SessionScoped.class, event.getSession());
+        }
+        catch (Exception e)
+        {
+            logger.log(Level.SEVERE,
+                WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0020, event.getSession()));
+            WebBeansUtil.throwRuntimeExceptions(e);
+        }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void sessionCreated(HttpSessionEvent se)
+    public void contextDestroyed(ServletContextEvent event)
     {
-        beginWebBeansConfigurationListener.sessionCreated(se);
+        if (lifeCycle != null)
+        {
+            lifeCycle.stopApplication(event);
+        }
+
+        // just to be sure that we didn't lazily create anything...
+        cleanupRequestThreadLocals();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void sessionDestroyed(HttpSessionEvent se)
+    public void requestDestroyed(ServletRequestEvent event)
     {
-        endWebBeansConfigurationListener.sessionDestroyed(se);
+        if (logger.isLoggable(Level.FINE))
+        {
+            logger.log(Level.FINE, "Destroying a request : [{0}]", event == null ? "null" : event.getServletRequest().getRemoteAddr());
+        }
+
+        // clean up the EL caches after each request
+        ELContextStore elStore = ELContextStore.getInstance(false);
+        if (elStore != null)
+        {
+            elStore.destroyELContextStore();
+        }
+
+        this.lifeCycle.getContextService().endContext(RequestScoped.class, event);
+
+        this.cleanupRequestThreadLocals();
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void requestInitialized(ServletRequestEvent sre)
+    public void sessionDestroyed(HttpSessionEvent event)
     {
-        beginWebBeansConfigurationListener.requestInitialized(sre);
+        if (logger.isLoggable(Level.FINE))
+        {
+            logger.log(Level.FINE, "Destroying a session with session id : [{0}]", event.getSession().getId());
+        }
+        boolean mustDestroy = ensureRequestScope();
+
+        this.lifeCycle.getContextService().endContext(SessionScoped.class, event.getSession());
+
+        if (mustDestroy)
+        {
+            requestDestroyed(null);
+        }
     }
 
-    @Override
-    public void requestDestroyed(ServletRequestEvent sre)
+    private boolean ensureRequestScope()
     {
-        endWebBeansConfigurationListener.requestDestroyed(sre);
+        Context context = this.lifeCycle.getContextService().getCurrentContext(RequestScoped.class);
+
+        if (context == null || !context.isActive())
+        {
+            requestInitialized(null);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Ensures that all ThreadLocals, which could have been set in this
+     * requests Thread, are removed in order to prevent memory leaks.
+     */
+    private void cleanupRequestThreadLocals()
+    {
+        if (contextsService != null)
+        {
+            contextsService.removeThreadLocals();
+        }
     }
 
 }

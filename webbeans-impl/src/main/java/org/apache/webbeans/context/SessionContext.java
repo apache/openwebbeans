@@ -25,6 +25,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Contextual;
 
 import org.apache.webbeans.context.creational.BeanInstanceBag;
+import org.apache.webbeans.intercept.SessionScopedBeanInterceptorHandler;
 
 /**
  * Session context implementation.
@@ -44,4 +45,10 @@ public class SessionContext extends PassivatingContext implements Serializable
         componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
     }
 
+    @Override
+    public void destroy(Contextual<?> contextual)
+    {
+        super.destroy(contextual);
+        SessionScopedBeanInterceptorHandler.removeThreadLocals();
+    }
 }

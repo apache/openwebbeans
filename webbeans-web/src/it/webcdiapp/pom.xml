@@ -30,6 +30,11 @@
 
     <name>Webbeans Web IT</name>
 
+    <!--
+        For locally debugging this integration test you need to first build the module.
+        Afterwards cd into target/it/webcdiapp and start tomcat with
+        $ mvn clean package tomcat7:run -Dtomcat.fork=false
+    -->
 
     <properties>
         <tomcat.version>7.0.61</tomcat.version>

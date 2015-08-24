@@ -30,6 +30,7 @@ import org.apache.webbeans.util.ArrayUtil;
 import org.apache.webbeans.util.Asserts;
 
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.New;
@@ -187,7 +188,7 @@ public final class AnnotationManager
      */
     public boolean hasInterceptorBindingMetaAnnotation(Annotation[] anns)
     {
-        Asserts.assertNotNull(anns, "anns");
+        Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
 
         for (Annotation ann : anns)
         {
@@ -219,7 +220,7 @@ public final class AnnotationManager
      */
     public Annotation[] getInterceptorBindingMetaAnnotations(Annotation[] anns)
     {
-        Asserts.assertNotNull(anns, "anns");
+        Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
         List<Annotation> interAnns = new ArrayList<Annotation>();
 
         for (final Annotation ann : anns)
@@ -365,21 +366,21 @@ public final class AnnotationManager
     /**
      * Gets the array of qualifier annotations on the given array.
      *
-     * @param annotations annotation array
+     * @param anns annotation array
      * @return array containing qualifier anns
      */
-    public Set<Annotation> getQualifierAnnotations(Collection<Annotation> annotations)
+    public Set<Annotation> getQualifierAnnotations(Collection<Annotation> anns)
     {
-        Asserts.assertNotNull(annotations, "annotations");
+        Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
 
-        if (annotations.isEmpty())
+        if (anns.isEmpty())
         {
             return DefaultLiteral.SET;
         }
 
         Set<Annotation> set = new HashSet<Annotation>();
 
-        for (Annotation annot : annotations)
+        for (Annotation annot : anns)
         {
             if (isQualifierAnnotation(annot.annotationType()))
             {
@@ -398,6 +399,17 @@ public final class AnnotationManager
 
     public void checkQualifierConditions(Annotation... qualifierAnnots)
     {
+        if (qualifierAnnots == null || qualifierAnnots.length == 0)
+        {
+            return;
+        }
+
+        if (qualifierAnnots.length == 1)
+        {
+            // performance hack to avoid Set creation
+            checkQualifierConditions(qualifierAnnots[0]);
+        }
+
         Set<Annotation> annSet = ArrayUtil.asSet(qualifierAnnots);
 
         //check for duplicate annotations
@@ -425,6 +437,14 @@ public final class AnnotationManager
 
     private void checkQualifierConditions(Annotation ann)
     {
+        if (ann == DefaultLiteral.INSTANCE || ann == AnyLiteral.INSTANCE ||
+            ann.annotationType().equals(Default.class) || ann.annotationType().equals(Any.class) ||
+            ann.annotationType().equals(Named.class))
+        {
+            // special performance boost for some known Qualifiers
+            return;
+        }
+
         Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(ann.annotationType());
 
         for (Method method : methods)
@@ -500,7 +520,7 @@ public final class AnnotationManager
 
     public boolean hasStereoTypeMetaAnnotation(Set<Class<? extends Annotation>> anns)
     {
-        Asserts.assertNotNull(anns, "anns");
+        Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
 
         for (Class<? extends Annotation> ann : anns)
         {
@@ -515,7 +535,7 @@ public final class AnnotationManager
 
     public boolean hasStereoTypeMetaAnnotation(Annotation[] anns)
     {
-        Asserts.assertNotNull(anns, "anns");
+        Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
 
         for (Annotation ann : anns)
         {
@@ -530,7 +550,7 @@ public final class AnnotationManager
 
     public Annotation[] getStereotypeMetaAnnotations(Annotation[] anns)
     {
-        Asserts.assertNotNull(anns, "anns");
+        Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
         List<Annotation> interAnns = new ArrayList<Annotation>();
 
         for (Annotation ann : anns)
@@ -556,7 +576,7 @@ public final class AnnotationManager
      */
     public Set<Class<? extends Annotation>> getStereotypeMetaAnnotations(Set<Class<? extends Annotation>> stereotypes)
     {
-        Asserts.assertNotNull(stereotypes, "anns");
+        Asserts.assertNotNull(stereotypes, Asserts.PARAM_NAME_ANNOTATION);
         Set<Class<? extends Annotation>> interAnns = new HashSet<Class<? extends Annotation>>();
 
         for (Class<? extends Annotation> ann : stereotypes)
@@ -588,7 +608,7 @@ public final class AnnotationManager
      */
     public Set<Class<? extends Annotation>> getStereotypes(Set<Class<? extends Annotation>> anns)
     {
-        Asserts.assertNotNull(anns, "bean");
+        Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
         if (hasStereoTypeMetaAnnotation(anns))
         {
             return getStereotypeMetaAnnotations(anns);

@@ -16,25 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.web.tomcat7;
+package org.apache.webbeans.test.injection.generics;
 
-import org.apache.catalina.ContainerEvent;
-import org.apache.catalina.ContainerListener;
+import javax.enterprise.context.ApplicationScoped;
 
-/**
- * Container listener that propagates the change of a session id (e. g. during an authentication through the container)
- * to the session context manager. Otherwise a new session context for the same session is created, because the session
- * id is used to identify the session context. <br/> Adapted from OpenEJB tomee/tomee-catalina and updated.
- *
- * @deprecated we do not use the sessionId anymore since owb-1.5.1, so we do not need any sessionId change listener
- */
-public class TomcatContainerListener implements ContainerListener
+@ApplicationScoped
+public class StringBeanAbstract extends MyAbstract<String>
 {
-
     @Override
-    public void containerEvent(ContainerEvent containerEvent)
+    public String getValue()
     {
-        // nothing to do anymore.
-        // we do not use the sessionId anymore since owb-1.5.1
+        return getClass().getName();
     }
 }
