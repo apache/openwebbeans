@@ -17,12 +17,14 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
-    <description>Sample JSF2 Application</description>
+
     <parent>
-        <artifactId>samples</artifactId>
         <groupId>org.apache.openwebbeans</groupId>
+        <artifactId>samples</artifactId>
         <version>2.0.0-alpha-1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -30,13 +32,33 @@ under the License.
     <groupId>org.apache.openwebbeans.samples</groupId>
     <artifactId>conversation-sample</artifactId>
     <packaging>war</packaging>
-    <name>JSF Conversation Sample</name>
+
+    <name>Sample JSF2 Conversation</name>
+    <description>Sample JSF2 Application</description>
 
     <properties>
         <deploy.skip>true</deploy.skip>
+        <tomcat.version>7.0.61</tomcat.version>
     </properties>
 
     <dependencies>
+
+        <!-- JSR-330 API -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-atinject_1.0_spec</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-annotation_1.2_spec</artifactId>
+        </dependency>
+
+        <!-- JSR-299 API -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jcdi_2.0_spec</artifactId>
+        </dependency>
 
         <!-- JSR-299 Impl -->
         <dependency>
@@ -53,14 +75,7 @@ under the License.
         <!-- JSF Plugin -->
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-jsf12</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <!-- EL Plugin -->
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-el10</artifactId>
+            <artifactId>openwebbeans-jsf</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -69,12 +84,6 @@ under the License.
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-web</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.openwebbeans</groupId>
-                    <artifactId>openwebbeans-el22</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- MyFaces API -->
@@ -89,31 +98,7 @@ under the License.
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-impl</artifactId>
             <version>${myfaces.version}</version>
-        </dependency>
-
-        <!-- JSF Facelet -->
-        <dependency>
-            <groupId>com.sun.facelets</groupId>
-            <artifactId>jsf-facelets</artifactId>
-            <version>1.1.14</version>
-        </dependency>
-
-        <!-- JSR-299 API -->
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jcdi_2.0_spec</artifactId>
-        </dependency>
-
-        <!-- JSR-330 API -->
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-atinject_1.0_spec</artifactId>
-        </dependency>
-
-        <!-- SPI API -->
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-spi</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>
@@ -123,7 +108,7 @@ under the License.
         <plugins>
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat6-maven-plugin</artifactId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
