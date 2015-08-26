@@ -17,18 +17,22 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <artifactId>samples</artifactId>
         <groupId>org.apache.openwebbeans</groupId>
+        <artifactId>samples</artifactId>
         <version>2.0.0-alpha-1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.openwebbeans.samples</groupId>
     <artifactId>guess</artifactId>
     <packaging>war</packaging>
+
     <name>Sample Guess Application</name>
     <description>Simple login application</description>
 
@@ -36,25 +40,7 @@ under the License.
         <deploy.skip>true</deploy.skip>
     </properties>
 
-    <build>
-        <finalName>guess</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-
     <dependencies>
-
-        <!-- JSF Plugin -->
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-jsf</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <!-- Servlet API -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
@@ -62,24 +48,16 @@ under the License.
             <scope>provided</scope>
         </dependency>
 
-        <!-- JSR-299 implementation per application -->
+        <!-- JSR-330 API -->
         <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-impl</artifactId>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-atinject_1.0_spec</artifactId>
         </dependency>
 
-        <!-- Web Plugin -->
+        <!-- JSR-250 API -->
         <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-web</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-		
-		<!-- EL Plugin -->
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-el10</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-annotation_1.2_spec</artifactId>
         </dependency>
 
         <!-- JSR-299 API -->
@@ -88,28 +66,30 @@ under the License.
             <artifactId>geronimo-jcdi_2.0_spec</artifactId>
         </dependency>
 
-        <!-- JSR-330 API -->
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-atinject_1.0_spec</artifactId>
-        </dependency>
-		
-		<!-- JSR-250 API -->
-		<dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-annotation_1.2_spec</artifactId>
-        </dependency>
-
-        <!-- SPI API -->
+        <!-- JSR-299 implementation per application -->
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-spi</artifactId>
+            <artifactId>openwebbeans-impl</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Interceptor API -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-interceptor_1.2_spec</artifactId>
+        </dependency>
+
+        <!-- JSF Plugin -->
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-jsf</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Web Plugin -->
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-web</artifactId>
         </dependency>
 
         <!-- MyFaces IMPL -->
@@ -122,8 +102,19 @@ under the License.
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-impl</artifactId>
             <version>${myfaces2.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
-
     </dependencies>
+
+    <build>
+        <finalName>guess</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

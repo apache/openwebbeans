@@ -19,10 +19,7 @@ under the License.
 -->
 
 <faces-config version="1.2" xmlns="http://java.sun.com/xml/ns/javaee"
-              xmlns:xi="http://www.w3.org/2001/XInclude"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
-
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
 
     <navigation-rule>
         <from-view-id>/home.xhtml</from-view-id>
@@ -39,15 +36,5 @@ under the License.
             <to-view-id>/home.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
-
-    <navigation-rule>
-        <from-view-id>/conversation.xhtml</from-view-id>
-        <navigation-case>
-            <from-outcome>toRedirect</from-outcome>
-            <to-view-id>/redirect.jsf?book=alis</to-view-id>
-            <redirect/>
-        </navigation-case>
-    </navigation-rule>
-
 
 </faces-config>

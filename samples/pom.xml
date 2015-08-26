@@ -32,13 +32,19 @@ under the License.
     <description>Apache OpenWebBeans Samples contains samples project for openwebbeans.</description>
 
     <properties>
+        <!--
+         * we just want to deploy the parent of our samples but net the samples itself.
+         * we have to override this property with true in every sample-module
+        -->
         <deploy.skip>false</deploy.skip>
+
         <myfaces2.version>2.2.8</myfaces2.version>
     </properties>
 
     <build>
         <pluginManagement>
             <plugins>
+                <!-- X TODO remove tomcat6 -->
                 <plugin>
                     <groupId>org.apache.tomcat.maven</groupId>
                     <artifactId>tomcat6-maven-plugin</artifactId>
