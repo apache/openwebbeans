@@ -50,6 +50,7 @@ import org.w3c.dom.NodeList;
 public class DefaultBeanArchiveService implements BeanArchiveService
 {
     private static final String WEB_INF_CLASSES = "WEB-INF/classes/";
+    private static final String WEB_INF_CLASSES_MAVEN = "target/classes/";
 
     private static final Logger logger = WebBeansLoggerFacade.getLogger(BeanArchiveService.class);
 
@@ -85,7 +86,8 @@ public class DefaultBeanArchiveService implements BeanArchiveService
 
         }
 
-        if (bdaInfo == null && beanArchiveLocation.contains(WEB_INF_CLASSES))
+        if (bdaInfo == null
+                && (beanArchiveLocation.contains(WEB_INF_CLASSES) || beanArchiveLocation.contains(WEB_INF_CLASSES_MAVEN)))
         {
             // this is a very special case for beans.xml in a WAR file
             // in this case we need to merge the 2 BDAs from WEB-INF/classes/META-INF/beans.xml and WEB-INF/beans.xml
