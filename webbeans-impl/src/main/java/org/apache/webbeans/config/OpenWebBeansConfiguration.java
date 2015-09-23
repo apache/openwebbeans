@@ -33,7 +33,7 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 /**
  * Defines configuration for OpenWebBeans.
- * 
+ *
  * The algorithm is easy:
  * <ul>
  * <li>Load all properties you can find with the name (META-INF/openwebbeans/openwebbeans.properties),</li>
@@ -51,7 +51,7 @@ public class OpenWebBeansConfiguration
 
     /**Conversation periodic delay in ms.*/
     public static final String CONVERSATION_PERIODIC_DELAY = "org.apache.webbeans.conversation.Conversation.periodicDelay";
-    
+
     /**Timeout interval in ms*/
     public static final String CONVERSATION_TIMEOUT_INTERVAL = "org.apache.webbeans.conversation.Conversation.timeoutInterval";
 
@@ -65,34 +65,34 @@ public class OpenWebBeansConfiguration
 
     /**Use EJB Discovery or not*/
     public static final String USE_EJB_DISCOVERY = "org.apache.webbeans.spi.deployer.useEjbMetaDataDiscoveryService";
-    
+
     /**Container lifecycle*/
     public static final String CONTAINER_LIFECYCLE = "org.apache.webbeans.spi.ContainerLifecycle";
-    
+
     /**JNDI Service SPI*/
-    public static final String JNDI_SERVICE = "org.apache.webbeans.spi.JNDIService";    
-    
+    public static final String JNDI_SERVICE = "org.apache.webbeans.spi.JNDIService";
+
     /**Scanner Service*/
     public static final String SCANNER_SERVICE = "org.apache.webbeans.spi.ScannerService";
 
     /**Contexts Service*/
     public static final String CONTEXTS_SERVICE = "org.apache.webbeans.spi.ContextsService";
-    
+
     /**Conversation Service*/
     public static final String CONVERSATION_SERVICE = "org.apache.webbeans.spi.ConversationService";
-    
+
     /**Resource Injection Service*/
     public static final String RESOURCE_INJECTION_SERVICE = "org.apache.webbeans.spi.ResourceInjectionService";
-    
+
     /**Security Service*/
     public static final String SECURITY_SERVICE = "org.apache.webbeans.spi.SecurityService";
-    
+
     /**Validator Service*/
     public static final String VALIDATOR_SERVICE = "org.apache.webbeans.spi.ValidatorService";
-    
+
     /**Transaction Service*/
     public static final String TRANSACTION_SERVICE = "org.apache.webbeans.spi.TransactionService";
-    
+
     /**Application is core JSP*/
     public static final String APPLICATION_IS_JSP = "org.apache.webbeans.application.jsp";
 
@@ -116,6 +116,9 @@ public class OpenWebBeansConfiguration
      * @deprecated as spec section 5 and 12 contradict each other and the BDA per jar handling is broken anyway
      **/
     public static final String USE_BDA_BEANSXML_SCANNER = "org.apache.webbeans.useBDABeansXMLScanner";
+
+    /** A list of known JARs/pathes which should not be scanned for beans */
+    public static final String BEAN_SCANNING_EXCLUDES = "org.apache.webbeans.beanScanningExcludes";
 
     /**
      * a comma-separated list of fully qualified class names that should be ignored
@@ -254,7 +257,7 @@ public class OpenWebBeansConfiguration
     {
         return configProperties.getProperty(key);
     }
-    
+
     /**
      * Gets property value.
      * @param key
@@ -265,8 +268,8 @@ public class OpenWebBeansConfiguration
     {
         return configProperties.getProperty(key, defaultValue);
     }
-    
-    
+
+
     /**
      * Sets given property.
      * @param key property name
@@ -276,7 +279,7 @@ public class OpenWebBeansConfiguration
     {
         configProperties.put(key, value);
     }
-    
+
 
     /**
      * Gets jsp property.
@@ -285,10 +288,10 @@ public class OpenWebBeansConfiguration
     public boolean isJspApplication()
     {
         String value = getProperty(APPLICATION_IS_JSP);
-        
+
         return Boolean.valueOf(value);
     }
-    
+
     /**
      * Gets conversation supports property.
      * @return true if supports
@@ -296,7 +299,7 @@ public class OpenWebBeansConfiguration
     public boolean supportsConversation()
     {
         String value = getProperty(APPLICATION_SUPPORTS_CONVERSATION);
-        
+
         return Boolean.valueOf(value);
     }
 
