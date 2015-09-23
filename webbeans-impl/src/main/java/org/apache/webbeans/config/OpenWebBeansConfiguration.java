@@ -117,8 +117,8 @@ public class OpenWebBeansConfiguration
      **/
     public static final String USE_BDA_BEANSXML_SCANNER = "org.apache.webbeans.useBDABeansXMLScanner";
 
-    /** A list of known JARs/pathes which should not be scanned for beans */
-    public static final String BEAN_SCANNING_EXCLUDES = "org.apache.webbeans.beanScanningExcludes";
+    /** A list of known JARs/paths which should not be scanned for beans */
+    public static final String SCAN_EXCLUSION_PATHS = "org.apache.webbeans.scanExclusionPaths";
 
     /**
      * a comma-separated list of fully qualified class names that should be ignored

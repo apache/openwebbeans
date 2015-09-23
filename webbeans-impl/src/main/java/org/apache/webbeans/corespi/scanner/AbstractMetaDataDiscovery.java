@@ -305,7 +305,8 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         String usage = WebBeansContext.currentInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_BDA_BEANSXML_SCANNER);
         isBDAScannerEnabled = Boolean.parseBoolean(usage);
 
-        String scanningExcludesProperty = WebBeansContext.currentInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.BEAN_SCANNING_EXCLUDES);
+        String scanningExcludesProperty =
+                WebBeansContext.currentInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.SCAN_EXCLUSION_PATHS);
         ArrayList<String> scanningExcludesList = new ArrayList<String>();
         if (scanningExcludesProperty != null)
         {
