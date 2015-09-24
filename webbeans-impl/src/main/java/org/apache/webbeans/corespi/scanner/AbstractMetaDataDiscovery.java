@@ -253,6 +253,9 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
 
     private int isKnownJar(final String path)
     {
+        // lazy init - required when using DS CdiTestRunner
+        initScanningExcludes();
+
         for (final String p : scanningExcludes)
         {
             final int i = path.indexOf(p);
@@ -305,21 +308,29 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         String usage = WebBeansContext.currentInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_BDA_BEANSXML_SCANNER);
         isBDAScannerEnabled = Boolean.parseBoolean(usage);
 
-        String scanningExcludesProperty =
-                WebBeansContext.currentInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.SCAN_EXCLUSION_PATHS);
-        ArrayList<String> scanningExcludesList = new ArrayList<String>();
-        if (scanningExcludesProperty != null)
+        initScanningExcludes();
+    }
+
+    public void initScanningExcludes()
+    {
+        if (scanningExcludes == null)
         {
-            for (String scanningExclude : scanningExcludesProperty.split(","))
+            String scanningExcludesProperty =
+                    WebBeansContext.currentInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.SCAN_EXCLUSION_PATHS);
+            ArrayList<String> scanningExcludesList = new ArrayList<String>();
+            if (scanningExcludesProperty != null)
             {
-                scanningExclude = scanningExclude.trim();
-                if (!scanningExclude.isEmpty())
+                for (String scanningExclude : scanningExcludesProperty.split(","))
                 {
-                    scanningExcludesList.add(scanningExclude);
+                    scanningExclude = scanningExclude.trim();
+                    if (!scanningExclude.isEmpty())
+                    {
+                        scanningExcludesList.add(scanningExclude);
+                    }
                 }
             }
+            scanningExcludes = scanningExcludesList.toArray(new String[scanningExcludesList.size()]);
         }
-        scanningExcludes = scanningExcludesList.toArray(new String[scanningExcludesList.size()]);
     }
 
     /**
