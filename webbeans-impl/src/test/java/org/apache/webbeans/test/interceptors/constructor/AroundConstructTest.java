@@ -19,7 +19,6 @@
 package org.apache.webbeans.test.interceptors.constructor;
 
 import org.apache.webbeans.test.AbstractUnitTest;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -42,7 +41,7 @@ public class AroundConstructTest extends AbstractUnitTest
     @Inject
     private IAmBuiltWithMyConstructor bean;
 
-    @Test @Ignore("needs CDI 1.1")
+    @Test
     public void checkBeanWasBuiltWithItsConstructorAndIntercepted()
     {
         addInterceptor(IllGetYourConstructorInvocation.class);
