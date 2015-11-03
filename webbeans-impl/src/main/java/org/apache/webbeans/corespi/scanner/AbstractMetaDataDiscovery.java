@@ -39,6 +39,7 @@ import org.apache.xbean.finder.ClassLoaders;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -49,7 +50,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static java.util.Arrays.asList;
 
 
 public abstract class AbstractMetaDataDiscovery implements ScannerService
@@ -77,6 +77,8 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
      * new URL(...).
      */
     private final Map<String, URL> beanDeploymentUrls = new HashMap<String, URL>();
+
+    protected String[] scanningExcludes;
 
     protected ClassLoader loader;
     protected CdiArchive archive;
@@ -251,47 +253,10 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
 
     private int isKnownJar(final String path)
     {
-        for (final String p : asList(
-                                "/jre/lib",
-                                "/Contents/Home/",
-                                "/dt.jar",
-                                "/tools.jar",
-                                "/asm",
-                                "/javassist",
-                                "/xbean-",
-                                "/jconsole.jar",
-                                "/geronimo-",
-                                "/commons-",
-                                "/arquillian-",
-                                "/bsh-",
-                                "/shrinkwrap-",
-                                "/junit-",
-                                "/testng-",
-                                "/openjpa-",
-                                "/bcel",
-                                "/hamcrest",
-                                "/mysql-connector",
-                                "/testng",
-                                "/idea_rt",
-                                "/eclipse",
-                                "/jcommander",
-                                "/tomcat",
-                                "/catalina",
-                                "/jasper",
-                                "/jsp-api",
-                                "/myfaces-",
-                                "/servlet-api",
-                                "/javax",
-                                "/annotation-api",
-                                "/el-api",
-                                "/mojarra",
-                                "/sisu-guice-",
-                                "/sisu-inject-",
-                                "/aether-",
-                                "/plexus-",
-                                "/maven-",
-                                "/guava-",
-                                "/openwebbeans-"))
+        // lazy init - required when using DS CdiTestRunner
+        initScanningExcludes();
+
+        for (final String p : scanningExcludes)
         {
             final int i = path.indexOf(p);
             if (i > 0)
@@ -342,6 +307,30 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         // properties are loaded.
         String usage = WebBeansContext.currentInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_BDA_BEANSXML_SCANNER);
         isBDAScannerEnabled = Boolean.parseBoolean(usage);
+
+        initScanningExcludes();
+    }
+
+    public void initScanningExcludes()
+    {
+        if (scanningExcludes == null)
+        {
+            String scanningExcludesProperty =
+                    WebBeansContext.currentInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.SCAN_EXCLUSION_PATHS);
+            ArrayList<String> scanningExcludesList = new ArrayList<String>();
+            if (scanningExcludesProperty != null)
+            {
+                for (String scanningExclude : scanningExcludesProperty.split(","))
+                {
+                    scanningExclude = scanningExclude.trim();
+                    if (!scanningExclude.isEmpty())
+                    {
+                        scanningExcludesList.add(scanningExclude);
+                    }
+                }
+            }
+            scanningExcludes = scanningExcludesList.toArray(new String[scanningExcludesList.size()]);
+        }
     }
 
     /**

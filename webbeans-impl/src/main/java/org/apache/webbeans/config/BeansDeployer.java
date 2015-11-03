@@ -216,6 +216,8 @@ public class BeansDeployer
                 // Register Manager built-in component
                 webBeansContext.getBeanManagerImpl().addInternalBean(webBeansContext.getWebBeansUtil().getManagerBean());
 
+                webBeansContext.getBeanManagerImpl().getInjectionResolver().setStartup(true);
+                
                 //Fire Event
                 fireBeforeBeanDiscoveryEvent();
                 
@@ -286,6 +288,7 @@ public class BeansDeployer
                 // do some cleanup after the deployment
                 scanner.release();
                 webBeansContext.getAnnotatedElementFactory().clear();
+                webBeansContext.getBeanManagerImpl().getInjectionResolver().setStartup(false);
             }
         }
         catch (UnsatisfiedResolutionException e)

@@ -99,6 +99,8 @@ public class InjectionResolver
      */
     private Map<String, Set<Bean<?>>> resolvedBeansByName = new ConcurrentHashMap<String, Set<Bean<?>>>();
 
+    private boolean startup;
+    
     /**
      * Creates a new injection resolve for given bean manager.
      *
@@ -108,8 +110,14 @@ public class InjectionResolver
     {
         this.webBeansContext = webBeansContext;
         this.alternativesManager = webBeansContext.getAlternativesManager();
+        this.startup = false;
     }
 
+    public void setStartup(boolean startup)
+    {
+        this.startup = startup;
+    }
+    
     /**
      * Clear caches.
      */
@@ -499,7 +507,17 @@ public class InjectionResolver
                 resolvedComponents = byParameterizedType;
             }
         }
-        resolvedBeansByType.put(cacheKey, resolvedComponents);
+
+        if (startup && (resolvedComponents == null || resolvedComponents.isEmpty()))
+        {
+            // skip cache on startup when resolvedComponents are null or empty
+            // see https://issues.apache.org/jira/browse/OWB-1095
+        }
+        else
+        {
+            resolvedBeansByType.put(cacheKey, resolvedComponents);
+        }
+
         if (logger.isLoggable(Level.FINE))
         {
             logger.log(Level.FINE, "DEBUG_ADD_BYTYPE_CACHE_BEANS", cacheKey);
