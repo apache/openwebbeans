@@ -26,6 +26,10 @@ import java.lang.reflect.Proxy;
 
 public class OwbCustomObjectInputStream extends ObjectInputStream
 {
+    private static final BlacklistClassResolver BLACKLIST_CLASSES = new BlacklistClassResolver(System.getProperty(
+        "openwebbeans.BlacklistClassResolver",
+        "org.codehaus.groovy.runtime.,org.apache.commons.collections.functors.,org.apache.xalan").split(" *, *"));
+
     private ClassLoader classLoader;
 
     public OwbCustomObjectInputStream(InputStream in, ClassLoader classLoader) throws IOException
@@ -37,7 +41,7 @@ public class OwbCustomObjectInputStream extends ObjectInputStream
     @Override
     protected Class<?> resolveClass(ObjectStreamClass desc) throws ClassNotFoundException
     {
-        return Class.forName(desc.getName(), false, classLoader);
+        return Class.forName(BLACKLIST_CLASSES.check(desc.getName()), false, classLoader);
     }
 
     @Override
@@ -56,6 +60,31 @@ public class OwbCustomObjectInputStream extends ObjectInputStream
         catch (IllegalArgumentException e)
         {
             throw new ClassNotFoundException(null, e);
+        }
+    }
+
+    private static final class BlacklistClassResolver
+    {
+        private final String[] blacklist;
+
+        protected BlacklistClassResolver(final String[] blacklist)
+        {
+            this.blacklist = blacklist;
+        }
+
+        public final String check(final String name)
+        {
+            if (blacklist != null)
+            {
+                for (final String white : blacklist)
+                {
+                    if (name.startsWith(white))
+                    {
+                        throw new SecurityException(name + " is not whitelisted as deserialisable, prevented before loading.");
+                    }
+                }
+            }
+            return name;
         }
     }
 }
