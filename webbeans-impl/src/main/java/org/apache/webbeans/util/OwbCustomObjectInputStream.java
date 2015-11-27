@@ -28,9 +28,9 @@ public class OwbCustomObjectInputStream extends ObjectInputStream
 {
     public static final BlacklistClassResolver BLACKLIST_CLASSES = new BlacklistClassResolver(
         toArray(System.getProperty(
-            "tomee.serialization.class.blacklist",
+            "openwebbeans.serialization.class.blacklist",
             "org.codehaus.groovy.runtime.,org.apache.commons.collections.functors.,org.apache.xalan")),
-        toArray(System.getProperty("tomee.serialization.class.whitelist")));
+        toArray(System.getProperty("openwebbeans.serialization.class.whitelist")));
 
     private ClassLoader classLoader;
 
