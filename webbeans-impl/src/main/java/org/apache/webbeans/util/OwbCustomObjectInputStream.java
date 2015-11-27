@@ -97,9 +97,12 @@ public class OwbCustomObjectInputStream extends ObjectInputStream
 
         private static boolean contains(final String[] list, String name)
         {
-            if (list != null) {
-                for (final String white : list) {
-                    if (name.startsWith(white)) {
+            if (list != null)
+            {
+                for (final String white : list)
+                {
+                    if (name.startsWith(white))
+                    {
                         return true;
                     }
                 }
