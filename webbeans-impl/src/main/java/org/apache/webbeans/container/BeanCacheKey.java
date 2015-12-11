@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.container;
 
+import org.apache.webbeans.annotation.EmptyAnnotationLiteral;
 import org.apache.webbeans.util.AnnotationUtil;
 
 import javax.enterprise.util.Nonbinding;
@@ -177,96 +178,16 @@ public final class BeanCacheKey
     }
 
     /**
-     * Calculate the hashCode() of a qualifier, which ignores {@link Nonbinding} members.
+     * Calculate the hashCode() of a qualifier.
+     * We do not do any in-depth hashCode down to member hashes
+     * but only use the hashcode of the AnnotationType itself.
+     * This is WAY faster and spreads well enough in practice.
+     * We can do this as we do not need to return a perfectly unique
+     * result anyway.
      */
     private int getQualifierHashCode(Annotation a)
     {
-        Class annotationClass = getAnnotationClass(a.getClass());
-
-        if (annotationClass == null)
-        {
-            return getTypeHashCode(a.getClass());
-        }
-
-        // the hashCode of an Annotation is calculated solely via the hashCodes
-        // of it's members. If there are no members, it is 0.
-        // thus we first need to get the annotation-class hashCode
-        int hashCode = getTypeHashCode(annotationClass);
-
-        // and now add the hashCode of all it's Nonbinding members
-        // the following algorithm is defined by the Annotation class definition
-        // see the JavaDoc for Annotation!
-        // we only change it so far that we skip evaluating @Nonbinding members
-        final Method[] members = annotationClass.getDeclaredMethods();
-
-        for (Method member : members)
-        {
-            if (member.isAnnotationPresent(Nonbinding.class))
-            {
-                // ignore the non binding
-                continue;
-            }
-
-            // Member value
-            final Object object = callMethod(a, member);
-            final int value;
-            if(object.getClass().isArray())
-            {
-                Class<?> type = object.getClass().getComponentType();
-                if(type.isPrimitive())
-                {
-                    if(Long.TYPE == type)
-                    {
-                        value = Arrays.hashCode((long[]) object);
-                    }
-                    else if(Integer.TYPE == type)
-                    {
-                        value = Arrays.hashCode((int[])object);
-                    }
-                    else if(Short.TYPE == type)
-                    {
-                        value = Arrays.hashCode((short[])object);
-                    }
-                    else if(Double.TYPE == type)
-                    {
-                        value = Arrays.hashCode((double[])object);
-                    }
-                    else if(Float.TYPE == type)
-                    {
-                        value = Arrays.hashCode((float[])object);
-                    }
-                    else if(Boolean.TYPE == type)
-                    {
-                        value = Arrays.hashCode((boolean[])object);
-                    }
-                    else if(Byte.TYPE == type)
-                    {
-                        value = Arrays.hashCode((byte[])object);
-                    }
-                    else if(Character.TYPE == type)
-                    {
-                        value = Arrays.hashCode((char[])object);
-                    }
-                    else
-                    {
-                        value = 0;
-                    }
-                }
-                else
-                {
-                    value = Arrays.hashCode((Object[])object);
-                }
-            }
-            else
-            {
-                value = object.hashCode();
-            }
-
-            hashCode = 29 * hashCode + value;
-            hashCode = 29 * hashCode + member.getName().hashCode();
-        }
-
-        return hashCode;
+        return a.annotationType().hashCode();
     }
 
     /**
@@ -277,17 +198,6 @@ public final class BeanCacheKey
         return ANNOTATION_COMPARATOR.compare(qualifier1, qualifier2) == 0;
     }
 
-    private static Class getAnnotationClass(Class a)
-    {
-        for (Class i : a.getInterfaces())
-        {
-            if (i.isAnnotation())
-            {
-                return i;
-            }
-        }
-        return null;
-    }
 
     /**
      * Helper method for calculating the hashCode of an annotation.
@@ -338,6 +248,13 @@ public final class BeanCacheKey
             {
                 return temp;
             }
+            if (annotation1 instanceof EmptyAnnotationLiteral || annotation2 instanceof EmptyAnnotationLiteral)
+            {
+                // if any of those 2 annotations are known to have no members
+                // then we can immediately return as we know the 2 annotations mean the same
+                return 0;
+            }
+
             final Method[] member1 = type1.getDeclaredMethods();
             final Method[] member2 = type2.getDeclaredMethods();
 
