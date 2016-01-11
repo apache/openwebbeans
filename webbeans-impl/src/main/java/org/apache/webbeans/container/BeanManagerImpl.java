@@ -1413,6 +1413,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         passivationBeans.clear();
         webBeansContext.getInterceptorsManager().clear();
         webBeansContext.getDecoratorsManager().clear();
+
+        // finally destroy all SPI services
+        webBeansContext.clear();
     }
 
     public void clearCacheProxies()
