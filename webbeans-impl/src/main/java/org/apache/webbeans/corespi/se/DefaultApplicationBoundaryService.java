@@ -18,33 +18,78 @@
  */
 package org.apache.webbeans.corespi.se;
 
-import javax.enterprise.inject.spi.BeanManager;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.spi.ApplicationBoundaryService;
 
 /**
  * Really simple default impl of the ApplicationBoundaryService.
  * Assumes that there is a pretty easy ClassLoader structure in place.
  */
-public class DefaultApplicationBoundaryService implements ApplicationBoundaryService
+public class DefaultApplicationBoundaryService implements ApplicationBoundaryService, Closeable
 {
-    private final ClassLoader appCL = BeanManager.class.getClassLoader();
+    private final ClassLoader applicationClassLoader;
+    private final Set<ClassLoader> parentClassLoaders;
+
+    public DefaultApplicationBoundaryService()
+    {
+        applicationClassLoader = BeanManagerImpl.class.getClassLoader();
+        parentClassLoaders = new HashSet<ClassLoader>();
+        ClassLoader cl = applicationClassLoader;
+        while (cl.getParent() != null)
+        {
+            cl = cl.getParent();
+            parentClassLoaders.add(cl);
+        }
+    }
 
     @Override
     public ClassLoader getApplicationClassLoader()
     {
-        return appCL;
+        return applicationClassLoader;
     }
 
     @Override
     public ClassLoader getBoundaryClassLoader(Class classToProxy)
     {
-        ClassLoader classLoader = classToProxy.getClassLoader();
-        if (classLoader == null && classToProxy.isInterface())
+        ClassLoader appCl = getApplicationClassLoader();
+
+        ClassLoader classToProxyCl = classToProxy.getClassLoader();
+
+        if (classToProxyCl == null)
         {
-            return getApplicationClassLoader();
+            // Some JVMs return null for the bootstrap CL
+            return appCl;
         }
-        return classLoader;
+
+        if (classToProxyCl == appCl)
+        {
+            // this mainly happens in a 'flat CL' environment
+            return appCl;
+        }
+
+        if (isOutsideOfApplicationClassLoader(classToProxyCl))
+        {
+            return appCl;
+        }
+
+        return classToProxyCl;
     }
 
+    protected boolean isOutsideOfApplicationClassLoader(ClassLoader classToProxyCl)
+    {
+
+        return parentClassLoaders.contains(classToProxyCl);
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+        // we store ClassLoaders so we MUST free them at shutdown!
+        parentClassLoaders.clear();
+    }
 }
