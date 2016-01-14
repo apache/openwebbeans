@@ -29,13 +29,28 @@ import org.apache.webbeans.spi.ApplicationBoundaryService;
 /**
  * Really simple default impl of the ApplicationBoundaryService.
  * Assumes that there is a pretty easy ClassLoader structure in place.
+ * If a proxy should get created for a class further outside of the
+ * {@link #applicationClassLoader} then the {@link #applicationClassLoader}
+ * itself will get used to prevent mem leaks.
  */
 public class DefaultApplicationBoundaryService implements ApplicationBoundaryService, Closeable
 {
-    private final ClassLoader applicationClassLoader;
-    private final Set<ClassLoader> parentClassLoaders;
+    /**
+     * The outermost ClassLoader of the appliction. E.g. the EAR classloader
+     */
+    private ClassLoader applicationClassLoader;
+
+    /**
+     * All ClassLoaders further outside of the {@link #applicationClassLoader}.
+     */
+    private Set<ClassLoader> parentClassLoaders;
 
     public DefaultApplicationBoundaryService()
+    {
+        init();
+    }
+
+    protected void init()
     {
         applicationClassLoader = BeanManagerImpl.class.getClassLoader();
         parentClassLoaders = new HashSet<ClassLoader>();
@@ -45,6 +60,7 @@ public class DefaultApplicationBoundaryService implements ApplicationBoundarySer
             cl = cl.getParent();
             parentClassLoaders.add(cl);
         }
+
     }
 
     @Override
@@ -74,6 +90,9 @@ public class DefaultApplicationBoundaryService implements ApplicationBoundarySer
 
         if (isOutsideOfApplicationClassLoader(classToProxyCl))
         {
+            // note: this logic only works if you have a hieararchic ClassLoader scenario
+            // It doesn't work for e.g. OSGi environments where the CLs are spread out
+            // with very limited visibility
             return appCl;
         }
 
