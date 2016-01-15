@@ -40,6 +40,7 @@ public final class WebBeansConstants
     
     public static final String WEB_BEANS_XML_INTERCEPTORS_ELEMENT = "interceptors";
     public static final String WEB_BEANS_XML_DECORATORS_ELEMENT = "decorators";
+    public static final String WEB_BEANS_XML_ALLOW_PROXYING_ELEMENT = "allowProxying";
     public static final String WEB_BEANS_XML_ALTERNATIVES_ELEMENT = "alternatives";
     public static final String WEB_BEANS_XML_SCAN_ELEMENT = "scan";
 

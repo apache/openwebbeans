@@ -95,7 +95,7 @@ public final class PropertyLoader
         }
     }
 
-    private static List<Properties> loadAllProperties(String propertyFileName)
+    public static List<Properties> loadAllProperties(String propertyFileName)
             throws IOException
     {
         ClassLoader cl = WebBeansUtil.getCurrentClassLoader();

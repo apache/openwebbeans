@@ -18,14 +18,19 @@
  */
 package org.apache.webbeans.config;
 
+import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -57,6 +62,12 @@ public class OpenWebBeansConfiguration
 
     /**Timeout interval in ms*/
     public static final String CONVERSATION_TIMEOUT_INTERVAL = "org.apache.webbeans.conversation.Conversation.timeoutInterval";
+
+    /**
+     * Environment property which comma separated list of classes which
+     * should NOT fail with UnproxyableResolutionException
+     */
+    public static final String ALLOW_PROXYING_PARAM = "javax.enterprise.inject.allowProxying.classes";
 
     /**
      * Lifycycle methods like {@link javax.annotation.PostConstruct} and
@@ -165,6 +176,23 @@ public class OpenWebBeansConfiguration
     private Set<String> ignoredInterfaces;
 
     /**
+     * All configured lists per key.
+     *
+     * For a single key the following configuration sources will get parsed:
+     * <ul>
+     *     <li>all {@link #DEFAULT_CONFIG_PROPERTIES_NAME} files</li>
+     *     <li>{@code System.getProperties()}</li>
+     *     <li>{@code System.env()}</li>
+     * </ul>
+     *
+     * All the found values will get split by comma (',') and all trimmed values
+     * will get stored in a Set.
+     *
+     */
+    private Map<String, Set<String>> configuredLists = new HashMap<String, Set<String>>();
+
+
+    /**
      * you can configure this externally as well.
      *
      * @param properties
@@ -186,6 +214,7 @@ public class OpenWebBeansConfiguration
     }
 
 
+
     /**
      * (re)read the configuration from the resources in the classpath.
      * @see #DEFAULT_CONFIG_PROPERTIES_NAME
@@ -205,6 +234,27 @@ public class OpenWebBeansConfiguration
             configProperties.putAll(newConfigProperties);
         }
 
+    }
+
+    /**
+     * Take the given commaSeparatedVals and spit them by ',' and trim them.
+     * @return all trimmed values or an empty list
+     */
+    public List<String> splitValues(String commaSeparatedVals)
+    {
+        ArrayList<String> values = new ArrayList<String>();
+        if (commaSeparatedVals != null)
+        {
+            for (String value : commaSeparatedVals.split(","))
+            {
+                value = value.trim();
+                if (!value.isEmpty())
+                {
+                    values.add(value);
+                }
+            }
+        }
+        return values;
     }
 
     private void overrideWithGlobalSettings(Properties configProperties)
@@ -321,6 +371,68 @@ public class OpenWebBeansConfiguration
             }
         }
         return ignoredInterfaces;
+    }
+
+    /**
+     * Scan all openwebbeans.properties files + system properties +
+     * syste.env for the given key.
+     * If the key is comma separated then use the separate tokens.
+     * All the values get put into a big set.
+     */
+    public synchronized Set<String> getConfigListValues(String keyName)
+    {
+        Set<String> allValues = configuredLists.get(keyName);
+        if (allValues != null)
+        {
+            return allValues;
+        }
+
+        allValues = new HashSet<String>();
+        try
+        {
+            List<Properties> properties = PropertyLoader.loadAllProperties(DEFAULT_CONFIG_PROPERTIES_NAME);
+            if (properties != null)
+            {
+                for (Properties property : properties)
+                {
+                    String values = (String) property.get(keyName);
+                    allValues.addAll(splitValues(values));
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            logger.log(Level.SEVERE, "Error while loading the propertyFile " + DEFAULT_CONFIG_PROPERTIES_NAME, e);
+            return Collections.EMPTY_SET;
+        }
+
+        // search for the key in the properties
+        String value = System.getProperty(keyName);
+        allValues.addAll(splitValues(value));
+
+        // search for the key in the environment
+        String envKeyName = keyName.toUpperCase().replace(".", "_");
+        value = System.getenv(envKeyName);
+        allValues.addAll(splitValues(value));
+
+        configuredLists.put(keyName, allValues);
+
+        return allValues;
+    }
+
+    /**
+     * Add a configuration value to the Set of configured values registered
+     * under the keyName.
+     *
+     * Calling this method ensures that all the configured values are first
+     * read from the environment and configuration properties.
+     *
+     * @see #getConfigListValues(String) get's called internally to insure the list is initialised
+     */
+    public synchronized void addConfigListValue(String keyName, String value)
+    {
+        Set<String> configListValues = getConfigListValues(keyName);
+        configListValues.add(value);
     }
 
     public boolean supportsInterceptionOnProducers()

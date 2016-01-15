@@ -154,6 +154,7 @@ public interface BeanArchiveService
 
         List<String> getExcludedClasses();
         List<String> getExcludedPackages();
+        List<String> getAllowProxyingClasses();
     }
 
 

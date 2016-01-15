@@ -38,7 +38,7 @@ public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArc
 
     /** Exclude all subpackages (exclude= .**) */
     private List<String> excludedPackages = null;
-
+    private List<String> allowProxyingClasses = new ArrayList<String>();
 
 
     @Override
@@ -188,4 +188,11 @@ public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArc
     {
         this.excludedPackages = excludedPackages;
     }
+
+    @Override
+    public List<String> getAllowProxyingClasses()
+    {
+        return allowProxyingClasses;
+    }
+
 }

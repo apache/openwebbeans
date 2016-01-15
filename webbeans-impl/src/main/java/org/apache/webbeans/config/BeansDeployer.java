@@ -1179,6 +1179,7 @@ public class BeansDeployer
             configureInterceptors(url, beanArchiveInformation.getInterceptors());
             configureAlternatives(url, beanArchiveInformation.getAlternativeClasses(), false, preProcessing);
             configureAlternatives(url, beanArchiveInformation.getAlternativeStereotypes(), true, preProcessing);
+            configureAllowProxying(url, beanArchiveInformation.getAllowProxyingClasses());
         }
 
         logger.fine("Deploying configurations from XML has ended successfully.");
@@ -1342,6 +1343,15 @@ public class BeansDeployer
                     interceptorsManager.addEnabledInterceptorClass(clazz);
                 }
             }
+        }
+    }
+
+    private void configureAllowProxying(URL url, List<String> allowProxyingClasses)
+    {
+        OpenWebBeansConfiguration owbConfiguration = webBeansContext.getOpenWebBeansConfiguration();
+        for (String allowProxyingClass : allowProxyingClasses)
+        {
+            owbConfiguration.addConfigListValue(OpenWebBeansConfiguration.ALLOW_PROXYING_PARAM, allowProxyingClass);
         }
     }
 

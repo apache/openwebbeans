@@ -149,6 +149,8 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         mergedBdaInfo.getAlternativeClasses().addAll(mergeLists(bdaWebClasses.getAlternativeClasses(), bdaWebInf.getAlternativeClasses()));
         mergedBdaInfo.getAlternativeStereotypes().addAll(mergeLists(bdaWebClasses.getAlternativeStereotypes(), bdaWebInf.getAlternativeStereotypes()));
 
+        // we do NOT merge the allowProxying as they just stack up anyway
+
         return mergedBdaInfo;
     }
 
@@ -343,6 +345,10 @@ public class DefaultBeanArchiveService implements BeanArchiveService
             {
                 fillExcludes(bdaInfo, child);
             }
+            else if (WebBeansConstants.WEB_BEANS_XML_ALLOW_PROXYING_ELEMENT.equalsIgnoreCase(child.getLocalName()))
+            {
+                fillAllowProxying(bdaInfo, child);
+            }
         }
     }
 
@@ -488,6 +494,26 @@ public class DefaultBeanArchiveService implements BeanArchiveService
             }
         }
     }
+
+    private void fillAllowProxying(DefaultBeanArchiveInformation bdaInfo, Element allowProxyingElement)
+    {
+        ElementIterator elit = new ElementIterator(allowProxyingElement);
+        while (elit.hasNext())
+        {
+            Element child = elit.next();
+            if (WebBeansConstants.WEB_BEANS_XML_CLASS.equalsIgnoreCase(child.getLocalName()))
+            {
+                String clazz = child.getTextContent().trim();
+                if (clazz.isEmpty())
+                {
+                    throw new WebBeansConfigurationException("allowProxying <class> element must not be empty!");
+                }
+                bdaInfo.getAllowProxyingClasses().add(clazz);
+            }
+        }
+    }
+
+
 
     private static boolean isClassAvailable(final ClassLoader loader, final String name)
     {

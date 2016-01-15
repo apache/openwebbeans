@@ -39,12 +39,12 @@ import org.apache.xbean.finder.ClassLoaders;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -315,21 +315,10 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     {
         if (scanningExcludes == null)
         {
-            String scanningExcludesProperty =
-                    WebBeansContext.currentInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.SCAN_EXCLUSION_PATHS);
-            ArrayList<String> scanningExcludesList = new ArrayList<String>();
-            if (scanningExcludesProperty != null)
-            {
-                for (String scanningExclude : scanningExcludesProperty.split(","))
-                {
-                    scanningExclude = scanningExclude.trim();
-                    if (!scanningExclude.isEmpty())
-                    {
-                        scanningExcludesList.add(scanningExclude);
-                    }
-                }
-            }
-            scanningExcludes = scanningExcludesList.toArray(new String[scanningExcludesList.size()]);
+            OpenWebBeansConfiguration owbConfiguration = WebBeansContext.currentInstance().getOpenWebBeansConfiguration();
+            String scanningExcludesProperty = owbConfiguration.getProperty(OpenWebBeansConfiguration.SCAN_EXCLUSION_PATHS);
+            List<String> excludes = owbConfiguration.splitValues(scanningExcludesProperty);
+            scanningExcludes = excludes.toArray(new String[excludes.size()]);
         }
     }
 
