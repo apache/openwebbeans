@@ -21,8 +21,10 @@ package org.apache.webbeans.ee.event;
 import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 
 import org.apache.webbeans.config.OWBLogConst;
@@ -46,6 +48,22 @@ public final class TransactionalEventNotifier
 
     /**
      * This will get called by the EJB integration code
+     *
+     * Since registration of the event can blow up if the tx is not active we have a matrix of assumed behaviour
+     *
+     * There are 3 different error cases when registering a TX Synchronization:
+     * RollbackException - Thrown to indicate that the transaction has been marked for rollback only.
+     * IllegalStateException - Thrown if the transaction in the target object is in the prepared state or the transaction is inactive.
+     * SystemException - Thrown if the transaction manager encounters an unexpected error condition.
+     *
+     * In case of the SystemException we simply let it blow up. This is usually the case if there
+     * is some setup problem.
+     *
+     * In case of a RollbackException or IllegalStateException we will perform different actions based on the
+     * desired TransactionPhase:
+     * For AFTER_COMPLETION, BEFORE_COMPLETION and AFTER_FAILURE we will deliver the event immediately.
+     * For AFTER_SUCCESS we copmletely skip the event. It will not get invoked at all because the transaction
+     * will not succeed.
      */
     public static void registerTransactionSynchronization(TransactionPhase phase, ObserverMethod<? super Object> observer, Object event, EventMetadata metadata) throws Exception
     {
@@ -61,19 +79,19 @@ public final class TransactionalEventNotifier
         {
             if (phase.equals(TransactionPhase.AFTER_COMPLETION))
             {
-                transaction.registerSynchronization(new AfterCompletion(observer, event, metadata));
+                registerEvent(transaction, new AfterCompletion(observer, event, metadata), true);
             }
             else if (phase.equals(TransactionPhase.AFTER_SUCCESS))
             {
-                transaction.registerSynchronization(new AfterCompletionSuccess(observer, event, metadata));
+                registerEvent(transaction, new AfterCompletionSuccess(observer, event, metadata), false);
             }
             else if (phase.equals(TransactionPhase.AFTER_FAILURE))
             {
-                transaction.registerSynchronization(new AfterCompletionFailure(observer, event, metadata));
+                registerEvent(transaction, new AfterCompletionFailure(observer, event, metadata), true);
             }
             else if (phase.equals(TransactionPhase.BEFORE_COMPLETION))
             {
-                transaction.registerSynchronization(new BeforeCompletion(observer, event, metadata));
+                registerEvent(transaction, new BeforeCompletion(observer, event, metadata), true);
             }
             else
             {
@@ -92,7 +110,30 @@ public final class TransactionalEventNotifier
             }
         }
     }
-    
+
+    private static void registerEvent(Transaction transaction, AbstractSynchronization synchronization, boolean immediateOnError)
+        throws SystemException
+    {
+        try
+        {
+            transaction.registerSynchronization(synchronization);
+        }
+        catch (RollbackException re)
+        {
+            if (immediateOnError)
+            {
+                synchronization.notifyObserver();
+            }
+        }
+        catch (IllegalStateException ise)
+        {
+            if (immediateOnError)
+            {
+                synchronization.notifyObserver();
+            }
+        }
+    }
+
     private static class AbstractSynchronization<T> implements Synchronization
     {
 
