@@ -83,7 +83,15 @@ public final class TransactionalEventNotifier
             }
             else if (phase.equals(TransactionPhase.AFTER_SUCCESS))
             {
-                registerEvent(transaction, new AfterCompletionSuccess(observer, event, metadata), false);
+                if (transaction.getStatus() == Status.STATUS_NO_TRANSACTION)
+                {
+                    // the AFTER_SUCCESS observers only get invoked if the TX succeeds or if there is no transaction
+                    new AfterCompletionSuccess(observer, event, metadata).notifyObserver();
+                }
+                else
+                {
+                    registerEvent(transaction, new AfterCompletionSuccess(observer, event, metadata), false);
+                }
             }
             else if (phase.equals(TransactionPhase.AFTER_FAILURE))
             {
