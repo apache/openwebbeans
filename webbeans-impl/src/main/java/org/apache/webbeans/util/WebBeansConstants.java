@@ -43,6 +43,8 @@ public final class WebBeansConstants
     public static final String WEB_BEANS_XML_ALLOW_PROXYING_ELEMENT = "allowProxying";
     public static final String WEB_BEANS_XML_ALTERNATIVES_ELEMENT = "alternatives";
     public static final String WEB_BEANS_XML_SCAN_ELEMENT = "scan";
+    /** Having this tag in beans.xml fordes bean-discovery-mode="scoped" in a backward compat way */
+    public static final String WEB_BEANS_XML_SCOPED_BEANS_ONLY_ELEMENT = "scopedBeansOnly";
 
     public static final String WEB_BEANS_XML_CLASS = "class";
     public static final String WEB_BEANS_XML_STEREOTYPE = "stereotype";

@@ -131,6 +131,28 @@ public class BeanArchiveServiceTest
     }
 
     @Test
+    public void testCdi11_discovery_scoped() throws Exception
+    {
+        BeanArchiveInformation bai = scanBeansXml("cdi11_discovery_scoped.xml");
+        Assert.assertEquals(BeanDiscoveryMode.SCOPED, bai.getBeanDiscoveryMode());
+        Assert.assertTrue(bai.getAlternativeClasses().isEmpty());
+        Assert.assertTrue(bai.getAlternativeStereotypes().isEmpty());
+        Assert.assertTrue(bai.getDecorators().isEmpty());
+        Assert.assertTrue(bai.getInterceptors().isEmpty());
+    }
+
+    @Test
+    public void testCdi11_discovery_scopedBeansOnly() throws Exception
+    {
+        BeanArchiveInformation bai = scanBeansXml("cdi11_discovery_scopedBeansOnly.xml");
+        Assert.assertEquals(BeanDiscoveryMode.SCOPED, bai.getBeanDiscoveryMode());
+        Assert.assertTrue(bai.getAlternativeClasses().isEmpty());
+        Assert.assertTrue(bai.getAlternativeStereotypes().isEmpty());
+        Assert.assertTrue(bai.getDecorators().isEmpty());
+        Assert.assertTrue(bai.getInterceptors().isEmpty());
+    }
+
+    @Test
     public void testExclude() throws Exception
     {
         BeanArchiveInformation bai = scanBeansXml("cdi11_exclude.xml");
