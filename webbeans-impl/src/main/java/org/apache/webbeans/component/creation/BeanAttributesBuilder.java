@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.decorator.Decorator;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.Alternative;
@@ -43,6 +44,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Named;
 import javax.inject.Scope;
+import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.AnyLiteral;
@@ -106,9 +108,17 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
 
     public BeanAttributesImpl<T> build()
     {
-        defineTypes();
+        // we need to check the stereotypes first because we might need it to determine the scope
         defineStereotypes();
+
         defineScope();
+        if (scope == null)
+        {
+            // this indicates that we shall not use this AnnotatedType to create Beans from it.
+            return null;
+        }
+
+        defineTypes();
         defineName();
         defineQualifiers();
         defineNullable();
@@ -281,10 +291,10 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
 
     protected void defineScope(String errorMessage)
     {
-        defineScope(null, errorMessage);
+        defineScope(null, false, errorMessage);
     }
 
-    protected void defineScope(Class<?> declaringClass, String errorMessage)
+    protected void defineScope(Class<?> declaringClass, boolean onlyScopedBeans, String errorMessage)
     {
         Annotation[] annotations = AnnotationUtil.asArray(annotated.getAnnotations());
         boolean found = false;
@@ -364,24 +374,20 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
 
         if (!found && declaringClass != null && !hasDeclaredNonInheritedScope(declaringClass))
         {
-            defineScope(declaringClass.getSuperclass(), errorMessage);
+            defineScope(declaringClass.getSuperclass(), onlyScopedBeans, errorMessage);
         }
         else if (!found)
         {
-            defineDefaultScope(errorMessage);
+            defineDefaultScope(errorMessage, onlyScopedBeans);
         }
     }
 
-    private void defineDefaultScope(String exceptionMessage)
+    private void defineDefaultScope(String exceptionMessage, boolean onlyScopedBeans)
     {
         if (scope == null)
         {
             Set<Class<? extends Annotation>> stereos = stereotypes;
-            if (stereos.size() == 0)
-            {
-                scope = Dependent.class;
-            }
-            else
+            if (stereos != null && stereos.size() >  0)
             {
                 Annotation defined = null;
                 Set<Class<? extends Annotation>> anns = stereotypes;
@@ -426,6 +432,17 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
                     scope = Dependent.class;
                 }
             }
+            if (scope == null &&
+                    (!onlyScopedBeans ||
+                    annotated.getAnnotation(Interceptor.class) != null ||
+                    annotated.getAnnotation(Decorator.class) != null))
+            {
+                // only add a 'default' Dependent scope
+                // * if it's not in a bean-discovery-mode='scoped' module, or
+                // * if it's a Decorator or Interceptor
+                scope = Dependent.class;
+            }
+
         }
     }
 
@@ -558,9 +575,14 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         
         public <T> BeanAttributesBuilder<T, AnnotatedType<T>> newBeanAttibutes(AnnotatedType<T> annotatedType)
         {
-            return new AnnotatedTypeBeanAttributesBuilder<T>(webBeansContext, annotatedType);
+            return newBeanAttibutes(annotatedType, false);
         }
         
+        public <T> BeanAttributesBuilder<T, AnnotatedType<T>> newBeanAttibutes(AnnotatedType<T> annotatedType, boolean onlyScopedBeans)
+        {
+            return new AnnotatedTypeBeanAttributesBuilder<T>(webBeansContext, annotatedType, onlyScopedBeans);
+        }
+
         public <T> BeanAttributesBuilder<T, AnnotatedField<T>> newBeanAttibutes(AnnotatedField<T> annotatedField)
         {
             return new AnnotatedFieldBeanAttributesBuilder<T>(webBeansContext, annotatedField);
@@ -574,16 +596,19 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
 
     private static class AnnotatedTypeBeanAttributesBuilder<C> extends BeanAttributesBuilder<C, AnnotatedType<C>>
     {
+        private final boolean onlyScopedBeans;
 
-        public AnnotatedTypeBeanAttributesBuilder(WebBeansContext webBeansContext, AnnotatedType<C> annotated)
+        public AnnotatedTypeBeanAttributesBuilder(WebBeansContext webBeansContext, AnnotatedType<C> annotated, boolean onlyScopedBeans)
         {
             super(webBeansContext, annotated);
+            this.onlyScopedBeans = onlyScopedBeans;
         }
 
         @Override
         protected void defineScope()
         {
-            defineScope(getAnnotated().getJavaClass(), WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + getAnnotated().getJavaClass().getName() +
+            defineScope(getAnnotated().getJavaClass(), onlyScopedBeans,
+                    WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_MB_IMPL) + getAnnotated().getJavaClass().getName() +
                     WebBeansLoggerFacade.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
         }
 

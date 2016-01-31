@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.webbeans.config.OWBLogConst;
@@ -40,6 +41,7 @@ import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.InconsistentSpecializationException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 
 /**
@@ -63,15 +65,17 @@ public class SpecializationUtil
 
     /**
      *
-     * @param annotatedTypes all annotatypes
+     * @param annotatedTypesPerBda all annotatypes sliced by BDA
      * @param attributeProvider if not null provides bean attributes to be able to validate types contains superclass
      * @param notSpecializationOnly first pass/2nd pass. First one removes only root beans, second one handles inheritance even in @Spe
      */
-    public void removeDisabledTypes(Collection<AnnotatedType<?>> annotatedTypes,
+    public void removeDisabledTypes( Map<BeanArchiveService.BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda,
                                     BeanAttributesProvider attributeProvider,
                                     boolean notSpecializationOnly)
     {
-        if (annotatedTypes != null && !annotatedTypes.isEmpty())
+        Set<AnnotatedType<?>> allAnnotatedTypes = getAllAnnotatedTypes(annotatedTypesPerBda);
+
+        if (allAnnotatedTypes != null && !allAnnotatedTypes.isEmpty())
         {
             // superClassList is used to handle the case: Car, CarToyota, Bus, SchoolBus, CarFord
             // for which case OWB should throw exception that both CarToyota and CarFord are
@@ -81,7 +85,7 @@ public class SpecializationUtil
 
             // first let's find all superclasses of Specialized types
             Set<Class<?>> disabledClasses = new HashSet<Class<?>>();
-            for(AnnotatedType<?> annotatedType : annotatedTypes)
+            for(AnnotatedType<?> annotatedType : allAnnotatedTypes)
             {
                 if(annotatedType.getAnnotation(Specializes.class) != null && isEnabled(annotatedType))
                 {
@@ -113,19 +117,21 @@ public class SpecializationUtil
                         throw new WebBeansDeploymentException(new InconsistentSpecializationException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0005) +
                                                                        superClass.getName()));
                     }
-                    if (!containsAllSuperclassTypes(annotatedType, superClass, annotatedTypes))
+                    if (!containsAllSuperclassTypes(annotatedType, superClass, allAnnotatedTypes))
                     {
                         throw new WebBeansDeploymentException(new InconsistentSpecializationException("@Specialized Class : " + specialClass.getName()
                                                                           + " must have all bean types of its super class"));
                     }
 
-                    AnnotatedType<?> superType = getAnnotatedTypeForClass(annotatedTypes, superClass);
+                    AnnotatedType<?> superType = getAnnotatedTypeForClass(allAnnotatedTypes, superClass);
                     if (notSpecializationOnly)
                     {
+                        /*X TODO remove?
                         if (superType != null && superType.getAnnotation(Specializes.class) != null)
                         {
                             continue;
                         }
+                        */
 
                         if ((superType == null && !webBeansContext.findMissingAnnotatedType(superClass)) || (superType != null && !webBeansUtil.isConstructorOk(superType)))
                         {
@@ -156,19 +162,34 @@ public class SpecializationUtil
             }
 
             // and now remove all AnnotatedTypes of those collected disabledClasses
-            if (!disabledClasses.isEmpty())
+            removeAllDisabledClasses(annotatedTypesPerBda, disabledClasses);
+        }
+    }
+
+    private void removeAllDisabledClasses(Map<BeanArchiveService.BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda, Set<Class<?>> disabledClasses)
+    {
+        for (List<AnnotatedType<?>> annotatedTypes : annotatedTypesPerBda.values())
+        {
+            Iterator<AnnotatedType<?>> annotatedTypeIterator = annotatedTypes.iterator();
+            while (annotatedTypeIterator.hasNext())
             {
-                Iterator<AnnotatedType<?>> annotatedTypeIterator = annotatedTypes.iterator();
-                while (annotatedTypeIterator.hasNext())
+                AnnotatedType<?> annotatedType = annotatedTypeIterator.next();
+                if (disabledClasses.contains(annotatedType.getJavaClass()))
                 {
-                    AnnotatedType<?> annotatedType = annotatedTypeIterator.next();
-                    if (disabledClasses.contains(annotatedType.getJavaClass()))
-                    {
-                        annotatedTypeIterator.remove();
-                    }
+                    annotatedTypeIterator.remove();
                 }
             }
         }
+    }
+
+    private Set<AnnotatedType<?>> getAllAnnotatedTypes(Map<BeanArchiveService.BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda)
+    {
+        Set<AnnotatedType<?>> allAnnotatedTypes = new HashSet<AnnotatedType<?>>(annotatedTypesPerBda.size()*50);
+        for (List<AnnotatedType<?>> annotatedTypes : annotatedTypesPerBda.values())
+        {
+            allAnnotatedTypes.addAll(annotatedTypes);
+        }
+        return allAnnotatedTypes;
     }
 
     private boolean containsAllSuperclassTypes(AnnotatedType<?> annotatedType, Class<?> superClass, Collection<AnnotatedType<?>> annotatedTypes)
@@ -214,11 +235,11 @@ public class SpecializationUtil
     }
 
     /**
-     * @return false if the AnnotatedType is for a not enabled Alternative
+     * @return true if the AnnotatedType is an enabled Alternative or no alternative at all
      */
     private boolean isEnabled(AnnotatedType<?> annotatedType)
     {
-        return  annotatedType.getAnnotation(Alternative.class) == null ||
+        return annotatedType.getAnnotation(Alternative.class) == null ||
                 alternativesManager.isAlternative(annotatedType.getJavaClass(), getAnnotationClasses(annotatedType));
     }
 

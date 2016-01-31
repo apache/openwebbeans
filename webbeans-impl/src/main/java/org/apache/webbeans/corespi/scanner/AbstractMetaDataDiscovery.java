@@ -27,9 +27,9 @@ import org.apache.webbeans.corespi.scanner.xbean.OwbAnnotationFinder;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
+import org.apache.webbeans.spi.BdaScannerService;
 import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.BeanArchiveService.BeanDiscoveryMode;
-import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.UrlSet;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -52,7 +52,7 @@ import java.util.logging.Logger;
 
 
 
-public abstract class AbstractMetaDataDiscovery implements ScannerService
+public abstract class AbstractMetaDataDiscovery implements BdaScannerService
 {
     protected static final Logger logger = WebBeansLoggerFacade.getLogger(AbstractMetaDataDiscovery.class);
 
@@ -77,6 +77,12 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
      * new URL(...).
      */
     private final Map<String, URL> beanDeploymentUrls = new HashMap<String, URL>();
+
+    /**
+     * for having proper scan mode 'SCOPED' support we need to know which bean class
+     * has which beans.xml.
+     */
+    private Map<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>> beanClassesPerBda;
 
     protected String[] scanningExcludes;
 
@@ -113,6 +119,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
 
     /**
      * @return list of beans.xml locations or implicit bean archives
+     * @deprecated just here for backward compat reasons
      */
     protected Iterable<URL> getBeanArchiveUrls()
     {
@@ -341,7 +348,64 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
             beanArchiveService = webBeansContext.getBeanArchiveService();
         }
 
+        // just to trigger the creation
         beanArchiveService.getBeanArchiveInformation(beanArchiveUrl);
+    }
+
+
+    /**
+     * This method only gets called if the initialisation is done already.
+     * It will collect all the classes from all the BDAs it can find.
+     */
+    public Map<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>> getBeanClassesPerBda()
+    {
+        if (beanClassesPerBda == null)
+        {
+            beanClassesPerBda = new HashMap<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>>();
+
+            for (CdiArchive.FoundClasses foundClasses : archive.classesByUrl().values())
+            {
+                Set<Class<?>> classSet = new HashSet<Class<?>>();
+                boolean scanModeAnnotated = BeanDiscoveryMode.ANNOTATED.equals(foundClasses.getBeanArchiveInfo().getBeanDiscoveryMode());
+                for (String className : foundClasses.getClassNames())
+                {
+                    try
+                    {
+                        if (scanModeAnnotated)
+                        {
+                            // in this case we need to find out whether we should keep this class in the Archive
+                            AnnotationFinder.ClassInfo classInfo = finder.getClassInfo(className);
+                            if (classInfo == null || !isBeanAnnotatedClass(classInfo))
+                            {
+                                continue;
+                            }
+                        }
+
+                        Class<?> clazz = ClassUtil.getClassFromName(className);
+                        if (clazz != null)
+                        {
+                            // try to provoke a NoClassDefFoundError exception which is thrown
+                            // if some dependencies of the class are missing
+                            clazz.getDeclaredFields();
+
+                            // we can add this class cause it has been loaded completely
+                            classSet.add(clazz);
+                        }
+                    }
+                    catch (NoClassDefFoundError e)
+                    {
+                        if (logger.isLoggable(Level.WARNING))
+                        {
+                            logger.log(Level.WARNING, OWBLogConst.WARN_0018, new Object[]{className, e.toString()});
+                        }
+                    }
+                }
+
+                beanClassesPerBda.put(foundClasses.getBeanArchiveInfo(), classSet);
+            }
+
+        }
+        return beanClassesPerBda;
     }
 
     /* (non-Javadoc)
@@ -350,50 +414,8 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     @Override
     public Set<Class<?>> getBeanClasses()
     {
-        final Set<Class<?>> classSet = new HashSet<Class<?>>();
-        for (CdiArchive.FoundClasses foundClasses : archive.classesByUrl().values())
-        {
-            boolean scanModeAnnotated = BeanDiscoveryMode.ANNOTATED.equals(foundClasses.getBeanArchiveInfo().getBeanDiscoveryMode());
-            for(String className : foundClasses.getClassNames())
-            {
-                try
-                {
-                    if (scanModeAnnotated)
-                    {
-                        // in this case we need to find out whether we should keep this class in the Archive
-                        AnnotationFinder.ClassInfo classInfo = finder.getClassInfo(className);
-                        if (classInfo == null || !isBeanAnnotatedClass(classInfo))
-                        {
-                            continue;
-                        }
-                    }
-
-                    Class<?> clazz = ClassUtil.getClassFromName(className);
-                    if (clazz != null)
-                    {
-
-                        // try to provoke a NoClassDefFoundError exception which is thrown
-                        // if some dependencies of the class are missing
-                        clazz.getDeclaredFields();
-                        clazz.getDeclaredMethods();
-
-                        // we can add this class cause it has been loaded completely
-                        classSet.add(clazz);
-
-                    }
-                }
-                catch (NoClassDefFoundError e)
-                {
-                    if (logger.isLoggable(Level.WARNING))
-                    {
-                        logger.log(Level.WARNING, OWBLogConst.WARN_0018, new Object[] { className, e.toString() });
-                    }
-                }
-            }
-
-        }
-
-        return classSet;
+        // do nothing, getBeanClasses() should not get invoked anymore
+        return Collections.EMPTY_SET;
     }
 
     /**

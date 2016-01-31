@@ -48,6 +48,20 @@ public interface BeanArchiveService
         ALL(10),
 
         /**
+         * Pick up all classes (like with {@link #ALL} and fire the
+         * ProcessAnnotatedType event for them.
+         * But <b>only</b> pick up the scanned class as CDI bean:
+         * <ul>
+         * <li>if they have an explicit CDI scope annotation, or</li>
+         * <li>if they are an Interceptor or Decorator</li>
+         * <li>if they are a JavaEE managed bean</li>
+         * </ul>
+         * Contrary to the {@link #ALL} mode beans without any scope will
+         * <i>not</i> get picked up as &#064;Dependent scoped beans!
+         */
+        SCOPED(8),
+
+        /**
          * Only classes with a 'bean defining annotation' will get
          * picked up as CDI beans.
          * A 'bean defining annotation' is any CDI or atinject Scope annotation
