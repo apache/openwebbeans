@@ -135,6 +135,11 @@ public class OpenWebBeansConfiguration
     public static final String SCAN_EXCLUSION_PATHS = "org.apache.webbeans.scanExclusionPaths";
 
     /**
+     * Flag which indicates that only jars with an explicit META-INF/beans.xml marker file shall get paresed.
+     * Default is {@code false}
+     */
+    public static final String SCAN_ONLY_BEANS_XML_JARS = "org.apache.webbeans.scanBeansXmlOnly";
+    /**
      * a comma-separated list of fully qualified class names that should be ignored
      * when determining if a decorator matches its delegate.  These are typically added by
      * weaving or bytecode modification.
@@ -167,6 +172,9 @@ public class OpenWebBeansConfiguration
     /**Default configuration files*/
     private static final String DEFAULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";
 
+    /**
+     * A value which indicates an 'automatic' behaviour.
+     */
     private static final String AUTO_CONFIG = "auto";
 
     /**Property of application*/
@@ -354,6 +362,16 @@ public class OpenWebBeansConfiguration
         String value = getProperty(APPLICATION_SUPPORTS_CONVERSATION);
 
         return Boolean.valueOf(value);
+    }
+
+    /**
+     * Flag which indicates that only jars with an explicit META-INF/beans.xml marker file shall get paresed.
+     * Default is {@code false}
+     */
+    public boolean scanOnlyBeansXmlJars()
+    {
+        String value = getProperty(SCAN_ONLY_BEANS_XML_JARS);
+        return "true".equalsIgnoreCase(value);
     }
 
     public synchronized Set<String> getIgnoredInterfaces()

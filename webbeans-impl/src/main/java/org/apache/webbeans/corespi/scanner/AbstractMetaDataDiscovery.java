@@ -204,16 +204,20 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
                 }
             }
 
-            // third step: remove all jars we know they do not contain any CDI beans
-            filterExcludedJars(classPathUrls);
-
-            // forth step: add all 'implicit bean archives'
-            for (URL url : classPathUrls)
+            boolean onlyBeansXmlJars = webBeansContext.getOpenWebBeansConfiguration().scanOnlyBeansXmlJars();
+            if (!onlyBeansXmlJars)
             {
-                if (isBdaUrlEnabled(url))
+                // third step: remove all jars we know they do not contain any CDI beans
+                filterExcludedJars(classPathUrls);
+
+                // forth step: add all 'implicit bean archives'
+                for (URL url : classPathUrls)
                 {
-                    addWebBeansXmlLocation(url);
-                    addDeploymentUrl(url.toExternalForm(), url);
+                    if (isBdaUrlEnabled(url))
+                    {
+                        addWebBeansXmlLocation(url);
+                        addDeploymentUrl(url.toExternalForm(), url);
+                    }
                 }
             }
         }
@@ -247,7 +251,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             final String path = url.toExternalForm();
             // TODO: should extract file path and test file.getName(), not the whole path
             // + should be configurable
-            final int knownJarIdx = isKnownJar(path);
+            final int knownJarIdx = isExcludedJar(path);
             // -Prun-its openwebbeans-tomcat7 in path but WEB-INF/classes
             if (knownJarIdx > 0 && knownJarIdx < path.indexOf(".jar"))
             {
@@ -258,7 +262,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         }
     }
 
-    private int isKnownJar(final String path)
+    private int isExcludedJar(final String path)
     {
         // lazy init - required when using DS CdiTestRunner
         initScanningExcludes();
