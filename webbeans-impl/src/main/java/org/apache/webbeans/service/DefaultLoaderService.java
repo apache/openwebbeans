@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.service;
 
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.LoaderService;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -25,6 +26,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -49,12 +51,23 @@ public class DefaultLoaderService implements LoaderService
         if(JAVA_6_AVAILABLE)
         {
             List<T> result = new ArrayList<T>();
-            ServiceLoader<T> services = ServiceLoader.load(serviceType, classLoader);
-
-            for (T service : services)
+            try
             {
-                result.add(service);
+                ServiceLoader<T> services;
+                services = ServiceLoader.load(serviceType, classLoader);
+
+                for (T service : services)
+                {
+                    result.add(service);
+                }
             }
+            catch (Error error)
+            {
+                // WTF! ServiceLoader is cool, but THAT is utter crap: it throws some Errors!
+                logger.log(Level.SEVERE, "Problem while loading CDI Extensions", error);
+                throw new WebBeansConfigurationException("Problem while loading CDI Extensions", error);
+            }
+
 
             return result;
         }
