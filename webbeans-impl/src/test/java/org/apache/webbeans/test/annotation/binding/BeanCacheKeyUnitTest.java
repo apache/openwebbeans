@@ -175,7 +175,6 @@ public class BeanCacheKeyUnitTest
         BeanCacheKey a = new BeanCacheKey(true, String.class, null, a1);
         BeanCacheKey b = new BeanCacheKey(true, String.class, null, a2);
         Assert.assertFalse(a.equals(b));
-        Assert.assertFalse(a.hashCode() == b.hashCode());
     }
 
     @Test
@@ -230,7 +229,6 @@ public class BeanCacheKeyUnitTest
         BeanCacheKey a = new BeanCacheKey(true, String.class, null, a4);
         BeanCacheKey b = new BeanCacheKey(true, String.class, null, a5);
         Assert.assertFalse(a.equals(b));
-        Assert.assertFalse(a.hashCode() == b.hashCode());
     }
 
     @Test
@@ -257,7 +255,6 @@ public class BeanCacheKeyUnitTest
         BeanCacheKey a = new BeanCacheKey(true, String.class, null, a7);
         BeanCacheKey b = new BeanCacheKey(true, String.class, null, a8);
         Assert.assertFalse(a.equals(b));
-        Assert.assertFalse(a.hashCode() == b.hashCode());
     }
 
     @Test
@@ -266,7 +263,6 @@ public class BeanCacheKeyUnitTest
         BeanCacheKey a = new BeanCacheKey(true, String.class, null, a9);
         BeanCacheKey b = new BeanCacheKey(true, String.class, null, aa);
         Assert.assertFalse(a.equals(b));
-        Assert.assertFalse(a.hashCode() == b.hashCode());
     }
 
     @Test
@@ -275,7 +271,6 @@ public class BeanCacheKeyUnitTest
         BeanCacheKey a = new BeanCacheKey(true, String.class, null, ab);
         BeanCacheKey b = new BeanCacheKey(true, String.class, null, ac);
         Assert.assertFalse(a.equals(b));
-        Assert.assertFalse(a.hashCode() == b.hashCode());
     }
 
     @Test

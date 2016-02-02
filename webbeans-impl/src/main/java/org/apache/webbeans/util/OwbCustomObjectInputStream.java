@@ -26,6 +26,12 @@ import java.lang.reflect.Proxy;
 
 public class OwbCustomObjectInputStream extends ObjectInputStream
 {
+    public static final BlacklistClassResolver BLACKLIST_CLASSES = new BlacklistClassResolver(
+        toArray(System.getProperty(
+            "openwebbeans.serialization.class.blacklist",
+            "org.codehaus.groovy.runtime.,org.apache.commons.collections.functors.,org.apache.xalan")),
+        toArray(System.getProperty("openwebbeans.serialization.class.whitelist")));
+
     private ClassLoader classLoader;
 
     public OwbCustomObjectInputStream(InputStream in, ClassLoader classLoader) throws IOException
@@ -37,7 +43,7 @@ public class OwbCustomObjectInputStream extends ObjectInputStream
     @Override
     protected Class<?> resolveClass(ObjectStreamClass desc) throws ClassNotFoundException
     {
-        return Class.forName(desc.getName(), false, classLoader);
+        return Class.forName(BLACKLIST_CLASSES.check(desc.getName()), false, classLoader);
     }
 
     @Override
@@ -56,6 +62,52 @@ public class OwbCustomObjectInputStream extends ObjectInputStream
         catch (IllegalArgumentException e)
         {
             throw new ClassNotFoundException(null, e);
+        }
+    }
+
+    private static String[] toArray(final String property)
+    {
+        return property == null ? null : property.split(" *, *");
+    }
+
+    private static class BlacklistClassResolver
+    {
+        private final String[] blacklist;
+        private final String[] whitelist;
+
+        protected BlacklistClassResolver(final String[] blacklist, final String[] whitelist)
+        {
+            this.whitelist = whitelist;
+            this.blacklist = blacklist;
+        }
+
+        protected boolean isBlacklisted(final String name)
+        {
+            return (whitelist != null && !contains(whitelist, name)) || contains(blacklist, name);
+        }
+
+        public final String check(final String name)
+        {
+            if (isBlacklisted(name))
+            {
+                throw new SecurityException(name + " is not whitelisted as deserialisable, prevented before loading.");
+            }
+            return name;
+        }
+
+        private static boolean contains(final String[] list, String name)
+        {
+            if (list != null)
+            {
+                for (final String white : list)
+                {
+                    if (name.startsWith(white))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

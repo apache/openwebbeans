@@ -29,7 +29,8 @@ package org.apache.webbeans.spi;
 public interface ApplicationBoundaryService
 {
     /**
-     *
+     * Please note that the ApplicationClassLoader always have to 'see' the internal OWB classes
+     * like BeanManagerImpl or the proxy marker interfaces (
      * @return The 'outermost' ClassLoader of that Application
      */
     ClassLoader getApplicationClassLoader();

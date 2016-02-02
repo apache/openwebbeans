@@ -203,8 +203,8 @@ org.apache.webbeans.spi.JNDIService=org.apache.webbeans.spi.ee.JNDIServiceEnterp
     				</listitem>
     				
     				<listitem>
-    					<para><emphasis>org.apache.webbeans.conversation.Conversation.periodicDelay:</emphasis>  Conversation removing thread periodic delay. Unused
-    					conversations are removed by the container periodically.</para>
+    					<para><emphasis>org.apache.webbeans.conversation.Conversation.timeoutInterval:</emphasis>  Conversation removing thread periodic delay. Unused
+    					conversations are removed by the container if they are not touched for this amount of time.</para>
     				</listitem>
     				
     				<listitem>

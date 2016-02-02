@@ -152,14 +152,12 @@ public abstract class AbstractOwbBean<T>
 
     private Throwable getRootException(Throwable throwable)
     {
-        if(throwable.getCause() == null || throwable.getCause() == throwable)
+        Throwable current = throwable;
+        while (current.getCause() != null && current.getCause() != current)
         {
-            return throwable;
+            current = current.getCause();
         }
-        else
-        {
-            return getRootException(throwable.getCause());
-        }
+        return current;
     }
 
     /*

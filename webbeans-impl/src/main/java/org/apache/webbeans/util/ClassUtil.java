@@ -540,7 +540,7 @@ public final class ClassUtil
     
 
     /**
-     * Returna true if the class is not abstract and interface.
+     * Return true if the class is not abstract and interface.
      *     
      * @param clazz class type
      * @return true if the class is not abstract and interface

@@ -70,6 +70,7 @@ import org.apache.webbeans.portable.events.discovery.AfterTypeDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
+import org.apache.webbeans.spi.BdaScannerService;
 import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
@@ -82,6 +83,7 @@ import org.apache.webbeans.util.InjectionExceptionUtil;
 import org.apache.webbeans.util.SpecializationUtil;
 import org.apache.webbeans.util.WebBeansConstants;
 import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.webbeans.xml.DefaultBeanArchiveInformation;
 
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.Model;
@@ -121,6 +123,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.util.Arrays.asList;
+import static org.apache.webbeans.spi.BeanArchiveService.BeanDiscoveryMode;
+import static org.apache.webbeans.spi.BeanArchiveService.BeanArchiveInformation;
 
 /**
  * Deploys the all beans that are defined in the {@link org.apache.webbeans.spi.ScannerService} at
@@ -165,6 +169,12 @@ public class BeansDeployer
     private final Map<String, Boolean> packageVetoCache = new HashMap<String, Boolean>();
 
     /**
+     * This BdaInfo is used for all manually added annotated types or in case
+     * a non-Bda-aware ScannerService got configured.
+     */
+    private final DefaultBeanArchiveInformation defaultBeanArchiveInformation;
+
+    /**
      * Creates a new deployer with given xml configurator.
      * 
      * @param webBeansContext
@@ -179,6 +189,9 @@ public class BeansDeployer
 
         String usage = this.webBeansContext.getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_EJB_DISCOVERY);
         discoverEjb = Boolean.parseBoolean(usage);
+
+        defaultBeanArchiveInformation = new DefaultBeanArchiveInformation();
+        defaultBeanArchiveInformation.setBeanDiscoveryMode(BeanDiscoveryMode.ALL);
     }
 
     /**
@@ -224,44 +237,58 @@ public class BeansDeployer
                 //Configure Default Beans
                 configureDefaultBeans();
 
-                List<AnnotatedType<?>> annotatedTypes = annotatedTypesFromClassPath(scanner);
+                Map<BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda = annotatedTypesFromClassPath(scanner);
 
-                //Deploy additional Annotated Types
-                addAdditionalAnnotatedTypes(webBeansContext.getBeanManagerImpl().getAdditionalAnnotatedTypes(), annotatedTypes);
+                List<AnnotatedType<?>> globalBdaAnnotatedTypes = annotatedTypesPerBda.get(defaultBeanArchiveInformation);
 
-                registerAlternativesDecoratorsAndInterceptorsWithPriority(annotatedTypes);
+                // Deploy additional Annotated Types which got added via BeforeBeanDiscovery#addAnnotatedType
+                addAdditionalAnnotatedTypes(webBeansContext.getBeanManagerImpl().getAdditionalAnnotatedTypes(), globalBdaAnnotatedTypes);
 
-                addAdditionalAnnotatedTypes(fireAfterTypeDiscoveryEvent(), annotatedTypes);
+                registerAlternativesDecoratorsAndInterceptorsWithPriority(globalBdaAnnotatedTypes);
+
+                addAdditionalAnnotatedTypes(fireAfterTypeDiscoveryEvent(), globalBdaAnnotatedTypes);
+
+                // Also configures deployments, interceptors, decorators.
+                deployFromXML(scanner);
 
                 SpecializationUtil specializationUtil = new SpecializationUtil(webBeansContext);
+                specializationUtil.removeDisabledTypes(annotatedTypesPerBda, null, true);
 
-                specializationUtil.removeDisabledTypes(annotatedTypes, null, true);
+                final Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> beanAttributesPerBda
+                    = getBeanAttributes(annotatedTypesPerBda);
 
-                final Map<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedTypePreProcessing = getBeanAttributes(annotatedTypes);
-                annotatedTypes.clear(); // shouldn't be used anymore, view is now annotatedTypePreProcessing
+                // shouldn't be used anymore, view is now beanAttributes
+                annotatedTypesPerBda.clear();
 
-                //Deploy bean from XML. Also configures deployments, interceptors, decorators.
-                deployFromXML(scanner, annotatedTypePreProcessing);
 
                 //Checking stereotype conditions
                 checkStereoTypes(scanner);
 
                 // Handle Specialization
                 specializationUtil.removeDisabledTypes(
-                        annotatedTypePreProcessing.keySet(),
+                        annotatedTypesPerBda,
                         new SpecializationUtil.BeanAttributesProvider()
                         {
                             @Override
                             public <T> BeanAttributes get(final AnnotatedType<T> at)
                             {
-                                final AnnotatedTypeData<?> data = annotatedTypePreProcessing.get(at);
+                                ExtendedBeanAttributes<?> data = null;
+                                for (Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> beanAttributes : beanAttributesPerBda.values())
+                                {
+                                    data = beanAttributes.get(at);
+                                    if (data != null)
+                                    {
+                                        break;
+                                    }
+
+                                }
                                 return data == null ? null : data.beanAttributes;
                             }
                         },
                         false);
 
                 // create beans from the discovered AnnotatedTypes
-                deployFromAnnotatedTypes(annotatedTypePreProcessing);
+                deployFromBeanAttributes(beanAttributesPerBda);
 
                 //X TODO configure specialized producer beans.
                 webBeansContext.getWebBeansUtil().configureProducerMethodSpecializations();
@@ -320,37 +347,56 @@ public class BeansDeployer
         }
     }
 
-    private Map<AnnotatedType<?>, AnnotatedTypeData<?>> getBeanAttributes(final List<AnnotatedType<?>> annotatedTypes)
+    private Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> getBeanAttributes(
+                                final Map<BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda)
     {
-        final Map<AnnotatedType<?>, AnnotatedTypeData<?>> result = new IdentityHashMap<AnnotatedType<?>, AnnotatedTypeData<?>>(annotatedTypes.size());
-        final Iterator<AnnotatedType<?>> iterator = annotatedTypes.iterator();
-        while (iterator.hasNext())
+        final Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> beanAttributesPerBda
+            = new HashMap<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>>();
+
+        for (Map.Entry<BeanArchiveInformation, List<AnnotatedType<?>>> atEntry : annotatedTypesPerBda.entrySet())
         {
-            final AnnotatedType<?> at = iterator.next();
-            final Class beanClass = at.getJavaClass();
-            final boolean isEjb = discoverEjb && EJBWebBeansConfigurator.isSessionBean(beanClass, webBeansContext);
-            try
+            BeanArchiveInformation bdaInfo = atEntry.getKey();
+            List<AnnotatedType<?>> annotatedTypes = atEntry.getValue();
+
+            boolean onlyScopedBeans = BeanDiscoveryMode.SCOPED.equals(bdaInfo.getBeanDiscoveryMode());
+
+            final Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> bdaBeanAttributes = new IdentityHashMap<AnnotatedType<?>, ExtendedBeanAttributes<?>>(annotatedTypes.size());
+            final Iterator<AnnotatedType<?>> iterator = annotatedTypes.iterator();
+            while (iterator.hasNext())
             {
-                if(isEjb || (ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(at)) && isValidManagedBean(at))
+                final AnnotatedType<?> at = iterator.next();
+                final Class beanClass = at.getJavaClass();
+                final boolean isEjb = discoverEjb && EJBWebBeansConfigurator.isSessionBean(beanClass, webBeansContext);
+                try
                 {
-                    final BeanAttributesImpl tBeanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(at).build();
-                    final BeanAttributes<?> beanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(at, at.getJavaClass(), tBeanAttributes);
-                    if (beanAttributes != null)
+                    if (isEjb || (ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(at)) && isValidManagedBean(at))
                     {
-                        result.put(at, new AnnotatedTypeData(beanAttributes, isEjb));
+                        final BeanAttributesImpl tBeanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(at, onlyScopedBeans).build();
+                        if (tBeanAttributes != null)
+                        {
+                            final BeanAttributes<?> beanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(at, at.getJavaClass(), tBeanAttributes);
+                            if (beanAttributes != null)
+                            {
+                                bdaBeanAttributes.put(at, new ExtendedBeanAttributes(beanAttributes, isEjb));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        iterator.remove();
                     }
                 }
-                else
+                catch (final NoClassDefFoundError ncdfe)
                 {
-                    iterator.remove();
+                    logger.info("Skipping deployment of Class " + beanClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
                 }
             }
-            catch (final NoClassDefFoundError ncdfe)
-            {
-                logger.info("Skipping deployment of Class " + beanClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
-            }
+
+            beanAttributesPerBda.put(bdaInfo, bdaBeanAttributes);
         }
-        return result;
+
+
+        return beanAttributesPerBda;
     }
 
     private void validateDisposeParameters()
@@ -487,7 +533,6 @@ public class BeansDeployer
                 {
                     final Class<?> javaClass = annotatedType.getJavaClass();
                     interceptorsManager.addPriorityClazzInterceptor(javaClass, priority);
-                    // interceptorsManager.addEnabledInterceptorClass(javaClass);
                 }
             }
             if (annotatedType.getAnnotation(javax.decorator.Decorator.class) != null)
@@ -497,7 +542,6 @@ public class BeansDeployer
                 {
                     final Class<?> javaClass = annotatedType.getJavaClass();
                     decoratorsManager.addPriorityClazzDecorator(javaClass, priority);
-                    // decoratorsManager.addEnabledDecorator(javaClass);
                 }
             }
         }
@@ -880,13 +924,44 @@ public class BeansDeployer
     /**
      * Create AnnotatedTypes from the ClassPath via the ScannerService
      */
-    private List<AnnotatedType<?>> annotatedTypesFromClassPath(ScannerService scanner)
+    private Map<BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesFromClassPath(ScannerService scanner)
     {
         logger.fine("Creating AnnotatedTypes from class files has started.");
 
-        // Start from the class
-        Set<Class<?>> classIndex = scanner.getBeanClasses();
+        Map<BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda
+            = new HashMap<BeanArchiveInformation, List<AnnotatedType<?>>>();
 
+        if (scanner instanceof BdaScannerService)
+        {
+            Map<BeanArchiveInformation, Set<Class<?>>> beanClassesPerBda = ((BdaScannerService) scanner).getBeanClassesPerBda();
+
+            for (Map.Entry<BeanArchiveInformation, Set<Class<?>>> bdaEntry : beanClassesPerBda.entrySet())
+            {
+                BeanArchiveInformation bdaInfo = bdaEntry.getKey();
+                List<AnnotatedType<?>> annotatedTypes = annotatedTypesFromBdaClassPath(bdaEntry.getValue());
+                annotatedTypesPerBda.put(bdaEntry.getKey(), annotatedTypes);
+            }
+
+            // also add the rest of the class es to the default bda
+            // we also need this initialised in case annotatedTypes get added manually at a later step
+            annotatedTypesPerBda.put(defaultBeanArchiveInformation, annotatedTypesFromBdaClassPath(scanner.getBeanClasses()));
+        }
+        else
+        {
+            // this path is only for backward compat to older ScannerService implementations
+
+            Set<Class<?>> classIndex = scanner.getBeanClasses();
+            List<AnnotatedType<?>> annotatedTypes = annotatedTypesFromBdaClassPath(classIndex);
+
+            annotatedTypesPerBda.put(defaultBeanArchiveInformation, annotatedTypes);
+        }
+
+
+        return annotatedTypesPerBda;
+    }
+
+    private List<AnnotatedType<?>> annotatedTypesFromBdaClassPath(Set<Class<?>> classIndex)
+    {
         List<AnnotatedType<?>> annotatedTypes = new ArrayList<AnnotatedType<?>>();
 
         //Iterating over each class
@@ -1055,30 +1130,34 @@ public class BeansDeployer
     /**
      * Discovers and deploys classes from class path.
      * 
-     * @param annotatedTypes the AnnotatedTypes which got discovered so far and are not vetoed
+     * @param beanAttributesPerBda the AnnotatedTypes which got discovered so far and are not vetoed
      * @throws ClassNotFoundException if class not found
      */
-    protected void deployFromAnnotatedTypes(Map<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedTypes)
+    protected void deployFromBeanAttributes( Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> beanAttributesPerBda)
     {
         logger.fine("Deploying configurations from class files has started.");
 
-        // Start from the class
-        for(Map.Entry<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedType : annotatedTypes.entrySet())
+        for (Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> beanAttributesMap : beanAttributesPerBda.values())
         {
-            try
-            {
-                deploySingleAnnotatedType(annotatedType.getKey(), annotatedType.getValue(), annotatedTypes);
-            }
-            catch (NoClassDefFoundError ncdfe)
-            {
-                logger.info("Skipping deployment of Class " + annotatedType.getKey().getJavaClass() + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
-            }
 
-            // if the implClass already gets processed as part of the
-            // standard BDA scanning, then we don't need to 'additionally'
-            // deploy it anymore.
-            webBeansContext.getBeanManagerImpl().removeAdditionalAnnotatedType(annotatedType.getKey());
+            // Start from the class
+            for (Map.Entry<AnnotatedType<?>, ExtendedBeanAttributes<?>> annotatedType : beanAttributesMap.entrySet())
+            {
+                try
+                {
+                    deploySingleAnnotatedType(annotatedType.getKey(), annotatedType.getValue(), beanAttributesMap);
+                }
+                catch (NoClassDefFoundError ncdfe)
+                {
+                    logger.info("Skipping deployment of Class " + annotatedType.getKey().getJavaClass() + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
+                }
 
+                // if the implClass already gets processed as part of the
+                // standard BDA scanning, then we don't need to 'additionally'
+                // deploy it anymore.
+                webBeansContext.getBeanManagerImpl().removeAdditionalAnnotatedType(annotatedType.getKey());
+
+            }
         }
 
         logger.fine("Deploying configurations from class files has ended.");
@@ -1092,7 +1171,7 @@ public class BeansDeployer
      * 
      * @param annotatedTypeData the AnnotatedType representing the bean to be deployed with their already computed data
      */
-    private void deploySingleAnnotatedType(AnnotatedType annotatedType, AnnotatedTypeData annotatedTypeData, Map<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedTypes)
+    private void deploySingleAnnotatedType(AnnotatedType annotatedType, ExtendedBeanAttributes annotatedTypeData, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> annotatedTypes)
     {
 
         Class beanClass = annotatedType.getJavaClass();
@@ -1160,7 +1239,8 @@ public class BeansDeployer
      *
      * @throws WebBeansDeploymentException if a problem occurs
      */
-    protected void deployFromXML(ScannerService scanner, Map<AnnotatedType<?>, AnnotatedTypeData<?>> preProcessing) throws WebBeansDeploymentException
+    protected void deployFromXML(ScannerService scanner)
+        throws WebBeansDeploymentException
     {
         logger.fine("Deploying configurations from XML files has started.");
 
@@ -1173,19 +1253,23 @@ public class BeansDeployer
 
             logger.fine("OpenWebBeans BeansDeployer configuring: " + url.toExternalForm());
 
-            BeanArchiveService.BeanArchiveInformation beanArchiveInformation = beanArchiveService.getBeanArchiveInformation(url);
+            BeanArchiveInformation beanArchiveInformation = beanArchiveService.getBeanArchiveInformation(url);
 
             configureDecorators(url, beanArchiveInformation.getDecorators());
             configureInterceptors(url, beanArchiveInformation.getInterceptors());
-            configureAlternatives(url, beanArchiveInformation.getAlternativeClasses(), false, preProcessing);
-            configureAlternatives(url, beanArchiveInformation.getAlternativeStereotypes(), true, preProcessing);
+            configureAlternatives(url, beanArchiveInformation.getAlternativeClasses(), false);
+            configureAlternatives(url, beanArchiveInformation.getAlternativeStereotypes(), true);
+            configureAllowProxying(url, beanArchiveInformation.getAllowProxyingClasses());
         }
 
         logger.fine("Deploying configurations from XML has ended successfully.");
     }
 
-    private void configureAlternatives(URL bdaLocation, List<String> alternatives, boolean isStereotype, Map<AnnotatedType<?>, AnnotatedTypeData<?>> preProcessing)
+    private void configureAlternatives(URL bdaLocation, List<String> alternatives, boolean isStereotype)
     {
+        AlternativesManager manager = webBeansContext.getAlternativesManager();
+        AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
+
         // the alternatives in this beans.xml
         // this gets used to detect multiple definitions of the
         // same alternative in one beans.xml file.
@@ -1208,7 +1292,6 @@ public class BeansDeployer
             }
             else
             {
-                AlternativesManager manager = webBeansContext.getAlternativesManager();
                 if (isStereotype)
                 {
                     manager.addXmlStereoTypeAlternative(clazz);
@@ -1222,17 +1305,17 @@ public class BeansDeployer
                     }
                     else
                     {
-                        AnnotatedType annotatedType = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(clazz);
+                        AnnotatedType annotatedType = annotatedElementFactory.getAnnotatedType(clazz);
                         if (annotatedType != null)
                         {
-                            AnnotatedTypeData data = preProcessing.get(annotatedType);
-                            if (data != null && data.beanAttributes.isAlternative())
+                            if (annotatedType.getAnnotation(Alternative.class) != null)
                             {
                                 manager.addXmlClazzAlternative(clazz);
+                                break;
                             }
                             else
                             {
-                                throw new WebBeansDeploymentException("Given alternative class : " + clazz.getName() + " is not decorated wih @Alternative" );
+                                throw new WebBeansDeploymentException("Given alternative class : " + clazz.getName() + " is not decorated wih @Alternative");
                             }
                         }
                     }
@@ -1345,6 +1428,15 @@ public class BeansDeployer
         }
     }
 
+    private void configureAllowProxying(URL url, List<String> allowProxyingClasses)
+    {
+        OpenWebBeansConfiguration owbConfiguration = webBeansContext.getOpenWebBeansConfiguration();
+        for (String allowProxyingClass : allowProxyingClasses)
+        {
+            owbConfiguration.addConfigListValue(OpenWebBeansConfiguration.ALLOW_PROXYING_PARAM, allowProxyingClass);
+        }
+    }
+
 
     /**
      * Gets error message for XML parsing of the current XML file.
@@ -1440,7 +1532,7 @@ public class BeansDeployer
      * Defines and configures managed bean.
      * @param <T> type info
      */
-    protected <T> void defineManagedBean(AnnotatedType<T> annotatedType, BeanAttributes<T> attributes, Map<AnnotatedType<?>, AnnotatedTypeData<?>> annotatedTypes)
+    protected <T> void defineManagedBean(AnnotatedType<T> annotatedType, BeanAttributes<T> attributes, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> annotatedTypes)
     {   
         //Fires ProcessInjectionTarget event for Java EE components instances
         //That supports injections but not managed beans
@@ -1625,12 +1717,12 @@ public class BeansDeployer
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(bean);
     }
 
-    private static class AnnotatedTypeData<T>
+    private static class ExtendedBeanAttributes<T>
     {
         private final BeanAttributes<T> beanAttributes;
         private final boolean isEjb;
 
-        public AnnotatedTypeData(final BeanAttributes<T> beanAttributes, final boolean isEjb)
+        public ExtendedBeanAttributes(final BeanAttributes<T> beanAttributes, final boolean isEjb)
         {
             this.beanAttributes = beanAttributes;
             this.isEjb = isEjb;

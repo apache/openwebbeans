@@ -25,6 +25,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.TransientReference;
@@ -42,13 +43,22 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
 import org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.util.SecurityUtil;
 
 public class DeploymentValidationService
 {
+    /**Logger instance*/
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(DeploymentValidationService.class);
 
     private WebBeansContext webBeansContext;
+
+    /**
+     * Classes which are allowed to be proxies despite having a non-private, non-static final method
+     */
+    private Set<String> allowProxyingClasses = null;
+
 
     public DeploymentValidationService(WebBeansContext webBeansContext)
     {
@@ -62,13 +72,19 @@ public class DeploymentValidationService
      */
     public UnproxyableResolutionException validateProxyable(OwbBean<?> bean)
     {
+        if (allowProxyingClasses == null)
+        {
+            allowProxyingClasses = webBeansContext.getOpenWebBeansConfiguration().getConfigListValues(OpenWebBeansConfiguration.ALLOW_PROXYING_PARAM);
+        }
+
         // Unproxyable test for NormalScoped beans
         if (webBeansContext.getBeanManagerImpl().isNormalScope(bean.getScope()))
         {
             ViolationMessageBuilder violationMessage = ViolationMessageBuilder.newViolation();
 
             Class<?> beanClass = bean.getReturnType();
-            
+
+
             if(!beanClass.isInterface() && beanClass != Object.class)
             {
                 if(beanClass.isPrimitive())
@@ -91,7 +107,16 @@ public class DeploymentValidationService
                     String finalMethodName = hasNonPrivateFinalMethod(beanClass);
                     if (finalMethodName != null)
                     {
-                        violationMessage.addLine(beanClass.getName(), " has final method "+ finalMethodName + " CDI doesn't allow to proxy that.");
+                        if (allowProxyingClasses.contains(beanClass.getName()))
+                        {
+                            logger.info(beanClass.getName() +  " has final method " + finalMethodName + ". CDI doesn't allow to proxy that." +
+                                " Continuing because the class is explicitly configured to be treated as proxyable." +
+                                " Final methods shall not get invoked on this proxy!");
+                        }
+                        else
+                        {
+                            violationMessage.addLine(beanClass.getName(), " has final method " + finalMethodName + " CDI doesn't allow to proxy that.");
+                        }
                     }
 
 

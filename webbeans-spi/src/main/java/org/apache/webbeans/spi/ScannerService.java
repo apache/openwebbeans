@@ -68,7 +68,9 @@ public interface ScannerService
     
     /**
      * Gets beans classes that are found in the
-     * deployment archives. 
+     * deployment archives.
+     * Attention: if the ScannerService is a BdaScannerService then
+     * these classes will only get added to the 'default' BDA
      * @return bean classes
      */
     Set<Class<?>> getBeanClasses();

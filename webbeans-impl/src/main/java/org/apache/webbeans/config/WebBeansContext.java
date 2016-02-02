@@ -18,12 +18,17 @@
  */
 package org.apache.webbeans.config;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -38,6 +43,7 @@ import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
@@ -64,6 +70,8 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class WebBeansContext
 {
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansContext.class);
+
     private final Map<Class<?>, Object> managerMap = new HashMap<Class<?>, Object>();
 
     private final Map<Class<?>, Object> serviceMap = new HashMap<Class<?>, Object>();
@@ -446,9 +454,35 @@ public class WebBeansContext
         }
     }
 
+    /**
+     * Clear and destroy the whole WebBeansContext.
+     * This will also properly destroy all SPI services
+     */
     public void clear()
     {
+        destroyServices(managerMap.values());
+        destroyServices(serviceMap.values());
+
         managerMap.clear();
+        serviceMap.clear();
+    }
+
+    private void destroyServices(Collection<Object> services)
+    {
+        for (Object spiService : services)
+        {
+            if (spiService instanceof Closeable)
+            {
+                try
+                {
+                    ((Closeable) spiService).close();
+                }
+                catch (IOException e)
+                {
+                    logger.log(Level.SEVERE, "Error while destroying SPI service " + spiService.getClass().getName(), e);
+                }
+            }
+        }
     }
 
     public LoaderService getLoaderService()

@@ -149,6 +149,8 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         mergedBdaInfo.getAlternativeClasses().addAll(mergeLists(bdaWebClasses.getAlternativeClasses(), bdaWebInf.getAlternativeClasses()));
         mergedBdaInfo.getAlternativeStereotypes().addAll(mergeLists(bdaWebClasses.getAlternativeStereotypes(), bdaWebInf.getAlternativeStereotypes()));
 
+        // we do NOT merge the allowProxying as they just stack up anyway
+
         return mergedBdaInfo;
     }
 
@@ -212,7 +214,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         {
             xmlStream = beansXmlUrl.openStream();
 
-            return readBeansXml(xmlStream);
+            return readBeansXml(xmlStream, beansXmlUrl.toExternalForm());
 
         }
         catch (Exception e)
@@ -255,7 +257,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
      * Read the information from the given beans.xml and fill it into a
      * BeanArchiveInformation instance.
      */
-    protected BeanArchiveInformation readBeansXml(InputStream xmlStreamIn) throws IOException
+    protected BeanArchiveInformation readBeansXml(InputStream xmlStreamIn, String beansXmlLocation) throws IOException
     {
         DefaultBeanArchiveInformation bdaInfo = createBeanArchiveInformation();
 
@@ -285,7 +287,8 @@ public class DefaultBeanArchiveService implements BeanArchiveService
                 {
                     if (!"beans".equalsIgnoreCase(webBeansRoot.getLocalName()))
                     {
-                        throw new WebBeansConfigurationException("beans.xml must have a <beans> root element, but has: " + webBeansRoot.getLocalName());
+                        throw new WebBeansConfigurationException("beans.xml must have a <beans> root element, but has: " + webBeansRoot.getLocalName() +
+                                                                 " in " + beansXmlLocation);
                     }
 
                     bdaInfo.setVersion(getTrimmedAttribute(webBeansRoot, "version"));
@@ -293,13 +296,13 @@ public class DefaultBeanArchiveService implements BeanArchiveService
                     String beanDiscoveryMode = getTrimmedAttribute(webBeansRoot, "bean-discovery-mode");
                     bdaInfo.setBeanDiscoveryMode(beanDiscoveryMode != null ? BeanDiscoveryMode.valueOf(beanDiscoveryMode.toUpperCase()) : null);
 
-                    readBeanChildren(bdaInfo, webBeansRoot);
+                    readBeanChildren(bdaInfo, webBeansRoot, beansXmlLocation);
                 }
 
 
                 if (bdaInfo.getVersion() != null && !"1.0".equals(bdaInfo.getVersion()) && bdaInfo.getBeanDiscoveryMode() == null)
                 {
-                    throw new WebBeansConfigurationException("beans.xml with version 1.1 and higher must declare a bean-discovery-mode!");
+                    throw new WebBeansConfigurationException("beans.xml with version 1.1 and higher must declare a bean-discovery-mode! url=" + beansXmlLocation);
                 }
 
 
@@ -320,7 +323,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         return bdaInfo;
     }
 
-    private void readBeanChildren(DefaultBeanArchiveInformation bdaInfo, Element webBeansRoot)
+    private void readBeanChildren(DefaultBeanArchiveInformation bdaInfo, Element webBeansRoot, String beansXmlLocation)
     {
         ElementIterator elit = new ElementIterator(webBeansRoot);
         while (elit.hasNext())
@@ -342,6 +345,15 @@ public class DefaultBeanArchiveService implements BeanArchiveService
             else if (WebBeansConstants.WEB_BEANS_XML_SCAN_ELEMENT.equalsIgnoreCase(child.getLocalName()))
             {
                 fillExcludes(bdaInfo, child);
+            }
+            else if (WebBeansConstants.WEB_BEANS_XML_ALLOW_PROXYING_ELEMENT.equalsIgnoreCase(child.getLocalName()))
+            {
+                fillAllowProxying(bdaInfo, child);
+            }
+            else if (WebBeansConstants.WEB_BEANS_XML_SCOPED_BEANS_ONLY_ELEMENT.equalsIgnoreCase(child.getLocalName()))
+            {
+                logger.info("OWB specific feature detected: force bean-discovery-mode=\"scopex\" for " + beansXmlLocation);
+                bdaInfo.setBeanDiscoveryMode(BeanDiscoveryMode.SCOPED);
             }
         }
     }
@@ -488,6 +500,26 @@ public class DefaultBeanArchiveService implements BeanArchiveService
             }
         }
     }
+
+    private void fillAllowProxying(DefaultBeanArchiveInformation bdaInfo, Element allowProxyingElement)
+    {
+        ElementIterator elit = new ElementIterator(allowProxyingElement);
+        while (elit.hasNext())
+        {
+            Element child = elit.next();
+            if (WebBeansConstants.WEB_BEANS_XML_CLASS.equalsIgnoreCase(child.getLocalName()))
+            {
+                String clazz = child.getTextContent().trim();
+                if (clazz.isEmpty())
+                {
+                    throw new WebBeansConfigurationException("allowProxying <class> element must not be empty!");
+                }
+                bdaInfo.getAllowProxyingClasses().add(clazz);
+            }
+        }
+    }
+
+
 
     private static boolean isClassAvailable(final ClassLoader loader, final String name)
     {

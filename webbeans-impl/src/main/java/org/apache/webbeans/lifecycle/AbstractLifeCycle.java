@@ -31,7 +31,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
-import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.ContextsService;
@@ -171,14 +170,6 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             
             //Clear extensions
             webBeansContext.getExtensionLoader().clear();
-            
-            //Delete Resolutions Cache
-            InjectionResolver injectionResolver = webBeansContext.getBeanManagerImpl().getInjectionResolver();
-
-            injectionResolver.clearCaches();
-            
-            //Delete AnnotateTypeCache
-            webBeansContext.getAnnotatedElementFactory().clear();
             
             //After Stop
             afterStopApplication(endObject);
