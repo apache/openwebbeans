@@ -1214,27 +1214,31 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                         webBeansContext,
                         interceptorUtil.getLifecycleMethods(type, PostConstruct.class),
                         interceptorUtil.getLifecycleMethods(type, PreDestroy.class));
-        try
+        if (afterBeanDiscoveryFired)
         {
-            webBeansContext.getWebBeansUtil().validate(injectionTarget.getInjectionPoints(), null);
-        }
-        catch (final InjectionException ie)
-        {
-            throw new IllegalArgumentException(ie);
-        }
-        catch (final WebBeansConfigurationException ie)
-        {
-            throw new IllegalArgumentException(ie);
-        }
-        catch (final DeploymentException ie)
-        {
-            throw new IllegalArgumentException(ie);
+            try
+            {
+                webBeansContext.getWebBeansUtil().validate(injectionTarget.getInjectionPoints(), null);
+            }
+            catch (final InjectionException ie)
+            {
+                throw new IllegalArgumentException(ie);
+            }
+            catch (final WebBeansConfigurationException ie)
+            {
+                throw new IllegalArgumentException(ie);
+            }
+            catch (final DeploymentException ie)
+            {
+                throw new IllegalArgumentException(ie);
+            }
         }
         GProcessInjectionTarget event = webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, type);
         final InjectionTarget it = event.getInjectionTarget();
         event.setStarted();
         return it;
     }
+
 
     @Override
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, Annotation... qualifiers)
