@@ -22,6 +22,9 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.intercept.DefaultInterceptorHandler;
+import org.apache.webbeans.proxy.InterceptorHandler;
+import org.apache.webbeans.proxy.OwbInterceptorProxy;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -80,7 +83,16 @@ public class ProducerFieldProducer<T, P> extends BaseProducerProducer<T, P>
             else
             { 
                 parentInstance = getParentInstanceFromContext(parentCreational);
-                
+
+                if (OwbInterceptorProxy.class.isInstance(parentInstance))
+                {
+                    final InterceptorHandler handler = webBeansContext.getInterceptorDecoratorProxyFactory()
+                        .getInterceptorHandler(OwbInterceptorProxy.class.cast(parentInstance));
+                    if (DefaultInterceptorHandler.class.isInstance(handler))
+                    {
+                        parentInstance = (P) DefaultInterceptorHandler.class.cast(handler).getTarget();
+                    }
+                }
                 instance = (T) field.get(parentInstance);
             }
         }
