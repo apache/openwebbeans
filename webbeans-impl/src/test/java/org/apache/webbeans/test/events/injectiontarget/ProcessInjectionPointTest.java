@@ -18,6 +18,7 @@ package org.apache.webbeans.test.events.injectiontarget;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
@@ -58,6 +59,68 @@ public class ProcessInjectionPointTest extends AbstractUnitTest
         Assert.assertFalse(extension.isOtherInjectionPointParsed());
     }
 
+    @Test
+    public void testConsumerInterfaceScanning()
+    {
+        TestExtension extension = new TestExtension();
+        addExtension(extension);
+        startContainer(SomeInterface.class, SomeImpl.class, ConsumerInterface.class);
+
+        Assert.assertFalse(extension.isXInjectionPointParsed());
+        Assert.assertFalse(extension.isAInjectionPointParsed());
+        Assert.assertFalse(extension.isBInjectionPointParsed());
+        Assert.assertFalse(extension.isOtherInjectionPointParsed());
+
+        Assert.assertTrue(extension.isInterfaceInjectionPointParsed());
+        Assert.assertFalse(extension.isImplInjectionPointParsed());
+    }
+
+    @Test
+    public void testConsumerImplScanning()
+    {
+        TestExtension extension = new TestExtension();
+        addExtension(extension);
+        startContainer(SomeInterface.class, SomeImpl.class, ConsumerImpl.class);
+
+        Assert.assertFalse(extension.isXInjectionPointParsed());
+        Assert.assertFalse(extension.isAInjectionPointParsed());
+        Assert.assertFalse(extension.isBInjectionPointParsed());
+        Assert.assertFalse(extension.isOtherInjectionPointParsed());
+
+        Assert.assertTrue(extension.isInterfaceInjectionPointParsed());
+        Assert.assertTrue(extension.isImplInjectionPointParsed());
+    }
+
+    @Test
+    public void testConsumerRawInstanceScanning()
+    {
+        TestExtension extension = new TestExtension();
+        addExtension(extension);
+        startContainer(SomeInterface.class, SomeImpl.class, ConsumerRawInstance.class);
+
+        Assert.assertFalse(extension.isXInjectionPointParsed());
+        Assert.assertFalse(extension.isAInjectionPointParsed());
+        Assert.assertFalse(extension.isBInjectionPointParsed());
+        Assert.assertFalse(extension.isOtherInjectionPointParsed());
+        Assert.assertFalse(extension.isInterfaceInjectionPointParsed());
+        Assert.assertFalse(extension.isImplInjectionPointParsed());
+
+        Assert.assertTrue(extension.isWildcardInstanceInjectionPointParsed());
+        Assert.assertTrue(extension.isExplicitInstanceInjectionPointParsed());
+        Assert.assertTrue(extension.isRawInstanceInjectionPointParsed());
+    }
+
+    public interface SomeInterface {
+        void doSomething();
+    }
+
+    public static class SomeImpl implements SomeInterface {
+        @Override
+        public void doSomething()
+        {
+            // nop
+        }
+    }
 
     @Dependent
     public static class X
@@ -90,12 +153,36 @@ public class ProcessInjectionPointTest extends AbstractUnitTest
         private @Inject B b;
     }
 
+    @Dependent
+    public static class ConsumerInterface
+    {
+        private @Inject SomeInterface someInterface;
+    }
+
+    @Dependent
+    public static class ConsumerImpl
+    {
+        private @Inject SomeImpl someImpl;
+    }
+
+    @Dependent
+    public static class ConsumerRawInstance
+    {
+        private @Inject Instance<SomeImpl> someImplInstance;
+    }
+
+
     public static class TestExtension implements Extension
     {
         private boolean xInjectionPointParsed = false;
         private boolean aInjectionPointParsed = false;
         private boolean bInjectionPointParsed = false;
         private boolean otherInjectionPointParsed = false;
+        private boolean interfaceInjectionPointParsed = false;
+        private boolean implInjectionPointParsed = false;
+        private boolean rawInstanceInjectionPointParsed = false;
+        private boolean wildcardInstanceInjectionPointParsed = false;
+        private boolean explicitInstanceInjectionPointParsed = false;
 
         void testX(@Observes ProcessInjectionPoint<?, X> pip)
         {
@@ -115,6 +202,31 @@ public class ProcessInjectionPointTest extends AbstractUnitTest
         void testOther(@Observes ProcessInjectionPoint<?, String> pip)
         {
             otherInjectionPointParsed = true;
+        }
+
+        void testInterface(@Observes ProcessInjectionPoint<?, SomeInterface> pip)
+        {
+            interfaceInjectionPointParsed = true;
+        }
+
+        void testImpl(@Observes ProcessInjectionPoint<?, SomeImpl> pip)
+        {
+            implInjectionPointParsed = true;
+        }
+
+        void testRawInstance(@Observes ProcessInjectionPoint<?, Instance> pip)
+        {
+            rawInstanceInjectionPointParsed = true;
+        }
+
+        void testRawInstanceWithWildCard(@Observes ProcessInjectionPoint<?, Instance<?>> pip)
+        {
+            wildcardInstanceInjectionPointParsed = true;
+        }
+
+        void testExplicitInstance(@Observes ProcessInjectionPoint<?, Instance<SomeImpl>> pip)
+        {
+            explicitInstanceInjectionPointParsed = true;
         }
 
 
@@ -137,6 +249,31 @@ public class ProcessInjectionPointTest extends AbstractUnitTest
         public boolean isOtherInjectionPointParsed()
         {
             return otherInjectionPointParsed;
+        }
+
+        public boolean isInterfaceInjectionPointParsed()
+        {
+            return interfaceInjectionPointParsed;
+        }
+
+        public boolean isImplInjectionPointParsed()
+        {
+            return implInjectionPointParsed;
+        }
+
+        public boolean isRawInstanceInjectionPointParsed()
+        {
+            return rawInstanceInjectionPointParsed;
+        }
+
+        public boolean isWildcardInstanceInjectionPointParsed()
+        {
+            return wildcardInstanceInjectionPointParsed;
+        }
+
+        public boolean isExplicitInstanceInjectionPointParsed()
+        {
+            return explicitInstanceInjectionPointParsed;
         }
     }
 }

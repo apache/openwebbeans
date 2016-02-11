@@ -30,8 +30,19 @@ public class DisabledSpecializationTest extends AbstractUnitTest
 {
 
     @Test
-    public void testSpecialization() throws Exception{
+    public void testSpecializationPatVeto() throws Exception{
         addExtension(new VetoMeExtension());
+        startContainer(LoginService.class, MockLoginService.class);
+
+        LoginService loginService = getInstance(LoginService.class);
+        Assert.assertNotNull(loginService);
+
+        Assert.assertFalse(loginService.login("dummy"));
+    }
+
+    @Test
+    public void testSpecializationPbaVeto() throws Exception{
+        addExtension(new VetoMeProcessBeanAttributesExtension());
         startContainer(LoginService.class, MockLoginService.class);
 
         LoginService loginService = getInstance(LoginService.class);

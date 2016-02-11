@@ -531,7 +531,7 @@ public final class NotificationManager
             if(checkEventTypeParameterForExtensions(beanClass, actualArgs[0])
                     && (secondParam == null || actualArgs.length == 1
                             || checkEventTypeParameterForExtensions(secondParam, actualArgs[1])
-                            || GenericsUtil.isAssignableFrom(false, false, actualArgs[1], secondParam)))
+                            || GenericsUtil.isAssignableFrom(true, false, actualArgs[1], secondParam)))
             {
                 addToMatching(type, matching);   
             }

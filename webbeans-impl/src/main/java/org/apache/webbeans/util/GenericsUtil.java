@@ -194,6 +194,14 @@ public final class GenericsUtil
         {
             return false; //raw types don't match
         }
+
+        if (isDelegateOrEvent)
+        {
+            // for delegate and events we match 'in reverse' kind off
+            // @Observes ProcessInjectionPoint<?, Instance> does also match Instance<SomeBean>
+            return isAssignableFrom(true, injectionPointType, beanType.getRawType());
+        }
+
         for (Type typeArgument: beanType.getActualTypeArguments())
         {
             if (typeArgument == Object.class)

@@ -251,22 +251,22 @@ public class BeansDeployer
                 // Also configures deployments, interceptors, decorators.
                 deployFromXML(scanner);
 
-                SpecializationUtil specializationUtil = new SpecializationUtil(webBeansContext);
-                specializationUtil.removeDisabledTypes(annotatedTypesPerBda, null, true);
-
                 final Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> beanAttributesPerBda
                     = getBeanAttributes(annotatedTypesPerBda);
 
                 // shouldn't be used anymore, view is now beanAttributes
                 annotatedTypesPerBda.clear();
 
+                SpecializationUtil specializationUtil = new SpecializationUtil(webBeansContext);
+                specializationUtil.removeDisabledBeanAttributes(beanAttributesPerBda, null, true);
+
 
                 //Checking stereotype conditions
                 checkStereoTypes(scanner);
 
                 // Handle Specialization
-                specializationUtil.removeDisabledTypes(
-                        annotatedTypesPerBda,
+                specializationUtil.removeDisabledBeanAttributes(
+                        beanAttributesPerBda,
                         new SpecializationUtil.BeanAttributesProvider()
                         {
                             @Override
@@ -1717,7 +1717,7 @@ public class BeansDeployer
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(bean);
     }
 
-    private static class ExtendedBeanAttributes<T>
+    public static class ExtendedBeanAttributes<T>
     {
         private final BeanAttributes<T> beanAttributes;
         private final boolean isEjb;

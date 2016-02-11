@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -64,16 +65,21 @@ public class SpecializationUtil
     }
 
     /**
+     * This method iterates over all given BeanAttributes and removes those which are 'Specialised away'.
+     * This methods gets invoked twice.
+     * The first pass is over the plain scanned classes.
+     * The second pass is for any specialised producer fields and methods.
+     * We need to do this twice as producers of 'disabled beans' must not get taken into consideration.
      *
-     * @param annotatedTypesPerBda all annotatypes sliced by BDA
-     * @param attributeProvider if not null provides bean attributes to be able to validate types contains superclass
+     * @param beanAttributesPerBda all annotatypes sliced by BDA
+     * @param attributeProvider if not null provides bean attributes to be able to validate types contains superclass. Needed for producers.
      * @param notSpecializationOnly first pass/2nd pass. First one removes only root beans, second one handles inheritance even in @Spe
      */
-    public void removeDisabledTypes( Map<BeanArchiveService.BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda,
-                                    BeanAttributesProvider attributeProvider,
-                                    boolean notSpecializationOnly)
+    public void removeDisabledBeanAttributes(Map<BeanArchiveService.BeanArchiveInformation, Map<AnnotatedType<?>, BeansDeployer.ExtendedBeanAttributes<?>>> beanAttributesPerBda,
+                                             BeanAttributesProvider attributeProvider,
+                                             boolean notSpecializationOnly)
     {
-        Set<AnnotatedType<?>> allAnnotatedTypes = getAllAnnotatedTypes(annotatedTypesPerBda);
+        Set<AnnotatedType<?>> allAnnotatedTypes = getAllAnnotatedTypes(beanAttributesPerBda);
 
         if (allAnnotatedTypes != null && !allAnnotatedTypes.isEmpty())
         {
@@ -162,32 +168,34 @@ public class SpecializationUtil
             }
 
             // and now remove all AnnotatedTypes of those collected disabledClasses
-            removeAllDisabledClasses(annotatedTypesPerBda, disabledClasses);
+            removeAllDisabledClasses(beanAttributesPerBda, disabledClasses);
         }
     }
 
-    private void removeAllDisabledClasses(Map<BeanArchiveService.BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda, Set<Class<?>> disabledClasses)
+    private void removeAllDisabledClasses(Map<BeanArchiveService.BeanArchiveInformation, Map<AnnotatedType<?>, BeansDeployer.ExtendedBeanAttributes<?>>> beanAttributesPerBda,
+                                          Set<Class<?>> disabledClasses)
     {
-        for (List<AnnotatedType<?>> annotatedTypes : annotatedTypesPerBda.values())
+        for (Map<AnnotatedType<?>, BeansDeployer.ExtendedBeanAttributes<?>> beanAttributeMap : beanAttributesPerBda.values())
         {
-            Iterator<AnnotatedType<?>> annotatedTypeIterator = annotatedTypes.iterator();
-            while (annotatedTypeIterator.hasNext())
+            Iterator<Map.Entry<AnnotatedType<?>, BeansDeployer.ExtendedBeanAttributes<?>>> beanAttributeEntryIterator = beanAttributeMap.entrySet().iterator();
+            while (beanAttributeEntryIterator.hasNext())
             {
-                AnnotatedType<?> annotatedType = annotatedTypeIterator.next();
-                if (disabledClasses.contains(annotatedType.getJavaClass()))
+                Map.Entry<AnnotatedType<?>, BeansDeployer.ExtendedBeanAttributes<?>> beanAttributesEntry = beanAttributeEntryIterator.next();
+                if (disabledClasses.contains(beanAttributesEntry.getKey().getJavaClass()))
                 {
-                    annotatedTypeIterator.remove();
+                    beanAttributeEntryIterator.remove();
                 }
             }
         }
     }
 
-    private Set<AnnotatedType<?>> getAllAnnotatedTypes(Map<BeanArchiveService.BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda)
+    private Set<AnnotatedType<?>> getAllAnnotatedTypes(
+        Map<BeanArchiveService.BeanArchiveInformation, Map<AnnotatedType<?>, BeansDeployer.ExtendedBeanAttributes<?>>> beanAttributesPerBda)
     {
-        Set<AnnotatedType<?>> allAnnotatedTypes = new HashSet<AnnotatedType<?>>(annotatedTypesPerBda.size()*50);
-        for (List<AnnotatedType<?>> annotatedTypes : annotatedTypesPerBda.values())
+        Set<AnnotatedType<?>> allAnnotatedTypes = new HashSet<AnnotatedType<?>>(beanAttributesPerBda.size()*50);
+        for (Map<AnnotatedType<?>, BeansDeployer.ExtendedBeanAttributes<?>> annotatedTypeMap : beanAttributesPerBda.values())
         {
-            allAnnotatedTypes.addAll(annotatedTypes);
+            allAnnotatedTypes.addAll(annotatedTypeMap.keySet());
         }
         return allAnnotatedTypes;
     }
