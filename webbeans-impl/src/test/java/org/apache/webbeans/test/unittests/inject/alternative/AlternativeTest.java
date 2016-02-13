@@ -69,5 +69,22 @@ public class AlternativeTest extends AbstractUnitTest
         WebBeansContext.getInstance().getPluginLoader().shutDown();
         
     }
-    
+
+    @Test
+    public void testNotEnabledAlternative()
+    {
+        startContainer(AlternativeComponent.class, NotAlternativeComponent.class, AlternativeInjector.class);
+
+        AlternativeInjector instance = getInstance(AlternativeInjector.class);
+
+        Assert.assertNotNull(instance);
+
+        IAlternative alternative = instance.getAlternative();
+
+        Assert.assertTrue(alternative instanceof NotAlternativeComponent);
+
+        WebBeansContext.getInstance().getPluginLoader().shutDown();
+
+    }
+
 }

@@ -19,6 +19,7 @@
 package org.apache.webbeans.config;
 
 import org.apache.webbeans.annotation.AnnotationManager;
+import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.BuiltInOwbBean;
@@ -298,8 +299,9 @@ public class BeansDeployer
                 
                 // We are finally done with our bean discovery
                 fireAfterBeanDiscoveryEvent();
-                
-                // Validate injection Points
+
+                validateAlternatives(beanAttributesPerBda);
+
                 validateInjectionPoints();
                 validateDisposeParameters();
 
@@ -722,7 +724,68 @@ public class BeansDeployer
         packageVetoCache.clear(); // no more needed, free the memory
         event.setStarted();
     }
-    
+
+    /**
+     * Check if all XML configured alternatives end up as alternative beans
+     * @param beanAttributesPerBda
+     */
+    private void validateAlternatives(Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> beanAttributesPerBda)
+    {
+        Set<Class<?>> xmlConfiguredAlternatives = webBeansContext.getAlternativesManager().getXmlConfiguredAlternatives();
+        InjectionResolver injectionResolver = webBeansContext.getBeanManagerImpl().getInjectionResolver();
+
+        for (Class<?> alternativeClass : xmlConfiguredAlternatives)
+        {
+            if (AnnotationUtil.hasClassAnnotation(alternativeClass, Alternative.class) ||
+                AnnotationUtil.hasMetaAnnotation(alternativeClass.getAnnotations(), Alternative.class))
+            {
+                continue;
+            }
+
+            boolean foundAlternativeClass = false;
+
+            Set<Bean<?>> beans = injectionResolver.implResolveByType(false, alternativeClass, AnyLiteral.INSTANCE);
+            if (beans == null || beans.isEmpty())
+            {
+                out:
+                for (Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> annotatedTypeExtendedBeanAttributesMap : beanAttributesPerBda.values())
+                {
+                    for (Map.Entry<AnnotatedType<?>, ExtendedBeanAttributes<?>> exType : annotatedTypeExtendedBeanAttributesMap.entrySet())
+                    {
+                        if (alternativeClass.equals(exType.getKey().getJavaClass()))
+                        {
+                            if (exType.getValue().beanAttributes.isAlternative() ||
+                                exType.getKey().getAnnotation(Alternative.class) != null)
+                            {
+                                foundAlternativeClass = true;
+                                break out; // all fine, continue with the next
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (Bean<?> bean : beans)
+                {
+                    if (bean.isAlternative())
+                    {
+                        foundAlternativeClass = true;
+                        break;
+                    }
+                }
+            }
+            if (!foundAlternativeClass)
+            {
+                throw new WebBeansDeploymentException("Given alternative class : " + alternativeClass.getName() +
+                    " is not annotated wih @Alternative or not an enabled bean");
+            }
+
+        }
+
+    }
+
+
     /**
      * Validate all injection points.
      */
@@ -1298,27 +1361,7 @@ public class BeansDeployer
                 }
                 else
                 {
-                    if (AnnotationUtil.hasClassAnnotation(clazz, Alternative.class) ||
-                            AnnotationUtil.hasMetaAnnotation(clazz.getAnnotations(), Alternative.class))
-                    {
-                        manager.addXmlClazzAlternative(clazz);
-                    }
-                    else
-                    {
-                        AnnotatedType annotatedType = annotatedElementFactory.getAnnotatedType(clazz);
-                        if (annotatedType != null)
-                        {
-                            if (annotatedType.getAnnotation(Alternative.class) != null)
-                            {
-                                manager.addXmlClazzAlternative(clazz);
-                                break;
-                            }
-                            else
-                            {
-                                throw new WebBeansDeploymentException("Given alternative class : " + clazz.getName() + " is not decorated wih @Alternative");
-                            }
-                        }
-                    }
+                    manager.addXmlClazzAlternative(clazz);
                 }
             }
         }

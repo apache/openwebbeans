@@ -31,7 +31,6 @@ import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.inject.AlternativesManager;
 
 public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
 {
@@ -41,7 +40,7 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
     {
         super(webBeansContext,
               WebBeansType.THIRDPARTY,
-              new BeanAttributesImpl<T>(bean),
+              new BeanAttributesImpl<T>(bean, false),
               bean.getBeanClass(),
               bean.isNullable());
         
@@ -140,18 +139,7 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
     @Override
     public boolean isAlternative()
     {
-        boolean alternative = super.isAlternative();
-        if(alternative)
-        {
-            AlternativesManager manager = getWebBeansContext().getAlternativesManager();
-            //Class alternative
-            if (manager.isAlternative(getBeanClass(), bean.getStereotypes()))
-            {
-                return true;
-            }
-        }
-        
-        return false;
+        return bean.isAlternative();
     }
 
     /**

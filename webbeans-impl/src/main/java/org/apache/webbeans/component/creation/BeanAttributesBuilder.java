@@ -30,10 +30,8 @@ import java.util.Set;
 import javax.decorator.Decorator;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
-import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedField;
@@ -56,7 +54,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 
-import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -86,7 +83,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
 
     protected boolean nullable;
 
-    protected Set<Class<? extends Annotation>> stereotypes = new HashSet<Class<? extends Annotation>>();
+    protected Set<Class<? extends Annotation>> stereotypes;
 
     protected boolean alternative;
     
@@ -109,7 +106,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     public BeanAttributesImpl<T> build()
     {
         // we need to check the stereotypes first because we might need it to determine the scope
-        defineStereotypes();
+        stereotypes = defineStereotypes(annotated);
 
         defineScope();
         if (scope == null)
@@ -511,9 +508,10 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     /**
      * {@inheritDoc}
      */
-    protected void defineStereotypes()
+    protected Set<Class<? extends Annotation>> defineStereotypes(Annotated annot)
     {
-        Annotation[] anns = AnnotationUtil.asArray(annotated.getAnnotations());
+        Set<Class<? extends Annotation>> stereos  = null;
+        Annotation[] anns = AnnotationUtil.asArray(annot.getAnnotations());
         final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         if (annotationManager.hasStereoTypeMetaAnnotation(anns))
         {
@@ -522,44 +520,23 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
 
             for (Annotation stereo : steroAnns)
             {
-                stereotypes.add(stereo.annotationType());
+                if (stereos == null)
+                {
+                    stereos = new HashSet<Class<? extends Annotation>>();
+                }
+                stereos.add(stereo.annotationType());
             }
         }
+
+        return stereos != null ? stereos : Collections.EMPTY_SET;
     }
 
     // these alternatives can be not activated
     protected void defineAlternative()
     {
-        final AlternativesManager alternativesManager = webBeansContext.getAlternativesManager();
-        alternative = alternativesManager.isAlternative(getType(), Collections.<Class<? extends Annotation>>emptySet());
-        if (alternative)
-        {
-            alternative = true;
-            return;
-        }
-
-        for (final Annotation a : annotated.getAnnotations())
-        {
-            final Class<? extends Annotation> annotationType = a.annotationType();
-            if (annotationType == Alternative.class)
-            {
-                alternative = true;
-                return;
-            }
-
-            if (annotationType.getAnnotation(Stereotype.class) != null)
-            {
-                for (final Annotation aa : annotationType.getAnnotations())
-                {
-                    if (aa.annotationType() == Alternative.class)
-                    {
-                        alternative = true;
-                        return;
-                    }
-                }
-            }
-        }
+        alternative = WebBeansUtil.isAlternative(annotated, stereotypes);
     }
+
 
     protected abstract Class<?> getType();
     
@@ -809,7 +786,6 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
 
     private abstract static class AnnotatedMemberBeanAttributesBuilder<M, A extends AnnotatedMember<M>> extends BeanAttributesBuilder<M, A>
     {
-
         protected AnnotatedMemberBeanAttributesBuilder(WebBeansContext webBeansContext, A annotated)
         {
             super(webBeansContext, annotated);

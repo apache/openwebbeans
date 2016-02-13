@@ -68,11 +68,6 @@ public abstract class AbstractOwbBean<T>
     protected boolean enabled = true;
 
     /**
-     * cached value for {@link #isAlternative()}
-     */
-    protected Boolean isAlternative = null;
-
-    /**
      * This string will be used for passivating the Bean.
      * It will be created on the first use.
      * @see #getId()
@@ -310,20 +305,6 @@ public abstract class AbstractOwbBean<T>
     public boolean isSpecializedBean()
     {
         return specializedBean;
-    }
-    
-     /**
-     * {@inheritDoc}
-     */    
-    @Override
-    public boolean isAlternative()
-    {
-        if (isAlternative == null)
-        {
-            isAlternative = webBeansContext.getAlternativesManager().isAlternative(getBeanClass(), getStereotypes());
-        }
-
-        return isAlternative;
     }
     
     /**

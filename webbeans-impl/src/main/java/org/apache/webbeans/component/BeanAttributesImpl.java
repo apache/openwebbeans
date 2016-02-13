@@ -26,7 +26,6 @@ import java.util.Set;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.Bean;
-
 import javax.enterprise.inject.spi.BeanAttributes;
 import org.apache.webbeans.util.AnnotationUtil;
 
@@ -41,7 +40,8 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
     private final boolean alternative;
 
     /**
-     * TODO This constructor can be removed, when we move to CDI 1.1 since {@link Bean} extends BeanAttributes.
+     * do not remove, this ct is used from within TomEE for example.
+     * @deprecated
      */
     public BeanAttributesImpl(Bean<T> bean)
     {

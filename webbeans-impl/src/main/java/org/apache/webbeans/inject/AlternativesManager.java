@@ -163,7 +163,15 @@ public class AlternativesManager
 
         return false;
     }
-    
+
+    /**
+     * @return all the alternative classes declared in beans.xml files
+     */
+    public Set<Class<?>> getXmlConfiguredAlternatives()
+    {
+        return configuredAlternatives;
+    }
+
     public void clear()
     {
         configuredAlternatives.clear();

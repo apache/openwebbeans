@@ -631,7 +631,9 @@ public class InjectionResolver
 
         for (Bean<? extends X> bean : beans)
         {
-            if (bean.isAlternative())
+            if (bean.isAlternative() ||
+                (bean instanceof AbstractProducerBean &&
+                    ((AbstractProducerBean) bean).getOwnerComponent().isAlternative()))
             {
                 alternativeSet.add(bean);
             }
@@ -652,6 +654,8 @@ public class InjectionResolver
         {
             return alternativeSet;
         }
+
+        //
 
         return enableSet;
     }

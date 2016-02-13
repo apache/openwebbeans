@@ -52,7 +52,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                                   Class<T> returnType,
                                   MethodProducerFactory<P> producerFactory)
     {
-        super(ownerComponent.getBeanClass(), ownerComponent.getWebBeansContext(), WebBeansType.PRODUCERMETHOD, beanAttributes, returnType, producerFactory);
+        super(ownerComponent, WebBeansType.PRODUCERMETHOD, beanAttributes, returnType, producerFactory);
     }
 
     /**

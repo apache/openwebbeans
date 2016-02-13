@@ -21,13 +21,11 @@ package org.apache.webbeans.component;
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.Producer;
 
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.ProducerFactory;
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.WebBeansUtil;
 
 
@@ -41,23 +39,23 @@ public class AbstractProducerBean<T> extends AbstractOwbBean<T> implements Passi
 {
     private Class<T> returnType;
     private Producer<T> producer;
+    private InjectionTargetBean<?> ownerComponent;
 
     /**
      * Create a new instance.
      * 
      * @param returnType bean type info
-     * @param ownerBeanClass class which contains this producer method or field
      */
-    public AbstractProducerBean(Class<?> ownerBeanClass,
-            WebBeansContext webBeansContext,
-            WebBeansType webBeansType,
-            BeanAttributes<T> beanAttributes,
-            Class<T> returnType,
-            ProducerFactory<?> producerFactory)
+    public AbstractProducerBean(InjectionTargetBean<?> ownerComponent,
+                                WebBeansType webBeansType,
+                                BeanAttributes<T> beanAttributes,
+                                Class<T> returnType,
+                                ProducerFactory<?> producerFactory)
     {
-        super(webBeansContext, webBeansType, beanAttributes, ownerBeanClass, !returnType.isPrimitive());
+        super(ownerComponent.webBeansContext, webBeansType, beanAttributes, ownerComponent.getBeanClass(), !returnType.isPrimitive());
         this.returnType = returnType;
         producer = producerFactory.createProducer(this);
+        this.ownerComponent = ownerComponent;
     }
 
     @Override
@@ -72,14 +70,11 @@ public class AbstractProducerBean<T> extends AbstractOwbBean<T> implements Passi
         return returnType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void dispose(T instance, CreationalContext<T> creationalContext)
+    public InjectionTargetBean<?> getOwnerComponent()
     {
-        // Do nothing
+        return ownerComponent;
     }
-    
+
     /**
      * Check null control.
      * 
