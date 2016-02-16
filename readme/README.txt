@@ -1,12 +1,12 @@
 -------------------------------
-Apache OpenWebBeans 1.6.2
+Apache OpenWebBeans 1.6.3
 -------------------------------
 Welcome!
 
 Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.6.2 release of Apache OpenWebBeans.
+This document is based on the 1.6.3 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -25,10 +25,10 @@ http://openwebbeans.apache.org
 
 
 --------------------------------
-OpenWebBeans 1.6.2 Release Features
+OpenWebBeans 1.6.3 Release Features
 --------------------------------
 
-- The 1.6.2 release supports the following features
+- The 1.6.3 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -57,11 +57,50 @@ other CDI implementations. This is to some degree caused by the JSR-299 spec bei
 not clear about some special topics so we needed to interpret the wording on our own.
 This mainly concerns the area of section 5 and 12.1 Bean Archives (BDA) which doesn't work
 out when it comes to OSGi containers and likes.
-In Apache OpenWebBeans, a settings configured in a beans.xml file of a BDA is not
+In Apache OpenWebBeans, a settings configured in a beans.xml file of a jar is not
 only effective for this very bean archive but for the whole BeanManager in control
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.6.3
+-------------------------------------------
+
+Bug
+
+    [OWB-1095] - Beans not fully initialized in AfterBeanDiscovery or InjectionPoint validation to early?
+    [OWB-1100] - blacklist org.codehaus.groovy.runtime.,org.apache.commons.collections.functors.,org.apache.xalan in OwbCustomObjectInputStream
+    [OWB-1102] - ProcessInjectionPoint observer is resolved for declared injection points with parent class
+    [OWB-1103] - ProxyGenerationException caused by NoClassDefFoundError in OpenWebBeans OSGi
+    [OWB-1105] - add an exclude list config for classes which have final methods but shall considered proxyable nonetheless
+    [OWB-1111] - firing a during-transaction event fails if the tx is already rolled back or not active
+    [OWB-1112] - CDI Producer method
+    [OWB-1113] - Exceptions during Extension initialization get swallowed on tomcat9
+    [OWB-1116] - @Specializes rules must take ProcessBeanAttributes#veto() into consideration
+    [OWB-1117] - Beanmanager createInjectionTarget shouldnt validate injection points during extension boot
+    [OWB-1118] - Producer Fields don't work with Interceptors
+
+Improvement
+
+    [OWB-1094] - Move bean scanning excludes to openwebbeans.properties
+    [OWB-1098] - Iteration instead of recursion
+    [OWB-1104] - add bootstrap jar to scan-excludes list
+    [OWB-1106] - Scanning mode: Only jars with beans.xml (Like eg CDI 1.0)
+    [OWB-1107] - Scanning mode: Like Annotated but send PAT allowing Extensions to add beans
+    [OWB-1108] - properly destroy SPI services which implement Closeable
+
+New Feature
+
+    [OWB-1110] - implement exclude mechanism to suppress UnproxyableResolutionException for some classes
+
+Task
+
+    [OWB-1034] - re-visit BeanCacheKey#getQualifierHashCode
+    [OWB-1091] - bootstrap upgrade for our site
+    [OWB-1093] - WebApp beans scanning broken with maven and jetty
+    [OWB-1096] - Enable > CDI1.0 unit tests
 
 
 -------------------------------------------
