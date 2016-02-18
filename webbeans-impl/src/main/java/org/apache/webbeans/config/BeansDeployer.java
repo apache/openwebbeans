@@ -245,7 +245,10 @@ public class BeansDeployer
                 // Deploy additional Annotated Types which got added via BeforeBeanDiscovery#addAnnotatedType
                 addAdditionalAnnotatedTypes(webBeansContext.getBeanManagerImpl().getAdditionalAnnotatedTypes(), globalBdaAnnotatedTypes);
 
-                registerAlternativesDecoratorsAndInterceptorsWithPriority(globalBdaAnnotatedTypes);
+                for (List<AnnotatedType<?>> at : annotatedTypesPerBda.values())
+                {
+                    registerAlternativesDecoratorsAndInterceptorsWithPriority(at);
+                }
 
                 addAdditionalAnnotatedTypes(fireAfterTypeDiscoveryEvent(), globalBdaAnnotatedTypes);
 
