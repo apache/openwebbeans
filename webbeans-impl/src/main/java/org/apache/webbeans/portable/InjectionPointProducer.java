@@ -104,7 +104,7 @@ public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
         // nothing to do
     }
 
-    private class InjectionPointDelegate implements InjectionPoint, Serializable
+    private static class InjectionPointDelegate implements InjectionPoint, Serializable
     {
         private InjectionPoint ip;
         private Type type;

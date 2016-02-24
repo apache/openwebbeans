@@ -23,8 +23,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -34,8 +37,8 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Context;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
@@ -175,7 +178,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     public Instance<T> select(Annotation... qualifiers)
     {
         Annotation[] newQualifiersArray = getAdditionalQualifiers(qualifiers);
-        return new InstanceImpl<T>(injectionClazz, injectionPoint, webBeansContext, parentCreationalContext, newQualifiersArray);
+        return new InstanceImpl<T>(injectionClazz, new InstanceInjectionPoint(injectionPoint, newQualifiersArray), webBeansContext, parentCreationalContext, newQualifiersArray);
     }
 
     /**
@@ -270,7 +273,6 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             Provider<T> provider = webBeansContext.getNormalScopeProxyFactory().getInstanceProvider(proxy);
             NormalScopedBeanInterceptorHandler handler = (NormalScopedBeanInterceptorHandler)provider;
             Bean<T> bean = (Bean<T>)handler.getBean();
-            CreationalContext<T> creationalContext = (CreationalContext<T>)parentCreationalContext;
             Class<? extends Annotation> beanScope = bean.getScope();
             Context currentContext = webBeansContext.getBeanManagerImpl().getContext(beanScope);
             if (currentContext instanceof AlterableContext)
@@ -358,10 +360,79 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             }
 
             builder.append(qualifier.toString());
+            i++;
         }
 
         builder.append("}");
 
         return builder.toString();
+    }
+
+    private static class InstanceInjectionPoint implements InjectionPoint, Serializable
+    {
+        private InjectionPoint delegate;
+        private Set<Annotation> qualifiers;
+
+        protected InstanceInjectionPoint(final InjectionPoint injectionPoint, final Annotation[] newQualifiersArray)
+        {
+            this.delegate = injectionPoint;
+            this.qualifiers = Collections.unmodifiableSet(new HashSet<Annotation>(Arrays.asList(newQualifiersArray)));
+        }
+
+        @Override
+        public Type getType()
+        {
+            return delegate.getType();
+        }
+
+        @Override
+        public Set<Annotation> getQualifiers()
+        {
+            return qualifiers;
+        }
+
+        @Override
+        public Bean<?> getBean()
+        {
+            return delegate.getBean();
+        }
+
+        @Override
+        public Member getMember()
+        {
+            return delegate.getMember();
+        }
+
+        @Override
+        public Annotated getAnnotated()
+        {
+            return delegate.getAnnotated();
+        }
+
+        @Override
+        public boolean isDelegate()
+        {
+            return delegate.isDelegate();
+        }
+
+        @Override
+        public boolean isTransient()
+        {
+            return delegate.isTransient();
+        }
+
+        private void readObject(final ObjectInputStream inp) throws IOException, ClassNotFoundException
+        {
+            final OwbCustomObjectInputStream owbCustomObjectInputStream = new OwbCustomObjectInputStream(inp, WebBeansUtil.getCurrentClassLoader());
+            qualifiers = Set.class.cast(owbCustomObjectInputStream.readObject());
+            delegate = InjectionPoint.class.cast(owbCustomObjectInputStream.readObject());
+        }
+
+        private void writeObject(final ObjectOutputStream op) throws IOException
+        {
+            final ObjectOutputStream out = new ObjectOutputStream(op);
+            out.writeObject(qualifiers);
+            out.writeObject(delegate);
+        }
     }
 }
