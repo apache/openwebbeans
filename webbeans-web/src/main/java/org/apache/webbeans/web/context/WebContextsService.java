@@ -810,6 +810,7 @@ public class WebContextsService extends AbstractContextsService
         if (requestContext == null)
         {
             logger.log(Level.WARNING, "Could NOT lazily initialize session context because NO active request context");
+            return;
         }
 
         HttpServletRequest servletRequest = requestContext.getServletRequest();
