@@ -117,7 +117,7 @@ public class OpenWebBeansConfiguration
     public static final String PRODUCER_INTERCEPTION_SUPPORT = "org.apache.webbeans.application.supportsProducerInterception";
 
     /**EL Adaptor*/
-    public static final String EL_ADAPTOR_CLASS = "org.apache.webbeans.spi.adaptor.ELAdaptor";
+    public static final String EL_ADAPTOR_SERVICE = "org.apache.webbeans.spi.adaptor.ELAdaptor";
 
     /** prefix followed by the fully qualified scope name, for configuring InterceptorHandlers for our proxies.*/
     public static final String PROXY_MAPPING_PREFIX = "org.apache.webbeans.proxy.mapping.";
@@ -135,10 +135,11 @@ public class OpenWebBeansConfiguration
     public static final String SCAN_EXCLUSION_PATHS = "org.apache.webbeans.scanExclusionPaths";
 
     /**
-     * Flag which indicates that only jars with an explicit META-INF/beans.xml marker file shall get paresed.
+     * Flag which indicates that only jars with an explicit META-INF/beans.xml marker file shall get parsed.
      * Default is {@code false}
      */
     public static final String SCAN_ONLY_BEANS_XML_JARS = "org.apache.webbeans.scanBeansXmlOnly";
+
     /**
      * a comma-separated list of fully qualified class names that should be ignored
      * when determining if a decorator matches its delegate.  These are typically added by
@@ -166,7 +167,7 @@ public class OpenWebBeansConfiguration
      * The default is set to "1.6" as some tools in jetty/tomcat/etc still
      * cannot properly handle Java8 (mostly due to older Eclipse JDT versions).
      */
-    public static final String GENERATOR_JAVA_VERSIN = "org.apache.webbeans.generator.javaVersion";
+    public static final String GENERATOR_JAVA_VERSION = "org.apache.webbeans.generator.javaVersion";
 
 
     /**Default configuration files*/
@@ -455,12 +456,12 @@ public class OpenWebBeansConfiguration
 
     public boolean supportsInterceptionOnProducers()
     {
-        return "true".equals(getProperty(PRODUCER_INTERCEPTION_SUPPORT, "true"));
+        return Boolean.parseBoolean(getProperty(PRODUCER_INTERCEPTION_SUPPORT, "true"));
     }
 
     public String getGeneratorJavaVersion()
     {
-        String generatorJavaVersion = getProperty(GENERATOR_JAVA_VERSIN);
+        String generatorJavaVersion = getProperty(GENERATOR_JAVA_VERSION);
         if (generatorJavaVersion == null || AUTO_CONFIG.equals(generatorJavaVersion))
         {
             return System.getProperty("java.version");
