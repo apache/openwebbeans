@@ -227,11 +227,7 @@ org.apache.webbeans.spi.JNDIService=org.apache.webbeans.spi.ee.JNDIServiceEnterp
     					application is run in the OpenEJB embeddable container, one must define this as true.</para>
     				</listitem>
     				
-    				<listitem>
-    					<para><emphasis>org.apache.webbeans.fieldInjection.useOwbSpecificInjection:</emphasis>  Use @Inject annotation at injection fields or not. If it is set to true
-  						you can inject objects into beans without @Inject annotation. Not portable!</para>
-    				</listitem>
-    				
+
     				<listitem>
     					<para><emphasis>org.apache.webbeans.spi.conversation.ConversationService:</emphasis> Conversation Service SPI. Configures Conversation Service
     					implementation for getting conversation related informations. Currently conversation service is implemented for Java Server Faces
