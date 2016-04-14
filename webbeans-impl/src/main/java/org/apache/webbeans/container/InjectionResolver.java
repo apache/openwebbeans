@@ -189,7 +189,7 @@ public class InjectionResolver
             throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " type can not be defined as Typevariable or Wildcard type!");
         }
 
-        if (webBeansContext.getBeanManagerImpl().isAfterBeanDiscoveryFired())
+        if (webBeansContext.getBeanManagerImpl().isAfterBeanDiscoveryDone())
         {
             Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
             qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);

@@ -670,13 +670,15 @@ public class BeansDeployer
     private void fireAfterBeanDiscoveryEvent()
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        manager.setAfterBeanDiscoveryFired(true);
+        manager.setAfterBeanDiscoveryStart();
         final AfterBeanDiscoveryImpl event = new AfterBeanDiscoveryImpl(webBeansContext);
         manager.fireLifecycleEvent(event);
+
 
         webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack(
                 "There are errors that are added by AfterBeanDiscovery event observers. Look at logs for further details");
 
+        manager.setAfterBeanDiscoveryDone();
         event.setStarted();
     }
     

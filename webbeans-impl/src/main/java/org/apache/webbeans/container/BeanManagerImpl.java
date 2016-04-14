@@ -194,10 +194,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private boolean inUse = false;
 
     /**
-     * This flag will get set to {@code true} after the
-     * {@link javax.enterprise.inject.spi.AfterBeanDiscovery} gets fired
+     * This flag will get set to handle lifecyle around
+     * {@link javax.enterprise.inject.spi.AfterBeanDiscovery}
      */
-    private boolean afterBeanDiscoveryFired = false;
+    private LifecycleState beanDiscoveryState = LifecycleState.BEFORE_DISCOVERY;
 
     /**
      * This flag will get set to {@code true} after the
@@ -1214,7 +1214,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                         webBeansContext,
                         interceptorUtil.getLifecycleMethods(type, PostConstruct.class),
                         interceptorUtil.getLifecycleMethods(type, PreDestroy.class));
-        if (afterBeanDiscoveryFired)
+        if (isAfterBeanDiscoveryDone())
         {
             try
             {
@@ -1435,16 +1435,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return inUse;
     }
 
-    public boolean isAfterBeanDiscoveryFired()
-    {
-        return afterBeanDiscoveryFired;
-    }
-
-    public void setAfterBeanDiscoveryFired(boolean afterBeanDiscoveryFired)
-    {
-        this.afterBeanDiscoveryFired = afterBeanDiscoveryFired;
-    }
-
     public boolean isAfterDeploymentValidationFired()
     {
         return afterDeploymentValidationFired;
@@ -1453,5 +1443,30 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public void setAfterDeploymentValidationFired(boolean afterDeploymentValidationFired)
     {
         this.afterDeploymentValidationFired = afterDeploymentValidationFired;
+    }
+
+    public void setAfterBeanDiscoveryStart()
+    {
+        this.beanDiscoveryState = LifecycleState.DISCOVERY;
+    }
+
+    public void setAfterBeanDiscoveryDone()
+    {
+        this.beanDiscoveryState = LifecycleState.AFTER_DISCOVERY;
+    }
+
+    public boolean isAfterBeanDiscoveryDone()
+    {
+        return beanDiscoveryState == LifecycleState.AFTER_DISCOVERY;
+    }
+
+    public boolean isAfterBeanDiscovery()
+    {
+        return beanDiscoveryState == LifecycleState.DISCOVERY;
+    }
+
+    private enum LifecycleState
+    {
+        BEFORE_DISCOVERY, DISCOVERY, AFTER_DISCOVERY
     }
 }

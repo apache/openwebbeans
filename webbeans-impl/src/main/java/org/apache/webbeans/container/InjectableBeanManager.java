@@ -397,7 +397,7 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
      */
     private void checkAfterBeanDiscoveryProcessed(String message)
     {
-        if (!bm.isAfterBeanDiscoveryFired())
+        if (!bm.isAfterBeanDiscoveryDone() && !bm.isAfterBeanDiscovery())
         {
             throw new IllegalStateException(message);
         }
