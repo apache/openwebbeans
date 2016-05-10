@@ -1571,7 +1571,7 @@ public final class WebBeansUtil
                 if (hasClassInterceptors)
                 {
                     // spec section 3.15 unproxyable bean types -> Deployment Error
-                    throw new WebBeansDeploymentException("Maanged bean class : " + clazz.getName()
+                    throw new WebBeansDeploymentException("Managed bean class : " + clazz.getName()
                                                     + " can not define non-static, non-private final methods. Because it is annotated with at least one @InterceptorBinding");
                 }
 
