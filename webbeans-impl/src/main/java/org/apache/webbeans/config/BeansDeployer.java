@@ -995,6 +995,7 @@ public class BeansDeployer
     private Map<BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesFromClassPath(ScannerService scanner)
     {
         logger.fine("Creating AnnotatedTypes from class files has started.");
+        Set<Class<?>> foundClasses = new HashSet<Class<?>>(100);
 
         Map<BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda
             = new HashMap<BeanArchiveInformation, List<AnnotatedType<?>>>();
@@ -1006,20 +1007,20 @@ public class BeansDeployer
             for (Map.Entry<BeanArchiveInformation, Set<Class<?>>> bdaEntry : beanClassesPerBda.entrySet())
             {
                 BeanArchiveInformation bdaInfo = bdaEntry.getKey();
-                List<AnnotatedType<?>> annotatedTypes = annotatedTypesFromBdaClassPath(bdaEntry.getValue());
+                List<AnnotatedType<?>> annotatedTypes = annotatedTypesFromBdaClassPath(bdaEntry.getValue(), foundClasses);
                 annotatedTypesPerBda.put(bdaEntry.getKey(), annotatedTypes);
             }
 
             // also add the rest of the class es to the default bda
             // we also need this initialised in case annotatedTypes get added manually at a later step
-            annotatedTypesPerBda.put(defaultBeanArchiveInformation, annotatedTypesFromBdaClassPath(scanner.getBeanClasses()));
+            annotatedTypesPerBda.put(defaultBeanArchiveInformation, annotatedTypesFromBdaClassPath(scanner.getBeanClasses(), foundClasses));
         }
         else
         {
             // this path is only for backward compat to older ScannerService implementations
 
             Set<Class<?>> classIndex = scanner.getBeanClasses();
-            List<AnnotatedType<?>> annotatedTypes = annotatedTypesFromBdaClassPath(classIndex);
+            List<AnnotatedType<?>> annotatedTypes = annotatedTypesFromBdaClassPath(classIndex, foundClasses);
 
             annotatedTypesPerBda.put(defaultBeanArchiveInformation, annotatedTypes);
         }
@@ -1028,7 +1029,10 @@ public class BeansDeployer
         return annotatedTypesPerBda;
     }
 
-    private List<AnnotatedType<?>> annotatedTypesFromBdaClassPath(Set<Class<?>> classIndex)
+    /**
+     * @param foundClasses classes which already got processed. To prevent picking up the same class from multiple classpaths
+     */
+    private List<AnnotatedType<?>> annotatedTypesFromBdaClassPath(Set<Class<?>> classIndex, Set<Class<?>> foundClasses)
     {
         List<AnnotatedType<?>> annotatedTypes = new ArrayList<AnnotatedType<?>>();
 
@@ -1039,6 +1043,14 @@ public class BeansDeployer
 
             for (Class<?> implClass : classIndex)
             {
+                if (foundClasses.contains(implClass))
+                {
+                    // skip this class
+                    continue;
+                }
+
+                foundClasses.add(implClass);
+
                 if (isVetoed(implClass))
                 {
                     if (isEEComponent(implClass))
