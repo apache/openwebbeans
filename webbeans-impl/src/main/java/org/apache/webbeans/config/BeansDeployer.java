@@ -294,7 +294,6 @@ public class BeansDeployer
                 // create beans from the discovered AnnotatedTypes
                 deployFromBeanAttributes(beanAttributesPerBda);
 
-                //X TODO configure specialized producer beans.
                 webBeansContext.getWebBeansUtil().configureProducerMethodSpecializations();
 
                 // all beans which got 'overridden' by a Specialized version can be removed now
