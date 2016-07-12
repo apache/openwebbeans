@@ -25,6 +25,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.PassivationCapable;
 import javax.inject.Provider;
+import java.io.NotSerializableException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 
@@ -121,6 +122,10 @@ public class NormalScopedBeanInterceptorHandler implements Provider, Serializabl
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         beanManager = webBeansContext.getBeanManagerImpl();
         bean = beanManager.getPassivationCapableBean(beanPassivationId);
+        if (bean == null)
+        {
+            throw new NotSerializableException("Failure during de-serialisation: Cannot load Bean with passivationId " + beanPassivationId);
+        }
 
         return webBeansContext.getNormalScopeProxyFactory().createNormalScopeProxy(bean);
     }
