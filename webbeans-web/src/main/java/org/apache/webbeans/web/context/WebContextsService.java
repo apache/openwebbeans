@@ -487,9 +487,14 @@ public class WebContextsService extends AbstractContextsService
                     {
                         currentSessionContext = new SessionContext();
                         currentSessionContext.setActive(true);
+                        
+                        // init context before fire @Initialized(SessionScoped)
+                        // so that SessionScoped beans are already available inside the observer
+                        session.setAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME, currentSessionContext);
+                        sessionContexts.set(currentSessionContext);
+                        
                         webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
                             session, InitializedLiteral.INSTANCE_SESSION_SCOPED);
-                        session.setAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME, currentSessionContext);
                     }
                 }
             }
@@ -499,9 +504,10 @@ public class WebContextsService extends AbstractContextsService
                 // This is needed to trigger delta-replication on most servers
                 session.setAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME, currentSessionContext);
                 currentSessionContext.setActive(true);
+
+                //Set thread local
+                sessionContexts.set(currentSessionContext);
             }
-            //Set thread local
-            sessionContexts.set(currentSessionContext);
         }
     }
 
