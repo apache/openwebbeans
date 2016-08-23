@@ -237,11 +237,18 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         if (factory == null)
         {
             try
-            {   // no need of using the tccl since in OSGi it is init elsewhere and using container shortcut can just make it faster
-                Class.forName("org.apache.jasper.compiler.JspRuntimeContext", true, WebContainerLifecycle.class.getClassLoader());
+            {
+                try
+                {   // no need of using the tccl since in OSGi it is init elsewhere and using container shortcut can just make it faster
+                    Class.forName("org.apache.jasper.servlet.JasperInitializer", true, WebContainerLifecycle.class.getClassLoader());
+                }
+                catch (final Throwable th)
+                {
+                    Class.forName("org.apache.jasper.compiler.JspRuntimeContext", true, WebContainerLifecycle.class.getClassLoader());
+                }
                 factory = JspFactory.getDefaultFactory();
             }
-            catch (Exception e)
+            catch (final Exception e)
             {
                 // ignore
             }
