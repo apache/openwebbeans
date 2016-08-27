@@ -31,15 +31,17 @@ import java.util.zip.ZipEntry;
 
 public class OpenWebBeansPropertiesTransformer implements ResourceTransformer
 {
-    private static final String CONFIGURATION_ORDINAL_PROPERTY_NAME = "configuration.ordinal";
-    private static final int CONFIGURATION_ORDINAL_DEFAULT_VALUE = 100;
-
     private final List<Properties> configurations = new ArrayList<Properties>();
+
+    private String resource = "META-INF/openwebbeans/openwebbeans.properties";
+    private String ordinalKey = "configuration.ordinal";
+    private int defaultOrdinal = 100;
+    private boolean reverseOrder = false;
 
     @Override
     public boolean canTransformResource(final String s)
     {
-        return "META-INF/openwebbeans/openwebbeans.properties".equals(s) || "/META-INF/openwebbeans/openwebbeans.properties".equals(s);
+        return resource.equals(s);
     }
 
     @Override
@@ -60,12 +62,32 @@ public class OpenWebBeansPropertiesTransformer implements ResourceTransformer
     public void modifyOutputStream(final JarOutputStream jarOutputStream) throws IOException
     {
         final Properties out = mergeProperties(sortProperties(configurations));
-        jarOutputStream.putNextEntry(new ZipEntry("META-INF/openwebbeans/openwebbeans.properties"));
-        out.store(jarOutputStream, "# gradle openwebbeans.properties merge");
+        jarOutputStream.putNextEntry(new ZipEntry(resource));
+        out.store(jarOutputStream, "# maven " + resource + " merge");
         jarOutputStream.closeEntry();
     }
 
-    private static List<Properties> sortProperties(List<Properties> allProperties)
+    public void setReverseOrder(final boolean reverseOrder)
+    {
+        this.reverseOrder = reverseOrder;
+    }
+
+    public void setResource(final String resource)
+    {
+        this.resource = resource;
+    }
+
+    public void setOrdinalKey(final String ordinalKey)
+    {
+        this.ordinalKey = ordinalKey;
+    }
+
+    public void setDefaultOrdinal(final int defaultOrdinal)
+    {
+        this.defaultOrdinal = defaultOrdinal;
+    }
+
+    private List<Properties> sortProperties(List<Properties> allProperties)
     {
         final List<Properties> sortedProperties = new ArrayList<Properties>();
         for (final Properties p : allProperties)
@@ -76,7 +98,7 @@ public class OpenWebBeansPropertiesTransformer implements ResourceTransformer
             for (i = 0; i < sortedProperties.size(); i++)
             {
                 final int listConfigOrder = getConfigurationOrdinal(sortedProperties.get(i));
-                if (listConfigOrder > configOrder)
+                if ((!reverseOrder && listConfigOrder > configOrder) || (reverseOrder && listConfigOrder < configOrder))
                 {
                     break;
                 }
@@ -86,14 +108,14 @@ public class OpenWebBeansPropertiesTransformer implements ResourceTransformer
         return sortedProperties;
     }
 
-    private static int getConfigurationOrdinal(final Properties p)
+    private int getConfigurationOrdinal(final Properties p)
     {
-        final String configOrderString = p.getProperty(CONFIGURATION_ORDINAL_PROPERTY_NAME);
+        final String configOrderString = p.getProperty(ordinalKey);
         if (configOrderString != null && configOrderString.length() > 0)
         {
             return Integer.parseInt(configOrderString);
         }
-        return CONFIGURATION_ORDINAL_DEFAULT_VALUE;
+        return defaultOrdinal;
     }
 
     private static Properties mergeProperties(final List<Properties> sortedProperties)
