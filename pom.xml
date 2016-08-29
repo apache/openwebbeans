@@ -495,7 +495,6 @@
         <module>atinject-tck</module>
         <module>webbeans-tck</module>
         <module>distribution</module>
-        <module>webbeans-doc</module>
         <module>webbeans-maven</module>
         <module>webbeans-gradle</module>
     </modules>
@@ -779,15 +778,6 @@
             </reporting>
 
         </profile>
-
-        <profile>
-            <id>doc</id>
-            <modules>
-                <module>webbeans-doc</module>
-            </modules>
-        </profile>
-
-
 
     </profiles>
 </project>
