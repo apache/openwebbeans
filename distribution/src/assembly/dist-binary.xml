@@ -93,7 +93,6 @@ under the License.
             <includes>
                 <include>org.apache.openwebbeans:openwebbeans-resource</include>
                 <include>org.apache.openwebbeans:openwebbeans-jsf</include>
-                <include>org.apache.openwebbeans:openwebbeans-jsf12</include>
                 <include>org.apache.openwebbeans:openwebbeans-jms</include>
                 <include>org.apache.openwebbeans:openwebbeans-ejb</include>
                 <include>org.apache.openwebbeans:openwebbeans-ee</include>

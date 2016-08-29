@@ -161,7 +161,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>openwebbeans-jsf12</artifactId>
+            <artifactId>openwebbeans-jsf</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -182,11 +182,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>openwebbeans-ee-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>openwebbeans-el10</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

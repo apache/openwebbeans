@@ -53,14 +53,14 @@ under the License.
         <!-- JSF Plugin -->
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-jsf12</artifactId>
+            <artifactId>openwebbeans-jsf</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <!-- EL Plugin -->
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-el10</artifactId>
+            <artifactId>openwebbeans-el22</artifactId>
             <version>${project.version}</version>
         </dependency>
 
