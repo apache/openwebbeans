@@ -28,13 +28,6 @@
     <description>Apache OpenWebBeans Java EE Utility</description>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.apache.myfaces.core</groupId>
-            <artifactId>myfaces-api</artifactId>
-            <optional>true</optional>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-el_2.2_spec</artifactId>
@@ -48,50 +41,44 @@
 
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-servlet_3.0_spec</artifactId>
+            <artifactId>geronimo-jcdi_1.1_spec</artifactId>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
-        	<groupId>org.apache.geronimo.specs</groupId>
-        	<artifactId>geronimo-jcdi_1.1_spec</artifactId>
-                <scope>provided</scope>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
+            <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
-        	<groupId>org.apache.geronimo.specs</groupId>
-        	<artifactId>geronimo-jta_1.1_spec</artifactId>
-        	<scope>provided</scope>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-validation_1.0_spec</artifactId>
+            <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
-        	<groupId>org.apache.geronimo.specs</groupId>
-        	<artifactId>geronimo-validation_1.0_spec</artifactId>
-        	<scope>provided</scope>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-impl</artifactId>
         </dependency>
-        
+
         <dependency>
-        	<groupId>org.apache.openwebbeans</groupId>
-        	<artifactId>openwebbeans-impl</artifactId>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-ee-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
-        	<groupId>org.apache.openwebbeans</groupId>
-        	<artifactId>openwebbeans-ee-common</artifactId>
-        	<version>${project.version}</version>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-atinject_1.0_spec</artifactId>
+            <scope>provided</scope>
         </dependency>
-        
-		<dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-atinject_1.0_spec</artifactId>
-                <scope>provided</scope>
+
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-spi</artifactId>
+            <optional>true</optional>
         </dependency>
-        
-		<dependency>
-			<groupId>org.apache.openwebbeans</groupId>
-			<artifactId>openwebbeans-spi</artifactId>
-			<optional>true</optional>
-		</dependency>		
-              
+
     </dependencies>
 </project>
