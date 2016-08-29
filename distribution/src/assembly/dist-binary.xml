@@ -101,7 +101,6 @@ under the License.
                 <include>org.apache.openwebbeans:openwebbeans-resource</include>
                 <include>org.apache.openwebbeans:openwebbeans-osgi</include>
                 <include>org.apache.openwebbeans:openwebbeans-web</include>
-                <include>org.apache.openwebbeans:openwebbeans-tomcat6</include>
                 <include>org.apache.openwebbeans:openwebbeans-tomcat7</include>
             </includes>
 

@@ -76,7 +76,6 @@
         <geronimo_atinject.version>1.0</geronimo_atinject.version>
         <geronimo_interceptor.version>1.0</geronimo_interceptor.version>
         <geronimo_validation.version>1.1</geronimo_validation.version>
-        <tomcat6.version>6.0.45</tomcat6.version>
         <tomcat7.version>7.0.70</tomcat7.version>
         <myfaces.version>2.2.10</myfaces.version>
         <xbean.version>4.5</xbean.version>
@@ -484,7 +483,6 @@
         <module>webbeans-web</module>
         <module>webbeans-ejb</module>
         <module>webbeans-ee</module>
-        <module>webbeans-tomcat6</module>
         <module>webbeans-tomcat7</module>
         <module>webbeans-jms</module>       
         <module>webbeans-jsf</module>
