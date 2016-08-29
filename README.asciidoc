@@ -1,0 +1,9 @@
+= Apache OpenWebBeans README
+
+=== What is Apache OpenWebBeans?
+
+Apache OpenWebBeans (OWB) is an implementation of the Contexts and Dependency Injection 1.2 specification (CDI-1.2).
+
+OWB is modularly built is fully functional under 1 MB.
+
+Please visit http://openwebbeans.apache.org for more documentation
