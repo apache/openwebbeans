@@ -488,7 +488,6 @@
         <module>webbeans-jsf</module>
         <module>webbeans-el22</module>
         <module>webbeans-resource</module>
-        <module>webbeans-jee5-ejb-resource</module>
         <module>webbeans-osgi</module>
         <module>webbeans-porting</module>
         <module>webbeans-arquillian</module>
