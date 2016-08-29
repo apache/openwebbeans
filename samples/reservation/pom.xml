@@ -132,7 +132,7 @@ under the License.
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
-            <version>2.4.0</version>
+            <version>2.4.1</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -162,9 +162,9 @@ under the License.
         <finalName>reservation</finalName>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.apache.openjpa</groupId>
                 <artifactId>openjpa-maven-plugin</artifactId>
-                <version>1.2</version>
+                <version>2.4.1</version>
                 <configuration>
                     <includes>org/apache/webbeans/reservation/entity/*.class</includes>
                     <addDefaultConstructor>true</addDefaultConstructor>

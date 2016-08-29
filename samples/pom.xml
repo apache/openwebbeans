@@ -33,17 +33,11 @@ under the License.
 
     <properties>
         <deploy.skip>false</deploy.skip>
-        <myfaces2.version>2.2.8</myfaces2.version>
     </properties>
 
     <build>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.apache.tomcat.maven</groupId>
-                    <artifactId>tomcat6-maven-plugin</artifactId>
-                    <version>2.2</version>
-                </plugin>
                 <plugin>
                     <groupId>org.apache.tomcat.maven</groupId>
                     <artifactId>tomcat7-maven-plugin</artifactId>
@@ -112,7 +106,6 @@ under the License.
         <module>conversation-sample</module>
         <module>jsf2sample</module>
         <module>reservation</module>
-        <module>tomcat-sample</module>
         <module>tomcat7-sample</module>
         <module>standalone-sample</module>
     </modules>
