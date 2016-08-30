@@ -22,13 +22,11 @@ http://openwebbeans.apache.org
 
 
 
-
-
 --------------------------------
-OpenWebBeans 1.6.3 Release Features
+OpenWebBeans 1.7.0 Release Features
 --------------------------------
 
-- The 1.6.3 release supports the following features
+- The 1.7.0 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -45,7 +43,7 @@ OpenWebBeans 1.6.3 Release Features
 * @Alternative support
 * OSGi environment support with an own plugable bundle ClassPath scanner
 * plugable SecurityManager integration doubles speed if no SecurityManager is being used
-* support for direct CDI usage in tomcat-6, tomcat-7, tomcat-8 and other Servlet environments
+* support for direct CDI usage in tomcat-7, tomcat-8 and other Servlet environments
 
 
 
@@ -62,6 +60,48 @@ only effective for this very bean archive but for the whole BeanManager in contr
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.7.0
+-------------------------------------------
+
+Bug
+
+    [OWB-1115] - Wrong version listed on download page
+    [OWB-1121] - IllegalStateException in case of duplicated classes
+    [OWB-1122] - InjectionPoint.getQualifiers does not return the list of selected qualifiers with programmatic lookup
+    [OWB-1123] - NPE at NormalScopeProxyFactory.createNormalScopeProxy during deserialization
+    [OWB-1124] - Lazy start on SessionContext NPE on no active RequestContext
+    [OWB-1125] - Please delete old releases from mirroring system
+    [OWB-1129] - isAfterBeanDiscoveryFired() doesn't handle before/during/after event states as required
+    [OWB-1130] - ContainerCtrlTckTest fails
+    [OWB-1131] - Typo in exception message
+    [OWB-1136] - Can't access SessionScoped beans inside @Observers @Initialized(SessionScoped)
+    [OWB-1138] - PassivationCapable bean id is not unique: PRODUCERMETHOD#class
+    [OWB-1139] - JSP misses CDI ELResolver
+    [OWB-1140] - Caused by: javax.enterprise.inject.UnsatisfiedResolutionException: Api type [xxx] is not found with the qualifiers
+
+Dependency upgrade
+
+    [OWB-1134] - Upgrade plugins to support Java 8: maven-bundle-plugin and maven-checkstyle-plugin
+
+New Feature
+
+    [OWB-1141] - Maven Shade transformer for openwebbeans.properties
+    [OWB-1142] - Gradle ShadowJar Transformer for openwebbeans.properties
+
+Task
+
+    [OWB-1089] - OpenWebBeansJsfPlugin is pretty much empty
+    [OWB-1127] - Upgrade to XBean 4.4
+    [OWB-1143] - upgrade to apache-parent-18, plugins and dependencies
+    [OWB-1144] - Drop JSF-1.2 module for OWB-1.7.x
+    [OWB-1145] - Drop EL-1.0 module for OWB-1.7
+    [OWB-1146] - Remove tomcat6 module for OWB-1.7
+    [OWB-1147] - Remove webbeans-jee5-ejb-resource module for OWB-1.7
+    [OWB-1148] - remove the webbeans-doc module
+
 
 
 -------------------------------------------
