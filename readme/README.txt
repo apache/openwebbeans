@@ -81,6 +81,7 @@ Bug
     [OWB-1138] - PassivationCapable bean id is not unique: PRODUCERMETHOD#class
     [OWB-1139] - JSP misses CDI ELResolver
     [OWB-1140] - Caused by: javax.enterprise.inject.UnsatisfiedResolutionException: Api type [xxx] is not found with the qualifiers
+    [OWB-1149] - ContextsService doesn't re-attach mocked sessions correctly
 
 Dependency upgrade
 
@@ -94,13 +95,14 @@ New Feature
 Task
 
     [OWB-1089] - OpenWebBeansJsfPlugin is pretty much empty
-    [OWB-1127] - Upgrade to XBean 4.4
+    [OWB-1127] - Upgrade to XBean 4.5
     [OWB-1143] - upgrade to apache-parent-18, plugins and dependencies
     [OWB-1144] - Drop JSF-1.2 module for OWB-1.7.x
     [OWB-1145] - Drop EL-1.0 module for OWB-1.7
     [OWB-1146] - Remove tomcat6 module for OWB-1.7
     [OWB-1147] - Remove webbeans-jee5-ejb-resource module for OWB-1.7
     [OWB-1148] - remove the webbeans-doc module
+
 
 
 
