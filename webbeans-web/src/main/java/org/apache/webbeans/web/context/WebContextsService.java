@@ -449,16 +449,8 @@ public class WebContextsService extends AbstractContextsService
         SessionScopedBeanInterceptorHandler.removeThreadLocals();
 
         //Clear thread locals
-        conversationContexts.set(null);
-        conversationContexts.remove();
-
-        sessionContexts.set(null);
-        sessionContexts.remove();
-
         requestContexts.set(null);
         requestContexts.remove();
-
-        RequestScopedBeanInterceptorHandler.removeThreadLocals();
     }
 
 
