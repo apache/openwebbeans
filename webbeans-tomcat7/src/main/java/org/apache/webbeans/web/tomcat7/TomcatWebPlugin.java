@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.web.tomcat7;
 
-import javax.jws.WebService;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContextAttributeListener;
@@ -29,6 +28,8 @@ import javax.servlet.http.HttpSessionActivationListener;
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.HttpSessionListener;
+
+import java.util.EventListener;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.spi.SecurityService;
@@ -75,45 +76,48 @@ public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansPl
     @Override
     public void isManagedBean(Class<?> clazz)
     {
-        if (Servlet.class.isAssignableFrom(clazz) ||
-            Filter.class.isAssignableFrom(clazz) ||
-            ServletContextListener.class.isAssignableFrom(clazz) ||
-            ServletContextAttributeListener.class.isAssignableFrom(clazz) ||
-            HttpSessionActivationListener.class.isAssignableFrom(clazz) ||
-            HttpSessionAttributeListener.class.isAssignableFrom(clazz) ||
-            HttpSessionBindingListener.class.isAssignableFrom(clazz) ||
-            HttpSessionListener.class.isAssignableFrom(clazz) ||
-            ServletRequestListener.class.isAssignableFrom(clazz) ||
-            ServletRequestAttributeListener.class.isAssignableFrom(clazz) )
+        if (isServletSpecClass(clazz))
         {
             throw new WebBeansConfigurationException("Given class  : " + clazz.getName() + " is not managed bean");
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public boolean supportsJavaEeComponentInjections(Class<?> clazz)
     {
-        if(Servlet.class.isAssignableFrom(clazz) ||
-           Filter.class.isAssignableFrom(clazz) ||
-           ServletContextListener.class.isAssignableFrom(clazz) ||
-           ServletContextAttributeListener.class.isAssignableFrom(clazz) ||
-           HttpSessionActivationListener.class.isAssignableFrom(clazz) ||
-           HttpSessionAttributeListener.class.isAssignableFrom(clazz) ||
-           HttpSessionBindingListener.class.isAssignableFrom(clazz) ||
-           HttpSessionListener.class.isAssignableFrom(clazz) ||
-           ServletRequestListener.class.isAssignableFrom(clazz) ||
-           ServletRequestAttributeListener.class.isAssignableFrom(clazz) ||
-           clazz.isAnnotationPresent(WebService.class))
+        if(isServletSpecClass(clazz))
         {
             return true;
         }
-        
+
         return false;
     }
-    
+
+    private boolean isServletSpecClass(Class<?> clazz)
+    {
+        if (Servlet.class.isAssignableFrom(clazz) ||
+            Filter.class.isAssignableFrom(clazz))
+        {
+            return true;
+        }
+
+        if (EventListener.class.isAssignableFrom(clazz))
+        {
+            return ServletContextListener.class.isAssignableFrom(clazz) ||
+                   ServletContextAttributeListener.class.isAssignableFrom(clazz) ||
+                   HttpSessionActivationListener.class.isAssignableFrom(clazz) ||
+                   HttpSessionAttributeListener.class.isAssignableFrom(clazz) ||
+                   HttpSessionBindingListener.class.isAssignableFrom(clazz) ||
+                   HttpSessionListener.class.isAssignableFrom(clazz) ||
+                   ServletRequestListener.class.isAssignableFrom(clazz) ||
+                   ServletRequestAttributeListener.class.isAssignableFrom(clazz);
+        }
+        return false;
+    }
+
     
     /**
      * {@inheritDoc}
