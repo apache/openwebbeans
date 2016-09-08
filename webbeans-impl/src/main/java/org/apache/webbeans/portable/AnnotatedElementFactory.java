@@ -326,10 +326,9 @@ public final class AnnotatedElementFactory
         {
             return cast(methods);
         }
-        methods = Collections.unmodifiableSet(getFilteredMethods(
-                annotatedType.getJavaClass(),
-                (Set<AnnotatedMethod<?>>)(Set<?>)annotatedType.getMethods(),
-                new HashSet<AnnotatedMethod<?>>()));
+        methods = Collections.unmodifiableSet(getFilteredMethods(annotatedType.getJavaClass(),
+                                                                 (Set)annotatedType.getMethods(),
+                                                                 new HashSet<AnnotatedMethod<?>>()));
         Set<AnnotatedMethod<?>> old = annotatedMethodsOfTypeCache.putIfAbsent(annotatedType, methods);
         if (old != null)
         {

@@ -1216,6 +1216,7 @@ public class BeansDeployer
     {
         logger.fine("Deploying configurations from class files has started.");
 
+        BeanManagerImpl bm = webBeansContext.getBeanManagerImpl();
         for (Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> beanAttributesMap : beanAttributesPerBda.values())
         {
 
@@ -1234,7 +1235,7 @@ public class BeansDeployer
                 // if the implClass already gets processed as part of the
                 // standard BDA scanning, then we don't need to 'additionally'
                 // deploy it anymore.
-                webBeansContext.getBeanManagerImpl().removeAdditionalAnnotatedType(annotatedType.getKey());
+                bm.removeAdditionalAnnotatedType(annotatedType.getKey());
 
             }
         }
@@ -1273,7 +1274,7 @@ public class BeansDeployer
             }
             catch (NoClassDefFoundError ncdfe)
             {
-                logger.info("Skipping deployment of Class " + beanClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
+                logger.warning("Skipping deployment of Class " + beanClass + " due to a NoClassDefFoundError: " + ncdfe.getMessage());
             }
         }
     }

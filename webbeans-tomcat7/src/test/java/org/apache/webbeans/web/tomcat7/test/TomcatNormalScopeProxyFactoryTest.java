@@ -21,6 +21,7 @@ package org.apache.webbeans.web.tomcat7.test;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.apache.webbeans.config.WebBeansContext;
@@ -41,12 +42,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 public class TomcatNormalScopeProxyFactoryTest
 {
+    private static final Logger log = Logger.getLogger(TomcatNormalScopeProxyFactoryTest.class.getName());
+
     @Test
     public void checkDeserialisation() throws Exception
     {
@@ -62,6 +67,11 @@ public class TomcatNormalScopeProxyFactoryTest
 
             final Context ctx = tomcat.addContext("/test", war.getAbsolutePath());
             ctx.addLifecycleListener(new ContextLifecycleListener());
+
+            // needed for Java9
+            if (ctx instanceof StandardContext) {
+                ((StandardContext) ctx).setClearReferencesRmiTargets(false);
+            }
 
             tomcat.start();
 
@@ -114,6 +124,9 @@ public class TomcatNormalScopeProxyFactoryTest
                     // don't do to not destroy the instance
                     // contextsService.endContext(SessionScoped.class, request.getSession());
                 }
+                catch (Exception e) {
+                    log.log(Level.SEVERE, "Exception during test execution", e);
+                }
                 finally
                 {
                     thread.setContextClassLoader(old);
@@ -121,7 +134,15 @@ public class TomcatNormalScopeProxyFactoryTest
             }
             finally
             {
-                tomcat.stop();
+                try
+                {
+                    tomcat.stop();
+                }
+                catch (Exception e)
+                {
+                    log.log(Level.SEVERE, "This _might_ happen on Java9 currently. I hope it gets soon fixed.", e);
+                }
+
             }
         }
     }
