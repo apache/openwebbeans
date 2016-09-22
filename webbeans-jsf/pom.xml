@@ -85,16 +85,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.1.0</version>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
+
                 <configuration>
                     <supportedProjectTypes>
                         <supportedProjectType>jar</supportedProjectType>
@@ -107,6 +98,9 @@
                         <Export-Package>!org.apache.webbeans.internal.*,org.apache.webbeans.*;version="${project.version}"</Export-Package>
                         <Private-Package>org.apache.webbeans.internal.*</Private-Package>
                         <Import-Package>
+                            javax.servlet.*;version="[2.4,)",
+                            javax.el.*;version="[2.2,)",
+                            javax.faces.*;version="[2.0,)",
                             *
                         </Import-Package>
                     </instructions>
