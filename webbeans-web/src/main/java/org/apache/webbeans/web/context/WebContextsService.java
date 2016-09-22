@@ -472,7 +472,7 @@ public class WebContextsService extends AbstractContextsService
             if (currentSessionContext == null)
             {
                 // no current context, so lets create a new one
-                synchronized (OWB_SESSION_CONTEXT_ATTRIBUTE_NAME)
+                synchronized (session)
                 {
                     currentSessionContext = (SessionContext) session.getAttribute(OWB_SESSION_CONTEXT_ATTRIBUTE_NAME);
                     if (currentSessionContext == null)
