@@ -91,18 +91,9 @@
                 <artifactId>maven-bundle-plugin</artifactId>
 
                 <configuration>
-                    <supportedProjectTypes>
-                        <supportedProjectType>jar</supportedProjectType>
-                        <supportedProjectType>bundle</supportedProjectType>
-                        <supportedProjectType>war</supportedProjectType>
-                    </supportedProjectTypes>
                     <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Version>${project.version}</Bundle-Version>
-                        <Export-Package>!org.apache.webbeans.internal.*,org.apache.webbeans.*;version="${project.version}"</Export-Package>
-                        <Private-Package>org.apache.webbeans.internal.*</Private-Package>
                         <Import-Package>
-                            javax.el.*;version="[2.2,)",
+                            javax.el.*;version="${osgi.el.range}",
                             *
                         </Import-Package>
                     </instructions>
