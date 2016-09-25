@@ -19,5 +19,5 @@ under the License.
 -->
 <beans version="1.1" bean-discovery-mode="all">
     <!-- this overwrites 'all' -->
-    <scopedBeansOnly/>
+    <trim/>
 </beans>

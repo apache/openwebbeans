@@ -40,14 +40,6 @@ public interface BeanArchiveService
     enum BeanDiscoveryMode
     {
         /**
-         * Pick up all classes as CDI beans.
-         * Classes with no 'bean defining annotations'
-         * will get picked up as &#064;Dependent scoped beans.
-         * This is basically the backward compatible mode to CDI-1.0.
-         */
-        ALL(10),
-
-        /**
          * Pick up all classes (like with {@link #ALL} and fire the
          * ProcessAnnotatedType event for them.
          * But <b>only</b> pick up the scanned class as CDI bean:
@@ -59,7 +51,15 @@ public interface BeanArchiveService
          * Contrary to the {@link #ALL} mode beans without any scope will
          * <i>not</i> get picked up as &#064;Dependent scoped beans!
          */
-        SCOPED(8),
+        SCOPED(10),
+
+        /**
+         * Pick up all classes as CDI beans.
+         * Classes with no 'bean defining annotations'
+         * will get picked up as &#064;Dependent scoped beans.
+         * This is basically the backward compatible mode to CDI-1.0.
+         */
+        ALL(8),
 
         /**
          * Only classes with a 'bean defining annotation' will get
