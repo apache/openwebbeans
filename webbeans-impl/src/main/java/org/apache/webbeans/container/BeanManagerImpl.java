@@ -214,6 +214,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private static Map<Class<? extends Annotation>, Boolean> isScopeTypeNormalCache =
             new ConcurrentHashMap<Class<? extends Annotation>, Boolean>();
 
+    /**
+     * Map to be able to lookup always 3rd party beans when user does lookups with custom beans.
+     */
+    private Map<Bean<?>, Bean<?>> thirdPartyMapping = new HashMap<>();
 
     /**
      * Creates a new {@link BeanManager} instance.
@@ -374,6 +378,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             }
             addPassivationInfo(bean);
             deploymentBeans.add(bean);
+            thirdPartyMapping.put(newBean, bean);
         }
 
         return this;
@@ -703,13 +708,18 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * {@inheritDoc}
      */
     @Override
-    public Object getReference(Bean<?> bean, Type beanType, CreationalContext<?> creationalContext)
+    public Object getReference(Bean<?> providedBean, Type beanType, CreationalContext<?> creationalContext)
     {
-        Asserts.assertNotNull(bean, "bean parameter");
+        Asserts.assertNotNull(providedBean, "bean parameter");
 
         Context context = null;
         Object instance = null;
 
+        Bean<?> bean =  !OwbBean.class.isInstance(providedBean) ? thirdPartyMapping.get(providedBean) : providedBean;
+        if (bean == null) // more than unlikely but still possible and not invalid (user could create new instance of bean each time, not forbidden)
+        {
+            bean = providedBean;
+        }
         if (bean instanceof SerializableBean)
         {
             bean = ((SerializableBean)bean).getBean();
