@@ -29,7 +29,6 @@ import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 import org.apache.webbeans.web.util.ServletCompatibilityUtil;
 
-import javax.el.ELResolver;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -103,14 +102,14 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     @Override
     protected void afterStartApplication(final Object startupObject)
     {
-        ELAdaptor elAdaptor = getWebBeansContext().getService(ELAdaptor.class);
-        ELResolver resolver = elAdaptor.getOwbELResolver();
         //Application is configured as JSP
         if(getWebBeansContext().getOpenWebBeansConfiguration().isJspApplication())
         {
+            ELAdaptor elAdaptor = getWebBeansContext().getService(ELAdaptor.class);
+
             logger.log(Level.FINE, "Application is configured as JSP. Adding EL Resolver.");
 
-            setJspELFactory((ServletContext) startupObject, resolver);
+            setJspELFactory((ServletContext) startupObject, elAdaptor.getOwbELResolver());
         }
 
         ServletContext servletContext =  null;
@@ -231,7 +230,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         throw new IllegalArgumentException("ServletContextEvent object but found null");
     }
 
-    protected void setJspELFactory(ServletContext startupObject, ELResolver resolver)
+    protected void setJspELFactory(ServletContext startupObject, Object resolver)
     {
         JspFactory factory = JspFactory.getDefaultFactory();
         if (factory == null)
@@ -258,7 +257,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         if (factory != null)
         {
             JspApplicationContext applicationCtx = factory.getJspApplicationContext(startupObject);
-            applicationCtx.addELResolver(resolver);
+            applicationCtx.addELResolver(javax.el.ELResolver.class.cast(resolver));
         }
         else
         {
