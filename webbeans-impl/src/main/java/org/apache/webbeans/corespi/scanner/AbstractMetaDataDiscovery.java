@@ -35,6 +35,7 @@ import org.apache.webbeans.util.UrlSet;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.xbean.finder.AnnotationFinder;
 import org.apache.xbean.finder.ClassLoaders;
+import org.apache.xbean.finder.filter.Filter;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -111,7 +112,8 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             beanArchiveService = webBeansContext.getBeanArchiveService();
         }
 
-        archive = new CdiArchive(beanArchiveService, WebBeansUtil.getCurrentClassLoader(), getBeanDeploymentUrls());
+        final Filter userFilter = webBeansContext.getService(Filter.class);
+        archive = new CdiArchive(beanArchiveService, WebBeansUtil.getCurrentClassLoader(), getBeanDeploymentUrls(), userFilter);
         finder = new OwbAnnotationFinder(archive);
 
         return finder;

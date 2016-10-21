@@ -24,6 +24,7 @@ import org.apache.xbean.finder.archive.Archive;
 import org.apache.xbean.finder.archive.ClasspathArchive;
 import org.apache.xbean.finder.archive.CompositeArchive;
 import org.apache.xbean.finder.archive.FilteredArchive;
+import org.apache.xbean.finder.filter.Filter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,7 +52,8 @@ public class CdiArchive implements Archive
 
     private final Archive delegate;
 
-    public CdiArchive(BeanArchiveService beanArchiveService, final ClassLoader loader, final Map<String, URL> urls)
+    public CdiArchive(BeanArchiveService beanArchiveService, final ClassLoader loader, final Map<String, URL> urls,
+                      final Filter userFilter)
     {
         final Collection<Archive> archives = new ArrayList<Archive>();
         for (final URL url : urls.values())
@@ -60,7 +62,7 @@ public class CdiArchive implements Archive
 
             BeanArchiveInformation beanArchiveInfo = beanArchiveService.getBeanArchiveInformation(url);
             final Archive archive = new FilteredArchive(ClasspathArchive.archive(loader, url),
-                    new BeanArchiveFilter(beanArchiveInfo, urlClasses));
+                    new BeanArchiveFilter(beanArchiveInfo, urlClasses, userFilter));
 
             classesByUrl.put(url.toExternalForm(), new FoundClasses(url, urlClasses, beanArchiveInfo));
             archives.add(archive);

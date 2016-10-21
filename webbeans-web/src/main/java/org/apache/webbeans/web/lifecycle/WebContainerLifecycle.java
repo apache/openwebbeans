@@ -75,7 +75,6 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         this.logger = WebBeansLoggerFacade.getLogger(WebContainerLifecycle.class);
     }
 
-
     /**
      * {@inheritDoc}
      */

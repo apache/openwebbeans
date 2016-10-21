@@ -31,13 +31,15 @@ public class BeanArchiveFilter implements Filter
 {
     private final BeanArchiveInformation beanArchiveInfo;
     private final boolean scanNone;
+    private final Filter userFilter;
 
     private List<String> urlClasses;
 
-    public BeanArchiveFilter(BeanArchiveInformation beanArchiveInfo, List<String> urlClasses)
+    public BeanArchiveFilter(BeanArchiveInformation beanArchiveInfo, List<String> urlClasses, Filter userFilter)
     {
         this.beanArchiveInfo = beanArchiveInfo;
         this.urlClasses = urlClasses;
+        this.userFilter = userFilter;
         BeanDiscoveryMode discoveryMode = beanArchiveInfo.getBeanDiscoveryMode();
 
         scanNone = BeanDiscoveryMode.NONE.equals(discoveryMode);
@@ -51,13 +53,13 @@ public class BeanArchiveFilter implements Filter
             return false;
         }
 
-        if (beanArchiveInfo.isClassExcluded(name))
+        if ((userFilter != null && !userFilter.accept(name)) || beanArchiveInfo.isClassExcluded(name))
         {
             return false;
         }
 
-            urlClasses.add(name);
-            return true;
+        urlClasses.add(name);
+        return true;
     }
 
 }
