@@ -264,7 +264,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         }
     }
 
-    private int isExcludedJar(final String path)
+    protected int isExcludedJar(final String path)
     {
         // lazy init - required when using DS CdiTestRunner
         initScanningExcludes();
