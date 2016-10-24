@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.EventListener;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,11 +38,15 @@ import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
 import javax.servlet.descriptor.JspConfigDescriptor;
 
+import static java.util.Collections.enumeration;
+
 /**
  * Implement the ServletContext interface for testing.
  */
 public class MockServletContext implements ServletContext
 {
+
+    private Map<String, Object> attributes = new HashMap<>();
 
     @Override
     public String getContextPath()
@@ -172,19 +177,19 @@ public class MockServletContext implements ServletContext
     @Override
     public Object getAttribute(String name)
     {
-        return null;
+        return attributes.get(name);
     }
 
     @Override
     public Enumeration<String> getAttributeNames()
     {
-        return null;
+        return enumeration(attributes.keySet());
     }
 
     @Override
     public void setAttribute(String name, Object object)
     {
-
+        attributes.put(name, object);
     }
 
     @Override

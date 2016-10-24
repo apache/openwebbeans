@@ -25,8 +25,10 @@ import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.lifecycle.AbstractLifeCycle;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
+import org.apache.webbeans.web.context.WebContextsService;
 import org.apache.webbeans.web.util.ServletCompatibilityUtil;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -86,6 +88,12 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         if ("true".equalsIgnoreCase(getWebBeansContext().getOpenWebBeansConfiguration().getProperty("org.apache.webbeans.web.add-beans", "true")))
         {
             webBeansContext.getBeanManagerImpl().addInternalBean(new ServletContextBean(webBeansContext, servletContext));
+
+            final ContextsService contextsService = webBeansContext.getContextsService();
+            if (WebContextsService.class.isInstance(contextsService))
+            {
+                webBeansContext.getBeanManagerImpl().addInternalBean(new ServletRequestBean(webBeansContext, WebContextsService.class.cast(contextsService)));
+            }
         }
         super.startApplication(servletContext);
     }
