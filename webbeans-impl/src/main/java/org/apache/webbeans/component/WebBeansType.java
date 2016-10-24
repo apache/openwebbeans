@@ -70,5 +70,6 @@ public enum WebBeansType
     PRINCIPAL,
     VALIDATIONFACT,
     VALIDATION,
-    METADATA
+    METADATA,
+    SERVLET_CONTEXT
 }

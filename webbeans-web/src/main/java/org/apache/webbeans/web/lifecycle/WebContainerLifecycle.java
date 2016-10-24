@@ -43,12 +43,12 @@ import java.util.logging.Level;
 
 /**
  * Manages container lifecycle.
- * 
+ *
  * <p>
  * Behaves according to the request, session, and application
- * contexts of the web application. 
+ * contexts of the web application.
  * </p>
- * 
+ *
  * @version $Rev: 911764 $ $Date: 2010-02-19 11:52:54 +0200 (Fri, 19 Feb 2010) $
  * @see org.apache.webbeans.servlet.WebBeansConfigurationListener
  */
@@ -82,6 +82,11 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     public void startApplication(Object startupObject)
     {
         ServletContext servletContext = getServletContext(startupObject);
+        // this flag is just there in case some integration does it already so we should be able to switch it off
+        if ("true".equalsIgnoreCase(getWebBeansContext().getOpenWebBeansConfiguration().getProperty("org.apache.webbeans.web.add-beans", "true")))
+        {
+            webBeansContext.getBeanManagerImpl().addInternalBean(new ServletContextBean(webBeansContext, servletContext));
+        }
         super.startApplication(servletContext);
     }
 
@@ -190,7 +195,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         //ContextFactory.cleanUpContextFactory();
 
         this.cleanupShutdownThreadLocals();
-        
+
         if (logger.isLoggable(Level.INFO))
         {
           logger.log(Level.INFO, OWBLogConst.INFO_0002, ServletCompatibilityUtil.getServletInfo(servletContext));
@@ -205,7 +210,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     {
         contextsService.removeThreadLocals();
     }
-    
+
     /**
      * Returns servelt context otherwise throws exception.
      * @param object object
@@ -224,8 +229,8 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
             {
                 throw new WebBeansException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0018));
             }
-        }                
-        
+        }
+
         throw new IllegalArgumentException("ServletContextEvent object but found null");
     }
 
