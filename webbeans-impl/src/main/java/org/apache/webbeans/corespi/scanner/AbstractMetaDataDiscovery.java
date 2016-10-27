@@ -341,10 +341,17 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
      */
     protected void addWebBeansXmlLocation(URL beanArchiveUrl)
     {
+        // just the logging there to let children customize the way it is printed out,
+        // no logic there but in doAddWebBeansXmlLocation(URL) please
         if(logger.isLoggable(Level.INFO))
         {
             logger.info("added beans archive URL: " + beanArchiveUrl.toExternalForm());
         }
+        doAddWebBeansXmlLocation(beanArchiveUrl);
+    }
+
+    protected void doAddWebBeansXmlLocation(final URL beanArchiveUrl)
+    {
         beanArchiveLocations.add(beanArchiveUrl);
 
         // and also scan the bean archive!
