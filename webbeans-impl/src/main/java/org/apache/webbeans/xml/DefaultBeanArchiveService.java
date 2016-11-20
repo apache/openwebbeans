@@ -51,6 +51,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
 {
     private static final String WEB_INF_CLASSES = "WEB-INF/classes/";
     private static final String WEB_INF_CLASSES_MAVEN = "target/classes/";
+    private static final String META_INF_BEANS_XML = "/META-INF/beans.xml";
 
     private static final Logger logger = WebBeansLoggerFacade.getLogger(BeanArchiveService.class);
 
@@ -74,10 +75,18 @@ public class DefaultBeanArchiveService implements BeanArchiveService
             // in this case we need to look whether we have a corresponding beans.xml already scanned
 
             String strippedBeanArchiveUrl = stripProtocol(beanArchiveLocation);
+            strippedBeanArchiveUrl = stripTrailingSlash(strippedBeanArchiveUrl);
 
             for (Map.Entry<String, BeanArchiveInformation> entry : beanArchiveInformations.entrySet())
             {
-                if (stripProtocol(entry.getKey()).startsWith(strippedBeanArchiveUrl))
+                // we have to 'normalise' both values and remove the beans.xml string to be compareable
+                String entryUrl = stripProtocol(entry.getKey());
+                if (entryUrl.length() > META_INF_BEANS_XML.length() &&
+                    entryUrl.substring(entryUrl.length() - META_INF_BEANS_XML.length()).equalsIgnoreCase(META_INF_BEANS_XML))
+                {
+                    entryUrl = entryUrl.substring(0, entryUrl.length() - META_INF_BEANS_XML.length());
+                }
+                if (entryUrl.equals(strippedBeanArchiveUrl))
                 {
                     bdaInfo = entry.getValue();
                     break;
@@ -135,7 +144,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         }
 
         // means we need to merge them
-        DefaultBeanArchiveInformation mergedBdaInfo = new DefaultBeanArchiveInformation();
+        DefaultBeanArchiveInformation mergedBdaInfo = new DefaultBeanArchiveInformation(bdaWebClasses.getBdaUrl());
 
         mergedBdaInfo.setBeanDiscoveryMode(BeanDiscoveryMode.max(bdaWebClasses.getBeanDiscoveryMode(), bdaWebInf.getBeanDiscoveryMode()));
 
@@ -188,9 +197,9 @@ public class DefaultBeanArchiveService implements BeanArchiveService
     /**
      * This method exists for extensibility reasons.
      */
-    protected DefaultBeanArchiveInformation createBeanArchiveInformation()
+    protected DefaultBeanArchiveInformation createBeanArchiveInformation(String bdaUrl)
     {
-        return new DefaultBeanArchiveInformation();
+        return new DefaultBeanArchiveInformation(bdaUrl);
     }
 
     private BeanArchiveInformation readBeansXml(URL beansXmlUrl, String beansXmlLocation)
@@ -203,7 +212,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         if (!beansXmlLocation.endsWith(".xml"))
         {
             // handle jars without beans.xml file
-            DefaultBeanArchiveInformation bdaInfo = createBeanArchiveInformation();
+            DefaultBeanArchiveInformation bdaInfo = createBeanArchiveInformation(beansXmlLocation);
             bdaInfo.setBeanDiscoveryMode(BeanDiscoveryMode.ANNOTATED);
             return bdaInfo;
         }
@@ -252,6 +261,17 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         return urlPath;
     }
 
+    private String stripTrailingSlash(String urlPath)
+    {
+        if (urlPath.endsWith("/"))
+        {
+            return urlPath.substring(0, urlPath.length()-1);
+        }
+        return urlPath;
+    }
+
+
+
 
     /**
      * Read the information from the given beans.xml and fill it into a
@@ -259,7 +279,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
      */
     protected BeanArchiveInformation readBeansXml(InputStream xmlStreamIn, String beansXmlLocation) throws IOException
     {
-        DefaultBeanArchiveInformation bdaInfo = createBeanArchiveInformation();
+        DefaultBeanArchiveInformation bdaInfo = createBeanArchiveInformation(beansXmlLocation);
 
         if (xmlStreamIn != null)
         {

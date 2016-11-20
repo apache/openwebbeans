@@ -191,7 +191,7 @@ public class BeansDeployer
         String usage = this.webBeansContext.getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_EJB_DISCOVERY);
         discoverEjb = Boolean.parseBoolean(usage);
 
-        defaultBeanArchiveInformation = new DefaultBeanArchiveInformation();
+        defaultBeanArchiveInformation = new DefaultBeanArchiveInformation("default");
         defaultBeanArchiveInformation.setBeanDiscoveryMode(BeanDiscoveryMode.ALL);
     }
 

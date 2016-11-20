@@ -122,6 +122,11 @@ public interface BeanArchiveService
     interface BeanArchiveInformation
     {
         /**
+         * @return The classpath entry this BDA represents.
+         */
+        String getBdaUrl();
+
+        /**
          * @return the version string of the beans.xml file (if any), or <code>null</code> if not set
          */
         String getVersion();

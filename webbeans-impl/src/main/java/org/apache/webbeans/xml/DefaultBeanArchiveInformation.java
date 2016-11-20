@@ -26,6 +26,7 @@ import org.apache.webbeans.spi.BeanArchiveService.BeanDiscoveryMode;
 
 public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArchiveInformation
 {
+    private final String bdaUrl;
     private String version;
     private BeanDiscoveryMode beanDiscoveryMode;
     private List<String> interceptors = new ArrayList<String>();
@@ -40,11 +41,21 @@ public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArc
     private List<String> excludedPackages = null;
     private List<String> allowProxyingClasses = new ArrayList<String>();
 
+    public DefaultBeanArchiveInformation(String bdaUrl)
+    {
+        this.bdaUrl = bdaUrl;
+    }
 
     @Override
     public BeanDiscoveryMode getBeanDiscoveryMode()
     {
         return beanDiscoveryMode;
+    }
+
+    @Override
+    public String getBdaUrl()
+    {
+        return bdaUrl;
     }
 
     @Override
@@ -195,4 +206,12 @@ public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArc
         return allowProxyingClasses;
     }
 
+    @Override
+    public String toString()
+    {
+        return "DefaultBeanArchiveInformation{" +
+            "bdaUrl='" + bdaUrl + '\'' +
+            ", beanDiscoveryMode=" + beanDiscoveryMode +
+            '}';
+    }
 }
