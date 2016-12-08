@@ -362,7 +362,7 @@ public class BeansDeployer
             BeanArchiveInformation bdaInfo = atEntry.getKey();
             List<AnnotatedType<?>> annotatedTypes = atEntry.getValue();
 
-            boolean onlyScopedBeans = BeanDiscoveryMode.SCOPED.equals(bdaInfo.getBeanDiscoveryMode());
+            boolean onlyScopedBeans = BeanDiscoveryMode.TRIM.equals(bdaInfo.getBeanDiscoveryMode());
 
             final Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> bdaBeanAttributes = new IdentityHashMap<AnnotatedType<?>, ExtendedBeanAttributes<?>>(annotatedTypes.size());
             final Iterator<AnnotatedType<?>> iterator = annotatedTypes.iterator();

@@ -51,7 +51,7 @@ public interface BeanArchiveService
          * Contrary to the {@link #ALL} mode beans without any scope will
          * <i>not</i> get picked up as &#064;Dependent scoped beans!
          */
-        SCOPED(10),
+        TRIM(10),
 
         /**
          * Pick up all classes as CDI beans.
