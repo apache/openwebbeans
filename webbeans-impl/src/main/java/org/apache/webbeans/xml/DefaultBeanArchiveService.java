@@ -85,6 +85,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
                     entryUrl.substring(entryUrl.length() - META_INF_BEANS_XML.length()).equalsIgnoreCase(META_INF_BEANS_XML))
                 {
                     entryUrl = entryUrl.substring(0, entryUrl.length() - META_INF_BEANS_XML.length());
+                    entryUrl = stripTrailingSlash(entryUrl);
                 }
                 if (entryUrl.equals(strippedBeanArchiveUrl))
                 {
@@ -263,9 +264,9 @@ public class DefaultBeanArchiveService implements BeanArchiveService
 
     private String stripTrailingSlash(String urlPath)
     {
-        if (urlPath.endsWith("/"))
+        while (urlPath.endsWith("/") || urlPath.endsWith("!") || urlPath.endsWith("\\"))
         {
-            return urlPath.substring(0, urlPath.length()-1);
+            urlPath = urlPath.substring(0, urlPath.length() - 1);
         }
         return urlPath;
     }
@@ -372,8 +373,8 @@ public class DefaultBeanArchiveService implements BeanArchiveService
             }
             else if (WebBeansConstants.WEB_BEANS_XML_SCOPED_BEANS_ONLY_ELEMENT.equalsIgnoreCase(child.getLocalName()))
             {
-                logger.info("OWB specific feature detected: force bean-discovery-mode=\"scopex\" for " + beansXmlLocation);
-                bdaInfo.setBeanDiscoveryMode(BeanDiscoveryMode.SCOPED);
+                logger.log(Level.FINE, "trimmed bean archive detected: " + beansXmlLocation);
+                bdaInfo.setBeanDiscoveryMode(BeanDiscoveryMode.TRIM);
             }
         }
     }
