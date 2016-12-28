@@ -1295,6 +1295,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public <T> void addAdditionalAnnotatedType(Object extension, AnnotatedType<T> inAnnotatedType, String id)
     {
+        if (id == null)
+        {
+            addAdditionalAnnotatedType(extension, inAnnotatedType);
+            return;
+        }
+
         final AnnotatedType<T> annotatedType = new AnnotatedTypeWrapper<T>(Extension.class.cast(extension), inAnnotatedType);
         if (annotatedType.getAnnotation(Vetoed.class) != null)
         {
@@ -1302,11 +1308,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             return;
         }
 
-        if (id == null)
-        {
-            id = extension.getClass().getName() + annotatedType + AnnotatedElementFactory.OWB_DEFAULT_KEY;
-        }
-        
         webBeansContext.getAnnotatedElementFactory().setAnnotatedType(annotatedType, id);
         ConcurrentMap<String, AnnotatedType<?>> annotatedTypes = additionalAnnotatedTypes.get(annotatedType.getJavaClass());
         if (annotatedTypes == null)
