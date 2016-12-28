@@ -37,13 +37,16 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Context;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.New;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Provider;
 
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
@@ -178,7 +181,9 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     public Instance<T> select(Annotation... qualifiers)
     {
         Annotation[] newQualifiersArray = getAdditionalQualifiers(qualifiers);
-        return new InstanceImpl<T>(injectionClazz, new InstanceInjectionPoint(injectionPoint, newQualifiersArray), webBeansContext, parentCreationalContext, newQualifiersArray);
+        return new InstanceImpl<T>(
+                injectionClazz, injectionPoint == null ? null : new InstanceInjectionPoint(injectionPoint, newQualifiersArray),
+                webBeansContext, parentCreationalContext, newQualifiersArray);
     }
 
     /**
@@ -193,12 +198,33 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
 
         Set<Annotation> newQualifiers = new HashSet<Annotation>(qualifierAnnotations);
 
+        final Set<Class<?>> types = new HashSet<>(newQualifiers.size() + (qualifiers != null ? qualifiers.length : 0));
+        for (final Annotation a : newQualifiers)
+        {
+            types.add(a.annotationType());
+        }
+
+        boolean addsDefault = false;
         if (qualifiers != null && qualifiers.length > 0)
         {
             for (int i = 0; i < qualifiers.length; i++)
             {
                 newQualifiers.add(qualifiers[i]);
+                final Class<? extends Annotation> type = qualifiers[i].annotationType();
+                if (type == Default.class)
+                {
+                    addsDefault = true;
+                }
+                else if (!types.add(type))
+                {
+                    throw new IllegalArgumentException("Duplicated qualifier " + qualifiers[i].annotationType());
+                }
             }
+        }
+
+        if (!addsDefault && !types.contains(New.class)) // easy way to ensure @New will not resolve, not yet perfect though
+        {
+            newQualifiers.remove(DefaultLiteral.INSTANCE);
         }
 
         Annotation[] newQualifiersArray = new Annotation[newQualifiers.size()];

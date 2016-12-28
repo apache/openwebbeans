@@ -21,11 +21,19 @@ package org.apache.webbeans.container;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
+import javax.enterprise.util.AnnotationLiteral;
+import javax.inject.Qualifier;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class OwbCDIProviderTest extends AbstractUnitTest
 {
@@ -38,5 +46,49 @@ public class OwbCDIProviderTest extends AbstractUnitTest
         assertFalse(CDI.current().isUnsatisfied());
         assertFalse(CDI.current().isAmbiguous());
         assertNotNull(CDI.current().get());
+    }
+
+    @Test
+    public void select()
+    {
+        startContainer(ABean.class);
+        final Instance<ABean> select = CDI.current().select(ABean.class);
+        assertFalse(select.isAmbiguous());
+        assertFalse(select.isUnsatisfied());
+        final ABean bean = select.get();
+        assertNotNull(bean);
+    }
+
+    @Test
+    public void selectQualifier()
+    {
+        startContainer(QualifiedBean.class, Qual.class);
+        final Instance<QualifiedBean> select = CDI.current()
+                .select(QualifiedBean.class, new Annotation[0])
+                .select(new AnnotationLiteral<Qual>()
+                {
+                });
+        assertFalse(select.isAmbiguous());
+        assertFalse(select.isUnsatisfied());
+        final QualifiedBean bean = select.get();
+        assertNotNull(bean);
+    }
+
+    @ApplicationScoped
+    public static class ABean
+    {
+    }
+
+    @Target(TYPE)
+    @Retention(RUNTIME)
+    @Qualifier
+    public @interface Qual
+    {
+    }
+
+    @Qual
+    @ApplicationScoped
+    public static class QualifiedBean
+    {
     }
 }
