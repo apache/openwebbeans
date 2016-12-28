@@ -1302,6 +1302,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             return;
         }
 
+        if (id == null)
+        {
+            id = extension.getClass().getName() + annotatedType + AnnotatedElementFactory.OWB_DEFAULT_KEY;
+        }
+        
         webBeansContext.getAnnotatedElementFactory().setAnnotatedType(annotatedType, id);
         ConcurrentMap<String, AnnotatedType<?>> annotatedTypes = additionalAnnotatedTypes.get(annotatedType.getJavaClass());
         if (annotatedTypes == null)
