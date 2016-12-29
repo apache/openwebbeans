@@ -21,7 +21,6 @@ package org.apache.webbeans.component.third;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.component.BeanAttributesImpl;
 
-import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.BeanAttributes;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
@@ -31,7 +30,8 @@ import java.util.Set;
 class ThirdpartyBeanAttributesImpl<T> extends BeanAttributesImpl<T>
 {
     private final Set<Annotation> qualifiers;
-    ThirdpartyBeanAttributesImpl(BeanAttributes<T> beanAttributes)
+
+    ThirdpartyBeanAttributesImpl(final BeanAttributes<T> beanAttributes)
     {
         super(beanAttributes, false);
         this.qualifiers = calculateQualifiers(beanAttributes);
@@ -43,24 +43,17 @@ class ThirdpartyBeanAttributesImpl<T> extends BeanAttributesImpl<T>
         return qualifiers;
     }
 
-    private Set<Annotation> calculateQualifiers(BeanAttributes<T> beanAttributes)
+    private Set<Annotation> calculateQualifiers(final BeanAttributes<T> beanAttributes)
     {
         final Set<Annotation> originalQualifiers = beanAttributes.getQualifiers() == null ?
                 Collections.<Annotation>emptySet() : beanAttributes.getQualifiers();
+        if (originalQualifiers.contains(AnyLiteral.INSTANCE))
+        {
+            return originalQualifiers;
+        }
+
         final Set<Annotation> newQualifiers = new HashSet<>(originalQualifiers);
-        boolean foundAny = false;
-        for(Annotation a : originalQualifiers)
-        {
-            if(a instanceof Any)
-            {
-                foundAny = true;
-                break;
-            }
-        }
-        if(!foundAny)
-        {
-            newQualifiers.add(AnyLiteral.INSTANCE);
-        }
+        newQualifiers.add(AnyLiteral.INSTANCE);
         return newQualifiers;
     }
 }
