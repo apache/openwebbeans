@@ -20,10 +20,10 @@ package org.apache.webbeans.component.third;
 
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.component.BeanAttributesImpl;
+import org.apache.webbeans.util.SingleItemSet;
 
 import javax.enterprise.inject.spi.BeanAttributes;
 import java.lang.annotation.Annotation;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,15 +45,21 @@ class ThirdpartyBeanAttributesImpl<T> extends BeanAttributesImpl<T>
 
     private Set<Annotation> calculateQualifiers(final BeanAttributes<T> beanAttributes)
     {
-        final Set<Annotation> originalQualifiers = beanAttributes.getQualifiers() == null ?
-                Collections.<Annotation>emptySet() : beanAttributes.getQualifiers();
-        if (originalQualifiers.contains(AnyLiteral.INSTANCE))
+        Set<Annotation> originalQualifiers = beanAttributes.getQualifiers();
+        if (originalQualifiers != null && originalQualifiers.contains(AnyLiteral.INSTANCE))
         {
             return originalQualifiers;
         }
 
-        final Set<Annotation> newQualifiers = new HashSet<>(originalQualifiers);
-        newQualifiers.add(AnyLiteral.INSTANCE);
-        return newQualifiers;
+        if (originalQualifiers != null)
+        {
+            Set<Annotation> newQualifiers = new HashSet<>(originalQualifiers);
+            newQualifiers.add(AnyLiteral.INSTANCE);
+            return newQualifiers;
+        }
+        else
+        {
+            return new SingleItemSet<Annotation>(AnyLiteral.INSTANCE);
+        }
     }
 }
