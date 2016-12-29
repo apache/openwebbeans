@@ -27,7 +27,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -40,7 +39,7 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
     {
         super(webBeansContext,
               WebBeansType.THIRDPARTY,
-              new BeanAttributesImpl<T>(bean, false),
+              new ThirdpartyBeanAttributesImpl<>(bean),
               bean.getBeanClass(),
               bean.isNullable());
         
