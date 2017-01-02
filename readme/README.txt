@@ -1,12 +1,12 @@
 -------------------------------
-Apache OpenWebBeans 1.6.3
+Apache OpenWebBeans 1.7.1
 -------------------------------
 Welcome!
 
 Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.6.3 release of Apache OpenWebBeans.
+This document is based on the 1.7.1 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -23,10 +23,10 @@ http://openwebbeans.apache.org
 
 
 --------------------------------
-OpenWebBeans 1.7.0 Release Features
+OpenWebBeans 1.7.1 Release Features
 --------------------------------
 
-- The 1.7.0 release supports the following features
+- The 1.7.1 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -60,6 +60,36 @@ only effective for this very bean archive but for the whole BeanManager in contr
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.7.1
+-------------------------------------------
+
+Bug
+
+    [OWB-1150] - OSGI bundle version ranges too restrictive
+    [OWB-1154] - Synchronization on a string literal
+    [OWB-1157] - when user does a getReference of a programmatically registered bean without looking it up it can lead to multiple bean handling
+    [OWB-1158] - Web lifecycle not registering Servlet Context as bean
+    [OWB-1159] - HttpServletRequest not available
+    [OWB-1160] - DefaultArchiveService migh mix up BDA urls if the containing folder is also a cp entry
+    [OWB-1162] - CDI.current().select(X.class).select(SomeQualifier.LITERAL) doesn't work
+    [OWB-1163] - NPE in BeforeBeanDiscovery#addAnnotatedType if id is null
+    [OWB-1164] - Third Party Beans do not include Any qualifier if not included in bean impl
+
+Improvement
+
+    [OWB-1151] - extend our default scan-excludes
+    [OWB-1152] - Improve compatibility and handling with Java9
+    [OWB-1153] - improve tomcat-plugin performance
+    [OWB-1156] - implement support for <trim/> feature of CDI-2.0
+
+Task
+
+    [OWB-1090] - remove jsf12 module for owb-2.0
+
+
 
 
 -------------------------------------------
