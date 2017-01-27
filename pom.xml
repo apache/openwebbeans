@@ -56,13 +56,6 @@
         <url>http://issues.apache.org/jira/browse/OWB</url>
     </issueManagement>
 
-    <distributionManagement>
-        <site>
-            <id>apache.openwebbeans.site</id>
-            <url>scp://minotaur.apache.org/www/openwebbeans.apache.org/${project.version}</url>
-        </site>
-    </distributionManagement>
-
     <properties>
         <geronimo_jaxws.version>1.0</geronimo_jaxws.version>
         <geronimo_servlet.version>1.0</geronimo_servlet.version>
@@ -229,13 +222,31 @@
             <email>arne at apache dot org</email>
             <timezone>+1</timezone>
             <roles>
-                <role>committer</role>
+                <role>PMC</role>
             </roles>
         </developer>
         <developer>
             <id>tandraschko</id>
             <name>Thomas Andraschko</name>
             <email>tandraschko at apache dot org</email>
+            <timezone>+1</timezone>
+            <roles>
+                <role>PMC</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>rmannibucau</id>
+            <name>Romain Manni-Bucau</name>
+            <email>rmannibucau at apache dot org</email>
+            <timezone>+1</timezone>
+            <roles>
+                <role>PMC</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>rsandtner</id>
+            <name>Reinhard Sandtner</name>
+            <email>rsandtner at apache dot org</email>
             <timezone>+1</timezone>
             <roles>
                 <role>committer</role>
