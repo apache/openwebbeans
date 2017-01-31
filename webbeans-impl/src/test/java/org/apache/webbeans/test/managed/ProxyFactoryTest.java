@@ -22,21 +22,28 @@ package org.apache.webbeans.test.managed;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.proxy.NormalScopeProxyFactory;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.managed.multipleinterfaces.MyEntityServiceImpl;
 import org.junit.Test;
 
-public class ProxyFactoryTest extends AbstractUnitTest {
+public class ProxyFactoryTest extends AbstractUnitTest
+{
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testProxyFactoryWithMultipleInterfaces() {
+    public void testProxyFactoryWithMultipleInterfaces()
+    {
         Collection<String> beanXmls = new ArrayList<String>();
 
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
@@ -55,6 +62,62 @@ public class ProxyFactoryTest extends AbstractUnitTest {
         Object reference = getBeanManager().getReference(bean, MyEntityServiceImpl.class, ctx);
         Assert.assertNotNull(reference);
         
+        shutDownContainer();
+    }
+
+    @Test
+    public void threadSafe() throws Throwable
+    {
+        Collection<String> beanXmls = new ArrayList<>();
+
+        Collection<Class<?>> beanClasses = new ArrayList<>();
+        beanClasses.add(MyEntityServiceImpl.class);
+
+        startContainer(beanClasses, beanXmls);
+
+        final AtomicReference<Throwable> failed = new AtomicReference<>();
+        final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        final NormalScopeProxyFactory normalScopeProxyFactory = WebBeansContext.currentInstance().getNormalScopeProxyFactory();
+        final Thread[] concurrentRequests = new Thread[16];
+        final CountDownLatch starter = new CountDownLatch(1);
+        for (int i = 0; i < concurrentRequests.length; i++)
+        {
+            final int idx = i;
+            concurrentRequests[i] = new Thread()
+            {
+                {
+                    setName(getClass().getName() + ".threadSafe-#" + (idx + 1));
+                }
+
+                @Override
+                public void run()
+                {
+                    try
+                    {
+                        starter.await();
+                        normalScopeProxyFactory.createProxyClass(loader, MyEntityServiceImpl.class);
+                    }
+                    catch (final Throwable t)
+                    {
+                        failed.compareAndSet(null, t);
+                    }
+                }
+            };
+        }
+
+        for (final Thread t : concurrentRequests)
+        {
+            t.start();
+        }
+        starter.countDown();
+        for (final Thread t : concurrentRequests)
+        {
+            t.join(TimeUnit.MINUTES.toMillis(1));
+        }
+        if (failed.get() != null) {
+            throw failed.get();
+        }
+
         shutDownContainer();
     }
 }

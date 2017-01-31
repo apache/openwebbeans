@@ -353,8 +353,22 @@ public abstract class AbstractProxyFactory
         {
             Class<T> definedClass = (Class<T>) defineClassMethod.invoke(classLoader, proxyName, proxyBytes, 0, proxyBytes.length);
 
-            Class<T> loadedClass = (Class<T>) Class.forName(definedClass.getName(), true, classLoader);
-            return loadedClass;
+            return (Class<T>) Class.forName(definedClass.getName(), true, classLoader);
+        }
+        catch (InvocationTargetException le) // if concurrent calls are done then ensure to just reload the created one
+        {
+            if (LinkageError.class.isInstance(le.getCause()))
+            {
+                try
+                {
+                    return (Class<T>) Class.forName(proxyName.replace('/', '.'), true, classLoader);
+                }
+                catch (ClassNotFoundException e)
+                {
+                    // default error handling
+                }
+            }
+            throw new ProxyGenerationException(le.getCause());
         }
         catch (Throwable e)
         {
