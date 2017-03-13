@@ -21,8 +21,11 @@ package org.apache.webbeans.arquillian.standalone;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.ArchivePaths;
+import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.Node;
+import org.jboss.shrinkwrap.api.asset.ArchiveAsset;
 import org.jboss.shrinkwrap.api.asset.Asset;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 import java.io.Closeable;
@@ -38,7 +41,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class OwbSWClassLoader extends URLClassLoader implements Closeable
 {
@@ -128,12 +134,12 @@ public class OwbSWClassLoader extends URLClassLoader implements Closeable
     @Override
     public URL findResource(final String name)
     {
-        final Node node = findNode(name);
-        if (node != null)
+        Set<String> nodes = findNodes(archive, name);
+        if (!nodes.isEmpty())
         {
             try
             {
-                return new URL(null, "archive:" + archive.getName() + "/" + name, new ArchiveStreamHandler());
+                return new URL(null, "archive:" + nodes.iterator().next());
             }
             catch (final MalformedURLException e)
             {
@@ -150,31 +156,65 @@ public class OwbSWClassLoader extends URLClassLoader implements Closeable
     @Override
     public Enumeration<URL> findResources(final String name) throws IOException
     {
-        final Node node = findNode(name);
-        if (node != null)
+        final Set<String> nodes = findNodes(archive, name);
+        List<URL> urls = new ArrayList<>(nodes.size());
+        for (String node : nodes)
         {
-            return Collections.enumeration(Collections.singleton(new URL(null, "archive:" + archive.getName() + "/" + name, new ArchiveStreamHandler())));
-        }
-        if (useOnlyArchiveResources)
-        {
-            return EMPTY_ENUMERATION;
+            urls.add(new URL(null, "archive:" + node, new ArchiveStreamHandler()));
         }
 
-        return super.findResources(name);
+        if (!useOnlyArchiveResources)
+        {
+            Enumeration<URL> parentResources = getParent().getResources(name);
+            while (parentResources.hasMoreElements())
+            {
+                urls.add(parentResources.nextElement());
+            }
+        }
+
+        return Collections.enumeration(urls);
     }
 
-    private Node findNode(final String name)
+    private Set<String> findNodes(Archive arch, final String name)
     {
-        ArchivePath path = ArchivePaths.create(path(prefix, name));
-        Node node = archive.get(path);
-        if (node == null)
+        Set<String> nodes = new HashSet<>();
+
+        if (arch instanceof WebArchive)
         {
-            path = ArchivePaths.create(name);
-            node = archive.get(path);
+            // first check WEB-INF/classes
+            ArchivePath path = ArchivePaths.create(path(prefix, name));
+            Node node = arch.get(path);
+            if (node != null)
+            {
+                nodes.add(path.get());
+            }
 
+            Map<ArchivePath, Node> jarLibs = ((WebArchive) arch).getContent(Filters.include("/WEB-INF/lib/.*\\.jar"));
+            for (Node jarLib : jarLibs.values())
+            {
+                if (jarLib.getAsset() instanceof ArchiveAsset && ((ArchiveAsset) jarLib.getAsset()).getArchive() instanceof JavaArchive)
+                {
+                    Set<String> jarNodes = findNodes(((ArchiveAsset) jarLib.getAsset()).getArchive(), name);
+                    for (String jarNode : jarNodes)
+                    {
+                        path = ArchivePaths.create(path("WEB-INF/lib", ((ArchiveAsset) jarLib.getAsset()).getArchive().getName(), jarNode));
+                        nodes.add(path.get());
+                    }
 
+                }
+            }
         }
-        return node;
+        else
+        {
+            ArchivePath path = ArchivePaths.create(name);
+            Node node = arch.get(path);
+            if (node != null)
+            {
+                nodes.add(path.get());
+            }
+        }
+
+        return nodes;
     }
 
     private String path(final String... parts)
