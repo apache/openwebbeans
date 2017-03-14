@@ -19,6 +19,7 @@
 package org.apache.webbeans.inject.impl;
 
 import java.io.IOException;
+import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -39,6 +40,7 @@ import javax.decorator.Delegate;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -46,6 +48,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.util.Asserts;
@@ -173,17 +176,33 @@ class InjectionPointImpl implements InjectionPoint, Serializable
     {
         ObjectOutputStream out = new ObjectOutputStream(op);
 
-        //Write the owning bean class
-        out.writeObject(ownerBean.getBeanClass());
 
-        Set<Annotation> qualifiers = ownerBean.getQualifiers();
-        for(Annotation qualifier : qualifiers)
+        if (ownerBean != null)
         {
-            out.writeObject(Character.valueOf('-')); // throw-away delimiter so alternating annotations don't get swallowed in the read.
-            out.writeObject(qualifier);
-            
+            //Write the owning bean class
+            out.writeObject(ownerBean.getBeanClass());
+
+            // and it's Qualifiers
+            Set<Annotation> qualifiers = ownerBean.getQualifiers();
+            for (Annotation qualifier : qualifiers)
+            {
+                out.writeObject(Character.valueOf('-')); // throw-away delimiter so alternating annotations don't get swallowed in the read.
+                out.writeObject(qualifier);
+            }
         }
-        
+        else
+        {
+            if (annotated instanceof AnnotatedMember)
+            {
+                Class<?> beanClass = ((AnnotatedMember) annotated).getDeclaringType().getJavaClass();
+                out.writeObject(beanClass);
+            }
+            else
+            {
+                throw new NotSerializableException("Cannot detect bean class of InjetionPoint");
+            }
+        }
+
         out.writeObject(Character.valueOf('~'));
         
         if(injectionMember instanceof Field)
@@ -202,7 +221,6 @@ class InjectionPointImpl implements InjectionPoint, Serializable
             
             AnnotatedParameter<?> ap = (AnnotatedParameter<?>) annotated;
             out.writeByte(ap.getPosition());
-            
         }
         
         if(injectionMember instanceof Constructor)
@@ -214,7 +232,6 @@ class InjectionPointImpl implements InjectionPoint, Serializable
             
             AnnotatedParameter<?> ap = (AnnotatedParameter<?>) annotated;
             out.writeByte(ap.getPosition());
-            
         }
         
         out.writeBoolean(delegate);
@@ -230,7 +247,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         ObjectInputStream in = new OwbCustomObjectInputStream(inp, WebBeansUtil.getCurrentClassLoader());
 
         Class<?> beanClass = (Class<?>)in.readObject();
-        Set<Annotation> anns = new HashSet<Annotation>();
+        Set<Annotation> anns = new HashSet<>();
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
         AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
 
@@ -241,9 +258,14 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         }
         
         //process annotations
-        ownerBean = webBeansContext.getBeanManagerImpl().getBeans(beanClass, anns.toArray(new Annotation[anns.size()])).iterator().next();
-        qualifierAnnotations = anns;
-        
+        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
+        Set<Bean<?>> beans = beanManager.getBeans(beanClass, anns.toArray(new Annotation[anns.size()]));
+        ownerBean = beanManager.resolve(beans);
+        if (ownerBean != null)
+        {
+            qualifierAnnotations = anns;
+        }
+
         // determine type of injection point member (0=field, 1=method, 2=constructor) and read...
         int c = in.readByte();
         if(c == 0)
@@ -256,7 +278,6 @@ class InjectionPointImpl implements InjectionPoint, Serializable
             AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(beanClass);
             annotated = annotatedElementFactory.newAnnotatedField(field, annotatedType);
             injectionType = field.getGenericType();
-            
         }
         else if(c == 1)
         {
@@ -273,7 +294,6 @@ class InjectionPointImpl implements InjectionPoint, Serializable
 
             annotated = annParameters.get(in.readByte());
             injectionType = annotated.getBaseType();
-            
         }
         else if(c == 2)
         {
@@ -299,7 +319,6 @@ class InjectionPointImpl implements InjectionPoint, Serializable
 
         delegate = in.readBoolean();
         transientt = in.readBoolean();
-         
     }
 
 
@@ -315,7 +334,6 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         {
             Method method = (Method) injectionMember;
             buffer.append("Method Injection Point, method name :  ").append(method.getName()).append(", Bean Owner : [").append(ownerBean).append("]");
-            
         }
         else if(injectionMember instanceof Field)
         {

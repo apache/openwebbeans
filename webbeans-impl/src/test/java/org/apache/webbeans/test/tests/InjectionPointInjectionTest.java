@@ -29,11 +29,12 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
 
-import junit.framework.Assert;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.injection.injectionpoint.beans.AbstractInjectionPointOwner;
@@ -46,6 +47,9 @@ import org.apache.webbeans.test.injection.injectionpoint.beans.InjectionPointOwn
 import org.apache.webbeans.test.injection.injectionpoint.beans.MethodInjectionPointOwner;
 import org.apache.webbeans.test.injection.injectionpoint.beans.ProducerInjectionPointInstanceOwner;
 import org.apache.webbeans.test.injection.injectionpoint.beans.ProducerMethodInjectionPointOwner;
+import org.apache.webbeans.test.injection.injectionpoint.beans.UnmanagedClassWithInjectionPoints;
+import org.apache.webbeans.test.util.Serializations;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class InjectionPointInjectionTest extends AbstractUnitTest {
@@ -154,6 +158,28 @@ public class InjectionPointInjectionTest extends AbstractUnitTest {
         Assert.assertNotNull(owner.getConstructorInjectionPointOwner());
         Assert.assertNotNull(owner.getConstructorInjectionPointOwner().getInjectionPoint());
         Assert.assertNotNull(owner.getConstructorInjectionPointOwner().getName());
+    }
+
+    @Test
+    public void testManualCreateInjectionTargetWithInjectionPointsSerialisation() throws Exception
+    {
+        startContainer(FieldInjectionPointOwner.class);
+        AnnotatedType<UnmanagedClassWithInjectionPoints> at = getBeanManager().createAnnotatedType(UnmanagedClassWithInjectionPoints.class);
+        InjectionTarget<UnmanagedClassWithInjectionPoints> injectionTarget = getBeanManager().createInjectionTarget(at);
+
+        UnmanagedClassWithInjectionPoints instance = new UnmanagedClassWithInjectionPoints();
+        Assert.assertNull(instance.getSomeField());
+
+        CreationalContext cc = getBeanManager().createCreationalContext(null);
+        injectionTarget.inject(instance, cc);
+
+        Assert.assertNotNull(instance.getSomeField());
+        Assert.assertNotNull(instance.getSomeField().getInjectionPoint());
+
+        byte[] bytes = Serializations.serialize(instance);
+        Assert.assertNotNull(bytes);
+        UnmanagedClassWithInjectionPoints instance2 = (UnmanagedClassWithInjectionPoints) Serializations.deserialize(bytes);
+        Assert.assertNotNull(instance2);
     }
 
     @Dependent

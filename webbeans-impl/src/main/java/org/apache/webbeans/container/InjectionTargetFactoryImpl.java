@@ -33,7 +33,6 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -73,12 +72,7 @@ public class InjectionTargetFactoryImpl<T> implements InjectionTargetFactory<T>
 
     public Set<InjectionPoint> createInjectionPoints(Bean<T> bean)
     {
-        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
-        for (InjectionPoint injectionPoint: webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType))
-        {
-            injectionPoints.add(injectionPoint);
-        }
-        return injectionPoints;
+        return webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, annotatedType);
     }
 
     public AnnotatedType<T> getAnnotatedType()

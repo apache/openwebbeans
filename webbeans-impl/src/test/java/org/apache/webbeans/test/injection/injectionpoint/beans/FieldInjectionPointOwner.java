@@ -18,8 +18,10 @@ package org.apache.webbeans.test.injection.injectionpoint.beans;
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
+import java.io.Serializable;
 
-public class FieldInjectionPointOwner extends AbstractInjectionPointOwner {
+public class FieldInjectionPointOwner extends AbstractInjectionPointOwner implements Serializable
+{
 
     @Inject
     private InjectionPoint ip;
