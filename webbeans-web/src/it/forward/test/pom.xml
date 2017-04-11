@@ -19,16 +19,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.openwebbeans</groupId>
-        <artifactId>openwebbeans</artifactId>
+        <groupId>org.apache.openwebbeans.it</groupId>
+        <artifactId>openwebbeans-web-it-forward</artifactId>
         <version>@project.version@</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.openwebbeans.it</groupId>
-    <artifactId>openwebbeans-web-it-webcdiapp</artifactId>
-    <packaging>war</packaging>
-
-    <name>Webbeans Web IT</name>
+    <artifactId>openwebbeans-web-it-forward-test</artifactId>
+    <packaging>jar</packaging>
 
     <!--
         For locally debugging this integration test you need to first build the module.
@@ -45,42 +44,25 @@
     <dependencies>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.apache.openwebbeans.it</groupId>
+            <artifactId>openwebbeans-web-it-forward-a</artifactId>
+            <version>@project.version@</version>
+            <type>war</type>
+            <scope>provided</scope>
         </dependency>
-
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jcdi_1.1_spec</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-atinject_1.0_spec</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-interceptor_1.2_spec</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-servlet_3.0_spec</artifactId>
+            <groupId>org.apache.openwebbeans.it</groupId>
+            <artifactId>openwebbeans-web-it-forward-b</artifactId>
+            <version>@project.version@</version>
+            <type>war</type>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-web</artifactId>
-            <version>${project.version}</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>jstl</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.2</version>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -93,8 +75,6 @@
 
 
     <build>
-        <finalName>webbeanswebCdiApp</finalName>
-
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -239,6 +219,25 @@
                     <path>/${project.build.finalName}</path>
                     <port>${tomcat.port.it}</port>
                     <fork>${tomcat.fork}</fork> <!-- true is needed for IT, but if we want to debug it we do not want to fork -->
+                    <webapps>
+                        <webapp>
+                            <groupId>org.apache.openwebbeans.it</groupId>
+                            <artifactId>openwebbeans-web-it-forward-a</artifactId>
+                            <version>@project.version@</version>
+                            <type>war</type>
+                            <asWebapp>true</asWebapp>
+                            <contextPath>/a</contextPath>
+                        </webapp>
+                        <webapp>
+                            <groupId>org.apache.openwebbeans.it</groupId>
+                            <artifactId>openwebbeans-web-it-forward-b</artifactId>
+                            <version>@project.version@</version>
+                            <type>war</type>
+                            <asWebapp>true</asWebapp>
+                            <contextPath>/b</contextPath>
+                        </webapp>
+                    </webapps>
+                    <contextFile>src/main/tomcat/context.xml</contextFile>
                 </configuration>
                 <executions>
                     <execution>

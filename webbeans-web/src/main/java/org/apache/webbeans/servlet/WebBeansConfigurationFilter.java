@@ -66,6 +66,7 @@ public class WebBeansConfigurationFilter implements Filter
     private WebBeansContext webBeansContext;
     private ServletContext servletContext;
     private WebContextsService webContextsService;
+    private boolean startOwb;
 
     /**
      * Default constructor
@@ -83,18 +84,24 @@ public class WebBeansConfigurationFilter implements Filter
     public void init(FilterConfig filterConfig) throws ServletException
     {
         this.lifeCycle = webBeansContext.getService(ContainerLifecycle.class);
+        this.servletContext = filterConfig.getServletContext();
 
-        try
+        String startOwbCfg = filterConfig.getInitParameter("startOwb");
+        startOwb = startOwbCfg == null || "true".equalsIgnoreCase(startOwbCfg);
+        if (startOwb)
         {
-            this.servletContext = filterConfig.getServletContext();
-            this.lifeCycle.startApplication(new ServletContextEvent(this.servletContext));
 
-        }
-        catch (Exception e)
-        {
-             logger.log(Level.SEVERE,
-                     WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0018, ServletCompatibilityUtil.getServletInfo(servletContext)));
-             WebBeansUtil.throwRuntimeExceptions(e);
+            try
+            {
+                this.lifeCycle.startApplication(new ServletContextEvent(this.servletContext));
+
+            }
+            catch (Exception e)
+            {
+                logger.log(Level.SEVERE,
+                    WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0018, ServletCompatibilityUtil.getServletInfo(servletContext)));
+                WebBeansUtil.throwRuntimeExceptions(e);
+            }
         }
     }
 
@@ -193,12 +200,15 @@ public class WebBeansConfigurationFilter implements Filter
     @Override
     public void destroy()
     {
-        this.lifeCycle.stopApplication(new ServletContextEvent(this.servletContext));
-        this.lifeCycle = null;
-        this.servletContext = null;
+        if (startOwb)
+        {
+            this.lifeCycle.stopApplication(new ServletContextEvent(this.servletContext));
+            this.lifeCycle = null;
+            this.servletContext = null;
 
-        // just to be sure that we didn't lazily create anything...
-        cleanupRequestThreadLocals();
+            // just to be sure that we didn't lazily create anything...
+            cleanupRequestThreadLocals();
+        }
     }
 
     /**

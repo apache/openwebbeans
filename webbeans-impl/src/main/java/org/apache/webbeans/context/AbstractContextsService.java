@@ -60,7 +60,6 @@ public abstract class AbstractContextsService implements ContextsService
     @Override
     public Context getCurrentContext(Class<? extends Annotation> scopeType)
     {
-        
         return null;
     }
 
