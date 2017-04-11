@@ -92,14 +92,14 @@ public class AbstractProducerBean<T> extends AbstractOwbBean<T> implements Passi
     /**
      * Check passivation check.
      */
-    protected void checkScopeType(String producerName)
+    protected void checkScopeType(String producerName, Object instance)
     {
         String errorMessage = "WebBeans producer : %s" +
-                              " return type in the component implementation class : %s" +
+                              " instance in the component implementation class : %s" +
                               " with passivating scope @%s" +
                               " must be Serializable";
         getWebBeansContext().getWebBeansUtil().checkSerializableScopeType(getScope(),
-                Serializable.class.isAssignableFrom(getReturnType()), errorMessage, producerName, getBeanClass().getName(),
+                Serializable.class.isInstance(instance), errorMessage, producerName, getBeanClass().getName(),
                 getScope().getName());
 
     }

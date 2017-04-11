@@ -97,7 +97,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         checkNullInstance(instance, creatorMethod.getName());
 
         // Check scope type
-        checkScopeType(creatorMethod.getName());
+        checkScopeType(creatorMethod.getName(), instance);
         return instance;
     }
 

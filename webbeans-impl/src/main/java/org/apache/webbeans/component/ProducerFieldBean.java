@@ -56,7 +56,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T>
         
         instance = super.create(creationalContext);
         checkNullInstance(instance, producerField.getName());
-        checkScopeType(producerField.getName());
+        checkScopeType(producerField.getName(), instance);
 
         return instance;
 
