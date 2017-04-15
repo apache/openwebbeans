@@ -44,7 +44,6 @@
             </pluginRepositories>
 
             <properties>
-                <openjpa.version>1.2.0</openjpa.version>
                 <hsqldb.version>1.8.0.8</hsqldb.version>
             </properties>
         </profile>
