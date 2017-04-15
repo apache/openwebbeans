@@ -42,15 +42,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-<!--
-            <dependency>
-                <groupId>org.jboss.arquillian</groupId>
-                <artifactId>arquillian-build</artifactId>
-                <version>${arquillian.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
--->
+
         </dependencies>
 
     </dependencyManagement>
@@ -79,7 +71,7 @@
         <dependency>
             <groupId>org.jboss.shrinkwrap</groupId>
             <artifactId>shrinkwrap-api</artifactId>
-            <version>1.2.2</version>
+            <version>1.2.6</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
