@@ -1,12 +1,12 @@
 -------------------------------
-Apache OpenWebBeans 1.7.1
+Apache OpenWebBeans 1.7.3
 -------------------------------
 Welcome!
 
 Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.7.1 release of Apache OpenWebBeans.
+This document is based on the 1.7.3 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -23,10 +23,10 @@ http://openwebbeans.apache.org
 
 
 --------------------------------
-OpenWebBeans 1.7.1 Release Features
+OpenWebBeans 1.7.3 Release Features
 --------------------------------
 
-- The 1.7.1 release supports the following features
+- The 1.7.3 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -60,6 +60,31 @@ only effective for this very bean archive but for the whole BeanManager in contr
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.7.3
+-------------------------------------------
+
+Bug
+
+    [OWB-1172] - getResources doesn't work in OWB Arquillian container for WebArchives
+    [OWB-1173] - InjectionPoint with no ownerBean fails on serialisation
+    [OWB-1175] - Duplicate registration of ServletContextBean
+    [OWB-1177] - producer should check runtime instance for Serializable constraint and not returned type
+
+Task
+
+    [OWB-1178] - Upgrade Arquillian to 1.1.13 and ShrinkWrap to 1.2.6
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.7.2
+-------------------------------------------
+
+Bug
+
+    [OWB-1170] - normal scoped proxy creation not thread safe
 
 
 -------------------------------------------
