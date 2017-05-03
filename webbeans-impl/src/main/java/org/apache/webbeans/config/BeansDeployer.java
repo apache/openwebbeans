@@ -142,16 +142,27 @@ public class BeansDeployer
     private static final Method GET_PACKAGE;
     static
     {
+        Method getPackage;
         try
         {
-            GET_PACKAGE = ClassLoader.class.getDeclaredMethod("getPackage", String.class);
-            GET_PACKAGE.setAccessible(true);
+            getPackage = ClassLoader.class.getDeclaredMethod("getDefinedPackage", String.class);
+            getPackage.setAccessible(true);
         }
         catch (final NoSuchMethodException e)
         {
-            throw new IllegalStateException(e);
+            try
+            {
+                getPackage = ClassLoader.class.getDeclaredMethod("getPackage", String.class);
+                getPackage.setAccessible(true);
+            }
+            catch (final NoSuchMethodException ex)
+            {
+                throw new IllegalStateException(ex);
+            }
         }
+        GET_PACKAGE = getPackage;
     }
+
 
     /**Deployment is started or not*/
     protected boolean deployed = false;
