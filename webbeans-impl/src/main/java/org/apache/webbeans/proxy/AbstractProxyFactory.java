@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -65,6 +66,7 @@ public abstract class AbstractProxyFactory
      */
     private Object unsafe = null;
     private Method unsafeAllocateInstance = null;
+    private Method unsafeDefineClass;
 
     private final int javaVersion;
 
@@ -343,15 +345,30 @@ public abstract class AbstractProxyFactory
             clazz = clazz.getSuperclass();
         } while (defineClassMethod == null && clazz != Object.class);
 
-        if (defineClassMethod == null)
+        if (defineClassMethod != null && !defineClassMethod.isAccessible())
         {
-            throw new ProxyGenerationException("could not find 'defineClass' method in the ClassLoader!");
+            try
+            {
+                defineClassMethod.setAccessible(true);
+            }
+            catch (RuntimeException re) // likely j9, let's use unsafe
+            {
+                defineClassMethod = null;
+            }
         }
 
-        defineClassMethod.setAccessible(true);
         try
         {
-            Class<T> definedClass = (Class<T>) defineClassMethod.invoke(classLoader, proxyName, proxyBytes, 0, proxyBytes.length);
+            final Class<T> definedClass;
+
+            if (defineClassMethod != null)
+            {
+                definedClass = (Class<T>) defineClassMethod.invoke(classLoader, proxyName, proxyBytes, 0, proxyBytes.length);
+            }
+            else
+            {
+                definedClass = (Class<T>) unsafeDefineClass.invoke(unsafe, proxyName, proxyBytes, 0, proxyBytes.length, classLoader, null);
+            }
 
             return (Class<T>) Class.forName(definedClass.getName(), true, classLoader);
         }
@@ -741,6 +758,22 @@ public abstract class AbstractProxyFactory
                     catch (Exception e)
                     {
                         throw new IllegalStateException("Cannot get sun.misc.Unsafe.allocateInstance", e);
+                    }
+                }
+            });
+            unsafeDefineClass = AccessController.doPrivileged(new PrivilegedAction<Method>()
+            {
+                @Override
+                public Method run()
+                {
+                    try
+                    {
+                        return unsafeClass.getDeclaredMethod("defineClass",
+                                String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new IllegalStateException("Cannot get Unsafe.defineClass", e);
                     }
                 }
             });
