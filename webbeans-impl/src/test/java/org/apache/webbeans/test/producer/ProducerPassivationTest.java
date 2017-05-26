@@ -23,7 +23,7 @@ import javax.enterprise.inject.spi.DefinitionException;
 import javax.inject.Inject;
 import java.io.Serializable;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 

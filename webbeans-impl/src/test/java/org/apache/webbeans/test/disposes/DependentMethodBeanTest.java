@@ -25,7 +25,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.disposes.beans.AppScopedBean;

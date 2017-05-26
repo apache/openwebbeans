@@ -29,7 +29,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * <p>This test performs a few tests to ensure correct handling of injecting

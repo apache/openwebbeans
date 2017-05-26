@@ -21,7 +21,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * Test that an Extension can send  any message to another Extension.

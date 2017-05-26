@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.disposes;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.disposes.beans.DisposeModel;
 import org.apache.webbeans.test.disposes.beans.DisposerMethodBean;

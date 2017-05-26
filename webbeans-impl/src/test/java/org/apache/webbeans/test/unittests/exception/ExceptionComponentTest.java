@@ -23,7 +23,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import java.util.Set;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.test.AbstractUnitTest;

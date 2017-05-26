@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.IllegalProductException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Test;

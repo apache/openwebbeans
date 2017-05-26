@@ -20,7 +20,7 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.DeploymentException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;

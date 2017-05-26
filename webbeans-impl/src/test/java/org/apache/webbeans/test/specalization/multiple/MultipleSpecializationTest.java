@@ -20,7 +20,7 @@ package org.apache.webbeans.test.specalization.multiple;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import javax.enterprise.inject.spi.DefinitionException;
 

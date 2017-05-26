@@ -24,7 +24,7 @@ import java.util.Collection;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.contexts.session.common.AppScopedBean;

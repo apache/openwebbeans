@@ -25,7 +25,7 @@ import java.util.Collection;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Before;

@@ -24,7 +24,7 @@ import java.util.Map;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.util.TypeLiteral;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean;

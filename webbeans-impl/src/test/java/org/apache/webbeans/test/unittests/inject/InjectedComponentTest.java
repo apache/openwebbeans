@@ -19,7 +19,7 @@
 package org.apache.webbeans.test.unittests.inject;
 
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.service.InjectedComponent;

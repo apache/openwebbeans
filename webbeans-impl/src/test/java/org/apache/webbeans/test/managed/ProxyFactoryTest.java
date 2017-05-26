@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;

@@ -23,7 +23,7 @@ import java.util.Collection;
 
 import javax.enterprise.inject.spi.Bean;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.profields.beans.stringproducer.StringProducerBean;

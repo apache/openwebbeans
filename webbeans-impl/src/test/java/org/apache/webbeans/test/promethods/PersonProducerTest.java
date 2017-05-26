@@ -26,7 +26,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.spi.Bean;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.test.AbstractUnitTest;

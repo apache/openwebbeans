@@ -30,7 +30,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.TypeLiteral;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 

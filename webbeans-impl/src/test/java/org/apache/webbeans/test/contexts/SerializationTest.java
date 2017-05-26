@@ -43,7 +43,7 @@ import org.apache.webbeans.test.component.event.normal.ComponentWithObserves2;
 import org.apache.webbeans.test.component.event.normal.TransactionalInterceptor;
 import org.apache.webbeans.util.WebBeansUtil;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 

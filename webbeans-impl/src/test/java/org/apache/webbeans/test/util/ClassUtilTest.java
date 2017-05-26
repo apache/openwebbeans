@@ -26,7 +26,7 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.test.util.differentPackage.MyOtherPackageSubClass;
 import org.junit.Test;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class ClassUtilTest {
 

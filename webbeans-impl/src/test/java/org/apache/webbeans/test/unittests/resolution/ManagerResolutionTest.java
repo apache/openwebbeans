@@ -20,7 +20,7 @@ package org.apache.webbeans.test.unittests.resolution;
 
 import javax.enterprise.inject.spi.BeanManager;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;

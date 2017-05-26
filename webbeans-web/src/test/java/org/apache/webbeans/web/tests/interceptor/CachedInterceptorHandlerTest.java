@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.web.tests.interceptor;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.interceptors.beans.ApplicationScopedBean;

@@ -23,7 +23,7 @@ import java.util.Collection;
 
 import javax.enterprise.inject.AmbiguousResolutionException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import javax.enterprise.inject.spi.DeploymentException;

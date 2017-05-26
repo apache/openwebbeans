@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.test.events.extensionevents;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 

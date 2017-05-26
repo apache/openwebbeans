@@ -27,7 +27,7 @@ import java.util.Set;
 
 import javax.enterprise.inject.spi.Decorator;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.test.AbstractUnitTest;

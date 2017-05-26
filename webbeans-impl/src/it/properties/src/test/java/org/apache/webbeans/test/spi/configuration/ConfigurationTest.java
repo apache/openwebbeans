@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.spi.configuration;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;

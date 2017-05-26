@@ -189,7 +189,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
                     Decorator decorator = decorators.get(i - 1);
                     creationalContextImpl.putContextual(decorator);
                     creationalContextImpl.putDelegate(delegate);
-                    Object decoratorInstance = decorator.create((CreationalContext) creationalContext);
+                    Object decoratorInstance = decorator.create(creationalContext);
                     instances.put(decorator, decoratorInstance);
                     delegate = proxyFactory.createProxyInstance(proxyClass, instance,
                             new DecoratorHandler(interceptorInfo, decorators, instances, i - 1, instance, passivationId));

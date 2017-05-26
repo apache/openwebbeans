@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.interceptors.business.tests;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.interceptors.business.common.TransactionalBaseBean;
 import org.apache.webbeans.test.interceptors.business.common.TransactionalChildBean;

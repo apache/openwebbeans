@@ -20,7 +20,7 @@ package org.apache.webbeans.jsf.test;
 
 import org.apache.webbeans.jsf.JSFUtil;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.TestCase;
 import org.junit.Test;
 

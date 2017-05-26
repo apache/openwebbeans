@@ -27,7 +27,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionTarget;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.test.AbstractUnitTest;

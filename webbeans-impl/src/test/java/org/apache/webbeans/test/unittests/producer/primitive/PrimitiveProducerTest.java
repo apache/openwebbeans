@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.producer.primitive;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.producer.primitive.PrimitiveConsumer;
@@ -34,7 +34,7 @@ public class PrimitiveProducerTest extends AbstractUnitTest
         
         PrimitiveConsumer consumer = getInstance("primitiveConsumer");
         
-        Assert.assertEquals(56.7f, consumer.getSalary());
+        Assert.assertEquals(56.7f, consumer.getSalary(), 0.01f);
     }
 }
 

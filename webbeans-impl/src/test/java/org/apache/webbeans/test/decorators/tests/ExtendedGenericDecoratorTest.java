@@ -26,7 +26,7 @@ import javax.enterprise.inject.Decorated;
 import javax.enterprise.inject.spi.Bean;
 import javax.inject.Inject;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Ignore;
 import org.junit.Test;

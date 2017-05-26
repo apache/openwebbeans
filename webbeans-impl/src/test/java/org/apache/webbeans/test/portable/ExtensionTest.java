@@ -24,7 +24,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.PassivationCapable;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;

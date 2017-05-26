@@ -65,6 +65,16 @@
                 </methods>
             </class>
 
+            <!-- https://issues.jboss.org/browse/CDITCK-577 -->
+            <class name="org.jboss.cdi.tck.tests.definition.bean.BeanDefinitionTest">
+                <methods>
+                    <exclude name="testRawBeanTypes"/>
+                </methods>
+            </class>
+
+            <!-- https://issues.jboss.org/browse/CDITCK-432 -->
+            <class name="org.jboss.cdi.tck.tests.decorators.builtin.event.complex.ComplexEventDecoratorTest"/>
+
 
 <!--
  Tests broken in the CDI-1.2 TCK:

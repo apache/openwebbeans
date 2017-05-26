@@ -36,7 +36,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.interceptor.Interceptor;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.annotation.binding.Binding1;

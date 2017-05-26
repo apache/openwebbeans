@@ -23,7 +23,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.spi.Bean;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.test.AbstractUnitTest;

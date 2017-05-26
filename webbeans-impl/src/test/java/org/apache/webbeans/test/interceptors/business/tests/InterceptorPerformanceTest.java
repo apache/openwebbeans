@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.interceptors.business.tests;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContextsService;

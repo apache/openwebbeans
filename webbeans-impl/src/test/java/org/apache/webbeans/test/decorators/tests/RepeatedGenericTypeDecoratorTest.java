@@ -23,7 +23,7 @@ import javax.decorator.Delegate;
 import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 

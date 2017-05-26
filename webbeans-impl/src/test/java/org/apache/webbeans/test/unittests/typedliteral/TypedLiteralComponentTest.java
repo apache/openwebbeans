@@ -26,7 +26,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.enterprise.util.TypeLiteral;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.AbstractUnitTest;

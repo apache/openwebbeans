@@ -21,7 +21,7 @@ package org.apache.webbeans.test.producer;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.test.AbstractUnitTest;

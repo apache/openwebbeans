@@ -22,7 +22,7 @@ import javax.enterprise.context.RequestScoped;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.interceptors.beans.ApplicationScopedBean;
 import org.apache.webbeans.test.interceptors.beans.DependentScopedBean;

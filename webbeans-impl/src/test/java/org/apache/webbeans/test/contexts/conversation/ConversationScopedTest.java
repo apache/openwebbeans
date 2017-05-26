@@ -20,7 +20,7 @@ package org.apache.webbeans.test.contexts.conversation;
 
 import javax.enterprise.context.RequestScoped;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;

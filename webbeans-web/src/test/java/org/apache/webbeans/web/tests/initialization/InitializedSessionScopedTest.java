@@ -23,7 +23,7 @@ import java.util.Collection;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.servlet.ServletRequestEvent;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.web.lifecycle.test.MockServletContext;
 import org.apache.webbeans.web.tests.MockHttpSession;

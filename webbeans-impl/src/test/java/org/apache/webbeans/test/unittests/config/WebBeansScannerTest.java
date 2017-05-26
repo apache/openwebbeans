@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
 import org.apache.webbeans.test.AbstractUnitTest;

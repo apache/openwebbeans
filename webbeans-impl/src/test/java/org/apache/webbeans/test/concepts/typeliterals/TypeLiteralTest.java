@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 
 import org.junit.Test;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.TestCase;
 
 public class TypeLiteralTest extends TestCase

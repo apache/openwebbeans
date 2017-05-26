@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.noncontextual;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;

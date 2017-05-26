@@ -20,7 +20,7 @@ package org.apache.webbeans.svtest.unittests.event.component;
 
 import javax.enterprise.util.AnnotationLiteral;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.test.AbstractUnitTest;

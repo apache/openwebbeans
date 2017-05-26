@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import javax.enterprise.util.AnnotationLiteral;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.concepts.alternatives.common.AlternativeOnClassAndProducerMethodBean;
