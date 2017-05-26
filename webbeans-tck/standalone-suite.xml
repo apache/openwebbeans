@@ -56,6 +56,16 @@
 
         <classes>
 
+            <!-- Tests broken in the CDI-2.0 TCK: -->
+
+            <!-- https://issues.jboss.org/projects/CDITCK/issues/CDITCK-576 -->
+            <class name="org.jboss.cdi.tck.tests.context.passivating.dependency.builtin.BuiltinBeanPassivationDependencyTest">
+                <methods>
+                    <exclude name="testInjectionPoint"/>
+                </methods>
+            </class>
+
+
 <!--
  Tests broken in the CDI-1.2 TCK:
 

@@ -184,11 +184,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
 
             // and it's Qualifiers
             Set<Annotation> qualifiers = ownerBean.getQualifiers();
-            for (Annotation qualifier : qualifiers)
-            {
-                out.writeObject(Character.valueOf('-')); // throw-away delimiter so alternating annotations don't get swallowed in the read.
-                out.writeObject(qualifier);
-            }
+            writeQualifiers(out, qualifiers);
         }
         else
         {
@@ -196,6 +192,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
             {
                 Class<?> beanClass = ((AnnotatedMember) annotated).getDeclaringType().getJavaClass();
                 out.writeObject(beanClass);
+                out.writeObject(Character.valueOf('~'));
             }
             else
             {
@@ -203,12 +200,12 @@ class InjectionPointImpl implements InjectionPoint, Serializable
             }
         }
 
-        out.writeObject(Character.valueOf('~'));
-        
+
         if(injectionMember instanceof Field)
         {
             out.writeByte(0);
             out.writeUTF(injectionMember.getName());
+            writeQualifiers(out, qualifierAnnotations);
         }
         
         if(injectionMember instanceof Method)
@@ -239,55 +236,49 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         out.flush();
         
     }
-    
+
     @SuppressWarnings("unchecked")
     private void readObject(java.io.ObjectInputStream inp) throws IOException, ClassNotFoundException
     {
 
         ObjectInputStream in = new OwbCustomObjectInputStream(inp, WebBeansUtil.getCurrentClassLoader());
 
-        Class<?> beanClass = (Class<?>)in.readObject();
-        Set<Annotation> anns = new HashSet<>();
+        Class<?> ownerBeanClass = (Class<?>)in.readObject();
+        Set<Annotation> ownerQualifiers = readQualifiers(in);
+
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
         AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
 
-        while(!in.readObject().equals('~'))   // read throw-away '-' or '~' terminal delimiter.
-        {
-            Annotation ann = (Annotation) in.readObject();  // now read the annotation.
-            anns.add(ann);
-        }
-        
         //process annotations
         BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
-        Set<Bean<?>> beans = beanManager.getBeans(beanClass, anns.toArray(new Annotation[anns.size()]));
+        Set<Bean<?>> beans = beanManager.getBeans(ownerBeanClass,
+                                                  ownerQualifiers.toArray(new Annotation[ownerQualifiers.size()]));
         ownerBean = beanManager.resolve(beans);
-        if (ownerBean != null)
-        {
-            qualifierAnnotations = anns;
-        }
 
         // determine type of injection point member (0=field, 1=method, 2=constructor) and read...
         int c = in.readByte();
         if(c == 0)
         {
             String fieldName = in.readUTF();
-            Field field = webBeansContext.getSecurityService().doPrivilegedGetDeclaredField(beanClass, fieldName);
+            Field field = webBeansContext.getSecurityService().doPrivilegedGetDeclaredField(ownerBeanClass, fieldName);
 
             injectionMember = field;
             
-            AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(beanClass);
+            AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(ownerBeanClass);
             annotated = annotatedElementFactory.newAnnotatedField(field, annotatedType);
             injectionType = field.getGenericType();
+
+            qualifierAnnotations = readQualifiers(in);
         }
         else if(c == 1)
         {
             String methodName = in.readUTF();
             Class<?>[] parameters = (Class<?>[])in.readObject();
             
-            Method method = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(beanClass, methodName, parameters);
+            Method method = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(ownerBeanClass, methodName, parameters);
             injectionMember = method;
             
-            AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(beanClass);
+            AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(ownerBeanClass);
             AnnotatedMethod<Object> am =  (AnnotatedMethod<Object>)annotatedElementFactory.
                                     newAnnotatedMethod((Method) injectionMember,annotatedType);
             List<AnnotatedParameter<Object>> annParameters = am.getParameters();
@@ -300,7 +291,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
             Class<?>[] parameters = (Class<?>[])in.readObject();            
             try
             {
-                injectionMember = beanClass.getConstructor(parameters);
+                injectionMember = ownerBeanClass.getConstructor(parameters);
 
             }
             catch(NoSuchMethodException e)
@@ -308,7 +299,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
                 injectionMember = null;
             }
 
-            AnnotatedType<Object> annotatedType = (AnnotatedType<Object>)annotatedElementFactory.newAnnotatedType(beanClass);
+            AnnotatedType<Object> annotatedType = (AnnotatedType<Object>)annotatedElementFactory.newAnnotatedType(ownerBeanClass);
             AnnotatedConstructor<Object> am =  annotatedElementFactory
                                             .newAnnotatedConstructor((Constructor<Object>) injectionMember,annotatedType);
             List<AnnotatedParameter<Object>> annParameters = am.getParameters();
@@ -321,6 +312,58 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         transientt = in.readBoolean();
     }
 
+    private void writeQualifiers(ObjectOutputStream out, Set<Annotation> qualifiers) throws IOException
+    {
+        for (Annotation qualifier : qualifiers)
+        {
+            out.writeObject(Character.valueOf('-')); // throw-away delimiter so alternating annotations don't get swallowed in the read.
+            out.writeObject(qualifier);
+        }
+
+        // terminate character
+        out.writeObject(Character.valueOf('~'));
+    }
+
+    private Set<Annotation> readQualifiers(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        Set<Annotation> qualifiers = new HashSet<>();
+        while(!in.readObject().equals('~'))   // read throw-away '-' or '~' terminal delimiter.
+        {
+            Annotation ann = (Annotation) in.readObject();  // now read the annotation.
+            qualifiers.add(ann);
+        }
+        return qualifiers;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        InjectionPointImpl that = (InjectionPointImpl) o;
+
+        if (transientt != that.transientt) return false;
+        if (delegate != that.delegate) return false;
+        if (!qualifierAnnotations.equals(that.qualifierAnnotations)) return false;
+        if (ownerBean != null ? !ownerBean.equals(that.ownerBean) : that.ownerBean != null) return false;
+        if (!injectionMember.equals(that.injectionMember)) return false;
+        if (!injectionType.equals(that.injectionType)) return false;
+        return annotated != null ? annotated.equals(that.annotated) : that.annotated == null;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = qualifierAnnotations.hashCode();
+        result = 31 * result + (ownerBean != null ? ownerBean.hashCode() : 0);
+        result = 31 * result + injectionMember.hashCode();
+        result = 31 * result + injectionType.hashCode();
+        result = 31 * result + (annotated != null ? annotated.hashCode() : 0);
+        result = 31 * result + (transientt ? 1 : 0);
+        result = 31 * result + (delegate ? 1 : 0);
+        return result;
+    }
 
     public String toString()
     {
