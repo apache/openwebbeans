@@ -335,36 +335,6 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         return qualifiers;
     }
 
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        InjectionPointImpl that = (InjectionPointImpl) o;
-
-        if (transientt != that.transientt) return false;
-        if (delegate != that.delegate) return false;
-        if (!qualifierAnnotations.equals(that.qualifierAnnotations)) return false;
-        if (ownerBean != null ? !ownerBean.equals(that.ownerBean) : that.ownerBean != null) return false;
-        if (!injectionMember.equals(that.injectionMember)) return false;
-        if (!injectionType.equals(that.injectionType)) return false;
-        return annotated != null ? annotated.equals(that.annotated) : that.annotated == null;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int result = qualifierAnnotations.hashCode();
-        result = 31 * result + (ownerBean != null ? ownerBean.hashCode() : 0);
-        result = 31 * result + injectionMember.hashCode();
-        result = 31 * result + injectionType.hashCode();
-        result = 31 * result + (annotated != null ? annotated.hashCode() : 0);
-        result = 31 * result + (transientt ? 1 : 0);
-        result = 31 * result + (delegate ? 1 : 0);
-        return result;
-    }
-
     public String toString()
     {
         StringBuilder buffer = new StringBuilder();
