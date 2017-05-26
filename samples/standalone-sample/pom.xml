@@ -56,7 +56,7 @@ under the License.
 
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jcdi_1.1_spec</artifactId>
+            <artifactId>geronimo-jcdi_2.0_spec</artifactId>
             <optional>true</optional>
         </dependency>
 
