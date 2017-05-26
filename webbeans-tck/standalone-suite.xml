@@ -44,12 +44,9 @@
 
         <packages>
             <package name="org.jboss.cdi.tck.tests.*">
-                <!-- CHALLENGED TCK TESTS: clarifying this in the EG -->
-                <exclude name="org.jboss.cdi.tck.tests.inheritance.specialization.simple"/>
 
-                <!-- CDITCK-432 -->
-                <exclude name="org.jboss.cdi.tck.tests.decorators.builtin.event.complex"/>
-
+                <!--X TODO OWB-1182 CDI 2.0 exlcuded for now - current focus on ee -->
+                <exclude name="org.jboss.cdi.tck.tests.se.*" />
             </package>
 
             <package name="org.jboss.cdi.tck.interceptors.tests.*"/>
@@ -58,130 +55,6 @@
 
 
         <classes>
-            <!-- Issues in the spec -->
-            <!-- CDI-437 -->
-            <class name="org.jboss.cdi.tck.tests.lookup.byname.ambiguous.broken.AmbiguousELNamesTest">
-                <methods>
-                    <exclude name=".*"/>
-                </methods>
-            </class>
-
-            <!-- Issues in the TCK -->
-            <!-- CDITCK-444 -->
-            <class name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.broken.invalid.InvalidStereotypeTest">
-                <methods>
-                    <exclude name=".*"/>
-                </methods>
-            </class>
-
-            <!-- CDITCK-418 -->
-            <class name="org.jboss.cdi.tck.interceptors.tests.contract.interceptorLifeCycle.environment.jndi.ejb.InterceptorEnvironmentJNDISessionBeanTest">
-                <methods>
-                    <exclude name=".*"/>
-                </methods>
-            </class>
-
-            <!-- CDITCK-417 -->
-            <class name="org.jboss.cdi.tck.tests.extensions.registration.BeanRegistrationByExtensionInEarLibraryTest">
-                <methods>
-                    <exclude name=".*"/>
-                </methods>
-            </class>
-
-            <!-- CDITCK-421 -->
-            <class name="org.jboss.cdi.tck.interceptors.tests.contract.aroundInvoke.AroundInvokeAccessInterceptorTest">
-                <methods>
-                    <exclude name=".*"/>
-                </methods>
-            </class>
-            
-            <!-- CDITCK-427 -->
-            <class name="org.jboss.cdi.tck.tests.lookup.circular.CircularDependencyTest">
-                <methods>
-                    <exclude name="testDependentProducerMethodDeclaredOnNormalBeanWhichInjectsProducedBean"/>
-                </methods>
-            </class>
-
-            <!-- CDITCK-428 -->
-            <class name="org.jboss.cdi.tck.interceptors.tests.contract.interceptorLifeCycle.InterceptorLifeCycleTest">
-                <methods>
-                    <exclude name="testInterceptorInstanceCreatedWhenTargetInstanceCreated"/>
-                </methods>
-            </class>
-
-            <class name="org.jboss.cdi.tck.interceptors.tests.contract.aroundTimeout.AroundTimeoutInterceptorTest">
-                <methods>
-                    <exclude name=".*"/>
-                </methods>
-            </class>
-
-            <!-- CDITCK-423 -->
-            <class name="org.jboss.cdi.tck.tests.implementation.enterprise.definition.remote.RemoteInterfaceNotInAPITypesTest">
-                <methods>
-                    <exclude name=".*"/>
-                </methods>
-            </class>
-            
-            <!-- CDITCK-437 -->
-            <class name="org.jboss.cdi.tck.tests.decorators.interceptor.DecoratorAndInterceptorTest">
-                <methods>
-                    <exclude name="testLifecycleCallbacks"/>
-                </methods>
-            </class>
-
-            <!-- CDITCK-449 -->
-            <class name="org.jboss.cdi.tck.tests.extensions.beanManager.beanAttributes.CreateBeanAttributesTest">
-                <methods>
-                    <exclude name="testBeanAttributesForManagedBeanWithModifiedAnnotatedType"/>
-                </methods>
-            </class>
-
-            <!-- CDITCK-466 -->
-            <class name="org.jboss.cdi.tck.tests.extensions.lifecycle.bbd.broken.passivatingScope.AddingPassivatingScopeTest">
-                <methods>
-                    <exclude name=".*"/>
-                </methods>
-            </class>
-
-            <!-- CDI-514 (issue got moved from original CDITC -->
-            <class name="org.jboss.cdi.tck.tests.event.fires.FireEventTest">
-                <methods>
-                    <exclude name="testDuplicateBindingsToFireEventFails"/>
-                </methods>
-            </class>
-            <class name="org.jboss.cdi.tck.tests.event.select.SelectEventTest">
-                <methods>
-                    <exclude name=".*DuplicateBindingType"/>
-                </methods>
-            </class>
-            <class name="org.jboss.cdi.tck.tests.event.resolve.binding.DuplicateBindingTypesWhenResolvingTest">
-                <methods>
-                    <exclude name=".*"/>
-                </methods>
-            </class>
-            <class name="org.jboss.cdi.tck.tests.lookup.dynamic.DynamicLookupTest">
-                <methods>
-                    <exclude name="testDuplicateBindingsThrowsException"/>
-                </methods>
-            </class>
-            <class name="org.jboss.cdi.tck.tests.extensions.bean.bytype.BeanByTypeTest">
-                <methods>
-                    <exclude name="testSameBindingTwice"/>
-                </methods>
-            </class>
-            <class name="org.jboss.cdi.tck.tests.interceptors.definition.InterceptorDefinitionTest">
-                <methods>
-                    <exclude name="testSameBindingTypesToResolveInterceptorsFails"/>
-                </methods>
-            </class>
-
-
-            <!-- CDI-517 -->
-            <class name="org.jboss.cdi.tck.tests.lookup.typesafe.resolution.parameterized.raw.RawBeanTypeParameterizedRequiredTypeTest">
-                <methods>
-                    <exclude name="testNotAssignableTypeParams"/>
-                </methods>
-            </class>
         </classes>
 
 
