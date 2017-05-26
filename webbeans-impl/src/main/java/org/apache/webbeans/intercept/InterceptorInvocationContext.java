@@ -60,7 +60,18 @@ public class InterceptorInvocationContext<T> extends AbstractInvocationContext<T
                 return proceed();
             }
 
-            return interceptor.intercept(type, instances.get(interceptor), this);
+            try
+            {
+                return interceptor.intercept(type, instances.get(interceptor), this);
+            }
+            catch (Exception e)
+            {
+                // restore the original location
+                // this allows for catching an Exception inside an Interceptor
+                // and then try to proceed with the interceptor chain again.
+                index--;
+                throw e;
+            }
         }
         else
         {
