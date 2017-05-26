@@ -42,8 +42,10 @@ import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.InjectionException;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.*;
@@ -339,6 +341,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return found;
     }
 
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public Instance<Object> createInstance()
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet implemented");
+    }
+
     /**
      * Add new bean to the BeanManager.
      * This will also set OWBs {@link #inUse} status.
@@ -452,6 +461,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public void fireEvent(Object event, Annotation... bindings)
     {
         fireEvent(event, false, bindings);
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public Event<Object> getEvent()
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
     public void fireEvent(Object event, boolean containerEvent, Annotation... bindings)
@@ -1173,6 +1189,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
     {
         return injectionResolver.resolve(beans, null);
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public <T> InterceptionFactory<T> createInterceptionFactory(CreationalContext<T> creationalContext, Class<T> clazz)
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet implemented");
     }
 
     /**

@@ -29,6 +29,8 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
+import javax.enterprise.inject.spi.configurator.BeanConfigurator;
+import javax.enterprise.inject.spi.configurator.ObserverMethodConfigurator;
 
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.OWBLogConst;
@@ -239,6 +241,20 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
             throw new IllegalStateException("Don't call AfterBeanDiscovery.getAnnotatedTypes(...) after the event is fired");
         }
         return beanManager.getAnnotatedTypes(type);
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public <T> BeanConfigurator<T> addBean()
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public <T> ObserverMethodConfigurator<T> addObserverMethod()
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
 }

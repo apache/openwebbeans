@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -132,6 +133,27 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
             throw new IllegalStateException("Only call container eevnt methods in their lifecycle");
         }
         beanManager.addAdditionalAnnotatedType(extension, annotatedType, id);
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public <T> AnnotatedTypeConfigurator<T> addAnnotatedType(Class<T> aClass, String s)
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public <T extends Annotation> AnnotatedTypeConfigurator<T> configureInterceptorBinding(Class<T> aClass)
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public <T extends Annotation> AnnotatedTypeConfigurator<T> configureQualifier(Class<T> aClass)
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
     /**

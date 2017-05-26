@@ -33,6 +33,8 @@ import javax.el.ExpressionFactory;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -46,6 +48,7 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InjectionTargetFactory;
+import javax.enterprise.inject.spi.InterceptionFactory;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
@@ -107,6 +110,13 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
         bm.fireEvent(event, qualifiers);
     }
 
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public Event<Object> getEvent()
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+    }
+
     @Override
     public Set<Bean<?>> getBeans(String name)
     {
@@ -127,6 +137,13 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
     public Context getContext(Class<? extends Annotation> scope)
     {
         return bm.getContext(scope);
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public Instance<Object> createInstance()
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
     @Override
@@ -213,6 +230,13 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
         checkAfterBeanDiscoveryProcessed("It's not allowed to call resolve(Set<Bean>) before AfterBeanDiscovery");
 
         return bm.resolve(beans);
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public <T> InterceptionFactory<T> createInterceptionFactory(CreationalContext<T> creationalContext, Class<T> aClass)
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
     @Override

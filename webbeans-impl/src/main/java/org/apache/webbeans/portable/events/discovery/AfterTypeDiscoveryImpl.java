@@ -20,6 +20,7 @@ package org.apache.webbeans.portable.events.discovery;
 
 import javax.enterprise.inject.spi.AfterTypeDiscovery;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 import java.util.List;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -78,6 +79,13 @@ public class AfterTypeDiscoveryImpl extends EventBase implements AfterTypeDiscov
         checkState();
         webBeansContext.getBeanManagerImpl().addAdditionalAnnotatedType(extension, type, id);
         newAt.add(type);
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public <T> AnnotatedTypeConfigurator<T> addAnnotatedType(Class<T> aClass, String s)
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
     @Override

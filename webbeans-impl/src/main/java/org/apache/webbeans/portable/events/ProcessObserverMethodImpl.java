@@ -21,6 +21,7 @@ package org.apache.webbeans.portable.events;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
+import javax.enterprise.inject.spi.configurator.ObserverMethodConfigurator;
 
 import org.apache.webbeans.config.WebBeansContext;
 
@@ -56,6 +57,13 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
     }
 
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public ObserverMethodConfigurator<T> configureObserverMethod()
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -74,6 +82,20 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
     {
         checkState();
         return observerMethod;
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public void setObserverMethod(ObserverMethod<T> observerMethod)
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public void veto()
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
 }

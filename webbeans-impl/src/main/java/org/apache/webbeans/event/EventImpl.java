@@ -23,8 +23,10 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.event.NotificationOptions;
 import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.util.TypeLiteral;
 
@@ -79,6 +81,20 @@ public class EventImpl<T> implements Event<T>, Serializable
         Type eventType = event.getClass();
         webBeansContext.getWebBeansUtil().validEventType(eventType.getClass(), metadata.getType());
         webBeansContext.getBeanManagerImpl().fireEvent(event, metadata.select(eventType), false);
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public <U extends T> CompletionStage<U> fireAsync(U u)
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public <U extends T> CompletionStage<U> fireAsync(U u, NotificationOptions notificationOptions)
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
     /**

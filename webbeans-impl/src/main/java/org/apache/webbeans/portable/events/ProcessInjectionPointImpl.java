@@ -22,6 +22,7 @@ import org.apache.webbeans.config.WebBeansContext;
 
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
+import javax.enterprise.inject.spi.configurator.InjectionPointConfigurator;
 
 /**
  * Fired for every {@link InjectionPoint} of every Java EE component class supporting injection,
@@ -70,5 +71,12 @@ public class ProcessInjectionPointImpl<T, X> extends EventBase implements Proces
     {
         checkState();
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public InjectionPointConfigurator configureInjectionPoint()
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 }

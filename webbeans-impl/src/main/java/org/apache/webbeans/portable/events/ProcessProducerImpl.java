@@ -21,6 +21,7 @@ package org.apache.webbeans.portable.events;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.ProcessProducer;
 import javax.enterprise.inject.spi.Producer;
+import javax.enterprise.inject.spi.configurator.ProducerConfigurator;
 
 import org.apache.webbeans.config.WebBeansContext;
 
@@ -54,6 +55,13 @@ public class ProcessProducerImpl<X,T> extends EventBase implements ProcessProduc
     {
         checkState();
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public ProducerConfigurator<T> configureProducer()
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
     /**

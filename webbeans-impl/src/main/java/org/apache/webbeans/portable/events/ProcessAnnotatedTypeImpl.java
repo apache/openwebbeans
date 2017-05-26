@@ -20,6 +20,7 @@ package org.apache.webbeans.portable.events;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 
 /**
  * Default implementation of the {@link ProcessAnnotatedType}.
@@ -90,7 +91,14 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
     {
         veto = true;
     }
-    
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public AnnotatedTypeConfigurator<X> configureAnnotatedType()
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+    }
+
     /**
      * Returns veto status.
      * 

@@ -21,6 +21,7 @@ package org.apache.webbeans.portable.events;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType;
+import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 
 /**
  * Default implementation of the {@link javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType}.
@@ -98,6 +99,13 @@ public class ProcessSyntheticAnnotatedTypeImpl<X> extends EventBase implements P
     {
         checkState();
         veto = true;
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public AnnotatedTypeConfigurator<X> configureAnnotatedType()
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
     /**

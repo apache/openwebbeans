@@ -29,6 +29,8 @@ import javax.el.ExpressionFactory;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -42,6 +44,7 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InjectionTargetFactory;
+import javax.enterprise.inject.spi.InterceptionFactory;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
@@ -124,9 +127,21 @@ public class MockManager implements BeanManager
     }
 
     @Override
+    public Event<Object> getEvent()
+    {
+        return manager.getEvent();
+    }
+
+    @Override
     public Context getContext(Class<? extends Annotation> scopeType)
     {
         return manager.getContext(scopeType);
+    }
+
+    @Override
+    public Instance<Object> createInstance()
+    {
+        return manager.createInstance();
     }
 
     public <T> T getInstance(Bean<T> bean)
@@ -277,6 +292,12 @@ public class MockManager implements BeanManager
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
     {
         return this.manager.resolve(beans);
+    }
+
+    @Override
+    public <T> InterceptionFactory<T> createInterceptionFactory(CreationalContext<T> creationalContext, Class<T> clazz)
+    {
+        return manager.createInterceptionFactory(creationalContext, clazz);
     }
 
     @Override

@@ -21,6 +21,7 @@ package org.apache.webbeans.portable.events;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.ProcessBeanAttributes;
+import javax.enterprise.inject.spi.configurator.BeanAttributesConfigurator;
 
 public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBeanAttributes<T>
 {
@@ -68,6 +69,20 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
     {
         checkState();
         definitionError = throwable;
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public void ignoreFinalMethods()
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+    }
+
+    //X TODO OWB-1182 CDI 2.0
+    @Override
+    public BeanAttributesConfigurator<T> configureBeanAttributes()
+    {
+        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
     public BeanAttributes<T> getAttributes()
