@@ -53,6 +53,7 @@ import org.apache.webbeans.exception.WebBeansException;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
+import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.DefinitionException;
@@ -751,8 +752,14 @@ public class BeansDeployer
 
         for (Class<?> alternativeClass : xmlConfiguredAlternatives)
         {
+            // If the class itself is annotated with @Alternative, then all is fine
             if (AnnotationUtil.hasClassAnnotation(alternativeClass, Alternative.class) ||
                 AnnotationUtil.hasMetaAnnotation(alternativeClass.getAnnotations(), Alternative.class))
+            {
+                continue;
+            }
+
+            if (hasAlternativeProducerMethod(alternativeClass))
             {
                 continue;
             }
@@ -798,6 +805,23 @@ public class BeansDeployer
 
         }
 
+    }
+
+    private boolean hasAlternativeProducerMethod(Class<?> alternativeClass)
+    {
+        // It's also ok if the class has an @Alternative producer method
+        List<Method> nonPrivateMethods = ClassUtil.getNonPrivateMethods(alternativeClass, true);
+        for (Method method : nonPrivateMethods)
+        {
+            if ((method.getAnnotation(Alternative.class) != null ||
+                AnnotationUtil.hasMetaAnnotation(method.getAnnotations(), Alternative.class))
+                    && method.getAnnotation(Produces.class) != null )
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
