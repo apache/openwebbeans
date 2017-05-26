@@ -27,7 +27,7 @@
     </parent>
 
     <artifactId>openwebbeans-tck</artifactId>
-    <name>JSR-346 TCK runner</name>
+    <name>JSR-365 TCK runner</name>
     <packaging>jar</packaging>
     <description>All TCK tests for the Apache OpenWebBeans Implementation</description>
 
