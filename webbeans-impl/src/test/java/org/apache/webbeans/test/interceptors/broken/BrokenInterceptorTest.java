@@ -21,20 +21,20 @@ package org.apache.webbeans.test.interceptors.broken;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
-public class BrokenTest extends AbstractUnitTest
+public class BrokenInterceptorTest extends AbstractUnitTest
 {
 
-    public static final String PACKAGE_NAME = BrokenTest.class.getPackage().getName();
+    public static final String PACKAGE_NAME = BrokenInterceptorTest.class.getPackage().getName();
 
     @Test
     public void testWarnings()
     {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(BrokenBean.class);
-        classes.add(BrokenScope.class);
         classes.add(BrokenAlternative.class);
         classes.add(BrokenName.class);
         
@@ -45,6 +45,12 @@ public class BrokenTest extends AbstractUnitTest
                 
         shutDownContainer();
         
+    }
+
+    @Test(expected = WebBeansConfigurationException.class)
+    public void testBrokenScopeOnInterceptor()
+    {
+        startContainer(BrokenScope.class);
     }
 
 }

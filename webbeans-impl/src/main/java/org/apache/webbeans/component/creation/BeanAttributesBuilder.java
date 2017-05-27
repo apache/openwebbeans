@@ -369,6 +369,17 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
             }
         }
 
+        if (found && annotated.getAnnotation(Interceptor.class) != null && scope != Dependent.class)
+        {
+            throw new WebBeansConfigurationException("An Interceptor must declare any other Scope than @Dependent: " + ClassUtil.getClass(annotated.getBaseType()).getName());
+        }
+
+        if (found && annotated.getAnnotation(Decorator.class) != null && scope != Dependent.class)
+        {
+            throw new WebBeansConfigurationException("A Decorator must declare any other Scope than @Dependent: " + ClassUtil.getClass(annotated.getBaseType()).getName());
+        }
+
+
         if (!found && declaringClass != null && !hasDeclaredNonInheritedScope(declaringClass))
         {
             defineScope(declaringClass.getSuperclass(), onlyScopedBeans, errorMessage);

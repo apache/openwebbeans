@@ -37,8 +37,8 @@ public class BrokenDecoratorTest extends AbstractUnitTest
 {
     public static final String PACKAGE_NAME = BrokenDecoratorTest.class.getPackage().getName();
 
-    @Test
-    public void testWarnings()
+    @Test(expected = WebBeansConfigurationException.class)
+    public void testDecoratorWithNonDependentScope()
     {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(SomeBrokenDecorated.class);
@@ -50,10 +50,6 @@ public class BrokenDecoratorTest extends AbstractUnitTest
         xmls.add(getXmlPath(PACKAGE_NAME, "BrokenDecoratorTest"));
 
         startContainer(classes, xmls);
-
-
-
-        shutDownContainer();
     }
 
     @Test(expected = WebBeansConfigurationException.class)
