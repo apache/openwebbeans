@@ -258,13 +258,27 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         }
         else if(qualifiers.size() == 1)
         {
+            // section 2.3.1
+            // If a bean does not explicitly declare a qualifier other than @Named or @Any,
+            // the bean has exactly one additional qualifier, of type @Default.
             Annotation annot = qualifiers.iterator().next();
-            if(annot.annotationType().equals(Named.class))
+            if(annot.annotationType().equals(Named.class) || annot.annotationType().equals(Any.class))
             {
                 qualifiers.add(DefaultLiteral.INSTANCE);
             }
         }
-        
+        else if (qualifiers.size() == 2)
+        {
+            Iterator<Annotation> qualiIt = qualifiers.iterator();
+            Class<? extends Annotation> q1 = qualiIt.next().annotationType();
+            Class<? extends Annotation> q2 = qualiIt.next().annotationType();
+            if (q1.equals(Named.class) && q2.equals(Any.class) ||
+                q2.equals(Named.class) && q1.equals(Any.class) )
+            {
+                qualifiers.add(DefaultLiteral.INSTANCE);
+            }
+        }
+
         //Add @Any support
         if(!hasAnyQualifier())
         {
