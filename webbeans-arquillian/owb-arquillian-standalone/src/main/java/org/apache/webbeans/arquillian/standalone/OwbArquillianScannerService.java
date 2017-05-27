@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.arquillian.standalone;
 
+import javax.enterprise.inject.spi.BeanManager;
+
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.BeanArchiveService;
@@ -35,6 +37,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -52,7 +55,9 @@ public class OwbArquillianScannerService implements ScannerService
 
     private final boolean beansXmlBdaScanningEnabled;
     private final WebBeansContext webBeansContext;
-    private final BeanArchiveService archiveService;
+    private final BeanManager beanManager;
+    private final BeanArchiveService beanArchiveService;
+
 
     private Archive archive;
 
@@ -64,7 +69,8 @@ public class OwbArquillianScannerService implements ScannerService
     {
         this.beansXmlBdaScanningEnabled = false;
         webBeansContext = WebBeansContext.getInstance();
-        archiveService = webBeansContext.getBeanArchiveService();
+        this.beanManager = webBeansContext.getBeanManagerImpl();
+        beanArchiveService = webBeansContext.getBeanArchiveService();
     }
 
     @Override
@@ -151,7 +157,7 @@ public class OwbArquillianScannerService implements ScannerService
 
         if (metainfBeansXmlUrl != null || webBeansXmlUrl != null)
         {
-            final BeanArchiveService.BeanArchiveInformation info = archiveService.getBeanArchiveInformation(webBeansXmlUrl != null ? webBeansXmlUrl : metainfBeansXmlUrl);
+            final BeanArchiveService.BeanArchiveInformation info = beanArchiveService.getBeanArchiveInformation(webBeansXmlUrl != null ? webBeansXmlUrl : metainfBeansXmlUrl);
 
             // in this case we need to scan the WEB-INF/classses folder for .class files
             Map<ArchivePath, Node> classes = archive.getContent(Filters.include(WEB_INF_CLASS_FOLDER + ".*\\.class"));
@@ -188,17 +194,16 @@ public class OwbArquillianScannerService implements ScannerService
 
         if (beansXmlUrl == null)
         {
-            // this is not a CDI archive
-            return;
+            // that means we switch to 'Implicit BDA' mode
+            beansXmlUrl = getBeanXmlUrl(archive, "/");
         }
-
 
         // otherwise we store it for later use
         beansXmls.add(beansXmlUrl);
 
-        // and now add all classes
+        // and now scan all classes those classes acording to their BDA info
         Map<ArchivePath, Node> classes = archive.getContent(Filters.include(".*\\.class"));
-        scanClasses(archiveService.getBeanArchiveInformation(beansXmlUrl), classes, null);
+        scanClasses(beanArchiveService.getBeanArchiveInformation(beansXmlUrl), classes, null);
     }
 
     /**
@@ -209,6 +214,12 @@ public class OwbArquillianScannerService implements ScannerService
     private void scanClasses(final BeanArchiveService.BeanArchiveInformation info,
                              final Map<ArchivePath, Node> classes, String classBasePath)
     {
+        if (info != null && info.getBeanDiscoveryMode() == BeanArchiveService.BeanDiscoveryMode.NONE)
+        {
+            // this jar should not get scanned at all.
+            return;
+        }
+
         for (Map.Entry<ArchivePath, Node> classEntry : classes.entrySet())
         {
             String className = classEntry.getKey().get();
@@ -229,22 +240,49 @@ public class OwbArquillianScannerService implements ScannerService
 
             className = className.replace('/', '.');
 
-            if (info != null && info.isClassExcluded(className))
-            {
-                continue;
-            }
-
-
+            Class<?> beanClass = null;
             try
             {
-                Class<?> beanClass = Class.forName(className);
-                beanClasses.add(beanClass);
+                beanClass = Class.forName(className);
             }
             catch (ClassNotFoundException cnfe)
             {
                 throw new RuntimeException("Could not scan class", cnfe);
             }
+
+            if (info != null && info.isClassExcluded(className))
+            {
+                continue;
+            }
+            if (info != null && info.getBeanDiscoveryMode() == BeanArchiveService.BeanDiscoveryMode.ANNOTATED)
+            {
+                // only classes with a 'Bean Defining Annotation should get included
+                boolean hasBeanDefiningAnnotation = false;
+                for (Annotation annotation : beanClass.getAnnotations())
+                {
+                    if (isBeanDefiningAnnotation(annotation))
+                    {
+                        hasBeanDefiningAnnotation = true;
+                        break;
+                    }
+                }
+                if (!hasBeanDefiningAnnotation)
+                {
+                    continue;
+                }
+            }
+
+            beanClasses.add(beanClass);
         }
+    }
+
+    protected boolean isBeanDefiningAnnotation(Annotation annotation)
+    {
+        Class<? extends Annotation> annotationType = annotation.annotationType();
+        boolean isBeanAnnotation = beanManager.isScope(annotationType);
+        isBeanAnnotation = isBeanAnnotation || beanManager.isStereotype(annotationType);
+
+        return isBeanAnnotation;
     }
 
     private URL getBeanXmlUrl(Archive archive, String beansXmlPath)
