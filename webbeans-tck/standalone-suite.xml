@@ -74,9 +74,7 @@
 
             <!-- https://issues.jboss.org/browse/CDITCK-432 -->
             <class name="org.jboss.cdi.tck.tests.decorators.builtin.event.complex.ComplexEventDecoratorTest">
-                <methods>
-                    <exclude name=".*"/>
-                </methods>
+                <methods><exclude name=".*"/></methods>
             </class>
 
             <!-- https://issues.jboss.org/browse/CDITCK-578, https://issues.jboss.org/browse/CDITCK-579 -->
@@ -88,12 +86,17 @@
                 </methods>
             </class>
 
+            <!-- this tests Weld specific internals -->
+            <class name="org.jboss.cdi.tck.tests.definition.bean.types.illegal.BeanTypesWithIllegalTypeTest">
+                <methods><exclude name=".*"/></methods>
+            </class>
+
 
 
             <!--
              Tests broken in the CDI-1.2 TCK:
 
-                        &lt;!&ndash; Issues in the spec &ndash;&gt;
+                        &lt;!&ndash; Issues in the fec &ndash;&gt;
                         &lt;!&ndash; CDI-437 &ndash;&gt;
                         <class name="org.jboss.cdi.tck.tests.lookup.byname.ambiguous.broken.AmbiguousELNamesTest">
                             <methods>
