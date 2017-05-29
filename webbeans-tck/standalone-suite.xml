@@ -91,6 +91,11 @@
                 <methods><exclude name=".*"/></methods>
             </class>
 
+            <!-- https://issues.jboss.org/browse/CDITCK-580 -->
+            <class name="org.jboss.cdi.tck.tests.inheritance.specialization.simple.SimpleBeanSpecializationTest">
+                <methods><exclude name=".*"/></methods>
+            </class>
+
 
 
             <!--
