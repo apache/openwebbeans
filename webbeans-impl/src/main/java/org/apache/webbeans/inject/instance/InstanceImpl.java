@@ -37,16 +37,13 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Context;
-import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.New;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Provider;
 
-import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
@@ -83,6 +80,8 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     private Map<Object, CreationalContextImpl<?>> creationalContexts;
     private CreationalContextImpl<?> parentCreationalContext;
 
+    private boolean strictValidation;
+
     /**
      * Creates new instance.
      * 
@@ -90,20 +89,27 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
      * @param injectionPoint null or injection point
      * @param webBeansContext
      * @param creationalContext will get used for creating &#064;Dependent beans
-     * @param annotations qualifier annotations
+     * @param qualifiers qualifier annotations
      */
     public InstanceImpl(Type injectionClazz, InjectionPoint injectionPoint, WebBeansContext webBeansContext,
-                 CreationalContextImpl<?> creationalContext, Annotation... annotations)
+                 CreationalContextImpl<?> creationalContext, Annotation... qualifiers)
     {
         this.injectionClazz = injectionClazz;
         this.injectionPoint = injectionPoint;
         parentCreationalContext = creationalContext;
 
-        for (Annotation ann : annotations)
+        this.webBeansContext = webBeansContext;
+        strictValidation = webBeansContext.getOpenWebBeansConfiguration().strictDynamicValidation();
+
+        if (strictValidation)
+        {
+            webBeansContext.getAnnotationManager().checkQualifierConditions(qualifiers);
+        }
+
+        for (Annotation ann : qualifiers)
         {
             qualifierAnnotations.add(ann);
         }
-        this.webBeansContext = webBeansContext;
     }
 
     /**
@@ -114,8 +120,6 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     @Override
     public T get()
     {
-        Annotation[] anns = new Annotation[qualifierAnnotations.size()];
-        anns = qualifierAnnotations.toArray(anns);
 
         Set<Bean<?>> beans = resolveBeans();
 
@@ -123,6 +127,8 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
 
         if (bean == null)
         {
+            Annotation[] anns = new Annotation[qualifierAnnotations.size()];
+            anns = qualifierAnnotations.toArray(anns);
             InjectionExceptionUtil.throwUnsatisfiedResolutionException(ClassUtil.getClazz(injectionClazz), injectionPoint, anns);
         }
 
@@ -180,66 +186,27 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     @Override
     public Instance<T> select(Annotation... qualifiers)
     {
-        Annotation[] newQualifiersArray = getAdditionalQualifiers(qualifiers);
+        if (strictValidation)
+        {
+            webBeansContext.getAnnotationManager().checkQualifierConditions(qualifiers);
+        }
+
+        Annotation[] newQualifiersArray = qualifiers;
         return new InstanceImpl<T>(
                 injectionClazz, injectionPoint == null ? null : new InstanceInjectionPoint(injectionPoint, newQualifiersArray),
                 webBeansContext, parentCreationalContext, newQualifiersArray);
     }
 
     /**
-     * Returns total qualifiers array
-     * 
-     * @param qualifiers additional qualifiers
-     * @return total qualifiers array
-     */
-    private Annotation[] getAdditionalQualifiers(Annotation[] qualifiers)
-    {
-        webBeansContext.getAnnotationManager().checkQualifierConditions(qualifiers);
-
-        Set<Annotation> newQualifiers = new HashSet<Annotation>(qualifierAnnotations);
-
-        final Set<Class<?>> types = new HashSet<>(newQualifiers.size() + (qualifiers != null ? qualifiers.length : 0));
-        for (final Annotation a : newQualifiers)
-        {
-            types.add(a.annotationType());
-        }
-
-        boolean addsDefault = false;
-        if (qualifiers != null && qualifiers.length > 0)
-        {
-            for (int i = 0; i < qualifiers.length; i++)
-            {
-                newQualifiers.add(qualifiers[i]);
-                final Class<? extends Annotation> type = qualifiers[i].annotationType();
-                if (type == Default.class)
-                {
-                    addsDefault = true;
-                }
-                else if (!types.add(type))
-                {
-                    throw new IllegalArgumentException("Duplicated qualifier " + qualifiers[i].annotationType());
-                }
-            }
-        }
-
-        if (!addsDefault && !types.contains(New.class)) // easy way to ensure @New will not resolve, not yet perfect though
-        {
-            newQualifiers.remove(DefaultLiteral.INSTANCE);
-        }
-
-        Annotation[] newQualifiersArray = new Annotation[newQualifiers.size()];
-        newQualifiersArray = newQualifiers.toArray(newQualifiersArray);
-        
-        return newQualifiersArray;
-    }
-    
-    /**
      * {@inheritDoc}
      */
     @Override
     public <U extends T> Instance<U> select(Class<U> subtype, Annotation... qualifiers)
     {
-        webBeansContext.getAnnotationManager().checkQualifierConditions(qualifiers);
+        if (strictValidation)
+        {
+            webBeansContext.getAnnotationManager().checkQualifierConditions(qualifiers);
+        }
 
         Type sub = subtype;
         
@@ -248,9 +215,9 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             sub = injectionClazz;
         }
         
-        Annotation[] newQualifiers = getAdditionalQualifiers(qualifiers);
-        
-        return new InstanceImpl<U>(sub, injectionPoint, webBeansContext, parentCreationalContext, newQualifiers);
+        //X Annotation[] newQualifiers = getAdditionalQualifiers(qualifiers);
+
+        return new InstanceImpl<U>(sub, injectionPoint, webBeansContext, parentCreationalContext, qualifiers);
     }
 
     /**

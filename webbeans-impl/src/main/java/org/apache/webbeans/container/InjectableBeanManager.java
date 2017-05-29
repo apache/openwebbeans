@@ -139,11 +139,10 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
         return bm.getContext(scope);
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public Instance<Object> createInstance()
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        return bm.createInstance();
     }
 
     @Override

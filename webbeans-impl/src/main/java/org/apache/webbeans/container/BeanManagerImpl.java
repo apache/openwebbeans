@@ -56,6 +56,7 @@ import javax.naming.Reference;
 import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.CdiInterceptorBean;
@@ -341,11 +342,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return found;
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public Instance<Object> createInstance()
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet implemented");
+        return OwbCDI.current().select(DefaultLiteral.INSTANCE);
     }
 
     /**

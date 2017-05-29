@@ -101,6 +101,10 @@
                 <methods><exclude name="testBeanNameWithSeparatedListOfELIdentifiers"/></methods>
             </class>
 
+            <!-- OWB provides a bit more for @New than CDI requires -->
+            <class name="org.jboss.cdi.tck.tests.lookup.dynamic.DynamicLookupTest">
+                <methods><exclude name="testNewBeanNotEnabledWithouInjectionPoint"/></methods>
+            </class>
 
 
             <!--

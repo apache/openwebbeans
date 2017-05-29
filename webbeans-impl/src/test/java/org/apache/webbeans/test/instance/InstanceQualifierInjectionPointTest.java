@@ -18,11 +18,13 @@
  */
 package org.apache.webbeans.test.instance;
 
+import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -48,7 +50,11 @@ public class InstanceQualifierInjectionPointTest extends AbstractUnitTest
 
     @Inject
     @Any
-    private Instance<ShardContract> instance;
+    private Instance<ShardContract> instance1;
+
+    @Inject
+    private Instance<ShardContract> instance2;
+
 
     @Test
     public void checkQualfiers() {
@@ -57,8 +63,20 @@ public class InstanceQualifierInjectionPointTest extends AbstractUnitTest
             QualifiersHolder.class,
             Factory.class), Collections.<String>emptyList(), true);
 
-        assertNotNull(instance.select(new AnnotationLiteral<Qualifier1>() {}).get());
-        assertEquals(2, holder.getQualifiers().size());
+        assertNotNull(instance1.select(new AnnotationLiteral<Qualifier1>() {}).get());
+        assertEquals(1, holder.getQualifiers().size());
+        assertEquals(Qualifier1.class, holder.getQualifiers().iterator().next().annotationType());
+
+        assertNotNull(instance2.select(AnyLiteral.INSTANCE).get());
+        assertEquals(1, holder.getQualifiers().size());
+        assertEquals(Any.class, holder.getQualifiers().iterator().next().annotationType());
+
+        assertNotNull(instance2.get());
+        assertEquals(1, holder.getQualifiers().size());
+        assertEquals(Default.class, holder.getQualifiers().iterator().next().annotationType());
+
+
+
     }
 
 
@@ -73,6 +91,7 @@ public class InstanceQualifierInjectionPointTest extends AbstractUnitTest
 
         @Produces
         @Qualifier1
+        @Default
         public ShardContract produces(final InjectionPoint ip)
         {
             holder.setQualifiers(ip.getQualifiers());

@@ -27,8 +27,11 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.webbeans.annotation.DefaultLiteral;
 
 import static java.util.Collections.emptySet;
 
@@ -50,7 +53,7 @@ public class ThirdPartyExtension implements Extension
             @Override
             public Set<Annotation> getQualifiers()
             {
-                return emptySet();
+                return new HashSet<>(Arrays.asList(DefaultLiteral.INSTANCE));
             }
 
             @Override

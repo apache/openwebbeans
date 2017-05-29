@@ -77,6 +77,12 @@ public class OpenWebBeansConfiguration
      */
     public static final String INTERCEPTOR_FORCE_NO_CHECKED_EXCEPTIONS = "org.apache.webbeans.forceNoCheckedExceptions";
 
+    /**
+     * Enable that calls to various methods get strictly validated.
+     * Defaults to 'false' for more performance.
+     */
+    public static final String STRICT_DYNAMIC_VALIDATION = "org.apache.webbeans.strictDynamicValidation";
+
     /**Use EJB Discovery or not*/
     public static final String USE_EJB_DISCOVERY = "org.apache.webbeans.spi.deployer.useEjbMetaDataDiscoveryService";
 
@@ -372,6 +378,18 @@ public class OpenWebBeansConfiguration
     public boolean scanOnlyBeansXmlJars()
     {
         String value = getProperty(SCAN_ONLY_BEANS_XML_JARS);
+        return "true".equalsIgnoreCase(value);
+    }
+
+    /**
+     * Flag which indicates that programmatic invocations to vaious BeanManager methods
+     * should get strictly validated.
+     * E.g. whether qualifier parameters are really qualifiers, etc.
+     * Default is {@code false}
+     */
+    public boolean strictDynamicValidation()
+    {
+        String value = getProperty(STRICT_DYNAMIC_VALIDATION);
         return "true".equalsIgnoreCase(value);
     }
 
