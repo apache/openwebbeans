@@ -214,10 +214,13 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         {
             sub = injectionClazz;
         }
-        
-        //X Annotation[] newQualifiers = getAdditionalQualifiers(qualifiers);
-
-        return new InstanceImpl<U>(sub, injectionPoint, webBeansContext, parentCreationalContext, qualifiers);
+        Set<Annotation> mergedQualifiers = new HashSet<>(qualifierAnnotations);
+        for (Annotation qualifier : qualifiers)
+        {
+            mergedQualifiers.add(qualifier);
+        }
+        return new InstanceImpl<U>(sub, injectionPoint, webBeansContext, parentCreationalContext,
+                                   mergedQualifiers.toArray(new Annotation[mergedQualifiers.size()]));
     }
 
     /**

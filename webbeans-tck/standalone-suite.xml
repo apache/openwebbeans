@@ -101,9 +101,14 @@
                 <methods><exclude name="testBeanNameWithSeparatedListOfELIdentifiers"/></methods>
             </class>
 
-            <!-- OWB provides a bit more for @New than CDI requires -->
+            <!-- OWB provides a bit more for @New than CDI requires
+               https://issues.jboss.org/browse/CDITCK-581
+            -->
             <class name="org.jboss.cdi.tck.tests.lookup.dynamic.DynamicLookupTest">
-                <methods><exclude name="testNewBeanNotEnabledWithouInjectionPoint"/></methods>
+                <methods>
+                    <exclude name="testNewBeanNotEnabledWithouInjectionPoint"/>
+                    <exclude name="testDuplicateBindingsThrowsException"/>
+                </methods>
             </class>
 
 
