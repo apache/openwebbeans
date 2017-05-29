@@ -96,6 +96,11 @@
                 <methods><exclude name=".*"/></methods>
             </class>
 
+            <!-- https://issues.jboss.org/browse/CDI-498 dots in EL names are not allowed by the EL spec. -->
+            <class name="org.jboss.cdi.tck.tests.lookup.el.ResolutionByNameTest">
+                <methods><exclude name="testBeanNameWithSeparatedListOfELIdentifiers"/></methods>
+            </class>
+
 
 
             <!--
