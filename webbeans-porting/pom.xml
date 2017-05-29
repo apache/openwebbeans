@@ -128,6 +128,10 @@
             <artifactId>jasper-el</artifactId>
             <version>6.0.20</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
 
     </dependencies>
 

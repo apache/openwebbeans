@@ -18,10 +18,12 @@
  */
 package org.apache.webbeans.jsf.test;
 
-import org.apache.webbeans.jsf.JSFUtil;
+import javax.faces.component.UIViewRoot;
+import javax.servlet.http.HttpSession;
 
-import org.junit.Assert;
 import junit.framework.TestCase;
+import org.apache.webbeans.jsf.JSFUtil;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class JSFUtilTest extends TestCase
@@ -64,5 +66,79 @@ public class JSFUtilTest extends TestCase
         path = JSFUtil.getRedirectViewIdWithCid(withQueryWithContextWithPath, cid);
         Assert.assertEquals("/context?cid=1&hiho=hi#same", path);
     }
+
+
+
+
+    @Test
+    public void testGetConversationPropagation() {
+
+        String string = JSFUtil.getConversationPropagation();
+
+        assertNull(string);
+
+    }
+
+
+    @Test
+    public void testGetViewRoot() {
+
+        UIViewRoot uIViewRoot = JSFUtil.getViewRoot();
+
+        assertNull(uIViewRoot);
+
+    }
+
+
+    @Test
+    public void testGetRedirectViewIdWithCidReturningNonEmptyString() {
+
+        String string = JSFUtil.getRedirectViewIdWithCid("=V[m", "=V[m");
+
+        assertEquals("=V[m?cid==V[m", string);
+
+    }
+
+
+    @Test
+    public void testGetRedirectViewIdWithCidWithNonEmptyStringOne() {
+
+        String string = JSFUtil.getRedirectViewIdWithCid("asd", "f?cid==V[m");
+
+        assertEquals("asd?cid=f?cid==V[m", string);
+
+    }
+
+
+    @Test
+    public void testGetRedirectViewIdWithCidWithNonEmptyStringTwo() {
+
+        String string = JSFUtil.getRedirectViewIdWithCid("#", "#");
+
+        assertEquals("?cid=##", string);
+
+    }
+
+
+    @Test
+    public void testGetSession() {
+
+        HttpSession httpSession = JSFUtil.getSession();
+
+        assertNull(httpSession);
+
+    }
+
+
+    @Test
+    public void testGetConversationId() {
+
+        String string = JSFUtil.getConversationId();
+
+        assertNull(string);
+
+    }
+
+
 
 }
