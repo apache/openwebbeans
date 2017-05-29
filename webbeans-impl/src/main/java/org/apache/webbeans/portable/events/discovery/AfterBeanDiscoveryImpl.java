@@ -24,11 +24,11 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.ProcessBean;
-import javax.enterprise.inject.spi.ProcessObserverMethod;
+import javax.enterprise.inject.spi.ProcessSyntheticBean;
 import javax.enterprise.inject.spi.configurator.BeanConfigurator;
 import javax.enterprise.inject.spi.configurator.ObserverMethodConfigurator;
 
@@ -39,8 +39,8 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.portable.events.generics.GProcessBean;
-import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
+import org.apache.webbeans.portable.events.generics.GProcessSyntheticBean;
+import org.apache.webbeans.portable.events.generics.GProcessSyntheticObserverMethod;
 import org.apache.webbeans.util.AnnotationUtil;
 
 import java.util.logging.Level;
@@ -52,12 +52,14 @@ import java.util.logging.Logger;
  * @version $Rev$ $Date$
  *
  */
-public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
+public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery, ExtensionAware
 {
     private BeanManagerImpl beanManager = null;
 
     private static final Logger logger = WebBeansLoggerFacade.getLogger(AfterBeanDiscoveryImpl.class);
     private final WebBeansContext webBeansContext;
+
+    private Extension extension;
     private boolean started;
 
     public AfterBeanDiscoveryImpl(WebBeansContext webBeansContext)
@@ -69,6 +71,12 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     public void setStarted()
     {
         started = true;
+    }
+
+    @Override
+    public void setExtension(Extension extension)
+    {
+        this.extension = extension;
     }
 
     /**
@@ -85,8 +93,8 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(bean.getBeanClass());
 
         //Fire Event
-        ProcessBean<?> processBeanEvent = new GProcessBean(bean,annotatedType);
-        beanManager.fireEvent(processBeanEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        ProcessSyntheticBean<?> processSyntheticBean = new GProcessSyntheticBean(bean,annotatedType, extension);
+        beanManager.fireEvent(processSyntheticBean, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
 
         if(bean instanceof Interceptor)
         {
@@ -214,9 +222,13 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         {
             throw new IllegalStateException("Don't call AfterBeanDiscovery.addObserverMethod(...) after the event is fired");
         }
-        ProcessObserverMethod<?, ?> event = new GProcessObservableMethod(null,observerMethod);
-        beanManager.fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-        beanManager.getNotificationManager().addObserver(observerMethod, observerMethod.getObservedType());
+        GProcessSyntheticObserverMethod event = new GProcessSyntheticObserverMethod(null,observerMethod, extension);
+        if (!event.isVetoed())
+        {
+            beanManager.fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+            ObserverMethod newObserverMethod = event.getObserverMethod();
+            beanManager.getNotificationManager().addObserver(newObserverMethod);
+        }
     }
 
     /**

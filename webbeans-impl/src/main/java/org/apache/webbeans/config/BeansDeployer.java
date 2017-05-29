@@ -1764,6 +1764,7 @@ public class BeansDeployer
                 ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean, annotatedType);
                 beanManager.fireEvent(processBeanEvent, true);
                 processBeanEvent.setStarted();
+
                 webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessManagedBean event observers for " +
                         "managed beans. Look at logs for further details");
 
@@ -1776,11 +1777,6 @@ public class BeansDeployer
                 webBeansContext.getWebBeansUtil().fireProcessProducerFieldBeanEvent(annotatedFields);
                 webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessProducerField event observers for " +
                         "producer field beans. Look at logs for further details");
-
-                //Fire ObservableMethods
-                webBeansContext.getWebBeansUtil().fireProcessObservableMethodBeanEvent(observerMethodsMap);
-                webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessObserverMethod event observers for " +
-                        "observer methods. Look at logs for further details");
 
                 if(!webBeansContext.getWebBeansUtil().isAnnotatedTypeDecoratorOrInterceptor(annotatedType))
                 {

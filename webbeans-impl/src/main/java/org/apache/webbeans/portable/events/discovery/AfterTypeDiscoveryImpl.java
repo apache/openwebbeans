@@ -20,6 +20,7 @@ package org.apache.webbeans.portable.events.discovery;
 
 import javax.enterprise.inject.spi.AfterTypeDiscovery;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class AfterTypeDiscoveryImpl extends EventBase implements AfterTypeDiscov
     private final List<Class<?>> sortedInterceptors;
     private final List<Class<?>> sortedDecorators;
     private final List<AnnotatedType<?>> newAt;
-    private Object extension;
+    private Extension extension;
 
     public AfterTypeDiscoveryImpl(WebBeansContext webBeansContext,
                                   List<AnnotatedType<?>> newAt,
@@ -89,7 +90,7 @@ public class AfterTypeDiscoveryImpl extends EventBase implements AfterTypeDiscov
     }
 
     @Override
-    public void setExtension(final Object instance)
+    public void setExtension(Extension instance)
     {
         this.extension = instance;
     }

@@ -95,7 +95,7 @@ public class EventExceptionTest extends AbstractUnitTest
             };
 
             LoggedInObserver observer = new LoggedInObserver(ArrayUtil.asSet(anns));
-            WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, LoggedInEvent.class);
+            WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer);
 
             getBeanManager().fireEvent(new LoggedInEvent(), anns);
 
@@ -121,7 +121,7 @@ public class EventExceptionTest extends AbstractUnitTest
             };
             
             LoggedInObserver observer = new LoggedInObserver(ArrayUtil.asSet(anns));
-            WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, LoggedInEvent.class);
+            WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer);
             Assert.fail("IllegalArgumentException expected");
         }
         catch (IllegalArgumentException e)

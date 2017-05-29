@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -40,7 +41,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
     
     private BeanManagerImpl beanManager = null;
     private final WebBeansContext webBeansContext;
-    private Object extension;
+    private Extension extension;
     private boolean started;
 
     public BeforeBeanDiscoveryImpl(WebBeansContext webBeansContext)
@@ -183,7 +184,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
         beanManager.addAdditionalQualifier(annotatedType);
     }
 
-    public void setExtension(final Object extension)
+    public void setExtension(final Extension extension)
     {
         this.extension = extension;
     }

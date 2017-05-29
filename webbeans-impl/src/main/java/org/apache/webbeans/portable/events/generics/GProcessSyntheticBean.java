@@ -16,11 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.portable.events.discovery;
+package org.apache.webbeans.portable.events.generics;
 
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.ProcessSyntheticBean;
 
-public interface ExtensionAware
+
+@SuppressWarnings("unchecked")
+public class GProcessSyntheticBean extends GProcessBean implements ProcessSyntheticBean
 {
-    void setExtension(Extension instance);
+    private final Extension source;
+
+    public GProcessSyntheticBean(Bean<?> bean, AnnotatedType<?> annotated, Extension source)
+    {
+        super(bean,annotated);
+        this.source = source;
+    }
+
+
+    @Override
+    public Extension getSource()
+    {
+        return source;
+    }
 }

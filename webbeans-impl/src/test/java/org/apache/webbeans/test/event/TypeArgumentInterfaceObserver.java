@@ -63,7 +63,7 @@ public class TypeArgumentInterfaceObserver implements ObserverMethod<ITypeArgume
 
     @Override
     public Type getObservedType() {
-        return null;
+        return ITypeArgumentEventInterface.class;
     }
 
     @Override

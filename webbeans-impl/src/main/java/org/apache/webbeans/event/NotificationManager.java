@@ -59,7 +59,7 @@ import javax.enterprise.inject.spi.ProcessProducer;
 import javax.enterprise.inject.spi.ProcessProducerField;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType;
-import javax.enterprise.util.TypeLiteral;
+import javax.enterprise.inject.spi.ProcessSyntheticBean;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.OWBLogConst;
@@ -69,6 +69,7 @@ import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
+import org.apache.webbeans.portable.events.generics.GProcessObserverMethod;
 import org.apache.webbeans.portable.events.generics.GenericBeanEvent;
 import org.apache.webbeans.portable.events.generics.GenericProducerObserverEvent;
 import org.apache.webbeans.portable.events.generics.TwoParametersGenericBeanEvent;
@@ -108,6 +109,7 @@ public final class NotificationManager
             ProcessAnnotatedType.class,
             ProcessBean.class,
             ProcessBeanAttributes.class,
+            ProcessSyntheticBean.class,
             ProcessInjectionPoint.class,
             ProcessInjectionTarget.class,
             ProcessManagedBean.class,
@@ -173,23 +175,18 @@ public final class NotificationManager
         return observerMethods;
     }
 
-    public <T> void addObserver(ObserverMethod<T> observer, Type eventType)
+    public <T> void addObserver(ObserverMethod<T> observer)
     {
         webBeansContext.getAnnotationManager().checkQualifierConditions(observer.getObservedQualifiers());
 
-        Set<ObserverMethod<?>> set = observers.get(eventType);
+        Set<ObserverMethod<?>> set = observers.get(observer.getObservedType());
         if (set == null)
         {
             set = new HashSet<ObserverMethod<?>>();
-            observers.put(eventType, set);
+            observers.put(observer.getObservedType(), set);
         }
 
         set.add(observer);
-    }
-
-    public <T> void addObserver(ObserverMethod<T> observer, TypeLiteral<T> typeLiteral)
-    {
-        addObserver(observer, typeLiteral.getType());
     }
 
 
@@ -734,14 +731,37 @@ public final class NotificationManager
     public <T> ObserverMethod<?> getObservableMethodForAnnotatedMethod(AnnotatedMethod<?> annotatedMethod, AnnotatedParameter<?> annotatedParameter, AbstractOwbBean<T> bean)
     {
         Asserts.assertNotNull(annotatedParameter, "annotatedParameter");
-        
-        //Observer creation from annotated method
-        ObserverMethodImpl<T> observer = isContainerEvent(annotatedParameter)?
-                new ContainerEventObserverMethodImpl(bean, annotatedMethod, annotatedParameter) :
-                new ObserverMethodImpl(bean, annotatedMethod, annotatedParameter);
-        
-        //Adds this observer
-        addObserver(observer, annotatedParameter.getBaseType());
+
+        ObserverMethodImpl<T> observer = null;
+        // Observer creation from annotated method
+        if (isContainerEvent(annotatedParameter))
+        {
+            observer = new ContainerEventObserverMethodImpl(bean, annotatedMethod, annotatedParameter);
+            addObserver(observer);
+        }
+        else
+        {
+            observer = new ObserverMethodImpl(bean, annotatedMethod, annotatedParameter);
+
+            GProcessObserverMethod event = new GProcessObserverMethod(annotatedMethod, observer);
+
+            //Fires ProcessObserverMethod
+            webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+
+            webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessObserverMethod event observers for " +
+                "observer methods. Look at logs for further details");
+
+            if (!event.isVetoed())
+            {
+                //Adds this observer
+                addObserver(event.getObserverMethod());
+            }
+            else
+            {
+                observer = null;
+            }
+            event.setStarted();
+        }
 
         return observer;
     }

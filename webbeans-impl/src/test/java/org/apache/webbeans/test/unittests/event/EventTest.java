@@ -21,7 +21,6 @@ package org.apache.webbeans.test.unittests.event;
 import java.lang.annotation.Annotation;
 
 import javax.enterprise.util.AnnotationLiteral;
-import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.AbstractUnitTest;
@@ -49,7 +48,7 @@ public class EventTest extends AbstractUnitTest
         };
 
         LoggedInObserver observer = new LoggedInObserver(ArrayUtil.asSet(anns));
-        WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, LoggedInEvent.class);
+        WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer);
 
         getBeanManager().fireEvent(new LoggedInEvent(), anns);
 
@@ -66,11 +65,8 @@ public class EventTest extends AbstractUnitTest
         };
 
         TypeArgumentObserver observer = new TypeArgumentObserver(ArrayUtil.asSet(anns));
-        TypeLiteral<TypeArgumentBaseEvent> tl = new TypeLiteral<TypeArgumentBaseEvent>()
-        {
-        };
 
-        WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, tl);
+        WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer);
 
         getBeanManager().fireEvent(new TypeArgumentEvent(), anns);
 
@@ -87,7 +83,7 @@ public class EventTest extends AbstractUnitTest
         };
 
         TypeArgumentInterfaceObserver observer = new TypeArgumentInterfaceObserver(ArrayUtil.asSet(anns));
-        WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, ITypeArgumentEventInterface.class);
+        WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer);
 
         getBeanManager().fireEvent(new TypeArgumentEvent(), anns);
         Assert.assertEquals("ok", observer.getResult());

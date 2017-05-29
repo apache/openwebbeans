@@ -73,7 +73,7 @@ import org.apache.webbeans.portable.events.generics.GProcessBeanAttributes;
 import org.apache.webbeans.portable.events.generics.GProcessInjectionPoint;
 import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
-import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
+import org.apache.webbeans.portable.events.generics.GProcessObserverMethod;
 import org.apache.webbeans.portable.events.generics.GProcessProducer;
 import org.apache.webbeans.portable.events.generics.GProcessProducerField;
 import org.apache.webbeans.portable.events.generics.GProcessProducerMethod;
@@ -109,7 +109,6 @@ import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBean;
@@ -1095,20 +1094,6 @@ public final class WebBeansUtil
         }
     }
 
-    public void fireProcessObservableMethodBeanEvent(Map<ObserverMethod<?>,AnnotatedMethod<?>> annotatedMethods)
-    {
-        for(Map.Entry<ObserverMethod<?>, AnnotatedMethod<?>> observableMethodEntry : annotatedMethods.entrySet())
-        {
-            ObserverMethod<?> observableMethod = observableMethodEntry.getKey();
-            AnnotatedMethod<?> annotatedMethod = observableMethodEntry.getValue();
-
-            GProcessObservableMethod event = new GProcessObservableMethod(annotatedMethod, observableMethod);
-
-            //Fires ProcessProducer
-            webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-            event.setStarted();
-        }
-    }
 
 
     public void fireProcessProducerFieldBeanEvent(Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields)
@@ -1295,7 +1280,7 @@ public final class WebBeansUtil
             GProcessProducer.class,
             GProcessProducerField.class,
             GProcessProducerMethod.class,
-            GProcessObservableMethod.class}));
+            GProcessObserverMethod.class}));
     public static boolean isExtensionProducerOrObserverEventType(Type type)
     {
         return EXTENSION_PRODUCER_OR_OBSERVER_EVENT_TYPE.contains(type);

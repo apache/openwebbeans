@@ -39,7 +39,8 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
     private final AnnotatedMethod<X> annotatedMethod;
     
     /**ObserverMethod instance*/
-    private final ObserverMethod<T> observerMethod;
+    private ObserverMethod<T> observerMethod;
+    private boolean vetoed = false;
 
     public ProcessObserverMethodImpl(AnnotatedMethod<X> annotatedMethod,ObserverMethod<T> observerMethod)
     {
@@ -84,18 +85,22 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
         return observerMethod;
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public void setObserverMethod(ObserverMethod<T> observerMethod)
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        checkState();
+        this.observerMethod = observerMethod;
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public void veto()
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        checkState();
+        vetoed = true;
     }
 
+    public boolean isVetoed()
+    {
+        return vetoed;
+    }
 }

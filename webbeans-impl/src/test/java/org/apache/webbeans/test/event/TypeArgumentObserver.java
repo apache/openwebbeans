@@ -64,7 +64,7 @@ public class TypeArgumentObserver implements ObserverMethod<TypeArgumentBaseEven
 
     @Override
     public Type getObservedType() {
-        return null;
+        return TypeArgumentBaseEvent.class;
     }
 
     @Override

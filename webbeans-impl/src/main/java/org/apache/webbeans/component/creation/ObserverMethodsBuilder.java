@@ -96,7 +96,10 @@ public class ObserverMethodsBuilder<T>
                 //Looking for ObserverMethod
                 ObserverMethod<?> definedObserver = webBeansContext.getBeanManagerImpl().getNotificationManager().
                         getObservableMethodForAnnotatedMethod(annotatedMethod, observesParameter, bean);
-                definedObservers.add(definedObserver);
+                if (definedObserver != null)
+                {
+                    definedObservers.add(definedObserver);
+                }
             }
         }
 

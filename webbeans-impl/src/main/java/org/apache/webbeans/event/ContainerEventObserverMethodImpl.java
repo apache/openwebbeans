@@ -24,6 +24,7 @@ import org.apache.webbeans.portable.events.discovery.ExtensionAware;
 
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.WithAnnotations;
 import java.lang.reflect.InvocationTargetException;
@@ -76,7 +77,7 @@ public class ContainerEventObserverMethodImpl<T> extends ObserverMethodImpl<T>
             if (ExtensionAware.class.isInstance(args[0]))
             {
                 extensionAware = ExtensionAware.class.cast(args[0]);
-                extensionAware.setExtension(object);
+                extensionAware.setExtension((Extension) object);
             }
         }
         super.invoke(object, args);

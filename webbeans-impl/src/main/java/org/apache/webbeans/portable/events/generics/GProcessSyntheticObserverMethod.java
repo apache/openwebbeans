@@ -19,32 +19,27 @@
 package org.apache.webbeans.portable.events.generics;
 
 import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.ProcessSyntheticObserverMethod;
 
-import org.apache.webbeans.portable.events.ProcessObserverMethodImpl;
-import org.apache.webbeans.util.ClassUtil;
 
 @SuppressWarnings("unchecked")
-public class GProcessObservableMethod extends ProcessObserverMethodImpl implements GenericProducerObserverEvent
+public class GProcessSyntheticObserverMethod extends GProcessObserverMethod implements ProcessSyntheticObserverMethod
 {
+    private final Extension source;
 
-    public GProcessObservableMethod(AnnotatedMethod<?> annotatedMethod, ObserverMethod<?> observerMethod)
+    public GProcessSyntheticObserverMethod(AnnotatedMethod<?> annotatedMethod,
+                                           ObserverMethod<?> observerMethod,
+                                           Extension source)
     {
         super(annotatedMethod, observerMethod);
+        this.source = source;
     }
 
     @Override
-    public Class<?> getBeanClass()
+    public Extension getSource()
     {
-        return getObserverMethod().getBeanClass();
+        return source;
     }
-
-    @Override
-    public Class<?> getProducerOrObserverType()
-    {
-        return ClassUtil.getClazz(getObserverMethod().getObservedType());
-    }
-
-    
-    
 }
