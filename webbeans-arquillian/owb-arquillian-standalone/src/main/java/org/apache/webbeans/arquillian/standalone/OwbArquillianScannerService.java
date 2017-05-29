@@ -22,8 +22,8 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
+import org.apache.webbeans.spi.BdaScannerService;
 import org.apache.webbeans.spi.BeanArchiveService;
-import org.apache.webbeans.spi.ScannerService;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.Filters;
@@ -41,6 +41,8 @@ import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +50,7 @@ import java.util.Set;
 /**
  *
  */
-public class OwbArquillianScannerService implements ScannerService
+public class OwbArquillianScannerService implements BdaScannerService
 {
 
     private static final String WEB_INF_CLASS_FOLDER = "/WEB-INF/classes/";
@@ -62,7 +64,7 @@ public class OwbArquillianScannerService implements ScannerService
     private Archive archive;
 
     private UrlSet beansXmls = new UrlSet();
-    private Set<Class<?>> beanClasses = new HashSet<Class<?>>();
+    private Map<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>> beanClassesPerBda = new HashMap<>();
 
 
     public OwbArquillianScannerService()
@@ -123,14 +125,20 @@ public class OwbArquillianScannerService implements ScannerService
     @Override
     public Set<Class<?>> getBeanClasses()
     {
-        return beanClasses;
+        return Collections.EMPTY_SET;
+    }
+
+    @Override
+    public Map<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>> getBeanClassesPerBda()
+    {
+        return beanClassesPerBda;
     }
 
     @Override
     public void release()
     {
         beansXmls.clear();
-        beanClasses.clear();
+        beanClassesPerBda.clear();
     }
 
     @Override
@@ -214,6 +222,12 @@ public class OwbArquillianScannerService implements ScannerService
     private void scanClasses(final BeanArchiveService.BeanArchiveInformation info,
                              final Map<ArchivePath, Node> classes, String classBasePath)
     {
+        Set<Class<?>> bdaClasses = beanClassesPerBda.get(info);
+        if (bdaClasses == null)
+        {
+            bdaClasses = new HashSet<>();
+            beanClassesPerBda.put(info, bdaClasses);
+        }
         if (info != null && info.getBeanDiscoveryMode() == BeanArchiveService.BeanDiscoveryMode.NONE)
         {
             // this jar should not get scanned at all.
@@ -272,7 +286,7 @@ public class OwbArquillianScannerService implements ScannerService
                 }
             }
 
-            beanClasses.add(beanClass);
+            bdaClasses.add(beanClass);
         }
     }
 
@@ -340,6 +354,6 @@ public class OwbArquillianScannerService implements ScannerService
         archive = null;
 
         beansXmls = new UrlSet();
-        beanClasses = new HashSet<Class<?>>();
+        beanClassesPerBda = new HashMap<>();
     }
 }
