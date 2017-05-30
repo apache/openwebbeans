@@ -278,7 +278,7 @@ public class BeansDeployer
 
 
                 //Checking stereotype conditions
-                checkStereoTypes(scanner);
+                checkStereoTypes(beanAttributesPerBda);
 
                 // Handle Specialization
                 specializationUtil.removeDisabledBeanAttributes(
@@ -1581,25 +1581,31 @@ public class BeansDeployer
 
     /**
      * Check steretypes.
-     * @param scanner scanner instance
      */
-    protected void checkStereoTypes(ScannerService scanner)
+    protected void checkStereoTypes(Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> beanAttributesPerBda)
     {
         logger.fine("Checking StereoType constraints has started.");
 
         addDefaultStereoTypes();
 
-        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-        
-        Set<Class<?>> beanClasses = scanner.getBeanClasses();
-        if (beanClasses != null && beanClasses.size() > 0)
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
+        StereoTypeManager stereoTypeManager = webBeansContext.getStereoTypeManager();
+
+        // all the Stereotypes we did already check
+        Set<Class<? extends Annotation>> verifiedStereotypes = new HashSet<>();
+
+        for (Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> annotatedTypeExtendedBeanAttributesMap : beanAttributesPerBda.values())
         {
-            final StereoTypeManager stereoTypeManager = webBeansContext.getStereoTypeManager();
-            for(Class<?> beanClass : beanClasses)
-            {                
-                if(beanClass.isAnnotation())
+            for (ExtendedBeanAttributes<?> extendedBeanAttributes : annotatedTypeExtendedBeanAttributesMap.values())
+            {
+                Set<Class<? extends Annotation>> stereotypes = extendedBeanAttributes.beanAttributes.getStereotypes();
+
+                for (Class<? extends Annotation> stereoClass : stereotypes)
                 {
-                    Class<? extends Annotation> stereoClass = (Class<? extends Annotation>) beanClass;
+                    if (verifiedStereotypes.contains(stereoClass))
+                    {
+                        continue;
+                    }
                     if (annotationManager.isStereoTypeAnnotation(stereoClass)
                         && stereoTypeManager.getStereoTypeModel(stereoClass.getName()) == null)
                     {
@@ -1607,12 +1613,14 @@ public class BeansDeployer
                         StereoTypeModel model = new StereoTypeModel(webBeansContext, stereoClass);
                         stereoTypeManager.addStereoTypeModel(model);
                     }
+                    verifiedStereotypes.add(stereoClass);
                 }
             }
         }
 
         logger.fine("Checking StereoType constraints has ended.");
     }
+
 
     /**
      * Adds default stereotypes.
