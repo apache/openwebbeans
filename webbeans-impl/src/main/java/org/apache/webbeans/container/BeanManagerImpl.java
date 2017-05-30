@@ -419,7 +419,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             {
                 throw new DuplicateDefinitionException("PassivationCapable bean id is not unique: " + id + " bean:" + bean);
             }
-
         }
     }
 
