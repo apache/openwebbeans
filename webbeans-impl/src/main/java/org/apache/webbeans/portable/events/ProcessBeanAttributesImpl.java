@@ -29,6 +29,7 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
     private BeanAttributes<T> attributes;
     private boolean veto = false;
     private Throwable definitionError = null;
+    private boolean ignoreFinalMethods = false;
 
     public ProcessBeanAttributesImpl(final Annotated annotated, final BeanAttributes<T> attributes)
     {
@@ -71,11 +72,10 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
         definitionError = throwable;
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public void ignoreFinalMethods()
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        ignoreFinalMethods = true;
     }
 
     //X TODO OWB-1182 CDI 2.0
@@ -93,6 +93,11 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
     public boolean isVeto()
     {
         return veto;
+    }
+
+    public boolean isIgnoreFinalMethods()
+    {
+        return ignoreFinalMethods;
     }
 
     public Throwable getDefinitionError()

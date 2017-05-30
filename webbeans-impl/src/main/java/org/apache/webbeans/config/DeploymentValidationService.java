@@ -70,7 +70,7 @@ public class DeploymentValidationService
      * @throws org.apache.webbeans.exception.WebBeansConfigurationException if bean is not proxied by the container
      * @return exception TCKs validate at runtime
      */
-    public UnproxyableResolutionException validateProxyable(OwbBean<?> bean)
+    public UnproxyableResolutionException validateProxyable(OwbBean<?> bean, boolean ignoreFinalMethods)
     {
         if (allowProxyingClasses == null)
         {
@@ -104,21 +104,23 @@ public class DeploymentValidationService
                         violationMessage.addLine(beanClass.getName(), " is a final class! CDI doesn't allow to proxy that.");
                     }
 
-                    String finalMethodName = hasNonPrivateFinalMethod(beanClass);
-                    if (finalMethodName != null)
+                    if (!ignoreFinalMethods)
                     {
-                        if (allowProxyingClasses.contains(beanClass.getName()))
+                        String finalMethodName = hasNonPrivateFinalMethod(beanClass);
+                        if (finalMethodName != null)
                         {
-                            logger.info(beanClass.getName() +  " has final method " + finalMethodName + ". CDI doesn't allow to proxy that." +
-                                " Continuing because the class is explicitly configured to be treated as proxyable." +
-                                " Final methods shall not get invoked on this proxy!");
-                        }
-                        else
-                        {
-                            violationMessage.addLine(beanClass.getName(), " has final method " + finalMethodName + " CDI doesn't allow to proxy that.");
+                            if (allowProxyingClasses.contains(beanClass.getName()))
+                            {
+                                logger.info(beanClass.getName() + " has final method " + finalMethodName + ". CDI doesn't allow to proxy that." +
+                                    " Continuing because the class is explicitly configured to be treated as proxyable." +
+                                    " Final methods shall not get invoked on this proxy!");
+                            }
+                            else
+                            {
+                                violationMessage.addLine(beanClass.getName(), " has final method " + finalMethodName + " CDI doesn't allow to proxy that.");
+                            }
                         }
                     }
-
 
                     Constructor<?> cons = webBeansContext.getWebBeansUtil().getNoArgConstructor(beanClass);
                     if (cons == null)

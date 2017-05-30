@@ -42,11 +42,12 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
     protected final WebBeansContext webBeansContext;
     protected final AnnotatedType<T> annotatedType;
     protected final BeanAttributes<T> beanAttributes;
+    protected final boolean ignoreFinalMethods;
 
     /**
      * Creates a new creator.
      */
-    public ManagedBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributes<T> beanAttributes)
+    public ManagedBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributes<T> beanAttributes, boolean ignoreFinalMethods)
     {
         Asserts.assertNotNull(webBeansContext, Asserts.PARAM_NAME_WEBBEANSCONTEXT);
         Asserts.assertNotNull(annotatedType, "annotated type");
@@ -54,6 +55,7 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
         this.webBeansContext = webBeansContext;
         this.annotatedType = annotatedType;
         this.beanAttributes = beanAttributes;
+        this.ignoreFinalMethods = ignoreFinalMethods;
     }
 
     /**
@@ -67,7 +69,7 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
         WebBeansUtil.checkGenericType(annotatedType.getJavaClass(), beanAttributes.getScope());
         webBeansContext.getWebBeansUtil().validateBeanInjection(bean);
 
-        final UnproxyableResolutionException lazyException = webBeansContext.getDeploymentValidationService().validateProxyable(bean);
+        final UnproxyableResolutionException lazyException = webBeansContext.getDeploymentValidationService().validateProxyable(bean, ignoreFinalMethods);
         if (lazyException == null)
         {
             return bean;

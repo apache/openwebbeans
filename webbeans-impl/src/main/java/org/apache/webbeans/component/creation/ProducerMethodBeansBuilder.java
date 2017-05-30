@@ -23,6 +23,7 @@ import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.portable.events.ProcessBeanAttributesImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -33,7 +34,6 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanAttributes;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.HashSet;
@@ -88,17 +88,17 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
                 }
 
                 final AnnotatedMethod<T> method = (AnnotatedMethod<T>) annotatedMethod;
-                final BeanAttributes<T> beanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(
+                final ProcessBeanAttributesImpl<T> processBeanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(
                         annotatedMethod, annotatedMethod.getJavaMember().getReturnType(),
                         BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(method).build());
-                if (beanAttributes != null)
+                if (processBeanAttributes != null)
                 {
-                    ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<T>(bean, annotatedMethod, beanAttributes);
+                    ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<T>(bean, annotatedMethod, processBeanAttributes.getAttributes());
 
                     ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
 
                     //X TODO validateProxyable returns the exception, throw the returned exception??
-                    webBeansContext.getDeploymentValidationService().validateProxyable(producerMethodBean);
+                    webBeansContext.getDeploymentValidationService().validateProxyable(producerMethodBean, processBeanAttributes.isIgnoreFinalMethods());
                     producerMethodBeanCreator.validate();
 
                     if(specialize)

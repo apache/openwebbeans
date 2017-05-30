@@ -422,4 +422,5 @@ public abstract class AbstractOwbBean<T>
     {
         return super.hashCode();
     }
+
 }

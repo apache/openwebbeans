@@ -26,7 +26,6 @@ import java.util.Set;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanAttributes;
 import javax.inject.Named;
 
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -34,6 +33,7 @@ import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.portable.events.ProcessBeanAttributesImpl;
 import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -91,11 +91,11 @@ public class ProducerFieldBeansBuilder<T>
                         throw new WebBeansConfigurationException("Resource producer annotated field : " + annotatedField + " can not define EL name");
                     }
 
-                    final BeanAttributes<T> beanAttributes = fireProcessBeanAttributes(annotatedField);
-                    if (beanAttributes != null)
+                    final ProcessBeanAttributesImpl<T> processBeanAttributes = fireProcessBeanAttributes(annotatedField);
+                    if (processBeanAttributes != null)
                     {
                         ResourceBeanBuilder<T, Annotation> resourceBeanCreator
-                                = new ResourceBeanBuilder<T, Annotation>(bean, resourceRef, annotatedField, beanAttributes);
+                                = new ResourceBeanBuilder<T, Annotation>(bean, resourceRef, annotatedField, processBeanAttributes.getAttributes());
                         ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
                         resourceBean.setProducerField(field);
                         producerBeans.add(resourceBean);
@@ -104,14 +104,13 @@ public class ProducerFieldBeansBuilder<T>
                 }
                 else
                 {
-                    BeanAttributes<T> beanAttributes = fireProcessBeanAttributes(annotatedField);
+                    ProcessBeanAttributesImpl<T> processBeanAttributes = fireProcessBeanAttributes(annotatedField);
 
                     ProducerFieldBeanBuilder<T, ProducerFieldBean<T>> producerFieldBeanCreator
-                        = new ProducerFieldBeanBuilder<T, ProducerFieldBean<T>>(bean, annotatedField, beanAttributes);
+                        = new ProducerFieldBeanBuilder<T, ProducerFieldBean<T>>(bean, annotatedField, processBeanAttributes.getAttributes());
                     ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
 
-                    //X TODO validateProxyable returns the exception, throw the returned exception??
-                    webBeansContext.getDeploymentValidationService().validateProxyable(producerFieldBean);
+                    webBeansContext.getDeploymentValidationService().validateProxyable(producerFieldBean, processBeanAttributes.isIgnoreFinalMethods());
                     producerFieldBeanCreator.validate();
 
                     producerFieldBean.setProducerField(field);
@@ -128,7 +127,7 @@ public class ProducerFieldBeansBuilder<T>
     }
 
 
-    private BeanAttributes<T> fireProcessBeanAttributes(AnnotatedField<? super T> annotatedField)
+    private ProcessBeanAttributesImpl<T> fireProcessBeanAttributes(AnnotatedField<? super T> annotatedField)
     {
         return webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(
                 annotatedField, annotatedField.getJavaMember().getType(),

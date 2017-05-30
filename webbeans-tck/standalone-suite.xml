@@ -113,10 +113,14 @@
 
             <!-- https://issues.jboss.org/browse/CDITCK-582 -->
             <class name="org.jboss.cdi.tck.tests.deployment.discovery.BeanDiscoveryTest">
-                <methods>
-                    <exclude name=".*"/>
-                </methods>
+                <methods><exclude name=".*"/></methods>
             </class>
+
+            <!-- https://issues.jboss.org/browse/CDITCK-584 -->
+            <class name="org.jboss.cdi.tck.tests.implementation.simple.lifecycle.unproxyable.UnproxyableManagedBeanTest">
+                <methods><exclude name=".*"/></methods>
+            </class>
+
 
 
             <!--

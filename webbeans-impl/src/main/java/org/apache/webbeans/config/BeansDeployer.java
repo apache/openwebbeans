@@ -64,6 +64,7 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.AbstractProducer;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.BaseProducerProducer;
+import org.apache.webbeans.portable.events.ProcessBeanAttributesImpl;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessSyntheticAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
@@ -390,10 +391,11 @@ public class BeansDeployer
                         final BeanAttributesImpl tBeanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(at, onlyScopedBeans).build();
                         if (tBeanAttributes != null)
                         {
-                            final BeanAttributes<?> beanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(at, at.getJavaClass(), tBeanAttributes);
-                            if (beanAttributes != null)
+                            final ProcessBeanAttributesImpl<?> processBeanAttributes
+                                = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(at, at.getJavaClass(), tBeanAttributes);
+                            if (processBeanAttributes != null)
                             {
-                                bdaBeanAttributes.put(at, new ExtendedBeanAttributes(beanAttributes, isEjb));
+                                bdaBeanAttributes.put(at, new ExtendedBeanAttributes(processBeanAttributes.getAttributes(), isEjb, processBeanAttributes.isIgnoreFinalMethods()));
                             }
                         }
                     }
@@ -1304,7 +1306,7 @@ public class BeansDeployer
                 if((ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(annotatedType))
                         && isValidManagedBean(annotatedType))
                 {
-                    defineManagedBean(annotatedType, annotatedTypeData.beanAttributes, annotatedTypes);
+                    defineManagedBean(annotatedType, annotatedTypeData, annotatedTypes);
                 }
             }
             catch (NoClassDefFoundError ncdfe)
@@ -1633,10 +1635,13 @@ public class BeansDeployer
 
     /**
      * Defines and configures managed bean.
-     * @param <T> type info
      */
-    protected <T> void defineManagedBean(AnnotatedType<T> annotatedType, BeanAttributes<T> attributes, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> annotatedTypes)
-    {   
+    protected <T> void defineManagedBean(AnnotatedType<T> annotatedType,
+                                         ExtendedBeanAttributes extendedBeanAttributes,
+                                         Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> annotatedTypes)
+    {
+        BeanAttributes attributes = extendedBeanAttributes.beanAttributes;
+
         //Fires ProcessInjectionTarget event for Java EE components instances
         //That supports injections but not managed beans
         Class beanClass = annotatedType.getJavaClass();
@@ -1652,7 +1657,8 @@ public class BeansDeployer
         }
 
         {
-            ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, attributes);
+            ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator
+                = new ManagedBeanBuilder<>(webBeansContext, annotatedType, attributes, extendedBeanAttributes.ignoreFinalMethods);
 
             if(WebBeansUtil.isDecorator(annotatedType))
             {
@@ -1820,11 +1826,13 @@ public class BeansDeployer
     {
         private final BeanAttributes<T> beanAttributes;
         private final boolean isEjb;
+        private final boolean ignoreFinalMethods;
 
-        public ExtendedBeanAttributes(final BeanAttributes<T> beanAttributes, final boolean isEjb)
+        public ExtendedBeanAttributes(BeanAttributes<T> beanAttributes, boolean isEjb, boolean ignoreFinalMethods)
         {
             this.beanAttributes = beanAttributes;
             this.isEjb = isEjb;
+            this.ignoreFinalMethods = ignoreFinalMethods;
         }
     }
 }

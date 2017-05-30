@@ -424,7 +424,7 @@ public final class WebBeansUtil
         BeanAttributesImpl<T> defaultBeanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
         BeanAttributesImpl<T> newBeanAttributes = new BeanAttributesImpl<T>(defaultBeanAttributes.getTypes(), Collections.<Annotation>singleton(new NewLiteral(type)));
         // TODO replace this by InjectionPointBuilder
-        ManagedBeanBuilder<T, ManagedBean<T>> beanBuilder = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, newBeanAttributes);
+        ManagedBeanBuilder<T, ManagedBean<T>> beanBuilder = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, newBeanAttributes, false);
         NewManagedBean<T> newBean
             = new NewManagedBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, newBeanAttributes, type, beanBuilder.getBean().getInjectionPoints());
         return newBean;
@@ -1385,7 +1385,7 @@ public final class WebBeansUtil
     public <T> ManagedBean<T> defineManagedBeanWithoutFireEvents(AnnotatedType<T> type)
     {
         BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(type).build();
-        ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, type, beanAttributes);
+        ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, type, beanAttributes, false);
 
         //Check for Enabled via Alternative
         setInjectionTargetBeanEnableFlag(managedBeanCreator.getBean());
@@ -1817,7 +1817,7 @@ public final class WebBeansUtil
         return false;
     }
 
-    public <T> BeanAttributes<T> fireProcessBeanAttributes(final Annotated annotatedType, final Class<?> type, final BeanAttributes<T> ba)
+    public <T> ProcessBeanAttributesImpl<T> fireProcessBeanAttributes(final Annotated annotatedType, final Class<?> type, final BeanAttributes<T> ba)
     {
         // we don't use bm stack since it is actually quite useless
         final ProcessBeanAttributesImpl event = new GProcessBeanAttributes(type, annotatedType, ba);
@@ -1844,16 +1844,12 @@ public final class WebBeansUtil
                 throw new WebBeansConfigurationException(beanAttributes.getScope() + " is not a scope");
             }
         }
-        else
-        {
-            beanAttributes = ba;
-        }
         event.setStarted();
         if (event.isVeto())
         {
             return null;
         }
-        return beanAttributes;
+        return event;
     }
 
     public void validateBeanInjection(final Bean<?> bean)
