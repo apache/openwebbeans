@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Priority;
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
@@ -44,6 +45,7 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.WithAnnotations;
 
 import org.apache.webbeans.component.AbstractOwbBean;
@@ -111,6 +113,8 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     
     /**\@Observes parameter*/
     private AnnotatedParameter<T> annotatedObservesParameter;
+
+    private int priority = ObserverMethod.DEFAULT_PRIORITY;
     
     private static class ObserverParams
     {
@@ -145,6 +149,13 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
                 observedQualifiers.add(annotation);
             }
         }
+
+        // detect the Priority
+        Priority priorityAnn = annotatedObservesParameter.getAnnotation(Priority.class);
+        if (priorityAnn != null)
+        {
+            priority = priorityAnn.value();
+        }
         
         final OpenWebBeansEjbPlugin ejbPlugin = getWebBeansContext().getPluginLoader().getEjbPlugin();
         if (ejbPlugin != null && ejbPlugin.isNewSessionBean(bean.getBeanClass()))
@@ -178,6 +189,11 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         }
     }
 
+    @Override
+    public int getPriority()
+    {
+        return priority;
+    }
 
     /**
      * {@inheritDoc}

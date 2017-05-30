@@ -26,7 +26,9 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -633,7 +635,12 @@ public final class NotificationManager
             throw new IllegalArgumentException("Firing container events is forbidden");
         }
 
-        Set<ObserverMethod<? super Object>> observerMethods = resolveObservers(event, metadata, isLifecycleEvent);
+        LinkedList<ObserverMethod<? super Object>> observerMethods = new LinkedList<>(resolveObservers(event, metadata, isLifecycleEvent));
+
+        // new in CDI-2.0: sort observers
+        Collections.sort(observerMethods,
+            (ObserverMethod o1, ObserverMethod o2) -> Integer.compare(o1.getPriority(), o2.getPriority()));
+
 
         for (ObserverMethod<? super Object> observer : observerMethods)
         {

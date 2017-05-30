@@ -25,6 +25,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1280,7 +1282,14 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, EventMetadataImpl metadata)
     {
-        return notificationManager.resolveObservers(event, metadata, false);
+        LinkedList<ObserverMethod<? super Object>> observerMethods
+            = new LinkedList<>(notificationManager.resolveObservers(event, metadata, false));
+
+        // new in CDI-2.0: sort observers
+        Collections.sort(observerMethods,
+            (ObserverMethod o1, ObserverMethod o2) -> Integer.compare(o1.getPriority(), o2.getPriority()));
+
+        return new LinkedHashSet<>(observerMethods);
     }
 
     @Override
