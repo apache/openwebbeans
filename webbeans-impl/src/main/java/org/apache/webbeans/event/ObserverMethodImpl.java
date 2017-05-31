@@ -38,6 +38,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -115,6 +116,8 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     private AnnotatedParameter<T> annotatedObservesParameter;
 
     private int priority = ObserverMethod.DEFAULT_PRIORITY;
+
+    private boolean isAsync = false;
     
     private static class ObserverParams
     {
@@ -139,8 +142,25 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         this.annotatedObserverMethod = annotatedObserverMethod;
         observedEventType = annotatedObservesParameter.getBaseType();
         Observes observes = annotatedObservesParameter.getAnnotation(Observes.class);
-        ifExist = observes.notifyObserver() == Reception.IF_EXISTS;
-        phase = observes.during();
+
+        Class<? extends Annotation> observerAnnotation;
+
+        if (observes != null)
+        {
+            ifExist = observes.notifyObserver() == Reception.IF_EXISTS;
+            phase = observes.during();
+            observerAnnotation = Observes.class;
+        }
+        else
+        {
+            ObservesAsync observesAsync = annotatedObservesParameter.getAnnotation(ObservesAsync.class);
+            ifExist = observesAsync.notifyObserver() == Reception.IF_EXISTS;
+            phase = TransactionPhase.IN_PROGRESS;
+            observerAnnotation = ObservesAsync.class;
+
+            isAsync = true;
+        }
+
         observedQualifiers = new HashSet<Annotation>();
         for (Annotation annotation: annotatedObservesParameter.getAnnotations())
         {
@@ -167,10 +187,10 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
             view = annotatedObserverMethod.getJavaMember();
         }
 
-        injectionPoints = new LinkedHashSet<InjectionPoint>();
+        injectionPoints = new LinkedHashSet<>();
         for (AnnotatedParameter<?> parameter: annotatedObserverMethod.getParameters())
         {
-            if (!parameter.isAnnotationPresent(Observes.class))
+            if (!parameter.isAnnotationPresent(observerAnnotation))
             {
                 Collection<Annotation> qualifierAnnots = getWebBeansContext().getAnnotationManager().getQualifierAnnotations(parameter.getAnnotations());
 
@@ -187,6 +207,12 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         {
             throw new WebBeansConfigurationException("@WithAnnotations must only be used for ProcessAnnotatedType events");
         }
+    }
+
+    @Override
+    public boolean isAsync()
+    {
+        return isAsync;
     }
 
     @Override

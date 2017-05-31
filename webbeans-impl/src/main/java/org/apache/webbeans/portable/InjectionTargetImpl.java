@@ -42,6 +42,7 @@ import org.apache.webbeans.util.ExceptionUtil;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
@@ -410,7 +411,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         {
             for (Annotation annotation : annotations)
             {
-                if (annotation.annotationType().equals(Observes.class))
+                if (annotation.annotationType().equals(Observes.class) || annotation.annotationType().equals(ObservesAsync.class))
                 {
                     return true;
                 }

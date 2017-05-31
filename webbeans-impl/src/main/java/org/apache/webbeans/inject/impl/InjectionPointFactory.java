@@ -27,6 +27,7 @@ import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedCallable;
@@ -177,8 +178,8 @@ public class InjectionPointFactory
 
         for (AnnotatedParameter<?> parameter : parameters)
         {
-            //@Observes is not injection point type for method parameters
-            if (parameter.getAnnotation(Observes.class) == null)
+            // @Observes and @ObservesAsync are not injection point type for method parameters
+            if (parameter.getAnnotation(Observes.class) == null && parameter.getAnnotation(ObservesAsync.class) == null)
             {
                 lists.add(buildInjectionPoint(owner, parameter, true));
             }
@@ -207,9 +208,10 @@ public class InjectionPointFactory
                 throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Disposes annotation in annotated constructor : " + constructor);
             }
 
-            if(parameter.isAnnotationPresent(Observes.class))
+            if(parameter.isAnnotationPresent(Observes.class) || parameter.isAnnotationPresent(ObservesAsync.class))
             {
-                throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Observes annotation in annotated constructor : " + constructor);
+                throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Observes nor @ObservesAsync annotation in annotated constructor : "
+                                                         + constructor);
             }
         }
     }
@@ -242,11 +244,12 @@ public class InjectionPointFactory
             annotationManager.checkForNewQualifierForDeployment(annotatedParameter.getBaseType(), annotatedMethod.getDeclaringType().getJavaClass(),
                     method.getName(), AnnotationUtil.asArray(annotatedParameter.getAnnotations()));
 
-            if(annotatedParameter.isAnnotationPresent(Disposes.class) ||
-                    annotatedParameter.isAnnotationPresent(Observes.class))
+            if (annotatedParameter.isAnnotationPresent(Disposes.class) ||
+                annotatedParameter.isAnnotationPresent(Observes.class) ||
+                annotatedParameter.isAnnotationPresent(ObservesAsync.class))
             {
                 throw new WebBeansConfigurationException("Error in defining injected methods in annotated method : " + annotatedMethod+ 
-                ". Reason : Initializer method parameters does not contain @Observes or @Dispose annotations.");
+                ". Reason : Initializer method parameters does not contain @Observes, @ObservesAsync or @Dispose annotations.");
                 
             }
         }

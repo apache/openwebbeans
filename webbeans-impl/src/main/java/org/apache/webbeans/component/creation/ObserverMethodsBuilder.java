@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.enterprise.event.Reception;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Disposes;
@@ -77,7 +78,7 @@ public class ObserverMethodsBuilder<T>
             AnnotatedParameter<?> observesParameter = null;
             for(AnnotatedParameter<?> parameter : parameters)
             {
-                if(parameter.isAnnotationPresent(Observes.class))
+                if(parameter.isAnnotationPresent(Observes.class) || parameter.isAnnotationPresent(ObservesAsync.class))
                 {
                     if (observesParameter != null)
                     {
@@ -145,8 +146,18 @@ public class ObserverMethodsBuilder<T>
         if (bean.getScope().equals(Dependent.class))
         {
             //Check Reception
+            Reception reception;
             Observes observes = annotatedParameter.getAnnotation(Observes.class);
-            Reception reception = observes.notifyObserver();
+            if (observes != null)
+            {
+                reception = observes.notifyObserver();
+            }
+            else
+            {
+                ObservesAsync observesAsync = annotatedParameter.getAnnotation(ObservesAsync.class);
+                reception = observesAsync.notifyObserver();
+            }
+
             if(reception.equals(Reception.IF_EXISTS))
             {
                 throw new WebBeansConfigurationException("Dependent Bean : " + annotatedType.getJavaClass() + " can not define observer method with @Receiver = IF_EXIST");

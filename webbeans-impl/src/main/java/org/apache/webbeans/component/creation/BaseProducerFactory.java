@@ -27,6 +27,7 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.GenericsUtil;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
@@ -197,6 +198,7 @@ public abstract class BaseProducerFactory<P> implements ProducerFactory<P>
         
         if(annotatedMethod.isAnnotationPresent(Inject.class) 
             || AnnotationUtil.hasAnnotatedMethodParameterAnnotation(annotatedMethod, Observes.class)
+            || AnnotationUtil.hasAnnotatedMethodParameterAnnotation(annotatedMethod, ObservesAsync.class)
             || annotatedMethod.isAnnotationPresent(Produces.class))
         {
             throw new WebBeansConfigurationException("Error in definining disposal method of annotated method : " + annotatedMethod

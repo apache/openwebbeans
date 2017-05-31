@@ -29,6 +29,7 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
@@ -139,7 +140,8 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
 
         if (annotatedMethod.isAnnotationPresent(Inject.class) || 
                 annotatedMethod.isAnnotationPresent(Disposes.class) ||  
-                annotatedMethod.isAnnotationPresent(Observes.class))
+                annotatedMethod.isAnnotationPresent(Observes.class) ||
+                annotatedMethod.isAnnotationPresent(ObservesAsync.class))
         {
             throw new WebBeansConfigurationException("Producer annotated method : " + annotatedMethod + " can not be annotated with"
                                                      + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");

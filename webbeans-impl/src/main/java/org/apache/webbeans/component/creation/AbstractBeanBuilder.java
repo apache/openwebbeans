@@ -19,6 +19,7 @@
 package org.apache.webbeans.component.creation;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedField;
@@ -116,9 +117,9 @@ public abstract class AbstractBeanBuilder<T>
 
             for (AnnotatedParameter<?> parameter : annotatedMethod.getParameters())
             {
-                if (parameter.isAnnotationPresent(Observes.class))
+                if (parameter.isAnnotationPresent(Observes.class) || parameter.isAnnotationPresent(ObservesAsync.class))
                 {
-                    throw new WebBeansConfigurationException("This class must not have a @Observes method " + annotatedMethod.getJavaMember());
+                    throw new WebBeansConfigurationException("This class must not have an @Observes nor @ObservesAsync method " + annotatedMethod.getJavaMember());
                 }
             }
         }
