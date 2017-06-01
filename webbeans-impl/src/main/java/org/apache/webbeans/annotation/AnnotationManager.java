@@ -47,6 +47,7 @@ import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Repeatable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -74,12 +75,15 @@ public final class AnnotationManager
     private final BeanManagerImpl beanManagerImpl;
     private final WebBeansContext webBeansContext;
 
+    private final boolean strictValidation;
+
     // No instantiate
 
     public AnnotationManager(WebBeansContext context)
     {
         webBeansContext = context;
         beanManagerImpl = context.getBeanManagerImpl();
+        strictValidation = context.getOpenWebBeansConfiguration().strictDynamicValidation();
     }
 
     public Annotation getDeclaredScopeAnnotation(Class<?> beanClass)
@@ -429,8 +433,23 @@ public final class AnnotationManager
      */
     public void checkQualifierConditions(Set<Annotation> qualifierAnnots)
     {
+        Set<Class<? extends Annotation>> usedQualifiers = strictValidation ? new HashSet<>(qualifierAnnots.size()) : null;
+
         for (Annotation ann : qualifierAnnots)
         {
+            if (usedQualifiers != null && usedQualifiers.contains(ann.annotationType()))
+            {
+                if (ann.annotationType().getAnnotation(Repeatable.class) == null)
+                {
+                    throw new IllegalArgumentException("Qualifier list must not contain multiple annotations or the same non-Repeatable type: "
+                        + ann.annotationType().getName());
+                }
+            }
+            if (usedQualifiers != null)
+            {
+                usedQualifiers.add(ann.annotationType());
+            }
+
             checkQualifierConditions(ann);
         }
     }

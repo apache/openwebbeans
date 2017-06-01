@@ -67,11 +67,12 @@ public class EventMetadataImpl implements EventMetadata, Serializable
         }
         else
         {
-            completeQualifiers = new HashSet<Annotation>(Arrays.asList(qualifiers));
+            completeQualifiers = new HashSet<>(Arrays.asList(qualifiers));
             if (completeQualifiers.size() != qualifiers.length)
             {
                 throw new IllegalArgumentException("duplicate qualifier");
             }
+
             if (!completeQualifiers.contains(AnyLiteral.INSTANCE))
             {
                 completeQualifiers.add(AnyLiteral.INSTANCE);

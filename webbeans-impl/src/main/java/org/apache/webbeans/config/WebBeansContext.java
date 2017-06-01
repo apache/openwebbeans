@@ -93,7 +93,7 @@ public class WebBeansContext
     private final PluginLoader pluginLoader = new PluginLoader();
     private final SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
     private final StereoTypeManager stereoTypeManager = new StereoTypeManager();
-    private final AnnotationManager annotationManager = new AnnotationManager(this);
+    private final AnnotationManager annotationManager;
     private final InjectionPointFactory injectionPointFactory = new InjectionPointFactory(this);
     private final InterceptorUtil interceptorUtil = new InterceptorUtil(this);
     private final SecurityService securityService;
@@ -122,6 +122,7 @@ public class WebBeansContext
     private WebBeansContext(Map<Class<?>, Object> initialServices, OpenWebBeansConfiguration openWebBeansConfiguration)
     {
         this.openWebBeansConfiguration = openWebBeansConfiguration != null ? openWebBeansConfiguration : new OpenWebBeansConfiguration();
+        annotationManager = new AnnotationManager(this);
 
         //pluggable service-loader
         if (initialServices == null || !initialServices.containsKey(LoaderService.class))
