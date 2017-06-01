@@ -355,6 +355,10 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
                 }
             }                        
         }
+        catch (InvocationTargetException ite)
+        {
+            throw new WebBeansException(ite.getCause());
+        }
         catch (Exception e)
         {
             throw new WebBeansException(e);
