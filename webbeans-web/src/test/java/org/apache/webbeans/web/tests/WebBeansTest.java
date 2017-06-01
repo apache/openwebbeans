@@ -79,7 +79,7 @@ public class WebBeansTest {
         @Override
         public void scan()
         {
-            archive = new CdiArchive(new DefaultBeanArchiveService(), Thread.currentThread().getContextClassLoader(), new HashMap<String, URL>(), null);
+            archive = new CdiArchive(new DefaultBeanArchiveService(), Thread.currentThread().getContextClassLoader(), new HashMap<String, URL>(), null, null);
             finder = new OwbAnnotationFinder(new ClassesArchive());
         }
     }

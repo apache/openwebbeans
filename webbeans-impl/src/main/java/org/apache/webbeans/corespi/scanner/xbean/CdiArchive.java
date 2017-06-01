@@ -53,15 +53,20 @@ public class CdiArchive implements Archive
     private final Archive delegate;
 
     public CdiArchive(BeanArchiveService beanArchiveService, final ClassLoader loader, final Map<String, URL> urls,
-                      final Filter userFilter)
+                      final Filter userFilter, final Archive customArchive)
     {
         final Collection<Archive> archives = new ArrayList<Archive>();
+        if (customArchive != null)
+        {
+            archives.add(userFilter != null ? new FilteredArchive(customArchive, userFilter) : customArchive);
+        }
         for (final URL url : urls.values())
         {
             final List<String> urlClasses = new ArrayList<String>();
 
             BeanArchiveInformation beanArchiveInfo = beanArchiveService.getBeanArchiveInformation(url);
-            final Archive archive = new FilteredArchive(ClasspathArchive.archive(loader, url),
+            final Archive archive = new FilteredArchive(
+                    "openwebbeans".equals(url.getProtocol()) ? customArchive : ClasspathArchive.archive(loader, url),
                     new BeanArchiveFilter(beanArchiveInfo, urlClasses, userFilter));
 
             classesByUrl.put(url.toExternalForm(), new FoundClasses(url, urlClasses, beanArchiveInfo));

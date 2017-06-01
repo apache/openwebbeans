@@ -35,6 +35,7 @@ import org.apache.webbeans.util.UrlSet;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.xbean.finder.AnnotationFinder;
 import org.apache.xbean.finder.ClassLoaders;
+import org.apache.xbean.finder.archive.Archive;
 import org.apache.xbean.finder.filter.Filter;
 
 import java.io.IOException;
@@ -92,13 +93,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
     protected OwbAnnotationFinder finder;
     protected boolean isBDAScannerEnabled = false;
     protected BDABeansXmlScanner bdaBeansXmlScanner;
-    protected final WebBeansContext webBeansContext;
-
-
-    protected AbstractMetaDataDiscovery()
-    {
-        webBeansContext = WebBeansContext.getInstance();
-    }
+    protected WebBeansContext webBeansContext;
 
     protected AnnotationFinder initFinder()
     {
@@ -109,14 +104,19 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
 
         if (beanArchiveService == null)
         {
-            beanArchiveService = webBeansContext.getBeanArchiveService();
+            beanArchiveService = webBeansContext().getBeanArchiveService();
         }
 
-        final Filter userFilter = webBeansContext.getService(Filter.class);
-        archive = new CdiArchive(beanArchiveService, WebBeansUtil.getCurrentClassLoader(), getBeanDeploymentUrls(), userFilter);
+        final Filter userFilter = webBeansContext().getService(Filter.class);
+        archive = new CdiArchive(beanArchiveService, WebBeansUtil.getCurrentClassLoader(), getBeanDeploymentUrls(), userFilter, getAdditionalArchive());
         finder = new OwbAnnotationFinder(archive);
 
         return finder;
+    }
+
+    protected Archive getAdditionalArchive()
+    {
+        return null;
     }
 
     /**
@@ -206,7 +206,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
                 }
             }
 
-            boolean onlyBeansXmlJars = webBeansContext.getOpenWebBeansConfiguration().scanOnlyBeansXmlJars();
+            boolean onlyBeansXmlJars = webBeansContext().getOpenWebBeansConfiguration().scanOnlyBeansXmlJars();
             if (!onlyBeansXmlJars)
             {
                 // third step: remove all jars we know they do not contain any CDI beans
@@ -358,7 +358,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         if (beanArchiveService == null)
         {
 
-            beanArchiveService = webBeansContext.getBeanArchiveService();
+            beanArchiveService = webBeansContext().getBeanArchiveService();
         }
 
         // just to trigger the creation
@@ -463,8 +463,8 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         try
         {
             Class<? extends Annotation> annotationType = (Class<? extends Annotation>) WebBeansUtil.getCurrentClassLoader().loadClass(annotationName);
-            boolean isBeanAnnotation = webBeansContext.getBeanManagerImpl().isScope(annotationType);
-            isBeanAnnotation = isBeanAnnotation || webBeansContext.getBeanManagerImpl().isStereotype(annotationType);
+            boolean isBeanAnnotation = webBeansContext().getBeanManagerImpl().isScope(annotationType);
+            isBeanAnnotation = isBeanAnnotation || webBeansContext().getBeanManagerImpl().isStereotype(annotationType);
 
             return isBeanAnnotation;
         }
@@ -491,5 +491,14 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
     public boolean isBDABeansXmlScanningEnabled()
     {
         return isBDAScannerEnabled;
+    }
+
+    protected WebBeansContext webBeansContext()
+    {
+        if (webBeansContext == null)
+        {
+            webBeansContext = WebBeansContext.getInstance();
+        }
+        return WebBeansContext.getInstance();
     }
 }

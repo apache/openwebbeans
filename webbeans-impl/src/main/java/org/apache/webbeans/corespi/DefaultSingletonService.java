@@ -60,6 +60,15 @@ public class DefaultSingletonService implements SingletonService<WebBeansContext
         }
     }
 
+    public void register(final ClassLoader key, final WebBeansContext context)
+    {
+        if (singletonMap.containsKey(key))
+        {
+            throw new IllegalArgumentException(key + " is already registered");
+        }
+        singletonMap.putIfAbsent(key, context);
+    }
+
     /**
      * Clear all deployment instances when the application is undeployed.
      * @param classLoader of the deployment

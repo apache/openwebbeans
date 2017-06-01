@@ -537,6 +537,7 @@
         <module>distribution</module>
         <module>webbeans-maven</module>
         <module>webbeans-gradle</module>
+        <module>webbeans-se</module>
     </modules>
 
     <dependencyManagement>

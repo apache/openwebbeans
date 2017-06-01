@@ -29,6 +29,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @version $Rev$ $Date$
  *
  */
+// TODO: we need to rework it to allow to re-set it at runtime (owb-se, openejb, meecrowave, ...) should be able to run sequentially
 public final class WebBeansFinder
 {   
     //How you use singleton provider ,
@@ -45,7 +46,12 @@ public final class WebBeansFinder
     {
         //No action
     }
-    
+
+    public static SingletonService<WebBeansContext> getSingletonService()
+    {
+        return singletonService;
+    }
+
     public static WebBeansContext getSingletonInstance()
     {
         return singletonService.get(WebBeansUtil.getCurrentClassLoader());
