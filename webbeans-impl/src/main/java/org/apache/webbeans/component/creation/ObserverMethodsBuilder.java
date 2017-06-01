@@ -127,7 +127,7 @@ public class ObserverMethodsBuilder<T>
         
         AnnotatedMethod<?> annotatedMethod = (AnnotatedMethod<?>)annotatedParameter.getDeclaringCallable();
 
-        if (annotatedMethod.isAnnotationPresent(Produces.class) 
+        if (annotatedMethod.isAnnotationPresent(Produces.class)
                 || annotatedMethod.isAnnotationPresent(Inject.class))
         {
             throw new WebBeansConfigurationException("Observer method : " + annotatedMethod.getJavaMember().getName() + " in class : " 
@@ -148,13 +148,21 @@ public class ObserverMethodsBuilder<T>
             //Check Reception
             Reception reception;
             Observes observes = annotatedParameter.getAnnotation(Observes.class);
+            ObservesAsync observesAsync = annotatedParameter.getAnnotation(ObservesAsync.class);
+
+            if (observes != null && observesAsync != null)
+            {
+                throw new WebBeansConfigurationException("Observer method : " + annotatedMethod.getJavaMember().getName() + " in class : "
+                    + annotatedMethod.getJavaMember().getDeclaringClass().getName()
+                    + " can not be annotated with both @Observes *and* @ObservesAsync!");
+            }
+
             if (observes != null)
             {
                 reception = observes.notifyObserver();
             }
             else
             {
-                ObservesAsync observesAsync = annotatedParameter.getAnnotation(ObservesAsync.class);
                 reception = observesAsync.notifyObserver();
             }
 
