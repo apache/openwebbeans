@@ -19,6 +19,8 @@
 
 package org.apache.webbeans.event;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -26,6 +28,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,9 +41,10 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.RequestScoped;
@@ -141,12 +145,14 @@ public final class NotificationManager
         this.defaultNotificationOptions = NotificationOptions.ofExecutor(getDefaultExecutor());
     }
 
-    //X TODO move to some SPI and implement properly!
-    private ExecutorService getDefaultExecutor()
+    private Executor getDefaultExecutor()
     {
-        // this is just for the start!
-        //X must get implemented properly with configuration etc
-        return Executors.newFixedThreadPool(5);
+        // here it would be nice to support to use a produced bean like @Named("openwebbeansCdiExecutor")
+        // instead of a direct spi
+        //
+        // logic is: if an Executor is registered as a spi use it, otherwise use JVM default one
+        final Executor service = webBeansContext.getService(Executor.class);
+        return service != null ? service : new CloseableExecutor(ForkJoinPool.commonPool());
     }
 
     /**
@@ -927,6 +933,56 @@ public final class NotificationManager
             {
                 complete(event);
             }
+        }
+    }
+
+    private static final class CloseableExecutor implements Executor, Closeable
+    {
+        private final Executor delegate;
+        private final Collection<Runnable> tracker = new CopyOnWriteArrayList<>();
+        private volatile boolean reject = false;
+
+        private CloseableExecutor(final Executor delegate)
+        {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void close() throws IOException
+        {
+            reject = true;
+            tracker.forEach(r -> {
+                try
+                {
+                    r.run();
+                }
+                catch (final RuntimeException re)
+                {
+                    WebBeansLoggerFacade.getLogger(NotificationManager.class).warning(re.getMessage());
+                }
+            });
+        }
+
+        @Override
+        public void execute(final Runnable command)
+        {
+            if (reject)
+            {
+                throw new RejectedExecutionException("CDI executor is shutdown");
+            }
+
+            tracker.add(command);
+            delegate.execute(() ->
+            {
+                try
+                {
+                    command.run();
+                }
+                finally
+                {
+                    tracker.remove(command);
+                }
+            });
         }
     }
 }

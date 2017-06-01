@@ -86,10 +86,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public <U extends T> CompletionStage<U> fireAsync(U event)
     {
-        Type eventType = event.getClass();
-        webBeansContext.getWebBeansUtil().validEventType(eventType.getClass(), metadata.getType());
-        return webBeansContext.getNotificationManager().fireEvent(event, metadata.select(eventType), false,
-                    webBeansContext.getNotificationManager().getDefaultNotificationOptions());
+        return fireAsync(event, webBeansContext.getNotificationManager().getDefaultNotificationOptions());
     }
 
     //X TODO OWB-1182 CDI 2.0

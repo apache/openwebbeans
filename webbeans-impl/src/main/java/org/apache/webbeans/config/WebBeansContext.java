@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -105,7 +106,7 @@ public class WebBeansContext
     private final ConversationManager conversationManager;
     private ConversationService conversationService = null;
     private final ApplicationBoundaryService applicationBoundaryService;
-    private final NotificationManager notificationManager = new NotificationManager(this);
+    private final NotificationManager notificationManager;
 
 
     public WebBeansContext()
@@ -158,6 +159,8 @@ public class WebBeansContext
 
         beanArchiveService = getService(BeanArchiveService.class);
         conversationManager = new ConversationManager(this);
+
+        notificationManager = new NotificationManager(this);
 
         // Allow the WebBeansContext itself to be looked up
         managerMap.put(getClass(), this);
@@ -489,6 +492,20 @@ public class WebBeansContext
                 {
                     logger.log(Level.SEVERE, "Error while destroying SPI service " + spiService.getClass().getName(), e);
                 }
+            }
+            else if (ExecutorService.class.isInstance(spiService))
+            {
+                ExecutorService es = ExecutorService.class.cast(spiService);
+                es.shutdownNow().forEach(r -> {
+                    try
+                    {
+                        r.run();
+                    }
+                    catch (final RuntimeException re)
+                    {
+                        logger.warning(re.getMessage());
+                    }
+                });
             }
         }
     }
