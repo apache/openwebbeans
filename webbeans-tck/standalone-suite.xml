@@ -126,6 +126,14 @@
                 <methods><exclude name="testAsyncObserversCalledInDifferentThread"/></methods>
             </class>
 
+            <!-- overreachingly defined checks for repeatable qualifiers -->
+            <class name="org.jboss.cdi.tck.tests.event.select.SelectEventTest">
+                <methods>
+                    <exclude name="testEventSelectThrowsExceptionForDuplicateBindingType"/>
+                    <exclude name="testEventSelectWithSubtypeThrowsExceptionForDuplicateBindingType"/>
+                </methods>
+            </class>
+
 
 
             <!--
