@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.RequestScoped;
@@ -799,15 +800,17 @@ public final class NotificationManager
                                            NotificationOptions notificationOptions)
     {
         CompletableFuture<?> future = new CompletableFuture<>();
-        try
-        {
-            runAsync(event, metadata, observer);
-            future.complete(null);
-        }
-        catch (final WebBeansException wbe)
-        {
-            future.completeExceptionally(wbe.getCause());
-        }
+        CompletableFuture.runAsync(() -> {
+            try
+            {
+                runAsync(event, metadata, observer);
+                future.complete(null);
+            }
+            catch (final WebBeansException wbe)
+            {
+                future.completeExceptionally(wbe.getCause());
+            }
+        }, notificationOptions.getExecutor() == null ? ForkJoinPool.commonPool() : notificationOptions.getExecutor());
         return future;
     }
 
