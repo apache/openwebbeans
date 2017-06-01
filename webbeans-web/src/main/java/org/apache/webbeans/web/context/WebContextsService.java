@@ -779,7 +779,7 @@ public class WebContextsService extends AbstractContextsService
     {
         if (fireRequestLifecycleEvents == null)
         {
-            NotificationManager notificationManager = webBeansContext.getBeanManagerImpl().getNotificationManager();
+            NotificationManager notificationManager = webBeansContext.getNotificationManager();
             fireRequestLifecycleEvents
                 = notificationManager.hasContextLifecycleObserver(InitializedLiteral.INSTANCE_REQUEST_SCOPED) ||
                   notificationManager.hasContextLifecycleObserver(DestroyedLiteral.INSTANCE_REQUEST_SCOPED);

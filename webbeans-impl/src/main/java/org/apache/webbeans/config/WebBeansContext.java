@@ -37,6 +37,7 @@ import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.deployment.StereoTypeManager;
+import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
@@ -104,6 +105,7 @@ public class WebBeansContext
     private final ConversationManager conversationManager;
     private ConversationService conversationService = null;
     private final ApplicationBoundaryService applicationBoundaryService;
+    private final NotificationManager notificationManager = new NotificationManager(this);
 
 
     public WebBeansContext()
@@ -177,6 +179,7 @@ public class WebBeansContext
         managerMap.put(SerializableBeanVault.class, serializableBeanVault);
         managerMap.put(StereoTypeManager.class, stereoTypeManager);
         managerMap.put(InterceptorResolutionService.class, interceptorResolutionService);
+        managerMap.put(NotificationManager.class, notificationManager);
 
     }
 
@@ -371,6 +374,11 @@ public class WebBeansContext
     public BeanArchiveService getBeanArchiveService()
     {
         return beanArchiveService;
+    }
+
+    public NotificationManager getNotificationManager()
+    {
+        return notificationManager;
     }
 
     public ConversationService getConversationService()

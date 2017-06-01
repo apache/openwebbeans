@@ -83,18 +83,23 @@ public class EventImpl<T> implements Event<T>, Serializable
         webBeansContext.getBeanManagerImpl().fireEvent(event, metadata.select(eventType), false);
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
-    public <U extends T> CompletionStage<U> fireAsync(U u)
+    public <U extends T> CompletionStage<U> fireAsync(U event)
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        Type eventType = event.getClass();
+        webBeansContext.getWebBeansUtil().validEventType(eventType.getClass(), metadata.getType());
+        return webBeansContext.getNotificationManager().fireEvent(event, metadata.select(eventType), false,
+                    webBeansContext.getNotificationManager().getDefaultNotificationOptions());
     }
 
     //X TODO OWB-1182 CDI 2.0
     @Override
-    public <U extends T> CompletionStage<U> fireAsync(U u, NotificationOptions notificationOptions)
+    public <U extends T> CompletionStage<U> fireAsync(U event, NotificationOptions notificationOptions)
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        Type eventType = event.getClass();
+        webBeansContext.getWebBeansUtil().validEventType(eventType.getClass(), metadata.getType());
+        return webBeansContext.getNotificationManager().fireEvent(event, metadata.select(eventType), false,
+                    notificationOptions);
     }
 
     /**
@@ -103,7 +108,6 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public Event<T> select(Annotation... bindings)
     {
-        
         return new EventImpl<T>(metadata.select(bindings), webBeansContext);
     }
     

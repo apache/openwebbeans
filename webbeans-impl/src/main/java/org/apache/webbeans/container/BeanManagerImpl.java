@@ -23,6 +23,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -58,6 +59,7 @@ import javax.naming.Reference;
 import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 
+import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractProducerBean;
@@ -83,8 +85,8 @@ import org.apache.webbeans.context.CustomAlterablePassivatingContextImpl;
 import org.apache.webbeans.context.CustomPassivatingContextImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DecoratorComparator;
+import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.event.EventMetadataImpl;
-import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.DuplicateDefinitionException;
 
@@ -145,9 +147,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     /**Normal scoped cache proxies*/
     private Map<Contextual<?>, Object> cacheProxies = new ConcurrentHashMap<Contextual<?>, Object>();
-
-    /**Event notification manager instance*/
-    private NotificationManager notificationManager = null;
 
     /**Injection resolver instance*/
     private InjectionResolver injectionResolver = null;
@@ -233,7 +232,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         this.webBeansContext = webBeansContext;
         injectionResolver = new InjectionResolver(webBeansContext);
-        notificationManager = new NotificationManager(webBeansContext);
         annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
     }
 
@@ -259,16 +257,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public ErrorStack getErrorStack()
     {
         return errorStack;
-    }
-
-    /**
-     * Return manager notification manager.
-     *
-     * @return notification manager
-     */
-    public NotificationManager getNotificationManager()
-    {
-        return notificationManager;
     }
 
     /**
@@ -464,11 +452,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         fireEvent(event, false, bindings);
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public Event<Object> getEvent()
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        return new EventImpl<>(new EventMetadataImpl(null, Object.class, null, new Annotation[]{AnyLiteral.INSTANCE}, webBeansContext), webBeansContext);
     }
 
     public void fireEvent(Object event, boolean containerEvent, Annotation... bindings)
@@ -486,7 +473,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     public void fireContextLifecyleEvent(Object payload, Annotation lifecycleQualifier)
     {
-        if (notificationManager.hasContextLifecycleObserver(lifecycleQualifier))
+        if (webBeansContext.getNotificationManager().hasContextLifecycleObserver(lifecycleQualifier))
         {
             fireEvent(payload, lifecycleQualifier);
         }
@@ -504,7 +491,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public void fireEvent(Object event, EventMetadataImpl metadata, boolean isLifecycleEvent)
     {
-        notificationManager.fireEvent(event, metadata, isLifecycleEvent);
+        webBeansContext.getNotificationManager().fireEvent(event, metadata, isLifecycleEvent, null);
     }
 
     public Set<Bean<?>> getComponents()
@@ -1283,11 +1270,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, EventMetadataImpl metadata)
     {
         LinkedList<ObserverMethod<? super Object>> observerMethods
-            = new LinkedList<>(notificationManager.resolveObservers(event, metadata, false));
+            = new LinkedList<>(webBeansContext.getNotificationManager().resolveObservers(event, metadata, false));
 
         // new in CDI-2.0: sort observers
-        Collections.sort(observerMethods,
-            (ObserverMethod o1, ObserverMethod o2) -> Integer.compare(o1.getPriority(), o2.getPriority()));
+        Collections.sort(observerMethods, Comparator.comparingInt(ObserverMethod::getPriority));
 
         return new LinkedHashSet<>(observerMethods);
     }

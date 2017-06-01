@@ -227,7 +227,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery, ExtensionAwar
         {
             beanManager.fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
             ObserverMethod newObserverMethod = event.getObserverMethod();
-            beanManager.getNotificationManager().addObserver(newObserverMethod);
+            webBeansContext.getNotificationManager().addObserver(newObserverMethod);
         }
     }
 

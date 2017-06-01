@@ -26,15 +26,22 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.NotificationOptions;
 import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
@@ -87,21 +94,23 @@ public final class NotificationManager
     private final Map<Type, Set<ObserverMethod<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverMethod<?>>>();
     private final WebBeansContext webBeansContext;
 
+    private final NotificationOptions defaultNotificationOptions;
+
     /**
      * Contains information whether certain Initialized and Destroyed events have observer methods.
      */
     private final ConcurrentMap<Annotation, Boolean> hasContextLifecycleEventObservers
-        = new ConcurrentHashMap<Annotation, Boolean>();
+        = new ConcurrentHashMap<>();
 
     /**
      * List of ObserverMethods cached by their raw types.
      */
     private final ConcurrentHashMap<Class<?>, Set<ObserverMethod<?>>> observersByRawType
-        = new ConcurrentHashMap<Class<?>, Set<ObserverMethod<?>>>();
+        = new ConcurrentHashMap<>();
 
 
 
-    public static final Set<Class> CONTAINER_EVENT_CLASSES = new HashSet<Class>(
+    public static final Set<Class> CONTAINER_EVENT_CLASSES = new HashSet<>(
         Arrays.asList(new Class[]{
             AfterBeanDiscovery.class,
             AfterDeploymentValidation.class,
@@ -126,6 +135,15 @@ public final class NotificationManager
     public NotificationManager(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
+        this.defaultNotificationOptions = NotificationOptions.ofExecutor(getDefaultExecutor());
+    }
+
+    //X TODO move to some SPI and implement properly!
+    private ExecutorService getDefaultExecutor()
+    {
+        // this is just for the start!
+        //X must get implemented properly with configuration etc
+        return Executors.newFixedThreadPool(5);
     }
 
     /**
@@ -628,8 +646,19 @@ public final class NotificationManager
         return matching;
     }
 
-    public void fireEvent(Object event, EventMetadataImpl metadata, boolean isLifecycleEvent)
+    public NotificationOptions getDefaultNotificationOptions()
     {
+        return defaultNotificationOptions;
+    }
+
+    /**
+     * Fire the given event
+     * @param notificationOptions if {@code null} then this is a synchronous event. Otherwise fireAsync
+     */
+    public <T> CompletionStage<T> fireEvent(Object event, EventMetadataImpl metadata, boolean isLifecycleEvent, NotificationOptions notificationOptions)
+    {
+        final boolean async = notificationOptions != null;
+
         if (!isLifecycleEvent && webBeansContext.getWebBeansUtil().isContainerEventType(event))
         {
             throw new IllegalArgumentException("Firing container events is forbidden");
@@ -637,10 +666,21 @@ public final class NotificationManager
 
         LinkedList<ObserverMethod<? super Object>> observerMethods = new LinkedList<>(resolveObservers(event, metadata, isLifecycleEvent));
 
-        // new in CDI-2.0: sort observers
-        Collections.sort(observerMethods,
-            (ObserverMethod o1, ObserverMethod o2) -> Integer.compare(o1.getPriority(), o2.getPriority()));
+        // filter for all async or all synchronous observermethods
+        // oldschool and not Streams, because of performance and avoiding tons of temporary objects
+        Iterator<ObserverMethod<? super Object>> observerMethodIterator = observerMethods.iterator();
+        while (observerMethodIterator.hasNext())
+        {
+            if (async != observerMethodIterator.next().isAsync())
+            {
+                observerMethodIterator.remove();
+            }
+        }
 
+        // new in CDI-2.0: sort observers
+        observerMethods.sort(Comparator.comparingInt(ObserverMethod::getPriority));
+
+        List<CompletableFuture<Void>> completableFutures = async ? new ArrayList<>() : null;
 
         for (ObserverMethod<? super Object> observer : observerMethods)
         {
@@ -656,6 +696,11 @@ public final class NotificationManager
                 
                 if(phase != null && !phase.equals(TransactionPhase.IN_PROGRESS))
                 {
+                    if (async)
+                    {
+                        throw new WebBeansConfigurationException("Async Observer Methods can only use TransactionPhase.IN_PROGRESS!");
+                    }
+
                     TransactionService transactionService = webBeansContext.getService(TransactionService.class);
                     if(transactionService != null)
                     {
@@ -663,25 +708,18 @@ public final class NotificationManager
                     }
                     else
                     {
-                        if (observer instanceof OwbObserverMethod)
-                        {
-                            ((OwbObserverMethod<? super Object>)observer).notify(event, metadata);
-                        }
-                        else
-                        {
-                            observer.notify(event);
-                        }
+                        invokeObserverMethod(event, metadata, observer);
                     }                    
                 }
                 else
                 {
-                    if (observer instanceof OwbObserverMethod)
+                    if (async)
                     {
-                        ((OwbObserverMethod<? super Object>)observer).notify(event, metadata);
+                        completableFutures.add(invokeObserverMethodAsync(event, metadata, observer, notificationOptions));
                     }
                     else
                     {
-                        observer.notify(event);
+                        invokeObserverMethod(event, metadata, observer);
                     }
                 }
             }
@@ -725,6 +763,53 @@ public final class NotificationManager
             {
                 throw new WebBeansException(e);
             }
+        }
+
+        return complete(completableFutures, (T) event);
+    }
+
+    private <T> CompletableFuture<T> complete(List<CompletableFuture<Void>> completableFutures, T event)
+    {
+        if (completableFutures == null)
+        {
+            return null;
+        }
+        return CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[completableFutures.size()]))
+                                .thenApply(v -> event);
+    }
+
+    //X TODO review
+    private CompletableFuture invokeObserverMethodAsync(Object event,
+                                           EventMetadataImpl metadata,
+                                           ObserverMethod<? super Object> observer,
+                                           NotificationOptions notificationOptions)
+    {
+        return CompletableFuture.runAsync(() -> runAsync(event, metadata, observer), notificationOptions.getExecutor());
+    }
+
+    private void runAsync(Object event, EventMetadataImpl metadata, ObserverMethod<? super Object> observer)
+    {
+        //X TODO set up threads, requestcontext etc
+        webBeansContext.getContextsService().startContext(RequestScoped.class, null);
+        try
+        {
+            invokeObserverMethod(event, metadata, observer);
+        }
+        finally
+        {
+            webBeansContext.getContextsService().endContext(RequestScoped.class, null);
+        }
+    }
+
+    private void invokeObserverMethod(Object event, EventMetadataImpl metadata, ObserverMethod<? super Object> observer)
+    {
+        if (observer instanceof OwbObserverMethod)
+        {
+            ((OwbObserverMethod<? super Object>)observer).notify(event, metadata);
+        }
+        else
+        {
+            observer.notify(event);
         }
     }
 

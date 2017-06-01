@@ -323,7 +323,7 @@ public class BeansDeployer
                 validateDecoratorDecoratedTypes();
                 validateDecoratorGenericTypes();
 
-                webBeansContext.getBeanManagerImpl().getNotificationManager().clearCaches();
+                webBeansContext.getNotificationManager().clearCaches();
 
                 // fire event
                 fireAfterDeploymentValidationEvent();
@@ -863,7 +863,7 @@ public class BeansDeployer
         logger.fine("Validation of the observer methods' injection points has started.");
         
         //Validate Observers
-        validateObservers(webBeansContext.getBeanManagerImpl().getNotificationManager().getObserverMethods());
+        validateObservers(webBeansContext.getNotificationManager().getObserverMethods());
 
         logger.info(OWBLogConst.INFO_0003);
     }
