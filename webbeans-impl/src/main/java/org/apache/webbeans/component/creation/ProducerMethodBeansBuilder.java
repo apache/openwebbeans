@@ -33,6 +33,7 @@ import javax.enterprise.event.ObservesAsync;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
+import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.inject.Inject;
@@ -98,8 +99,12 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
 
                     ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
 
-                    //X TODO validateProxyable returns the exception, throw the returned exception??
-                    webBeansContext.getDeploymentValidationService().validateProxyable(producerMethodBean, processBeanAttributes.isIgnoreFinalMethods());
+                    final UnproxyableResolutionException lazyException = webBeansContext.getDeploymentValidationService()
+                            .validateProxyable(producerMethodBean, processBeanAttributes.isIgnoreFinalMethods());
+                    if (lazyException != null) // should we use UnproxyableBean there too? if not required by TCK, better to fail eagerly
+                    {
+                        throw lazyException;
+                    }
                     producerMethodBeanCreator.validate();
 
                     if(specialize)

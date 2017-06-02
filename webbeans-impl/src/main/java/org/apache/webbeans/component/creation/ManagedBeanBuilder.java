@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.component.creation;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanAttributes;
@@ -75,30 +74,5 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
             return bean;
         }
         return (M) new UnproxyableBean<T>(webBeansContext, WebBeansType.MANAGED, beanAttributes, annotatedType, annotatedType.getJavaClass(), lazyException);
-    }
-
-    private static class UnproxyableBean<T> extends ManagedBean<T>
-    {
-        private final UnproxyableResolutionException exception;
-
-        public UnproxyableBean(final WebBeansContext webBeansContext, final WebBeansType webBeansType,
-                               final BeanAttributes<T> beanAttributes, final AnnotatedType<T> at, final Class<T> beanClass,
-                               final UnproxyableResolutionException error)
-        {
-            super(webBeansContext, webBeansType, at, beanAttributes, beanClass);
-            this.exception = error;
-        }
-
-        @Override
-        public boolean valid()
-        {
-            throw exception;
-        }
-
-        @Override
-        public T create(final CreationalContext<T> creationalContext)
-        {
-            throw exception;
-        }
     }
 }

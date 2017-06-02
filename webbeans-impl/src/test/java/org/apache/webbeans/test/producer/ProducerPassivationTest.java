@@ -16,16 +16,16 @@
  */
 package org.apache.webbeans.test.producer;
 
+import org.apache.webbeans.test.AbstractUnitTest;
+import org.junit.Assert;
+import org.junit.Test;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.DefinitionException;
 import javax.inject.Inject;
 import java.io.Serializable;
-
-import org.junit.Assert;
-import org.apache.webbeans.test.AbstractUnitTest;
-import org.junit.Test;
 
 /**
  * Tests passivation capability detection for producerMethods

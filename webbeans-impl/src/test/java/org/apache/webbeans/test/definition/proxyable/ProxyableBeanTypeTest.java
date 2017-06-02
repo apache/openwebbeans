@@ -19,20 +19,19 @@
 package org.apache.webbeans.test.definition.proxyable;
 
 
-import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.definition.proxyable.beans.BaseClassWithPublicFinalMethod;
 import org.apache.webbeans.test.definition.proxyable.beans.BeanWithPrivateFinalMethod;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.apache.webbeans.test.definition.proxyable.beans.BeanWithPublicFinalMethod;
 import org.apache.webbeans.test.definition.proxyable.beans.DependentBeanWithoutDefaultCt;
 import org.apache.webbeans.test.definition.proxyable.beans.NonAbstractSubClassBean;
 import org.apache.webbeans.test.definition.proxyable.beans.SubClassWithNormalScope;
 import org.junit.Assert;
 import org.junit.Test;
+
+import javax.enterprise.inject.UnproxyableResolutionException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * This test checks for various conditions about NormalScope
@@ -65,16 +64,18 @@ public class ProxyableBeanTypeTest extends AbstractUnitTest
 
     }
 
-    @Test(expected = WebBeansConfigurationException.class)
+    @Test(expected = UnproxyableResolutionException.class)
     public void testBeanWithPublicFinalMethods()
     {
         startContainer(BeanWithPublicFinalMethod.class);
+        getInstance(BeanWithPublicFinalMethod.class);
     }
 
-    @Test(expected = WebBeansConfigurationException.class)
+    @Test(expected = UnproxyableResolutionException.class)
     public void testSubclassBeanWithPublicFinalMethods()
     {
         startContainer(SubClassWithNormalScope.class, BaseClassWithPublicFinalMethod.class);
+        getInstance(SubClassWithNormalScope.class);
     }
 
     @Test

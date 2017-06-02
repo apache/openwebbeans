@@ -36,11 +36,6 @@ public class InjectionExceptionUtil
         // utility class ct
     }
 
-    public static void throwUnproxyableResolutionException(ViolationMessageBuilder violationMessage)
-    {
-        throw createUnproxyableResolutionException(violationMessage);
-    }
-
     public static UnproxyableResolutionException createUnproxyableResolutionException(ViolationMessageBuilder violationMessage)
     {
         return new UnproxyableResolutionException(

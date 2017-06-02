@@ -18,7 +18,9 @@
 <suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue">
   <test name="JSR-346 TCK">
     <classes>
-          <class name="org.jboss.cdi.tck.tests.event.observer.async.handlingExceptions.MultipleExceptionsInObserversNotificationTest" />
+          <class name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.specialization.VetoTest" />
+          <class name="org.jboss.cdi.tck.tests.implementation.simple.lifecycle.unproxyable.UnproxyableManagedBeanTest" />
+          <class name="org.jboss.cdi.tck.tests.context.passivating.broken.producer.field.managed.NonPassivationCapableProducerFieldTest" />
       <!--
       <class name="org.jboss.cdi.tck.tests.event.parameterized.ParameterizedEventTest" />
       <class name="org.jboss.cdi.tck.tests.event.fires.FireEventTest" />

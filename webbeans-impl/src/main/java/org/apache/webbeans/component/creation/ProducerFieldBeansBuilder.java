@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.inject.Named;
@@ -107,10 +108,15 @@ public class ProducerFieldBeansBuilder<T>
                     ProcessBeanAttributesImpl<T> processBeanAttributes = fireProcessBeanAttributes(annotatedField);
 
                     ProducerFieldBeanBuilder<T, ProducerFieldBean<T>> producerFieldBeanCreator
-                        = new ProducerFieldBeanBuilder<T, ProducerFieldBean<T>>(bean, annotatedField, processBeanAttributes.getAttributes());
+                        = new ProducerFieldBeanBuilder<>(bean, annotatedField, processBeanAttributes.getAttributes());
                     ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
 
-                    webBeansContext.getDeploymentValidationService().validateProxyable(producerFieldBean, processBeanAttributes.isIgnoreFinalMethods());
+                    final UnproxyableResolutionException lazyException = webBeansContext.getDeploymentValidationService()
+                            .validateProxyable(producerFieldBean, processBeanAttributes.isIgnoreFinalMethods());
+                    if (lazyException != null) // should we use UnproxyableBean there too? if not required by TCK, better to fail eagerly
+                    {
+                        throw lazyException;
+                    }
                     producerFieldBeanCreator.validate();
 
                     producerFieldBean.setProducerField(field);

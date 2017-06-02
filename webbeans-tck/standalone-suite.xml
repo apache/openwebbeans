@@ -116,11 +116,6 @@
                 <methods><exclude name=".*"/></methods>
             </class>
 
-            <!-- https://issues.jboss.org/browse/CDITCK-584 -->
-            <class name="org.jboss.cdi.tck.tests.implementation.simple.lifecycle.unproxyable.UnproxyableManagedBeanTest">
-                <methods><exclude name=".*"/></methods>
-            </class>
-
             <!-- https://issues.jboss.org/browse/CDITCK-586 -->
             <class name="org.jboss.cdi.tck.tests.event.observer.async.basic.MixedObserversTest">
                 <methods><exclude name="testAsyncObserversCalledInDifferentThread"/></methods>

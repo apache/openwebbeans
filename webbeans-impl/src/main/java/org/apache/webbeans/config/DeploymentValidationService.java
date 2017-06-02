@@ -19,7 +19,6 @@
 package org.apache.webbeans.config;
 
 import static org.apache.webbeans.util.InjectionExceptionUtil.createUnproxyableResolutionException;
-import static org.apache.webbeans.util.InjectionExceptionUtil.throwUnproxyableResolutionException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -139,10 +138,9 @@ public class DeploymentValidationService
                     }
                 }
 
-                //Throw Exception
                 if(violationMessage.containsViolation())
                 {
-                    throwUnproxyableResolutionException(violationMessage);
+                    return createUnproxyableResolutionException(violationMessage);
                 }
             }
         }

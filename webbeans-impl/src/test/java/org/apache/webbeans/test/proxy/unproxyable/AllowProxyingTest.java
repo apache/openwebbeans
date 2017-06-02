@@ -19,6 +19,7 @@ package org.apache.webbeans.test.proxy.unproxyable;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.spi.DefinitionException;
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class AllowProxyingTest extends AbstractUnitTest
     }
 
 
-    @Test(expected = DefinitionException.class)
+    @Test(expected = UnproxyableResolutionException.class)
     public void testNonProxyableException()
     {
         startContainer(SomeClassWithFinalMethods.class);
