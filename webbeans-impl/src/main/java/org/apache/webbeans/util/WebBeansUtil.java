@@ -971,7 +971,7 @@ public final class WebBeansUtil
      */
     public <T> GProcessAnnotatedType fireProcessAnnotatedTypeEvent(AnnotatedType<T> annotatedType)
     {
-        GProcessAnnotatedType processAnnotatedEvent = new GProcessAnnotatedType(annotatedType);
+        GProcessAnnotatedType processAnnotatedEvent = new GProcessAnnotatedType(webBeansContext, annotatedType);
 
         //Fires ProcessAnnotatedType
         webBeansContext.getBeanManagerImpl().fireEvent(processAnnotatedEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);

@@ -43,7 +43,7 @@ import org.apache.webbeans.config.WebBeansContext;
  * @param <X> class type
  * @version $Rev$ $Date$
  */
-class AnnotatedTypeImpl<X>
+public class AnnotatedTypeImpl<X>
     extends AbstractAnnotated
     implements AnnotatedType<X>
 {
@@ -102,6 +102,32 @@ class AnnotatedTypeImpl<X>
             }
             setAnnotations(annotations.toArray(new Annotation[annotations.size()]));
         }
+    }
+
+    /**
+     * Copy constructor
+     *
+     * @param webBeansContext actual {@link WebBeansContext}
+     * @param annotatedType to copy
+     */
+    public AnnotatedTypeImpl(WebBeansContext webBeansContext, AnnotatedType annotatedType)
+    {
+        super(webBeansContext, annotatedType);
+        this.annotatedClass = annotatedType.getJavaClass();
+
+        //X TODO revisit!!
+        if (annotatedType instanceof AnnotatedTypeImpl)
+        {
+            AnnotatedTypeImpl annotatedTypeImpl = (AnnotatedTypeImpl) annotatedType;
+            this.supertype = annotatedTypeImpl.supertype;
+            this.state = annotatedTypeImpl.state;
+        }
+        else
+        {
+            // X TODO
+            this.supertype = null;
+        }
+
     }
 
     /**

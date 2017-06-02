@@ -138,7 +138,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
 
     //X TODO OWB-1182 CDI 2.0
     @Override
-    public <T> AnnotatedTypeConfigurator<T> addAnnotatedType(Class<T> aClass, String s)
+    public <T> AnnotatedTypeConfigurator<T> addAnnotatedType(Class<T> clazz, String id)
     {
         throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }

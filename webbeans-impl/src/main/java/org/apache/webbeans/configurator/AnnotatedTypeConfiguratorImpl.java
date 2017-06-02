@@ -18,6 +18,9 @@
  */
 package org.apache.webbeans.configurator;
 
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.AnnotatedTypeImpl;
+
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator;
 import javax.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator;
@@ -26,42 +29,48 @@ import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class AnnotatedTypeConfiguratorImpl implements AnnotatedTypeConfigurator
 {
+
+    private final AnnotatedTypeImpl<?> annotatedType;
+
+
+    public AnnotatedTypeConfiguratorImpl(WebBeansContext webBeansContext, AnnotatedType<?> annotatedType)
+    {
+        this.annotatedType = new AnnotatedTypeImpl<>(webBeansContext, annotatedType);
+    }
+
+
     @Override
     public AnnotatedType getAnnotated()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        return annotatedType;
     }
 
     @Override
     public AnnotatedTypeConfigurator add(Annotation annotation)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedType.addAnnotation(annotation);
+        return this;
     }
 
     @Override
     public AnnotatedTypeConfigurator remove(Predicate predicate)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedType.getAnnotations().removeIf(predicate);
+        return this;
     }
 
     @Override
     public AnnotatedTypeConfigurator removeAll()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedType.clearAnnotations();
+        return this;
     }
 
     @Override
     public Set<AnnotatedMethodConfigurator> methods()
-    {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
-    }
-
-    @Override
-    public Stream<AnnotatedMethodConfigurator> filterMethods(Predicate predicate)
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
@@ -73,20 +82,9 @@ public class AnnotatedTypeConfiguratorImpl implements AnnotatedTypeConfigurator
     }
 
     @Override
-    public Stream<AnnotatedFieldConfigurator> filterFields(Predicate predicate)
-    {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
-    }
-
-    @Override
     public Set<AnnotatedConstructorConfigurator> constructors()
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
 
-    @Override
-    public Stream<AnnotatedConstructorConfigurator> filterConstructors(Predicate predicate)
-    {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
-    }
 }

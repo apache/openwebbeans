@@ -18,6 +18,9 @@
  */
 package org.apache.webbeans.portable.events;
 
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.configurator.AnnotatedTypeConfiguratorImpl;
+
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
@@ -29,6 +32,10 @@ import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
  */
 public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnnotatedType<X>
 {
+
+    private final WebBeansContext webBeansContext;
+
+
     /**Annotated Type*/
     private AnnotatedType<X> annotatedType = null;
     
@@ -42,13 +49,16 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
      */
     private boolean modifiedAnnotatedType = false;
 
+    private AnnotatedTypeConfiguratorImpl configurator;
+
     /**
      * Creates a new instance with the given annotated type.
      * 
      * @param annotatedType annotated type
      */
-    public ProcessAnnotatedTypeImpl(AnnotatedType<X> annotatedType)
+    public ProcessAnnotatedTypeImpl(WebBeansContext webBeansContext, AnnotatedType<X> annotatedType)
     {
+        this.webBeansContext = webBeansContext;
         this.annotatedType = annotatedType;
     }
     
@@ -59,7 +69,15 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
     public AnnotatedType<X> getAnnotatedType()
     {
         checkState();
-        return annotatedType;
+
+        if (configurator == null)
+        {
+            return annotatedType;
+        }
+        else
+        {
+            return configurator.getAnnotated();
+        }
     }
 
     /**
@@ -71,6 +89,10 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
         checkState();
         annotatedType = type;
         modifiedAnnotatedType = true;
+
+        //X TODO test
+        // reset configurator
+        configurator = null;
     }
     
     /**
@@ -92,11 +114,15 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
         veto = true;
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public AnnotatedTypeConfigurator<X> configureAnnotatedType()
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        if (configurator == null)
+        {
+            configurator = new AnnotatedTypeConfiguratorImpl(webBeansContext, annotatedType);
+        }
+
+        return configurator;
     }
 
     /**

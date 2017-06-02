@@ -20,14 +20,15 @@ package org.apache.webbeans.portable.events.generics;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 
 @SuppressWarnings("unchecked")
 public class GProcessAnnotatedType extends ProcessAnnotatedTypeImpl implements GenericBeanEvent
 {
-    public GProcessAnnotatedType(AnnotatedType annotatedType )
+    public GProcessAnnotatedType(WebBeansContext webBeansContext, AnnotatedType annotatedType )
     {
-        super(annotatedType);
+        super(webBeansContext, annotatedType);
     }
 
     @Override

@@ -65,11 +65,28 @@ abstract class AbstractAnnotated implements Annotated
     }
 
     /**
+     * Copy consturctor
+     *
+     * @param webBeansContext current {@link WebBeansContext}
+     * @param annotated to copy
+     */
+    protected AbstractAnnotated(WebBeansContext webBeansContext, Annotated annotated)
+    {
+        this.baseType = annotated.getBaseType();
+        this.webBeansContext = webBeansContext;
+
+        this.typeClosures = annotated.getTypeClosure();
+        this.annotations.addAll(annotated.getAnnotations());
+    }
+
+
+
+    /**
      * Adds new annotation to set.
      * 
      * @param annotation new annotation
      */
-    protected void addAnnotation(Annotation annotation)
+    public void addAnnotation(Annotation annotation)
     {
         annotations.add(annotation);
     }
@@ -86,8 +103,13 @@ abstract class AbstractAnnotated implements Annotated
      */
     protected void setAnnotations(Annotation[] annotations)
     {        
-        this.annotations.clear();
+        clearAnnotations();
         Collections.addAll(this.annotations, annotations);
+    }
+
+    public void clearAnnotations()
+    {
+        annotations.clear();
     }
     
     /**
