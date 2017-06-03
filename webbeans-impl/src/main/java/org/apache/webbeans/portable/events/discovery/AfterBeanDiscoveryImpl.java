@@ -39,6 +39,7 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.portable.events.EventBase;
 import org.apache.webbeans.portable.events.generics.GProcessSyntheticBean;
 import org.apache.webbeans.portable.events.generics.GProcessSyntheticObserverMethod;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -52,7 +53,7 @@ import java.util.logging.Logger;
  * @version $Rev$ $Date$
  *
  */
-public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery, ExtensionAware
+public class AfterBeanDiscoveryImpl extends EventBase implements AfterBeanDiscovery, ExtensionAware
 {
     private BeanManagerImpl beanManager = null;
 
@@ -60,17 +61,11 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery, ExtensionAwar
     private final WebBeansContext webBeansContext;
 
     private Extension extension;
-    private boolean started;
 
     public AfterBeanDiscoveryImpl(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
         beanManager = this.webBeansContext.getBeanManagerImpl();
-    }
-
-    public void setStarted()
-    {
-        started = true;
     }
 
     @Override
@@ -85,10 +80,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery, ExtensionAwar
     @Override
     public void addBean(Bean<?> bean)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Don't call AfterBeanDiscovery.addBean(bean) after the event is fired");
-        }
+        checkState();
 
         AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(bean.getBeanClass());
 
@@ -191,10 +183,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery, ExtensionAwar
     @Override
     public void addContext(Context context)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Don't call AfterBeanDiscovery.addContext(...) after the event is fired");
-        }
+        checkState();
         beanManager.addContext(context);
 
     }
@@ -205,10 +194,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery, ExtensionAwar
     @Override
     public void addDefinitionError(Throwable t)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Don't call AfterBeanDiscovery.addBean(bean) after the event is fired");
-        }
+        checkState();
         beanManager.getErrorStack().pushError(t);
     }
 
@@ -218,10 +204,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery, ExtensionAwar
     @Override
     public void addObserverMethod(ObserverMethod<?> observerMethod)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Don't call AfterBeanDiscovery.addObserverMethod(...) after the event is fired");
-        }
+        checkState();
         GProcessSyntheticObserverMethod event = new GProcessSyntheticObserverMethod(null,observerMethod, extension);
         if (!event.isVetoed())
         {
@@ -236,10 +219,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery, ExtensionAwar
      */
     public <T> AnnotatedType<T> getAnnotatedType(Class<T> type, String id)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Don't call AfterBeanDiscovery.getAnnotatedType(...) after the event is fired");
-        }
+        checkState();
         return (AnnotatedType<T>) beanManager.getAdditionalAnnotatedType(type, id);
     }
 
@@ -248,10 +228,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery, ExtensionAwar
      */
     public <T> Iterable<AnnotatedType<T>> getAnnotatedTypes(Class<T> type)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Don't call AfterBeanDiscovery.getAnnotatedTypes(...) after the event is fired");
-        }
+        checkState();
         return beanManager.getAnnotatedTypes(type);
     }
 
@@ -259,6 +236,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery, ExtensionAwar
     @Override
     public <T> BeanConfigurator<T> addBean()
     {
+        checkState();
         throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
@@ -266,6 +244,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery, ExtensionAwar
     @Override
     public <T> ObserverMethodConfigurator<T> addObserverMethod()
     {
+        checkState();
         throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 

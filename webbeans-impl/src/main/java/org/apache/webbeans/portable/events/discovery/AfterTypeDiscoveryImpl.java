@@ -86,6 +86,7 @@ public class AfterTypeDiscoveryImpl extends EventBase implements AfterTypeDiscov
     @Override
     public <T> AnnotatedTypeConfigurator<T> addAnnotatedType(Class<T> forClass, String id)
     {
+        checkState();
         throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 

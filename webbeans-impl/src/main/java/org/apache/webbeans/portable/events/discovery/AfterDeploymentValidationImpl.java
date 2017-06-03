@@ -21,6 +21,7 @@ package org.apache.webbeans.portable.events.discovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.portable.events.EventBase;
 
 /**
  * Event that is fired by the container after it validates
@@ -29,20 +30,15 @@ import org.apache.webbeans.container.BeanManagerImpl;
  * @version $Rev$ $Date$
  *
  */
-public class AfterDeploymentValidationImpl implements AfterDeploymentValidation
+public class AfterDeploymentValidationImpl extends EventBase implements AfterDeploymentValidation
 {
     private final BeanManagerImpl beanManagerImpl;
-    private boolean started;
 
     public AfterDeploymentValidationImpl(BeanManagerImpl beanManagerImpl)
     {
         this.beanManagerImpl = beanManagerImpl;
     }
 
-    public void setStarted()
-    {
-        started = true;
-    }
 
     /**
      * {@inheritDoc}
@@ -50,10 +46,7 @@ public class AfterDeploymentValidationImpl implements AfterDeploymentValidation
     @Override
     public void addDeploymentProblem(Throwable t)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Only call container eevnt methods in their lifecycle");
-        }
+        checkState();
         beanManagerImpl.getErrorStack().pushError(t);
     }
 
