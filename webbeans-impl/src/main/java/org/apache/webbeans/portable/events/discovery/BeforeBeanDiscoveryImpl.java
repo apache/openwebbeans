@@ -29,6 +29,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.deployment.StereoTypeModel;
+import org.apache.webbeans.portable.events.EventBase;
 
 /**
  * Events that is fired before container starts to discover beans.
@@ -36,13 +37,12 @@ import org.apache.webbeans.deployment.StereoTypeModel;
  * @version $Rev$ $Date$
  *
  */
-public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAware
+public class BeforeBeanDiscoveryImpl extends EventBase implements BeforeBeanDiscovery, ExtensionAware
 {
     
     private BeanManagerImpl beanManager = null;
     private final WebBeansContext webBeansContext;
     private Extension extension;
-    private boolean started;
 
     public BeforeBeanDiscoveryImpl(WebBeansContext webBeansContext)
     {
@@ -50,20 +50,13 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
         beanManager = this.webBeansContext.getBeanManagerImpl();
     }
 
-    public void setStarted()
-    {
-        started = true;
-    }
     /**
      * {@inheritDoc}
      */
     @Override
     public void addAnnotatedType(AnnotatedType<?> type)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Only call container eevnt methods in their lifecycle");
-        }
+        checkState();
         beanManager.addAdditionalAnnotatedType(extension, type);
     }
 
@@ -73,10 +66,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
     @Override
     public void addQualifier(Class<? extends Annotation> qualifier)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Only call container eevnt methods in their lifecycle");
-        }
+        checkState();
         beanManager.addAdditionalQualifier(qualifier);
         
     }
@@ -87,10 +77,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
     @Override
     public void addInterceptorBinding(Class<? extends Annotation> binding, Annotation... bindingDef)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Only call container eevnt methods in their lifecycle");
-        }
+        checkState();
         webBeansContext.getInterceptorsManager().addInterceptorBindingType(binding, bindingDef);
     }
 
@@ -100,10 +87,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
     @Override
     public void addScope(Class<? extends Annotation> scope, boolean normal, boolean passivating)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Only call container eevnt methods in their lifecycle");
-        }
+        checkState();
         ExternalScope additionalScope = new ExternalScope(scope, normal, passivating); 
         beanManager.addAdditionalScope(additionalScope);
     }
@@ -114,10 +98,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
     @Override
     public void addStereotype(Class<? extends Annotation> stereotype, Annotation... stereotypeDef)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Only call container eevnt methods in their lifecycle");
-        }
+        checkState();
         webBeansContext.getAnnotationManager().checkStereoTypeClass(stereotype, stereotypeDef);
         StereoTypeModel model = new StereoTypeModel(webBeansContext, stereotype, stereotypeDef);
         webBeansContext.getStereoTypeManager().addStereoTypeModel(model);
@@ -129,10 +110,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
     @Override
     public void addAnnotatedType(AnnotatedType<?> annotatedType, String id)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Only call container eevnt methods in their lifecycle");
-        }
+        checkState();
         beanManager.addAdditionalAnnotatedType(extension, annotatedType, id);
     }
 
@@ -140,6 +118,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
     @Override
     public <T> AnnotatedTypeConfigurator<T> addAnnotatedType(Class<T> clazz, String id)
     {
+        checkState();
         throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
@@ -147,6 +126,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
     @Override
     public <T extends Annotation> AnnotatedTypeConfigurator<T> configureInterceptorBinding(Class<T> aClass)
     {
+        checkState();
         throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
@@ -154,6 +134,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
     @Override
     public <T extends Annotation> AnnotatedTypeConfigurator<T> configureQualifier(Class<T> aClass)
     {
+        checkState();
         throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
@@ -163,10 +144,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
     @Override
     public void addInterceptorBinding(AnnotatedType<? extends Annotation> annotatedType)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Only call container eevnt methods in their lifecycle");
-        }
+        checkState();
         // TODO extract inherited types
         webBeansContext.getInterceptorsManager().addInterceptorBindingType(annotatedType);
     }
@@ -177,10 +155,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery, ExtensionAw
     @Override
     public void addQualifier(AnnotatedType<? extends Annotation> annotatedType)
     {
-        if (started)
-        {
-            throw new IllegalStateException("Only call container eevnt methods in their lifecycle");
-        }
+        checkState();
         beanManager.addAdditionalQualifier(annotatedType);
     }
 
