@@ -38,7 +38,7 @@ public class AddBeanExtension implements Extension
     {
         
     }
-    
+
     public static class MyBeanExtension implements Extension
     {
         public static Bean<MyBean> myBean;

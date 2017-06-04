@@ -70,6 +70,7 @@ import org.apache.webbeans.portable.events.ProcessSyntheticAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
 import org.apache.webbeans.portable.events.discovery.AfterTypeDiscoveryImpl;
+import org.apache.webbeans.portable.events.discovery.AnnotatedTypeConfiguratorHolder;
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
@@ -674,6 +675,14 @@ public class BeansDeployer
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         BeforeBeanDiscoveryImpl event = new BeforeBeanDiscoveryImpl(webBeansContext);
         manager.fireLifecycleEvent(event);
+        for (AnnotatedTypeConfiguratorHolder holder : event.getAnnotatedTypeConfigurators())
+        {
+            manager.addAdditionalAnnotatedType(
+                holder.getExtension(),
+                holder.getAnnotatedTypeConfigurator().getAnnotated(),
+                holder.getId());
+        }
+
         event.setStarted();
     }
     

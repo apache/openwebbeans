@@ -28,6 +28,7 @@ import javax.enterprise.context.SessionScoped;
  */
 public class SessionScopeLiteral extends EmptyAnnotationLiteral<SessionScoped> implements SessionScoped
 {
+    public static final SessionScopeLiteral INSTANCE = new SessionScopeLiteral();
 
     private static final long serialVersionUID = -7469945140661485990L;
 }

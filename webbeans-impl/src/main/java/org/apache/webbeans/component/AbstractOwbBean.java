@@ -205,19 +205,21 @@ public abstract class AbstractOwbBean<T>
         }
         if (passivatingId == null)
         {
-            passivatingId = providedId();
+            StringBuilder sb = new StringBuilder(webBeansType.toString()).append('#');
 
-            if (passivatingId == null)
+            String providedId = providedId();
+            if (providedId != null)
             {
-                StringBuilder sb = new StringBuilder(webBeansType.toString()).append('#');
-                sb.append(getReturnType()).append('#');
-                for (Annotation qualifier : getQualifiers())
-                {
-                    sb.append(qualifier.toString()).append(',');
-                }
-
-                passivatingId = sb.toString();
+                sb.append(providedId).append('#');
             }
+
+            sb.append(getReturnType()).append('#');
+            for (Annotation qualifier : getQualifiers())
+            {
+                sb.append(qualifier.toString()).append(',');
+            }
+
+            passivatingId = sb.toString();
         }
 
         return passivatingId;

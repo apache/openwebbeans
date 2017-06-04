@@ -23,14 +23,43 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 
-import org.apache.webbeans.test.portable.events.extensions.AddBeanExtension.MyBean;
+import org.apache.webbeans.annotation.ApplicationScopeLiteral;
+import org.apache.webbeans.annotation.RequestedScopeLiteral;
+
 
 public class AddAdditionalAnnotatedTypeExtension implements Extension
 {
+    public static class MyBean
+    {
+
+    }
+
+    public static class MyConfigBean1
+    {
+        public String getId()
+        {
+            return "1";
+        }
+    }
+
+    public static class MyConfigBean2
+    {
+        public String getId()
+        {
+            return "2";
+        }
+    }
+
 
     public void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd, BeanManager bm)
     {
         bbd.addAnnotatedType(bm.createAnnotatedType(MyBean.class));
+
+        bbd.addAnnotatedType(MyConfigBean1.class, "hi1")
+            .add(RequestedScopeLiteral.INSTANCE);
+
+        bbd.addAnnotatedType(MyConfigBean2.class, "hi1")
+            .add(ApplicationScopeLiteral.INSTANCE);
     }
 
 }

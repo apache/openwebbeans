@@ -19,6 +19,9 @@
 package org.apache.webbeans.portable.events.discovery;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
@@ -26,6 +29,7 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.configurator.AnnotatedTypeConfiguratorImpl;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.deployment.StereoTypeModel;
@@ -43,6 +47,7 @@ public class BeforeBeanDiscoveryImpl extends EventBase implements BeforeBeanDisc
     private BeanManagerImpl beanManager = null;
     private final WebBeansContext webBeansContext;
     private Extension extension;
+    private Map<String, AnnotatedTypeConfiguratorHolder> annotatedTypeConfigurators = new HashMap<>();
 
     public BeforeBeanDiscoveryImpl(WebBeansContext webBeansContext)
     {
@@ -119,8 +124,19 @@ public class BeforeBeanDiscoveryImpl extends EventBase implements BeforeBeanDisc
     public <T> AnnotatedTypeConfigurator<T> addAnnotatedType(Class<T> clazz, String id)
     {
         checkState();
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        String key = clazz.getName() + id;
+        AnnotatedTypeConfiguratorHolder configuratorHolder = annotatedTypeConfigurators.get(key);
+        if (configuratorHolder == null)
+        {
+            AnnotatedType<T> initialAnnotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
+            AnnotatedTypeConfigurator<T> configurator = new AnnotatedTypeConfiguratorImpl(webBeansContext, initialAnnotatedType);
+            configuratorHolder = new AnnotatedTypeConfiguratorHolder(extension, id, configurator);
+            annotatedTypeConfigurators.put(key, configuratorHolder);
+        }
+
+        return configuratorHolder.getAnnotatedTypeConfigurator();
     }
+
 
     //X TODO OWB-1182 CDI 2.0
     @Override
@@ -163,4 +179,10 @@ public class BeforeBeanDiscoveryImpl extends EventBase implements BeforeBeanDisc
     {
         this.extension = extension;
     }
+
+    public Collection<AnnotatedTypeConfiguratorHolder> getAnnotatedTypeConfigurators()
+    {
+        return annotatedTypeConfigurators.values();
+    }
+
 }

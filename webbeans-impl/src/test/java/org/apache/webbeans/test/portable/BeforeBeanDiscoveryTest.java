@@ -29,7 +29,6 @@ import org.junit.Assert;
  */
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.portable.addannotated.extension.AddAdditionalAnnotatedTypeExtension;
-import org.apache.webbeans.test.portable.events.extensions.AddBeanExtension.MyBean;
 import org.junit.Test;
 
 public class BeforeBeanDiscoveryTest extends AbstractUnitTest
@@ -46,13 +45,21 @@ public class BeforeBeanDiscoveryTest extends AbstractUnitTest
 
         startContainer(beanClasses, beanXmls);
 
-        Bean<?> bean = getBeanManager().getBeans(MyBean.class, new AnnotationLiteral<Default>()
+        Bean<?> bean = getBeanManager().getBeans(AddAdditionalAnnotatedTypeExtension.MyBean.class, new AnnotationLiteral<Default>()
         {
         }).iterator().next();
 
         // Bean should not be null, as we added it as an additional annotated
         // type during before bean discovery in the extension
         Assert.assertNotNull(bean);
+
+        AddAdditionalAnnotatedTypeExtension.MyConfigBean1 myConfigBean1 = getInstance(AddAdditionalAnnotatedTypeExtension.MyConfigBean1.class);
+        Assert.assertNotNull(myConfigBean1);
+        Assert.assertEquals("1", myConfigBean1.getId());
+
+        AddAdditionalAnnotatedTypeExtension.MyConfigBean2 myConfigBean2 = getInstance(AddAdditionalAnnotatedTypeExtension.MyConfigBean2.class);
+        Assert.assertNotNull(myConfigBean2);
+        Assert.assertEquals("2", myConfigBean2.getId());
 
         shutDownContainer();
     }
@@ -63,13 +70,13 @@ public class BeforeBeanDiscoveryTest extends AbstractUnitTest
         Collection<String> beanXmls = new ArrayList<String>();
 
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(MyBean.class);
+        beanClasses.add(AddAdditionalAnnotatedTypeExtension.MyBean.class);
 
         addExtension(new AddAdditionalAnnotatedTypeExtension());
 
         startContainer(beanClasses, beanXmls);
 
-        Bean<?> bean = getBeanManager().getBeans(MyBean.class, new AnnotationLiteral<Default>()
+        Bean<?> bean = getBeanManager().getBeans(AddAdditionalAnnotatedTypeExtension.MyBean.class, new AnnotationLiteral<Default>()
         {
         }).iterator().next();
 
