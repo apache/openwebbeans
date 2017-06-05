@@ -19,6 +19,7 @@
 package org.apache.webbeans.configurator;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.AnnotatedFieldImpl;
 import org.apache.webbeans.portable.AnnotatedMethodImpl;
 import org.apache.webbeans.portable.AnnotatedTypeImpl;
 
@@ -37,6 +38,7 @@ public class AnnotatedTypeConfiguratorImpl<T> implements AnnotatedTypeConfigurat
 
     private final AnnotatedTypeImpl<T> annotatedType;
     private Set<AnnotatedMethodConfigurator<? super T>> annotatedMethodConfigurators;
+    private Set<AnnotatedFieldConfigurator<? super T>> annotatedFieldConfigurators;
 
 
     public AnnotatedTypeConfiguratorImpl(WebBeansContext webBeansContext, AnnotatedType<T> originalAnnotatedType)
@@ -45,6 +47,10 @@ public class AnnotatedTypeConfiguratorImpl<T> implements AnnotatedTypeConfigurat
 
         annotatedMethodConfigurators = annotatedType.getMethods().stream()
             .map(m -> new AnnotatedMethodConfiguratorImpl<>((AnnotatedMethodImpl<T>) m))
+            .collect(Collectors.toSet());
+
+        annotatedFieldConfigurators = annotatedType.getFields().stream()
+            .map(m -> new AnnotatedFieldConfiguratorImpl<>((AnnotatedFieldImpl<T>) m))
             .collect(Collectors.toSet());
     }
 
@@ -85,7 +91,7 @@ public class AnnotatedTypeConfiguratorImpl<T> implements AnnotatedTypeConfigurat
     @Override
     public Set<AnnotatedFieldConfigurator<? super T>> fields()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        return annotatedFieldConfigurators;
     }
 
     @Override

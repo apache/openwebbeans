@@ -54,13 +54,15 @@ public class AnnotatedMethodConfiguratorImpl<T> implements AnnotatedMethodConfig
     @Override
     public AnnotatedMethodConfigurator<T> remove(Predicate annotation)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedMethod.getAnnotations().removeIf(annotation);
+        return this;
     }
 
     @Override
     public AnnotatedMethodConfigurator<T> removeAll()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedMethod.getAnnotations().clear();
+        return this;
     }
 
     @Override

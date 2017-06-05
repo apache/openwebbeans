@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
@@ -108,19 +109,23 @@ public class AnnotatedTypeImpl<X>
      * Copy constructor
      *
      * @param webBeansContext actual {@link WebBeansContext}
-     * @param annotatedType to copy
+     * @param otherAnnotatedType to copy
      */
-    public AnnotatedTypeImpl(WebBeansContext webBeansContext, AnnotatedType annotatedType)
+    public AnnotatedTypeImpl(WebBeansContext webBeansContext, AnnotatedType otherAnnotatedType)
     {
-        super(webBeansContext, annotatedType);
-        this.annotatedClass = annotatedType.getJavaClass();
+        super(webBeansContext, otherAnnotatedType);
+        this.annotatedClass = otherAnnotatedType.getJavaClass();
 
         //X TODO revisit!!
-        if (annotatedType instanceof AnnotatedTypeImpl)
+        if (otherAnnotatedType instanceof AnnotatedTypeImpl)
         {
-            AnnotatedTypeImpl annotatedTypeImpl = (AnnotatedTypeImpl) annotatedType;
+            AnnotatedTypeImpl annotatedTypeImpl = (AnnotatedTypeImpl) otherAnnotatedType;
             this.supertype = annotatedTypeImpl.supertype;
-            this.state = annotatedTypeImpl.state;
+
+            if (annotatedTypeImpl.state != null)
+            {
+                this.state = new State(annotatedTypeImpl.state);
+            }
         }
         else
         {
@@ -285,6 +290,24 @@ public class AnnotatedTypeImpl<X>
                 }
             }
 
+        }
+
+        /**
+         * Copy ct
+         */
+        private State(State otherState)
+        {
+            constructors = otherState.constructors.stream()
+                .map(af -> new AnnotatedConstructorImpl<>(getWebBeansContext(), af.getJavaMember(), AnnotatedTypeImpl.this))
+                .collect(Collectors.toSet());
+
+            fields = otherState.fields.stream()
+                .map(af -> new AnnotatedFieldImpl<>(getWebBeansContext(), af.getJavaMember(), AnnotatedTypeImpl.this))
+                .collect(Collectors.toSet());
+
+            methods = otherState.methods.stream()
+                .map(af -> new AnnotatedMethodImpl<>(getWebBeansContext(), af.getJavaMember(), AnnotatedTypeImpl.this))
+                .collect(Collectors.toSet());
         }
     }
 }

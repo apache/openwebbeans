@@ -23,29 +23,41 @@ import javax.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 
+import org.apache.webbeans.portable.AnnotatedFieldImpl;
+
 public class AnnotatedFieldConfiguratorImpl<T> implements AnnotatedFieldConfigurator<T>
 {
+    private final AnnotatedFieldImpl<T> annotatedField;
+
+    public AnnotatedFieldConfiguratorImpl(AnnotatedFieldImpl<T> annotatedField)
+    {
+        this.annotatedField = annotatedField;
+    }
+
     @Override
     public AnnotatedField<T> getAnnotated()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        return annotatedField;
     }
 
     @Override
     public AnnotatedFieldConfigurator<T> add(Annotation annotation)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedField.addAnnotation(annotation);
+        return this;
     }
 
     @Override
     public AnnotatedFieldConfigurator<T> remove(Predicate annotation)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedField.getAnnotations().removeIf(annotation);
+        return this;
     }
 
     @Override
     public AnnotatedFieldConfigurator<T> removeAll()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedField.getAnnotations().clear();
+        return this;
     }
 }

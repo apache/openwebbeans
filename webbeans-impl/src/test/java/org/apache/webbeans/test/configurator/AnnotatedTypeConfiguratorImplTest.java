@@ -161,6 +161,34 @@ public class AnnotatedTypeConfiguratorImplTest extends AbstractUnitTest
             }, AnnotatedTypeConfigClass.class);
     }
 
+    @Test
+    public void testAddAnnotationToField()
+    {
+        checkAnnotatedType(
+            pat ->
+            {
+                pat.configureAnnotatedType()
+                    .filterFields(m -> m.getJavaMember().getName().equals("field1"))
+                    .findFirst()
+                    .get()
+                    .add(new TheQualifierLiteral("Field1"));
+            },
+            pba ->
+            {
+                Assert.assertTrue(pba.getAnnotated() instanceof AnnotatedType);
+                AnnotatedType<?> at = (AnnotatedType<?>) pba.getAnnotated();
+                Set<Annotation> annotations = at.getFields().stream()
+                    .filter(m -> m.getJavaMember().getName().equals("field1"))
+                    .findFirst()
+                    .get().getAnnotations();
+                assertEquals(1, annotations.size());
+                Annotation ann = annotations.iterator().next();
+                assertEquals(TheQualifier.class, ann.annotationType());
+                assertEquals("Field1", ((TheQualifier) ann).value());
+
+            }, AnnotatedTypeConfigClass.class);
+    }
+
 
     private void checkAnnotatedType(Consumer<ProcessAnnotatedType<AnnotatedTypeConfigClass>> typeConfigurator,
                                     Consumer<ProcessBeanAttributes> beanAttributesConsumer,
