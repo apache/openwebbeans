@@ -26,40 +26,40 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class AnnotatedMethodConfiguratorImpl implements AnnotatedMethodConfigurator
+public class AnnotatedMethodConfiguratorImpl<T> implements AnnotatedMethodConfigurator<T>
 {
     @Override
-    public AnnotatedMethod getAnnotated()
+    public AnnotatedMethod<T> getAnnotated()
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
 
     @Override
-    public AnnotatedMethodConfigurator add(Annotation annotation)
+    public AnnotatedMethodConfigurator<T> add(Annotation annotation)
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
 
     @Override
-    public AnnotatedMethodConfigurator remove(Predicate annotation)
+    public AnnotatedMethodConfigurator<T> remove(Predicate annotation)
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
 
     @Override
-    public AnnotatedMethodConfigurator removeAll()
+    public AnnotatedMethodConfigurator<T> removeAll()
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
 
     @Override
-    public List<AnnotatedParameterConfigurator> params()
+    public List<AnnotatedParameterConfigurator<T>> params()
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
 
     @Override
-    public Stream<AnnotatedParameterConfigurator> filterParams(Predicate predicate)
+    public Stream<AnnotatedParameterConfigurator<T>> filterParams(Predicate predicate)
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }

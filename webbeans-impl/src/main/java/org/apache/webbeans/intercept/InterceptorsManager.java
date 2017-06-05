@@ -319,7 +319,7 @@ public class InterceptorsManager
         Set<Annotation> inherits = additionalInterceptorBindingTypes.get(bindingType);
         if (inherits == null)
         {
-            inherits = new HashSet<Annotation>();
+            inherits = new HashSet<>();
             additionalInterceptorBindingTypes.put(bindingType, inherits);
         }
         Collections.addAll(inherits, inheritsArray);

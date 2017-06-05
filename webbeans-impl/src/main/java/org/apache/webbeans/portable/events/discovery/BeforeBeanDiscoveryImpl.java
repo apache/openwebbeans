@@ -21,7 +21,9 @@ package org.apache.webbeans.portable.events.discovery;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
@@ -48,6 +50,8 @@ public class BeforeBeanDiscoveryImpl extends EventBase implements BeforeBeanDisc
     private final WebBeansContext webBeansContext;
     private Extension extension;
     private Map<String, AnnotatedTypeConfiguratorHolder> annotatedTypeConfigurators = new HashMap<>();
+    private Set<AnnotatedTypeConfigurator<?>> interceptorBindingConfigurators = new HashSet<>();
+    private Set<AnnotatedTypeConfigurator<?>> qualifierConfigurators = new HashSet<>();
 
     public BeforeBeanDiscoveryImpl(WebBeansContext webBeansContext)
     {
@@ -117,9 +121,12 @@ public class BeforeBeanDiscoveryImpl extends EventBase implements BeforeBeanDisc
     {
         checkState();
         beanManager.addAdditionalAnnotatedType(extension, annotatedType, id);
+
+        // and also remove any AnnotatedTypeConfigurator for that combination
+        String key = annotatedType.getJavaClass() + id;
+        annotatedTypeConfigurators.remove(key);
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public <T> AnnotatedTypeConfigurator<T> addAnnotatedType(Class<T> clazz, String id)
     {
@@ -128,8 +135,7 @@ public class BeforeBeanDiscoveryImpl extends EventBase implements BeforeBeanDisc
         AnnotatedTypeConfiguratorHolder configuratorHolder = annotatedTypeConfigurators.get(key);
         if (configuratorHolder == null)
         {
-            AnnotatedType<T> initialAnnotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
-            AnnotatedTypeConfigurator<T> configurator = new AnnotatedTypeConfiguratorImpl(webBeansContext, initialAnnotatedType);
+            AnnotatedTypeConfigurator<T> configurator = getAnnotatedTypeConfigurator(clazz);
             configuratorHolder = new AnnotatedTypeConfiguratorHolder(extension, id, configurator);
             annotatedTypeConfigurators.put(key, configuratorHolder);
         }
@@ -137,21 +143,26 @@ public class BeforeBeanDiscoveryImpl extends EventBase implements BeforeBeanDisc
         return configuratorHolder.getAnnotatedTypeConfigurator();
     }
 
-
-    //X TODO OWB-1182 CDI 2.0
     @Override
-    public <T extends Annotation> AnnotatedTypeConfigurator<T> configureInterceptorBinding(Class<T> aClass)
+    public <T extends Annotation> AnnotatedTypeConfigurator<T> configureInterceptorBinding(Class<T> clazz)
     {
         checkState();
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+
+        AnnotatedTypeConfigurator<T> configurator = getAnnotatedTypeConfigurator(clazz);
+        interceptorBindingConfigurators.add(configurator);
+
+        return configurator;
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
-    public <T extends Annotation> AnnotatedTypeConfigurator<T> configureQualifier(Class<T> aClass)
+    public <T extends Annotation> AnnotatedTypeConfigurator<T> configureQualifier(Class<T> clazz)
     {
         checkState();
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+
+        AnnotatedTypeConfigurator<T> configurator = getAnnotatedTypeConfigurator(clazz);
+        qualifierConfigurators.add(configurator);
+
+        return configurator;
     }
 
     /**
@@ -185,4 +196,19 @@ public class BeforeBeanDiscoveryImpl extends EventBase implements BeforeBeanDisc
         return annotatedTypeConfigurators.values();
     }
 
+    public Collection<AnnotatedTypeConfigurator<?>> getInterceptorBindingConfigurators()
+    {
+        return interceptorBindingConfigurators;
+    }
+
+    public Collection<AnnotatedTypeConfigurator<?>> getQualifierConfigurators()
+    {
+        return qualifierConfigurators;
+    }
+
+    private <T> AnnotatedTypeConfigurator<T> getAnnotatedTypeConfigurator(Class<T> clazz)
+    {
+        AnnotatedType<T> initialAnnotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
+        return (AnnotatedTypeConfigurator<T>) new AnnotatedTypeConfiguratorImpl(webBeansContext, initialAnnotatedType);
+    }
 }

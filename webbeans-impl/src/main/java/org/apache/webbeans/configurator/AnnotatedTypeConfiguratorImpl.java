@@ -30,10 +30,10 @@ import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class AnnotatedTypeConfiguratorImpl implements AnnotatedTypeConfigurator
+public class AnnotatedTypeConfiguratorImpl<T> implements AnnotatedTypeConfigurator<T>
 {
 
-    private final AnnotatedTypeImpl<?> annotatedType;
+    private final AnnotatedTypeImpl<T> annotatedType;
 
 
     public AnnotatedTypeConfiguratorImpl(WebBeansContext webBeansContext, AnnotatedType<?> annotatedType)
@@ -43,46 +43,46 @@ public class AnnotatedTypeConfiguratorImpl implements AnnotatedTypeConfigurator
 
 
     @Override
-    public AnnotatedType getAnnotated()
+    public AnnotatedType<T> getAnnotated()
     {
         return annotatedType;
     }
 
     @Override
-    public AnnotatedTypeConfigurator add(Annotation annotation)
+    public AnnotatedTypeConfigurator<T> add(Annotation annotation)
     {
         annotatedType.addAnnotation(annotation);
         return this;
     }
 
     @Override
-    public AnnotatedTypeConfigurator remove(Predicate predicate)
+    public AnnotatedTypeConfigurator<T> remove(Predicate predicate)
     {
         annotatedType.getAnnotations().removeIf(predicate);
         return this;
     }
 
     @Override
-    public AnnotatedTypeConfigurator removeAll()
+    public AnnotatedTypeConfigurator<T> removeAll()
     {
         annotatedType.clearAnnotations();
         return this;
     }
 
     @Override
-    public Set<AnnotatedMethodConfigurator> methods()
+    public Set<AnnotatedMethodConfigurator<? super T>> methods()
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
 
     @Override
-    public Set<AnnotatedFieldConfigurator> fields()
+    public Set<AnnotatedFieldConfigurator<? super T>> fields()
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
 
     @Override
-    public Set<AnnotatedConstructorConfigurator> constructors()
+    public Set<AnnotatedConstructorConfigurator<T>> constructors()
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }

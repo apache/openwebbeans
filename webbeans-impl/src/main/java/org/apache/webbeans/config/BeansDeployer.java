@@ -103,6 +103,7 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.Producer;
+import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -681,6 +682,17 @@ public class BeansDeployer
                 holder.getExtension(),
                 holder.getAnnotatedTypeConfigurator().getAnnotated(),
                 holder.getId());
+        }
+
+        for (AnnotatedTypeConfigurator<?> interceptorATC : event.getInterceptorBindingConfigurators())
+        {
+            webBeansContext.getInterceptorsManager().addInterceptorBindingType((AnnotatedType) interceptorATC.getAnnotated());
+        }
+
+        for (AnnotatedTypeConfigurator<?> qualifierAt : event.getQualifierConfigurators())
+        {
+            webBeansContext.getBeanManagerImpl().addAdditionalQualifier((AnnotatedType) qualifierAt.getAnnotated());
+
         }
 
         event.setStarted();

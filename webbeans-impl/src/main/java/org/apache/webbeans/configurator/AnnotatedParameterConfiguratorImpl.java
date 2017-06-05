@@ -23,28 +23,28 @@ import javax.enterprise.inject.spi.configurator.AnnotatedParameterConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 
-public class AnnotatedParameterConfiguratorImpl implements AnnotatedParameterConfigurator
+public class AnnotatedParameterConfiguratorImpl<T> implements AnnotatedParameterConfigurator<T>
 {
     @Override
-    public AnnotatedParameter getAnnotated()
+    public AnnotatedParameter<T> getAnnotated()
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
 
     @Override
-    public AnnotatedParameterConfigurator add(Annotation annotation)
+    public AnnotatedParameterConfigurator<T> add(Annotation annotation)
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
 
     @Override
-    public AnnotatedParameterConfigurator remove(Predicate annotation)
+    public AnnotatedParameterConfigurator<T> remove(Predicate annotation)
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
 
     @Override
-    public AnnotatedParameterConfigurator removeAll()
+    public AnnotatedParameterConfigurator<T> removeAll()
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
