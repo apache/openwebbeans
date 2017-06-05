@@ -24,7 +24,6 @@ import javax.enterprise.inject.spi.configurator.AnnotatedParameterConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import org.apache.webbeans.portable.AnnotatedMethodImpl;
 
