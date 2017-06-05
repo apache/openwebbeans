@@ -220,7 +220,7 @@ public class AfterBeanDiscoveryImpl extends EventBase implements AfterBeanDiscov
     public <T> AnnotatedType<T> getAnnotatedType(Class<T> type, String id)
     {
         checkState();
-        return (AnnotatedType<T>) beanManager.getAdditionalAnnotatedType(type, id);
+        return beanManager.getAdditionalAnnotatedType(type, id);
     }
 
     /**

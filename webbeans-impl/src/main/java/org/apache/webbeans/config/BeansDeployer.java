@@ -737,6 +737,16 @@ public class BeansDeployer
         // reverse to keep "selection" order - decorator and interceptors considers it in their sorting.
         // NOTE: from here priorityClass.getSorted() MUST NOT be recomputed (ie no priorityClass.add(...))
         Collections.reverse(alternatives);
+
+        for (AnnotatedTypeConfiguratorHolder holder : event.getAnnotatedTypeConfigurators())
+        {
+            manager.addAdditionalAnnotatedType(
+                holder.getExtension(),
+                holder.getAnnotatedTypeConfigurator().getAnnotated(),
+                holder.getId());
+        }
+
+
         event.setStarted();
 
         // we do not need to set back the sortedAlternatives to the AlternativesManager as the API
@@ -1236,7 +1246,7 @@ public class BeansDeployer
     }
 
     /**
-     * Process any AnnotatedTypes which got added by BeforeBeanDiscovery#addAnnotatedType
+     * Process any AnnotatedTypes which got added by BeforeBeanDiscovery#addAnnotatedType and other events
      * @param annotatedTypes
      */
     private void addAdditionalAnnotatedTypes(Collection<AnnotatedType<?>> toDeploy, List<AnnotatedType<?>> annotatedTypes)
