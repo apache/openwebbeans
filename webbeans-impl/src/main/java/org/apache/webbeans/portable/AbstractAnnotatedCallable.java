@@ -37,7 +37,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
  *
  * @param <X> declaring class
  */
-abstract class AbstractAnnotatedCallable<X> extends AbstractAnnotatedMember<X> implements AnnotatedCallable<X>
+public abstract class AbstractAnnotatedCallable<X> extends AbstractAnnotatedMember<X> implements AnnotatedCallable<X>
 {
     /**Annotated parameters*/
     private List<AnnotatedParameter<X>> annotatedParameters = new ArrayList<AnnotatedParameter<X>>();

@@ -19,9 +19,11 @@
 package org.apache.webbeans.test.configurator;
 
 import org.apache.webbeans.test.AbstractUnitTest;
+import org.junit.Assert;
 import org.junit.Test;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBeanAttributes;
@@ -45,105 +47,132 @@ public class AnnotatedTypeConfiguratorImplTest extends AbstractUnitTest
     public void testAddAnnotationToClass()
     {
 
-        AnnotatedTypeConfiguratorExtension extension = new AnnotatedTypeConfiguratorExtension(pat -> pat.configureAnnotatedType().add(new TheQualifierLiteral("type")),
-                                                                                              pba ->
-                                                                                              {
-                                                                                                  Set<Annotation> annotations = pba.getAnnotated().getAnnotations();
-                                                                                                  assertEquals(1, annotations.size());
-                                                                                                  assertEquals(TheQualifier.class, annotations.iterator().next().annotationType());
-                                                                                              });
-        addExtension(extension);
-        startContainer(AnnotatedTypeConfigClass.class);
-        shutdown();
+        checkAnnotatedType(
+            pat -> pat.configureAnnotatedType().add(new TheQualifierLiteral("type")),
+            pba ->
+            {
+                Set<Annotation> annotations = pba.getAnnotated().getAnnotations();
+                assertEquals(1, annotations.size());
+                assertEquals(TheQualifier.class, annotations.iterator().next().annotationType());
+            },
+            AnnotatedTypeConfigClass.class);
     }
 
     @Test
     public void testAddAnnotationToClass_classAlreadyContainsAnnotations()
     {
 
-        AnnotatedTypeConfiguratorExtension extension = new AnnotatedTypeConfiguratorExtension(pat -> pat.configureAnnotatedType().add(new TheQualifierLiteral("type")),
-                                                                                              pba ->
-                                                                                              {
-                                                                                                  Set<Annotation> annotations = pba.getAnnotated().getAnnotations();
-                                                                                                  assertEquals(2, annotations.size());
-                                                                                              });
-        addExtension(extension);
-        startContainer(AnnotatedTypeConfigClassWithAnnotation.class);
-        shutdown();
+        checkAnnotatedType(
+            pat -> pat.configureAnnotatedType().add(new TheQualifierLiteral("type")),
+            pba ->
+            {
+                Set<Annotation> annotations = pba.getAnnotated().getAnnotations();
+                assertEquals(2, annotations.size());
+            },
+            AnnotatedTypeConfigClassWithAnnotation.class);
     }
 
 
     @Test
     public void testRemoveAnnotation()
     {
-        AnnotatedTypeConfiguratorExtension extension = new AnnotatedTypeConfiguratorExtension(
-                pat -> pat.configureAnnotatedType().add(new TheQualifierLiteral("one"))
-                          .add(new TheQualifierLiteral("two"))
-                          .remove(a -> ((TheQualifier) a).value().equals("two")),
-                pba ->
-                {
-                    Set<Annotation> annotations = pba.getAnnotated().getAnnotations();
-                    assertEquals(1, annotations.size());
-                    Annotation annotation = annotations.iterator().next();
-                    assertEquals(TheQualifier.class, annotation.annotationType());
-                    assertEquals("one", ((TheQualifier) annotation).value());
-                });
-
-        addExtension(extension);
-        startContainer(AnnotatedTypeConfigClass.class);
-        shutdown();
+        checkAnnotatedType(
+            pat -> pat.configureAnnotatedType().add(new TheQualifierLiteral("one"))
+                      .add(new TheQualifierLiteral("two"))
+                      .remove(a -> ((TheQualifier) a).value().equals("two")),
+            pba ->
+            {
+                Set<Annotation> annotations = pba.getAnnotated().getAnnotations();
+                assertEquals(1, annotations.size());
+                Annotation annotation = annotations.iterator().next();
+                assertEquals(TheQualifier.class, annotation.annotationType());
+                assertEquals("one", ((TheQualifier) annotation).value());
+            },
+            AnnotatedTypeConfigClass.class);
     }
 
     @Test
     public void testRemoveAnnotation_classAlreadyContainsAnnotations()
     {
-        AnnotatedTypeConfiguratorExtension extension = new AnnotatedTypeConfiguratorExtension(
-                pat -> pat.configureAnnotatedType().add(new TheQualifierLiteral("one"))
-                          .remove(a -> ((TheQualifier) a).value().equals("one")),
-                pba ->
-                {
-                    Set<Annotation> annotations = pba.getAnnotated().getAnnotations();
-                    assertEquals(2, annotations.size());
-                });
-
-        addExtension(extension);
-        startContainer(AnnotatedTypeConfigClassWithAnnotation.class);
-        shutdown();
+        checkAnnotatedType(
+            pat -> pat.configureAnnotatedType().add(new TheQualifierLiteral("one"))
+                      .remove(a -> ((TheQualifier) a).value().equals("one")),
+            pba ->
+            {
+                Set<Annotation> annotations = pba.getAnnotated().getAnnotations();
+                assertEquals(2, annotations.size());
+            },
+            AnnotatedTypeConfigClassWithAnnotation.class);
     }
 
     @Test
     public void testRemoveAllAnnotations()
     {
-        AnnotatedTypeConfiguratorExtension extension = new AnnotatedTypeConfiguratorExtension(
-                pat -> pat.configureAnnotatedType().add(new TheQualifierLiteral("one"))
-                          .add(new TheQualifierLiteral("two"))
-                          .removeAll(),
-                pba ->
-                {
-                    Set<Annotation> annotations = pba.getAnnotated().getAnnotations();
-                    assertTrue(annotations.isEmpty());
-                });
-
-        addExtension(extension);
-        startContainer(AnnotatedTypeConfigClass.class);
-        shutdown();
+        checkAnnotatedType(
+            pat -> pat.configureAnnotatedType().add(new TheQualifierLiteral("one"))
+                      .add(new TheQualifierLiteral("two"))
+                      .removeAll(),
+            pba ->
+            {
+                Set<Annotation> annotations = pba.getAnnotated().getAnnotations();
+                assertTrue(annotations.isEmpty());
+            },
+            AnnotatedTypeConfigClass.class);
     }
 
     @Test
     public void testRemoveAllAnnotations_classAlreadyContainsAnnotations()
     {
-        AnnotatedTypeConfiguratorExtension extension = new AnnotatedTypeConfiguratorExtension(
-                pat -> pat.configureAnnotatedType().removeAll(),
-                pba ->
-                {
-                    Set<Annotation> annotations = pba.getAnnotated().getAnnotations();
-                    assertTrue(annotations.isEmpty());
-                });
+        checkAnnotatedType(
+            pat -> pat.configureAnnotatedType().removeAll(),
+            pba ->
+            {
+                Set<Annotation> annotations = pba.getAnnotated().getAnnotations();
+                assertTrue(annotations.isEmpty());
+            },
+            AnnotatedTypeConfigClass.class);
+    }
 
+    @Test
+    public void testAddAnnotationToMethod()
+    {
+        checkAnnotatedType(
+            pat ->
+            {
+                pat.configureAnnotatedType()
+                    .filterMethods(m -> m.getJavaMember().getName().equals("method1"))
+                    .findFirst()
+                    .get()
+                    .add(new TheQualifierLiteral("Method1"));
+            },
+            pba ->
+            {
+                Assert.assertTrue(pba.getAnnotated() instanceof AnnotatedType);
+                AnnotatedType<?> at = (AnnotatedType<?>) pba.getAnnotated();
+                Set<Annotation> annotations = at.getMethods().stream()
+                    .filter(m -> m.getJavaMember().getName().equals("method1"))
+                    .findFirst()
+                    .get().getAnnotations();
+                assertEquals(1, annotations.size());
+                Annotation ann = annotations.iterator().next();
+                assertEquals(TheQualifier.class, ann.annotationType());
+                assertEquals("Method1", ((TheQualifier) ann).value());
+
+            }, AnnotatedTypeConfigClass.class);
+    }
+
+
+    private void checkAnnotatedType(Consumer<ProcessAnnotatedType<AnnotatedTypeConfigClass>> typeConfigurator,
+                                    Consumer<ProcessBeanAttributes> beanAttributesConsumer,
+                                    Class<?> classToCheck)
+    {
+        AnnotatedTypeConfiguratorExtension extension
+            = new AnnotatedTypeConfiguratorExtension(typeConfigurator,beanAttributesConsumer);
         addExtension(extension);
-        startContainer(AnnotatedTypeConfigClass.class);
+        startContainer(classToCheck);
         shutdown();
     }
+
 
 
     public static class AnnotatedTypeConfiguratorExtension implements Extension
@@ -173,6 +202,18 @@ public class AnnotatedTypeConfiguratorImplTest extends AbstractUnitTest
 
     public static class AnnotatedTypeConfigClass
     {
+        private String field1;
+        private Integer field2;
+
+        public void method1()
+        {
+            // do nothing
+        }
+
+        public String method2()
+        {
+            return "method 2";
+        }
     }
 
     @TheQualifier(value = "default")

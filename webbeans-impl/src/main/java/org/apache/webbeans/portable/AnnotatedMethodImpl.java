@@ -35,7 +35,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
  *
  * @param <X> class info
  */
-class AnnotatedMethodImpl<X> extends AbstractAnnotatedCallable<X> implements AnnotatedMethod<X>
+public class AnnotatedMethodImpl<X> extends AbstractAnnotatedCallable<X> implements AnnotatedMethod<X>
 {
 
     /**
@@ -49,6 +49,16 @@ class AnnotatedMethodImpl<X> extends AbstractAnnotatedCallable<X> implements Ann
         super(webBeansContext, GenericsUtil.resolveReturnType(declaringType.getJavaClass(), javaMember), javaMember,declaringType);
         setAnnotations(javaMember.getDeclaredAnnotations());
         setAnnotatedParameters(GenericsUtil.resolveParameterTypes(declaringType.getJavaClass(), javaMember), javaMember.getParameterAnnotations());
+    }
+
+    /**
+     * Copy ct for Configurators
+     */
+    public AnnotatedMethodImpl(WebBeansContext webBeansContext, AnnotatedType<X> declaringType, AnnotatedMethod<X> originalAnnotatedMethod)
+    {
+        super(webBeansContext, originalAnnotatedMethod.getBaseType(), originalAnnotatedMethod.getJavaMember(), declaringType);
+
+        //X TODO copy AnnotatedParameters
     }
 
     @Override

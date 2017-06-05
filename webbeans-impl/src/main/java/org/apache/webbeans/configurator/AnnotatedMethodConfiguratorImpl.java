@@ -26,18 +26,29 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.apache.webbeans.portable.AnnotatedMethodImpl;
+
+
 public class AnnotatedMethodConfiguratorImpl<T> implements AnnotatedMethodConfigurator<T>
 {
+    private final AnnotatedMethodImpl<T> annotatedMethod;
+
+    public AnnotatedMethodConfiguratorImpl(AnnotatedMethodImpl<T> annotatedMethod)
+    {
+        this.annotatedMethod = annotatedMethod;
+    }
+
     @Override
     public AnnotatedMethod<T> getAnnotated()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        return annotatedMethod;
     }
 
     @Override
     public AnnotatedMethodConfigurator<T> add(Annotation annotation)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedMethod.addAnnotation(annotation);
+        return this;
     }
 
     @Override

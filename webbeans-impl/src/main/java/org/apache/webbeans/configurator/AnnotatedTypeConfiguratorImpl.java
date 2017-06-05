@@ -19,6 +19,7 @@
 package org.apache.webbeans.configurator;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.AnnotatedMethodImpl;
 import org.apache.webbeans.portable.AnnotatedTypeImpl;
 
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -29,16 +30,22 @@ import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class AnnotatedTypeConfiguratorImpl<T> implements AnnotatedTypeConfigurator<T>
 {
 
     private final AnnotatedTypeImpl<T> annotatedType;
+    private Set<AnnotatedMethodConfigurator<? super T>> annotatedMethodConfigurators;
 
 
-    public AnnotatedTypeConfiguratorImpl(WebBeansContext webBeansContext, AnnotatedType<?> annotatedType)
+    public AnnotatedTypeConfiguratorImpl(WebBeansContext webBeansContext, AnnotatedType<T> originalAnnotatedType)
     {
-        this.annotatedType = new AnnotatedTypeImpl<>(webBeansContext, annotatedType);
+        this.annotatedType = new AnnotatedTypeImpl<>(webBeansContext, originalAnnotatedType);
+
+        annotatedMethodConfigurators = annotatedType.getMethods().stream()
+            .map(m -> new AnnotatedMethodConfiguratorImpl<>((AnnotatedMethodImpl<T>) m))
+            .collect(Collectors.toSet());
     }
 
 
@@ -72,7 +79,7 @@ public class AnnotatedTypeConfiguratorImpl<T> implements AnnotatedTypeConfigurat
     @Override
     public Set<AnnotatedMethodConfigurator<? super T>> methods()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        return annotatedMethodConfigurators;
     }
 
     @Override
