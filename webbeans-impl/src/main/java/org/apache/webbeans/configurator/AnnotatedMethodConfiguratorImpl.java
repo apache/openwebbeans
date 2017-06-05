@@ -52,7 +52,7 @@ public class AnnotatedMethodConfiguratorImpl<T> implements AnnotatedMethodConfig
     }
 
     @Override
-    public AnnotatedMethodConfigurator<T> remove(Predicate annotation)
+    public AnnotatedMethodConfigurator<T> remove(Predicate<Annotation> annotation)
     {
         annotatedMethod.getAnnotations().removeIf(annotation);
         return this;
@@ -71,9 +71,4 @@ public class AnnotatedMethodConfiguratorImpl<T> implements AnnotatedMethodConfig
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
 
-    @Override
-    public Stream<AnnotatedParameterConfigurator<T>> filterParams(Predicate predicate)
-    {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
-    }
 }

@@ -162,6 +162,27 @@ public class AnnotatedTypeConfiguratorImplTest extends AbstractUnitTest
     }
 
     @Test
+    public void testRemoveAnnotationFromMethod()
+    {
+        final String methodName = "method2";
+
+        checkAnnotatedType(
+                pat -> pat.configureAnnotatedType()
+                          .filterMethods(m -> methodName.equals(m.getJavaMember().getName()))
+                          .findFirst()
+                          .get()
+                          .removeAll(),
+                pba -> assertTrue(((AnnotatedType<?>) pba.getAnnotated()).getMethods()
+                                                                         .stream()
+                                                                         .filter(m -> methodName.equals(m.getJavaMember().getName()))
+                                                                         .findFirst()
+                                                                         .get()
+                                                                         .getAnnotations()
+                                                                         .isEmpty()),
+                AnnotatedTypeConfigClassWithAnnotation.class);
+    }
+
+    @Test
     public void testAddAnnotationToField()
     {
         checkAnnotatedType(
@@ -187,6 +208,28 @@ public class AnnotatedTypeConfiguratorImplTest extends AbstractUnitTest
                 assertEquals("Field1", ((TheQualifier) ann).value());
 
             }, AnnotatedTypeConfigClass.class);
+    }
+
+    @Test
+    public void testRemoveAnnotationFromField()
+    {
+        checkAnnotatedType(pat -> pat.configureAnnotatedType()
+                                     .filterFields(af -> "field2".equals(af.getJavaMember().getName()))
+                                     .findFirst()
+                                     .get()
+                                     .remove(a -> a.annotationType() == TheQualifier.class),
+                           pba ->
+                           {
+                               Assert.assertTrue(pba.getAnnotated() instanceof AnnotatedType);
+                               assertTrue(((AnnotatedType<?>) pba.getAnnotated()).getFields()
+                                                                                 .stream()
+                                                                                 .filter(m -> m.getJavaMember().getName().equals("field2"))
+                                                                                 .findFirst()
+                                                                                 .get()
+                                                                                 .getAnnotations()
+                                                                                 .isEmpty());
+                           },
+                           AnnotatedTypeConfigClassWithAnnotation.class);
     }
 
 
@@ -242,12 +285,46 @@ public class AnnotatedTypeConfiguratorImplTest extends AbstractUnitTest
         {
             return "method 2";
         }
+
+        public String methodWithParameters(String param1, Integer param2)
+        {
+            return "parameters: " + param1 + ", " + param2;
+        }
     }
 
     @TheQualifier(value = "default")
     public static class AnnotatedTypeConfigClassWithAnnotation
     {
 
+        @TheQualifier(value = "default_field1")
+        private String field1;
+
+        @TheQualifier(value = "default_field2")
+        private Integer field2;
+
+        @TheQualifier(value = "default_method1")
+        public void method1()
+        {
+            // do nothing
+        }
+
+        @TheQualifier(value = "default_method2")
+        public String method2()
+        {
+            return "method 2";
+        }
+
+        @TheQualifier(value = "default_methodWithParameters")
+        public String methodWithParameters(String param1, String param2)
+        {
+            return "parameters: " + param1 + ", " + param2;
+        }
+
+        public void methodWithAnnotatedParameters(@TheQualifier(value = "default_param1") String param1,
+                                                  @TheQualifier(value = "default_param2") Integer param2)
+        {
+            // nothing to do here
+        }
     }
 
     @Qualifier
