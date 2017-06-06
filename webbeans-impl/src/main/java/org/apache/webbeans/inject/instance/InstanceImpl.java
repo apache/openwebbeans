@@ -307,10 +307,6 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
                 creationalContexts = new IdentityHashMap<Object, CreationalContextImpl<?>>();
             }
             creationalContexts.put(reference, creationalContext);
-            if (WebBeansUtil.isDependent(bean))
-            {
-                parentCreationalContext.addDependent(bean, reference);
-            }
             return reference;
         }
         finally
@@ -362,6 +358,17 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         builder.append("}");
 
         return builder.toString();
+    }
+
+    public void release()
+    {
+        if (creationalContexts != null)
+        {
+            for (CreationalContextImpl<?> creationalContext : creationalContexts.values())
+            {
+                creationalContext.release();
+            }
+        }
     }
 
     private static class InstanceInjectionPoint implements InjectionPoint, Serializable

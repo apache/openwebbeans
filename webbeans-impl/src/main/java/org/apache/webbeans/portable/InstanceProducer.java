@@ -38,7 +38,8 @@ public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
     private Class<Instance<T>> returnType;
     private Set<Annotation> qualifiers;
     private WebBeansContext webBeansContext;
-    
+
+
     public InstanceProducer(Class<Instance<T>> returnType, Set<Annotation> qualifiers, WebBeansContext webBeansContext)
     {
         this.returnType = returnType;
@@ -55,7 +56,7 @@ public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
             InjectionPoint injectionPoint = null;
             if (creationalContext instanceof CreationalContextImpl)
             {
-                creationalContextImpl = (CreationalContextImpl<Instance<T>>)creationalContext;
+                creationalContextImpl = creationalContext;
             }
             else
             {
@@ -87,5 +88,13 @@ public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
                 creationalContextImpl.removeInjectionPoint();
             }
         }
+    }
+
+    @Override
+    public void dispose(Instance<T> instance)
+    {
+        super.dispose(instance);
+
+        ((InstanceImpl<T>) instance).release();
     }
 }
