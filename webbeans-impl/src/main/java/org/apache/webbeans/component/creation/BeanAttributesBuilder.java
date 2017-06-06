@@ -55,6 +55,7 @@ import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.portable.AbstractAnnotated;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -232,7 +233,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
                     }
                 }
 
-                if (qualifiedTypes.contains(annotation.annotationType()))
+                if (qualifiedTypes.contains(annotation.annotationType()) && !isRepetable(annotated, annotation))
                 {
                     continue;
                 }
@@ -285,6 +286,14 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
             qualifiers.add(AnyLiteral.INSTANCE);
         }
         
+    }
+
+    // we don't want to do the getRepeatableMethod() logic *again* if we can but we can need for custom AT
+    private boolean isRepetable(final Annotated annotated, final Annotation annotation)
+    {
+        return AbstractAnnotated.class.isInstance(annotated) ?
+                AbstractAnnotated.class.cast(annotated).getRepeatables().contains(annotation.annotationType()) :
+                webBeansContext.getAnnotationManager().getRepeatableMethod(annotation.annotationType()) != null;
     }
 
     /**

@@ -19,11 +19,15 @@
 package org.apache.webbeans.portable;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.enterprise.inject.spi.Annotated;
 
@@ -31,12 +35,15 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.GenericsUtil;
 
+import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.toList;
+
 /**
  * Abstract implementation of the {@link Annotated} contract.
  * 
  * @version $Rev$ $Date$
  */
-abstract class AbstractAnnotated implements Annotated
+public abstract class AbstractAnnotated implements Annotated
 {
     /**Base type of an annotated element*/
     private final Type baseType;
@@ -45,7 +52,8 @@ abstract class AbstractAnnotated implements Annotated
     private Set<Type> typeClosures = null;
 
     /**Set of annotations*/
-    private Set<Annotation> annotations = new HashSet<Annotation>();
+    private Set<Annotation> annotations = new HashSet<>();
+    private Set<Class<?>> repeatables = new HashSet<>();
 
     private final WebBeansContext webBeansContext;
     
@@ -79,7 +87,42 @@ abstract class AbstractAnnotated implements Annotated
         this.annotations.addAll(annotated.getAnnotations());
     }
 
+    protected void buildRepeatableAnnotations(final Set<Annotation> annotations)
+    {
+        if (annotations.isEmpty())
+        {
+            return;
+        }
+        final List<Annotation> repeatables = annotations.stream()
+                .map(a -> {
+                    final Class<?> type = a.annotationType();
+                    try
+                    {
+                        final Method repeatableMethod = webBeansContext.getAnnotationManager().getRepeatableMethod(type);
+                        if (repeatableMethod == null)
+                        {
+                            return null;
+                        }
+                        return (Annotation[]) repeatableMethod.invoke(a);
+                    }
+                    catch (final Exception e)
+                    {
+                        return null;
+                    }
+                }).filter(Objects::nonNull)
+                .flatMap(Stream::of)
+                .collect(toList());
+        if (!repeatables.isEmpty())
+        {
+            this.repeatables.addAll(repeatables.stream().map(Annotation::annotationType).collect(toList()));
+            this.annotations.addAll(repeatables);
+        }
+    }
 
+    public Set<Class<?>> getRepeatables()
+    {
+        return repeatables;
+    }
 
     /**
      * Adds new annotation to set.
@@ -89,6 +132,7 @@ abstract class AbstractAnnotated implements Annotated
     public void addAnnotation(Annotation annotation)
     {
         annotations.add(annotation);
+        buildRepeatableAnnotations(singleton(annotation));
     }
 
     protected WebBeansContext getWebBeansContext()
@@ -105,6 +149,7 @@ abstract class AbstractAnnotated implements Annotated
     {        
         clearAnnotations();
         Collections.addAll(this.annotations, annotations);
+        buildRepeatableAnnotations(this.annotations);
     }
 
     public void clearAnnotations()

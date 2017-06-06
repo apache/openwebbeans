@@ -933,4 +933,27 @@ public final class AnnotationManager
         }
     }
 
+    public Method getRepeatableMethod(final Class<?> type)
+    {
+        final Method value;
+        try
+        {
+            value = type.getMethod("value");
+        }
+        catch (final NoSuchMethodException e)
+        {
+            return null;
+        }
+        if (!value.getReturnType().isArray())
+        {
+            return null;
+        }
+        final Class<?> componentType = value.getReturnType().getComponentType();
+        final Repeatable repeatable = componentType.getAnnotation(Repeatable.class);
+        if (repeatable == null || repeatable.value() != type)
+        {
+            return null;
+        }
+        return value;
+    }
 }
