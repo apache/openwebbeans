@@ -26,8 +26,10 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.util.GenericsUtil;
 
 public class BeanAttributesConfiguratorImpl<T> implements BeanAttributesConfigurator<T>
 {
@@ -86,8 +88,11 @@ public class BeanAttributesConfiguratorImpl<T> implements BeanAttributesConfigur
     @Override
     public BeanAttributesConfigurator<T> addTransitiveTypeClosure(Type type)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        Set<Type> typeClosure = GenericsUtil.getTypeClosure(type, type);
+        types.addAll(typeClosure);
+        return this;
     }
+
 
     @Override
     public BeanAttributesConfigurator<T> types(Type... types)
@@ -193,6 +198,9 @@ public class BeanAttributesConfiguratorImpl<T> implements BeanAttributesConfigur
 
     public BeanAttributes<T> getBeanAttributes()
     {
+        // make sure we always have an @Any Qualifier as well.
+        qualifiers.add(AnyLiteral.INSTANCE);
+
         return new BeanAttributesImpl<T>(types, qualifiers, scope, name, false, stereotypes, alternative);
     }
 }

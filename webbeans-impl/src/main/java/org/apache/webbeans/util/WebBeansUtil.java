@@ -1731,6 +1731,8 @@ public final class WebBeansUtil
         }
     }
 
+
+
     public void checkTypeVariables(final TypeLiteral<?> subtype)
     {
         final Type t = subtype.getType();
