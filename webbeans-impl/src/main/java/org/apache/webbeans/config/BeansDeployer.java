@@ -73,6 +73,7 @@ import org.apache.webbeans.portable.events.discovery.AfterTypeDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AnnotatedTypeConfiguratorHolder;
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
+import org.apache.webbeans.portable.events.generics.GProcessBean;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
 import org.apache.webbeans.spi.BdaScannerService;
 import org.apache.webbeans.spi.BeanArchiveService;
@@ -1703,6 +1704,15 @@ public class BeansDeployer
                 {
                     dbb.defineDecoratorRules();
                     DecoratorBean<T> decorator = dbb.getBean();
+
+                    //Fires ProcessBean
+                    ProcessBeanImpl<T> processBeanEvent = new GProcessBean(decorator, annotatedType);
+                    webBeansContext.getBeanManagerImpl().fireEvent(processBeanEvent, true);
+                    processBeanEvent.setStarted();
+
+                    webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessBean event observers for " +
+                        "interceptor beans. Look at logs for further details");
+
                     decoratorsManager.addDecorator(decorator);
                 }
             }
@@ -1718,6 +1728,15 @@ public class BeansDeployer
                 {
                     ibb.defineCdiInterceptorRules();
                     CdiInterceptorBean<T> interceptor = ibb.getBean();
+
+                    //Fires ProcessBean
+                    ProcessBeanImpl<T> processBeanEvent = new GProcessBean(interceptor, annotatedType);
+                    webBeansContext.getBeanManagerImpl().fireEvent(processBeanEvent, true);
+                    processBeanEvent.setStarted();
+
+                    webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessBean event observers for " +
+                        "interceptor beans. Look at logs for further details");
+
                     interceptorsManager.addCdiInterceptor(interceptor);
                 }
             }
