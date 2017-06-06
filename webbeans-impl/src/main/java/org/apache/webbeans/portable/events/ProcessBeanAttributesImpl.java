@@ -23,16 +23,22 @@ import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.ProcessBeanAttributes;
 import javax.enterprise.inject.spi.configurator.BeanAttributesConfigurator;
 
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.configurator.BeanAttributesConfiguratorImpl;
+
 public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBeanAttributes<T>
 {
+    private final WebBeansContext webBeansContext;
     private Annotated annotated;
     private BeanAttributes<T> attributes;
     private boolean veto = false;
     private Throwable definitionError = null;
     private boolean ignoreFinalMethods = false;
+    private BeanAttributesConfiguratorImpl beanAttributesConfigurator = null;
 
-    public ProcessBeanAttributesImpl(final Annotated annotated, final BeanAttributes<T> attributes)
+    public ProcessBeanAttributesImpl(WebBeansContext webBeansContext, Annotated annotated, BeanAttributes<T> attributes)
     {
+        this.webBeansContext = webBeansContext;
         this.annotated = annotated;
         this.attributes = attributes;
     }
@@ -56,6 +62,7 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
     {
         checkState();
         attributes = tBeanAttributes;
+        beanAttributesConfigurator = null;
     }
 
     @Override
@@ -78,15 +85,23 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
         ignoreFinalMethods = true;
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public BeanAttributesConfigurator<T> configureBeanAttributes()
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        if (beanAttributesConfigurator == null)
+        {
+            beanAttributesConfigurator = new BeanAttributesConfiguratorImpl(webBeansContext, attributes);
+        }
+
+        return beanAttributesConfigurator;
     }
 
     public BeanAttributes<T> getAttributes()
     {
+        if (beanAttributesConfigurator != null)
+        {
+            return beanAttributesConfigurator.getBeanAttributes();
+        }
         return attributes;
     }
 
@@ -104,4 +119,6 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
     {
         return definitionError;
     }
+
+
 }

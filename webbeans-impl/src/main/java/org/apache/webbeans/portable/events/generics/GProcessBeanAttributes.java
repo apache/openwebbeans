@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.portable.events.generics;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.events.ProcessBeanAttributesImpl;
 
 import javax.enterprise.inject.spi.Annotated;
@@ -27,9 +28,9 @@ public class GProcessBeanAttributes extends ProcessBeanAttributesImpl implements
 {
     private final Class<?> type;
 
-    public GProcessBeanAttributes(final Class<?> type, final Annotated annotated, final BeanAttributes attributes)
+    public GProcessBeanAttributes(WebBeansContext webBeansContext, final Class<?> type, final Annotated annotated, final BeanAttributes attributes)
     {
-        super(annotated, attributes);
+        super(webBeansContext, annotated, attributes);
         this.type = type;
     }
 

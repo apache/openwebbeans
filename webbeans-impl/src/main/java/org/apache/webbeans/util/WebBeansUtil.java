@@ -150,6 +150,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+
 /**
  * Contains some utility methods used in the all project.
  */
@@ -1820,7 +1821,7 @@ public final class WebBeansUtil
     public <T> ProcessBeanAttributesImpl<T> fireProcessBeanAttributes(final Annotated annotatedType, final Class<?> type, final BeanAttributes<T> ba)
     {
         // we don't use bm stack since it is actually quite useless
-        final ProcessBeanAttributesImpl event = new GProcessBeanAttributes(type, annotatedType, ba);
+        final ProcessBeanAttributesImpl event = new GProcessBeanAttributes(webBeansContext, type, annotatedType, ba);
         try
         {
             webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);

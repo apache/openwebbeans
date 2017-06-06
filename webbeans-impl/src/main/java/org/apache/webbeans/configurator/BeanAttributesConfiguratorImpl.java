@@ -18,119 +18,181 @@
  */
 package org.apache.webbeans.configurator;
 
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.configurator.BeanAttributesConfigurator;
 import javax.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.Set;
 
-public class BeanAttributesConfiguratorImpl implements BeanAttributesConfigurator
+import org.apache.webbeans.component.BeanAttributesImpl;
+import org.apache.webbeans.config.WebBeansContext;
+
+public class BeanAttributesConfiguratorImpl<T> implements BeanAttributesConfigurator<T>
 {
+    private final WebBeansContext webBeansContext;
+
+    private Set<Type> types;
+    private Set<Annotation> qualifiers;
+    private Class<? extends Annotation> scope;
+    private String name;
+    private Set<Class<? extends Annotation>> stereotypes;
+    private boolean alternative;
+
+    public BeanAttributesConfiguratorImpl(WebBeansContext webBeansContext, BeanAttributes<T> originalBeanAttribute)
+    {
+        this.webBeansContext = webBeansContext;
+        
+        this.types = new HashSet<>(originalBeanAttribute.getTypes());
+        this.qualifiers = new HashSet<>(originalBeanAttribute.getQualifiers());
+        this.scope = originalBeanAttribute.getScope();
+        this.name = originalBeanAttribute.getName();
+        this.stereotypes = new HashSet<>(originalBeanAttribute.getStereotypes());
+        this.alternative = originalBeanAttribute.isAlternative();
+    }
+
     @Override
-    public BeanAttributesConfigurator addType(Type type)
+    public BeanAttributesConfigurator<T> addType(Type type)
+    {
+        types.add(type);
+        return this;
+    }
+
+    @Override
+    public BeanAttributesConfigurator<T> addType(TypeLiteral typeLiteral)
+    {
+        types.add(typeLiteral.getType());
+        return this;
+    }
+
+    @Override
+    public BeanAttributesConfigurator<T> addTypes(Type... types)
+    {
+        for (Type type : types)
+        {
+            this.types.add(type);
+        }
+        return this;
+    }
+
+    @Override
+    public BeanAttributesConfigurator<T> addTypes(Set set)
+    {
+        types.addAll(set);
+        return this;
+    }
+
+    @Override
+    public BeanAttributesConfigurator<T> addTransitiveTypeClosure(Type type)
     {
         throw new UnsupportedOperationException("TODO implement CDI 2.0");
     }
 
     @Override
-    public BeanAttributesConfigurator addType(TypeLiteral typeLiteral)
+    public BeanAttributesConfigurator<T> types(Type... types)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.types.clear();
+        addTypes(types);
+        return this;
     }
 
     @Override
-    public BeanAttributesConfigurator addTypes(Type... types)
+    public BeanAttributesConfigurator<T> types(Set<Type> set)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.types.clear();
+        addTypes(set);
+        return this;
     }
 
     @Override
-    public BeanAttributesConfigurator addTypes(Set set)
+    public BeanAttributesConfigurator<T> scope(Class<? extends Annotation>  scope)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.scope = scope;
+        return this;
     }
 
     @Override
-    public BeanAttributesConfigurator addTransitiveTypeClosure(Type type)
+    public BeanAttributesConfigurator<T> addQualifier(Annotation qualifier)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        qualifiers.add(qualifier);
+        return this;
     }
 
     @Override
-    public BeanAttributesConfigurator types(Type... types)
+    public BeanAttributesConfigurator<T> addQualifiers(Annotation... qualifiers)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        for (Annotation qualifier : qualifiers)
+        {
+            addQualifiers(qualifier);
+        }
+        return this;
     }
 
     @Override
-    public BeanAttributesConfigurator types(Set set)
+    public BeanAttributesConfigurator<T> addQualifiers(Set<Annotation> qualifiers)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.qualifiers.addAll(qualifiers);
+        return this;
     }
 
     @Override
-    public BeanAttributesConfigurator scope(Class scope)
+    public BeanAttributesConfigurator<T> qualifiers(Annotation... qualifiers)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.qualifiers.clear();
+        for (Annotation qualifier : qualifiers)
+        {
+            addQualifier(qualifier);
+        }
+        return this;
     }
 
     @Override
-    public BeanAttributesConfigurator addQualifier(Annotation qualifier)
+    public BeanAttributesConfigurator<T> qualifiers(Set<Annotation> qualifiers)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.qualifiers.clear();
+        addQualifiers(qualifiers);
+        return this;
     }
 
     @Override
-    public BeanAttributesConfigurator addQualifiers(Annotation... qualifiers)
+    public BeanAttributesConfigurator<T> addStereotype(Class<? extends Annotation> stereotype)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        stereotypes.add(stereotype);
+        return this;
     }
 
     @Override
-    public BeanAttributesConfigurator addQualifiers(Set qualifiers)
+    public BeanAttributesConfigurator<T> addStereotypes(Set<Class<? extends Annotation>> stereotypes)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.stereotypes.addAll(stereotypes);
+        return this;
     }
 
     @Override
-    public BeanAttributesConfigurator qualifiers(Annotation... qualifiers)
+    public BeanAttributesConfigurator<T> stereotypes(Set<Class<? extends Annotation>> stereotypes)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.stereotypes.clear();
+        addStereotypes(stereotypes);
+        return this;
     }
 
     @Override
-    public BeanAttributesConfigurator qualifiers(Set qualifiers)
+    public BeanAttributesConfigurator<T> name(String name)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.name = name;
+        return this;
     }
 
     @Override
-    public BeanAttributesConfigurator addStereotype(Class stereotype)
+    public BeanAttributesConfigurator<T> alternative(boolean value)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.alternative = value;
+        return this;
     }
 
-    @Override
-    public BeanAttributesConfigurator addStereotypes(Set stereotypes)
+    public BeanAttributes<T> getBeanAttributes()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
-    }
-
-    @Override
-    public BeanAttributesConfigurator stereotypes(Set stereotypes)
-    {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
-    }
-
-    @Override
-    public BeanAttributesConfigurator name(String name)
-    {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
-    }
-
-    @Override
-    public BeanAttributesConfigurator alternative(boolean value)
-    {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        return new BeanAttributesImpl<T>(types, qualifiers, scope, name, false, stereotypes, alternative);
     }
 }
