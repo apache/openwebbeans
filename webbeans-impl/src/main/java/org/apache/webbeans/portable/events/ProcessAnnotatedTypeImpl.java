@@ -49,7 +49,10 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
      */
     private boolean modifiedAnnotatedType = false;
 
-    private AnnotatedTypeConfiguratorImpl configurator;
+    /**
+     * Gets set when one makes use the AnnotatedTypeConfigurator
+     */
+    private AnnotatedTypeConfiguratorImpl configurator = null;
 
     /**
      * Creates a new instance with the given annotated type.
@@ -76,7 +79,7 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
         }
         else
         {
-            return configurator.getAnnotated();
+            return configurator.getNewAnnotatedType();
         }
     }
 
@@ -102,7 +105,7 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
      */
     public boolean isModifiedAnnotatedType()
     {
-        return modifiedAnnotatedType;
+        return modifiedAnnotatedType || configurator != null;
     }
 
     /**

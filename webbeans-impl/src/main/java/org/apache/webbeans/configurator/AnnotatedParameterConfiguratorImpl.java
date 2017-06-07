@@ -25,27 +25,37 @@ import java.util.function.Predicate;
 
 public class AnnotatedParameterConfiguratorImpl<T> implements AnnotatedParameterConfigurator<T>
 {
+    private final AnnotatedParameter<T> annotatedParameter;
+
+    public AnnotatedParameterConfiguratorImpl(AnnotatedParameter<T> annotatedParameter)
+    {
+        this.annotatedParameter = annotatedParameter;
+    }
+
     @Override
     public AnnotatedParameter<T> getAnnotated()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        return annotatedParameter;
     }
 
     @Override
     public AnnotatedParameterConfigurator<T> add(Annotation annotation)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedParameter.getAnnotations().add(annotation);
+        return this;
     }
 
     @Override
-    public AnnotatedParameterConfigurator<T> remove(Predicate annotation)
+    public AnnotatedParameterConfigurator<T> remove(Predicate predicate)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedParameter.getAnnotations().removeIf(predicate);
+        return this;
     }
 
     @Override
     public AnnotatedParameterConfigurator<T> removeAll()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedParameter.getAnnotations().clear();
+        return this;
     }
 }

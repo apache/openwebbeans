@@ -24,43 +24,55 @@ import javax.enterprise.inject.spi.configurator.AnnotatedParameterConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
+
+import org.apache.webbeans.portable.AnnotatedConstructorImpl;
 
 public class AnnotatedConstructorConfiguratorImpl<T> implements AnnotatedConstructorConfigurator<T>
 {
+    private final AnnotatedConstructorImpl<T> annotatedConstructor;
+    private final List<AnnotatedParameterConfigurator<T>> annotatedParameterConfigurators;
+
+
+    public AnnotatedConstructorConfiguratorImpl(AnnotatedConstructorImpl<T> annotatedConstructor)
+    {
+        this.annotatedConstructor = annotatedConstructor;
+
+        annotatedParameterConfigurators = annotatedConstructor.getParameters().stream()
+            .map(m -> new AnnotatedParameterConfiguratorImpl<>(m))
+            .collect(Collectors.toList());
+    }
+
     @Override
     public AnnotatedConstructor<T> getAnnotated()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        return annotatedConstructor;
     }
 
     @Override
     public AnnotatedConstructorConfigurator<T> add(Annotation annotation)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedConstructor.addAnnotation(annotation);
+        return this;
     }
 
     @Override
-    public AnnotatedConstructorConfigurator<T> remove(Predicate annotation)
+    public AnnotatedConstructorConfigurator<T> remove(Predicate predicate)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedConstructor.getAnnotations().removeIf(predicate);
+        return this;
     }
 
     @Override
     public AnnotatedConstructorConfigurator<T> removeAll()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        annotatedConstructor.getAnnotations().clear();
+        return this;
     }
 
     @Override
     public List<AnnotatedParameterConfigurator<T>> params()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
-    }
-
-    @Override
-    public Stream<AnnotatedParameterConfigurator<T>> filterParams(Predicate predicate)
-    {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        return annotatedParameterConfigurators;
     }
 }

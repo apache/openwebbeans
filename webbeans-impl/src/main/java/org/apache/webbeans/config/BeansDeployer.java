@@ -38,6 +38,7 @@ import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
 import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
 import org.apache.webbeans.component.creation.ProducerMethodBeansBuilder;
+import org.apache.webbeans.configurator.AnnotatedTypeConfiguratorImpl;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
@@ -104,7 +105,6 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.Producer;
-import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -731,18 +731,18 @@ public class BeansDeployer
         {
             manager.addAdditionalAnnotatedType(
                 holder.getExtension(),
-                holder.getAnnotatedTypeConfigurator().getAnnotated(),
+                holder.getAnnotatedTypeConfigurator().getNewAnnotatedType(),
                 holder.getId());
         }
 
-        for (AnnotatedTypeConfigurator<?> interceptorATC : event.getInterceptorBindingConfigurators())
+        for (AnnotatedTypeConfiguratorImpl<?> interceptorATC : event.getInterceptorBindingConfigurators())
         {
-            webBeansContext.getInterceptorsManager().addInterceptorBindingType((AnnotatedType) interceptorATC.getAnnotated());
+            webBeansContext.getInterceptorsManager().addInterceptorBindingType((AnnotatedType) interceptorATC.getNewAnnotatedType());
         }
 
-        for (AnnotatedTypeConfigurator<?> qualifierAt : event.getQualifierConfigurators())
+        for (AnnotatedTypeConfiguratorImpl<?> qualifierAt : event.getQualifierConfigurators())
         {
-            webBeansContext.getBeanManagerImpl().addAdditionalQualifier((AnnotatedType) qualifierAt.getAnnotated());
+            webBeansContext.getBeanManagerImpl().addAdditionalQualifier((AnnotatedType) qualifierAt.getNewAnnotatedType());
 
         }
 
@@ -793,7 +793,7 @@ public class BeansDeployer
 
         for (AnnotatedTypeConfiguratorHolder holder : event.getAnnotatedTypeConfigurators())
         {
-            AnnotatedType<?> at = holder.getAnnotatedTypeConfigurator().getAnnotated();
+            AnnotatedType<?> at = holder.getAnnotatedTypeConfigurator().getNewAnnotatedType();
             manager.addAdditionalAnnotatedType(
                 holder.getExtension(),
                 at,

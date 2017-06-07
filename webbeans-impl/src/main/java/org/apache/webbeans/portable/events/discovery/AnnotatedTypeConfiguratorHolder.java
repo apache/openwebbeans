@@ -19,19 +19,20 @@
 package org.apache.webbeans.portable.events.discovery;
 
 import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
+
+import org.apache.webbeans.configurator.AnnotatedTypeConfiguratorImpl;
 
 /**
  * Hold information for lifecycle Events which can modify or add multiple
- * {@link AnnotatedTypeConfigurator}
+ * {@link javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator}
  */
 public class AnnotatedTypeConfiguratorHolder<T>
 {
     private final Extension extension;
     private final String id;
-    private final AnnotatedTypeConfigurator<T> annotatedTypeConfigurator;
+    private final AnnotatedTypeConfiguratorImpl<T> annotatedTypeConfigurator;
 
-    public AnnotatedTypeConfiguratorHolder(Extension extension, String id, AnnotatedTypeConfigurator<T> annotatedTypeConfigurator)
+    public AnnotatedTypeConfiguratorHolder(Extension extension, String id, AnnotatedTypeConfiguratorImpl<T> annotatedTypeConfigurator)
     {
         this.extension = extension;
         this.id = id;
@@ -48,7 +49,7 @@ public class AnnotatedTypeConfiguratorHolder<T>
         return id;
     }
 
-    public AnnotatedTypeConfigurator<T> getAnnotatedTypeConfigurator()
+    public AnnotatedTypeConfiguratorImpl<T> getAnnotatedTypeConfigurator()
     {
         return annotatedTypeConfigurator;
     }

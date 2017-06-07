@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 
 /**
@@ -49,6 +50,17 @@ public class AnnotatedConstructorImpl<X> extends AbstractAnnotatedCallable<X> im
         super(webBeansContext, javaMember.getDeclaringClass(), javaMember, declaringType);
         setAnnotations(findAnnotations(javaMember));
         setAnnotatedParameters(GenericsUtil.resolveParameterTypes(declaringType.getJavaClass(), javaMember), javaMember.getParameterAnnotations());
+    }
+
+    public AnnotatedConstructorImpl(WebBeansContext webBeansContext, AnnotatedConstructor<X> annotatedConstructor, AnnotatedType<X> declaringType)
+    {
+        super(webBeansContext, annotatedConstructor.getBaseType(), annotatedConstructor.getJavaMember(), declaringType);
+
+        getAnnotations().addAll(annotatedConstructor.getAnnotations());
+        for (AnnotatedParameter<X> annotatedParameter : annotatedConstructor.getParameters())
+        {
+            getParameters().add(new AnnotatedParameterImpl<>(webBeansContext, annotatedParameter.getBaseType(), this, annotatedParameter.getPosition()));
+        }
     }
 
     private static Annotation[] findAnnotations(final Constructor<?> javaMember)

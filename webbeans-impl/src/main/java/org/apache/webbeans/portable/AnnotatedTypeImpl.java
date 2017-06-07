@@ -298,7 +298,7 @@ public class AnnotatedTypeImpl<X>
         private State(State otherState)
         {
             constructors = otherState.constructors.stream()
-                .map(af -> new AnnotatedConstructorImpl<>(getWebBeansContext(), af.getJavaMember(), AnnotatedTypeImpl.this))
+                .map(ac -> new AnnotatedConstructorImpl<>(getWebBeansContext(), ac, AnnotatedTypeImpl.this))
                 .collect(Collectors.toSet());
 
             fields = otherState.fields.stream()
@@ -306,7 +306,7 @@ public class AnnotatedTypeImpl<X>
                 .collect(Collectors.toSet());
 
             methods = otherState.methods.stream()
-                .map(af -> new AnnotatedMethodImpl<>(getWebBeansContext(), af.getJavaMember(), AnnotatedTypeImpl.this))
+                .map(am -> new AnnotatedMethodImpl<>(getWebBeansContext(), am, AnnotatedTypeImpl.this))
                 .collect(Collectors.toSet());
         }
     }

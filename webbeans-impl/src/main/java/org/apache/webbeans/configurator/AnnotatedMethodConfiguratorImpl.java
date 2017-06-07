@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.configurator.AnnotatedParameterConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.webbeans.portable.AnnotatedMethodImpl;
 
@@ -32,9 +33,15 @@ public class AnnotatedMethodConfiguratorImpl<T> implements AnnotatedMethodConfig
 {
     private final AnnotatedMethodImpl<T> annotatedMethod;
 
+    private final List<AnnotatedParameterConfigurator<T>> annotatedParameterConfigurators;
+
     public AnnotatedMethodConfiguratorImpl(AnnotatedMethodImpl<T> annotatedMethod)
     {
         this.annotatedMethod = annotatedMethod;
+
+        annotatedParameterConfigurators = annotatedMethod.getParameters().stream()
+            .map(m -> new AnnotatedParameterConfiguratorImpl<>(m))
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -67,7 +74,7 @@ public class AnnotatedMethodConfiguratorImpl<T> implements AnnotatedMethodConfig
     @Override
     public List<AnnotatedParameterConfigurator<T>> params()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        return annotatedParameterConfigurators;
     }
 
 }

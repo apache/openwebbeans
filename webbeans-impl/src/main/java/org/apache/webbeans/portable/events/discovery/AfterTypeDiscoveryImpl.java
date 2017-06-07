@@ -95,7 +95,7 @@ public class AfterTypeDiscoveryImpl extends EventBase implements AfterTypeDiscov
         AnnotatedTypeConfiguratorHolder configuratorHolder = annotatedTypeConfigurators.get(key);
         if (configuratorHolder == null)
         {
-            AnnotatedTypeConfigurator<T> configurator = getAnnotatedTypeConfigurator(clazz);
+            AnnotatedTypeConfiguratorImpl<T> configurator = getAnnotatedTypeConfigurator(clazz);
             configuratorHolder = new AnnotatedTypeConfiguratorHolder(extension, id, configurator);
             annotatedTypeConfigurators.put(key, configuratorHolder);
         }
@@ -114,9 +114,9 @@ public class AfterTypeDiscoveryImpl extends EventBase implements AfterTypeDiscov
         return annotatedTypeConfigurators.values();
     }
 
-    private <T> AnnotatedTypeConfigurator<T> getAnnotatedTypeConfigurator(Class<T> clazz)
+    private <T> AnnotatedTypeConfiguratorImpl<T> getAnnotatedTypeConfigurator(Class<T> clazz)
     {
         AnnotatedType<T> initialAnnotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
-        return (AnnotatedTypeConfigurator<T>) new AnnotatedTypeConfiguratorImpl(webBeansContext, initialAnnotatedType);
+        return (AnnotatedTypeConfiguratorImpl<T>) new AnnotatedTypeConfiguratorImpl(webBeansContext, initialAnnotatedType);
     }
 }

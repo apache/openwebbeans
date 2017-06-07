@@ -19,6 +19,7 @@
 package org.apache.webbeans.configurator;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.portable.AnnotatedConstructorImpl;
 import org.apache.webbeans.portable.AnnotatedFieldImpl;
 import org.apache.webbeans.portable.AnnotatedMethodImpl;
 import org.apache.webbeans.portable.AnnotatedTypeImpl;
@@ -36,20 +37,27 @@ import java.util.stream.Collectors;
 public class AnnotatedTypeConfiguratorImpl<T> implements AnnotatedTypeConfigurator<T>
 {
 
-    private final AnnotatedTypeImpl<T> annotatedType;
+    private final AnnotatedType<T> originalAnnotatedType;
+    private final AnnotatedTypeImpl<T> newAnnotatedType;
+    private Set<AnnotatedConstructorConfigurator<T>> annotatedConstructorConfigurators;
     private Set<AnnotatedMethodConfigurator<? super T>> annotatedMethodConfigurators;
     private Set<AnnotatedFieldConfigurator<? super T>> annotatedFieldConfigurators;
 
 
     public AnnotatedTypeConfiguratorImpl(WebBeansContext webBeansContext, AnnotatedType<T> originalAnnotatedType)
     {
-        this.annotatedType = new AnnotatedTypeImpl<>(webBeansContext, originalAnnotatedType);
+        this.originalAnnotatedType = originalAnnotatedType;
+        this.newAnnotatedType = new AnnotatedTypeImpl<>(webBeansContext, originalAnnotatedType);
 
-        annotatedMethodConfigurators = annotatedType.getMethods().stream()
+        annotatedConstructorConfigurators = newAnnotatedType.getConstructors().stream()
+            .map(m -> new AnnotatedConstructorConfiguratorImpl<>((AnnotatedConstructorImpl<T>) m))
+            .collect(Collectors.toSet());
+
+        annotatedMethodConfigurators = newAnnotatedType.getMethods().stream()
             .map(m -> new AnnotatedMethodConfiguratorImpl<>((AnnotatedMethodImpl<T>) m))
             .collect(Collectors.toSet());
 
-        annotatedFieldConfigurators = annotatedType.getFields().stream()
+        annotatedFieldConfigurators = newAnnotatedType.getFields().stream()
             .map(m -> new AnnotatedFieldConfiguratorImpl<>((AnnotatedFieldImpl<T>) m))
             .collect(Collectors.toSet());
     }
@@ -58,27 +66,27 @@ public class AnnotatedTypeConfiguratorImpl<T> implements AnnotatedTypeConfigurat
     @Override
     public AnnotatedType<T> getAnnotated()
     {
-        return annotatedType;
+        return originalAnnotatedType;
     }
 
     @Override
     public AnnotatedTypeConfigurator<T> add(Annotation annotation)
     {
-        annotatedType.addAnnotation(annotation);
+        newAnnotatedType.addAnnotation(annotation);
         return this;
     }
 
     @Override
     public AnnotatedTypeConfigurator<T> remove(Predicate predicate)
     {
-        annotatedType.getAnnotations().removeIf(predicate);
+        newAnnotatedType.getAnnotations().removeIf(predicate);
         return this;
     }
 
     @Override
     public AnnotatedTypeConfigurator<T> removeAll()
     {
-        annotatedType.clearAnnotations();
+        newAnnotatedType.clearAnnotations();
         return this;
     }
 
@@ -97,7 +105,13 @@ public class AnnotatedTypeConfiguratorImpl<T> implements AnnotatedTypeConfigurat
     @Override
     public Set<AnnotatedConstructorConfigurator<T>> constructors()
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        return annotatedConstructorConfigurators;
+    }
+
+
+    public AnnotatedTypeImpl<T> getNewAnnotatedType()
+    {
+        return newAnnotatedType;
     }
 
 }

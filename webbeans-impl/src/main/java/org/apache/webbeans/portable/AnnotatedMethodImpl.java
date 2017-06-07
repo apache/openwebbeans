@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 
 /**
@@ -54,11 +55,15 @@ public class AnnotatedMethodImpl<X> extends AbstractAnnotatedCallable<X> impleme
     /**
      * Copy ct for Configurators
      */
-    public AnnotatedMethodImpl(WebBeansContext webBeansContext, AnnotatedType<X> declaringType, AnnotatedMethod<X> originalAnnotatedMethod)
+    public AnnotatedMethodImpl(WebBeansContext webBeansContext, AnnotatedMethod<? super X> originalAnnotatedMethod, AnnotatedType<X> declaringType)
     {
         super(webBeansContext, originalAnnotatedMethod.getBaseType(), originalAnnotatedMethod.getJavaMember(), declaringType);
 
-        //X TODO copy AnnotatedParameters
+        getAnnotations().addAll(originalAnnotatedMethod.getAnnotations());
+        for (AnnotatedParameter<? super X> annotatedParameter : originalAnnotatedMethod.getParameters())
+        {
+            getParameters().add(new AnnotatedParameterImpl<>(webBeansContext, annotatedParameter.getBaseType(), this, annotatedParameter.getPosition()));
+        }
     }
 
     @Override

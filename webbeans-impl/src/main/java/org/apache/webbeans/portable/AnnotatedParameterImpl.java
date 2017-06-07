@@ -32,7 +32,7 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
  *
  * @param <X> declaring class info
  */
-class AnnotatedParameterImpl<X> extends AbstractAnnotated implements AnnotatedParameter<X>
+public class AnnotatedParameterImpl<X> extends AbstractAnnotated implements AnnotatedParameter<X>
 {
     /**Declaring callable*/
     private final AnnotatedCallable<X> declaringCallable;
