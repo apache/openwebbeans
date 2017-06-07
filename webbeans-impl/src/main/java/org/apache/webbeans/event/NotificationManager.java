@@ -45,7 +45,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.stream.Stream;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.NotificationOptions;
@@ -774,10 +773,10 @@ public final class NotificationManager
             }
         }
 
-        return async ? complete(completableFutures.toArray(new CompletableFuture[completableFutures.size()]), (T) event) : null;
+        return async ? complete(completableFutures, (T) event) : null;
     }
 
-    private <T> CompletableFuture<T> complete(CompletableFuture<Void>[] completableFutures, T event)
+    private <T> CompletableFuture<T> complete(final List<CompletableFuture<Void>> completableFutures, T event)
     {
         if (completableFutures == null)
         {
@@ -785,17 +784,19 @@ public final class NotificationManager
         }
         final CDICompletionFuture<T> future = new CDICompletionFuture<>(event);
         // propagate the exception to the future aggregator (CDICompletionFuture)
-        Stream.of(completableFutures).forEach(f -> f.exceptionally(e ->
-        {
-            future.addError(e);
-            return null;
-        }));
+        CompletableFuture[] futures = completableFutures.stream()
+                .map(f -> f.exceptionally(e ->
+                {
+                    future.addError(e);
+                    return null;
+                })).toArray(CompletableFuture[]::new);
         // execute all futures and *once done* complete our future
-        CompletableFuture.allOf(completableFutures).handle((e, t) ->
-        {
-            future.done();
-            return null;
-        });
+        CompletableFuture.allOf(futures)
+                .handle((e, t) ->
+                {
+                    future.done();
+                    return null;
+                });
         return future;
     }
 
