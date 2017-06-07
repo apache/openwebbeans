@@ -18,7 +18,9 @@
 <suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue">
   <test name="JSR-346 TCK">
     <classes>
-          <class name="org.jboss.cdi.tck.tests.definition.qualifier.repeatable.RepeatableQualifiersTest" />
+          <class name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.VerifyValuesTest" />
+          <class name="org.jboss.cdi.tck.tests.lookup.byname.ambiguous.AmbiguousELNamesTest" />
+          <class name="org.jboss.cdi.tck.tests.lookup.byname.ambiguous.broken.AmbiguousELNamesTest" />
       <!--
       <class name="org.jboss.cdi.tck.tests.event.parameterized.ParameterizedEventTest" />
       <class name="org.jboss.cdi.tck.tests.event.fires.FireEventTest" />

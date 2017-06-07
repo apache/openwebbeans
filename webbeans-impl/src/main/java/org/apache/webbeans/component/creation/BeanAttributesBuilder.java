@@ -86,7 +86,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
 
     protected Set<Class<? extends Annotation>> stereotypes;
 
-    protected boolean alternative;
+    protected Boolean alternative;
     
     public static BeanAttributesBuilderFactory forContext(WebBeansContext webBeansContext)
     {
@@ -102,6 +102,12 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     {
         this.annotated = annotated;
         this.webBeansContext = webBeansContext;
+    }
+
+    public BeanAttributesBuilder<T, A> alternative(final boolean alternative)
+    {
+        this.alternative = alternative;
+        return this;
     }
 
     public BeanAttributesImpl<T> build()
@@ -568,7 +574,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     // these alternatives can be not activated
     protected void defineAlternative()
     {
-        alternative = WebBeansUtil.isAlternative(annotated, stereotypes);
+        alternative = alternative == null || !alternative ? WebBeansUtil.isAlternative(annotated, stereotypes) : alternative;
     }
 
 

@@ -326,6 +326,8 @@ public class BeansDeployer
                 validateDecoratorDecoratedTypes();
                 validateDecoratorGenericTypes();
 
+                validateNames();
+
                 webBeansContext.getNotificationManager().clearCaches();
 
                 // fire event
@@ -367,6 +369,51 @@ public class BeansDeployer
         }
     }
 
+    /**
+     * Ensure "foo" and "foo.bar" conflict and is reported as a DeploymentException but foo.bar and foo.dummy don't conflict.
+     */
+    private void validateNames()
+    {
+        final Collection<String> names = new HashSet<>();
+        final Collection<String> partials = new HashSet<>();
+        for (final Bean<?> bean : webBeansContext.getBeanManagerImpl().getBeans())
+        {
+            // the skip logic needs some revisit but this validation is not useful enough to justify to resolve all alternatives here
+            if (bean.isAlternative())
+            {
+                continue;
+            }
+            if (AbstractProducerBean.class.isInstance(bean) && AbstractProducerBean.class.cast(bean).getOwnerComponent().isAlternative())
+            {
+                continue;
+            }
+
+            final String name = bean.getName();
+            if (name != null)
+            {
+                if (name.contains("."))
+                {
+                    final String[] segments = name.split("\\.");
+                    String current = "";
+                    for (int i = 0; i < segments.length - 1; i++)
+                    {
+                        current += (i > 0 ? "." : "") + segments[i];
+                        partials.add(current);
+                        if (names.contains(current))
+                        {
+                            throw new WebBeansDeploymentException("Name '" + name + "' is conflicting with '" + current + "'");
+                        }
+                    }
+                }
+
+                if (!names.add(name) || partials.contains(name))
+                {
+                    throw new WebBeansDeploymentException("Name '" + name + "' is conflicting");
+                }
+            }
+        }
+    }
+
     private Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> getBeanAttributes(
                                 final Map<BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda)
     {
@@ -392,7 +439,9 @@ public class BeansDeployer
                     if (isEjb || (ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(at)) && isValidManagedBean(at))
                     {
                         final BeanAttributesImpl tBeanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(at, onlyScopedBeans).build();
-                        if (tBeanAttributes != null)
+                        if (tBeanAttributes != null &&
+                                (!tBeanAttributes.isAlternative() || webBeansContext.getAlternativesManager()
+                                        .isAlternative(at.getJavaClass(), tBeanAttributes.getStereotypes())))
                         {
                             final ProcessBeanAttributesImpl<?> processBeanAttributes
                                 = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(at, at.getJavaClass(), tBeanAttributes);
