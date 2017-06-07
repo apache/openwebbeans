@@ -172,7 +172,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private Set<Class<? extends Annotation>> nonscopeAnnotations = new HashSet<Class<? extends Annotation>>();
 
 
-    private ConcurrentMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>> additionalAnnotatedTypes = new ConcurrentHashMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>>();
+    private ConcurrentMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>> additionalAnnotatedTypes = new ConcurrentHashMap<>();
 
     private ErrorStack errorStack = new ErrorStack();
 

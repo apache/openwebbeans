@@ -741,10 +741,13 @@ public class BeansDeployer
 
         for (AnnotatedTypeConfiguratorHolder holder : event.getAnnotatedTypeConfigurators())
         {
+            AnnotatedType<?> at = holder.getAnnotatedTypeConfigurator().getAnnotated();
             manager.addAdditionalAnnotatedType(
                 holder.getExtension(),
-                holder.getAnnotatedTypeConfigurator().getAnnotated(),
+                at,
                 holder.getId());
+
+            newAt.add(at);
         }
 
 
