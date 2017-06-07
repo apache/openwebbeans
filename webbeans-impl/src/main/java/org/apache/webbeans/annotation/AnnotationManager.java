@@ -708,7 +708,7 @@ public final class AnnotationManager
                     "array argument can not be empty");
         }
 
-        Annotation old = null;
+        Set<Class<? extends Annotation>> usedInterceptors = strictValidation ? new HashSet<>(interceptorBindings.length) : null;
         for (Annotation interceptorBinding : interceptorBindings)
         {
             if (!isInterceptorBindingAnnotation(interceptorBinding.annotationType()))
@@ -717,20 +717,17 @@ public final class AnnotationManager
                         " bindings array can not contain other annotation that is not @InterceptorBinding");
             }
 
-            if (old == null)
+            if (usedInterceptors != null && usedInterceptors.contains(interceptorBinding.annotationType()))
             {
-                old = interceptorBinding;
-            }
-            else
-            {
-                if (old.equals(interceptorBinding))
+                if (interceptorBinding.annotationType().getAnnotation(Repeatable.class) == null)
                 {
-                    throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor " +
-                            "bindings array argument can not define duplicate binding annotation with name : @" +
-                            old.getClass().getName());
+                    throw new IllegalArgumentException("InterceptorBinding list must not contain multiple annotations or the same non-Repeatable type: "
+                        + interceptorBinding.annotationType().getName());
                 }
-
-                old = interceptorBinding;
+            }
+            if (usedInterceptors != null)
+            {
+                usedInterceptors.add(interceptorBinding.annotationType());
             }
         }
     }
