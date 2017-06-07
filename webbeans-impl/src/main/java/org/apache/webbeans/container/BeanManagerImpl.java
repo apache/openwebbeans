@@ -649,12 +649,21 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Find the injection point Bean
         Bean<Object> injectedBean = (Bean<Object>)injectionResolver.getInjectionPointBean(injectionPoint);
 
+
         if(WebBeansUtil.isDependent(injectedBean))
         {
             if (!(ownerCreationalContext instanceof CreationalContextImpl))
             {
                 ownerCreationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(ownerCreationalContext, injectionPoint.getBean());
             }
+
+            if (injectionPoint.isDelegate() && ((CreationalContextImpl<?>)ownerCreationalContext).getDelegate() != null)
+            {
+                // this is a dirty hack for Custom Decorators which inject into @Delegate InjectionPoints
+                // by using getInjectableReference. Done in the TCK. Never seen this for real though...
+                return ((CreationalContextImpl<?>)ownerCreationalContext).getDelegate();
+            }
+
             ((CreationalContextImpl<?>)ownerCreationalContext).putInjectionPoint(injectionPoint);
             //Using owner creational context
             //Dependents use parent creational context

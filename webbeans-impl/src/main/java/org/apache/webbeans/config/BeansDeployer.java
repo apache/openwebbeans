@@ -266,10 +266,11 @@ public class BeansDeployer
                     registerAlternativesDecoratorsAndInterceptorsWithPriority(at);
                 }
 
-                addAdditionalAnnotatedTypes(fireAfterTypeDiscoveryEvent(), globalBdaAnnotatedTypes);
-
                 // Also configures deployments, interceptors, decorators.
                 deployFromXML(scanner);
+
+                addAdditionalAnnotatedTypes(fireAfterTypeDiscoveryEvent(), globalBdaAnnotatedTypes);
+
 
                 final Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> beanAttributesPerBda
                     = getBeanAttributes(annotatedTypesPerBda);
@@ -781,9 +782,11 @@ public class BeansDeployer
         Collections.reverse(interceptors);
         Collections.reverse(decorators);
         Collections.reverse(alternatives);
+
         final AfterTypeDiscoveryImpl event = new AfterTypeDiscoveryImpl(webBeansContext, newAt,
                 interceptors, decorators, alternatives);
         manager.fireLifecycleEvent(event);
+
         // reverse to keep "selection" order - decorator and interceptors considers it in their sorting.
         // NOTE: from here priorityClass.getSorted() MUST NOT be recomputed (ie no priorityClass.add(...))
         Collections.reverse(alternatives);
@@ -798,7 +801,6 @@ public class BeansDeployer
 
             newAt.add(at);
         }
-
 
         event.setStarted();
 
