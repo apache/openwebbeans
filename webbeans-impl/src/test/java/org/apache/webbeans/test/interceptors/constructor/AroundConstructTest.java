@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.interceptor.AroundConstruct;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InterceptorBinding;
+import javax.interceptor.Interceptors;
 import javax.interceptor.InvocationContext;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 public class AroundConstructTest extends AbstractUnitTest
@@ -52,8 +54,15 @@ public class AroundConstructTest extends AbstractUnitTest
 
         startContainer(beanClasses, Collections.<String>emptyList(), true);
         assertEquals(1, IllGetYourConstructorInvocation.count);
-        shutDownContainer();
+    }
 
+    @Test
+    public void ejbStyle()
+    {
+        OldStyle.count = 0;
+        startContainer(asList(Simple.class, OldStyle.class), Collections.emptyList(), false);
+        getInstance(Simple.class).callForNothing();
+        assertEquals(1, OldStyle.count);
     }
 
     @ConstructorInterceptorBinding
@@ -74,6 +83,27 @@ public class AroundConstructTest extends AbstractUnitTest
 
     public static class Foo
     {
+    }
+
+    @Interceptors(OldStyle.class)
+    public static class Simple
+    {
+        public void callForNothing()
+        {
+            // no-op, just to ensure the bean exists
+        }
+    }
+
+    @Interceptor
+    public static class OldStyle
+    {
+        public static int count = 0;
+
+        @AroundConstruct
+        public void around(final InvocationContext ic)
+        {
+            count++;
+        }
     }
 
     @ConstructorInterceptorBinding
