@@ -42,18 +42,6 @@ public class ConstructorInterceptorInvocationContext<T> extends InterceptorInvoc
 
     public Object getNewInstance()
     {
-        if (newInstance == null)
-        {
-            try
-            {
-                directProceed();
-                return newInstance;
-            }
-            catch (final Exception e)
-            {
-                throw ExceptionUtil.throwAsRuntimeException(e);
-            }
-        }
         return newInstance;
     }
 

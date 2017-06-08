@@ -162,7 +162,13 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                         provider, aroundConstructInterceptors, interceptorInstances, cons, injectableConstructor.createParameters());
                 provider.setContext(invocationContext);
                 invocationContext.proceed();
-                return (T) invocationContext.getNewInstance();
+                Object newInstance = invocationContext.getNewInstance();
+                if (newInstance == null)
+                {
+                    invocationContext.directProceed();
+                    newInstance = invocationContext.getNewInstance();
+                }
+                return (T) newInstance;
             }
             catch (final Exception e) // CDI 1.0
             {
