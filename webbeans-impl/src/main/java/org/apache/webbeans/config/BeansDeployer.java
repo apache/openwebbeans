@@ -759,6 +759,7 @@ public class BeansDeployer
         final AfterBeanDiscoveryImpl event = new AfterBeanDiscoveryImpl(webBeansContext);
         manager.fireLifecycleEvent(event);
 
+        event.deployConfiguredBeans();
 
         webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack(
                 "There are errors that are added by AfterBeanDiscovery event observers. Look at logs for further details");

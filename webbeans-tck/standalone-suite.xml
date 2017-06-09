@@ -121,6 +121,17 @@
                 <methods><exclude name="testAsyncObserversCalledInDifferentThread"/></methods>
             </class>
 
+            <!-- https://issues.jboss.org/browse/CDITCK-588 equals on AnnotatedType -->
+            <!-- https://issues.jboss.org/browse/CDITCK-589 because the ct predicate ends up randomly removing from the wrong ct -->
+            <class name="org.jboss.cdi.tck.tests.extensions.configurators.annotatedTypeConfigurator.AnnotatedTypeConfiguratorTest">
+                <methods><exclude name=".*"/></methods>
+            </class>
+
+            <!-- https://issues.jboss.org/browse/CDITCK-573 should be solved with tck 2.0.1.Final -->
+            <class name="org.jboss.cdi.tck.tests.extensions.configurators.bean.BeanConfiguratorTest">
+                <methods><exclude name=".*"/></methods>
+            </class>
+
 
             <!--
              Tests broken in the CDI-1.2 TCK:

@@ -35,6 +35,7 @@ import javax.enterprise.inject.spi.configurator.ObserverMethodConfigurator;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.configurator.BeanConfiguratorImpl;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorsManager;
@@ -44,6 +45,8 @@ import org.apache.webbeans.portable.events.generics.GProcessSyntheticBean;
 import org.apache.webbeans.portable.events.generics.GProcessSyntheticObserverMethod;
 import org.apache.webbeans.util.AnnotationUtil;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,6 +62,7 @@ public class AfterBeanDiscoveryImpl extends EventBase implements AfterBeanDiscov
 
     private static final Logger logger = WebBeansLoggerFacade.getLogger(AfterBeanDiscoveryImpl.class);
     private final WebBeansContext webBeansContext;
+    private Set<BeanConfiguratorImpl<?>> beanConfigurators = new HashSet<>();
 
     private Extension extension;
 
@@ -232,12 +236,14 @@ public class AfterBeanDiscoveryImpl extends EventBase implements AfterBeanDiscov
         return beanManager.getAnnotatedTypes(type);
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public <T> BeanConfigurator<T> addBean()
     {
         checkState();
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        BeanConfiguratorImpl<T> beanConfigurator = new BeanConfiguratorImpl<>(webBeansContext);
+        beanConfigurators.add(beanConfigurator);
+
+        return beanConfigurator;
     }
 
     //X TODO OWB-1182 CDI 2.0
@@ -248,4 +254,8 @@ public class AfterBeanDiscoveryImpl extends EventBase implements AfterBeanDiscov
         throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
     }
 
+    public void deployConfiguredBeans()
+    {
+        beanConfigurators.forEach(bc -> addBean(bc.getBean()));
+    }
 }

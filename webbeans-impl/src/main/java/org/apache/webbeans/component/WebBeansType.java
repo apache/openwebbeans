@@ -49,7 +49,8 @@ package org.apache.webbeans.component;
  */
 public enum WebBeansType
 {
-    MANAGED, 
+    MANAGED,
+    CONFIGURED,
     PRODUCERMETHOD, 
     PRODUCERFIELD,
     RESOURCEBEAN,
