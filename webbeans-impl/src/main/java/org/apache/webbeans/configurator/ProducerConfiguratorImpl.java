@@ -18,21 +18,64 @@
  */
 package org.apache.webbeans.configurator;
 
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Producer;
 import javax.enterprise.inject.spi.configurator.ProducerConfigurator;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class ProducerConfiguratorImpl implements ProducerConfigurator
+public class ProducerConfiguratorImpl<T> implements ProducerConfigurator<T>
 {
+    private Function produceWithCallback;
+    private Consumer disposeWithCallback;
+    private Set<InjectionPoint> injectionPoints = new HashSet<>();
+
     @Override
-    public ProducerConfigurator produceWith(Function callback)
+    public<U extends T> ProducerConfigurator<T> produceWith(Function<CreationalContext<U>, U> callback)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.produceWithCallback = callback;
+        return this;
     }
 
     @Override
-    public ProducerConfigurator disposeWith(Consumer callback)
+    public ProducerConfigurator<T> disposeWith(Consumer<T> callback)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.disposeWithCallback = callback;
+        return this;
+    }
+
+    public ProducerConfigurator<T> addInjectionPoint(InjectionPoint injectionPoint)
+    {
+        this.injectionPoints.add(injectionPoint);
+        return this;
+    }
+
+    public <T> Producer<T> getProducer()
+    {
+        return new ConfiguredProducer();
+    }
+
+    public class ConfiguredProducer<T> implements Producer<T>
+    {
+        @Override
+        public T produce(CreationalContext<T> creationalContext)
+        {
+            return (T) produceWithCallback.apply(creationalContext);
+        }
+
+        @Override
+        public void dispose(T instance)
+        {
+            disposeWithCallback.accept(instance);
+        }
+
+        @Override
+        public Set<InjectionPoint> getInjectionPoints()
+        {
+            return injectionPoints;
+        }
     }
 }

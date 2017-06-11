@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.Producer;
 import javax.enterprise.inject.spi.configurator.ProducerConfigurator;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.configurator.ProducerConfiguratorImpl;
 
 /**
  * Implementation of {@link ProcessProducer}.
@@ -40,6 +41,8 @@ public class ProcessProducerImpl<X,T> extends EventBase implements ProcessProduc
     
     /**Used by container to produce instance for producer method or field*/
     private Producer<T> producer = null;
+
+    private ProducerConfiguratorImpl<T> producerConfigurator = null;
     
     public ProcessProducerImpl(Producer<T> producer,AnnotatedMember<X> annotateMember)
     {
@@ -57,11 +60,13 @@ public class ProcessProducerImpl<X,T> extends EventBase implements ProcessProduc
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public ProducerConfigurator<T> configureProducer()
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        checkState();
+        this.producerConfigurator = new ProducerConfiguratorImpl<>();
+        this.producer = null;
+        return producerConfigurator;
     }
 
     /**
@@ -81,6 +86,10 @@ public class ProcessProducerImpl<X,T> extends EventBase implements ProcessProduc
     public Producer<T> getProducer()
     {
         checkState();
+        if (producerConfigurator != null)
+        {
+            return producerConfigurator.getProducer();
+        }
         return producer;
     }
 
@@ -92,5 +101,6 @@ public class ProcessProducerImpl<X,T> extends EventBase implements ProcessProduc
     {
         checkState();
         this.producer = producer;
+        this.producerConfigurator = null;
     }
 }
