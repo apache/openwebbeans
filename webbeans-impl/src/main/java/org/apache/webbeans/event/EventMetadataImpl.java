@@ -139,12 +139,9 @@ public class EventMetadataImpl implements EventMetadata, Serializable
 
     public EventMetadataImpl select(Type subtype, Annotation... bindings)
     {
+        webBeansContext.getAnnotationManager().checkQualifierConditions(bindings);
         Set<Annotation> newQualifiers = ArrayUtil.asSet(bindings);
         newQualifiers.addAll(qualifiers);
-        if (newQualifiers.size() != qualifiers.size() + bindings.length)
-        {
-            throw new IllegalArgumentException("duplicate qualifier");
-        }
         return new EventMetadataImpl(type, subtype, injectionPoint, newQualifiers.toArray(new Annotation[newQualifiers.size()]), webBeansContext);
     }
     

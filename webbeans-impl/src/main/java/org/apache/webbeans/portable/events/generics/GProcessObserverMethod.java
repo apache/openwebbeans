@@ -21,6 +21,7 @@ package org.apache.webbeans.portable.events.generics;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.ObserverMethod;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.events.ProcessObserverMethodImpl;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -28,9 +29,9 @@ import org.apache.webbeans.util.ClassUtil;
 public class GProcessObserverMethod extends ProcessObserverMethodImpl implements GenericProducerObserverEvent
 {
 
-    public GProcessObserverMethod(AnnotatedMethod<?> annotatedMethod, ObserverMethod<?> observerMethod)
+    public GProcessObserverMethod(WebBeansContext webBeansContext, AnnotatedMethod<?> annotatedMethod, ObserverMethod<?> observerMethod)
     {
-        super(annotatedMethod, observerMethod);
+        super(webBeansContext, annotatedMethod, observerMethod);
     }
 
     @Override

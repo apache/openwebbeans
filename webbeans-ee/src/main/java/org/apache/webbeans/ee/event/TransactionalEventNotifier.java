@@ -29,7 +29,7 @@ import javax.transaction.Transaction;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.event.OwbObserverMethod;
+import org.apache.webbeans.event.EventContextImpl;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.TransactionService;
 
@@ -108,14 +108,7 @@ public final class TransactionalEventNotifier
         }
         else
         {
-            if (observer instanceof OwbObserverMethod)
-            {
-                ((OwbObserverMethod<? super Object>)observer).notify(event, metadata);
-            }
-            else
-            {
-                observer.notify(event);
-            }
+            observer.notify(new EventContextImpl(event, metadata));
         }
     }
 
@@ -172,14 +165,7 @@ public final class TransactionalEventNotifier
         {
             try
             {
-                if (observer instanceof OwbObserverMethod)
-                {
-                    ((OwbObserverMethod<T>)observer).notify(event, metadata);
-                }
-                else
-                {
-                    observer.notify(event);
-                }
+                observer.notify(new EventContextImpl(event, metadata));
             }
             catch (Exception e)
             {

@@ -23,17 +23,20 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessSyntheticObserverMethod;
 
+import org.apache.webbeans.config.WebBeansContext;
+
 
 @SuppressWarnings("unchecked")
 public class GProcessSyntheticObserverMethod extends GProcessObserverMethod implements ProcessSyntheticObserverMethod
 {
     private final Extension source;
 
-    public GProcessSyntheticObserverMethod(AnnotatedMethod<?> annotatedMethod,
+    public GProcessSyntheticObserverMethod(WebBeansContext webBeansContext,
+                                           AnnotatedMethod<?> annotatedMethod,
                                            ObserverMethod<?> observerMethod,
                                            Extension source)
     {
-        super(annotatedMethod, observerMethod);
+        super(webBeansContext, annotatedMethod, observerMethod);
         this.source = source;
     }
 

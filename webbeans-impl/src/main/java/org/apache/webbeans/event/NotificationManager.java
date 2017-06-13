@@ -835,26 +835,19 @@ public final class NotificationManager
         }
     }
 
-    private void invokeObserverMethod(Object event, EventMetadataImpl metadata, ObserverMethod<? super Object> observer)
+    private <T> void invokeObserverMethod(final T event, final EventMetadataImpl metadata, ObserverMethod<?> observer)
     {
-        if (observer instanceof OwbObserverMethod)
-        {
-            ((OwbObserverMethod<? super Object>)observer).notify(event, metadata);
-        }
-        else
-        {
-            observer.notify(event);
-        }
+        observer.notify(new EventContextImpl(event, metadata));
     }
 
     /**
      * Gets observer method from given annotated method.
      * @param <T> bean type info
      * @param annotatedMethod annotated method for observer
-     * @param bean bean instance 
+     * @param ownerBean bean instance
      * @return ObserverMethod
      */
-    public <T> ObserverMethod<?> getObservableMethodForAnnotatedMethod(AnnotatedMethod<?> annotatedMethod, AnnotatedParameter<?> annotatedParameter, AbstractOwbBean<T> bean)
+    public <T> ObserverMethod<?> getObservableMethodForAnnotatedMethod(AnnotatedMethod<?> annotatedMethod, AnnotatedParameter<?> annotatedParameter, AbstractOwbBean<T> ownerBean)
     {
         Asserts.assertNotNull(annotatedParameter, "annotatedParameter");
 
@@ -862,14 +855,14 @@ public final class NotificationManager
         // Observer creation from annotated method
         if (isContainerEvent(annotatedParameter))
         {
-            observer = new ContainerEventObserverMethodImpl(bean, annotatedMethod, annotatedParameter);
+            observer = new ContainerEventObserverMethodImpl(ownerBean, annotatedMethod, annotatedParameter);
             addObserver(observer);
         }
         else
         {
-            observer = new ObserverMethodImpl(bean, annotatedMethod, annotatedParameter);
+            observer = new ObserverMethodImpl(ownerBean, annotatedMethod, annotatedParameter);
 
-            GProcessObserverMethod event = new GProcessObserverMethod(annotatedMethod, observer);
+            GProcessObserverMethod event = new GProcessObserverMethod(webBeansContext, annotatedMethod, observer);
 
             //Fires ProcessObserverMethod
             webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);

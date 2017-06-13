@@ -36,6 +36,7 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.configurator.BeanConfiguratorImpl;
+import org.apache.webbeans.configurator.ObserverMethodConfiguratorImpl;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorsManager;
@@ -63,6 +64,7 @@ public class AfterBeanDiscoveryImpl extends EventBase implements AfterBeanDiscov
     private static final Logger logger = WebBeansLoggerFacade.getLogger(AfterBeanDiscoveryImpl.class);
     private final WebBeansContext webBeansContext;
     private Set<BeanConfiguratorImpl<?>> beanConfigurators = new HashSet<>();
+    private Set<ObserverMethodConfiguratorImpl<?>> observerMethodConfigurators = new HashSet<>();
 
     private Extension extension;
 
@@ -209,7 +211,7 @@ public class AfterBeanDiscoveryImpl extends EventBase implements AfterBeanDiscov
     public void addObserverMethod(ObserverMethod<?> observerMethod)
     {
         checkState();
-        GProcessSyntheticObserverMethod event = new GProcessSyntheticObserverMethod(null,observerMethod, extension);
+        GProcessSyntheticObserverMethod event = new GProcessSyntheticObserverMethod(webBeansContext, null, observerMethod, extension);
         if (!event.isVetoed())
         {
             beanManager.fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
@@ -251,11 +253,28 @@ public class AfterBeanDiscoveryImpl extends EventBase implements AfterBeanDiscov
     public <T> ObserverMethodConfigurator<T> addObserverMethod()
     {
         checkState();
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        ObserverMethodConfiguratorImpl<T> configurator = new ObserverMethodConfiguratorImpl<>(webBeansContext, extension);
+        observerMethodConfigurators.add(configurator);
+
+        return configurator;
     }
 
     public void deployConfiguredBeans()
     {
         beanConfigurators.forEach(bc -> addBean(bc.getBean()));
+        for (ObserverMethodConfiguratorImpl<?> omc : observerMethodConfigurators)
+        {
+            ObserverMethod<Object> observerMethod = omc.getObserverMethod();
+            if (observerMethod != null)
+            {
+                GProcessSyntheticObserverMethod event = new GProcessSyntheticObserverMethod(webBeansContext, null, observerMethod, omc.getExtension());
+                if (!event.isVetoed())
+                {
+                    beanManager.fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+                    ObserverMethod newObserverMethod = event.getObserverMethod();
+                    webBeansContext.getNotificationManager().addObserver(newObserverMethod);
+                }
+            }
+        }
     }
 }

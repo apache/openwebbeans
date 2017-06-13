@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.inject.spi.configurator.ObserverMethodConfigurator;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.configurator.ObserverMethodConfiguratorImpl;
 
 /**
  * Implementation of  {@link ProcessObserverMethod}.
@@ -35,15 +36,19 @@ import org.apache.webbeans.config.WebBeansContext;
  */
 public class ProcessObserverMethodImpl<T,X> extends EventBase implements ProcessObserverMethod<T, X>
 {
+    private final WebBeansContext webBeansContext;
+
     /**Observer annotated method*/
     private final AnnotatedMethod<X> annotatedMethod;
     
     /**ObserverMethod instance*/
     private ObserverMethod<T> observerMethod;
     private boolean vetoed = false;
+    private ObserverMethodConfiguratorImpl observerMethodConfigurator = null;
 
-    public ProcessObserverMethodImpl(AnnotatedMethod<X> annotatedMethod,ObserverMethod<T> observerMethod)
+    public ProcessObserverMethodImpl(WebBeansContext webBeansContext, AnnotatedMethod<X> annotatedMethod,ObserverMethod<T> observerMethod)
     {
+        this.webBeansContext = webBeansContext;
         this.annotatedMethod = annotatedMethod;
         this.observerMethod = observerMethod;
     }
@@ -58,11 +63,11 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public ObserverMethodConfigurator<T> configureObserverMethod()
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        this.observerMethodConfigurator = new ObserverMethodConfiguratorImpl(webBeansContext, null, observerMethod);
+        return observerMethodConfigurator;
     }
 
     /**
@@ -82,6 +87,10 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
     public ObserverMethod<T> getObserverMethod()
     {
         checkState();
+        if (observerMethodConfigurator != null)
+        {
+            return observerMethodConfigurator.getObserverMethod();
+        }
         return observerMethod;
     }
 
@@ -90,6 +99,7 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
     {
         checkState();
         this.observerMethod = observerMethod;
+        this.observerMethodConfigurator = null;
     }
 
     @Override

@@ -18,22 +18,29 @@
  */
 package org.apache.webbeans.event;
 
-import java.util.Set;
+import javax.enterprise.inject.spi.EventContext;
+import javax.enterprise.inject.spi.EventMetadata;
 
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.ObserverMethod;
-
-import org.apache.webbeans.component.AbstractOwbBean;
-
-/**
- * This interface fixes an issue of the CDI API. See https://issues.jboss.org/browse/CDI-36
- */
-public interface OwbObserverMethod<T> extends ObserverMethod<T>
+public class EventContextImpl<T> implements EventContext<T>
 {
-    AbstractOwbBean<?> getOwnerBean();
+    private final T event;
+    private final EventMetadata metadata;
 
-    /**
-     * Returns the {@link InjectionPoint}s for the parameters of this observer method.
-     */
-    Set<InjectionPoint> getInjectionPoints();
+    public EventContextImpl(T event, EventMetadata metadata)
+    {
+        this.event = event;
+        this.metadata = metadata;
+    }
+
+    @Override
+    public T getEvent()
+    {
+        return event;
+    }
+
+    @Override
+    public EventMetadata getMetadata()
+    {
+        return metadata;
+    }
 }
