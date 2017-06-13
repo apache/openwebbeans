@@ -55,7 +55,7 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
 import org.apache.webbeans.util.WebBeansUtil;
 
-class InjectionPointImpl implements InjectionPoint, Serializable
+public class InjectionPointImpl implements InjectionPoint, Serializable
 {
     private static final long serialVersionUID = 1047233127758068484L;
 
@@ -72,7 +72,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
     private boolean transientt;
     
     private boolean delegate;
-    
+
     InjectionPointImpl(Bean<?> ownerBean, Collection<Annotation> qualifiers, AnnotatedField<?> annotatedField)
     {
         this(ownerBean, annotatedField.getBaseType(), qualifiers, annotatedField,
@@ -103,7 +103,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         this.transientt = false;
     }
     
-    private InjectionPointImpl(Bean<?> ownerBean, Type type, Collection<Annotation> qualifiers, Annotated annotated, Member member, boolean delegate, boolean isTransient)
+    public InjectionPointImpl(Bean<?> ownerBean, Type type, Collection<Annotation> qualifiers, Annotated annotated, Member member, boolean delegate, boolean isTransient)
     {
         if (type == null)
         {

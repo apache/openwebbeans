@@ -19,6 +19,7 @@
 package org.apache.webbeans.portable.events;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.configurator.InjectionPointConfiguratorImpl;
 
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
@@ -35,6 +36,7 @@ public class ProcessInjectionPointImpl<T, X> extends EventBase implements Proces
 {
 
     private InjectionPoint injectionPoint;
+    private InjectionPointConfiguratorImpl injectionPointConfigurator;
 
 
     public ProcessInjectionPointImpl(InjectionPoint injectionPoint)
@@ -50,6 +52,10 @@ public class ProcessInjectionPointImpl<T, X> extends EventBase implements Proces
     public InjectionPoint getInjectionPoint()
     {
         checkState();
+        if (injectionPointConfigurator != null)
+        {
+            return injectionPointConfigurator.getInjectionPoint();
+        }
         return injectionPoint;
     }
 
@@ -61,6 +67,7 @@ public class ProcessInjectionPointImpl<T, X> extends EventBase implements Proces
     {
         checkState();
         this.injectionPoint = injectionPoint;
+        this.injectionPointConfigurator = null;
     }
 
     /**
@@ -73,10 +80,10 @@ public class ProcessInjectionPointImpl<T, X> extends EventBase implements Proces
         WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public InjectionPointConfigurator configureInjectionPoint()
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        this.injectionPointConfigurator = new InjectionPointConfiguratorImpl(injectionPoint);
+        return injectionPointConfigurator;
     }
 }

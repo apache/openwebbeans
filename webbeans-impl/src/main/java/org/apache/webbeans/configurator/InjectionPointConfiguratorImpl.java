@@ -18,58 +18,120 @@
  */
 package org.apache.webbeans.configurator;
 
+import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.configurator.InjectionPointConfigurator;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.webbeans.annotation.DefaultLiteral;
+import org.apache.webbeans.inject.impl.InjectionPointImpl;
 
 public class InjectionPointConfiguratorImpl implements InjectionPointConfigurator
 {
+
+    private Bean<?> ownerBean;
+    private Type type;
+    private Set<Annotation> qualifiers = new HashSet<>();
+    private Annotated annotated;
+    private Member member;
+    private boolean isDelegate;
+    private boolean isTransient;
+
+    public InjectionPointConfiguratorImpl(InjectionPoint originalInjectionPoint)
+    {
+        this.ownerBean = originalInjectionPoint.getBean();
+        this.type = originalInjectionPoint.getType();
+        this.qualifiers.addAll(originalInjectionPoint.getQualifiers());
+        this.annotated = originalInjectionPoint.getAnnotated();
+        this.member = originalInjectionPoint.getMember();
+        this.isDelegate = originalInjectionPoint.isDelegate();
+        this.isTransient = originalInjectionPoint.isTransient();
+    }
+
     @Override
     public InjectionPointConfigurator type(Type requiredType)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.type = requiredType;
+        return this;
     }
 
     @Override
     public InjectionPointConfigurator addQualifier(Annotation qualifier)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.qualifiers.add(qualifier);
+        return this;
     }
 
     @Override
     public InjectionPointConfigurator addQualifiers(Annotation... qualifiers)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        for (Annotation qualifier : qualifiers)
+        {
+            this.qualifiers.add(qualifier);
+        }
+        return this;
     }
 
     @Override
     public InjectionPointConfigurator addQualifiers(Set<Annotation> qualifiers)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.qualifiers.addAll(qualifiers);
+        return this;
     }
 
     @Override
     public InjectionPointConfigurator qualifiers(Annotation... qualifiers)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.qualifiers.clear();
+        addQualifiers(qualifiers);
+        return this;
     }
 
     @Override
     public InjectionPointConfigurator qualifiers(Set<Annotation> qualifiers)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.qualifiers.clear();
+        addQualifiers(qualifiers);
+        return this;
     }
 
     @Override
     public InjectionPointConfigurator delegate(boolean delegate)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.isDelegate = delegate;
+        return this;
     }
 
     @Override
     public InjectionPointConfigurator transientField(boolean trans)
     {
-        throw new UnsupportedOperationException("TODO implement CDI 2.0");
+        this.isTransient = trans;
+        return this;
+    }
+
+    public InjectionPoint getInjectionPoint()
+    {
+        // apply the rules from 3.8 '@Default qualifier'
+        if (qualifiers.isEmpty())
+        {
+            qualifiers.add(DefaultLiteral.INSTANCE);
+        }
+        else if (qualifiers.size() > 1)
+        {
+            qualifiers.remove(DefaultLiteral.INSTANCE);
+        }
+
+        return new InjectionPointImpl(ownerBean,
+                type,
+                qualifiers,
+                annotated,
+                member,
+                isDelegate,
+                isTransient);
     }
 }
