@@ -19,12 +19,14 @@
 package org.apache.webbeans.portable.events;
 
 import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.inject.spi.configurator.ObserverMethodConfigurator;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.configurator.ObserverMethodConfiguratorImpl;
+import org.apache.webbeans.portable.events.discovery.ExtensionAware;
 
 /**
  * Implementation of  {@link ProcessObserverMethod}.
@@ -34,7 +36,7 @@ import org.apache.webbeans.configurator.ObserverMethodConfiguratorImpl;
  * @param <X> declared bean class
  * @param <T> event type
  */
-public class ProcessObserverMethodImpl<T,X> extends EventBase implements ProcessObserverMethod<T, X>
+public class ProcessObserverMethodImpl<T,X> extends EventBase implements ProcessObserverMethod<T, X>, ExtensionAware
 {
     private final WebBeansContext webBeansContext;
 
@@ -46,13 +48,22 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
     private boolean vetoed = false;
     private ObserverMethodConfiguratorImpl observerMethodConfigurator = null;
 
+    private Extension extension;
+
+
     public ProcessObserverMethodImpl(WebBeansContext webBeansContext, AnnotatedMethod<X> annotatedMethod,ObserverMethod<T> observerMethod)
     {
         this.webBeansContext = webBeansContext;
         this.annotatedMethod = annotatedMethod;
         this.observerMethod = observerMethod;
     }
-    
+
+    @Override
+    public void setExtension(Extension extension)
+    {
+        this.extension = extension;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -66,7 +77,7 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
     @Override
     public ObserverMethodConfigurator<T> configureObserverMethod()
     {
-        this.observerMethodConfigurator = new ObserverMethodConfiguratorImpl(webBeansContext, null, observerMethod);
+        this.observerMethodConfigurator = new ObserverMethodConfiguratorImpl(webBeansContext, extension, observerMethod);
         return observerMethodConfigurator;
     }
 

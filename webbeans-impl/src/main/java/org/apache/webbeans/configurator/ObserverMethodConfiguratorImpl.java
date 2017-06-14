@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.event.EventContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 
@@ -49,6 +50,8 @@ import org.apache.webbeans.exception.WebBeansException;
 public class ObserverMethodConfiguratorImpl<T> implements ObserverMethodConfigurator<T>
 {
     private final WebBeansContext webBeansContext;
+
+    private ObserverMethod<T> originalObserverMethod;
 
     /**
      * The Extension which added this very ObserverMethod
@@ -66,10 +69,19 @@ public class ObserverMethodConfiguratorImpl<T> implements ObserverMethodConfigur
     private EventConsumer notifyWith;
 
 
+    /**
+     * Used for ProcessObserverMethod and ProcessSyntheticObserverMethod.
+     *
+     * In this case the Configurator just tweaks the Qualifiers, etc, but does _not_
+     * change the Notification.
+     * EXCEPT a {@link #notifyWith(EventConsumer)} is set!
+     */
     public ObserverMethodConfiguratorImpl(WebBeansContext webBeansContext, Extension extension, ObserverMethod<T> observerMethod)
     {
         this(webBeansContext, extension);
         read(observerMethod);
+
+        this.originalObserverMethod = observerMethod;
     }
 
     public ObserverMethodConfiguratorImpl(WebBeansContext webBeansContext, Extension extension)
@@ -279,6 +291,7 @@ public class ObserverMethodConfiguratorImpl<T> implements ObserverMethodConfigur
             webBeansContext.getBeanManagerImpl().getErrorStack().pushError(e);
             return null;
         }
+
         return new ConfiguredObserverMethod();
     }
 
@@ -322,7 +335,7 @@ public class ObserverMethodConfiguratorImpl<T> implements ObserverMethodConfigur
         @Override
         public void notify(T event)
         {
-
+            notify(new EventContextImpl<>(event, null));
         }
 
         @Override
@@ -330,7 +343,16 @@ public class ObserverMethodConfiguratorImpl<T> implements ObserverMethodConfigur
         {
             try
             {
-                notifyWith.accept(eventContext);
+                if (notifyWith == null && originalObserverMethod != null)
+                {
+                    // In case of ProcessObserverMethod with no switched-out Consumer
+                    // we just deletage through to the original ObserverMethos
+                    originalObserverMethod.notify((EventContext) eventContext);
+                }
+                else
+                {
+                    notifyWith.accept(eventContext);
+                }
             }
             catch (Exception e)
             {
