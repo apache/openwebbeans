@@ -142,6 +142,7 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
     @Override
     public Instance<Object> createInstance()
     {
+        checkAfterDeploymentValidationFired("It's not allowed to call createInstance() before AfterDeploymentValidation");
         return bm.createInstance();
     }
 
