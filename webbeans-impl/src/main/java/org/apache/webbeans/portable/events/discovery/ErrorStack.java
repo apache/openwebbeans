@@ -76,4 +76,9 @@ public class ErrorStack
     {
         return !errorStack.isEmpty();
     }
+
+    public Iterator<? extends Throwable> iterator()
+    {
+        return errorStack.iterator();
+    }
 }

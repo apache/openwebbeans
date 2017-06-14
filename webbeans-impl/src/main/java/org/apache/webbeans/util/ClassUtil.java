@@ -431,6 +431,32 @@ public final class ClassUtil
     }
 
     /**
+     * Checks, if the given {@link Class} implements the {@link Method} with the
+     * given name und parameterTypes.
+     * Returns {@code false} if the method is only a default method in the interface!
+     *
+     * @param clazz to check
+     * @param interfase the Interface which declares the method
+     * @param methodName of the method
+     * @param parameterTypes of the method
+     *
+     * @return {@code} true if the given class contains a method with the given name and parameterTypes,
+     *         otherwise {@code false}
+     */
+    public static boolean isMethodImplemented(Class<?> clazz, Class<?> interfase, String methodName, Class<?>... parameterTypes)
+    {
+        try
+        {
+            Method m = clazz.getMethod(methodName, parameterTypes);
+            return m != null && m.getDeclaringClass() != interfase;
+        }
+        catch (NoSuchMethodException e)
+        {
+            return false;
+        }
+    }
+
+    /**
      * Check if the method is already defined in a subclass
      * @param subclassMethods
      * @param superclassMethod

@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.event.EventContextImpl;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
 
 
@@ -285,7 +285,16 @@ public class ObserverMethodConfiguratorImpl<T> implements ObserverMethodConfigur
         if (observedType ==  null)
         {
             String extensionName = extension != null ? "(" + extension.toString() + ") ! " : "! ";
-            WebBeansConfigurationException e = new WebBeansConfigurationException("ObserverMethod observedType is missing "
+            WebBeansDeploymentException e = new WebBeansDeploymentException("ObserverMethod observedType is missing "
+                + extensionName
+                + toString());
+            webBeansContext.getBeanManagerImpl().getErrorStack().pushError(e);
+            return null;
+        }
+        if (originalObserverMethod == null && notifyWith == null)
+        {
+            String extensionName = extension != null ? "(" + extension.toString() + ") ! " : "! ";
+            WebBeansDeploymentException e = new WebBeansDeploymentException("ObserverMethod notifyWith is missing "
                 + extensionName
                 + toString());
             webBeansContext.getBeanManagerImpl().getErrorStack().pushError(e);

@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.EventContext;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
@@ -45,6 +46,7 @@ import org.apache.webbeans.portable.events.EventBase;
 import org.apache.webbeans.portable.events.generics.GProcessSyntheticBean;
 import org.apache.webbeans.portable.events.generics.GProcessSyntheticObserverMethod;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.ClassUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -211,6 +213,19 @@ public class AfterBeanDiscoveryImpl extends EventBase implements AfterBeanDiscov
     public void addObserverMethod(ObserverMethod<?> observerMethod)
     {
         checkState();
+
+        // spec requires that either notify(T) or notify(EventContext) is implemented
+        if (!ClassUtil.isMethodImplemented(observerMethod.getClass(), ObserverMethod.class, "notify", Object.class) &&
+            !ClassUtil.isMethodImplemented(observerMethod.getClass(), ObserverMethod.class, "notify", EventContext.class))
+        {
+            String extensionName = extension != null ? "(" + extension.toString() + ") ! " : "! ";
+            WebBeansConfigurationException e = new WebBeansConfigurationException("ObserverMethod must either implement notify(T) or notify(EventContext) "
+                + extensionName
+                + observerMethod.toString());
+            webBeansContext.getBeanManagerImpl().getErrorStack().pushError(e);
+
+        }
+
         GProcessSyntheticObserverMethod event = new GProcessSyntheticObserverMethod(webBeansContext, null, observerMethod, extension);
         if (!event.isVetoed())
         {
