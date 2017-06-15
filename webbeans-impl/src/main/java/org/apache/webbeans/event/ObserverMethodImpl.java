@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -58,7 +57,6 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.OwbNormalScopeProxy;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
@@ -191,9 +189,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         {
             if (!parameter.isAnnotationPresent(observerAnnotation))
             {
-                Collection<Annotation> qualifierAnnots = getWebBeansContext().getAnnotationManager().getQualifierAnnotations(parameter.getAnnotations());
-
-                injectionPoints.add(InjectionPointFactory.getPartialInjectionPoint(ownerBean, parameter, qualifierAnnots));
+                injectionPoints.add(getWebBeansContext().getInjectionPointFactory().buildInjectionPoint(ownerBean, parameter, true));
             }
         }
 
