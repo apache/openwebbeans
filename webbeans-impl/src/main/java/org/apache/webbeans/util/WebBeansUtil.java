@@ -398,9 +398,8 @@ public final class WebBeansUtil
         Class<?> clazz = annotatedType.getJavaClass();
 
         Constructor<?> defaultCt = getNoArgConstructor(clazz);
-        if (defaultCt != null && !Modifier.isPrivate(defaultCt.getModifiers()))
+        if (defaultCt != null )
         {
-            // if we have an accessible default ct, then all is fine in any case
             return true;
         }
 

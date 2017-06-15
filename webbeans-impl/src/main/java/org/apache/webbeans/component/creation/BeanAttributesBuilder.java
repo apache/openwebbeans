@@ -19,7 +19,9 @@
 package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashSet;
@@ -202,7 +204,8 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     /**
      * {@inheritDoc}
      */
-    protected void defineQualifiers()
+    protected void
+    defineQualifiers()
     {
         HashSet<Class<? extends Annotation>> qualifiedTypes = new HashSet<Class<? extends Annotation>>();
         if (annotated.isAnnotationPresent(Specializes.class))
@@ -469,10 +472,22 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
                     scope = Dependent.class;
                 }
             }
+            if (scope == null)
+            {
+                if (annotated instanceof AnnotatedType)
+                {
+                    Constructor<Object> defaultCt = webBeansContext.getWebBeansUtil().getNoArgConstructor(((AnnotatedType) annotated).getJavaClass());
+                    if (defaultCt != null && Modifier.isPrivate(defaultCt.getModifiers()))
+                    {
+                        // basically ignore this class by not adding a scope
+                        return;
+                    }
+                }
+            }
             if (scope == null &&
-                    (!onlyScopedBeans ||
-                    annotated.getAnnotation(Interceptor.class) != null ||
-                    annotated.getAnnotation(Decorator.class) != null))
+                (!onlyScopedBeans ||
+                 annotated.getAnnotation(Interceptor.class) != null ||
+                 annotated.getAnnotation(Decorator.class) != null))
             {
                 // only add a 'default' Dependent scope
                 // * if it's not in a bean-discovery-mode='scoped' module, or
