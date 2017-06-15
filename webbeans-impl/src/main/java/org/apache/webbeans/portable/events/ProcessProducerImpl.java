@@ -43,6 +43,8 @@ public class ProcessProducerImpl<X,T> extends EventBase implements ProcessProduc
     private Producer<T> producer = null;
 
     private ProducerConfiguratorImpl<T> producerConfigurator = null;
+
+    private boolean customProducerSet = false;
     
     public ProcessProducerImpl(Producer<T> producer,AnnotatedMember<X> annotateMember)
     {
@@ -64,6 +66,11 @@ public class ProcessProducerImpl<X,T> extends EventBase implements ProcessProduc
     public ProducerConfigurator<T> configureProducer()
     {
         checkState();
+        if (customProducerSet)
+        {
+            throw new IllegalStateException("Only one of setProducer() and configureProducer() must be used!");
+        }
+
         this.producerConfigurator = new ProducerConfiguratorImpl<>();
         this.producer = null;
         return producerConfigurator;
@@ -100,7 +107,11 @@ public class ProcessProducerImpl<X,T> extends EventBase implements ProcessProduc
     public void setProducer(Producer<T> producer)
     {
         checkState();
+        if (this.producerConfigurator != null)
+        {
+            throw new IllegalStateException("Only one of setProducer() and configureProducer() must be used!");
+        }
         this.producer = producer;
-        this.producerConfigurator = null;
+        customProducerSet = true;
     }
 }
