@@ -132,6 +132,11 @@
                 <methods><exclude name=".*"/></methods>
             </class>
 
+            <!-- https://issues.jboss.org/browse/CDITCK-591 -->
+            <class name="org.jboss.cdi.tck.tests.extensions.alternative.metadata.AlternativeMetadataTest">
+                <methods><exclude name=".*"/></methods>
+            </class>
+
 
             <!--
              Tests broken in the CDI-1.2 TCK:
