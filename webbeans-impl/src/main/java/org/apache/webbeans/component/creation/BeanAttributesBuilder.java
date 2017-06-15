@@ -578,8 +578,6 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     }
 
 
-    protected abstract Class<?> getType();
-    
     public static class BeanAttributesBuilderFactory
     {
         private WebBeansContext webBeansContext;
@@ -671,11 +669,6 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
             defineNullable(false);
         }
 
-        @Override
-        protected Class<?> getType()
-        {
-            return annotated.getJavaClass();
-        }
 
         @Override
         protected AnnotatedType<? super C> getSuperAnnotated()
@@ -702,12 +695,6 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         protected AnnotatedFieldBeanAttributesBuilder(WebBeansContext webBeansContext, AnnotatedField<M> annotated)
         {
             super(webBeansContext, annotated);
-        }
-
-        @Override
-        protected Class<?> getType()
-        {
-            return annotated.getJavaMember().getType();
         }
 
         @Override
@@ -750,12 +737,6 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         protected AnnotatedMethodBeanAttributesBuilder(WebBeansContext webBeansContext, AnnotatedMethod<M> annotated)
         {
             super(webBeansContext, annotated);
-        }
-
-        @Override
-        protected Class<?> getType()
-        {
-            return annotated.getJavaMember().getReturnType();
         }
 
         @Override
