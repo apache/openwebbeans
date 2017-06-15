@@ -137,6 +137,11 @@
                 <methods><exclude name=".*"/></methods>
             </class>
 
+            <!-- https://issues.jboss.org/browse/CDI-581 -->
+            <class name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.specialization.VetoTest">
+                <methods><exclude name=".*"/></methods>
+            </class>
+
 
             <!--
              Tests broken in the CDI-1.2 TCK:
