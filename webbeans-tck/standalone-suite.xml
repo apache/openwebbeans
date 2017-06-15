@@ -137,8 +137,11 @@
                 <methods><exclude name=".*"/></methods>
             </class>
 
-            <!-- https://issues.jboss.org/browse/CDI-581 -->
+            <!-- https://issues.jboss.org/browse/CDI-581 , both tests...-->
             <class name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.specialization.VetoTest">
+                <methods><exclude name=".*"/></methods>
+            </class>
+            <class name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.specialization.SpecializationTest">
                 <methods><exclude name=".*"/></methods>
             </class>
 
