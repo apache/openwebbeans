@@ -439,16 +439,29 @@ public class BeansDeployer
                 {
                     if (isEjb || (ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(at)) && isValidManagedBean(at))
                     {
-                        final BeanAttributesImpl tBeanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(at, onlyScopedBeans).build();
-                        if (tBeanAttributes != null &&
-                                (!tBeanAttributes.isAlternative() || webBeansContext.getAlternativesManager()
-                                        .isAlternative(at.getJavaClass(), tBeanAttributes.getStereotypes())))
+                        final BeanAttributesImpl beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(at, onlyScopedBeans).build();
+                        if (beanAttributes != null &&
+                                (!beanAttributes.isAlternative() || webBeansContext.getAlternativesManager()
+                                        .isAlternative(at.getJavaClass(), beanAttributes.getStereotypes())))
                         {
                             final ProcessBeanAttributesImpl<?> processBeanAttributes
-                                = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(at, at.getJavaClass(), tBeanAttributes);
+                                = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(at, at.getJavaClass(), beanAttributes);
                             if (processBeanAttributes != null)
                             {
-                                bdaBeanAttributes.put(at, new ExtendedBeanAttributes(processBeanAttributes.getAttributes(), isEjb, processBeanAttributes.isIgnoreFinalMethods()));
+                                BeanAttributes<?> newBeanAttributes = processBeanAttributes.getAttributes();
+                                if (beanAttributes != newBeanAttributes)
+                                {
+                                    // check stereotypes
+                                    for (Class<? extends Annotation> stereotype : newBeanAttributes.getStereotypes())
+                                    {
+                                        if (!webBeansContext.getBeanManagerImpl().isStereotype((stereotype)))
+                                        {
+                                            throw new WebBeansConfigurationException("Custom BeanAttributes#getStereotypes() must only contain Stereotypes!");
+                                        }
+                                    }
+                                }
+
+                                bdaBeanAttributes.put(at, new ExtendedBeanAttributes(newBeanAttributes, isEjb, processBeanAttributes.isIgnoreFinalMethods()));
                             }
                         }
                     }
