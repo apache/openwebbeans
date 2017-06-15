@@ -82,7 +82,7 @@ public class InjectionExceptionUtil
         }
 
         ViolationMessageBuilder violationMessage = newViolation("There is more than one Bean ",
-                classString != null ? "with type " + classString : ""
+                classString != null ? "with type " + classString + " " : ""
                 , qualifierMessage);
 
         if (injectionPoint != null)
