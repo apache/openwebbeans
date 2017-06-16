@@ -73,6 +73,11 @@ public abstract class AbstractUnitTest
         shutDownContainer();
     }
 
+    protected void startContainerInnerClasses()
+    {
+        startContainer(getClass().getClasses());
+    }
+
     protected void startContainer(Class<?>... beanClasses)
     {
         startContainer(new ArrayList<Class<?>>(Arrays.asList(beanClasses)), null);

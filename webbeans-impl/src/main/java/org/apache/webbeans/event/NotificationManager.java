@@ -45,6 +45,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.NotificationOptions;
@@ -782,21 +783,12 @@ public final class NotificationManager
         {
             return null;
         }
-        final CDICompletionFuture<T> future = new CDICompletionFuture<>(event);
-        // propagate the exception to the future aggregator (CDICompletionFuture)
-        CompletableFuture[] futures = completableFutures.stream()
-                .map(f -> f.exceptionally(e ->
-                {
-                    future.addError(e);
-                    return null;
-                })).toArray(CompletableFuture[]::new);
-        // execute all futures and *once done* complete our future
-        CompletableFuture.allOf(futures)
-                .handle((e, t) ->
-                {
-                    future.done();
-                    return null;
-                });
+        final CDICompletionFuture<T> future = new CDICompletionFuture<>(event, completableFutures.size());
+        completableFutures.forEach(f -> f.handle((t, e) ->
+        {
+            future.addResult(e);
+            return null;
+        }));
         return future;
     }
 
@@ -900,33 +892,37 @@ public final class NotificationManager
     private static final class CDICompletionFuture<T> extends CompletableFuture<T>
     {
         private final T event;
+        private final AtomicInteger counter;
         private CompletionException error;
 
-        private CDICompletionFuture(final T event)
+        private CDICompletionFuture(final T event, final int total)
         {
             this.event = event;
+            this.counter = new AtomicInteger(total);
         }
 
-        CDICompletionFuture<T> addError(final Throwable t)
+        CDICompletionFuture<T> addResult(final Throwable t)
         {
-            if (error == null)
+            if (t != null)
             {
-                error = new CompletionException(null);
+                if (error == null)
+                {
+                    error = new CompletionException(null);
+                }
+                error.addSuppressed(t);
             }
-            error.addSuppressed(t);
+            if (counter.decrementAndGet() == 0)
+            {
+                if (error != null)
+                {
+                    completeExceptionally(error);
+                }
+                else
+                {
+                    complete(event);
+                }
+            }
             return this;
-        }
-
-        void done()
-        {
-            if (error != null)
-            {
-                completeExceptionally(error);
-            }
-            else
-            {
-                complete(event);
-            }
         }
     }
 
