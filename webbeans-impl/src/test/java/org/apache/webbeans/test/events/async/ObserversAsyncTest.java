@@ -18,15 +18,52 @@
  */
 package org.apache.webbeans.test.events.async;
 
-import javax.annotation.Priority;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class ObserversAsyncTest
+import org.apache.webbeans.test.AbstractUnitTest;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class ObserversAsyncTest extends AbstractUnitTest
 {
+    @Test
+    public void testAsyncEventExceptionHandling() throws ExecutionException, InterruptedException
+    {
+        startContainer(Observer1.class, Observer2.class);
+
+        final AtomicReference<Throwable> observerException = new AtomicReference<>();
+
+        BlockingQueue<Throwable> queue = new LinkedBlockingQueue<>();
+
+        long start = System.nanoTime();
+
+        VisitorCollectorEvent event = new VisitorCollectorEvent();
+        CompletableFuture<VisitorCollectorEvent> completionStage = getBeanManager().getEvent().fireAsync(event)
+            .exceptionally(e ->
+            {
+                observerException.set(e);
+                return null;
+            })
+            .toCompletableFuture();
+
+        VisitorCollectorEvent visitorCollectorEvent = completionStage.get();
+
+        Assert.assertEquals(2, visitorCollectorEvent.getVisitors().size());
+
+        long end = System.nanoTime();
+        long durationMs = TimeUnit.NANOSECONDS.toMillis(end - start);
+        System.out.println("took ms: " + durationMs);
+    }
 
 
     public static class VisitorCollectorEvent
@@ -45,16 +82,28 @@ public class ObserversAsyncTest
     }
 
     @RequestScoped
-    public class Observer1
+    public static class Observer1
     {
-        public void visit(@Observes @Priority(1) VisitorCollectorEvent visitorCollector)
+        public void visit(@ObservesAsync VisitorCollectorEvent visitorCollector)
         {
-            sleep(10L);
+            sleep(100L);
             visitorCollector.visiting(getClass().getSimpleName());
+            throw new IllegalStateException("Observer1");
         }
     }
 
-    private void sleep(long time)
+    @RequestScoped
+    public static class Observer2
+    {
+        public void visit(@ObservesAsync VisitorCollectorEvent visitorCollector)
+        {
+            sleep(2000L);
+            visitorCollector.visiting(getClass().getSimpleName());
+            //X throw new IllegalStateException("Observer2");
+        }
+    }
+
+    private static void sleep(long time)
     {
         try
         {
