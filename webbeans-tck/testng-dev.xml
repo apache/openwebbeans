@@ -18,8 +18,9 @@
 <suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue">
   <test name="JSR-346 TCK">
     <classes>
-          <class name="org.jboss.cdi.tck.tests.extensions.interceptionFactory.broken.BrokenInterceptedInstanceTest" />
+          <class name="org.jboss.cdi.tck.tests.extensions.lifecycle.bbd.broken.passivatingScope.AddingPassivatingScopeTest" />
       <!--
+
       <class name="org.jboss.cdi.tck.tests.event.parameterized.ParameterizedEventTest" />
       <class name="org.jboss.cdi.tck.tests.event.fires.FireEventTest" />
       -->

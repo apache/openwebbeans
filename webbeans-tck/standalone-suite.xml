@@ -145,6 +145,12 @@
                 <methods><exclude name=".*"/></methods>
             </class>
 
+            <!-- CDITCK-466 -->
+            <class name="org.jboss.cdi.tck.tests.extensions.lifecycle.bbd.broken.passivatingScope.AddingPassivatingScopeTest">
+                <methods>
+                    <exclude name=".*"/>
+                </methods>
+            </class>
 
             <!--
              Tests broken in the CDI-1.2 TCK:
