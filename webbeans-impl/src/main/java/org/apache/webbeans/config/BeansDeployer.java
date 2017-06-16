@@ -331,6 +331,14 @@ public class BeansDeployer
 
                 webBeansContext.getNotificationManager().clearCaches();
 
+                if (webBeansContext.getNotificationManager().getObserverMethods().stream()
+                        .anyMatch(ObserverMethod::isAsync))
+                {
+                    // enforce it to be loaded and ensuring it works before runtime
+                    webBeansContext.getNotificationManager().getDefaultNotificationOptions()
+                            .getExecutor().execute(() -> {});
+                }
+
                 // fire event
                 fireAfterDeploymentValidationEvent();
 

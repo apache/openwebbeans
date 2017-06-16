@@ -151,7 +151,7 @@ public final class NotificationManager
         //
         // logic is: if an Executor is registered as a spi use it, otherwise use JVM default one
         final Executor service = webBeansContext.getService(Executor.class);
-        return service != null ? service : new CloseableExecutor(ForkJoinPool.commonPool());
+        return service != null ? service : new CloseableExecutor();
     }
 
     /**
@@ -817,7 +817,7 @@ public final class NotificationManager
             {
                 future.completeExceptionally(wbe.getCause());
             }
-        }, notificationOptions.getExecutor() == null ? ForkJoinPool.commonPool() : notificationOptions.getExecutor());
+        }, notificationOptions.getExecutor() == null ? defaultNotificationOptions.getExecutor() : notificationOptions.getExecutor());
         return future;
     }
 
@@ -932,14 +932,8 @@ public final class NotificationManager
 
     private static final class CloseableExecutor implements Executor, Closeable
     {
-        private final Executor delegate;
         private final Collection<Runnable> tracker = new CopyOnWriteArrayList<>();
         private volatile boolean reject = false;
-
-        private CloseableExecutor(final Executor delegate)
-        {
-            this.delegate = delegate;
-        }
 
         @Override
         public void close() throws IOException
@@ -966,7 +960,7 @@ public final class NotificationManager
             }
 
             tracker.add(command);
-            delegate.execute(() ->
+            ForkJoinPool.commonPool().execute(() ->
             {
                 try
                 {
