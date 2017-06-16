@@ -20,14 +20,16 @@ package org.apache.webbeans.portable.events.generics;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Extension;
+
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.events.ProcessSyntheticAnnotatedTypeImpl;
 
 
 public class GProcessSyntheticAnnotatedType extends ProcessSyntheticAnnotatedTypeImpl implements GenericBeanEvent
 {
-    public GProcessSyntheticAnnotatedType(Extension source, AnnotatedType annotatedType)
+    public GProcessSyntheticAnnotatedType(WebBeansContext webBeansContext, Extension source, AnnotatedType annotatedType)
     {
-        super(annotatedType, source);
+        super(webBeansContext, annotatedType, source);
     }
 
     @Override

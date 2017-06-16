@@ -21,23 +21,19 @@ package org.apache.webbeans.portable.events;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType;
-import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
+import org.apache.webbeans.config.WebBeansContext;
+
 
 /**
  * Default implementation of the {@link javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType}.
  *
  * @param <X> bean class info
  */
-public class ProcessSyntheticAnnotatedTypeImpl<X> extends EventBase implements ProcessSyntheticAnnotatedType<X>
+public class ProcessSyntheticAnnotatedTypeImpl<X> extends ProcessAnnotatedTypeImpl<X> implements ProcessSyntheticAnnotatedType<X>
 {
 
     private Extension source;
 
-    /**Annotated Type*/
-    private AnnotatedType<X> annotatedType = null;
-
-    /**veto or not*/
-    private boolean veto = false;
 
     /**
      * This field gets set to <code>true</code> when a custom AnnotatedType
@@ -47,9 +43,10 @@ public class ProcessSyntheticAnnotatedTypeImpl<X> extends EventBase implements P
     private boolean modifiedAnnotatedType = false;
 
 
-    public ProcessSyntheticAnnotatedTypeImpl(AnnotatedType<X> annotatedType, Extension source)
+    public ProcessSyntheticAnnotatedTypeImpl(WebBeansContext webBeansContext, AnnotatedType<X> annotatedType, Extension source)
     {
-        this.annotatedType = annotatedType;
+        super(webBeansContext, annotatedType);
+
         this.source = source;
     }
 
@@ -61,27 +58,6 @@ public class ProcessSyntheticAnnotatedTypeImpl<X> extends EventBase implements P
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public AnnotatedType<X> getAnnotatedType()
-    {
-        checkState();
-        return annotatedType;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setAnnotatedType(AnnotatedType<X> type)
-    {
-        checkState();
-        annotatedType = type;
-        modifiedAnnotatedType = true;
-    }
-
-    /**
      * Returns sets or not.
      *
      * @return set or not
@@ -89,33 +65,6 @@ public class ProcessSyntheticAnnotatedTypeImpl<X> extends EventBase implements P
     public boolean isModifiedAnnotatedType()
     {
         return modifiedAnnotatedType;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void veto()
-    {
-        checkState();
-        veto = true;
-    }
-
-    //X TODO OWB-1182 CDI 2.0
-    @Override
-    public AnnotatedTypeConfigurator<X> configureAnnotatedType()
-    {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
-    }
-
-    /**
-     * Returns veto status.
-     *
-     * @return veto status
-     */
-    public boolean isVeto()
-    {
-        return veto;
     }
 
 }

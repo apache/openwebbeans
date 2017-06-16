@@ -999,7 +999,7 @@ public final class WebBeansUtil
     public <T> GProcessSyntheticAnnotatedType fireProcessSyntheticAnnotatedTypeEvent(AnnotatedType<T> annotatedType)
     {
         Extension source = AnnotatedTypeWrapper.class.isInstance(annotatedType) ? AnnotatedTypeWrapper.class.cast(annotatedType).getSource() : null;
-        GProcessSyntheticAnnotatedType gProcessSyntheticAnnotatedType = new GProcessSyntheticAnnotatedType(source, annotatedType);
+        GProcessSyntheticAnnotatedType gProcessSyntheticAnnotatedType = new GProcessSyntheticAnnotatedType(webBeansContext, source, annotatedType);
 
         //Fires ProcessSyntheticAnnotatedType
         webBeansContext.getBeanManagerImpl().fireEvent(gProcessSyntheticAnnotatedType, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
