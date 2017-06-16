@@ -18,47 +18,73 @@
  */
 package org.apache.webbeans.test.events.async;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.event.ObservesAsync;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.Extension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.IntStream;
 
 import org.apache.webbeans.test.AbstractUnitTest;
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ObserversAsyncTest extends AbstractUnitTest
 {
     @Test
     public void testAsyncEventExceptionHandling() throws ExecutionException, InterruptedException
     {
-        startContainer(Observer1.class, Observer2.class);
+        final int count = 100 + ForkJoinPool.getCommonPoolParallelism() * 10;
+
+        final VisitorCollectorEvent event = new VisitorCollectorEvent();
+
+        addExtension(new Extension() {
+            void addABunchOfObserversAtLeastMoreThanThreads(@Observes final AfterBeanDiscovery afterBeanDiscovery)
+            {
+                IntStream.range(0, count)
+                        .forEach(i -> afterBeanDiscovery.addObserverMethod()
+                                .observedType(VisitorCollectorEvent.class)
+                                .async(true)
+                                .notifyWith(e ->
+                                {
+                                    if (i % 2 == 0 && (i < 30 || i > 70))
+                                    {
+                                        sleep(500);
+                                    }
+
+                                    final String name = "Observer" + i;
+                                    event.visiting(name);
+                                    throw new IllegalStateException(name);
+                                }));
+            }
+        });
+        startContainer();
 
         final AtomicReference<Throwable> observerException = new AtomicReference<>();
 
-        BlockingQueue<Throwable> queue = new LinkedBlockingQueue<>();
-
         long start = System.nanoTime();
 
-        VisitorCollectorEvent event = new VisitorCollectorEvent();
         CompletableFuture<VisitorCollectorEvent> completionStage = getBeanManager().getEvent().fireAsync(event)
             .exceptionally(e ->
             {
                 observerException.set(e);
-                return null;
+                return event;
             })
             .toCompletableFuture();
 
         VisitorCollectorEvent visitorCollectorEvent = completionStage.get();
 
-        Assert.assertEquals(2, visitorCollectorEvent.getVisitors().size());
+        assertNotNull(observerException.get());
+        assertNotNull(visitorCollectorEvent);
+        assertEquals(count, visitorCollectorEvent.getVisitors().size());
 
         long end = System.nanoTime();
         long durationMs = TimeUnit.NANOSECONDS.toMillis(end - start);
@@ -78,28 +104,6 @@ public class ObserversAsyncTest extends AbstractUnitTest
         public List<String> getVisitors()
         {
             return visitors;
-        }
-    }
-
-    @RequestScoped
-    public static class Observer1
-    {
-        public void visit(@ObservesAsync VisitorCollectorEvent visitorCollector)
-        {
-            sleep(100L);
-            visitorCollector.visiting(getClass().getSimpleName());
-            throw new IllegalStateException("Observer1");
-        }
-    }
-
-    @RequestScoped
-    public static class Observer2
-    {
-        public void visit(@ObservesAsync VisitorCollectorEvent visitorCollector)
-        {
-            sleep(2000L);
-            visitorCollector.visiting(getClass().getSimpleName());
-            //X throw new IllegalStateException("Observer2");
         }
     }
 
