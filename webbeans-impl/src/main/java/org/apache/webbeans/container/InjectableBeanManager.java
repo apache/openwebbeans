@@ -110,11 +110,10 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
         bm.fireEvent(event, qualifiers);
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public Event<Object> getEvent()
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        return bm.getEvent();
     }
 
     @Override
