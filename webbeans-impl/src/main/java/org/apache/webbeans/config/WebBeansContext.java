@@ -185,6 +185,8 @@ public class WebBeansContext
         managerMap.put(InterceptorResolutionService.class, interceptorResolutionService);
         managerMap.put(NotificationManager.class, notificationManager);
 
+        beanManagerImpl.getInjectionResolver().setFastMatching(!"false".equalsIgnoreCase(getOpenWebBeansConfiguration()
+                .getProperty(OpenWebBeansConfiguration.FAST_MATCHING)));
     }
 
     public static WebBeansContext getInstance()

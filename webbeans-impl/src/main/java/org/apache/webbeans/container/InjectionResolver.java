@@ -100,7 +100,8 @@ public class InjectionResolver
     private Map<String, Set<Bean<?>>> resolvedBeansByName = new ConcurrentHashMap<String, Set<Bean<?>>>();
 
     private boolean startup;
-    
+    private boolean fastMatching;
+
     /**
      * Creates a new injection resolve for given bean manager.
      *
@@ -111,6 +112,11 @@ public class InjectionResolver
         this.webBeansContext = webBeansContext;
         this.alternativesManager = webBeansContext.getAlternativesManager();
         this.startup = false;
+    }
+
+    public void setFastMatching(final boolean fastMatching)
+    {
+        this.fastMatching = fastMatching;
     }
 
     public void setStartup(boolean startup)
@@ -479,13 +485,30 @@ public class InjectionResolver
             }
             else
             {
-                for (Type componentApiType : component.getTypes())
+                if (fastMatching)
                 {
-
-                    if (ClassUtil.isRawClassEquals(injectionPointType, componentApiType))
+                    for (Type componentApiType : component.getTypes())
                     {
-                        resolvedComponents.add(component);
-                        break;
+
+                        if (ClassUtil.isRawClassEquals(injectionPointType, componentApiType))
+                        {
+                            resolvedComponents.add(component);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    for (Type componentApiType : component.getTypes())
+                    {
+
+                        if (GenericsUtil.satisfiesDependency(
+                                isDelegate, AbstractProducerBean.class.isInstance(component),
+                                injectionPointType, componentApiType))
+                        {
+                            resolvedComponents.add(component);
+                            break;
+                        }
                     }
                 }
             }
