@@ -33,6 +33,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -56,7 +57,7 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
     private String name = null;
     private boolean alternative;
 
-    private Set<Type> typeClosures = new HashSet<>();
+    private Set<Type> typeClosures = new LinkedHashSet<>();
     private Set<InjectionPoint> injectionPoints = new HashSet<>();
     private Set<Annotation> qualifiers = new HashSet<>();
     private Set<Class<? extends Annotation>> stereotypes = new HashSet<>();
@@ -337,7 +338,9 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
 
         public ConstructedBean()
         {
-            this.returnType = null; //X TODO calculate return type from the typeClosures
+            //X TODO calculate return type from the typeClosures properly
+            this.returnType = beanClass != null ? Class.class.cast(beanClass) : (typeClosures.isEmpty() ? null :
+                    Class.class.cast(typeClosures.stream().filter(Class.class::isInstance).findFirst().orElse(null)));
 
             dependent = !webBeansContext.getBeanManagerImpl().isNormalScope(scope);
 
@@ -381,7 +384,7 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
         @Override
         public Class<?> getBeanClass()
         {
-            return beanClass;
+            return beanClass == null ? returnType : beanClass;
         }
 
         @Override
@@ -405,7 +408,7 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
         @Override
         public Class<T> getReturnType()
         {
-            return (Class<T>) beanClass;
+            return returnType;
         }
 
         @Override

@@ -1188,11 +1188,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return injectionResolver.resolve(beans, null);
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public <T> InterceptionFactory<T> createInterceptionFactory(CreationalContext<T> creationalContext, Class<T> clazz)
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet implemented");
+        return new InterceptionFactoryImpl(
+                webBeansContext, createAnnotatedType(clazz), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+                // ok, we can need to not cast that brutally
+                CreationalContextImpl.class.cast(creationalContext));
     }
 
     /**

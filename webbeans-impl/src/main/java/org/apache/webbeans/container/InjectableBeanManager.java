@@ -232,11 +232,10 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
         return bm.resolve(beans);
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public <T> InterceptionFactory<T> createInterceptionFactory(CreationalContext<T> creationalContext, Class<T> aClass)
     {
-        throw new UnsupportedOperationException("CDI 2.0 not yet imlemented");
+        return bm.createInterceptionFactory(creationalContext, aClass);
     }
 
     @Override
