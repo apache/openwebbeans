@@ -22,6 +22,7 @@ package org.apache.webbeans.proxy;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ExceptionUtil;
@@ -31,16 +32,17 @@ import org.apache.xbean.asm5.MethodVisitor;
 import org.apache.xbean.asm5.Opcodes;
 import org.apache.xbean.asm5.Type;
 
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import java.io.ObjectStreamException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
-
 
 /**
  * Generate a dynamic subclass which has exactly 1 delegation point instance
@@ -69,7 +71,8 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
      * Caches the proxy classes for each bean.
      * We need this to prevent filling up the ClassLoaders by
      */
-    private ConcurrentMap<Bean<?>, Class<?>> cachedProxyClasses = new ConcurrentHashMap<Bean<?>, Class<?>>();
+    private ConcurrentMap<Bean<?>, Class<?>> cachedProxyClasses = new ConcurrentHashMap<>();
+    private ConcurrentMap<AnnotatedType<?>, Class<?>> cachedProxyClassesByAt = new ConcurrentHashMap<>();
 
 
     public InterceptorDecoratorProxyFactory(WebBeansContext webBeansContext)
@@ -182,6 +185,29 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
                                                       Method[] interceptedMethods, Method[] nonInterceptedMethods)
             throws ProxyGenerationException
     {
+        Class<T> proxyClass = createProxyClass(classLoader, classToProxy, interceptedMethods, nonInterceptedMethods);
+        cachedProxyClasses.put(bean, proxyClass);
+        return proxyClass;
+    }
+
+    public synchronized <T> Class<T> createProxyClass(final InterceptorResolutionService.BeanInterceptorInfo interceptorInfo,
+                                                      final AnnotatedType<T> at, final ClassLoader classLoader)
+            throws ProxyGenerationException
+    {
+        final Collection<Method> intercepted = interceptorInfo.getBusinessMethodsInfo().keySet();
+        final Collection<Method> others = interceptorInfo.getNonInterceptedMethods();
+
+        final Class<T> proxyClass = createProxyClass(
+                classLoader, at.getJavaClass(),
+                intercepted.toArray(new Method[intercepted.size()]), others.toArray(new Method[others.size()]));
+        cachedProxyClassesByAt.put(at, proxyClass);
+        return proxyClass;
+    }
+
+    private <T> Class<T> createProxyClass(ClassLoader classLoader, Class<T> classToProxy,
+                                          Method[] interceptedMethods, Method[] nonInterceptedMethods)
+            throws ProxyGenerationException
+    {
         String proxyClassName = getUnusedProxyClassName(classLoader, classToProxy.getName() + "$$OwbInterceptProxy");
 
 
@@ -198,9 +224,18 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
             throw new ProxyGenerationException(e);
         }
 
-        cachedProxyClasses.put(bean, clazz);
-
         return clazz;
+    }
+
+    public <T> Class<T> getCachedProxyClass(final InterceptorResolutionService.BeanInterceptorInfo interceptorInfo,
+                                            final AnnotatedType<T> at, final ClassLoader classLoader)
+    {
+        Class<T> value = (Class<T>) cachedProxyClassesByAt.get(at);
+        if (value == null)
+        {
+            value = createProxyClass(interceptorInfo, at, classLoader);
+        }
+        return value;
     }
 
     public <T> Class<T> getCachedProxyClass(Bean<T> bean)

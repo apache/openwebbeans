@@ -19,9 +19,7 @@
 package org.apache.webbeans.portable;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,17 +34,12 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.Producer;
-import javax.interceptor.AroundInvoke;
 
 import org.apache.webbeans.component.BeanManagerBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.intercept.DecoratorHandler;
-import org.apache.webbeans.intercept.DefaultInterceptorHandler;
 import org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
-import org.apache.webbeans.intercept.InterceptorResolutionService.BusinessMethodInterceptorInfo;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
-import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.proxy.OwbInterceptorProxy;
 
 public abstract class AbstractProducer<T> implements Producer<T>
@@ -87,7 +80,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
         }
 
         interceptorInfo = webBeansContext.getInterceptorResolutionService().
-                calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
+                calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType, false);
         proxyFactory = webBeansContext.getInterceptorDecoratorProxyFactory();
         if (bean instanceof PassivationCapable)
         {
@@ -95,39 +88,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
             passivationId = passivationCapable.getId();
         }
 
-        methodInterceptors = new HashMap<Method, List<Interceptor<?>>>();
-        for (Map.Entry<Method, BusinessMethodInterceptorInfo> miEntry : interceptorInfo.getBusinessMethodsInfo().entrySet())
-        {
-            Method interceptedMethod = miEntry.getKey();
-            BusinessMethodInterceptorInfo mii = miEntry.getValue();
-            List<Interceptor<?>> activeInterceptors = new ArrayList<Interceptor<?>>();
-
-            if (mii.getEjbInterceptors() != null)
-            {
-                Collections.addAll(activeInterceptors, mii.getEjbInterceptors());
-            }
-            if (mii.getCdiInterceptors() != null)
-            {
-                Collections.addAll(activeInterceptors, mii.getCdiInterceptors());
-            }
-            if (interceptorInfo.getSelfInterceptorBean() != null)
-            {
-                if (interceptedMethod.getAnnotation(AroundInvoke.class) == null) // this check is a dirty hack for now to prevent infinite loops
-                {
-                    // add self-interception as last interceptor in the chain.
-                    activeInterceptors.add(interceptorInfo.getSelfInterceptorBean());
-                }
-            }
-
-            if (activeInterceptors.size() > 0)
-            {
-                methodInterceptors.put(interceptedMethod, activeInterceptors);
-            }
-            else if (mii.getMethodDecorators() != null)
-            {
-                methodInterceptors.put(interceptedMethod, Collections.EMPTY_LIST);
-            }
-        }
+        methodInterceptors = webBeansContext.getInterceptorResolutionService().createMethodInterceptors(interceptorInfo);
 
         defineLifecycleInterceptors(bean, annotatedType, webBeansContext);
 
@@ -147,7 +108,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
 
         }
     }
-    
+
     @Override
     public Set<InjectionPoint> getInjectionPoints()
     {
@@ -166,72 +127,22 @@ public abstract class AbstractProducer<T> implements Producer<T>
 
         final Contextual<T> oldContextual = creationalContextImpl.getContextual();
 
-        final Map<Interceptor<?>, Object> interceptorInstances = createInterceptorInstances(creationalContextImpl);
+        final Map<Interceptor<?>, Object> interceptorInstances = creationalContextImpl.getWebBeansContext()
+                .getInterceptorResolutionService().createInterceptorInstances(interceptorInfo, creationalContextImpl);
         creationalContextImpl.putContextual(oldContextual);
 
         T instance = produce(interceptorInstances, creationalContextImpl);
 
         if (hasInterceptorInfo())
         {
-            // register the bean itself for self-interception
-            if (interceptorInfo.getSelfInterceptorBean() != null)
-            {
-                interceptorInstances.put(interceptorInfo.getSelfInterceptorBean(), instance);
-            }
-
-            T delegate = instance;
-            if (interceptorInfo.getDecorators() != null && !isDelegateInjection(creationalContextImpl))
-            {
-                List<Decorator<?>> decorators = filterDecorators(instance, interceptorInfo.getDecorators());
-                Map<Decorator<?>, Object> instances = new HashMap<Decorator<?>, Object>();
-                for (int i = decorators.size(); i > 0; i--)
-                {
-                    Decorator decorator = decorators.get(i - 1);
-                    creationalContextImpl.putContextual(decorator);
-                    creationalContextImpl.putDelegate(delegate);
-                    Object decoratorInstance = decorator.create(creationalContext);
-                    instances.put(decorator, decoratorInstance);
-                    delegate = proxyFactory.createProxyInstance(proxyClass, instance,
-                            new DecoratorHandler(interceptorInfo, decorators, instances, i - 1, instance, passivationId));
-                }
-            }
-            InterceptorHandler interceptorHandler = new DefaultInterceptorHandler<T>(instance, delegate, methodInterceptors, interceptorInstances, passivationId);
-
-            T proxyInstance = proxyFactory.createProxyInstance(proxyClass, instance, interceptorHandler);
-            instance = proxyInstance;
+            instance = creationalContextImpl.getWebBeansContext().getInterceptorResolutionService()
+                .createProxiedInstance(instance, creationalContextImpl, creationalContext,
+                        interceptorInfo, proxyClass, methodInterceptors, passivationId, interceptorInstances,
+                        this::isDelegateInjection, this::filterDecorators);
             creationalContextImpl.putContextual(oldContextual);
         }
 
         return instance;
-    }
-
-    protected Map<Interceptor<?>, Object> createInterceptorInstances(CreationalContextImpl<T> creationalContextImpl)
-    {
-        final Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<Interceptor<?>, Object>();
-        if (interceptorInfo != null)
-        {
-            // apply interceptorInfo
-
-            // create EJB-style interceptors
-            for (final Interceptor interceptorBean : interceptorInfo.getEjbInterceptors())
-            {
-                creationalContextImpl.putContextual(interceptorBean);
-                interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContextImpl));
-            }
-
-            // create CDI-style interceptors
-            for (final Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
-            {
-                creationalContextImpl.putContextual(interceptorBean);
-                interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContextImpl));
-            }
-            for (final Interceptor interceptorBean : interceptorInfo.getConstructorCdiInterceptors())
-            {
-                creationalContextImpl.putContextual(interceptorBean);
-                interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContextImpl));
-            }
-        }
-        return interceptorInstances;
     }
 
     protected List<Decorator<?>> filterDecorators(final T instance, final List<Decorator<?>> decorators)

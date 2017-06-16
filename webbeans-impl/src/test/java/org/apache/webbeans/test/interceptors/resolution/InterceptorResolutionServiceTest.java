@@ -86,7 +86,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         Bean<ClassInterceptedClass> bean =
                 (Bean<ClassInterceptedClass>) getBeanManager().resolve((Set) getBeanManager().getBeans(ClassInterceptedClass.class));
 
-        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
+        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType, false);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getCdiInterceptors());
@@ -129,7 +129,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         Bean<StereotypeInterceptedClass> bean =
                 (Bean<StereotypeInterceptedClass>) getBeanManager().resolve((Set) getBeanManager().getBeans(StereotypeInterceptedClass.class));
 
-        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
+        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType, false);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getCdiInterceptors());
@@ -165,7 +165,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         for (int i=0; i < 2; i++)
         {
             // for being able to do some cheap performance tests
-            interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
+            interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType, false);
         }
         long end = System.nanoTime();
         log.info("calculating the interceptor info took " + TimeUnit.NANOSECONDS.toMillis(end-start) + " ms");
@@ -218,7 +218,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         Bean<MethodInterceptedClass> bean =
                 (Bean<MethodInterceptedClass>) getBeanManager().resolve((Set) getBeanManager().getBeans(MethodInterceptedClass.class));
 
-        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
+        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType, false);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getCdiInterceptors());
@@ -265,7 +265,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         Bean<DecoratedClass> bean =
                 (Bean<DecoratedClass>) getBeanManager().resolve((Set) getBeanManager().getBeans(DecoratedClass.class, new AnnotationLiteral<Binding1>() {}));
 
-        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
+        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType, false);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getBusinessMethodsInfo());
@@ -295,7 +295,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         Bean<Cow> bean = (Bean<Cow>) getBeanManager().resolve((Set) getBeanManager().getBeans(Cow.class));
         Assert.assertNotNull(bean);
 
-        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
+        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType, false);
         Assert.assertNotNull(interceptorInfo);
 
         Assert.assertNotNull(interceptorInfo.getBusinessMethodsInfo());
@@ -323,7 +323,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
         Bean<InterceptedComponent> bean
                 = (Bean<InterceptedComponent>) getBeanManager().resolve((Set) getBeanManager().getBeans(InterceptedComponent.class));
 
-        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType);
+        BeanInterceptorInfo interceptorInfo = ir.calculateInterceptorInfo(bean.getTypes(), bean.getQualifiers(), annotatedType, false);
         Assert.assertNotNull(interceptorInfo);
         Assert.assertNotNull(interceptorInfo.getBusinessMethodsInfo());
         Assert.assertEquals(2, interceptorInfo.getBusinessMethodsInfo().size());

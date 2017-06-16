@@ -639,6 +639,8 @@ public class BeansDeployer
         BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
         WebBeansUtil webBeansUtil = webBeansContext.getWebBeansUtil();
 
+        beanManager.addInternalBean(webBeansUtil.getInterceptionFactoryBean());
+
         // Register Conversation built-in component
         beanManager.addInternalBean(webBeansUtil.getConversationBean());
         

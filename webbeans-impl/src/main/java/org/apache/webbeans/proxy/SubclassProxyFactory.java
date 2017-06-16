@@ -64,6 +64,7 @@ public class SubclassProxyFactory extends AbstractProxyFactory
         }
 
 
+        // todo: using a cache is faster (no synchronized)
         Class<T> proxyClass = tryToLoadClass(classLoader, classToProxy);
         if (proxyClass != null)
         {

@@ -36,6 +36,7 @@ import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.InterceptedOrDecoratedBeanMetadataBean;
+import org.apache.webbeans.component.InterceptionFactoryBean;
 import org.apache.webbeans.component.InterceptorMetadataBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewManagedBean;
@@ -1928,6 +1929,11 @@ public final class WebBeansUtil
         {
             throw new WebBeansConfigurationException(bean.getBeanClass() + " must be an Interceptor");
         }
+    }
+
+    public InterceptionFactoryBean getInterceptionFactoryBean()
+    {
+        return new InterceptionFactoryBean(webBeansContext);
     }
 
 
