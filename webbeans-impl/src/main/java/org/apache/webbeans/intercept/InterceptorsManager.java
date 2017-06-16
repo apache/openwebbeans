@@ -182,15 +182,11 @@ public class InterceptorsManager
             targetIndex = priorityInterceptors.getSorted().size() + i;
         }
 
-        if (p1 != -1 && p2 != -1)
-        {
-            return p1 - p2;
-        }
-        if (p1 == -1 && p2 != -1)
+        if (srcIndex == -1 && targetIndex != -1)
         {
             return -1;
         }
-        if (p1 != -1)
+        if (srcIndex != -1 && targetIndex == -1)
         {
             return 1;
         }
