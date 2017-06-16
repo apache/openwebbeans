@@ -43,6 +43,7 @@ public class InterceptionFactoryImpl<T> implements InterceptionFactory<T> /*todo
     private final Set<Annotation> qualifiers;
     private final WebBeansContext context;
     private boolean ignoreFinals;
+    private volatile boolean called;
 
     public InterceptionFactoryImpl(final WebBeansContext context, final AnnotatedType<T> at,
                                    final Set<Annotation> qualifiers, final CreationalContextImpl<T> cc)
@@ -69,6 +70,8 @@ public class InterceptionFactoryImpl<T> implements InterceptionFactory<T> /*todo
     @Override
     public T createInterceptedInstance(final T originalInstance)
     {
+        check();
+
         ClassLoader classLoader = originalInstance.getClass().getClassLoader();
         if (classLoader == null)
         {
@@ -79,7 +82,7 @@ public class InterceptionFactoryImpl<T> implements InterceptionFactory<T> /*todo
         final AnnotatedTypeImpl<T> newAnnotatedType = configurator.getNewAnnotatedType();
         final InterceptorResolutionService.BeanInterceptorInfo interceptorInfo =
                 context.getInterceptorResolutionService()
-                    .calculateInterceptorInfo(newAnnotatedType.getTypeClosure(), qualifiers, newAnnotatedType, ignoreFinals);
+                    .calculateInterceptorInfo(newAnnotatedType.getTypeClosure(), qualifiers, newAnnotatedType, !ignoreFinals);
         final Class<T> subClass = factory.getCachedProxyClass(interceptorInfo, newAnnotatedType, classLoader);
 
         final Map<Interceptor<?>,Object> interceptorInstances  = context.getInterceptorResolutionService()
@@ -94,5 +97,25 @@ public class InterceptionFactoryImpl<T> implements InterceptionFactory<T> /*todo
         return context.getInterceptorResolutionService().createProxiedInstance(
                 originalInstance, creationalContext, creationalContext, interceptorInfo, subClass,
                 methodInterceptors, passivationId, interceptorInstances, c -> false, (a, d) -> d);
+    }
+
+    private void check()
+    {
+        boolean ok = false;
+        if (!called)
+        {
+            synchronized (this)
+            {
+                if (!called)
+                {
+                    called = true;
+                    ok = true;
+                }
+            }
+        }
+        if (!ok)
+        {
+            throw new IllegalStateException("createInterceptedInstance() can be called only once");
+        }
     }
 }

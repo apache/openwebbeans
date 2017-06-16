@@ -38,6 +38,7 @@ import org.apache.webbeans.util.ClassUtil;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedCallable;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
@@ -93,7 +94,7 @@ public class InterceptorResolutionService
 
 
     public <T> BeanInterceptorInfo  calculateInterceptorInfo(Set<Type> beanTypes, Set<Annotation> qualifiers, AnnotatedType<T> annotatedType,
-                                                             boolean allowFinalMethod)
+                                                             boolean failOnFinal)
     {
         Asserts.assertNotNull(beanTypes, "beanTypes");
         Asserts.assertNotNull(qualifiers, "qualifiers");
@@ -150,12 +151,12 @@ public class InterceptorResolutionService
         {
             BusinessMethodInterceptorInfo methodInterceptorInfo = new BusinessMethodInterceptorInfo();
 
-            calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, annotatedMethod, allowFinalMethod);
+            calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, annotatedMethod, failOnFinal);
 
             calculateCdiMethodInterceptors(methodInterceptorInfo, InterceptionType.AROUND_INVOKE, allUsedCdiInterceptors, annotatedMethod,
-                                           classInterceptorBindings, classLevelInterceptors, allowFinalMethod);
+                                           classInterceptorBindings, classLevelInterceptors, failOnFinal);
 
-            calculateCdiMethodDecorators(methodInterceptorInfo, decorators, annotatedMethod, allowFinalMethod);
+            calculateCdiMethodDecorators(methodInterceptorInfo, decorators, annotatedMethod, failOnFinal);
 
             if (methodInterceptorInfo.isEmpty() && (selfInterceptorBean == null || !selfInterceptorBean.isAroundInvoke()))
             {
@@ -168,7 +169,7 @@ public class InterceptorResolutionService
         for (AnnotatedConstructor annotatedConstructor : annotatedType.getConstructors())
         {
             final BusinessMethodInterceptorInfo constructorInterceptorInfo = new BusinessMethodInterceptorInfo();
-            calculateEjbMethodInterceptors(constructorInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, annotatedConstructor, allowFinalMethod);
+            calculateEjbMethodInterceptors(constructorInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, annotatedConstructor, failOnFinal);
             if (constructorInterceptorInfo.isEmpty() && (selfInterceptorBean == null || !selfInterceptorBean.isAroundInvoke()))
             {
                 continue;
@@ -189,7 +190,7 @@ public class InterceptorResolutionService
                 allUsedEjbInterceptors,
                 classLevelEjbInterceptors,
                 classInterceptorBindings,
-                allowFinalMethod);
+                failOnFinal);
 
         addLifecycleMethods(
                 lifecycleMethodInterceptorInfos,
@@ -200,7 +201,7 @@ public class InterceptorResolutionService
                 allUsedEjbInterceptors,
                 classLevelEjbInterceptors,
                 classInterceptorBindings,
-                allowFinalMethod);
+                failOnFinal);
 
         List<Interceptor<?>> cdiInterceptors = new ArrayList<Interceptor<?>>(allUsedCdiInterceptors);
         Collections.sort(cdiInterceptors, new InterceptorComparator(webBeansContext));
@@ -224,7 +225,7 @@ public class InterceptorResolutionService
             boolean proxyable = false;
             for (AnnotatedConstructor<T> constructor : annotatedType.getConstructors())
             {
-                if ((constructor.getParameters().isEmpty() && !isUnproxyable(constructor, allowFinalMethod)) ||
+                if ((constructor.getParameters().isEmpty() && !isUnproxyable(constructor, failOnFinal)) ||
                      constructor.isAnnotationPresent(Inject.class))
                 {
                     proxyable = true;
@@ -353,7 +354,7 @@ public class InterceptorResolutionService
                                      Set<Interceptor<?>> allUsedEjbInterceptors,
                                      List<Interceptor<?>> classLevelEjbInterceptors,
                                      Set<Annotation> classInterceptorBindings,
-                                     boolean allowFinal)
+                                     boolean failOnFinal)
     {
         List<AnnotatedMethod<?>> foundMethods = new ArrayList<AnnotatedMethod<?>>();
         BusinessMethodInterceptorInfo methodInterceptorInfo = new BusinessMethodInterceptorInfo();
@@ -367,17 +368,17 @@ public class InterceptorResolutionService
             if (lifecycleMethod.getParameters().size() == 0)
             {
                 foundMethods.add(lifecycleMethod);
-                calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, lifecycleMethod, allowFinal);
+                calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, lifecycleMethod, failOnFinal);
 
-                calculateCdiMethodInterceptors(methodInterceptorInfo, interceptionType, allUsedCdiInterceptors, lifecycleMethod, classInterceptorBindings, null, allowFinal);
+                calculateCdiMethodInterceptors(methodInterceptorInfo, interceptionType, allUsedCdiInterceptors, lifecycleMethod, classInterceptorBindings, null, failOnFinal);
             }
         }
         for (AnnotatedConstructor<?> lifecycleMethod : annotatedType.getConstructors())
         {
             // TODO: verifyLifecycleMethod(lifeycleAnnotation, lifecycleMethod);
-            calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, lifecycleMethod, allowFinal);
+            calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, lifecycleMethod, failOnFinal);
 
-            calculateCdiMethodInterceptors(methodInterceptorInfo, interceptionType, allUsedCdiInterceptors, lifecycleMethod, classInterceptorBindings, null, allowFinal);
+            calculateCdiMethodInterceptors(methodInterceptorInfo, interceptionType, allUsedCdiInterceptors, lifecycleMethod, classInterceptorBindings, null, failOnFinal);
         }
 
         if (foundMethods.size() > 0 )
@@ -416,9 +417,9 @@ public class InterceptorResolutionService
 
     private void calculateEjbMethodInterceptors(BusinessMethodInterceptorInfo methodInterceptorInfo, Set<Interceptor<?>> allUsedEjbInterceptors,
                                                 List<Interceptor<?>> classLevelEjbInterceptors, AnnotatedCallable annotatedMethod,
-                                                boolean allowFinal)
+                                                boolean failOnFinal)
     {
-        boolean unproxyable = isUnproxyable(annotatedMethod, allowFinal);
+        boolean unproxyable = isUnproxyable(annotatedMethod, failOnFinal);
 
         List<Interceptor<?>> methodInterceptors = new ArrayList<Interceptor<?>>();
 
@@ -443,15 +444,20 @@ public class InterceptorResolutionService
         }
     }
 
-    private boolean isUnproxyable(AnnotatedCallable annotatedMethod, boolean allowFinal)
+    private boolean isUnproxyable(final AnnotatedCallable annotatedMethod, final boolean failOnFinal)
     {
         int modifiers = annotatedMethod.getJavaMember().getModifiers();
-        return (!allowFinal && Modifier.isFinal(modifiers)) || Modifier.isPrivate(modifiers);
+        final boolean isFinal = Modifier.isFinal(modifiers);
+        if (failOnFinal && isFinal)
+        {
+            throw new UnproxyableResolutionException(annotatedMethod + " is not proxyable");
+        }
+        return isFinal || Modifier.isPrivate(modifiers);
     }
 
 
     private void calculateCdiMethodDecorators(BusinessMethodInterceptorInfo methodInterceptorInfo, List<Decorator<?>> decorators, AnnotatedMethod annotatedMethod,
-                                              boolean allowFinal)
+                                              boolean failOnFinal)
     {
         if (decorators == null || decorators.isEmpty())
         {
@@ -470,7 +476,7 @@ public class InterceptorResolutionService
             Method decoratingMethod = getDecoratingMethod(decorator, annotatedMethod);
             if (decoratingMethod != null)
             {
-                if (isUnproxyable(annotatedMethod, allowFinal))
+                if (isUnproxyable(annotatedMethod, failOnFinal))
                 {
                     throw new WebBeansDeploymentException(annotatedMethod + " is not proxyable, but an Decorator got defined on it!");
                 }
@@ -592,11 +598,11 @@ public class InterceptorResolutionService
                                                 AnnotatedCallable annotatedMethod,
                                                 Set<Annotation> classInterceptorBindings,
                                                 List<Interceptor<?>> classLevelInterceptors,
-                                                boolean allowFinal)
+                                                boolean failOnFinal)
     {
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
-        boolean unproxyable = isUnproxyable(annotatedMethod, allowFinal);
+        boolean unproxyable = isUnproxyable(annotatedMethod, failOnFinal);
         boolean hasMethodInterceptors = false;
 
         Map<Class<? extends Annotation>, Annotation> cummulatedInterceptorBindings = new HashMap<Class<? extends Annotation>, Annotation>();
