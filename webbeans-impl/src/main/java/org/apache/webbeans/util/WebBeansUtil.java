@@ -111,6 +111,7 @@ import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InterceptionFactory;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
@@ -1675,6 +1676,24 @@ public final class WebBeansUtil
                     if (types.length != 1 || !GenericsUtil.isAssignableFrom(false, AbstractProducerBean.class.isInstance(bean), bean.getBeanClass(), types[0]))
                     {
                         throw new WebBeansConfigurationException("injected bean parameter must be " + rawType);
+                    }
+                }
+                else if (InterceptionFactory.class == rawType)
+                {
+                    if (!ParameterizedType.class.isInstance(injectionPoint.getType()))
+                    {
+                        throw new WebBeansConfigurationException(
+                                "No type specified for the interception factory, ensure to paramterize it");
+                    }
+                    final ParameterizedType pt = ParameterizedType.class.cast(injectionPoint.getType());
+                    if (pt.getActualTypeArguments() == null || pt.getActualTypeArguments().length != 1)
+                    {
+                        throw new WebBeansConfigurationException("No explicit type specified for the interception factory");
+                    }
+                    final Type type = pt.getActualTypeArguments()[0];
+                    if (!Class.class.isInstance(type))
+                    {
+                        throw new WebBeansConfigurationException("InterceptionFactory only works with Class, no generics");
                     }
                 }
 

@@ -73,23 +73,9 @@ public class InterceptionFactoryBean extends BuiltInOwbBean<InterceptionFactory>
                                                  final CreationalContextImpl<InterceptionFactory<?>> creationalContext)
         {
             final InjectionPoint ip = creationalContext.getInjectionPoint();
-            if (!ParameterizedType.class.isInstance(ip.getType()))
-            {
-                throw new IllegalArgumentException(
-                        "No type specified for the interception factory, ensure to paramterize it");
-            }
-            final ParameterizedType pt = ParameterizedType.class.cast(ip.getType());
-            if (pt.getActualTypeArguments() == null || pt.getActualTypeArguments().length != 1)
-            {
-                throw new IllegalArgumentException("No explicit type specified for the interception factory");
-            }
-            final Type type = pt.getActualTypeArguments()[0];
-            if (!Class.class.isInstance(type))
-            {
-                throw new IllegalArgumentException("InterceptionFactory only works with Class, no generics");
-            }
-
-            final AnnotatedType<?> at = context.getBeanManagerImpl().createAnnotatedType(Class.class.cast(type));
+            final AnnotatedType<?> at = context.getBeanManagerImpl().createAnnotatedType(
+                    // already validated at startup so let's be brutal at runtime
+                    Class.class.cast(ParameterizedType.class.cast(ip.getType()).getActualTypeArguments()[0]));
             return new InterceptionFactoryImpl(context, at, ip.getQualifiers(), creationalContext);
         }
     }
