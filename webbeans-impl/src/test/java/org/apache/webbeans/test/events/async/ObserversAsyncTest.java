@@ -23,6 +23,7 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -33,6 +34,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Assert;
@@ -74,6 +76,13 @@ public class ObserversAsyncTest extends AbstractUnitTest
         Assert.assertNotNull(t);
         Assert.assertTrue(t instanceof CompletionException);
         CompletionException ce = (CompletionException) t;
+
+        if (count != ce.getSuppressed().length)
+        {
+            Stream.of(ce.getSuppressed())
+                .sorted(Comparator.comparing(Throwable::getMessage))
+                .forEach(throwable -> System.out.println(throwable.getMessage()));
+        }
         Assert.assertEquals(count, ce.getSuppressed().length);
 
     }
@@ -161,7 +170,7 @@ public class ObserversAsyncTest extends AbstractUnitTest
                             sleep(500);
                         }
 
-                        final String name = "Observer" + i;
+                        final String name = String.format("%s_%03d", "Observer", i);
                         e.getEvent().visiting(name);
                         throw new IllegalStateException(name);
                     }));
