@@ -50,7 +50,7 @@ public class ObserversAsyncTest extends AbstractUnitTest
     @Test
     public void testAsyncEventExceptionHandling_handle() throws ExecutionException, InterruptedException
     {
-        final int count = 10 + ForkJoinPool.getCommonPoolParallelism() * 5;
+        final int count = 5 + ForkJoinPool.getCommonPoolParallelism() * 5;
 
         final VisitorCollectorEvent event = new VisitorCollectorEvent();
 
@@ -164,7 +164,7 @@ public class ObserversAsyncTest extends AbstractUnitTest
                     {
                         if (i % 2 == 0 && (i < 30 || i > 70))
                         {
-                            sleep(500);
+                            sleep(200);
                         }
 
                         final String name = String.format("%s_%03d", "Observer", i);
