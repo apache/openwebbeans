@@ -46,6 +46,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.NotificationOptions;
@@ -792,7 +793,6 @@ public final class NotificationManager
         return future;
     }
 
-    //X TODO review
     private CompletableFuture invokeObserverMethodAsync(Object event,
                                            EventMetadataImpl metadata,
                                            ObserverMethod<? super Object> observer,
@@ -893,7 +893,7 @@ public final class NotificationManager
     {
         private final T event;
         private final AtomicInteger counter;
-        private CompletionException error;
+        private AtomicReference<CompletionException> error = new AtomicReference<>();
 
         private CDICompletionFuture(final T event, final int total)
         {
@@ -905,17 +905,17 @@ public final class NotificationManager
         {
             if (t != null)
             {
-                if (error == null)
+                if (error.get() == null)
                 {
-                    error = new CompletionException(null);
+                    error.compareAndSet(null, new CompletionException(null));
                 }
-                error.addSuppressed(t);
+                error.get().addSuppressed(t);
             }
             if (counter.decrementAndGet() == 0)
             {
-                if (error != null)
+                if (error.get() != null)
                 {
-                    completeExceptionally(error);
+                    completeExceptionally(error.get());
                 }
                 else
                 {

@@ -62,10 +62,7 @@ public class ObserversAsyncTest extends AbstractUnitTest
         long start = System.nanoTime();
 
         getBeanManager().getEvent().fireAsync(event)
-            .handle((e, t) ->
-            {
-                return queue.offer(t);
-            });
+            .handle((e, t) -> queue.offer(t));
 
         Throwable t = queue.poll(20, TimeUnit.SECONDS);
 
