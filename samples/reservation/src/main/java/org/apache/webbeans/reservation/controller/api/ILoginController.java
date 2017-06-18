@@ -23,6 +23,6 @@ import org.apache.webbeans.reservation.entity.User;
 
 public interface ILoginController
 {
-    public User checkLogin(String userName, String password);
+    User checkLogin(String userName, String password);
 
 }

@@ -51,7 +51,7 @@ public abstract class AbstractProxyFactory
      * Note that the bitcode is the same as Modifier#TRANSIENT.
      * But 'varargs' is only for methods, whereas 'transient' is only for fields.
      */
-    public static final int MODIFIER_VARARGS = 0x00000080;;
+    public static final int MODIFIER_VARARGS = 0x00000080;
 
 
     private static final Logger logger = WebBeansLoggerFacade.getLogger(AbstractProxyFactory.class);

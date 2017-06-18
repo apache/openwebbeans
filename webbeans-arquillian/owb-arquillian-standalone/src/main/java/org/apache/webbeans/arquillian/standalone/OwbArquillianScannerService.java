@@ -329,7 +329,7 @@ public class OwbArquillianScannerService implements BdaScannerService
                                         return beansXml.getAsset().openStream();
                                     }
                                 };
-                            };
+                            }
                         });
         }
         catch (Exception e)

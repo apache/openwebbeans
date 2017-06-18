@@ -20,6 +20,6 @@ package org.apache.webbeans.jms.util;
 
 public interface Closable
 {
-    public void closeJMSObject();
+    void closeJMSObject();
 
 }

@@ -35,5 +35,5 @@ public interface BdaScannerService extends ScannerService
      * The key is the {@link org.apache.webbeans.spi.BeanArchiveService.BeanArchiveInformation}
      * of the scanned classpath, and the value is the Set of found bean classes.
      */
-    public Map<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>> getBeanClassesPerBda();
+    Map<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>> getBeanClassesPerBda();
 }

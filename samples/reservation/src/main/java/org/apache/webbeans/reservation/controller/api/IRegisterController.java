@@ -22,6 +22,6 @@ import org.apache.webbeans.reservation.entity.User;
 
 public interface IRegisterController
 {
-    public User registerUser(String userName, String password, String name, String surname , int age, boolean admin);
+    User registerUser(String userName, String password, String name, String surname, int age, boolean admin);
 
 }

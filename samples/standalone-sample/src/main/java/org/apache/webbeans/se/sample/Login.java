@@ -20,7 +20,7 @@ package org.apache.webbeans.se.sample;
 
 public interface Login
 {
-    public boolean login(String userName, char[] password);
+    boolean login(String userName, char[] password);
 
-    public void logout();
+    void logout();
 }
