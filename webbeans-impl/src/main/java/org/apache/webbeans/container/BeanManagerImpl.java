@@ -149,7 +149,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private Map<Contextual<?>, Object> cacheProxies = new ConcurrentHashMap<Contextual<?>, Object>();
 
     /**Injection resolver instance*/
-    private InjectionResolver injectionResolver = null;
+    private InjectionResolver injectionResolver;
 
     /**
      * This list contains additional qualifiers which got set via the
@@ -195,7 +195,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * (all non-internal beans like {@link org.apache.webbeans.component.BeanManagerBean;} etc)
      * gets set.
      */
-    private boolean inUse = false;
+    private boolean inUse;
 
     /**
      * This flag will get set to handle lifecyle around
@@ -207,7 +207,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * This flag will get set to {@code true} after the
      * {@link javax.enterprise.inject.spi.AfterDeploymentValidation} gets fired
      */
-    private boolean afterDeploymentValidationFired = false;
+    private boolean afterDeploymentValidationFired;
 
     /**
      * we cache results of calls to {@link #isNormalScope(Class)} because

@@ -45,8 +45,8 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
     
     /**ObserverMethod instance*/
     private ObserverMethod<T> observerMethod;
-    private boolean vetoed = false;
-    private ObserverMethodConfiguratorImpl observerMethodConfigurator = null;
+    private boolean vetoed;
+    private ObserverMethodConfiguratorImpl observerMethodConfigurator;
 
     private Extension extension;
 

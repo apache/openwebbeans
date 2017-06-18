@@ -29,7 +29,7 @@ import javax.enterprise.inject.spi.ProducerFactory;
 public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
 {
 
-    private ResourceReference<X,T> resourceReference = null;
+    private ResourceReference<X,T> resourceReference;
 
     public ResourceBean(InjectionTargetBean<?> ownerComponent,
                         ResourceReference<X, T> resourceReference,

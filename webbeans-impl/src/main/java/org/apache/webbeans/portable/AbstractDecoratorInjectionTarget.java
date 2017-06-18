@@ -36,7 +36,7 @@ import org.apache.webbeans.inject.InjectableConstructor;
 
 public class AbstractDecoratorInjectionTarget<T> extends InjectionTargetImpl<T>
 {
-    private Class<T> proxySubClass = null;
+    private Class<T> proxySubClass;
 
     public AbstractDecoratorInjectionTarget(AnnotatedType<T> annotatedType, Set<InjectionPoint> points, WebBeansContext webBeansContext,
                                              List<AnnotatedMethod<?>> postConstructMethods, List<AnnotatedMethod<?>> preDestroyMethods)

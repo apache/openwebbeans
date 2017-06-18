@@ -20,7 +20,7 @@ package org.apache.webbeans.sample.bean;
 
 public class AppObject
 {
-    public boolean config = false;
+    public boolean config;
     public AppObject()
     {
         config = true;

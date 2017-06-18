@@ -40,7 +40,7 @@ public class ApplicationContext extends AbstractContext
      * used to prevent us firing the Destroyed event twice.
      * We cannot just use setActive(false) as this would trash &#064;BeforeShutdown
      */
-    private boolean destroyed = false;
+    private boolean destroyed;
 
     public ApplicationContext()
     {

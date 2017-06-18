@@ -59,7 +59,7 @@ public class OsgiMetaDataScannerService implements ScannerService
 {
     private static final Logger logger = WebBeansLoggerFacade.getLogger(OsgiMetaDataScannerService.class);
 
-    protected ServletContext servletContext = null;
+    protected ServletContext servletContext;
     private static final String META_INF_BEANS_XML = "META-INF/beans.xml";
     private static final String WEB_INF_BEANS_XML = "WEB-INF/beans.xml";
 
@@ -150,7 +150,7 @@ public class OsgiMetaDataScannerService implements ScannerService
             @Override
             public boolean rangeDiscoveryRequired(DiscoveryRange discoveryRange)
             {
-                return discoveryRange.equals(DiscoveryRange.BUNDLE_CLASSPATH);
+                return discoveryRange == DiscoveryRange.BUNDLE_CLASSPATH;
             }
         });
 

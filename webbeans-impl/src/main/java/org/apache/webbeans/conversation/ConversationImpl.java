@@ -65,9 +65,9 @@ public class ConversationImpl implements Conversation, Serializable
     /**
      * Active duration of the conversation
      */
-    private long lastAccessTime = 0L;
+    private long lastAccessTime;
 
-    private transient RuntimeException problemDuringCreation = null;
+    private transient RuntimeException problemDuringCreation;
 
     /**
      * This instance is under used and by which threads, Atomicinteger would be great but then contract of ContextsService but be enhanced to

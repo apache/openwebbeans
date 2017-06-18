@@ -52,7 +52,7 @@ public class PluginLoader
     private static final Logger logger = WebBeansLoggerFacade.getLogger(PluginLoader.class);
 
     /** unmodifiable list with all found OWB plugins */
-    private List<OpenWebBeansPlugin> plugins = null;
+    private List<OpenWebBeansPlugin> plugins;
 
     private AtomicBoolean started = new AtomicBoolean(false);
 

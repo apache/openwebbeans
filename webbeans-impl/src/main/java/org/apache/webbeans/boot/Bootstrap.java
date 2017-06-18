@@ -34,9 +34,9 @@ public class Bootstrap
     
     private final CountDownLatch latch = new CountDownLatch(1);
     
-    private ContainerLifecycle containerLifecycle = null;
+    private ContainerLifecycle containerLifecycle;
     
-    private Properties properties = null;
+    private Properties properties;
 
     @SuppressWarnings("deprecated")
     public void init(Properties properties)

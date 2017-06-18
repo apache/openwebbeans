@@ -49,7 +49,7 @@ public abstract class AbstractAnnotated implements Annotated
     private final Type baseType;
     
     /**Type closures*/
-    private Set<Type> typeClosures = null;
+    private Set<Type> typeClosures;
 
     /**Set of annotations*/
     private Set<Annotation> annotations = new HashSet<>();

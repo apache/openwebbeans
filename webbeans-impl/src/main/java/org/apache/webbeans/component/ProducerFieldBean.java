@@ -34,7 +34,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T>
 {
 
     /** Producer field that defines the component */
-    private Field producerField = null;
+    private Field producerField;
 
     /**
      * Defines the new producer field component.

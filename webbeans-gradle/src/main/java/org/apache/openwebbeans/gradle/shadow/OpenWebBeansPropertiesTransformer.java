@@ -37,7 +37,7 @@ public class OpenWebBeansPropertiesTransformer implements Transformer
     private String resource = "META-INF/openwebbeans/openwebbeans.properties";
     private String ordinalKey = "configuration.ordinal";
     private int defaultOrdinal = 100;
-    private boolean reverseOrder = false;
+    private boolean reverseOrder;
 
     @Override
     public boolean canTransformResource(final FileTreeElement s)

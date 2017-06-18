@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class ConstructorInterceptorInvocationContext<T> extends InterceptorInvocationContext<T>
 {
-    protected Object newInstance = null;
+    protected Object newInstance;
 
     public ConstructorInterceptorInvocationContext(final Provider<T> provider,
                                                    final List<Interceptor<?>> aroundConstructInterceptors,

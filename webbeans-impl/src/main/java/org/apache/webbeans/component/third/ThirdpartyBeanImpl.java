@@ -33,7 +33,7 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 
 public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
 {
-    private Bean<T> bean = null;
+    private Bean<T> bean;
 
     public ThirdpartyBeanImpl(WebBeansContext webBeansContext, Bean<T> bean)
     {

@@ -56,7 +56,7 @@ public class DeploymentValidationService
     /**
      * Classes which are allowed to be proxies despite having a non-private, non-static final method
      */
-    private Set<String> allowProxyingClasses = null;
+    private Set<String> allowProxyingClasses;
 
 
     public DeploymentValidationService(WebBeansContext webBeansContext)

@@ -80,13 +80,13 @@ public class WebContextsService extends AbstractContextsService
     protected SingletonContext singletonContext;
 
     /**Current request context*/
-    protected ThreadLocal<ServletRequestContext> requestContexts = null;
+    protected ThreadLocal<ServletRequestContext> requestContexts;
 
     /**Current session context*/
-    protected ThreadLocal<SessionContext> sessionContexts = null;
+    protected ThreadLocal<SessionContext> sessionContexts;
 
     /**Current conversation context*/
-    protected ThreadLocal<ConversationContext> conversationContexts = null;
+    protected ThreadLocal<ConversationContext> conversationContexts;
     
     /**Current dependent context*/
     protected DependentContext dependentContext;
@@ -94,11 +94,11 @@ public class WebContextsService extends AbstractContextsService
     /**Conversation context manager*/
     protected final ConversationManager conversationManager;
 
-    protected Boolean eagerSessionInitialisation = null;
-    protected Pattern eagerSessionPattern = null;
+    protected Boolean eagerSessionInitialisation;
+    protected Pattern eagerSessionPattern;
 
 
-    protected Boolean fireRequestLifecycleEvents = null;
+    protected Boolean fireRequestLifecycleEvents;
 
     /**
      * Creates a new instance.

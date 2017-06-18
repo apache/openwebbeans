@@ -59,7 +59,7 @@ public class LoginWindow extends JPanel
     
     private JButton btnCancel;
     
-    private Logger logger = null;
+    private Logger logger;
     
     @Inject
     public LoginWindow(@JavaLogger LoggerFactory loggerFactory)

@@ -57,7 +57,7 @@ public abstract class AbstractContext implements AlterableContext, Serializable
 
 
     /**Context contextual instances*/
-    protected Map<Contextual<?>, BeanInstanceBag<?>> componentInstanceMap = null;
+    protected Map<Contextual<?>, BeanInstanceBag<?>> componentInstanceMap;
 
     /**Contextual Scope Type*/
     protected Class<? extends Annotation> scopeType;

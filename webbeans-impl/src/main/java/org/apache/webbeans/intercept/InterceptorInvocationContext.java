@@ -35,7 +35,7 @@ public class InterceptorInvocationContext<T> extends AbstractInvocationContext<T
     protected InterceptionType type;
     protected List<Interceptor<?>> interceptors;
     protected Map<Interceptor<?>, ?> instances;
-    protected int index = 0;
+    protected int index;
     
     public InterceptorInvocationContext(Provider<T> provider, InterceptionType type,
                                         List<Interceptor<?>> interceptors, Map<Interceptor<?>, ?> instances,

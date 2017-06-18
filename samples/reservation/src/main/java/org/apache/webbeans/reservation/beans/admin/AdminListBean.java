@@ -47,7 +47,7 @@ public class AdminListBean implements Serializable
     
     private Hotel selected;
     
-    private boolean renderedDetailPanel = false;
+    private boolean renderedDetailPanel;
     
     
     public String update()

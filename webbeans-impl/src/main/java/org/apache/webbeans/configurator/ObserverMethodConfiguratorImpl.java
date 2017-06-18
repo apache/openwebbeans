@@ -64,7 +64,7 @@ public class ObserverMethodConfiguratorImpl<T> implements ObserverMethodConfigur
     private Reception reception = Reception.ALWAYS;
     private TransactionPhase transactionPhase = TransactionPhase.IN_PROGRESS;
     private int priority = ObserverMethod.DEFAULT_PRIORITY;
-    private boolean async = false;
+    private boolean async;
 
     private EventConsumer notifyWith;
 

@@ -32,9 +32,9 @@ import org.apache.webbeans.spi.ContainerLifecycle;
 
 public class Boot
 {
-    private static ContainerLifecycle lifecycle = null;
+    private static ContainerLifecycle lifecycle;
     
-    private static JFrame frame = null;
+    private static JFrame frame;
     
     private static void boot(Object startupObject) throws Exception
     {

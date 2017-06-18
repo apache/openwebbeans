@@ -41,7 +41,7 @@ import org.apache.webbeans.sample.util.FacesMessageUtil;
 @Named
 public class LoginBean
 {
-    private User user = null;
+    private User user;
 
     private String userName;
 

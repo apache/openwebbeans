@@ -629,7 +629,7 @@ public final class WebBeansUtil
      *
      * @param sortedProducerBeans
      */
-    protected void configSpecializedProducerMethodBeans(List<ProducerMethodBean> sortedProducerBeans)
+    private void configSpecializedProducerMethodBeans(List<ProducerMethodBean> sortedProducerBeans)
     {
         if (sortedProducerBeans.isEmpty())
         {

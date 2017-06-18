@@ -30,7 +30,7 @@ import org.apache.webbeans.jms.JMSModel;
 
 public class JmsBean<T> extends AbstractOwbBean<T> implements JmsBeanMarker
 {
-    private JMSModel jmsModel = null;
+    private JMSModel jmsModel;
     
     JmsBean(WebBeansContext webBeansContext, JMSModel jmsModel, BeanAttributes<T> beanAttributes)
     {

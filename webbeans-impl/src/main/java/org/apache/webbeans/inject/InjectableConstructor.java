@@ -42,7 +42,7 @@ public class InjectableConstructor<T> extends AbstractInjectable<T>
     /** Injectable constructor instance */
     protected Constructor<T> con;
 
-    private Object[] params = null;
+    private Object[] params;
     private T instance;
 
     /**

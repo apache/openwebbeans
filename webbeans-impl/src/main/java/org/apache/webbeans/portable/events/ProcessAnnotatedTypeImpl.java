@@ -37,22 +37,22 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
 
 
     /**Annotated Type*/
-    private AnnotatedType<X> annotatedType = null;
+    private AnnotatedType<X> annotatedType;
     
     /**veto or not*/
-    private boolean veto = false;
+    private boolean veto;
     
     /**
      * This field gets set to <code>true</code> when a custom AnnotatedType
      * got set in an Extension. In this case we must now take this modified
      * AnnotatedType for our further processing!
      */
-    private boolean modifiedAnnotatedType = false;
+    private boolean modifiedAnnotatedType;
 
     /**
      * Gets set when one makes use the AnnotatedTypeConfigurator
      */
-    private AnnotatedTypeConfiguratorImpl configurator = null;
+    private AnnotatedTypeConfiguratorImpl configurator;
 
     /**
      * Creates a new instance with the given annotated type.

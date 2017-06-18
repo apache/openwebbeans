@@ -39,7 +39,7 @@ public class JSFNumberGuess implements Serializable
     private static final long serialVersionUID = 2264057893898002872L;
 
     private int no;
-    private boolean correct = false;
+    private boolean correct;
     private int guess = 1;
     private int smallRange;
     private int maxRange;

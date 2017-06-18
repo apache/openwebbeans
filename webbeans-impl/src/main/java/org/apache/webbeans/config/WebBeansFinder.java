@@ -37,7 +37,7 @@ public final class WebBeansFinder
     private static SingletonService<WebBeansContext> singletonService = new DefaultSingletonService();
 
     /** safety mechanism to allow setting a special SingletonService only once */
-    private static boolean customSingletonServiceUsed = false;
+    private static boolean customSingletonServiceUsed;
 
     /**
      * No instantiate.

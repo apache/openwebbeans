@@ -58,7 +58,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
 
 
     /**Manages the container lifecycle*/
-    protected ContainerLifecycle lifeCycle = null;
+    protected ContainerLifecycle lifeCycle;
 
     private WebBeansContext webBeansContext;
     private ContextsService contextsService;

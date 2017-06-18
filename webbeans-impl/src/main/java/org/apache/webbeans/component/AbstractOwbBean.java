@@ -53,7 +53,7 @@ public abstract class AbstractOwbBean<T>
         implements OwbBean<T>, PassivationCapable
 {
     /**Logger instance*/
-    protected Logger logger = null;
+    protected Logger logger;
     
     /** Web Beans type */
     protected WebBeansType webBeansType;
@@ -72,7 +72,7 @@ public abstract class AbstractOwbBean<T>
      * It will be created on the first use.
      * @see #getId()
      */
-    protected String passivatingId = null;
+    protected String passivatingId;
     
     protected final WebBeansContext webBeansContext;
 
@@ -247,7 +247,7 @@ public abstract class AbstractOwbBean<T>
     }
 
     /** cache previously calculated result */
-    private Boolean isPassivationCapable = null;
+    private Boolean isPassivationCapable;
 
     /**
      * Get web bean type of the bean.

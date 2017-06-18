@@ -170,13 +170,13 @@ public class BeansDeployer
 
 
     /**Deployment is started or not*/
-    protected boolean deployed = false;
+    protected boolean deployed;
 
     /**XML Configurator*/
     protected BeanArchiveService beanArchiveService;
     
     /**Discover ejb or not*/
-    protected boolean discoverEjb = false;
+    protected boolean discoverEjb;
     private final WebBeansContext webBeansContext;
 
     private final ScannerService scannerService;
@@ -434,7 +434,7 @@ public class BeansDeployer
             BeanArchiveInformation bdaInfo = atEntry.getKey();
             List<AnnotatedType<?>> annotatedTypes = atEntry.getValue();
 
-            boolean onlyScopedBeans = BeanDiscoveryMode.TRIM.equals(bdaInfo.getBeanDiscoveryMode());
+            boolean onlyScopedBeans = BeanDiscoveryMode.TRIM == bdaInfo.getBeanDiscoveryMode();
 
             final Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> bdaBeanAttributes = new IdentityHashMap<AnnotatedType<?>, ExtendedBeanAttributes<?>>(annotatedTypes.size());
             final Iterator<AnnotatedType<?>> iterator = annotatedTypes.iterator();

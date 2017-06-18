@@ -38,7 +38,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
 
     private static final Logger logger = WebBeansLoggerFacade.getLogger(WebScannerService.class);
 
-    protected ServletContext servletContext = null;
+    protected ServletContext servletContext;
 
     public WebScannerService()
     {

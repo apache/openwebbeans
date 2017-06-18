@@ -61,7 +61,7 @@ public final class JmsComponentFactory
         Set<Type> apiTypes = new HashSet<Type>();
         Set<Annotation> qualifiers = new HashSet<Annotation>();
         
-        if(model.getJmsType().equals(JMSType.QUEUE))
+        if(model.getJmsType() == JMSType.QUEUE)
         {
             apiTypes.add(Queue.class);
             apiTypes.add(QueueConnection.class);

@@ -32,7 +32,7 @@ public class PriorityClasses
      * value: the priority. Alternatives from beans.xml have -1 as they are lowest prio.
      */
     private final List<PriorityClass> raw = new ArrayList<PriorityClass>();
-    private List<Class<?>> sorted = null;
+    private List<Class<?>> sorted;
 
     public void add(final Class<?> clazz, final Priority priority)
     {

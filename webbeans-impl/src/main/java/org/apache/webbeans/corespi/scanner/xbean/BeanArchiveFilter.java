@@ -42,7 +42,7 @@ public class BeanArchiveFilter implements Filter
         this.userFilter = userFilter;
         BeanDiscoveryMode discoveryMode = beanArchiveInfo.getBeanDiscoveryMode();
 
-        scanNone = BeanDiscoveryMode.NONE.equals(discoveryMode);
+        scanNone = BeanDiscoveryMode.NONE == discoveryMode;
     }
 
     @Override

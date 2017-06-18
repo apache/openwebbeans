@@ -64,8 +64,8 @@ public abstract class AbstractProxyFactory
      * We use it for creating the proxy instance without fully
      * initializing the class.
      */
-    private Object unsafe = null;
-    private Method unsafeAllocateInstance = null;
+    private Object unsafe;
+    private Method unsafeAllocateInstance;
     private Method unsafeDefineClass;
 
     private final int javaVersion;
@@ -283,7 +283,7 @@ public abstract class AbstractProxyFactory
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         String classFileName = classToProxy.getName().replace('.', '/');
 
-        String[] interfaceNames = new String[]{Type.getInternalName(getMarkerInterface())};
+        String[] interfaceNames = {Type.getInternalName(getMarkerInterface())};
         String superClassName = classFileName;
 
         if (classToProxy.isInterface())

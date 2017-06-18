@@ -37,7 +37,7 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 public class StandaloneResourceProcessor
 { 
-    private static InitialContext context = null;
+    private static InitialContext context;
     
     private static Logger logger = WebBeansLoggerFacade.getLogger(StandaloneResourceProcessor.class);
     

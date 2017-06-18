@@ -704,7 +704,7 @@ public final class NotificationManager
 
                 TransactionPhase phase = observer.getTransactionPhase();
                 
-                if(phase != null && !phase.equals(TransactionPhase.IN_PROGRESS))
+                if(phase != null && phase != TransactionPhase.IN_PROGRESS)
                 {
                     if (async)
                     {
@@ -929,7 +929,7 @@ public final class NotificationManager
     private static final class CloseableExecutor implements Executor, Closeable
     {
         private final Collection<Runnable> tracker = new CopyOnWriteArrayList<>();
-        private volatile boolean reject = false;
+        private volatile boolean reject;
 
         @Override
         public void close() throws IOException

@@ -31,7 +31,7 @@ import org.apache.webbeans.se.sample.bindings.FileLoginBinding;
 @Singleton
 public class FileLogin implements Login
 {
-    private static Properties properties = null;
+    private static Properties properties;
 
     static
     {

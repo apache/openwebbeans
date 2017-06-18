@@ -35,10 +35,10 @@ public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArc
     private List<String> alternativeStereotypes = new ArrayList<String>();
 
     /** Either an excluded class or an excluded .* path */
-    private List<String> excludedClasses = null;
+    private List<String> excludedClasses;
 
     /** Exclude all subpackages (exclude= .**) */
-    private List<String> excludedPackages = null;
+    private List<String> excludedPackages;
     private List<String> allowProxyingClasses = new ArrayList<String>();
 
     public DefaultBeanArchiveInformation(String bdaUrl)

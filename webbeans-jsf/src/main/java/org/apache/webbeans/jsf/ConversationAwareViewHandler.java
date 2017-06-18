@@ -33,7 +33,7 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
 {
     private final ViewHandler delegate;
 
-    private Boolean owbApplication = null;
+    private Boolean owbApplication;
 
     public ConversationAwareViewHandler(ViewHandler delegate)
     {

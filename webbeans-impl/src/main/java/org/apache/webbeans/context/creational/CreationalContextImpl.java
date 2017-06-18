@@ -50,29 +50,29 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     /**
      * The injection point objects to be injected into injection points of type InjectionPoint
      */
-    private transient Stack<InjectionPoint> injectionPoints = null;
+    private transient Stack<InjectionPoint> injectionPoints;
     
     /**
      * The EventMetadata objects to be injected into injection points of type EventMetadata
      */
-    private transient Stack<EventMetadata> eventMetadata = null;
+    private transient Stack<EventMetadata> eventMetadata;
 
     /**
      * Contextual bean dependent instances
      *
      * <p><b>ATTENTION</b> This variable gets initiated lazily!</p>
      */
-    private List<DependentCreationalContext<?>> dependentObjects = null;
+    private List<DependentCreationalContext<?>> dependentObjects;
 
     /**
      * Contains the currently created bean
      */
-    private Bean<T> bean = null;
+    private Bean<T> bean;
     
     /**
      * Contains the currently created contextual, may be a bean, interceptor or decorator 
      */
-    private Contextual<T> contextual = null;
+    private Contextual<T> contextual;
 
     private WebBeansContext webBeansContext;
     
@@ -80,7 +80,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      * This flag will get set to <code>true</code> to prevent recursive loops while destroying
      * the CreationContext.
      */
-    private boolean destroying = false;
+    private boolean destroying;
 
     /**
      * Package private

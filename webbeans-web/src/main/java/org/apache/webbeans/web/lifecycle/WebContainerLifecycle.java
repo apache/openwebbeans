@@ -54,7 +54,7 @@ import java.util.logging.Level;
  * @version $Rev: 911764 $ $Date: 2010-02-19 11:52:54 +0200 (Fri, 19 Feb 2010) $
  * @see org.apache.webbeans.servlet.WebBeansConfigurationListener
  */
-public final class WebContainerLifecycle extends AbstractLifeCycle
+public class WebContainerLifecycle extends AbstractLifeCycle
 {
 
     /**

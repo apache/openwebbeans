@@ -145,7 +145,7 @@ public class JMSModel
                 return false;
             }
         }
-        else if (!jmsType.equals(other.jmsType))
+        else if (jmsType != other.jmsType)
         {
             return false;
         }

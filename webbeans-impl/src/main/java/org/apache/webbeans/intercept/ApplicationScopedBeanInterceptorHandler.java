@@ -46,7 +46,7 @@ public class ApplicationScopedBeanInterceptorHandler extends NormalScopedBeanInt
      * contextual instances because they could be injected into EJBs or other
      * shared instances which span over multiple web-apps.
      */
-    private transient Object cachedInstance = null;
+    private transient Object cachedInstance;
 
 
     public ApplicationScopedBeanInterceptorHandler(BeanManager beanManager, Bean<?> bean)

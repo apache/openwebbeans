@@ -116,7 +116,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
 
     private int priority = ObserverMethod.DEFAULT_PRIORITY;
 
-    private boolean isAsync = false;
+    private boolean isAsync;
     
     private static class ObserverParams
     {
@@ -126,7 +126,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         
         private CreationalContext<Object> creational;
         
-        private boolean isBean = false;
+        private boolean isBean;
     }
 
     /**

@@ -27,7 +27,7 @@ class WrappedCreationalContext<T> extends CreationalContextImpl<T> implements Cr
 {
     private static final long serialVersionUID = 3580925478881669439L;
     
-    private CreationalContext<T> wrapped = null;    
+    private CreationalContext<T> wrapped;
 
     WrappedCreationalContext(Contextual<T> contextual, CreationalContext<T> creationalContext,
                              WebBeansContext webBeansContext)

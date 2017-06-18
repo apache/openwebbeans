@@ -72,14 +72,14 @@ public final class EjbValidator
             throw new NullPointerException("Session Bean type can not be null. It must be one of @Stateless, @Stateful, @Singleton");
         }
 
-        if (ejbBean.getEjbType().equals(SessionBeanType.STATELESS))
+        if (ejbBean.getEjbType() == SessionBeanType.STATELESS)
         {
             if (!ejbBean.getScope().equals(Dependent.class))
             {
                 throw new WebBeansConfigurationException("Stateless Session Bean class : " + ejbBean.getReturnType() + " " + "can not define scope other than @Dependent");
             }
         }
-        else if (ejbBean.getEjbType().equals(SessionBeanType.SINGLETON))
+        else if (ejbBean.getEjbType() == SessionBeanType.SINGLETON)
         {
             if (!ejbBean.getScope().equals(Dependent.class) && !ejbBean.getScope().equals(ApplicationScoped.class))
             {

@@ -37,10 +37,10 @@ public class ProcessInjectionTargetImpl<X> extends EventBase implements ProcessI
     private final AnnotatedType<X> annotatedType;
     
     /**Injection target that is used by container to inject dependencies*/
-    private InjectionTarget<X> injectionTarget = null;
+    private InjectionTarget<X> injectionTarget;
     
     /**Injection target is set or not*/
-    private boolean set = false;
+    private boolean set;
     
     /**
      * Creates a new instance.

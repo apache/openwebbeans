@@ -40,7 +40,7 @@ public class ProcessSyntheticAnnotatedTypeImpl<X> extends ProcessAnnotatedTypeIm
      * got set in an Extension. In this case we must now take this modified
      * AnnotatedType for our further processing!
      */
-    private boolean modifiedAnnotatedType = false;
+    private boolean modifiedAnnotatedType;
 
 
     public ProcessSyntheticAnnotatedTypeImpl(WebBeansContext webBeansContext, AnnotatedType<X> annotatedType, Extension source)

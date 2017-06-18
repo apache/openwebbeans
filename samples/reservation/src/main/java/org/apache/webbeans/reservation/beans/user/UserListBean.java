@@ -39,7 +39,7 @@ public class UserListBean
 
     private List<Reservation> reservations = new ArrayList<Reservation>();
     
-    private HtmlDataTable model = null;
+    private HtmlDataTable model;
     
     private @Inject @Default UserController controller;
     

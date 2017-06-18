@@ -40,11 +40,11 @@ public class ProcessProducerImpl<X,T> extends EventBase implements ProcessProduc
     private final AnnotatedMember<X> annotateMember;
     
     /**Used by container to produce instance for producer method or field*/
-    private Producer<T> producer = null;
+    private Producer<T> producer;
 
-    private ProducerConfiguratorImpl<T> producerConfigurator = null;
+    private ProducerConfiguratorImpl<T> producerConfigurator;
 
-    private boolean customProducerSet = false;
+    private boolean customProducerSet;
     
     public ProcessProducerImpl(Producer<T> producer,AnnotatedMember<X> annotateMember)
     {

@@ -48,17 +48,17 @@ import org.apache.webbeans.intercept.SessionScopedBeanInterceptorHandler;
 
 public class DefaultContextsService extends AbstractContextsService
 {
-    private static ThreadLocal<RequestContext> requestContext = null;
+    private static ThreadLocal<RequestContext> requestContext;
 
-    private static ThreadLocal<SessionContext> sessionContext = null;
+    private static ThreadLocal<SessionContext> sessionContext;
 
-    private ApplicationContext applicationContext = null;
+    private ApplicationContext applicationContext;
 
-    private static ThreadLocal<ConversationContext> conversationContext = null;
+    private static ThreadLocal<ConversationContext> conversationContext;
     
-    private static ThreadLocal<SingletonContext> singletonContext = null;
+    private static ThreadLocal<SingletonContext> singletonContext;
 
-    private static ThreadLocal<DependentContext> dependentContext = null;
+    private static ThreadLocal<DependentContext> dependentContext;
 
 
     private final boolean supportsConversation;

@@ -91,7 +91,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
     protected ClassLoader loader;
     protected CdiArchive archive;
     protected OwbAnnotationFinder finder;
-    protected boolean isBDAScannerEnabled = false;
+    protected boolean isBDAScannerEnabled;
     protected BDABeansXmlScanner bdaBeansXmlScanner;
     protected WebBeansContext webBeansContext;
 
@@ -379,7 +379,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             for (CdiArchive.FoundClasses foundClasses : archive.classesByUrl().values())
             {
                 Set<Class<?>> classSet = new HashSet<Class<?>>();
-                boolean scanModeAnnotated = BeanDiscoveryMode.ANNOTATED.equals(foundClasses.getBeanArchiveInfo().getBeanDiscoveryMode());
+                boolean scanModeAnnotated = BeanDiscoveryMode.ANNOTATED == foundClasses.getBeanArchiveInfo().getBeanDiscoveryMode();
                 for (String className : foundClasses.getClassNames())
                 {
                     try

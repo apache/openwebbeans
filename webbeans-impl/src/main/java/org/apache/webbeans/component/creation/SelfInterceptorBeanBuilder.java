@@ -34,7 +34,7 @@ import org.apache.webbeans.config.WebBeansContext;
  */
 public class SelfInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, SelfInterceptorBean<T>>
 {
-    private boolean enabled = false;
+    private boolean enabled;
 
     public SelfInterceptorBeanBuilder(WebBeansContext webBeansContext, AnnotatedType<T> annotatedType, BeanAttributesImpl<T> beanAttributes)
     {

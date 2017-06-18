@@ -77,11 +77,11 @@ public final class TransactionalEventNotifier
         
         if(transaction != null)
         {
-            if (phase.equals(TransactionPhase.AFTER_COMPLETION))
+            if (phase == TransactionPhase.AFTER_COMPLETION)
             {
                 registerEvent(transaction, new AfterCompletion(observer, event, metadata), true);
             }
-            else if (phase.equals(TransactionPhase.AFTER_SUCCESS))
+            else if (phase == TransactionPhase.AFTER_SUCCESS)
             {
                 if (transaction.getStatus() == Status.STATUS_NO_TRANSACTION)
                 {
@@ -93,11 +93,11 @@ public final class TransactionalEventNotifier
                     registerEvent(transaction, new AfterCompletionSuccess(observer, event, metadata), false);
                 }
             }
-            else if (phase.equals(TransactionPhase.AFTER_FAILURE))
+            else if (phase == TransactionPhase.AFTER_FAILURE)
             {
                 registerEvent(transaction, new AfterCompletionFailure(observer, event, metadata), true);
             }
-            else if (phase.equals(TransactionPhase.BEFORE_COMPLETION))
+            else if (phase == TransactionPhase.BEFORE_COMPLETION)
             {
                 registerEvent(transaction, new BeforeCompletion(observer, event, metadata), true);
             }

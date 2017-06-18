@@ -34,13 +34,13 @@ public class OwbStandaloneConfiguration implements ContainerConfiguration
      * used to skip classpath resources which are not in the archive,
      * can be useful when a resource should appear a single time in an app
      */
-    private boolean useOnlyArchiveResources = false;
-    private String useOnlyArchiveResourcesExcludes = null;
+    private boolean useOnlyArchiveResources;
+    private String useOnlyArchiveResourcesExcludes;
 
     /**
      * config
      */
-    private String properties = null;
+    private String properties;
 
     @Override
     public void validate() throws ConfigurationException

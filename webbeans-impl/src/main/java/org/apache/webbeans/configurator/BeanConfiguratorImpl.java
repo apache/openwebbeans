@@ -51,10 +51,10 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
 {
     private final WebBeansContext webBeansContext;
 
-    private Class<?> beanClass = null;
-    private String passivationId = null;
+    private Class<?> beanClass;
+    private String passivationId;
     private Class<? extends Annotation> scope = Dependent.class;
-    private String name = null;
+    private String name;
     private boolean alternative;
 
     private Set<Type> typeClosures = new LinkedHashSet<>();
@@ -333,7 +333,7 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
     {
         private final Class<T> returnType;
         private final boolean dependent;
-        private boolean specialized = false;
+        private boolean specialized;
         private boolean enabled = true;
 
         public ConstructedBean()

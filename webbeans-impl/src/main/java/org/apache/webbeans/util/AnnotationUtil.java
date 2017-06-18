@@ -48,7 +48,7 @@ public final class AnnotationUtil
 
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
     
-    public static final Annotation[] DEFAULT_AND_ANY_ANNOTATION_ARRAY = new Annotation[] {DefaultLiteral.INSTANCE, AnyLiteral.INSTANCE};
+    public static final Annotation[] DEFAULT_AND_ANY_ANNOTATION_ARRAY = {DefaultLiteral.INSTANCE, AnyLiteral.INSTANCE};
 
     public static final Set<Annotation> DEFAULT_AND_ANY_ANNOTATION = Collections.unmodifiableSet(ArrayUtil.asSet(DEFAULT_AND_ANY_ANNOTATION_ARRAY));
     

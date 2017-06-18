@@ -46,7 +46,7 @@ import org.apache.webbeans.portable.events.EventBase;
 public class BeforeBeanDiscoveryImpl extends EventBase implements BeforeBeanDiscovery, ExtensionAware
 {
     
-    private BeanManagerImpl beanManager = null;
+    private BeanManagerImpl beanManager;
     private final WebBeansContext webBeansContext;
     private Extension extension;
     private Map<String, AnnotatedTypeConfiguratorHolder> annotatedTypeConfigurators = new HashMap<>();

@@ -54,7 +54,7 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
     private boolean disposable;
     
     /**Used in dispose method, represents produces method parameter instance*/
-    private Object producerMethodInstance = null;
+    private Object producerMethodInstance;
     
     private Map<Bean<?>, Object> dependentParameters = new HashMap<Bean<?>, Object>();
 

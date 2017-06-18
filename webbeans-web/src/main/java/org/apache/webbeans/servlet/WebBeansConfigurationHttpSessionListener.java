@@ -38,7 +38,7 @@ public class WebBeansConfigurationHttpSessionListener implements HttpSessionList
     private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansConfigurationHttpSessionListener.class);
 
     /**Manages the container lifecycle*/
-    protected ContainerLifecycle lifeCycle = null;
+    protected ContainerLifecycle lifeCycle;
 
     public WebBeansConfigurationHttpSessionListener()
     {

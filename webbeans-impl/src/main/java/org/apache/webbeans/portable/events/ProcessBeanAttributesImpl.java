@@ -31,10 +31,10 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
     private final WebBeansContext webBeansContext;
     private Annotated annotated;
     private BeanAttributes<T> attributes;
-    private boolean veto = false;
-    private Throwable definitionError = null;
-    private boolean ignoreFinalMethods = false;
-    private BeanAttributesConfiguratorImpl beanAttributesConfigurator = null;
+    private boolean veto;
+    private Throwable definitionError;
+    private boolean ignoreFinalMethods;
+    private BeanAttributesConfiguratorImpl beanAttributesConfigurator;
 
     public ProcessBeanAttributesImpl(WebBeansContext webBeansContext, Annotated annotated, BeanAttributes<T> attributes)
     {

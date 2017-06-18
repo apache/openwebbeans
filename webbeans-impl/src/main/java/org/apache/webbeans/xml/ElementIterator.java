@@ -31,7 +31,7 @@ import org.w3c.dom.NodeList;
 public class ElementIterator implements Iterator<Element>
 {
     private final NodeList children;
-    private int currentPosition = 0;
+    private int currentPosition;
 
     public ElementIterator(Element parent)
     {

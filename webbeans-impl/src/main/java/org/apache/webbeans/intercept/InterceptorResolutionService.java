@@ -913,7 +913,7 @@ public class InterceptorResolutionService
         /**
          * All the Decorator Beans active on this class.
          */
-        private List<Decorator<?>> decorators = null;
+        private List<Decorator<?>> decorators;
 
         /**
          * For each business method which is either decorated or intercepted we keep an entry.
@@ -986,9 +986,9 @@ public class InterceptorResolutionService
      */
     public static class BusinessMethodInterceptorInfo
     {
-        private Interceptor<?>[] ejbInterceptors = null;
-        private Interceptor<?>[] cdiInterceptors = null;
-        private LinkedHashMap<Decorator<?>, Method> methodDecorators = null;
+        private Interceptor<?>[] ejbInterceptors;
+        private Interceptor<?>[] cdiInterceptors;
+        private LinkedHashMap<Decorator<?>, Method> methodDecorators;
 
         public BusinessMethodInterceptorInfo()
         {

@@ -61,7 +61,7 @@ import java.util.logging.Logger;
  */
 public class AfterBeanDiscoveryImpl extends EventBase implements AfterBeanDiscovery, ExtensionAware
 {
-    private BeanManagerImpl beanManager = null;
+    private BeanManagerImpl beanManager;
 
     private static final Logger logger = WebBeansLoggerFacade.getLogger(AfterBeanDiscoveryImpl.class);
     private final WebBeansContext webBeansContext;

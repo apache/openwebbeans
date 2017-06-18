@@ -47,7 +47,7 @@ public final class EventUtil
             //This is added, because TCK Event tests for this.
             Retention retention = qualifier.annotationType().getAnnotation(Retention.class);
             RetentionPolicy policy = retention.value();
-            if(!policy.equals(RetentionPolicy.RUNTIME))
+            if(policy != RetentionPolicy.RUNTIME)
             {
                 throw new IllegalArgumentException("Event qualifier RetentionPolicy must be RUNTIME for qualifier : " + qualifier.annotationType().getName());
             }

@@ -179,7 +179,7 @@ public class ObserverMethodsBuilder<T>
                 reception = observesAsync.notifyObserver();
             }
 
-            if(reception.equals(Reception.IF_EXISTS))
+            if(reception == Reception.IF_EXISTS)
             {
                 throw new WebBeansConfigurationException("Dependent Bean : " + annotatedType.getJavaClass() + " can not define observer method with @Receiver = IF_EXIST");
             }

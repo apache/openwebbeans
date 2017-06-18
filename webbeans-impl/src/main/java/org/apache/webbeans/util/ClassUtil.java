@@ -255,7 +255,7 @@ public final class ClassUtil
 
         return objectMethodNames;
     }
-    private static volatile Set<String> objectMethodNames= null;
+    private static volatile Set<String> objectMethodNames;
 
     /**
      * collect all non-private, non-static and non-abstract methods from the given class.

@@ -35,7 +35,7 @@ public abstract class AbstractContextsService implements ContextsService
 {
     protected final WebBeansContext webBeansContext;
 
-    protected boolean supportsConversation = false;
+    protected boolean supportsConversation;
 
 
     protected AbstractContextsService(WebBeansContext webBeansContext)

@@ -30,7 +30,7 @@ import java.io.Serializable;
 public class ResourceProvider<T> implements Provider<T>, Serializable
 {
     
-    private ResourceReference<T, ?> resourceReference = null;
+    private ResourceReference<T, ?> resourceReference;
     private transient WebBeansContext webBeansContext;
 
     public ResourceProvider(ResourceReference<T, ?> resourceReference, WebBeansContext webBeansContext)

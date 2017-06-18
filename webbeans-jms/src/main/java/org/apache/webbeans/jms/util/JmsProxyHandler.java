@@ -45,9 +45,9 @@ import org.apache.webbeans.util.ClassUtil;
 
 public class JmsProxyHandler implements InvocationHandler
 {
-    private JmsBean<?> jmsComponent = null;
+    private JmsBean<?> jmsComponent;
 
-    private static volatile ConnectionFactory connectionFactory = null;
+    private static volatile ConnectionFactory connectionFactory;
 
     private AtomicBoolean cfSet = new AtomicBoolean(false);
 
@@ -55,9 +55,9 @@ public class JmsProxyHandler implements InvocationHandler
 
     private static Map<String, Destination> dests = new ConcurrentHashMap<String, Destination>();
     
-    private Object jmsObject = null;
+    private Object jmsObject;
     
-    private Class<?> injectionClazz = null;
+    private Class<?> injectionClazz;
 
     public JmsProxyHandler(JmsBean<?> jmsComponent, Class<?> injectionClazz)
     {
@@ -232,7 +232,7 @@ public class JmsProxyHandler implements InvocationHandler
 
         try
         {
-            if (jmsModel.getJmsType().equals(JMSType.QUEUE))
+            if (jmsModel.getJmsType() == JMSType.QUEUE)
             {
                 if (connections.containsKey(JMSType.QUEUE))
                 {
@@ -247,7 +247,7 @@ public class JmsProxyHandler implements InvocationHandler
                     return qc;
                 }
             }
-            else if (jmsModel.getJmsType().equals(JMSType.TOPIC))
+            else if (jmsModel.getJmsType() == JMSType.TOPIC)
             {
                 if (connections.containsKey(JMSType.TOPIC))
                 {

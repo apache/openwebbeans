@@ -61,7 +61,7 @@ public class WebBeansConfigurationFilter implements Filter
     private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansConfigurationFilter.class);
 
     /**Manages the container lifecycle*/
-    protected ContainerLifecycle lifeCycle = null;
+    protected ContainerLifecycle lifeCycle;
 
     private WebBeansContext webBeansContext;
     private ServletContext servletContext;

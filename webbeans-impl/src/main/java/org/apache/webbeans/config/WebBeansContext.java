@@ -104,7 +104,7 @@ public class WebBeansContext
     private ScannerService scannerService;
     private ContextsService contextsService;
     private final ConversationManager conversationManager;
-    private ConversationService conversationService = null;
+    private ConversationService conversationService;
     private final ApplicationBoundaryService applicationBoundaryService;
     private final NotificationManager notificationManager;
 
