@@ -192,7 +192,7 @@ public class InjectionPointImpl implements InjectionPoint, Serializable
             {
                 Class<?> beanClass = ((AnnotatedMember) annotated).getDeclaringType().getJavaClass();
                 out.writeObject(beanClass);
-                out.writeObject(Character.valueOf('~'));
+                out.writeObject('~');
             }
             else
             {
@@ -316,12 +316,12 @@ public class InjectionPointImpl implements InjectionPoint, Serializable
     {
         for (Annotation qualifier : qualifiers)
         {
-            out.writeObject(Character.valueOf('-')); // throw-away delimiter so alternating annotations don't get swallowed in the read.
+            out.writeObject('-'); // throw-away delimiter so alternating annotations don't get swallowed in the read.
             out.writeObject(qualifier);
         }
 
         // terminate character
-        out.writeObject(Character.valueOf('~'));
+        out.writeObject('~');
     }
 
     private Set<Annotation> readQualifiers(ObjectInputStream in) throws IOException, ClassNotFoundException

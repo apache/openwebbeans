@@ -22,7 +22,6 @@ import java.util.Set;
 
 import javax.el.ELContext;
 import javax.el.ELException;
-import javax.el.PropertyNotFoundException;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.Bean;
 
@@ -46,7 +45,7 @@ public class OwbTckElResolver extends WebBeansELResolver
      */    
     @Override
     @SuppressWarnings("unchecked")
-    public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
+    public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, ELException
     {
         //Bean instance
         Object contextualInstance = null;

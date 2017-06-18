@@ -57,7 +57,7 @@ public class ShoppingCardBean implements Serializable
     {
         model.getList().add(this.book);
         
-        StringBuffer buffer = new StringBuffer("Your shopping card contents : [");
+        StringBuilder buffer = new StringBuilder("Your shopping card contents : [");
         
         for(String b : model.getList())
         {
@@ -72,7 +72,7 @@ public class ShoppingCardBean implements Serializable
     
     public String getBooks()
     {
-        StringBuffer buffer = new StringBuffer("Your shopping card contents : [");
+        StringBuilder buffer = new StringBuilder("Your shopping card contents : [");
         
         for(String b : model.getList())
         {

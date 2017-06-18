@@ -67,10 +67,10 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
     {
         if (owbApplication == null)
         {
-            owbApplication = Boolean.valueOf(WebBeansContext.getInstance().getBeanManagerImpl().isInUse());
+            owbApplication = WebBeansContext.getInstance().getBeanManagerImpl().isInUse();
         }
 
-        return owbApplication.booleanValue();
+        return owbApplication;
     }
 
     /**

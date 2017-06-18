@@ -20,8 +20,6 @@ package org.apache.webbeans.el22;
 
 import javax.el.ELContext;
 import javax.el.ELException;
-import javax.el.PropertyNotFoundException;
-import javax.el.PropertyNotWritableException;
 import javax.el.ValueExpression;
 import javax.el.ValueReference;
 
@@ -56,13 +54,13 @@ public class WrappedValueExpression extends ValueExpression
     }
 
     @Override
-    public Class<?> getType(ELContext arg0) throws NullPointerException, PropertyNotFoundException, ELException
+    public Class<?> getType(ELContext arg0) throws NullPointerException, ELException
     {        
         return valueExpression.getType(arg0);
     }
 
     @Override
-    public Object getValue(ELContext context) throws NullPointerException, PropertyNotFoundException, ELException
+    public Object getValue(ELContext context) throws NullPointerException, ELException
     {
         Object value = null;
         try
@@ -84,13 +82,13 @@ public class WrappedValueExpression extends ValueExpression
     }
 
     @Override
-    public boolean isReadOnly(ELContext arg0) throws NullPointerException, PropertyNotFoundException, ELException
+    public boolean isReadOnly(ELContext arg0) throws NullPointerException, ELException
     {        
         return valueExpression.isReadOnly(arg0);
     }
 
     @Override
-    public void setValue(ELContext arg0, Object arg1) throws NullPointerException, PropertyNotFoundException, PropertyNotWritableException, ELException
+    public void setValue(ELContext arg0, Object arg1) throws NullPointerException, ELException
     {
         valueExpression.setValue(arg0, arg1);
     }

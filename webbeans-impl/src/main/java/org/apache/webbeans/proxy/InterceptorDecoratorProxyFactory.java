@@ -112,7 +112,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
     /**
      * @return the internal instance which gets proxied.
      */
-    public static <T> T unwrapInstance(T proxyInstance)
+    public <T> T unwrapInstance(T proxyInstance)
     {
         try
         {

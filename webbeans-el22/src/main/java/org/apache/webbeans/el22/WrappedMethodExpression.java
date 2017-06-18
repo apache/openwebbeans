@@ -24,8 +24,6 @@ import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.MethodExpression;
 import javax.el.MethodInfo;
-import javax.el.MethodNotFoundException;
-import javax.el.PropertyNotFoundException;
 
 public class WrappedMethodExpression extends MethodExpression
 {
@@ -33,19 +31,19 @@ public class WrappedMethodExpression extends MethodExpression
 
     public WrappedMethodExpression(MethodExpression methodExpression)
     {
-        this.delegate = methodExpression;
+        delegate = methodExpression;
     }
 
     @Override
     public MethodInfo getMethodInfo(ELContext context)
-            throws NullPointerException, PropertyNotFoundException, MethodNotFoundException, ELException
+            throws NullPointerException, ELException
     {
         return delegate.getMethodInfo(context);
     }
 
     @Override
     public Object invoke(ELContext context, Object[] params)
-            throws NullPointerException, PropertyNotFoundException, MethodNotFoundException, ELException
+            throws NullPointerException, ELException
     {
         try
         {

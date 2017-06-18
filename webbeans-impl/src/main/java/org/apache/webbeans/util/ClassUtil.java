@@ -67,13 +67,13 @@ public final class ClassUtil
         primitiveToWrappersMap.put(Void.TYPE,Void.class);
         PRIMITIVE_TO_WRAPPERS_MAP = Collections.unmodifiableMap(primitiveToWrappersMap);
         Map<Class<?>, Object> defaultValuesMap = new HashMap<Class<?>, Object>();
-        defaultValuesMap.put(Integer.TYPE, Integer.valueOf(0));
-        defaultValuesMap.put(Float.TYPE, Float.valueOf(0F));
-        defaultValuesMap.put(Double.TYPE, Double.valueOf(0D));
-        defaultValuesMap.put(Character.TYPE, Character.valueOf('\u0000'));
-        defaultValuesMap.put(Long.TYPE, Long.valueOf(0L));
-        defaultValuesMap.put(Byte.TYPE, Byte.valueOf((byte)0));
-        defaultValuesMap.put(Short.TYPE, Short.valueOf((short)0));
+        defaultValuesMap.put(Integer.TYPE, 0);
+        defaultValuesMap.put(Float.TYPE, 0F);
+        defaultValuesMap.put(Double.TYPE, 0D);
+        defaultValuesMap.put(Character.TYPE, '\u0000');
+        defaultValuesMap.put(Long.TYPE, 0L);
+        defaultValuesMap.put(Byte.TYPE, (byte) 0);
+        defaultValuesMap.put(Short.TYPE, (short) 0);
         defaultValuesMap.put(Boolean.TYPE, Boolean.FALSE);
         DEFAULT_VALUES_MAP = Collections.unmodifiableMap(defaultValuesMap);
     }
