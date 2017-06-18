@@ -45,7 +45,7 @@ public class OwbTckElResolver extends WebBeansELResolver
      * {@inheritDoc}
      */    
     @Override
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings("unchecked")
     public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
     {
         //Bean instance

@@ -54,10 +54,10 @@ public class User
     @Column(nullable=false,length=20)
     private String password;
     
-    @Temporal(value=TemporalType.DATE)
+    @Temporal(TemporalType.DATE)
     private Date registerDate;
     
-    @OneToMany(mappedBy="user",cascade={CascadeType.ALL})
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Reservation> reservations = new HashSet<Reservation>();
     
     @Version
@@ -67,7 +67,7 @@ public class User
     private boolean admin;
     
 
-    @Temporal(value=TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date lastLoginDate;
 
     public User()

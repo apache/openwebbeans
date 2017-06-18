@@ -28,7 +28,7 @@ import org.apache.webbeans.reservation.bindings.ApplicationLog;
 import org.apache.webbeans.reservation.controller.RegisterController;
 import org.apache.webbeans.reservation.util.JSFUtility;
 
-@Named(value="register")
+@Named("register")
 @RequestScoped
 public class RegisterBean
 {

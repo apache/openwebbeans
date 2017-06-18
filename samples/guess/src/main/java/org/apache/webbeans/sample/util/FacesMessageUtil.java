@@ -24,7 +24,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
 import javax.faces.context.FacesContext;
 
-@Named(value="facesMessage")
+@Named("facesMessage")
 @Dependent
 public class FacesMessageUtil
 {

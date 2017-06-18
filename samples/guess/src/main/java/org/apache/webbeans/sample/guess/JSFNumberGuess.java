@@ -32,7 +32,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
-@Named(value = "game")
+@Named("game")
 @SessionScoped
 public class JSFNumberGuess implements Serializable
 {

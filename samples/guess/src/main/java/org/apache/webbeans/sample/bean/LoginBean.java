@@ -86,7 +86,8 @@ public class LoginBean
     }
 
 
-    @Produces @SessionScoped @LoggedInUser @Named(value="currentUser")
+    @Produces @SessionScoped @LoggedInUser
+    @Named("currentUser")
     public User getLoggedInUser()
     {
         return this.user;

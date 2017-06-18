@@ -65,7 +65,7 @@ public abstract class ExceptionUtil
         return e;
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings("unchecked")
     private static class ExceptionHelper<T extends Throwable>
     {
         private void throwException(Throwable exception) throws T

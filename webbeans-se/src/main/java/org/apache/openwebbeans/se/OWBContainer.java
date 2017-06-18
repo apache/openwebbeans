@@ -94,13 +94,13 @@ public class OWBContainer implements SeContainer
     }
 
     @Override
-    public <U extends Object> Instance<U> select(final TypeLiteral<U> subtype, final Annotation... qualifiers)
+    public <U> Instance<U> select(final TypeLiteral<U> subtype, final Annotation... qualifiers)
     {
         return instance().select(subtype, qualifiers);
     }
 
     @Override
-    public <U extends Object> Instance<U> select(final Class<U> subtype, final Annotation... qualifiers)
+    public <U> Instance<U> select(final Class<U> subtype, final Annotation... qualifiers)
     {
         return instance().select(subtype, qualifiers);
     }
