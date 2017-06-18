@@ -31,7 +31,7 @@ import java.util.Set;
  */
 public class UrlSet implements Set<URL>
 {
-    private Map<String, URL> urlMap = new HashMap<String, URL>();
+    private Map<String, URL> urlMap = new HashMap<>();
 
 
     @Override

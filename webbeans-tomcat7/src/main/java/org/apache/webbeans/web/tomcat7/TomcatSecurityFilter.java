@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class TomcatSecurityFilter implements Filter
 {
-    private static ThreadLocal<Principal> principal = new ThreadLocal<Principal>();
+    private static ThreadLocal<Principal> principal = new ThreadLocal<>();
     
     public static Principal getPrincipal()
     {

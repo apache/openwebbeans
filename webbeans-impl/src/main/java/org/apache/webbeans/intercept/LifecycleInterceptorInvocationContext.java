@@ -40,7 +40,7 @@ public class LifecycleInterceptorInvocationContext<T> implements InvocationConte
     private InterceptionType type;
     private List<Interceptor<?>> interceptors;
     private Map<Interceptor<?>, ?> instances;
-    private Map<String, Object> contextData = new HashMap<String, Object>();
+    private Map<String, Object> contextData = new HashMap<>();
     private int interceptorIndex;
     private List<AnnotatedMethod<?>> lifecycleMethods;
 

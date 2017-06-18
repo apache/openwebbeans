@@ -75,7 +75,7 @@ public class ConversationImpl implements Conversation, Serializable
      * String to be serializable.
      * TODO: serialization should be done manually to use the manager otherwise all is broken
      */
-    private transient Set<Long> threadsUsingIt = new HashSet<Long>();
+    private transient Set<Long> threadsUsingIt = new HashSet<>();
 
     private transient WebBeansContext webBeansContext;
 
@@ -278,6 +278,6 @@ public class ConversationImpl implements Conversation, Serializable
     {
         in.defaultReadObject();
         webBeansContext = WebBeansContext.currentInstance();
-        threadsUsingIt = new HashSet<Long>();
+        threadsUsingIt = new HashSet<>();
     }
 }

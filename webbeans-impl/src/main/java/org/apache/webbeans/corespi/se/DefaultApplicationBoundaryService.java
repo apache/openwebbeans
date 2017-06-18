@@ -53,7 +53,7 @@ public class DefaultApplicationBoundaryService implements ApplicationBoundarySer
     protected void init()
     {
         applicationClassLoader = BeanManagerImpl.class.getClassLoader();
-        parentClassLoaders = new HashSet<ClassLoader>();
+        parentClassLoaders = new HashSet<>();
         ClassLoader cl = applicationClassLoader;
         while (cl.getParent() != null)
         {

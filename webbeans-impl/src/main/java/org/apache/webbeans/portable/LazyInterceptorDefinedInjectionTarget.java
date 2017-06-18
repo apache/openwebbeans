@@ -59,7 +59,7 @@ public class LazyInterceptorDefinedInjectionTarget<T> extends InjectionTargetImp
                     if (bean == null) // try to find it
                     {
                         BeanManagerImpl bm = webBeansContext.getBeanManagerImpl();
-                        Set<Annotation> annotations = new HashSet<Annotation>();
+                        Set<Annotation> annotations = new HashSet<>();
                         for (Annotation a : annotatedType.getAnnotations())
                         {
                             if (bm.isQualifier(a.annotationType()))

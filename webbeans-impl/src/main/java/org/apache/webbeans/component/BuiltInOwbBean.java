@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.reflect.Type;
-
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.util.Asserts;
@@ -35,7 +33,7 @@ public abstract class BuiltInOwbBean<T> extends AbstractOwbBean<T>
 
     protected BuiltInOwbBean(WebBeansContext webBeansContext, WebBeansType webBeansType, Class<T> returnType, ProducerFactory<T> producerFactory)
     {
-        this(webBeansContext, webBeansType, new BeanAttributesImpl<T>(CollectionUtil.<Type>unmodifiableSet(returnType, Object.class)), returnType, false, producerFactory);
+        this(webBeansContext, webBeansType, new BeanAttributesImpl<>(CollectionUtil.unmodifiableSet(returnType, Object.class)), returnType, false, producerFactory);
     }
     
     protected BuiltInOwbBean(

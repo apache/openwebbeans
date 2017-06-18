@@ -44,6 +44,6 @@ public class ExtensionBeanBuilder<T>
 
     public ExtensionBean<T> getBean()
     {
-        return new ExtensionBean<T>(webBeansContext, annotatedType.getJavaClass());
+        return new ExtensionBean<>(webBeansContext, annotatedType.getJavaClass());
     }
 }

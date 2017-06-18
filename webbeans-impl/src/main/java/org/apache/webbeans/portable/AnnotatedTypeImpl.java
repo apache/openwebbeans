@@ -78,8 +78,8 @@ public class AnnotatedTypeImpl<X>
         else
         {
             BeanManager bm = webBeansContext.getBeanManagerImpl();
-            Set<Class<? extends Annotation>> annotationTypes = new HashSet<Class<? extends Annotation>>();
-            List<Annotation> annotations = new ArrayList<Annotation>();
+            Set<Class<? extends Annotation>> annotationTypes = new HashSet<>();
+            List<Annotation> annotations = new ArrayList<>();
             boolean hasScope = false;
             for (Annotation annotation : annotatedClass.getDeclaredAnnotations())
             {
@@ -227,9 +227,9 @@ public class AnnotatedTypeImpl<X>
             Constructor<?>[] decCtxs =
                 getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructors(annotatedClass);
 
-            Set<AnnotatedConstructor<X>> constructors = new HashSet<AnnotatedConstructor<X>>();
-            Set<AnnotatedField<? super X>> fields = new HashSet<AnnotatedField<? super X>>();
-            Set<AnnotatedMethod<? super X>> methods = new HashSet<AnnotatedMethod<? super X>>();
+            Set<AnnotatedConstructor<X>> constructors = new HashSet<>();
+            Set<AnnotatedField<? super X>> fields = new HashSet<>();
+            Set<AnnotatedMethod<? super X>> methods = new HashSet<>();
 
             this.constructors = Collections.unmodifiableSet(constructors);
             this.fields = Collections.unmodifiableSet(fields);
@@ -240,8 +240,8 @@ public class AnnotatedTypeImpl<X>
                 if (!ct.isSynthetic())
                 {
                     AnnotatedConstructor<X> ac =
-                        new AnnotatedConstructorImpl<X>(getWebBeansContext(), (Constructor<X>) ct,
-                                                        AnnotatedTypeImpl.this);
+                        new AnnotatedConstructorImpl<>(getWebBeansContext(), (Constructor<X>) ct,
+                            AnnotatedTypeImpl.this);
                     constructors.add(ac);
                 }
             }
@@ -253,7 +253,7 @@ public class AnnotatedTypeImpl<X>
                 if (constructor != null)
                 {
                     constructors.add(
-                        new AnnotatedConstructorImpl<X>(getWebBeansContext(), constructor, AnnotatedTypeImpl.this));
+                        new AnnotatedConstructorImpl<>(getWebBeansContext(), constructor, AnnotatedTypeImpl.this));
                 }
             }
 
@@ -264,7 +264,7 @@ public class AnnotatedTypeImpl<X>
             {
                 if (!f.isSynthetic())
                 {
-                    AnnotatedField<X> af = new AnnotatedFieldImpl<X>(getWebBeansContext(), f, AnnotatedTypeImpl.this);
+                    AnnotatedField<X> af = new AnnotatedFieldImpl<>(getWebBeansContext(), f, AnnotatedTypeImpl.this);
                     fields.add(af);
                 }
             }
@@ -273,7 +273,7 @@ public class AnnotatedTypeImpl<X>
             {
                 if (!m.isSynthetic() && !m.isBridge())
                 {
-                    AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(getWebBeansContext(), m, AnnotatedTypeImpl.this);
+                    AnnotatedMethod<X> am = new AnnotatedMethodImpl<>(getWebBeansContext(), m, AnnotatedTypeImpl.this);
                     methods.add(am);
                 }
             }
@@ -282,11 +282,11 @@ public class AnnotatedTypeImpl<X>
             {
                 for (AnnotatedField<? super X> field: supertype.getFields())
                 {
-                    fields.add(new AnnotatedFieldImpl<X>(getWebBeansContext(), field.getJavaMember(), AnnotatedTypeImpl.this));
+                    fields.add(new AnnotatedFieldImpl<>(getWebBeansContext(), field.getJavaMember(), AnnotatedTypeImpl.this));
                 }
                 for (AnnotatedMethod<? super X> method : supertype.getMethods())
                 {
-                    methods.add(new AnnotatedMethodImpl<X>(getWebBeansContext(), method.getJavaMember(), AnnotatedTypeImpl.this));
+                    methods.add(new AnnotatedMethodImpl<>(getWebBeansContext(), method.getJavaMember(), AnnotatedTypeImpl.this));
                 }
             }
 

@@ -44,13 +44,17 @@ public class InterceptedOrDecoratedBeanMetadataBean<T> extends BuiltInOwbBean<Be
     public InterceptedOrDecoratedBeanMetadataBean(WebBeansContext webBeansContext)
     {
         super(webBeansContext,
-              WebBeansType.METADATA,
-              new BeanAttributesImpl<Bean<T>>(
-                      CollectionUtil.<Type>unmodifiableSet(Bean.class, Contextual.class, Object.class),
-                      CollectionUtil.<Annotation>unmodifiableSet(new AnnotationLiteral<Intercepted>() {}, new AnnotationLiteral<Decorated>() {})),
-              new TypeLiteral<Bean<T>>(){}.getRawType(),
-              false,
-              new SimpleProducerFactory<Bean<T>>(new BeanMetadataProducer<Bean<T>>()));
+            WebBeansType.METADATA,
+            new BeanAttributesImpl<>(
+                CollectionUtil.<Type>unmodifiableSet(Bean.class, Contextual.class, Object.class),
+                CollectionUtil.<Annotation>unmodifiableSet(new AnnotationLiteral<Intercepted>()
+                {
+                }, new AnnotationLiteral<Decorated>()
+                {
+                })),
+            new TypeLiteral<Bean<T>>(){}.getRawType(),
+            false,
+            new SimpleProducerFactory<>(new BeanMetadataProducer<Bean<T>>()));
     }
     
     /* (non-Javadoc)

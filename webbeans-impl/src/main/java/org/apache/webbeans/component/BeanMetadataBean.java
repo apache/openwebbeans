@@ -41,10 +41,10 @@ public class BeanMetadataBean<T> extends BuiltInOwbBean<Bean<T>>
     {
         super(webBeansContext,
               WebBeansType.METADATA,
-              new BeanAttributesImpl<Bean<T>>(CollectionUtil.<Type>unmodifiableSet(Bean.class, Contextual.class, Object.class)),
+              new BeanAttributesImpl<>(CollectionUtil.<Type>unmodifiableSet(Bean.class, Contextual.class, Object.class)),
               new TypeLiteral<Bean<T>>(){}.getRawType(),
               false,
-              new SimpleProducerFactory<Bean<T>>(new MetadataProducer<Bean<T>>()));
+              new SimpleProducerFactory<>(new MetadataProducer<Bean<T>>()));
     }
     
     /* (non-Javadoc)

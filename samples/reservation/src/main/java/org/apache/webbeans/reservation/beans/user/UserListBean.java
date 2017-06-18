@@ -37,7 +37,7 @@ import org.apache.webbeans.reservation.util.JSFUtility;
 public class UserListBean
 {
 
-    private List<Reservation> reservations = new ArrayList<Reservation>();
+    private List<Reservation> reservations = new ArrayList<>();
     
     private HtmlDataTable model;
     

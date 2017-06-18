@@ -57,9 +57,9 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
     private OwbArquillianSingletonService singletonService;
     private WebBeansContext webBeansContext;
 
-    private final ThreadLocal<ClassLoader> originalLoader = new ThreadLocal<ClassLoader>();
+    private final ThreadLocal<ClassLoader> originalLoader = new ThreadLocal<>();
     private boolean useOnlyArchiveResources;
-    private Collection<String> useOnlyArchiveResourcesExcludes = new ArrayList<String>();
+    private Collection<String> useOnlyArchiveResourcesExcludes = new ArrayList<>();
 
     @Override
     public Class<OwbStandaloneConfiguration> getConfigurationClass()

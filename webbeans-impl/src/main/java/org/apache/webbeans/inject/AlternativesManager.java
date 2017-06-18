@@ -58,13 +58,13 @@ public class AlternativesManager
     /**
      * All the stereotypes which are configured via XML &lt;class&gt;
      */
-    private final Set<Class<?>> configuredAlternatives = new HashSet<Class<?>>();
+    private final Set<Class<?>> configuredAlternatives = new HashSet<>();
 
     /**
      * All Stereotypes which are declared as &#064;Alternative in a beans.xml.
      * Please note that &#064;Priority on a stereotype does <b>not</b> automatically enable it!
      */
-    private final Set<Class<? extends Annotation>> configuredStereotypeAlternatives = new HashSet<Class<? extends Annotation>>();
+    private final Set<Class<? extends Annotation>> configuredStereotypeAlternatives = new HashSet<>();
 
     private final PriorityClasses priorityAlternatives = new PriorityClasses();
 

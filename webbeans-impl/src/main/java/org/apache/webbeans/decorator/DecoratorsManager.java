@@ -41,18 +41,18 @@ import org.apache.webbeans.util.PriorityClasses;
 
 public class DecoratorsManager
 {
-    private List<Class<?>> enabledDecorators = new CopyOnWriteArrayList<Class<?>>();
+    private List<Class<?>> enabledDecorators = new CopyOnWriteArrayList<>();
     private final WebBeansContext webBeansContext;
 
     /**
      * Additional decorator classes added by Extensions
      */
-    private List<Class<?>> additionalDecoratorClasses = new ArrayList<Class<?>>();
+    private List<Class<?>> additionalDecoratorClasses = new ArrayList<>();
 
     /**
      * Active and enabled decorators
      */
-    private Set<Decorator<?>> webBeansDecorators = new CopyOnWriteArraySet<Decorator<?>>();
+    private Set<Decorator<?>> webBeansDecorators = new CopyOnWriteArraySet<>();
 
     private final PriorityClasses priorityDecorators = new PriorityClasses();
 
@@ -166,10 +166,10 @@ public class DecoratorsManager
 
     public  Set<Decorator<?>> findDeployedWebBeansDecorator(Set<Type> apiTypes, Annotation... anns)
     {
-        Set<Decorator<?>> set = new HashSet<Decorator<?>>();
+        Set<Decorator<?>> set = new HashSet<>();
 
-        List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();
-        Set<Annotation> listAnnot = new HashSet<Annotation>();
+        List<Class<? extends Annotation>> bindingTypes = new ArrayList<>();
+        Set<Annotation> listAnnot = new HashSet<>();
         for (Annotation ann : anns)
         {
             bindingTypes.add(ann.annotationType());

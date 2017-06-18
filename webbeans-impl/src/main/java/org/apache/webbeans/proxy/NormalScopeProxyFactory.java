@@ -63,7 +63,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
      * Caches the proxy classes for each bean.
      * We need this to prevent filling up the ClassLoaders by
      */
-    private ConcurrentMap<Bean<?>, Class<?>> cachedProxyClasses = new ConcurrentHashMap<Bean<?>, Class<?>>();
+    private ConcurrentMap<Bean<?>, Class<?>> cachedProxyClasses = new ConcurrentHashMap<>();
 
 
     public NormalScopeProxyFactory(WebBeansContext webBeansContext)
@@ -242,8 +242,8 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         }
         else
         {
-            List<Method> methods = new ArrayList<Method>();
-            List<Method> protectedMethods = new ArrayList<Method>();
+            List<Method> methods = new ArrayList<>();
+            List<Method> protectedMethods = new ArrayList<>();
 
 
             for (Method method : ClassUtil.getNonPrivateMethods(classToProxy, true))

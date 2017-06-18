@@ -44,7 +44,7 @@ import javax.enterprise.inject.spi.Bean;
  */
 public final class ELContextStore
 {
-    private static ThreadLocal<ELContextStore> contextStores = new ThreadLocal<ELContextStore>();
+    private static ThreadLocal<ELContextStore> contextStores = new ThreadLocal<>();
 
     /**
      * @param createIfNotExist if <code>false</code> doesn't create a new ELContextStore if none exists
@@ -66,8 +66,8 @@ public final class ELContextStore
     /**
      * The same Expression must get same instances of &#064;Dependent beans
      */
-    private Map<Bean<?>, CreationalStore<?>> dependentObjects = new HashMap<Bean<?>, CreationalStore<?>>();
-    private Map<String, Bean<?>> beanNameToDependentBeanMapping = new HashMap<String, Bean<?>>();
+    private Map<Bean<?>, CreationalStore<?>> dependentObjects = new HashMap<>();
+    private Map<String, Bean<?>> beanNameToDependentBeanMapping = new HashMap<>();
 
     /**
      * Cache for resolved proxies of &#064;NormalScoped beans. This heavily speeds up pages with
@@ -75,7 +75,7 @@ public final class ELContextStore
      * property. If we wouldn't cache this, every EL call would create a new proxy and
      * drops it after the EL.
      */
-    private Map<String, Object> normalScopedObjects = new HashMap<String, Object>();
+    private Map<String, Object> normalScopedObjects = new HashMap<>();
 
     public Object findBeanByName(String name)
     {

@@ -70,7 +70,7 @@ public abstract class PassivatingContext extends AbstractContext implements Exte
     public void writeExternal(ObjectOutput out) throws IOException
     {
         out.writeObject(scopeType);
-        Map<String, BeanInstanceBag<?>> map = new HashMap<String, BeanInstanceBag<?>>(componentInstanceMap.size());
+        Map<String, BeanInstanceBag<?>> map = new HashMap<>(componentInstanceMap.size());
 
         for (Map.Entry<Contextual<?>, BeanInstanceBag<?>> beanBagEntry : componentInstanceMap.entrySet())
         {

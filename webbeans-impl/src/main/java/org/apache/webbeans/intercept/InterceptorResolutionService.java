@@ -107,7 +107,7 @@ public class InterceptorResolutionService
 
 
         // pick up EJB-style interceptors from a class level
-        List<Interceptor<?>> classLevelEjbInterceptors = new ArrayList<Interceptor<?>>();
+        List<Interceptor<?>> classLevelEjbInterceptors = new ArrayList<>();
 
         collectEjbInterceptors(classLevelEjbInterceptors, annotatedType, false, beanTypes);
 
@@ -118,7 +118,7 @@ public class InterceptorResolutionService
             decorators = Collections.emptyList(); // less to store
         }
 
-        Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<Interceptor<?>>();
+        Set<Interceptor<?>> allUsedCdiInterceptors = new HashSet<>();
 
         // pick up CDI interceptors from a class level
         Set<Annotation> classInterceptorBindings = annotationManager.getInterceptorAnnotations(annotatedType.getAnnotations());
@@ -133,16 +133,16 @@ public class InterceptorResolutionService
             classLevelInterceptors = Collections.EMPTY_LIST;
         }
 
-        Set<Interceptor<?>> allUsedConstructorCdiInterceptors = new HashSet<Interceptor<?>>();
+        Set<Interceptor<?>> allUsedConstructorCdiInterceptors = new HashSet<>();
         addCdiClassLifecycleInterceptors(annotatedType, classInterceptorBindings, allUsedCdiInterceptors, allUsedConstructorCdiInterceptors);
 
-        LinkedHashSet<Interceptor<?>> allUsedEjbInterceptors = new LinkedHashSet<Interceptor<?>>(); // we need to preserve the order!
+        LinkedHashSet<Interceptor<?>> allUsedEjbInterceptors = new LinkedHashSet<>(); // we need to preserve the order!
         allUsedEjbInterceptors.addAll(classLevelEjbInterceptors);
 
-        Map<Method, BusinessMethodInterceptorInfo> businessMethodInterceptorInfos = new HashMap<Method, BusinessMethodInterceptorInfo>();
-        Map<Constructor<?>, BusinessMethodInterceptorInfo> constructorInterceptorInfos = new HashMap<Constructor<?>, BusinessMethodInterceptorInfo>();
+        Map<Method, BusinessMethodInterceptorInfo> businessMethodInterceptorInfos = new HashMap<>();
+        Map<Constructor<?>, BusinessMethodInterceptorInfo> constructorInterceptorInfos = new HashMap<>();
 
-        List<Method> nonInterceptedMethods = new ArrayList<Method>();
+        List<Method> nonInterceptedMethods = new ArrayList<>();
 
         SelfInterceptorBean<T> selfInterceptorBean = resolveSelfInterceptorBean(annotatedType);
 
@@ -179,7 +179,7 @@ public class InterceptorResolutionService
         }
 
         Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos
-                = new HashMap<InterceptionType, LifecycleMethodInfo>();
+                = new HashMap<>();
 
         addLifecycleMethods(
                 lifecycleMethodInterceptorInfos,
@@ -203,10 +203,10 @@ public class InterceptorResolutionService
                 classInterceptorBindings,
                 failOnFinal);
 
-        List<Interceptor<?>> cdiInterceptors = new ArrayList<Interceptor<?>>(allUsedCdiInterceptors);
+        List<Interceptor<?>> cdiInterceptors = new ArrayList<>(allUsedCdiInterceptors);
         Collections.sort(cdiInterceptors, new InterceptorComparator(webBeansContext));
 
-        List<Interceptor<?>> cdiConstructorInterceptors = new ArrayList<Interceptor<?>>(allUsedConstructorCdiInterceptors);
+        List<Interceptor<?>> cdiConstructorInterceptors = new ArrayList<>(allUsedConstructorCdiInterceptors);
         Collections.sort(cdiConstructorInterceptors, new InterceptorComparator(webBeansContext));
 
         boolean interceptedBean = allUsedEjbInterceptors.size() > 0 ||
@@ -336,7 +336,7 @@ public class InterceptorResolutionService
     private <T> SelfInterceptorBean<T> resolveSelfInterceptorBean(AnnotatedType<T> annotatedType)
     {
         BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
-        SelfInterceptorBeanBuilder<T>sibb = new SelfInterceptorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
+        SelfInterceptorBeanBuilder<T>sibb = new SelfInterceptorBeanBuilder<>(webBeansContext, annotatedType, beanAttributes);
         sibb.defineSelfInterceptorRules();
         if (!sibb.isInterceptorEnabled())
         {
@@ -356,7 +356,7 @@ public class InterceptorResolutionService
                                      Set<Annotation> classInterceptorBindings,
                                      boolean failOnFinal)
     {
-        List<AnnotatedMethod<?>> foundMethods = new ArrayList<AnnotatedMethod<?>>();
+        List<AnnotatedMethod<?>> foundMethods = new ArrayList<>();
         BusinessMethodInterceptorInfo methodInterceptorInfo = new BusinessMethodInterceptorInfo();
 
         List<AnnotatedMethod<?>> lifecycleMethodCandidates = webBeansContext.getInterceptorUtil().getLifecycleMethods(annotatedType, lifeycleAnnotation);
@@ -421,7 +421,7 @@ public class InterceptorResolutionService
     {
         boolean unproxyable = isUnproxyable(annotatedMethod, failOnFinal);
 
-        List<Interceptor<?>> methodInterceptors = new ArrayList<Interceptor<?>>();
+        List<Interceptor<?>> methodInterceptors = new ArrayList<>();
 
         if (classLevelEjbInterceptors != null && classLevelEjbInterceptors.size() > 0 && !unproxyable)
         {
@@ -464,7 +464,7 @@ public class InterceptorResolutionService
             return;
         }
 
-        LinkedHashMap<Decorator<?>, Method> appliedDecorators = new LinkedHashMap<Decorator<?>, Method>();
+        LinkedHashMap<Decorator<?>, Method> appliedDecorators = new LinkedHashMap<>();
 
         for (Decorator decorator : decorators)
         {
@@ -605,7 +605,7 @@ public class InterceptorResolutionService
         boolean unproxyable = isUnproxyable(annotatedMethod, failOnFinal);
         boolean hasMethodInterceptors = false;
 
-        Map<Class<? extends Annotation>, Annotation> cummulatedInterceptorBindings = new HashMap<Class<? extends Annotation>, Annotation>();
+        Map<Class<? extends Annotation>, Annotation> cummulatedInterceptorBindings = new HashMap<>();
         for (Annotation interceptorBinding: annotationManager.getInterceptorAnnotations(annotatedMethod.getAnnotations()))
         {
             cummulatedInterceptorBindings.put(interceptorBinding.annotationType(), interceptorBinding);
@@ -707,19 +707,19 @@ public class InterceptorResolutionService
         Class<?> javaClass = annotatedType.getJavaClass();
         List<Method> interceptableMethods = ClassUtil.getNonPrivateMethods(javaClass, false);
 
-        List<AnnotatedMethod> interceptableAnnotatedMethods = new ArrayList<AnnotatedMethod>();
+        List<AnnotatedMethod> interceptableAnnotatedMethods = new ArrayList<>();
 
         AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
         Set<AnnotatedMethod> annotatedMethods = (Set<AnnotatedMethod>) annotatedElementFactory.getFilteredAnnotatedMethods(annotatedType);
         if (!javaClass.isAnnotation() && javaClass.isInterface())
         {
-            Set<Type> types = new HashSet<Type>(annotatedType.getTypeClosure());
+            Set<Type> types = new HashSet<>(annotatedType.getTypeClosure());
             types.remove(javaClass);
             types.remove(Object.class);
 
             if (!types.isEmpty()) // AT only supports 1 parent and ignores interface inheritance so add it manually here
             {
-                annotatedMethods = new HashSet<AnnotatedMethod>(annotatedMethods); // otherwise it is not mutable by default
+                annotatedMethods = new HashSet<>(annotatedMethods); // otherwise it is not mutable by default
                 for (Type c : types)
                 {
                     if (!Class.class.isInstance(c))
@@ -846,7 +846,7 @@ public class InterceptorResolutionService
         if (interceptorInfo.getDecorators() != null && !isDelegateInjection.apply(creationalContextImpl))
         {
             List<Decorator<?>> decorators = filterDecorators.apply(instance, interceptorInfo.getDecorators());
-            Map<Decorator<?>, Object> instances = new HashMap<Decorator<?>, Object>();
+            Map<Decorator<?>, Object> instances = new HashMap<>();
             for (int i = decorators.size(); i > 0; i--)
             {
                 Decorator decorator = decorators.get(i - 1);
@@ -1075,7 +1075,7 @@ public class InterceptorResolutionService
 
     public static class LifecycleMethodInfo
     {
-        private List<AnnotatedMethod<?>> methods = new ArrayList<AnnotatedMethod<?>>();
+        private List<AnnotatedMethod<?>> methods = new ArrayList<>();
         private BusinessMethodInterceptorInfo methodInterceptorInfo;
 
         public LifecycleMethodInfo(List<AnnotatedMethod<?>> methods, BusinessMethodInterceptorInfo methodInterceptorInfo)

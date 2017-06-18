@@ -46,18 +46,18 @@ public class ConversationBean extends BuiltInOwbBean<ConversationImpl> implement
     {
         super(webBeansContext,
               WebBeansType.CONVERSATION,
-              new BeanAttributesImpl<ConversationImpl>(
-                      CollectionUtil.<Type>unmodifiableSet(Conversation.class, ConversationImpl.class, Object.class),
-                      AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
-                      RequestScoped.class,
-                      "javax.enterprise.context.conversation",
-                      false,
-                      Collections.<Class<? extends Annotation>>emptySet(),
-                      false),
+                  new BeanAttributesImpl<>(
+                    CollectionUtil.<Type>unmodifiableSet(Conversation.class, ConversationImpl.class, Object.class),
+                    AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+                    RequestScoped.class,
+                    "javax.enterprise.context.conversation",
+                    false,
+                    Collections.<Class<? extends Annotation>>emptySet(),
+                    false),
               ConversationImpl.class,
               false,
-              new SimpleProducerFactory<ConversationImpl>(
-                      new ConversationProducer(webBeansContext.getAnnotatedElementFactory().newAnnotatedType(ConversationImpl.class), webBeansContext)));
+              new SimpleProducerFactory<>(
+                    new ConversationProducer(webBeansContext.getAnnotatedElementFactory().newAnnotatedType(ConversationImpl.class), webBeansContext)));
         setEnabled(true);
     }
 

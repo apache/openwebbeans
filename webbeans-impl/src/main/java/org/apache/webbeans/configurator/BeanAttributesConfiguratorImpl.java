@@ -201,6 +201,6 @@ public class BeanAttributesConfiguratorImpl<T> implements BeanAttributesConfigur
         // make sure we always have an @Any Qualifier as well.
         qualifiers.add(AnyLiteral.INSTANCE);
 
-        return new BeanAttributesImpl<T>(types, qualifiers, scope, name, false, stereotypes, alternative);
+        return new BeanAttributesImpl<>(types, qualifiers, scope, name, false, stereotypes, alternative);
     }
 }

@@ -55,7 +55,7 @@ public final class ClassUtil
 
     static
     {
-        Map<Class<?>, Class<?>> primitiveToWrappersMap = new HashMap<Class<?>, Class<?>>();
+        Map<Class<?>, Class<?>> primitiveToWrappersMap = new HashMap<>();
         primitiveToWrappersMap.put(Integer.TYPE,Integer.class);
         primitiveToWrappersMap.put(Float.TYPE,Float.class);
         primitiveToWrappersMap.put(Double.TYPE,Double.class);
@@ -66,7 +66,7 @@ public final class ClassUtil
         primitiveToWrappersMap.put(Boolean.TYPE,Boolean.class);
         primitiveToWrappersMap.put(Void.TYPE,Void.class);
         PRIMITIVE_TO_WRAPPERS_MAP = Collections.unmodifiableMap(primitiveToWrappersMap);
-        Map<Class<?>, Object> defaultValuesMap = new HashMap<Class<?>, Object>();
+        Map<Class<?>, Object> defaultValuesMap = new HashMap<>();
         defaultValuesMap.put(Integer.TYPE, 0);
         defaultValuesMap.put(Float.TYPE, 0F);
         defaultValuesMap.put(Double.TYPE, 0D);
@@ -242,7 +242,7 @@ public final class ClassUtil
         if (objectMethodNames == null)
         {
             // not much synchronisation needed...
-            Set<String> list = new HashSet<String>();
+            Set<String> list = new HashSet<>();
             Class<?> clazz = Object.class;
 
             Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
@@ -275,8 +275,8 @@ public final class ClassUtil
      */
     public static List<Method> getNonPrivateMethods(Class<?> topClass, boolean excludeFinalMethods)
     {
-        Map<String, List<Method>> methodMap = new HashMap<String, List<Method>>();
-        List<Method> allMethods = new ArrayList<Method>(10);
+        Map<String, List<Method>> methodMap = new HashMap<>();
+        List<Method> allMethods = new ArrayList<>(10);
 
         Class<?> clazz = topClass;
 
@@ -304,7 +304,7 @@ public final class ClassUtil
                                              Map<String, List<Method>> methodMap, List<Method> allMethods,
                                              Class<?> clazz)
     {
-        List<Method> temp = new ArrayList<Method>(Arrays.asList(clazz.getMethods()));
+        List<Method> temp = new ArrayList<>(Arrays.asList(clazz.getMethods()));
         for (Method method : clazz.getDeclaredMethods())
         {
             if (!temp.contains(method))
@@ -358,7 +358,7 @@ public final class ClassUtil
             List<Method> methods = methodMap.get(method.getName());
             if (methods == null)
             {
-                methods = new ArrayList<Method>();
+                methods = new ArrayList<>();
                 methods.add(method);
                 allMethods.add(method);
                 methodMap.put(method.getName(), methods);

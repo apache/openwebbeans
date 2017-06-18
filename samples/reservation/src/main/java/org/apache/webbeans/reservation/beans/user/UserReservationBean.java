@@ -47,11 +47,11 @@ public class UserReservationBean implements Serializable
 {
     private static final long serialVersionUID = -5860989760497059459L;
 
-    private List<SelectItem> reservations = new ArrayList<SelectItem>();
+    private List<SelectItem> reservations = new ArrayList<>();
     
     private @Inject @Default UserController controller;
     
-    private List<Hotel> hotels = new ArrayList<Hotel>();
+    private List<Hotel> hotels = new ArrayList<>();
     
     private @Inject @Default AdminController adminController;
     
@@ -65,7 +65,7 @@ public class UserReservationBean implements Serializable
         
     private Integer[] itemSelected = new Integer[0];
     
-    private Map<String, ReservationModel> models = new HashMap<String, ReservationModel>();
+    private Map<String, ReservationModel> models = new HashMap<>();
     
     public UserReservationBean()
     {

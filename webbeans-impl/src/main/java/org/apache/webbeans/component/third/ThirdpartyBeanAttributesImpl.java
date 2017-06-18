@@ -59,7 +59,7 @@ class ThirdpartyBeanAttributesImpl<T> extends BeanAttributesImpl<T>
         }
         else
         {
-            return new SingleItemSet<Annotation>(AnyLiteral.INSTANCE);
+            return new SingleItemSet<>(AnyLiteral.INSTANCE);
         }
     }
 }

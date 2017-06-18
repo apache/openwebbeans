@@ -54,7 +54,7 @@ public class InjectionTargetBean<T> extends AbstractOwbBean<T> implements Serial
             BeanAttributes<T> beanAttributes,
             Class<T> beanClass)
     {
-        this(webBeansContext, webBeansType, annotatedType, beanAttributes, beanClass, new InjectionTargetFactoryImpl<T>(annotatedType, webBeansContext));
+        this(webBeansContext, webBeansType, annotatedType, beanAttributes, beanClass, new InjectionTargetFactoryImpl<>(annotatedType, webBeansContext));
     }
 
     /**

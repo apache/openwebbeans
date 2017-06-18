@@ -127,7 +127,7 @@ public class UserController
         
         Set<Reservation> res = user.getReservations();
         
-        List<Reservation> l = new ArrayList<Reservation>();
+        List<Reservation> l = new ArrayList<>();
         for(Reservation r : res)
         {
             l.add(r);

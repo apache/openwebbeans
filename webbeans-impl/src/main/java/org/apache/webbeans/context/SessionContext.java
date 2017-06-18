@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Contextual;
 
-import org.apache.webbeans.context.creational.BeanInstanceBag;
 import org.apache.webbeans.intercept.SessionScopedBeanInterceptorHandler;
 
 /**
@@ -41,7 +40,7 @@ public class SessionContext extends PassivatingContext
     @Override
     public void setComponentInstanceMap()
     {
-        componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
+        componentInstanceMap = new ConcurrentHashMap<>();
     }
 
     @Override

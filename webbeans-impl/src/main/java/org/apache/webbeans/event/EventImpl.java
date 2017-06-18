@@ -105,7 +105,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public Event<T> select(Annotation... bindings)
     {
-        return new EventImpl<T>(metadata.select(bindings), webBeansContext);
+        return new EventImpl<>(metadata.select(bindings), webBeansContext);
     }
     
     /**
@@ -114,7 +114,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public <U extends T> Event<U> select(Class<U> subtype, Annotation... bindings)
     {
-        return new EventImpl<U>(metadata.select(subtype, bindings), webBeansContext);
+        return new EventImpl<>(metadata.select(subtype, bindings), webBeansContext);
     }
     
     /**
@@ -123,7 +123,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public <U extends T> Event<U> select(TypeLiteral<U> subtype, Annotation... bindings)
     {
-        return new EventImpl<U>(metadata.select(subtype, bindings), webBeansContext);
+        return new EventImpl<>(metadata.select(subtype, bindings), webBeansContext);
     }
     
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException

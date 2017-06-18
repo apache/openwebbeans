@@ -230,7 +230,7 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         BeanManager beanManager = webBeansContext.getBeanManagerImpl();
 
-        Map<Interceptor<?>, Object> tmpInstances = new HashMap<Interceptor<?>, Object>();
+        Map<Interceptor<?>, Object> tmpInstances = new HashMap<>();
         for (int i = 0; i < instancesSize; i++)
         {
             Interceptor<?> interceptor = readInterceptor(in.readUTF(), beanManager);
@@ -247,7 +247,7 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
         instances = tmpInstances;
 
         int interceptorsSize = in.readInt();
-        interceptors = new HashMap<Method, List<Interceptor<?>>>(interceptorsSize);
+        interceptors = new HashMap<>(interceptorsSize);
         for (int i = 0; i < interceptorsSize; i++)
         {
             Class<?> declaringClass = (Class<?>) in.readObject();
@@ -264,7 +264,7 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
             }
 
             int interceptorListSize = in.readInt();
-            List<Interceptor<?>> interceptorList = new ArrayList<Interceptor<?>>(interceptorListSize);
+            List<Interceptor<?>> interceptorList = new ArrayList<>(interceptorListSize);
             for (int j = 0; j < interceptorListSize; j++)
             {
                 interceptorList.add(readInterceptor(in.readUTF(), beanManager));

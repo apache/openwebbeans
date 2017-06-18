@@ -21,10 +21,8 @@ package org.apache.webbeans.context;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.context.spi.Contextual;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.creational.BeanInstanceBag;
 import org.apache.webbeans.conversation.ConversationImpl;
 
 /**
@@ -57,7 +55,7 @@ public class ConversationContext extends PassivatingContext
     @Override
     public void setComponentInstanceMap()
     {
-        componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
+        componentInstanceMap = new ConcurrentHashMap<>();
     }
 
     public ConversationImpl getConversation()

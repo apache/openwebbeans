@@ -55,7 +55,7 @@ public class DecoratorBean<T> extends InjectionTargetBean<T> implements Decorato
                          BeanAttributes<T> beanAttributes,
                          Class<T> beanClass)
     {
-        super(webBeansContext, webBeansType, annotatedType, beanAttributes, beanClass, new DecoratorInjectionTargetFactory<T>(annotatedType, webBeansContext));
+        super(webBeansContext, webBeansType, annotatedType, beanAttributes, beanClass, new DecoratorInjectionTargetFactory<>(annotatedType, webBeansContext));
     }
 
     public void setDecoratorInfo(Set<Type> decoratedTypes, Type delegateType, Set<Annotation> delegateQualifiers)

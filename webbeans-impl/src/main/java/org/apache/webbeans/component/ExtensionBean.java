@@ -41,14 +41,14 @@ public class ExtensionBean<T> extends BuiltInOwbBean<T>
     public ExtensionBean(WebBeansContext webBeansContext, Class<T> returnType)
     {
         super(webBeansContext,
-                WebBeansType.EXTENSION,
-                new BeanAttributesImpl<T>(
-                        webBeansContext.getAnnotatedElementFactory().getAnnotatedType(returnType).getTypeClosure(),
-                        AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
-                        ApplicationScoped.class),
-                returnType,
-                false,
-                new ExtensionProducerFactory<T>(webBeansContext.getAnnotatedElementFactory().getAnnotatedType(returnType), webBeansContext));
+              WebBeansType.EXTENSION,
+              new BeanAttributesImpl<>(
+              webBeansContext.getAnnotatedElementFactory().getAnnotatedType(returnType).getTypeClosure(),
+              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+              ApplicationScoped.class),
+              returnType,
+              false,
+              new ExtensionProducerFactory<>(webBeansContext.getAnnotatedElementFactory().getAnnotatedType(returnType), webBeansContext));
     }
 
     @Override

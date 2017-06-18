@@ -71,7 +71,7 @@ public class ObserverMethodsBuilder<T>
      */
     public Set<ObserverMethod<?>> defineObserverMethods(AbstractOwbBean<T> ownerBean)
     {   
-        Set<ObserverMethod<?>> definedObservers = new HashSet<ObserverMethod<?>>();
+        Set<ObserverMethod<?>> definedObservers = new HashSet<>();
         for (AnnotatedMethod<?> annotatedMethod : webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType))
         {
             ObserverMethod<?> observerMethod = defineObserverMethod(ownerBean, annotatedMethod);

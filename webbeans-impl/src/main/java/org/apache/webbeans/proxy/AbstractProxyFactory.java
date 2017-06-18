@@ -249,7 +249,7 @@ public abstract class AbstractProxyFactory
             return null;
         }
         
-        ArrayList<Method> duplicates = new ArrayList<Method>();
+        ArrayList<Method> duplicates = new ArrayList<>();
         
         for (Method outer : methods)
         {
@@ -264,7 +264,7 @@ public abstract class AbstractProxyFactory
             }
         }
 
-        ArrayList<Method> outsorted = new ArrayList<Method>(Arrays.asList(methods));
+        ArrayList<Method> outsorted = new ArrayList<>(Arrays.asList(methods));
         outsorted.removeAll(duplicates);
         return outsorted.toArray(new Method[outsorted.size()]);
     }

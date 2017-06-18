@@ -49,7 +49,7 @@ public final class InterceptorUtil
      */
     public List<Class> getReverseClassHierarchy(Class clazz)
     {
-        List<Class> hierarchy = new ArrayList<Class>();
+        List<Class> hierarchy = new ArrayList<>();
         while (clazz != null && clazz != Object.class)
         {
             hierarchy.add(0, clazz);
@@ -62,7 +62,7 @@ public final class InterceptorUtil
 
     public List<AnnotatedMethod<?>> getLifecycleMethods(AnnotatedType<?> annotatedType, Class<? extends Annotation> annotation)
     {
-        List<AnnotatedMethod<?>> lifecycleMethods = new ArrayList<AnnotatedMethod<?>>();
+        List<AnnotatedMethod<?>> lifecycleMethods = new ArrayList<>();
 
         List<Class> classes = getReverseClassHierarchy(annotatedType.getJavaClass());
         for (Class clazz : classes)

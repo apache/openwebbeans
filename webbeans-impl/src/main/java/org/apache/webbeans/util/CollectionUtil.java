@@ -28,7 +28,7 @@ public class CollectionUtil
 
     public static <T> Set<T> unmodifiableSet(T... entries)
     {
-        Set<T> set = new HashSet<T>(Arrays.asList(entries));
+        Set<T> set = new HashSet<>(Arrays.asList(entries));
         return Collections.unmodifiableSet(set);
     }
 }

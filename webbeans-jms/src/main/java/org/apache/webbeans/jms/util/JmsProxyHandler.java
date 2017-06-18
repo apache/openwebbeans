@@ -51,9 +51,9 @@ public class JmsProxyHandler implements InvocationHandler
 
     private AtomicBoolean cfSet = new AtomicBoolean(false);
 
-    private static Map<JMSType, Connection> connections = new ConcurrentHashMap<JMSType, Connection>();
+    private static Map<JMSType, Connection> connections = new ConcurrentHashMap<>();
 
-    private static Map<String, Destination> dests = new ConcurrentHashMap<String, Destination>();
+    private static Map<String, Destination> dests = new ConcurrentHashMap<>();
     
     private Object jmsObject;
     

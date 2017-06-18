@@ -45,8 +45,8 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class ExtensionLoader
 {
     /**Map of extensions*/
-    private final  Map<Class<?>, Object> extensions = new ConcurrentHashMap<Class<?>, Object>();
-    private final Set<Class<? extends Extension>> extensionClasses = new HashSet<Class<? extends Extension>>();
+    private final  Map<Class<?>, Object> extensions = new ConcurrentHashMap<>();
+    private final Set<Class<? extends Extension>> extensionClasses = new HashSet<>();
     private final BeanManagerImpl manager;
 
     private final WebBeansContext webBeansContext;

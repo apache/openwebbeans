@@ -58,11 +58,11 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
     protected Method aroundInvokeMethod;
 
     protected InterceptorBean(WebBeansContext webBeansContext,
-                                  AnnotatedType<T> annotatedType,
-                                  BeanAttributes<T> beanAttributes,
-                                  Class<T> beanClass,
-                                  Map<InterceptionType, Method[]> interceptionMethods,
-                                  InjectionTargetFactoryImpl<T> factory)
+                              AnnotatedType<T> annotatedType,
+                              BeanAttributes<T> beanAttributes,
+                              Class<T> beanClass,
+                              Map<InterceptionType, Method[]> interceptionMethods,
+                              InjectionTargetFactoryImpl<T> factory)
     {
         super(webBeansContext,
                 WebBeansType.INTERCEPTOR,
@@ -97,7 +97,7 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
                            Map<InterceptionType, Method[]> interceptionMethods)
     {
         this(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods,
-                new InterceptorInjectionTargetFactory<T>(annotatedType, webBeansContext));
+            new InterceptorInjectionTargetFactory<>(annotatedType, webBeansContext));
     }
 
     /**

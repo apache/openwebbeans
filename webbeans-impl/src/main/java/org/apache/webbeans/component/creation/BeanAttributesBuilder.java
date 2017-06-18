@@ -76,9 +76,9 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
 
     protected WebBeansContext webBeansContext;
 
-    protected Set<Type> types = new HashSet<Type>();
+    protected Set<Type> types = new HashSet<>();
 
-    protected Set<Annotation> qualifiers = new HashSet<Annotation>();
+    protected Set<Annotation> qualifiers = new HashSet<>();
 
     protected Class<? extends Annotation> scope;
 
@@ -129,7 +129,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         defineQualifiers();
         defineNullable();
         defineAlternative();
-        return new BeanAttributesImpl<T>(types, qualifiers, scope, name, nullable, stereotypes, alternative);
+        return new BeanAttributesImpl<>(types, qualifiers, scope, name, nullable, stereotypes, alternative);
     }
 
     protected A getAnnotated()
@@ -157,7 +157,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
                 Class<?>[] typedTypes = beanTypes.value();
 
                 //New api types
-                Set<Type> newTypes = new HashSet<Type>();
+                Set<Type> newTypes = new HashSet<>();
                 for (Class<?> type : typedTypes)
                 {
                     Type foundType = null;
@@ -207,7 +207,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     protected void
     defineQualifiers()
     {
-        HashSet<Class<? extends Annotation>> qualifiedTypes = new HashSet<Class<? extends Annotation>>();
+        HashSet<Class<? extends Annotation>> qualifiedTypes = new HashSet<>();
         if (annotated.isAnnotationPresent(Specializes.class))
         {
             defineQualifiers(getSuperAnnotated(), qualifiedTypes);
@@ -577,7 +577,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
             {
                 if (stereos == null)
                 {
-                    stereos = new HashSet<Class<? extends Annotation>>();
+                    stereos = new HashSet<>();
                 }
                 stereos.add(stereo.annotationType());
             }
@@ -610,17 +610,17 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         
         public <T> BeanAttributesBuilder<T, AnnotatedType<T>> newBeanAttibutes(AnnotatedType<T> annotatedType, boolean onlyScopedBeans)
         {
-            return new AnnotatedTypeBeanAttributesBuilder<T>(webBeansContext, annotatedType, onlyScopedBeans);
+            return new AnnotatedTypeBeanAttributesBuilder<>(webBeansContext, annotatedType, onlyScopedBeans);
         }
 
         public <T> BeanAttributesBuilder<T, AnnotatedField<T>> newBeanAttibutes(AnnotatedField<T> annotatedField)
         {
-            return new AnnotatedFieldBeanAttributesBuilder<T>(webBeansContext, annotatedField);
+            return new AnnotatedFieldBeanAttributesBuilder<>(webBeansContext, annotatedField);
         }
         
         public <T> BeanAttributesBuilder<T, AnnotatedMethod<T>> newBeanAttibutes(AnnotatedMethod<T> annotatedMethod)
         {
-            return new AnnotatedMethodBeanAttributesBuilder<T>(webBeansContext, annotatedMethod);
+            return new AnnotatedMethodBeanAttributesBuilder<>(webBeansContext, annotatedMethod);
         }
     }
 

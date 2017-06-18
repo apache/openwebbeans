@@ -132,14 +132,14 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
         List<Class> classHierarchy = webBeansContext.getInterceptorUtil().getReverseClassHierarchy(annotatedType.getJavaClass());
 
         Collection<Method> aroundInvokeMethod = null;
-        List<AnnotatedMethod> postConstructMethods = new ArrayList<AnnotatedMethod>();
-        List<AnnotatedMethod> preDestroyMethods = new ArrayList<AnnotatedMethod>();
-        List<AnnotatedMethod> aroundTimeoutMethods = new ArrayList<AnnotatedMethod>();
-        List<AnnotatedMethod> aroundConstructMethods = new ArrayList<AnnotatedMethod>();
+        List<AnnotatedMethod> postConstructMethods = new ArrayList<>();
+        List<AnnotatedMethod> preDestroyMethods = new ArrayList<>();
+        List<AnnotatedMethod> aroundTimeoutMethods = new ArrayList<>();
+        List<AnnotatedMethod> aroundConstructMethods = new ArrayList<>();
 
         // EJB related interceptors
-        List<AnnotatedMethod> prePassivateMethods = new ArrayList<AnnotatedMethod>();
-        List<AnnotatedMethod> postActivateMethods = new ArrayList<AnnotatedMethod>();
+        List<AnnotatedMethod> prePassivateMethods = new ArrayList<>();
+        List<AnnotatedMethod> postActivateMethods = new ArrayList<>();
 
         boolean interceptorFound = false;
 
@@ -179,7 +179,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
                         checkAroundInvokeConditions(m);
                         if (aroundInvokeMethod == null)
                         {
-                            aroundInvokeMethod = new ArrayList<Method>();
+                            aroundInvokeMethod = new ArrayList<>();
                         }
                         aroundInvokeMethod.add(m.getJavaMember());
                     }
@@ -234,7 +234,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 
         // and now for setting the bean info
 
-        interceptionMethods = new HashMap<InterceptionType, Method[]>();
+        interceptionMethods = new HashMap<>();
 
         if (aroundInvokeMethod != null)
         {
@@ -280,7 +280,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
     private void checkAroundInvokeConditions(AnnotatedMethod method)
     {
         List<AnnotatedParameter<T>> parameters = method.getParameters();
-        List<Class<?>> clazzParameters = new ArrayList<Class<?>>();
+        List<Class<?>> clazzParameters = new ArrayList<>();
         for(AnnotatedParameter<T> parameter : parameters)
         {
             clazzParameters.add(ClassUtil.getClazz(parameter.getBaseType()));

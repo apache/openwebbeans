@@ -65,11 +65,11 @@ public class DefaultContextsService extends AbstractContextsService
 
     static
     {
-        requestContext = new ThreadLocal<RequestContext>();
-        sessionContext = new ThreadLocal<SessionContext>();
-        conversationContext = new ThreadLocal<ConversationContext>();
-        dependentContext = new ThreadLocal<DependentContext>();
-        singletonContext = new ThreadLocal<SingletonContext>();
+        requestContext = new ThreadLocal<>();
+        sessionContext = new ThreadLocal<>();
+        conversationContext = new ThreadLocal<>();
+        dependentContext = new ThreadLocal<>();
+        singletonContext = new ThreadLocal<>();
     }
 
     public DefaultContextsService(WebBeansContext webBeansContext)

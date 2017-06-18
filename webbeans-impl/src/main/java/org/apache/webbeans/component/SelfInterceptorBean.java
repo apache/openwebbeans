@@ -49,7 +49,7 @@ public class SelfInterceptorBean<T> extends InterceptorBean<T>
                                Map<InterceptionType, Method[]> interceptionMethods)
     {
         super(webBeansContext, annotatedType, beanAttributes, beanClass, interceptionMethods,
-                new InjectionTargetFactoryImpl<T>(annotatedType, webBeansContext));
+            new InjectionTargetFactoryImpl<>(annotatedType, webBeansContext));
     }
 
     public boolean isAroundInvoke()

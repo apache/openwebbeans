@@ -99,7 +99,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 public final class NotificationManager
 {
-    private final Map<Type, Set<ObserverMethod<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverMethod<?>>>();
+    private final Map<Type, Set<ObserverMethod<?>>> observers = new ConcurrentHashMap<>();
     private final WebBeansContext webBeansContext;
 
     private final NotificationOptions defaultNotificationOptions;
@@ -194,7 +194,7 @@ public final class NotificationManager
     
     public List<ObserverMethod<?>> getObserverMethods()
     {
-        List<ObserverMethod<?>> observerMethods = new ArrayList<ObserverMethod<?>>();
+        List<ObserverMethod<?>> observerMethods = new ArrayList<>();
         for (Set<ObserverMethod<?>> methods: observers.values())
         {
             for (ObserverMethod<?> method: methods)
@@ -212,7 +212,7 @@ public final class NotificationManager
         Set<ObserverMethod<?>> set = observers.get(observer.getObservedType());
         if (set == null)
         {
-            set = new HashSet<ObserverMethod<?>>();
+            set = new HashSet<>();
             observers.put(observer.getObservedType(), set);
         }
 
@@ -244,7 +244,7 @@ public final class NotificationManager
 
     private <T> Set<ObserverMethod<? super T>> filterByWithAnnotations(Set<ObserverMethod<? super T>> observersMethods, AnnotatedType annotatedType)
     {
-        Set<ObserverMethod<? super T>> observerMethodsWithAnnotations = new HashSet<ObserverMethod<? super T>>();
+        Set<ObserverMethod<? super T>> observerMethodsWithAnnotations = new HashSet<>();
 
         for (ObserverMethod<? super T> observerMethod : observersMethods)
         {
@@ -361,7 +361,7 @@ public final class NotificationManager
             }
         }
 
-        Set<ObserverMethod<? super T>> matching = new HashSet<ObserverMethod<? super T>>();
+        Set<ObserverMethod<? super T>> matching = new HashSet<>();
 
         Set<Type> eventTypes = GenericsUtil.getTypeClosure(declaredEventType, eventClass);
         if (GenericsUtil.containTypeVariable(eventTypes))
@@ -400,7 +400,7 @@ public final class NotificationManager
     private <T> Set<ObserverMethod<? super T>> filterByExtensionEventType(T event, Type eventType)
     {
         Class<?> eventClass = ClassUtil.getClazz(eventType);
-        Set<ObserverMethod<? super T>> matching = new HashSet<ObserverMethod<? super T>>();        
+        Set<ObserverMethod<? super T>> matching = new HashSet<>();
         Set<Type> keySet = observers.keySet();
         for (Type type : keySet)
         {
@@ -620,7 +620,7 @@ public final class NotificationManager
      */
     private <T> Set<ObserverMethod<? super T>> filterByQualifiers(Set<ObserverMethod<? super T>> observers, Set<Annotation> eventQualifiers)
     {
-        Set<ObserverMethod<? super T>> matching = new HashSet<ObserverMethod<? super T>>();
+        Set<ObserverMethod<? super T>> matching = new HashSet<>();
 
         search: for (ObserverMethod<? super T> ob : observers)
         {

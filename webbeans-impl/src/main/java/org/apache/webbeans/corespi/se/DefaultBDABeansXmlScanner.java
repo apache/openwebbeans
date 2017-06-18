@@ -66,11 +66,11 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
 
     public DefaultBDABeansXmlScanner()
     {
-        interceptorsPerBDA = new HashMap<String, Set<Class<?>>>();
-        decoratorsPerBDA = new HashMap<String, Set<Class<?>>>();
-        stereotypesPerBDA = new HashMap<String, Set<Class<? extends Annotation>>>();
-        alternativesPerBDA = new HashMap<String, Set<Class<?>>>();
-        jarBeanClasses = new HashMap<Class<?>, String>();
+        interceptorsPerBDA = new HashMap<>();
+        decoratorsPerBDA = new HashMap<>();
+        stereotypesPerBDA = new HashMap<>();
+        alternativesPerBDA = new HashMap<>();
+        jarBeanClasses = new HashMap<>();
     }
 
     /**
@@ -92,7 +92,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
             Set<Class<?>> interceptorClasses = interceptorsPerBDA.get(beansXMLFilePath);
             if (interceptorClasses == null)
             {
-                interceptorClasses = new HashSet<Class<?>>();
+                interceptorClasses = new HashSet<>();
                 interceptorsPerBDA.put(beansXMLFilePath, interceptorClasses);
             }
             return interceptorClasses.add(interceptorClass);
@@ -113,11 +113,11 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
             set = interceptorsPerBDA.get(beansXMLFilePath);
             if (set != null)
             {
-                return new HashSet<Class<?>>(set);
+                return new HashSet<>(set);
             }
             else
             {
-                return new HashSet<Class<?>>();
+                return new HashSet<>();
             }
         }
     }
@@ -136,11 +136,11 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
             set = decoratorsPerBDA.get(beansXMLFilePath);
             if (set != null)
             {
-                return new HashSet<Class<?>>(set);
+                return new HashSet<>(set);
             }
             else
             {
-                return new HashSet<Class<?>>();
+                return new HashSet<>();
             }
         }
     }
@@ -164,7 +164,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
             Set<Class<?>> decoratorClasses = decoratorsPerBDA.get(beansXMLFilePath);
             if (decoratorClasses == null)
             {
-                decoratorClasses = new HashSet<Class<?>>();
+                decoratorClasses = new HashSet<>();
                 decoratorsPerBDA.put(beansXMLFilePath, decoratorClasses);
             }
             return decoratorClasses.add(decoratorClass);
@@ -191,7 +191,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
             Set<Class<?>> alternativeClasses = alternativesPerBDA.get(beansXMLFilePath);
             if (alternativeClasses == null)
             {
-                alternativeClasses = new HashSet<Class<?>>();
+                alternativeClasses = new HashSet<>();
                 alternativesPerBDA.put(beansXMLFilePath, alternativeClasses);
             }
             return alternativeClasses.add(alternativeClass);
@@ -217,7 +217,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
             Set<Class<? extends Annotation>> stereoTypeClasses = stereotypesPerBDA.get(beansXMLFilePath);
             if (stereoTypeClasses == null)
             {
-                stereoTypeClasses = new HashSet<Class<? extends Annotation>>();
+                stereoTypeClasses = new HashSet<>();
                 stereotypesPerBDA.put(beansXMLFilePath, stereoTypeClasses);
             }
             return stereoTypeClasses.add(stereoTypeClass);
@@ -238,11 +238,11 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
             set = alternativesPerBDA.get(beansXMLFilePath);
             if (set != null)
             {
-                return new HashSet<Class<?>>(set);
+                return new HashSet<>(set);
             }
             else
             {
-                return new HashSet<Class<?>>();
+                return new HashSet<>();
             }
         }
     }
@@ -261,11 +261,11 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
             set = stereotypesPerBDA.get(beansXMLFilePath);
             if (set != null)
             {
-                return new HashSet<Class<? extends Annotation>>(set);
+                return new HashSet<>(set);
             }
             else
             {
-                return new HashSet<Class<? extends Annotation>>();
+                return new HashSet<>();
             }
         }
     }

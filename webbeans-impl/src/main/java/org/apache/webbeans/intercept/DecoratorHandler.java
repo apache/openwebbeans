@@ -170,7 +170,7 @@ public class DecoratorHandler implements InterceptorHandler, Externalizable
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         BeanManager beanManager = webBeansContext.getBeanManagerImpl();
 
-        Map<Decorator<?>, Object> tmpInstances = new HashMap<Decorator<?>, Object>();
+        Map<Decorator<?>, Object> tmpInstances = new HashMap<>();
         for (int i = 0; i < instancesSize; i++)
         {
             Decorator<?> bean = (Decorator<?>) beanManager.getPassivationCapableBean(in.readUTF());
@@ -180,7 +180,7 @@ public class DecoratorHandler implements InterceptorHandler, Externalizable
         instances = tmpInstances;
 
         int decoratorsSize = in.readInt();
-        decorators = new CopyOnWriteArrayList<Decorator<?>>();
+        decorators = new CopyOnWriteArrayList<>();
         for (int i = 0; i < decoratorsSize; i++)
         {
             decorators.add((Decorator<?>) beanManager.getPassivationCapableBean(in.readUTF()));

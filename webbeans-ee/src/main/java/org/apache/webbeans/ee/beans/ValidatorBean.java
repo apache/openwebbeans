@@ -35,7 +35,7 @@ public class ValidatorBean extends BuiltInOwbBean<Validator>
         super(webBeansContext,
               WebBeansType.VALIDATION,
               Validator.class,
-              new SimpleProducerFactory<Validator>(new ProviderBasedProducer<Validator>(webBeansContext, Validator.class, new ValidatorProvider(webBeansContext), true)));
+            new SimpleProducerFactory<>(new ProviderBasedProducer<>(webBeansContext, Validator.class, new ValidatorProvider(webBeansContext), true)));
     }
 
     @Override

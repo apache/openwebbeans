@@ -85,7 +85,7 @@ public class ContextLifecycleListener implements LifecycleListener, ServletConte
     private void addOwbListeners(StandardContext context)
     {
         String[] oldListeners = context.findApplicationListeners();
-        LinkedList<String> listeners = new LinkedList<String>();
+        LinkedList<String> listeners = new LinkedList<>();
 
         listeners.addFirst(WebBeansConfigurationListener.class.getName());
 

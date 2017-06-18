@@ -64,7 +64,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
     /**
      * Cache the information if a certain class contains any EE resource at all
      */
-    private final Map<Class<?>, Boolean> classContainsEEResources = new ConcurrentHashMap<Class<?>, Boolean>();
+    private final Map<Class<?>, Boolean> classContainsEEResources = new ConcurrentHashMap<>();
 
     public StandaloneResourceInjectionService(WebBeansContext webBeansContext)
     {

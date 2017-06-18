@@ -33,16 +33,16 @@ class ServletRequestBean extends BuiltInOwbBean<HttpServletRequest>
 {
     ServletRequestBean(WebBeansContext ctx, WebContextsService contexts)
     {
-        super(ctx, WebBeansType.SERVLET_REQUEST, HttpServletRequest.class, new SimpleProducerFactory<HttpServletRequest>(
-                new ProviderBasedProducer<>(ctx, HttpServletRequest.class, new Provider<HttpServletRequest>()
+        super(ctx, WebBeansType.SERVLET_REQUEST, HttpServletRequest.class, new SimpleProducerFactory<>(
+            new ProviderBasedProducer<>(ctx, HttpServletRequest.class, new Provider<HttpServletRequest>()
+            {
+                @Override
+                public HttpServletRequest get()
                 {
-                    @Override
-                    public HttpServletRequest get()
-                    {
-                        ServletRequestContext requestContext = contexts.getRequestContext(false);
-                        return requestContext == null ? null : requestContext.getServletRequest();
-                    }
-                }, true)));
+                    ServletRequestContext requestContext = contexts.getRequestContext(false);
+                    return requestContext == null ? null : requestContext.getServletRequest();
+                }
+            }, true)));
     }
 
     @Override

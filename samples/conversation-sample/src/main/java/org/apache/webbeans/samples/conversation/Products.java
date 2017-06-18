@@ -33,7 +33,7 @@ public class Products implements Serializable
 {
     private static final long serialVersionUID = 1L;
     
-    private List<Item> products = new ArrayList<Item>();
+    private List<Item> products = new ArrayList<>();
     
     public Products()
     {

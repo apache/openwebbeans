@@ -63,7 +63,7 @@ public class InjectionTargetFactoryImpl<T> implements InjectionTargetFactory<T>
     {
         AnnotatedType<T> at = getAnnotatedType();
         InjectionTargetImpl<T> injectionTarget
-            = new InjectionTargetImpl<T>(at, createInjectionPoints(bean), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
+            = new InjectionTargetImpl<>(at, createInjectionPoints(bean), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
         if (ManagedBean.class.isInstance(bean))
         {
             ManagedBean.class.cast(bean).setOriginalInjectionTarget(injectionTarget);

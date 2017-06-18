@@ -71,7 +71,7 @@ public class AnnotatedConstructorImpl<X> extends AbstractAnnotatedCallable<X> im
         if (javaMember.getParameterTypes().length == 0)
         {
             Class<?> clazz = javaMember.getDeclaringClass();
-            Map<Class<?>, Annotation> annotations = new HashMap<Class<?>, Annotation>();
+            Map<Class<?>, Annotation> annotations = new HashMap<>();
             for (Annotation a : javaMember.getDeclaredAnnotations())
             {
                 annotations.put(a.annotationType(), a);

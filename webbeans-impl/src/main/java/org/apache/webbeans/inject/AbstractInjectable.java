@@ -150,7 +150,7 @@ public abstract class AbstractInjectable<T>
 
     protected static List<InjectionPoint> createInjectionPoints(Producer<?> owner, Member member)
     {
-        List<InjectionPoint> injectionPoints = new ArrayList<InjectionPoint>();
+        List<InjectionPoint> injectionPoints = new ArrayList<>();
         for (InjectionPoint injectionPoint : owner.getInjectionPoints())
         {
             if (injectionPoint.getMember().equals(member))

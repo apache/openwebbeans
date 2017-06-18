@@ -51,12 +51,12 @@ public final class CreationalContextFactory<T>
      */
     public CreationalContextImpl<T> getCreationalContext(Contextual<T> contextual)
     {        
-        return new CreationalContextImpl<T>(contextual, webBeansContext);
+        return new CreationalContextImpl<>(contextual, webBeansContext);
     }        
     
     public CreationalContextImpl<T> wrappedCreationalContext(CreationalContext<T> creationalContext, Contextual<T> contextual)
     {
-        return new WrappedCreationalContext<T>(contextual, creationalContext, webBeansContext);
+        return new WrappedCreationalContext<>(contextual, creationalContext, webBeansContext);
     }
     
 }

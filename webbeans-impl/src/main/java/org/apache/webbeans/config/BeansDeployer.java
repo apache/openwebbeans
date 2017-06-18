@@ -183,7 +183,7 @@ public class BeansDeployer
     private final DecoratorsManager decoratorsManager;
     private final InterceptorsManager interceptorsManager;
 
-    private final Map<String, Boolean> packageVetoCache = new HashMap<String, Boolean>();
+    private final Map<String, Boolean> packageVetoCache = new HashMap<>();
 
     /**
      * This BdaInfo is used for all manually added annotated types or in case
@@ -427,7 +427,7 @@ public class BeansDeployer
                                 Map<BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda)
     {
         Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> beanAttributesPerBda
-            = new HashMap<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>>();
+            = new HashMap<>();
 
         for (Map.Entry<BeanArchiveInformation, List<AnnotatedType<?>>> atEntry : annotatedTypesPerBda.entrySet())
         {
@@ -436,7 +436,7 @@ public class BeansDeployer
 
             boolean onlyScopedBeans = BeanDiscoveryMode.TRIM == bdaInfo.getBeanDiscoveryMode();
 
-            Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> bdaBeanAttributes = new IdentityHashMap<AnnotatedType<?>, ExtendedBeanAttributes<?>>(annotatedTypes.size());
+            Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> bdaBeanAttributes = new IdentityHashMap<>(annotatedTypes.size());
             Iterator<AnnotatedType<?>> iterator = annotatedTypes.iterator();
             while (iterator.hasNext())
             {
@@ -535,7 +535,7 @@ public class BeansDeployer
             Type type = decorator.getDelegateType();
 
             // capture ParameterizedType from decorator type
-            Collection<Type> types = new HashSet<Type>();
+            Collection<Type> types = new HashSet<>();
             if (Class.class.isInstance(type))
             {
                 Class<?> c = Class.class.cast(type);
@@ -797,7 +797,7 @@ public class BeansDeployer
     private List<AnnotatedType<?>> fireAfterTypeDiscoveryEvent()
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        List<AnnotatedType<?>> newAt = new LinkedList<AnnotatedType<?>>();
+        List<AnnotatedType<?>> newAt = new LinkedList<>();
         List<Class<?>> interceptors = interceptorsManager.getPrioritizedInterceptors();
         List<Class<?>> decorators = decoratorsManager.getPrioritizedDecorators();
         List<Class<?>> alternatives = webBeansContext.getAlternativesManager().getPrioritizedAlternatives();
@@ -989,7 +989,7 @@ public class BeansDeployer
 
         if (beans != null && beans.size() > 0)
         {
-            Stack<String> beanNames = new Stack<String>();
+            Stack<String> beanNames = new Stack<>();
             for (Bean<?> bean : beans)
             {
                 try
@@ -1141,10 +1141,10 @@ public class BeansDeployer
     private Map<BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesFromClassPath(ScannerService scanner)
     {
         logger.fine("Creating AnnotatedTypes from class files has started.");
-        Set<Class<?>> foundClasses = new HashSet<Class<?>>(100);
+        Set<Class<?>> foundClasses = new HashSet<>(100);
 
         Map<BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda
-            = new HashMap<BeanArchiveInformation, List<AnnotatedType<?>>>();
+            = new HashMap<>();
 
         if (scanner instanceof BdaScannerService)
         {
@@ -1180,7 +1180,7 @@ public class BeansDeployer
      */
     private List<AnnotatedType<?>> annotatedTypesFromBdaClassPath(Set<Class<?>> classIndex, Set<Class<?>> foundClasses)
     {
-        List<AnnotatedType<?>> annotatedTypes = new ArrayList<AnnotatedType<?>>();
+        List<AnnotatedType<?>> annotatedTypes = new ArrayList<>();
 
         //Iterating over each class
         if (classIndex != null)
@@ -1500,7 +1500,7 @@ public class BeansDeployer
         // the alternatives in this beans.xml
         // this gets used to detect multiple definitions of the
         // same alternative in one beans.xml file.
-        Set<String> alternativesInFile = new HashSet<String>();
+        Set<String> alternativesInFile = new HashSet<>();
 
         for (String alternativeName : alternatives)
         {
@@ -1533,7 +1533,7 @@ public class BeansDeployer
 
     private void configureDecorators(URL bdaLocation, List<String> decorators)
     {
-        Set<Class> decoratorsInFile = new HashSet<Class>();
+        Set<Class> decoratorsInFile = new HashSet<>();
 
         for (String decorator : decorators)
         {
@@ -1564,7 +1564,7 @@ public class BeansDeployer
         // the interceptors in this beans.xml
         // this gets used to detect multiple definitions of the
         // same interceptor in one beans.xml file.
-        Set<Class> interceptorsInFile = new HashSet<Class>();
+        Set<Class> interceptorsInFile = new HashSet<>();
         
         for (String interceptor : interceptors)
         {
@@ -1839,11 +1839,11 @@ public class BeansDeployer
                 boolean ignoreProducer = defaultAt != beanAnnotatedType && annotatedTypes.containsKey(defaultAt);
                 if(bean.isEnabled())
                 {
-                    observerMethods = new ObserverMethodsBuilder<T>(webBeansContext, beanAnnotatedType).defineObserverMethods(bean);
+                    observerMethods = new ObserverMethodsBuilder<>(webBeansContext, beanAnnotatedType).defineObserverMethods(bean);
                 }
                 else
                 {
-                    observerMethods = new HashSet<ObserverMethod<?>>();
+                    observerMethods = new HashSet<>();
                 }
 
                 WebBeansContext wbc = bean.getWebBeansContext();
@@ -1854,7 +1854,7 @@ public class BeansDeployer
 
                 ManagedBean<T> managedBean = (ManagedBean<T>)bean;
                 Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods =
-                        new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>();
+                    new HashMap<>();
 
                 if (!producerFields.isEmpty() || !producerMethods.isEmpty())
                 {
@@ -1876,7 +1876,7 @@ public class BeansDeployer
                 }
 
                 Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields =
-                        new HashMap<ProducerFieldBean<?>, AnnotatedField<?>>();
+                    new HashMap<>();
 
                 for(ProducerFieldBean<?> producerField : producerFields)
                 {
@@ -1890,7 +1890,7 @@ public class BeansDeployer
                 }
 
                 Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap =
-                        new HashMap<ObserverMethod<?>, AnnotatedMethod<?>>();
+                    new HashMap<>();
 
                 for(ObserverMethod<?> observerMethod : observerMethods)
                 {

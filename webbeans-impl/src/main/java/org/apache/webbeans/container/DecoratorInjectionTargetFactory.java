@@ -40,12 +40,12 @@ public class DecoratorInjectionTargetFactory<T> extends InjectionTargetFactoryIm
     {
         if (Modifier.isAbstract(getAnnotatedType().getJavaClass().getModifiers()))
         {
-            return new AbstractDecoratorInjectionTarget<T>(
-                    getAnnotatedType(),
-                    createInjectionPoints(bean),
-                    getWebBeansContext(),
-                    getPostConstructMethods(),
-                    getPreDestroyMethods());
+            return new AbstractDecoratorInjectionTarget<>(
+                getAnnotatedType(),
+                createInjectionPoints(bean),
+                getWebBeansContext(),
+                getPostConstructMethods(),
+                getPreDestroyMethods());
         }
         else
         {

@@ -98,14 +98,14 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
                         Set<Class<? extends Annotation>> stereotypes,
                         boolean alternative)
     {
-        this.types = types == null? Collections.<Type>emptySet(): Collections.unmodifiableSet(new HashSet<Type>(types));
-        this.qualifiers = qualifiers == null? Collections.<Annotation>emptySet(): Collections.unmodifiableSet(new HashSet<Annotation>(qualifiers));
+        this.types = types == null? Collections.<Type>emptySet(): Collections.unmodifiableSet(new HashSet<>(types));
+        this.qualifiers = qualifiers == null? Collections.<Annotation>emptySet(): Collections.unmodifiableSet(new HashSet<>(qualifiers));
         this.scope = scope;
         this.name = name;
         this.nullable = nullable;
         this.stereotypes = stereotypes == null
                 ? Collections.<Class<? extends Annotation>>emptySet()
-                : Collections.unmodifiableSet(new HashSet<Class<? extends Annotation>>(stereotypes));
+                : Collections.unmodifiableSet(new HashSet<>(stereotypes));
         this.alternative = alternative;
     }
 

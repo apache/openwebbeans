@@ -35,8 +35,8 @@ public class UserTransactionBean extends BuiltInOwbBean<UserTransaction>
         super(webBeansContext,
               WebBeansType.USERTRANSACTION,
               UserTransaction.class,
-              new SimpleProducerFactory<UserTransaction>(
-                      new ProviderBasedProducer<UserTransaction>(webBeansContext, UserTransaction.class, new UserTransactionProvider(webBeansContext), true)));
+            new SimpleProducerFactory<>(
+                new ProviderBasedProducer<>(webBeansContext, UserTransaction.class, new UserTransactionProvider(webBeansContext), true)));
     }
 
     @Override

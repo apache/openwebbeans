@@ -31,7 +31,7 @@ public class PrincipalBean extends BuiltInOwbBean<Principal>
         super(webBeansContext,
               WebBeansType.PRINCIPAL,
               Principal.class,
-              new SimpleProducerFactory<Principal>(new ProviderBasedProducer<Principal>(webBeansContext, Principal.class, new PrincipalProvider(webBeansContext), true)));
+              new SimpleProducerFactory<>(new ProviderBasedProducer<>(webBeansContext, Principal.class, new PrincipalProvider(webBeansContext), true)));
     }
 
     @Override

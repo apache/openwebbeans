@@ -57,29 +57,29 @@ public final class AnnotatedElementFactory
      * Cache of the initial AnnotatedTypes
      */
     private ConcurrentMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>> annotatedTypeCache =
-        new ConcurrentHashMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>>();
+        new ConcurrentHashMap<>();
 
     /**
      * Cache of modified AnnotatedTypes.
      */
     private ConcurrentMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>> modifiedAnnotatedTypeCache =
-        new ConcurrentHashMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>>();
+        new ConcurrentHashMap<>();
 
     //Cache of AnnotatedConstructor
     private ConcurrentMap<Constructor<?>, AnnotatedConstructor<?>> annotatedConstructorCache =
-        new ConcurrentHashMap<Constructor<?>, AnnotatedConstructor<?>>();
+        new ConcurrentHashMap<>();
 
     //Cache of AnnotatedMethod
     private ConcurrentMap<Method, AnnotatedMethod<?>> annotatedMethodCache =
-        new ConcurrentHashMap<Method, AnnotatedMethod<?>>();
+        new ConcurrentHashMap<>();
 
     //Cache of AnnotatedField
     private ConcurrentMap<Field, AnnotatedField<?>> annotatedFieldCache =
-        new ConcurrentHashMap<Field, AnnotatedField<?>>();
+        new ConcurrentHashMap<>();
 
     //Cache of AnnotatedMethod
     private ConcurrentMap<AnnotatedType<?>, Set<AnnotatedMethod<?>>> annotatedMethodsOfTypeCache =
-        new ConcurrentHashMap<AnnotatedType<?>, Set<AnnotatedMethod<?>>>();
+        new ConcurrentHashMap<>();
 
     private WebBeansContext webBeansContext;
 
@@ -144,7 +144,7 @@ public final class AnnotatedElementFactory
         ConcurrentMap<String, AnnotatedType<?>> annotatedTypes = modifiedAnnotatedTypeCache.get(type);
         if (annotatedTypes == null)
         {
-            annotatedTypes = new ConcurrentHashMap<String, AnnotatedType<?>>();
+            annotatedTypes = new ConcurrentHashMap<>();
         }
         ConcurrentMap<String, AnnotatedType<?>> oldAnnotatedTypes = modifiedAnnotatedTypeCache.putIfAbsent(type, annotatedTypes);
         if (oldAnnotatedTypes != null)
@@ -180,7 +180,7 @@ public final class AnnotatedElementFactory
                 {
                     supertype = newAnnotatedType(annotatedClass.getSuperclass());
                 }
-                annotatedType = new AnnotatedTypeImpl<X>(webBeansContext, annotatedClass, supertype);
+                annotatedType = new AnnotatedTypeImpl<>(webBeansContext, annotatedClass, supertype);
 
                 AnnotatedType<X> oldType = annotatedTypes.putIfAbsent(OWB_DEFAULT_KEY, annotatedType);
                 if(oldType != null)
@@ -238,7 +238,7 @@ public final class AnnotatedElementFactory
         }
         else
         {
-            annConstructor = new AnnotatedConstructorImpl<X>(webBeansContext, constructor, declaringClass);
+            annConstructor = new AnnotatedConstructorImpl<>(webBeansContext, constructor, declaringClass);
             AnnotatedConstructorImpl<X> old = (AnnotatedConstructorImpl<X>)annotatedConstructorCache.putIfAbsent(constructor, annConstructor);
             if(old != null)
             {
@@ -270,7 +270,7 @@ public final class AnnotatedElementFactory
         }
         else
         {
-            annotField = new AnnotatedFieldImpl<X>(webBeansContext, field, declaringClass);
+            annotField = new AnnotatedFieldImpl<>(webBeansContext, field, declaringClass);
             AnnotatedFieldImpl<X> old = (AnnotatedFieldImpl<X>) annotatedFieldCache.putIfAbsent(field, annotField);
             if(old != null)
             {
@@ -302,7 +302,7 @@ public final class AnnotatedElementFactory
         }
         else
         {
-            annotMethod = new AnnotatedMethodImpl<X>(webBeansContext, method, declaringType);
+            annotMethod = new AnnotatedMethodImpl<>(webBeansContext, method, declaringType);
             AnnotatedMethodImpl<X> old = (AnnotatedMethodImpl<X>) annotatedMethodCache.putIfAbsent(method, annotMethod);
             if(old != null)
             {
@@ -328,7 +328,7 @@ public final class AnnotatedElementFactory
         }
         methods = Collections.unmodifiableSet(getFilteredMethods(annotatedType.getJavaClass(),
                                                                  (Set)annotatedType.getMethods(),
-                                                                 new HashSet<AnnotatedMethod<?>>()));
+            new HashSet<>()));
         Set<AnnotatedMethod<?>> old = annotatedMethodsOfTypeCache.putIfAbsent(annotatedType, methods);
         if (old != null)
         {
@@ -388,7 +388,7 @@ public final class AnnotatedElementFactory
         ConcurrentMap<String, AnnotatedType<?>> annotatedTypes = annotatedTypeCache.get(type);
         if (annotatedTypes == null)
         {
-            annotatedTypes = new ConcurrentHashMap<String, AnnotatedType<?>>();
+            annotatedTypes = new ConcurrentHashMap<>();
             ConcurrentMap<String, AnnotatedType<?>> oldAnnotatedTypes = annotatedTypeCache.putIfAbsent(type, annotatedTypes);
             if (oldAnnotatedTypes != null)
             {

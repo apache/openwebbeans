@@ -110,7 +110,7 @@ public final class PropertyLoader
             return null;
         }
 
-        List<Properties> properties = new ArrayList<Properties>();
+        List<Properties> properties = new ArrayList<>();
 
         while (propertyUrls.hasMoreElements())
         {
@@ -149,7 +149,7 @@ public final class PropertyLoader
      */
     private static List<Properties> sortProperties(List<Properties> allProperties)
     {
-        List<Properties> sortedProperties = new ArrayList<Properties>();
+        List<Properties> sortedProperties = new ArrayList<>();
         for (Properties p : allProperties)
         {
             int configOrder = getConfigurationOrdinal(p);

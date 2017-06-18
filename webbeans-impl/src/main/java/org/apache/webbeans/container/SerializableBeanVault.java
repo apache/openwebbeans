@@ -44,7 +44,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class SerializableBeanVault
 {
 
-    private Map<String, SerializableBean<?>> serializableBeans = new ConcurrentHashMap<String, SerializableBean<?>>();
+    private Map<String, SerializableBean<?>> serializableBeans = new ConcurrentHashMap<>();
 
     @SuppressWarnings("unchecked")
     public <T> Contextual<T> getSerializableBean(Contextual<T> bean)
@@ -62,7 +62,7 @@ public class SerializableBeanVault
             SerializableBean<T> sb = (SerializableBean<T>) serializableBeans.get(id);
             if (sb == null)
             {
-                sb = new SerializableBean<T>((Bean<T>) bean);
+                sb = new SerializableBean<>((Bean<T>) bean);
                 serializableBeans.put(id, sb);
             }
 

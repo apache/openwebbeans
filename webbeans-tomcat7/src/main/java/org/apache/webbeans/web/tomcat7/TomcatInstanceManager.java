@@ -36,7 +36,7 @@ public class TomcatInstanceManager implements InstanceManager
 
     private ClassLoader loader;
 
-    private Map<Object, Object> objects = new ConcurrentHashMap<Object, Object>();
+    private Map<Object, Object> objects = new ConcurrentHashMap<>();
 
     public TomcatInstanceManager(ClassLoader loader, InstanceManager processor)
     {

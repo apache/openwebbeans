@@ -58,28 +58,28 @@ public class InterceptorsManager
     /**
      * Interceptor classes which got added via beans.xml
      */
-    private List<Class<?>> configuredInterceptorClasses = new CopyOnWriteArrayList<Class<?>>();
+    private List<Class<?>> configuredInterceptorClasses = new CopyOnWriteArrayList<>();
 
     /**
      * Active CDI-style interceptors.
      */
-    private List<Interceptor<?>> cdiInterceptors = new ArrayList<Interceptor<?>>();
+    private List<Interceptor<?>> cdiInterceptors = new ArrayList<>();
 
     /**
      * EJB-style Interceptor beans.
      */
-    private ConcurrentMap<Class<?>, Interceptor<?>> ejbInterceptors = new ConcurrentHashMap<Class<?>, Interceptor<?>>();
+    private ConcurrentMap<Class<?>, Interceptor<?>> ejbInterceptors = new ConcurrentHashMap<>();
 
     /**Additional interceptor class*/
-    private List<Class<?>> additionalInterceptorClasses = new ArrayList<Class<?>>();
+    private List<Class<?>> additionalInterceptorClasses = new ArrayList<>();
 
     /**
      * Additional interceptor binding types we got via Extensions
      */
     private Map<Class<? extends Annotation>, Set<Annotation>> additionalInterceptorBindingTypes
-            = new HashMap<Class<? extends Annotation>, Set<Annotation>>();
+            = new HashMap<>();
     private final Collection<AnnotatedType<?>> additionalInterceptorBindingTypesAnnotatedTypes
-            = new ArrayList<AnnotatedType<?>>();
+            = new ArrayList<>();
 
     private final PriorityClasses priorityInterceptors = new PriorityClasses();
 
@@ -136,7 +136,7 @@ public class InterceptorsManager
             }
 
             BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
-            EjbInterceptorBeanBuilder<T> buildr = new EjbInterceptorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
+            EjbInterceptorBeanBuilder<T> buildr = new EjbInterceptorBeanBuilder<>(webBeansContext, annotatedType, beanAttributes);
             buildr.defineEjbInterceptorRules();
             Interceptor<T> i = buildr.getBean();
             interceptor = (Interceptor<T>) ejbInterceptors.putIfAbsent(interceptorClass, i);
@@ -206,7 +206,7 @@ public class InterceptorsManager
 
     public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
     {
-        List<Interceptor<?>> interceptorList = new ArrayList<Interceptor<?>>();
+        List<Interceptor<?>> interceptorList = new ArrayList<>();
         for (Interceptor<?> interceptor : cdiInterceptors)
         {
             if (interceptor.intercepts(type) && intercepts(interceptor, interceptorBindings) && isInterceptorClassEnabled(interceptor.getBeanClass()))

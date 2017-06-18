@@ -394,7 +394,7 @@ public final class AnnotationUtil
 
         if (qualifierMethods.length > 0)
         {
-            List<Method> bindingMethods = new ArrayList<Method>();
+            List<Method> bindingMethods = new ArrayList<>();
 
             for (Method qualifierMethod : qualifierMethods)
             {
@@ -414,7 +414,7 @@ public final class AnnotationUtil
 
     private static List<Method> getBindingCdiAnnotationMethods(AnnotatedType<?> at)
     {
-        List<Method> bindingMethods = new ArrayList<Method>();
+        List<Method> bindingMethods = new ArrayList<>();
         for (AnnotatedMethod<?> method : at.getMethods())
         {
             if (method.isAnnotationPresent(Nonbinding.class))
@@ -503,7 +503,7 @@ public final class AnnotationUtil
      */
     public static Annotation[] getMetaAnnotations(Annotation[] anns, Class<? extends Annotation> metaAnnotation)
     {
-        List<Annotation> annots = new ArrayList<Annotation>();
+        List<Annotation> annots = new ArrayList<>();
         Annotation[] result;
 
         for (Annotation annot : anns)

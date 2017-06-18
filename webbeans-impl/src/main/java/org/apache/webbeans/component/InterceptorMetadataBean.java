@@ -39,11 +39,11 @@ public class InterceptorMetadataBean<T> extends BuiltInOwbBean<Interceptor<T>>
     public InterceptorMetadataBean(WebBeansContext webBeansContext)
     {
         super(webBeansContext,
-              WebBeansType.METADATA,
-              new BeanAttributesImpl<Interceptor<T>>(CollectionUtil.<Type>unmodifiableSet(Interceptor.class, Object.class)),
-              new TypeLiteral<Interceptor<T>>(){}.getRawType(),
-              false,
-              new SimpleProducerFactory<Interceptor<T>>(new MetadataProducer<Interceptor<T>>()));
+            WebBeansType.METADATA,
+            new BeanAttributesImpl<>(CollectionUtil.<Type>unmodifiableSet(Interceptor.class, Object.class)),
+            new TypeLiteral<Interceptor<T>>(){}.getRawType(),
+            false,
+            new SimpleProducerFactory<>(new MetadataProducer<Interceptor<T>>()));
     }
     
     /* (non-Javadoc)

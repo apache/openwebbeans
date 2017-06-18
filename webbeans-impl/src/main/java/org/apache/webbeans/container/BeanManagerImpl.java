@@ -130,7 +130,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * we don't even need a ConcurrentHashMap.
      * @see #singleContextMap
      */
-    private Map<Class<? extends Annotation>, List<Context>> contextMap = new HashMap<Class<? extends Annotation>, List<Context>>();
+    private Map<Class<? extends Annotation>, List<Context>> contextMap = new HashMap<>();
 
     /**
      * This will hold non-standard contexts where only one Context implementation got registered
@@ -140,13 +140,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * we don't even need a ConcurrentHashMap.
      * @see #contextMap
      */
-    private Map<Class<? extends Annotation>, Context> singleContextMap = new HashMap<Class<? extends Annotation>, Context>();
+    private Map<Class<? extends Annotation>, Context> singleContextMap = new HashMap<>();
 
     /**Deployment archive beans*/
-    private Set<Bean<?>> deploymentBeans = new HashSet<Bean<?>>();
+    private Set<Bean<?>> deploymentBeans = new HashSet<>();
 
     /**Normal scoped cache proxies*/
-    private Map<Contextual<?>, Object> cacheProxies = new ConcurrentHashMap<Contextual<?>, Object>();
+    private Map<Contextual<?>, Object> cacheProxies = new ConcurrentHashMap<>();
 
     /**Injection resolver instance*/
     private InjectionResolver injectionResolver;
@@ -156,20 +156,20 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addQualifier(Class)}
      * event function.
      */
-    private List<Class<? extends Annotation>> additionalQualifiers = new ArrayList<Class<? extends Annotation>>();
-    private Map<Class<?>, AnnotatedType<? extends Annotation>> additionalAnnotatedTypeQualifiers = new HashMap<Class<?>, AnnotatedType<? extends Annotation>>();
+    private List<Class<? extends Annotation>> additionalQualifiers = new ArrayList<>();
+    private Map<Class<?>, AnnotatedType<? extends Annotation>> additionalAnnotatedTypeQualifiers = new HashMap<>();
 
     /**
      * This list contains additional scopes which got set via the
      * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addScope(Class, boolean, boolean)} event function.
      */
-    private List<ExternalScope> additionalScopes =  new ArrayList<ExternalScope>();
+    private List<ExternalScope> additionalScopes = new ArrayList<>();
 
     /** quick detection if an annotation is a scope-annotation  */
-    private Set<Class<? extends Annotation>> scopeAnnotations = new HashSet<Class<? extends Annotation>>();
+    private Set<Class<? extends Annotation>> scopeAnnotations = new HashSet<>();
 
     /** quick detection if an annotation is NOT a scope-annotation  */
-    private Set<Class<? extends Annotation>> nonscopeAnnotations = new HashSet<Class<? extends Annotation>>();
+    private Set<Class<? extends Annotation>> nonscopeAnnotations = new HashSet<>();
 
 
     private ConcurrentMap<Class<?>, ConcurrentMap<String, AnnotatedType<?>>> additionalAnnotatedTypes = new ConcurrentHashMap<>();
@@ -180,11 +180,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * This map stores all beans along with their unique {@link javax.enterprise.inject.spi.PassivationCapable} id.
      * This is used as a reference for serialization.
      */
-    private ConcurrentMap<String, Bean<?>> passivationBeans = new ConcurrentHashMap<String, Bean<?>>();
+    private ConcurrentMap<String, Bean<?>> passivationBeans = new ConcurrentHashMap<>();
 
     /**InjectionTargets for Java EE component instances that supports injections*/
     private Map<Class<?>, Producer<?>> producersForJavaEeComponents =
-        new ConcurrentHashMap<Class<?>, Producer<?>>();
+        new ConcurrentHashMap<>();
 
     private AnnotatedElementFactory annotatedElementFactory;
 
@@ -216,7 +216,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * hierarchies, because each cl has other classes.
      */
     private static Map<Class<? extends Annotation>, Boolean> isScopeTypeNormalCache =
-            new ConcurrentHashMap<Class<? extends Annotation>, Boolean>();
+        new ConcurrentHashMap<>();
 
     /**
      * Map to be able to lookup always 3rd party beans when user does lookups with custom beans.
@@ -369,11 +369,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             ThirdpartyBeanImpl<?> bean;
             if (!PassivationCapable.class.isInstance(newBean))
             {
-                bean = new ThirdpartyBeanImpl<T>(webBeansContext, newBean);
+                bean = new ThirdpartyBeanImpl<>(webBeansContext, newBean);
             }
             else
             {
-                bean = new PassivationCapableThirdpartyBeanImpl<T>(webBeansContext, newBean);
+                bean = new PassivationCapableThirdpartyBeanImpl<>(webBeansContext, newBean);
             }
             addPassivationInfo(bean);
             deploymentBeans.add(bean);
@@ -514,7 +514,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         webBeansContext.getAnnotationManager().checkQualifiersParams(types, bindingTypes); // checkDecoratorResolverParams is too restrictive for repeatable bindings
         Set<Decorator<?>> intsSet = webBeansContext.getDecoratorsManager().findDeployedWebBeansDecorator(types, bindingTypes);
-        List<Decorator<?>> decoratorList = new ArrayList<Decorator<?>>(intsSet);
+        List<Decorator<?>> decoratorList = new ArrayList<>(intsSet);
         Collections.sort(decoratorList, new DecoratorComparator(webBeansContext));
         return decoratorList;
     }
@@ -554,7 +554,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             else
             {
                 // from the 2nd Context for this scopetype on, we need to maintain a List for them
-                contextList = new ArrayList<Context>();
+                contextList = new ArrayList<>();
                 contextList.add(singleContext);
                 contextList.add(context);
 
@@ -701,7 +701,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public Set<Annotation> getInterceptorBindingDefinition(Class<? extends Annotation> binding)
     {
         Annotation[] annotations = binding.getDeclaredAnnotations();
-        Set<Annotation> set = new HashSet<Annotation>();
+        Set<Annotation> set = new HashSet<>();
 
         if(binding.isAnnotationPresent(InterceptorBinding.class))
         {
@@ -861,17 +861,17 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public <X> ProducerFactory<X> getProducerFactory(AnnotatedField<? super X> field, Bean<X> bean)
     {
-        return new FieldProducerFactory<X>(field, bean, webBeansContext);
+        return new FieldProducerFactory<>(field, bean, webBeansContext);
     }
 
     public <X> ProducerFactory<X> getProducerFactory(AnnotatedMethod<? super X> method, Bean<X> bean)
     {
-        return new MethodProducerFactory<X>(method, bean, webBeansContext);
+        return new MethodProducerFactory<>(method, bean, webBeansContext);
     }
 
     public <X> InjectionTargetFactory<X> getInjectionTargetFactory(AnnotatedType<X> type)
     {
-        return new InjectionTargetFactoryImpl<X>(type, webBeansContext);
+        return new InjectionTargetFactoryImpl<>(type, webBeansContext);
     }
 
     public <T> Bean<T> createBean(BeanAttributes<T> attributes, Class<T> type, InjectionTargetFactory<T> factory)
@@ -998,7 +998,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public Set<Annotation> getStereotypeDefinition(Class<? extends Annotation> stereotype)
     {
         Annotation[] annotations = stereotype.getDeclaredAnnotations();
-        Set<Annotation> set = new HashSet<Annotation>();
+        Set<Annotation> set = new HashSet<>();
 
         if(stereotype.isAnnotationPresent(Stereotype.class))
         {
@@ -1150,13 +1150,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public <T, X> Bean<T> createBean(BeanAttributes<T> attributes, Class<X> type, ProducerFactory<X> factory)
     {
-        return new ProducerAwareInjectionTargetBean<T>(
-                webBeansContext,
-                WebBeansType.THIRDPARTY,
-                attributes,
-                findClass(factory, type),
-                false,
-                factory);
+        return new ProducerAwareInjectionTargetBean<>(
+            webBeansContext,
+            WebBeansType.THIRDPARTY,
+            attributes,
+            findClass(factory, type),
+            false,
+            factory);
     }
 
     private Class<?> findClass(ProducerFactory<?> factory, Class<?> type)
@@ -1238,14 +1238,14 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
-        InjectionTargetFactoryImpl<T> factory = new InjectionTargetFactoryImpl<T>(type, webBeansContext);
+        InjectionTargetFactoryImpl<T> factory = new InjectionTargetFactoryImpl<>(type, webBeansContext);
         InterceptorUtil interceptorUtil = webBeansContext.getInterceptorUtil();
-        InjectionTargetImpl<T> injectionTarget = new LazyInterceptorDefinedInjectionTarget<T>(
-                        type,
-                        factory.createInjectionPoints(null),
-                        webBeansContext,
-                        interceptorUtil.getLifecycleMethods(type, PostConstruct.class),
-                        interceptorUtil.getLifecycleMethods(type, PreDestroy.class));
+        InjectionTargetImpl<T> injectionTarget = new LazyInterceptorDefinedInjectionTarget<>(
+            type,
+            factory.createInjectionPoints(null),
+            webBeansContext,
+            interceptorUtil.getLifecycleMethods(type, PostConstruct.class),
+            interceptorUtil.getLifecycleMethods(type, PreDestroy.class));
         if (isAfterBeanDiscoveryDone())
         {
             try
@@ -1329,7 +1329,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             return;
         }
 
-        AnnotatedType<T> annotatedType = new AnnotatedTypeWrapper<T>(Extension.class.cast(extension), inAnnotatedType);
+        AnnotatedType<T> annotatedType = new AnnotatedTypeWrapper<>(Extension.class.cast(extension), inAnnotatedType);
         if (annotatedType.getAnnotation(Vetoed.class) != null)
         {
             // we could check package here too but would be a lost of time 99.99% of the time
@@ -1340,7 +1340,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         ConcurrentMap<String, AnnotatedType<?>> annotatedTypes = additionalAnnotatedTypes.get(annotatedType.getJavaClass());
         if (annotatedTypes == null)
         {
-            annotatedTypes = new ConcurrentHashMap<String, AnnotatedType<?>>();
+            annotatedTypes = new ConcurrentHashMap<>();
             ConcurrentMap<String, AnnotatedType<?>> oldAnnotatedTypes = additionalAnnotatedTypes.putIfAbsent(annotatedType.getJavaClass(), annotatedTypes);
             if (oldAnnotatedTypes != null)
             {
@@ -1394,7 +1394,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public Collection<AnnotatedType<?>> getAdditionalAnnotatedTypes()
     {
-        Collection<AnnotatedType<?>> annotatedTypes = new ArrayList<AnnotatedType<?>>();
+        Collection<AnnotatedType<?>> annotatedTypes = new ArrayList<>();
         for (ConcurrentMap<String,AnnotatedType<?>> types: additionalAnnotatedTypes.values())
         {
             annotatedTypes.addAll(types.values());
@@ -1435,7 +1435,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public <T> Iterable<AnnotatedType<T>> getAnnotatedTypes(Class<T> type)
     {
-        Collection<AnnotatedType<T>> types = new ArrayList<AnnotatedType<T>>(2);
+        Collection<AnnotatedType<T>> types = new ArrayList<>(2);
         types.add(annotatedElementFactory.getAnnotatedType(type));
         ConcurrentMap<String, AnnotatedType<?>> aTypes = additionalAnnotatedTypes.get(type);
         if (aTypes != null)

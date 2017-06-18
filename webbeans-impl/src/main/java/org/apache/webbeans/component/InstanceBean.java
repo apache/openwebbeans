@@ -37,15 +37,21 @@ public class InstanceBean<T> extends BuiltInOwbBean<Instance<T>>
     public InstanceBean(WebBeansContext webBeansContext)
     {
         super(webBeansContext,
-              WebBeansType.INSTANCE,
-              new BeanAttributesImpl<Instance<T>>(CollectionUtil.<Type>unmodifiableSet(
-                      new TypeLiteral<Instance<T>>(){}.getRawType(), 
-                      new TypeLiteral<Provider<T>>() {}.getRawType(), 
-                      Object.class)),
-              new TypeLiteral<Instance<T>>(){}.getRawType(),
-              false,
-              new SimpleProducerFactory<Instance<T>>(
-                      new InstanceProducer<T>(new TypeLiteral<Instance<T>>(){}.getRawType(), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION, webBeansContext)));
+            WebBeansType.INSTANCE,
+            new BeanAttributesImpl<>(CollectionUtil.<Type>unmodifiableSet(
+                new TypeLiteral<Instance<T>>()
+                {
+                }.getRawType(),
+                new TypeLiteral<Provider<T>>()
+                {
+                }.getRawType(),
+                Object.class)),
+            new TypeLiteral<Instance<T>>(){}.getRawType(),
+            false,
+            new SimpleProducerFactory<>(
+                new InstanceProducer<>(new TypeLiteral<Instance<T>>()
+                {
+                }.getRawType(), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION, webBeansContext)));
     }
 
     /* (non-Javadoc)

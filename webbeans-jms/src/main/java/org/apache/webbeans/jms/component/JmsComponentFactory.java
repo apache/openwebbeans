@@ -58,8 +58,8 @@ public final class JmsComponentFactory
     {
         Asserts.assertNotNull(model,"model parameter");
         
-        Set<Type> apiTypes = new HashSet<Type>();
-        Set<Annotation> qualifiers = new HashSet<Annotation>();
+        Set<Type> apiTypes = new HashSet<>();
+        Set<Annotation> qualifiers = new HashSet<>();
         
         if(model.getJmsType() == JMSType.QUEUE)
         {
@@ -85,6 +85,6 @@ public final class JmsComponentFactory
             qualifiers.add(a);
         }
         
-        return new JmsBean<T>(webBeansContext, model, new BeanAttributesImpl<T>(apiTypes, qualifiers));
+        return new JmsBean<>(webBeansContext, model, new BeanAttributesImpl<>(apiTypes, qualifiers));
     }
 }

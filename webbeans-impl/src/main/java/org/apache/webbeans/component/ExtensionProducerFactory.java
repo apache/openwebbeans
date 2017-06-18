@@ -46,6 +46,6 @@ public class ExtensionProducerFactory<T> implements ProducerFactory<T>
     @Override
     public <P> Producer<P> createProducer(Bean<P> bean)
     {
-        return new ExtensionProducer<P>((AnnotatedType<P>)annotatedType, bean, webBeansContext);
+        return new ExtensionProducer<>((AnnotatedType<P>) annotatedType, bean, webBeansContext);
     }
 }

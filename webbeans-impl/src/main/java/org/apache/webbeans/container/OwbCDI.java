@@ -43,7 +43,7 @@ public class OwbCDI extends CDI<Object>
         WebBeansContext webBeansContext = getWebBeansContext();
         BeanManagerImpl bm = webBeansContext.getBeanManagerImpl();
         CreationalContextImpl<Instance<Object>> creationalContext = bm.createCreationalContext(null);
-        return new InstanceBean<Object>(webBeansContext).create(creationalContext).select(DefaultLiteral.INSTANCE);
+        return new InstanceBean<>(webBeansContext).create(creationalContext).select(DefaultLiteral.INSTANCE);
     }
 
     @Override

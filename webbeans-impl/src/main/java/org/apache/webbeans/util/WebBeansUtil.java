@@ -146,7 +146,6 @@ import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -165,9 +164,9 @@ public final class WebBeansUtil
     private final WebBeansContext webBeansContext;
 
     // cache to skip some validations
-    private final ConcurrentMap<Type, Boolean> noTypeVariables = new ConcurrentHashMap<Type, Boolean>();
-    private final ConcurrentMap<EventCacheKey, Boolean> validEventType = new ConcurrentHashMap<EventCacheKey, Boolean>();
-    private final ConcurrentMap<Type, Boolean> notContainerEvents = new ConcurrentHashMap<Type, Boolean>();
+    private final ConcurrentMap<Type, Boolean> noTypeVariables = new ConcurrentHashMap<>();
+    private final ConcurrentMap<EventCacheKey, Boolean> validEventType = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Type, Boolean> notContainerEvents = new ConcurrentHashMap<>();
 
     public WebBeansUtil(WebBeansContext webBeansContext)
     {
@@ -428,11 +427,11 @@ public final class WebBeansUtil
 
         AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
         BeanAttributesImpl<T> defaultBeanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
-        BeanAttributesImpl<T> newBeanAttributes = new BeanAttributesImpl<T>(defaultBeanAttributes.getTypes(), Collections.<Annotation>singleton(new NewLiteral(type)));
+        BeanAttributesImpl<T> newBeanAttributes = new BeanAttributesImpl<>(defaultBeanAttributes.getTypes(), Collections.<Annotation>singleton(new NewLiteral(type)));
         // TODO replace this by InjectionPointBuilder
-        ManagedBeanBuilder<T, ManagedBean<T>> beanBuilder = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, annotatedType, newBeanAttributes, false);
+        ManagedBeanBuilder<T, ManagedBean<T>> beanBuilder = new ManagedBeanBuilder<>(webBeansContext, annotatedType, newBeanAttributes, false);
         NewManagedBean<T> newBean
-            = new NewManagedBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, newBeanAttributes, type, beanBuilder.getBean().getInjectionPoints());
+            = new NewManagedBean<>(webBeansContext, WebBeansType.MANAGED, annotatedType, newBeanAttributes, type, beanBuilder.getBean().getInjectionPoints());
         return newBean;
     }
     
@@ -451,8 +450,8 @@ public final class WebBeansUtil
         }
 
         AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
-        BeanAttributesImpl<T> newBeanAttributes = new BeanAttributesImpl<T>(bean.getTypes(), Collections.<Annotation>singleton(new NewLiteral(type)));
-        NewManagedBean<T> newBean = new NewManagedBean<T>(bean.getWebBeansContext(), bean.getWebBeansType(), annotatedType, newBeanAttributes, type, bean.getInjectionPoints());
+        BeanAttributesImpl<T> newBeanAttributes = new BeanAttributesImpl<>(bean.getTypes(), Collections.<Annotation>singleton(new NewLiteral(type)));
+        NewManagedBean<T> newBean = new NewManagedBean<>(bean.getWebBeansContext(), bean.getWebBeansType(), annotatedType, newBeanAttributes, type, bean.getInjectionPoints());
         //TODO XXX set producer
         return newBean;
     }
@@ -467,9 +466,9 @@ public final class WebBeansUtil
     public <T> ExtensionBean<T> createExtensionComponent(Class<T> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        ExtensionBeanBuilder<T> extensionBeanBuilder = new ExtensionBeanBuilder<T>(webBeansContext, clazz);
+        ExtensionBeanBuilder<T> extensionBeanBuilder = new ExtensionBeanBuilder<>(webBeansContext, clazz);
         ExtensionBean<T> bean = extensionBeanBuilder.getBean();
-        new ObserverMethodsBuilder<T>(webBeansContext, extensionBeanBuilder.getAnnotatedType()).defineObserverMethods(bean);
+        new ObserverMethodsBuilder<>(webBeansContext, extensionBeanBuilder.getAnnotatedType()).defineObserverMethods(bean);
         return bean;
     }
 
@@ -489,7 +488,7 @@ public final class WebBeansUtil
      */
     public <T> InstanceBean<T> getInstanceBean()
     {
-        return new InstanceBean<T>(webBeansContext);
+        return new InstanceBean<>(webBeansContext);
     }
 
     /**
@@ -498,7 +497,7 @@ public final class WebBeansUtil
      */
     public <T> EventBean<T> getEventBean()
     {
-        return new EventBean<T>(webBeansContext);
+        return new EventBean<>(webBeansContext);
     }
 
     /**
@@ -516,7 +515,7 @@ public final class WebBeansUtil
      */
     public <T> BeanMetadataBean<T> getBeanMetadataBean()
     {
-        return new BeanMetadataBean<T>(webBeansContext);
+        return new BeanMetadataBean<>(webBeansContext);
     }
 
     /**
@@ -534,7 +533,7 @@ public final class WebBeansUtil
      */
     public <T> InterceptorMetadataBean<T> getInterceptorMetadataBean()
     {
-        return new InterceptorMetadataBean<T>(webBeansContext);
+        return new InterceptorMetadataBean<>(webBeansContext);
     }
 
     /**
@@ -543,7 +542,7 @@ public final class WebBeansUtil
      */
     public <T> DecoratorMetadataBean<T> getDecoratorMetadataBean()
     {
-        return new DecoratorMetadataBean<T>(webBeansContext);
+        return new DecoratorMetadataBean<>(webBeansContext);
     }
 
     /**
@@ -552,7 +551,7 @@ public final class WebBeansUtil
      */
     public <T> InterceptedOrDecoratedBeanMetadataBean<T> getInterceptedOrDecoratedBeanMetadataBean()
     {
-        return new InterceptedOrDecoratedBeanMetadataBean<T>(webBeansContext);
+        return new InterceptedOrDecoratedBeanMetadataBean<>(webBeansContext);
     }
 
     /**
@@ -680,8 +679,8 @@ public final class WebBeansUtil
 
         // collect all producer method beans
         Set<Bean<?>> beans = webBeansContext.getBeanManagerImpl().getBeans();
-        List<ProducerMethodBean> producerBeans = new ArrayList<ProducerMethodBean>();
-        Set<Class> classesDisabledDueToSpecialization = new HashSet<Class>();
+        List<ProducerMethodBean> producerBeans = new ArrayList<>();
+        Set<Class> classesDisabledDueToSpecialization = new HashSet<>();
 
         for(Bean b : beans)
         {
@@ -705,25 +704,21 @@ public final class WebBeansUtil
 
         // create sorted bean helper.
         SortedListHelper<ProducerMethodBean> producerBeanListHelper = new
-                SortedListHelper<ProducerMethodBean>(new ArrayList<ProducerMethodBean>(),
-                new Comparator<ProducerMethodBean>()
+            SortedListHelper<>(new ArrayList<>(),
+            (e1, e2) ->
+            {
+                if (e1.getBeanClass().isAssignableFrom(e2.getBeanClass()))
                 {
-                    @Override
-                    public int compare(ProducerMethodBean e1, ProducerMethodBean e2)
-                    {
-                        if (e1.getBeanClass().isAssignableFrom(e2.getBeanClass()))
-                        {
-                            return -1;
-                        }
-                        else if (e1.equals(e2))
-                        {
-                            return 0;
-                        }
-                        return 1;
-                    }
-                });
+                    return -1;
+                }
+                else if (e1.equals(e2))
+                {
+                    return 0;
+                }
+                return 1;
+            });
 
-        Set<Method> disabledProducerMethods = new HashSet<Method>();
+        Set<Method> disabledProducerMethods = new HashSet<>();
 
         while(true)
         {
@@ -928,7 +923,7 @@ public final class WebBeansUtil
 
          if (component instanceof EnterpriseBeanMarker)
          {
-             beans = new HashSet<Bean<?>>();
+             beans = new HashSet<>();
              Set<Bean<?>> allBeans = manager.getBeans(Object.class, AnnotationUtil.asArray(component.getQualifiers()));
 
              for(Bean<?> candidateBean : allBeans)
@@ -1251,7 +1246,7 @@ public final class WebBeansUtil
         }
     }
 
-    private final static Set<Type> EXTENSION_BEAN_EVENT_TYPES = new HashSet<Type>(
+    private final static Set<Type> EXTENSION_BEAN_EVENT_TYPES = new HashSet<>(
         Arrays.asList(new Class[]{
             GProcessAnnotatedType.class,
             GProcessSyntheticAnnotatedType.class,
@@ -1266,7 +1261,7 @@ public final class WebBeansUtil
         return EXTENSION_BEAN_EVENT_TYPES.contains(type);
     }
 
-    private final static Set<Type> DEFAULT_EXTENSION_BEAN_EVENT_TYPE = new HashSet<Type>(
+    private final static Set<Type> DEFAULT_EXTENSION_BEAN_EVENT_TYPE = new HashSet<>(
         Arrays.asList(new Class[]{
             ProcessAnnotatedType.class,
             ProcessSyntheticAnnotatedType.class,
@@ -1281,7 +1276,7 @@ public final class WebBeansUtil
         return DEFAULT_EXTENSION_BEAN_EVENT_TYPE.contains(clazz);
     }
 
-    private final static Set<Type> EXTENSION_PRODUCER_OR_OBSERVER_EVENT_TYPE = new HashSet<Type>(
+    private final static Set<Type> EXTENSION_PRODUCER_OR_OBSERVER_EVENT_TYPE = new HashSet<>(
         Arrays.asList(new Class[]{
             GProcessProducer.class,
             GProcessProducerField.class,
@@ -1293,7 +1288,7 @@ public final class WebBeansUtil
         return EXTENSION_PRODUCER_OR_OBSERVER_EVENT_TYPE.contains(type);
     }
 
-    private final static Set<Type> DEFAULT_EXTENSION_PRODUCER_OR_OBSERVER_EVENT_TYPE = new HashSet<Type>(
+    private final static Set<Type> DEFAULT_EXTENSION_PRODUCER_OR_OBSERVER_EVENT_TYPE = new HashSet<>(
         Arrays.asList(new Class[]{
             ProcessProducer.class,
             ProcessProducerField.class,
@@ -1402,14 +1397,14 @@ public final class WebBeansUtil
     public <T> ManagedBean<T> defineManagedBeanWithoutFireEvents(AnnotatedType<T> type)
     {
         BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(type).build();
-        ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<T, ManagedBean<T>>(webBeansContext, type, beanAttributes, false);
+        ManagedBeanBuilder<T, ManagedBean<T>> managedBeanCreator = new ManagedBeanBuilder<>(webBeansContext, type, beanAttributes, false);
 
         //Check for Enabled via Alternative
         setInjectionTargetBeanEnableFlag(managedBeanCreator.getBean());
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
         new ProducerMethodBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerMethods(
                 managedBean, new ProducerFieldBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerFields(managedBean));
-        new ObserverMethodsBuilder<T>(webBeansContext, managedBean.getAnnotatedType()).defineObserverMethods(managedBean);
+        new ObserverMethodsBuilder<>(webBeansContext, managedBean.getAnnotatedType()).defineObserverMethods(managedBean);
 
         if (managedBean.getProducer() instanceof AbstractProducer)
         {

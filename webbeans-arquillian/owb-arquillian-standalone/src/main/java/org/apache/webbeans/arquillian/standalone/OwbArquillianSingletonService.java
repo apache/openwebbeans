@@ -53,7 +53,7 @@ public class OwbArquillianSingletonService implements SingletonService<WebBeansC
     {
         ScannerService dummyScannerService = new OwbArquillianScannerService();
 
-        Map<Class<?>, Object> initialServices = new HashMap<Class<?>, Object>();
+        Map<Class<?>, Object> initialServices = new HashMap<>();
         initialServices.put(ScannerService.class,  dummyScannerService);
 
         // this is needed because of a dirty hack in the OpenWebBeansConfiguration

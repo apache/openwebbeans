@@ -74,9 +74,9 @@ public class WebBeansContext
 {
     private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansContext.class);
 
-    private final Map<Class<?>, Object> managerMap = new HashMap<Class<?>, Object>();
+    private final Map<Class<?>, Object> managerMap = new HashMap<>();
 
-    private final Map<Class<?>, Object> serviceMap = new HashMap<Class<?>, Object>();
+    private final Map<Class<?>, Object> serviceMap = new HashMap<>();
 
     private final WebBeansUtil webBeansUtil = new WebBeansUtil(this);
     private final AlternativesManager alternativesManager = new AlternativesManager(this);

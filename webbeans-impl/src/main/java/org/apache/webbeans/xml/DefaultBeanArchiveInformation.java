@@ -29,17 +29,17 @@ public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArc
     private final String bdaUrl;
     private String version;
     private BeanDiscoveryMode beanDiscoveryMode;
-    private List<String> interceptors = new ArrayList<String>();
-    private List<String> decorators = new ArrayList<String>();
-    private List<String> alternativeClasses = new ArrayList<String>();
-    private List<String> alternativeStereotypes = new ArrayList<String>();
+    private List<String> interceptors = new ArrayList<>();
+    private List<String> decorators = new ArrayList<>();
+    private List<String> alternativeClasses = new ArrayList<>();
+    private List<String> alternativeStereotypes = new ArrayList<>();
 
     /** Either an excluded class or an excluded .* path */
     private List<String> excludedClasses;
 
     /** Exclude all subpackages (exclude= .**) */
     private List<String> excludedPackages;
-    private List<String> allowProxyingClasses = new ArrayList<String>();
+    private List<String> allowProxyingClasses = new ArrayList<>();
 
     public DefaultBeanArchiveInformation(String bdaUrl)
     {
@@ -164,7 +164,7 @@ public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArc
     {
         if (excludedClasses == null)
         {
-            excludedClasses = new ArrayList<String>();
+            excludedClasses = new ArrayList<>();
         }
 
         excludedClasses.add(classOrPath);
@@ -174,7 +174,7 @@ public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArc
     {
         if (excludedPackages == null)
         {
-            excludedPackages = new ArrayList<String>();
+            excludedPackages = new ArrayList<>();
         }
 
         excludedPackages.add(packageName);

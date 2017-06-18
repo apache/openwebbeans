@@ -61,7 +61,7 @@ public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDi
     @Override
     public Set<Class<?>> getBeanClasses()
     {
-        return new HashSet<Class<?>>(classes);
+        return new HashSet<>(classes);
     }
 
     /**

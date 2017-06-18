@@ -34,7 +34,7 @@ public class ErrorStack
 {
     private static final Logger logger = WebBeansLoggerFacade.getLogger(ErrorStack.class);
     
-    private Stack<Throwable> errorStack = new Stack<Throwable>();
+    private Stack<Throwable> errorStack = new Stack<>();
     
     public ErrorStack()
     {

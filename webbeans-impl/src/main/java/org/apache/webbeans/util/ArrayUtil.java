@@ -94,7 +94,7 @@ public final class ArrayUtil
 
     public static <T> Set<T> asSet(T... items)
     {
-        Set<T> set = new HashSet<T>(items.length);
+        Set<T> set = new HashSet<>(items.length);
         Collections.addAll(set, items);
 
         return set;

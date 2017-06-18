@@ -65,7 +65,7 @@ public abstract class BaseProducerFactory<P> implements ProducerFactory<P>
         Set<InjectionPoint> disposalIPs = null;
         if (disposalMethod != null)
         {
-            disposalIPs = new HashSet<InjectionPoint>(webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, disposalMethod));
+            disposalIPs = new HashSet<>(webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, disposalMethod));
         }
         return disposalIPs;
     }
@@ -78,7 +78,7 @@ public abstract class BaseProducerFactory<P> implements ProducerFactory<P>
         {
             producerQualifiers = Collections.emptySet();
         }
-        Set<Annotation> producerQualifiersWithoutNamed = new HashSet<Annotation>();
+        Set<Annotation> producerQualifiersWithoutNamed = new HashSet<>();
         for (Annotation qualifier: producerQualifiers)
         {
             if (!qualifier.annotationType().equals(Named.class))

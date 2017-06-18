@@ -111,9 +111,9 @@ public class WebContextsService extends AbstractContextsService
         applicationContext = new ApplicationContext();
         applicationContext.setActive(true);
 
-        requestContexts = new ThreadLocal<ServletRequestContext>();
-        sessionContexts = new ThreadLocal<SessionContext>();
-        conversationContexts = new ThreadLocal<ConversationContext>();
+        requestContexts = new ThreadLocal<>();
+        sessionContexts = new ThreadLocal<>();
+        conversationContexts = new ThreadLocal<>();
 
         //Dependent context is always active
         dependentContext = new DependentContext();

@@ -31,7 +31,7 @@ public class ConversationModel implements Serializable
 {
     private static final long serialVersionUID = -5042442586067259214L;
 
-    private List<String> list = new ArrayList<String>();
+    private List<String> list = new ArrayList<>();
     
     public void addNewBook(String name)
     {

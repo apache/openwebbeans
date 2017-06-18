@@ -83,8 +83,8 @@ public class AbstractDecoratorInjectionTarget<T> extends InjectionTargetImpl<T>
     @Override
     protected T newInstance(CreationalContextImpl<T> creationalContext)
     {
-        return new AbstractDecoratorInjectableConstructor<T>(
-                getConstructor().parentConstructor, getConstructor().getJavaMember(), this, creationalContext).doInjection();
+        return new AbstractDecoratorInjectableConstructor<>(
+            getConstructor().parentConstructor, getConstructor().getJavaMember(), this, creationalContext).doInjection();
     }
 
     public static class SubClassAnnotatedConstructorImpl<T> extends AnnotatedConstructorImpl<T>
@@ -116,7 +116,7 @@ public class AbstractDecoratorInjectionTarget<T> extends InjectionTargetImpl<T>
         @Override
         protected List<InjectionPoint> getInjectionPoints(Member member)
         {
-            List<InjectionPoint> injectionPoints = new ArrayList<InjectionPoint>();
+            List<InjectionPoint> injectionPoints = new ArrayList<>();
             for (InjectionPoint injectionPoint : owner.getInjectionPoints())
             {
                 if (injectionPoint.getMember().equals(parent)) // we don't compare to the runtime subclass constructor

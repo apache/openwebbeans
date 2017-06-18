@@ -47,7 +47,7 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
     public void configureProducerSpecialization(ProducerMethodBean<T> bean, AnnotatedMethod<T> annotatedMethod)
     {
         List<AnnotatedParameter<T>> annotatedParameters = annotatedMethod.getParameters();
-        List<Class<?>> parameters = new ArrayList<Class<?>>();
+        List<Class<?>> parameters = new ArrayList<>();
         for(AnnotatedParameter<T> annotatedParam : annotatedParameters)
         {
             parameters.add(ClassUtil.getClass(annotatedParam.getBaseType()));
@@ -78,7 +78,7 @@ public class ProducerMethodBeanBuilder<T> extends AbstractProducerBeanBuilder<T,
     {
         AnnotatedMethod<P> annotatedMethod = (AnnotatedMethod<P>) annotatedMember;
         ProducerMethodBean<T> producerMethodBean
-            = new ProducerMethodBean<T>(parent, beanAttributes, beanClass, new MethodProducerFactory<P>(annotatedMethod, parent, parent.getWebBeansContext()));
+            = new ProducerMethodBean<>(parent, beanAttributes, beanClass, new MethodProducerFactory<>(annotatedMethod, parent, parent.getWebBeansContext()));
         return producerMethodBean;
     }
     

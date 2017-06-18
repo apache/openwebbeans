@@ -26,7 +26,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.Contextual;
 
 import org.apache.webbeans.component.BuiltInOwbBean;
-import org.apache.webbeans.context.creational.BeanInstanceBag;
 
 /**
  * Application context implementation.
@@ -50,7 +49,7 @@ public class ApplicationContext extends AbstractContext
     @Override
     public void setComponentInstanceMap()
     {
-        componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
+        componentInstanceMap = new ConcurrentHashMap<>();
     }
 
 
@@ -61,7 +60,7 @@ public class ApplicationContext extends AbstractContext
     @Override
     public void destroy()
     {
-        Set<Contextual<?>> keySet = new HashSet<Contextual<?>>(componentInstanceMap.keySet());
+        Set<Contextual<?>> keySet = new HashSet<>(componentInstanceMap.keySet());
         for (Contextual<?> contextual: keySet)
         {
             if (contextual instanceof BuiltInOwbBean)

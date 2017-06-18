@@ -36,7 +36,7 @@ import org.apache.webbeans.spi.JNDIService;
 public class DefaultJndiService implements JNDIService
 {
 
-    private HashMap<String, Object> jndiContent = new HashMap<String, Object>(); 
+    private HashMap<String, Object> jndiContent = new HashMap<>();
     
     /** 
      * {@inheritDoc}

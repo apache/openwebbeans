@@ -58,10 +58,10 @@ public class StereoTypeModel implements IStereoTypeModel
     private Annotation defaultScopeType;
 
     /** Interceptor Bindings */
-    private Set<Annotation> interceptorBindingTypes = new HashSet<Annotation>();
+    private Set<Annotation> interceptorBindingTypes = new HashSet<>();
 
     /** Inherit StereoType annotations */
-    private Set<Annotation> inherits = new HashSet<Annotation>();
+    private Set<Annotation> inherits = new HashSet<>();
     
     private static final Logger logger = WebBeansLoggerFacade.getLogger(StereoTypeModel.class);
 

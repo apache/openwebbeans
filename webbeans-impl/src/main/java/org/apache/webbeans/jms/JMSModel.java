@@ -34,7 +34,7 @@ public class JMSModel
     private String jndiName;    
     private final String mappedName;    
     private boolean isJndiNameDefined;    
-    private final Set<Annotation> bindings = new HashSet<Annotation>();
+    private final Set<Annotation> bindings = new HashSet<>();
     
     
     public JMSModel(JMSType jmsType, String jndiName, String mappedName)

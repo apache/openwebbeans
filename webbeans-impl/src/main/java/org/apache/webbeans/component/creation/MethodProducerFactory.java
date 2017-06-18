@@ -57,12 +57,12 @@ public class MethodProducerFactory<P> extends BaseProducerFactory<P>
     public <T> Producer<T> createProducer(Bean<T> bean)
     {
         Set<InjectionPoint> disposalIPs = getInjectionPoints(bean);
-        Producer<T> producer = new ProducerMethodProducer<T, P>(parent, producerMethod, disposalMethod, createInjectionPoints(bean), disposalIPs, webBeansContext);
+        Producer<T> producer = new ProducerMethodProducer<>(parent, producerMethod, disposalMethod, createInjectionPoints(bean), disposalIPs, webBeansContext);
         return webBeansContext.getWebBeansUtil().fireProcessProducerEvent(producer, producerMethod);
     }
 
     protected Set<InjectionPoint> createInjectionPoints(Bean<?> bean)
     {
-        return new HashSet<InjectionPoint>(webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, producerMethod));
+        return new HashSet<>(webBeansContext.getInjectionPointFactory().buildInjectionPoints(bean, producerMethod));
     }
 }

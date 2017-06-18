@@ -156,7 +156,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             try
             {
                 Constructor<T> cons = getConstructor().getJavaMember();
-                InjectableConstructor<T> injectableConstructor = new InjectableConstructor<T>(cons, this, creationalContext);
+                InjectableConstructor<T> injectableConstructor = new InjectableConstructor<>(cons, this, creationalContext);
                 ConstructorInstanceProvider provider = new ConstructorInstanceProvider();
                 ConstructorInterceptorInvocationContext<T> invocationContext = new ConstructorInterceptorInvocationContext<T>(
                         provider, aroundConstructInterceptors, interceptorInstances, cons, injectableConstructor.createParameters());
@@ -194,7 +194,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     
     protected T newInstance(CreationalContextImpl<T> creationalContext)
     {
-        return new InjectableConstructor<T>(getConstructor().getJavaMember(), this, creationalContext).doInjection();
+        return new InjectableConstructor<>(getConstructor().getJavaMember(), this, creationalContext).doInjection();
     }
 
     @Override
@@ -224,7 +224,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             {
                 if (injectionPoint.getMember() instanceof Field)
                 {
-                    new InjectableField<T>((Field) injectionPoint.getMember(), instance, this, context).doInjection();
+                    new InjectableField<>((Field) injectionPoint.getMember(), instance, this, context).doInjection();
                 }
             }
         }
@@ -232,7 +232,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
 
     private void injectMethods(Class<?> type, T instance, CreationalContextImpl<T> context)
     {
-        Set<Member> injectedMethods = new HashSet<Member>();
+        Set<Member> injectedMethods = new HashSet<>();
         for (InjectionPoint injectionPoint : getInjectionPoints())
         {
             if (injectionPoint.getMember().getDeclaringClass().equals(type))
@@ -243,7 +243,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                         && !isDisposalMethod(injectionPoint)
                         && !isObserverMethod(injectionPoint))
                 {
-                    new InjectableMethod<T>((Method) injectionPoint.getMember(), instance, this, context).doInjection();
+                    new InjectableMethod<>((Method) injectionPoint.getMember(), instance, this, context).doInjection();
                     injectedMethods.add(injectionPoint.getMember());
                 }
             }
@@ -260,7 +260,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         {
             if (method.getDeclaringType().getJavaClass().equals(declaringType) && method.isAnnotationPresent(Inject.class) && method.getParameters().isEmpty())
             {
-                new InjectableMethod<T>(method.getJavaMember(), instance, this, context).doInjection();
+                new InjectableMethod<>(method.getJavaMember(), instance, this, context).doInjection();
             }
         }
     }
@@ -313,8 +313,8 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             return;
         }
 
-        InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(internalInstance, InterceptionType.POST_CONSTRUCT, postConstructInterceptors,
-                                                                            interceptorInstances, postConstructMethods);
+        InvocationContext ic = new LifecycleInterceptorInvocationContext<>(internalInstance, InterceptionType.POST_CONSTRUCT, postConstructInterceptors,
+            interceptorInstances, postConstructMethods);
         try
         {
             ic.proceed();
@@ -352,8 +352,8 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             return;
         }
 
-        InvocationContext ic = new LifecycleInterceptorInvocationContext<T>(internalInstance, InterceptionType.PRE_DESTROY, preDestroyInterceptors,
-                                                                            interceptorInstances, preDestroyMethods);
+        InvocationContext ic = new LifecycleInterceptorInvocationContext<>(internalInstance, InterceptionType.PRE_DESTROY, preDestroyInterceptors,
+            interceptorInstances, preDestroyMethods);
         try
         {
             ic.proceed();
@@ -393,7 +393,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         {
             throw new WebBeansCreationException("No default constructor for " + annotatedType.getJavaClass().getName());
         }
-        return new AnnotatedConstructorImpl<T>(webBeansContext, defaultConstructor, annotatedType);
+        return new AnnotatedConstructorImpl<>(webBeansContext, defaultConstructor, annotatedType);
     }
 
     private Constructor<T> getDefaultConstructor()
@@ -448,7 +448,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
 
     private List<Interceptor<?>> getLifecycleInterceptors(Collection<Interceptor<?>> ejbInterceptors, List<Interceptor<?>> cdiInterceptors, InterceptionType interceptionType)
     {
-        List<Interceptor<?>> lifecycleInterceptors = new ArrayList<Interceptor<?>>();
+        List<Interceptor<?>> lifecycleInterceptors = new ArrayList<>();
 
         for (Interceptor<?> ejbInterceptor : ejbInterceptors)
         {

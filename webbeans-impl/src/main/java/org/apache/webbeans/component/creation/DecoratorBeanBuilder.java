@@ -89,7 +89,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
         this.webBeansContext = webBeansContext;
         this.annotatedType = annotatedType;
         this.beanAttributes = beanAttributes;
-        decoratedTypes = new HashSet<Type>(beanAttributes.getTypes());
+        decoratedTypes = new HashSet<>(beanAttributes.getTypes());
         ignoredDecoratorInterfaces = getIgnoredDecoratorInterfaces();
     }
 
@@ -264,7 +264,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
 
     public DecoratorBean<T> getBean()
     {
-        DecoratorBean<T> decorator = new DecoratorBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, annotatedType.getJavaClass());
+        DecoratorBean<T> decorator = new DecoratorBean<>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, annotatedType.getJavaClass());
         decorator.setEnabled(webBeansContext.getDecoratorsManager().isDecoratorEnabled(annotatedType.getJavaClass()));
 
         // we can only do this after the bean injection points got scanned
@@ -276,7 +276,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
 
     protected List<AnnotatedMethod<?>> getPostConstructMethods()
     {
-        List<AnnotatedMethod<?>> postConstructMethods = new ArrayList<AnnotatedMethod<?>>();
+        List<AnnotatedMethod<?>> postConstructMethods = new ArrayList<>();
         collectPostConstructMethods(annotatedType.getJavaClass(), postConstructMethods);
         return postConstructMethods;
     }
@@ -301,7 +301,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
 
     protected List<AnnotatedMethod<?>> getPreDestroyMethods()
     {
-        List<AnnotatedMethod<?>> preDestroyMethods = new ArrayList<AnnotatedMethod<?>>();
+        List<AnnotatedMethod<?>> preDestroyMethods = new ArrayList<>();
         collectPreDestroyMethods(annotatedType.getJavaClass(), preDestroyMethods);
         return preDestroyMethods;
     }

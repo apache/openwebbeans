@@ -63,7 +63,7 @@ public class OwbSWClassLoader extends URLClassLoader
         }
     };
 
-    private final List<InputStream> openedStreams = new ArrayList<InputStream>();
+    private final List<InputStream> openedStreams = new ArrayList<>();
     private final String prefix;
     private final boolean useOnlyArchiveResources;
     private final Archive<?> archive;
@@ -118,7 +118,7 @@ public class OwbSWClassLoader extends URLClassLoader
             Enumeration<URL> urls = findResources(name);
             if (useOnlyArchiveResourcesExcludes.contains(name))
             {
-                Collection<URL> returnValue = new ArrayList<URL>(Collections.list(urls));
+                Collection<URL> returnValue = new ArrayList<>(Collections.list(urls));
                 returnValue.addAll(Collections.list(super.getResources(name)));
                 return Collections.enumeration(returnValue);
             }

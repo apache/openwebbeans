@@ -49,6 +49,6 @@ public class ProviderBasedProducerFactory<P> implements ProducerFactory<P>
     @Override
     public <T> Producer<T> createProducer(Bean<T> bean)
     {
-        return new ProviderBasedProducer<T>(webBeansContext, (Class<T>)providerType, (Provider<T>)provider, proxy);
+        return new ProviderBasedProducer<>(webBeansContext, (Class<T>) providerType, (Provider<T>) provider, proxy);
     }
 }

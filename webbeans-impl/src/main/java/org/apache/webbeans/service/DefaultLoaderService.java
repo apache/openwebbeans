@@ -50,7 +50,7 @@ public class DefaultLoaderService implements LoaderService
     {
         if(JAVA_6_AVAILABLE)
         {
-            List<T> result = new ArrayList<T>();
+            List<T> result = new ArrayList<>();
             try
             {
                 ServiceLoader<T> services;
@@ -72,7 +72,7 @@ public class DefaultLoaderService implements LoaderService
             return result;
         }
 
-        return new ManualImplementationLoaderService<T>(serviceType, classLoader).loadServiceImplementations();
+        return new ManualImplementationLoaderService<>(serviceType, classLoader).loadServiceImplementations();
     }
 
     private static boolean isJava6()

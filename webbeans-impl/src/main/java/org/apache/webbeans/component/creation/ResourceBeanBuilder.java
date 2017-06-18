@@ -48,7 +48,7 @@ public class ResourceBeanBuilder<T, R extends Annotation> extends ProducerFieldB
                 new ResourceProducerFactory(
                         !Dependent.class.equals(beanAttributes.getScope()),
                         owner,
-                        new ResourceProvider<T>(resourceRef, owner.getWebBeansContext()), beanClass, owner.getWebBeansContext(),
+                    new ResourceProvider<>(resourceRef, owner.getWebBeansContext()), beanClass, owner.getWebBeansContext(),
                         annotatedMember,
                         resourceRef));
     }

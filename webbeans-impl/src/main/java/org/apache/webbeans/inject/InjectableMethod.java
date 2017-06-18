@@ -56,13 +56,13 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
     /**Used in dispose method, represents produces method parameter instance*/
     private Object producerMethodInstance;
     
-    private Map<Bean<?>, Object> dependentParameters = new HashMap<Bean<?>, Object>();
+    private Map<Bean<?>, Object> dependentParameters = new HashMap<>();
 
     private Set<InjectionPoint> injectionPoints;
 
     public InjectableMethod(Method m, Object instance, Producer<T> owner, CreationalContextImpl<T> creationalContext)
     {
-        this(m, instance, owner, creationalContext, new HashSet<InjectionPoint>(createInjectionPoints(owner, m)));
+        this(m, instance, owner, creationalContext, new HashSet<>(createInjectionPoints(owner, m)));
     }
 
     /**
@@ -91,7 +91,7 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
             owner = NormalScopeProxyFactory.unwrapInstance(owner);
         }
 
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
                 
         
         for(int i=0;i<injectionPoints.size();i++)

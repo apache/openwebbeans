@@ -38,7 +38,7 @@ class ManualImplementationLoaderService<T>
     private static final String SERVICE_CONFIG = "META-INF/services/";
     private static final String FILE_ENCODING = "UTF-8";
 
-    protected List<Class<?>> foundServiceClasses = new ArrayList<Class<?>>();
+    protected List<Class<?>> foundServiceClasses = new ArrayList<>();
     private Class<T> serviceType;
     private ClassLoader currentClassLoader;
 
@@ -57,7 +57,7 @@ class ManualImplementationLoaderService<T>
             return Collections.emptyList();
         }
 
-        List<T> foundServices = new ArrayList<T>();
+        List<T> foundServices = new ArrayList<>();
 
         for (Class<?> serviceClass : result)
         {
@@ -79,7 +79,7 @@ class ManualImplementationLoaderService<T>
 
     private List<URL> getConfigFileList()
     {
-        List<URL> serviceFiles = new ArrayList<URL>();
+        List<URL> serviceFiles = new ArrayList<>();
 
         try
         {

@@ -118,7 +118,7 @@ public abstract class BaseProducerProducer<T, P> extends AbstractProducer<T>
                     parentInstance = (P)webBeansContext.getBeanManagerImpl().getReference(owner, owner.getBeanClass(), parentCreationalContext);
                 }
 
-                m = new InjectableMethod<T>(disposalMethod, parentInstance, this, (CreationalContextImpl<T>) parentCreationalContext, disposalIPs);
+                m = new InjectableMethod<>(disposalMethod, parentInstance, this, (CreationalContextImpl<T>) parentCreationalContext, disposalIPs);
                 m.setDisposable(true);
                 m.setProducerMethodInstance(instance);
 

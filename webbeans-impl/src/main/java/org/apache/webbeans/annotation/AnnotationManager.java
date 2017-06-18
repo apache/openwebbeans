@@ -68,9 +68,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class AnnotationManager
 {
     private Map<Class<? extends Annotation>, Boolean> checkedQualifierAnnotations =
-            new ConcurrentHashMap<Class<? extends Annotation>, Boolean>();
+        new ConcurrentHashMap<>();
     private Map<Class<? extends Annotation>, Boolean> checkedStereotypeAnnotations =
-            new ConcurrentHashMap<Class<? extends Annotation>, Boolean>();
+        new ConcurrentHashMap<>();
 
     private final BeanManagerImpl beanManagerImpl;
     private final WebBeansContext webBeansContext;
@@ -127,7 +127,7 @@ public final class AnnotationManager
     public Set<Annotation> getInterceptorAnnotations(Set<Annotation> typeAnns)
     {
         // use a map to ensure that every annotation type is present only once
-        Map<Class<? extends Annotation>, Annotation> bindings = new HashMap<Class<? extends Annotation>, Annotation>();
+        Map<Class<? extends Annotation>, Annotation> bindings = new HashMap<>();
 
         Annotation[] anns = getInterceptorBindingMetaAnnotations(typeAnns);
 
@@ -146,7 +146,7 @@ public final class AnnotationManager
 
         // check for stereotypes _explicitly_ declared on the bean class (not inherited)
         Annotation[] stereoTypes = getStereotypeMetaAnnotations(typeAnns.toArray(new Annotation[typeAnns.size()]));
-        Map<Class<? extends Annotation>, Annotation> annotationsFromSteretypes = new HashMap<Class<? extends Annotation>, Annotation>();
+        Map<Class<? extends Annotation>, Annotation> annotationsFromSteretypes = new HashMap<>();
         for (Annotation stereoType : stereoTypes)
         {
             if (hasInterceptorBindingMetaAnnotation(stereoType.annotationType().getDeclaredAnnotations()))
@@ -179,7 +179,7 @@ public final class AnnotationManager
             }
         }
 
-        return new HashSet<Annotation>(bindings.values());
+        return new HashSet<>(bindings.values());
     }
 
     /**
@@ -225,7 +225,7 @@ public final class AnnotationManager
     public Annotation[] getInterceptorBindingMetaAnnotations(Annotation[] anns)
     {
         Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
-        List<Annotation> interAnns = new ArrayList<Annotation>();
+        List<Annotation> interAnns = new ArrayList<>();
 
         for (Annotation ann : anns)
         {
@@ -291,7 +291,7 @@ public final class AnnotationManager
         Asserts.assertNotNull(annotatedMethod, "annotatedMethod");
         Asserts.nullCheckForClass(clazz);
 
-        List<Annotation> list = new ArrayList<Annotation>();
+        List<Annotation> list = new ArrayList<>();
         List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
         for(AnnotatedParameter<X> parameter : parameters)
         {
@@ -328,7 +328,7 @@ public final class AnnotationManager
         Asserts.nullCheckForClass(clazz);
 
         Annotation[][] parameterAnns = method.getParameterAnnotations();
-        List<Annotation> list = new ArrayList<Annotation>();
+        List<Annotation> list = new ArrayList<>();
         Annotation[] result;
 
         for (Annotation[] parameters : parameterAnns)
@@ -382,7 +382,7 @@ public final class AnnotationManager
             return DefaultLiteral.SET;
         }
 
-        Set<Annotation> set = new HashSet<Annotation>();
+        Set<Annotation> set = new HashSet<>();
 
         for (Annotation annot : anns)
         {
@@ -495,7 +495,7 @@ public final class AnnotationManager
      */
     public boolean isStereoTypeAnnotation(Class<? extends Annotation> clazz)
     {
-        return isStereoTypeAnnotation(clazz, new HashSet<Class<? extends Annotation>>());
+        return isStereoTypeAnnotation(clazz, new HashSet<>());
     }
     
     private boolean isStereoTypeAnnotation(Class<? extends Annotation> clazz, Set<Class<? extends Annotation>> checkedAnnotations)
@@ -570,7 +570,7 @@ public final class AnnotationManager
     public Annotation[] getStereotypeMetaAnnotations(Annotation[] anns)
     {
         Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
-        List<Annotation> interAnns = new ArrayList<Annotation>();
+        List<Annotation> interAnns = new ArrayList<>();
 
         for (Annotation ann : anns)
         {
@@ -596,7 +596,7 @@ public final class AnnotationManager
     public Set<Class<? extends Annotation>> getStereotypeMetaAnnotations(Set<Class<? extends Annotation>> stereotypes)
     {
         Asserts.assertNotNull(stereotypes, Asserts.PARAM_NAME_ANNOTATION);
-        Set<Class<? extends Annotation>> interAnns = new HashSet<Class<? extends Annotation>>();
+        Set<Class<? extends Annotation>> interAnns = new HashSet<>();
 
         for (Class<? extends Annotation> ann : stereotypes)
         {

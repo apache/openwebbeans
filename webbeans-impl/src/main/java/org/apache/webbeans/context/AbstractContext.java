@@ -65,7 +65,7 @@ public abstract class AbstractContext implements AlterableContext, Serializable
     @SuppressWarnings("unchecked")
     private <T> BeanInstanceBag<T> createContextualBag(Contextual<T> contextual, CreationalContext<T> creationalContext)
     {
-        BeanInstanceBag<T> bag = new BeanInstanceBag<T>(creationalContext);
+        BeanInstanceBag<T> bag = new BeanInstanceBag<>(creationalContext);
         
         if(componentInstanceMap instanceof ConcurrentMap)
         {
@@ -212,7 +212,7 @@ public abstract class AbstractContext implements AlterableContext, Serializable
      */
     public void destroy()
     {
-        Set<Contextual<?>> keySet = new HashSet<Contextual<?>>(componentInstanceMap.keySet());
+        Set<Contextual<?>> keySet = new HashSet<>(componentInstanceMap.keySet());
         for (Contextual<?> contextual: keySet)
         {
             destroyInstance(contextual);
@@ -281,7 +281,7 @@ public abstract class AbstractContext implements AlterableContext, Serializable
             SerializableBeanVault sbv = org.apache.webbeans.config.WebBeansContext.getInstance().getSerializableBeanVault();
 
             Map<Contextual<?>, BeanInstanceBag<?>> serializableInstanceMap =
-                    new HashMap<Contextual<?>, BeanInstanceBag<?>>();
+                new HashMap<>();
 
             for (Map.Entry<Contextual<?>, BeanInstanceBag<?>> componentInstanceMapEntry : componentInstanceMap.entrySet())
             {

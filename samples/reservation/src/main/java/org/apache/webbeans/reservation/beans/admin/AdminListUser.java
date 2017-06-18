@@ -37,13 +37,13 @@ import org.apache.webbeans.reservation.entity.User;
 @RequestScoped
 public class AdminListUser
 {
-    private List<User> users = new ArrayList<User>();
+    private List<User> users = new ArrayList<>();
     
     private @Inject @Default AdminController controller;
     
     private HtmlDataTable model;
     
-    private List<Hotel> hotels = new ArrayList<Hotel>();
+    private List<Hotel> hotels = new ArrayList<>();
     
     public AdminListUser()
     {

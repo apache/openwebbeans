@@ -62,7 +62,7 @@ public class InjectionPointFactory
 
     public <X> Set<InjectionPoint> buildInjectionPoints(Bean<X> owner, AnnotatedType<X> annotatedType)
     {
-        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
+        Set<InjectionPoint> injectionPoints = new HashSet<>();
         boolean constructorFound = false;
         for (AnnotatedConstructor<X> constructor: annotatedType.getConstructors())
         {
@@ -167,7 +167,7 @@ public class InjectionPointFactory
 
     public <X> List<InjectionPoint> buildInjectionPoints(Bean<?> owner, AnnotatedCallable<X> callable)
     {
-        List<InjectionPoint> lists = new ArrayList<InjectionPoint>();
+        List<InjectionPoint> lists = new ArrayList<>();
         buildInjectionPoints(owner, callable, lists);
         return lists;
     }

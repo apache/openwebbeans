@@ -48,21 +48,21 @@ public class CdiArchive implements Archive
      * key: URL#toExternalForm of the scanned classpath entry
      * value: small data container with URL and class names
      */
-    private final Map<String, FoundClasses> classesByUrl = new HashMap<String, FoundClasses>();
+    private final Map<String, FoundClasses> classesByUrl = new HashMap<>();
 
     private final Archive delegate;
 
     public CdiArchive(BeanArchiveService beanArchiveService, ClassLoader loader, Map<String, URL> urls,
                       Filter userFilter, Archive customArchive)
     {
-        Collection<Archive> archives = new ArrayList<Archive>();
+        Collection<Archive> archives = new ArrayList<>();
         if (customArchive != null)
         {
             archives.add(userFilter != null ? new FilteredArchive(customArchive, userFilter) : customArchive);
         }
         for (URL url : urls.values())
         {
-            List<String> urlClasses = new ArrayList<String>();
+            List<String> urlClasses = new ArrayList<>();
 
             BeanArchiveInformation beanArchiveInfo = beanArchiveService.getBeanArchiveInformation(url);
             Archive archive = new FilteredArchive(

@@ -92,12 +92,12 @@ public class InjectionResolver
      * If a bean have resolved as not existing, the entry will contain <code>null</code> as value.
      * The Long key is a hashCode, see {@link BeanCacheKey#BeanCacheKey(boolean, Type, String, Annotation...)}
      */
-    private Map<BeanCacheKey, Set<Bean<?>>> resolvedBeansByType = new ConcurrentHashMap<BeanCacheKey, Set<Bean<?>>>();
+    private Map<BeanCacheKey, Set<Bean<?>>> resolvedBeansByType = new ConcurrentHashMap<>();
 
     /**
      * This Map contains all resolved beans via it's ExpressionLanguage name.
      */
-    private Map<String, Set<Bean<?>>> resolvedBeansByName = new ConcurrentHashMap<String, Set<Bean<?>>>();
+    private Map<String, Set<Bean<?>>> resolvedBeansByName = new ConcurrentHashMap<>();
 
     private boolean startup;
     private boolean fastMatching;
@@ -363,7 +363,7 @@ public class InjectionResolver
             return resolvedComponents;
         }
 
-        resolvedComponents = new HashSet<Bean<?>>();
+        resolvedComponents = new HashSet<>();
         Set<Bean<?>> deployedComponents = webBeansContext.getBeanManagerImpl().getBeans();
 
         Iterator<Bean<?>> it = deployedComponents.iterator();
@@ -466,7 +466,7 @@ public class InjectionResolver
             return resolvedComponents;
         }
 
-        resolvedComponents = new HashSet<Bean<?>>();
+        resolvedComponents = new HashSet<>();
 
         boolean returnAll = injectionPointType.equals(Object.class) && currentQualifier;
 
@@ -551,7 +551,7 @@ public class InjectionResolver
 
     private Set<Bean<?>> findByBeanType(Set<Bean<?>> allComponents, Type injectionPointType, boolean isDelegate)
     {
-        Set<Bean<?>> resolved = new HashSet<Bean<?>>();
+        Set<Bean<?>> resolved = new HashSet<>();
         for (Bean<?> bean : allComponents)
         {
             boolean isProducer = AbstractProducerBean.class.isInstance(bean);
@@ -576,7 +576,7 @@ public class InjectionResolver
     {
         Bean<?> rawProducerBean = null;
 
-        Set<Bean<?>> resolvedComponents = new HashSet<Bean<?>>();
+        Set<Bean<?>> resolvedComponents = new HashSet<>();
         for (Bean<?> component : allComponents)
         {
             boolean isProducer = AbstractProducerBean.class.isInstance(component);
@@ -641,7 +641,7 @@ public class InjectionResolver
             {
                 if (alternativeClazz.equals(bean.getBeanClass()))
                 {
-                    return new SingleItemSet<Bean<? extends X>>(bean);
+                    return new SingleItemSet<>(bean);
                 }
             }
 
@@ -649,8 +649,8 @@ public class InjectionResolver
 
 
         // if none such Alternative got found let's check the 'old' alternatives from beans.xml
-        Set<Bean<? extends X>> alternativeSet = new HashSet<Bean<? extends X>>();
-        Set<Bean<? extends X>> enableSet = new HashSet<Bean<? extends X>>();
+        Set<Bean<? extends X>> alternativeSet = new HashSet<>();
+        Set<Bean<? extends X>> enableSet = new HashSet<>();
 
         for (Bean<? extends X> bean : beans)
         {
@@ -749,7 +749,7 @@ public class InjectionResolver
     private Set<Bean<?>> findByQualifier(Set<Bean<?>> remainingSet, Type type, Annotation... annotations)
     {
         Iterator<Bean<?>> it = remainingSet.iterator();
-        Set<Bean<?>> result = new HashSet<Bean<?>>();
+        Set<Bean<?>> result = new HashSet<>();
 
         while (it.hasNext())
         {

@@ -87,10 +87,10 @@ public class SpecializationUtil
             // for which case OWB should throw exception that both CarToyota and CarFord are
             // specialize Car.
             // see spec section 5.1.3
-            Set<Class<?>> superClassList = new HashSet<Class<?>>();
+            Set<Class<?>> superClassList = new HashSet<>();
 
             // first let's find all superclasses of Specialized types
-            Set<Class<?>> disabledClasses = new HashSet<Class<?>>();
+            Set<Class<?>> disabledClasses = new HashSet<>();
             for(AnnotatedType<?> annotatedType : allAnnotatedTypes)
             {
                 if(annotatedType.getAnnotation(Specializes.class) != null && isEnabled(annotatedType))
@@ -192,7 +192,7 @@ public class SpecializationUtil
     private Set<AnnotatedType<?>> getAllAnnotatedTypes(
         Map<BeanArchiveService.BeanArchiveInformation, Map<AnnotatedType<?>, BeansDeployer.ExtendedBeanAttributes<?>>> beanAttributesPerBda)
     {
-        Set<AnnotatedType<?>> allAnnotatedTypes = new HashSet<AnnotatedType<?>>(beanAttributesPerBda.size()*50);
+        Set<AnnotatedType<?>> allAnnotatedTypes = new HashSet<>(beanAttributesPerBda.size() * 50);
         for (Map<AnnotatedType<?>, BeansDeployer.ExtendedBeanAttributes<?>> annotatedTypeMap : beanAttributesPerBda.values())
         {
             allAnnotatedTypes.addAll(annotatedTypeMap.keySet());
@@ -213,7 +213,7 @@ public class SpecializationUtil
                 Set<Type> superClassTypes;
                 if (superClassTyped != null)
                 {
-                    superClassTypes = new HashSet<Type>(Arrays.asList(superClassTyped.value()));
+                    superClassTypes = new HashSet<>(Arrays.asList(superClassTyped.value()));
                 }
                 else
                 {
@@ -256,7 +256,7 @@ public class SpecializationUtil
         Set<Annotation> annotations = annotatedType.getAnnotations();
         if (annotations != null && !annotations.isEmpty())
         {
-            Set<Class<? extends Annotation>> annotationClasses = new HashSet<Class<? extends Annotation>>(annotations.size());
+            Set<Class<? extends Annotation>> annotationClasses = new HashSet<>(annotations.size());
             for (Annotation annotation : annotations)
             {
                 annotationClasses.add(annotation.annotationType());

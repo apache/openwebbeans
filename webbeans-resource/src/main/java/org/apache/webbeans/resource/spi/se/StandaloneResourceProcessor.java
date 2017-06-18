@@ -46,7 +46,7 @@ public class StandaloneResourceProcessor
     /**
      *  A cache for EntityManagerFactories.
      */
-    private Map<String, EntityManagerFactory> factoryCache = new ConcurrentHashMap<String, EntityManagerFactory>();    
+    private Map<String, EntityManagerFactory> factoryCache = new ConcurrentHashMap<>();
     
     static
     {

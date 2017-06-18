@@ -62,7 +62,7 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
      */
     public M getBean()
     {
-        M bean = (M) new ManagedBean<T>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, annotatedType.getJavaClass());
+        M bean = (M) new ManagedBean<>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, annotatedType.getJavaClass());
         bean.setEnabled(webBeansContext.getWebBeansUtil().isBeanEnabled(beanAttributes, annotatedType, bean.getStereotypes()));
         webBeansContext.getWebBeansUtil().checkManagedBeanCondition(annotatedType);
         WebBeansUtil.checkGenericType(annotatedType.getJavaClass(), beanAttributes.getScope());
@@ -73,6 +73,6 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
         {
             return bean;
         }
-        return (M) new UnproxyableBean<T>(webBeansContext, WebBeansType.MANAGED, beanAttributes, annotatedType, annotatedType.getJavaClass(), lazyException);
+        return (M) new UnproxyableBean<>(webBeansContext, WebBeansType.MANAGED, beanAttributes, annotatedType, annotatedType.getJavaClass(), lazyException);
     }
 }

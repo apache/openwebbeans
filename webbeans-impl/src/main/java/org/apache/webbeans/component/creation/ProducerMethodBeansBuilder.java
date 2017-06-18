@@ -67,9 +67,9 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
      */
     public Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<T> bean, Set<ProducerFieldBean<?>> producerFields)
     {
-        Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
+        Set<ProducerMethodBean<?>> producerBeans = new HashSet<>();
         Set<AnnotatedMethod<? super T>> annotatedMethods = webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType);
-        Collection<AnnotatedMethod<?>> skipMethods = new HashSet<AnnotatedMethod<?>>();
+        Collection<AnnotatedMethod<?>> skipMethods = new HashSet<>();
 
         for(AnnotatedMethod<? super T> annotatedMethod: annotatedMethods)
         {
@@ -95,7 +95,7 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
                         BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(method).build());
                 if (processBeanAttributes != null)
                 {
-                    ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<T>(bean, annotatedMethod, processBeanAttributes.getAttributes());
+                    ProducerMethodBeanBuilder<T> producerMethodBeanCreator = new ProducerMethodBeanBuilder<>(bean, annotatedMethod, processBeanAttributes.getAttributes());
 
                     ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
 

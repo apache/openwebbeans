@@ -59,7 +59,7 @@ public class InjectionPointImpl implements InjectionPoint, Serializable
 {
     private static final long serialVersionUID = 1047233127758068484L;
 
-    private Set<Annotation> qualifierAnnotations = new HashSet<Annotation>();
+    private Set<Annotation> qualifierAnnotations = new HashSet<>();
     
     private Bean<?> ownerBean;
     
@@ -96,7 +96,7 @@ public class InjectionPointImpl implements InjectionPoint, Serializable
         this.injectionType = bean.getBeanClass();
         this.qualifierAnnotations = bean.getQualifiers() == null ?
                 Collections.<Annotation>emptySet() :
-                Collections.unmodifiableSet(new HashSet<Annotation>(bean.getQualifiers()));
+                Collections.unmodifiableSet(new HashSet<>(bean.getQualifiers()));
         this.annotated = null;
         this.injectionMember = null;
         this.delegate = false;
@@ -116,7 +116,7 @@ public class InjectionPointImpl implements InjectionPoint, Serializable
         Asserts.assertNotNull(qualifiers, "qualifiers");
         this.ownerBean = ownerBean;
         injectionType = type;
-        qualifierAnnotations = Collections.unmodifiableSet(new HashSet<Annotation>(qualifiers));
+        qualifierAnnotations = Collections.unmodifiableSet(new HashSet<>(qualifiers));
         this.annotated = annotated;
         injectionMember = member;
         this.delegate = delegate;

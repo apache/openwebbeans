@@ -70,7 +70,7 @@ public class PluginLoader
         if(started.compareAndSet(false, true))
         {
             logger.fine("PluginLoader startUp called.");
-            ArrayList<OpenWebBeansPlugin> ps = new ArrayList<OpenWebBeansPlugin>();
+            ArrayList<OpenWebBeansPlugin> ps = new ArrayList<>();
 
             List<OpenWebBeansPlugin> pluginList = WebBeansContext.getInstance().getLoaderService().load(OpenWebBeansPlugin.class);
             for (OpenWebBeansPlugin plugin : pluginList)
@@ -136,7 +136,7 @@ public class PluginLoader
                 return;
             }
 
-            ArrayList<String> failedShutdown = new ArrayList<String>();
+            ArrayList<String> failedShutdown = new ArrayList<>();
 
             for (OpenWebBeansPlugin plugin : plugins)
             {

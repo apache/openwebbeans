@@ -48,7 +48,7 @@ public abstract class BaseEjbBean<T> extends InjectionTargetBean<T> implements E
     protected final SessionBeanType ejbType;
     
     /** Map of proxy instances to the dependent SFSB they've acquired but not yet removed */
-    private Map<Object, Object> dependentSFSBToBeRemoved = new ConcurrentHashMap<Object, Object>();
+    private Map<Object, Object> dependentSFSBToBeRemoved = new ConcurrentHashMap<>();
 
     /**
      * Creates a new instance of the session bean.

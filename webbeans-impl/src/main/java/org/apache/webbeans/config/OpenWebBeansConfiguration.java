@@ -207,7 +207,7 @@ public class OpenWebBeansConfiguration
      * will get stored in a Set.
      *
      */
-    private Map<String, Set<String>> configuredLists = new HashMap<String, Set<String>>();
+    private Map<String, Set<String>> configuredLists = new HashMap<>();
 
 
     /**
@@ -260,7 +260,7 @@ public class OpenWebBeansConfiguration
      */
     public List<String> splitValues(String commaSeparatedVals)
     {
-        ArrayList<String> values = new ArrayList<String>();
+        ArrayList<String> values = new ArrayList<>();
         if (commaSeparatedVals != null)
         {
             for (String value : commaSeparatedVals.split(","))
@@ -403,7 +403,7 @@ public class OpenWebBeansConfiguration
             String ignoredInterfacesString = getProperty(IGNORED_INTERFACES);
             if (ignoredInterfacesString != null)
             {
-                ignoredInterfaces = new HashSet<String>(Arrays.asList(ignoredInterfacesString.split("[,\\p{javaWhitespace}]")));
+                ignoredInterfaces = new HashSet<>(Arrays.asList(ignoredInterfacesString.split("[,\\p{javaWhitespace}]")));
             }
             else
             {
@@ -427,7 +427,7 @@ public class OpenWebBeansConfiguration
             return allValues;
         }
 
-        allValues = new HashSet<String>();
+        allValues = new HashSet<>();
         try
         {
             List<Properties> properties = PropertyLoader.loadAllProperties(DEFAULT_CONFIG_PROPERTIES_NAME);

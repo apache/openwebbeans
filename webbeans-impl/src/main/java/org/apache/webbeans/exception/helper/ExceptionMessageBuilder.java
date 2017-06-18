@@ -36,7 +36,7 @@ public class ExceptionMessageBuilder implements Serializable
     {
         if (additionalInformations == null)
         {
-            additionalInformations = new ArrayList<String>();
+            additionalInformations = new ArrayList<>();
         }
         additionalInformations.add(additionalInformation);
     }

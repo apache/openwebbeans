@@ -35,7 +35,7 @@ import org.apache.webbeans.util.Asserts;
 public class StereoTypeManager
 {
     /**Stereotype model instances, stereotype mode name to model instance*/
-    private Map<String, IStereoTypeModel> stereoTypeMap = new ConcurrentHashMap<String, IStereoTypeModel>();
+    private Map<String, IStereoTypeModel> stereoTypeMap = new ConcurrentHashMap<>();
 
     /**
      * Default constructor

@@ -31,7 +31,7 @@ public class DefaultSingletonService implements SingletonService<WebBeansContext
      * Keys --> ClassLoaders
      * Values --> WebBeansContext
      */
-    private final Map<ClassLoader, WebBeansContext> singletonMap = new WeakHashMap<ClassLoader, WebBeansContext>();
+    private final Map<ClassLoader, WebBeansContext> singletonMap = new WeakHashMap<>();
     
     /**
      * Gets singleton instance for deployment.

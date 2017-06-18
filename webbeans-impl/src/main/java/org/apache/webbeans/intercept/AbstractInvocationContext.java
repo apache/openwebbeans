@@ -89,7 +89,7 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
     {
         if (contextData == null)
         {
-            contextData = new HashMap<String, Object>();
+            contextData = new HashMap<>();
         }
         return contextData;
     }

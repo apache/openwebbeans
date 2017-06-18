@@ -39,7 +39,7 @@ public class SessionScopedBeanInterceptorHandler extends NormalScopedBeanInterce
     /**
      * Cached bean instance for each thread
      */
-    private static ThreadLocal<HashMap<Bean<?>, Object>> cachedInstances = new ThreadLocal<HashMap<Bean<?>, Object>>();
+    private static ThreadLocal<HashMap<Bean<?>, Object>> cachedInstances = new ThreadLocal<>();
 
 
     public static void removeThreadLocals()
@@ -65,7 +65,7 @@ public class SessionScopedBeanInterceptorHandler extends NormalScopedBeanInterce
         HashMap<Bean<?>, Object> beanMap = cachedInstances.get();
         if (beanMap == null)
         {
-            beanMap = new HashMap<Bean<?>, Object>();
+            beanMap = new HashMap<>();
             cachedInstances.set(beanMap);
         }
 

@@ -67,7 +67,7 @@ public class FieldProducerFactory<P> extends BaseProducerFactory<P>
     public <T> Producer<T> createProducer(Bean<T> bean)
     {
         Set<InjectionPoint> disposalIPs = getInjectionPoints(bean);
-        Producer<T> producer = new ProducerFieldProducer<T, P>(parent, producerField, disposalMethod, disposalIPs, webBeansContext);
+        Producer<T> producer = new ProducerFieldProducer<>(parent, producerField, disposalMethod, disposalIPs, webBeansContext);
         return webBeansContext.getWebBeansUtil().fireProcessProducerEvent(producer, producerField);
     }
 

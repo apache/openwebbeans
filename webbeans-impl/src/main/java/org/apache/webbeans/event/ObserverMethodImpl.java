@@ -158,7 +158,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
             isAsync = true;
         }
 
-        observedQualifiers = new HashSet<Annotation>();
+        observedQualifiers = new HashSet<>();
         for (Annotation annotation: annotatedObservesParameter.getAnnotations())
         {
             if (ownerBean.getWebBeansContext().getAnnotationManager().isQualifierAnnotation(annotation.annotationType()))
@@ -406,7 +406,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
      */
     protected List<ObserverParams> getMethodArguments(Object event, EventMetadata metadata)
     {
-        List<ObserverParams> list = new ArrayList<ObserverParams>();
+        List<ObserverParams> list = new ArrayList<>();
         if (annotatedObservesParameter.getPosition() == 0)
         {
             ObserverParams param = new ObserverParams();

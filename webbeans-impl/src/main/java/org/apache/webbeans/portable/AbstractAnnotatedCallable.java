@@ -40,7 +40,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 public abstract class AbstractAnnotatedCallable<X> extends AbstractAnnotatedMember<X> implements AnnotatedCallable<X>
 {
     /**Annotated parameters*/
-    private List<AnnotatedParameter<X>> annotatedParameters = new ArrayList<AnnotatedParameter<X>>();
+    private List<AnnotatedParameter<X>> annotatedParameters = new ArrayList<>();
     
     AbstractAnnotatedCallable(WebBeansContext webBeansContext, Type baseType, Member javaMember, AnnotatedType<X> declaringType)
     {
@@ -53,7 +53,7 @@ public abstract class AbstractAnnotatedCallable<X> extends AbstractAnnotatedMemb
         
         for(Type genericParameter : genericParameterTypes)
         {
-            AnnotatedParameterImpl<X> parameterImpl = new AnnotatedParameterImpl<X>(getWebBeansContext(), genericParameter,this,i);
+            AnnotatedParameterImpl<X> parameterImpl = new AnnotatedParameterImpl<>(getWebBeansContext(), genericParameter, this, i);
             parameterImpl.setAnnotations(parameterAnnotations[i]);
             
             addAnnotatedParameter(parameterImpl);

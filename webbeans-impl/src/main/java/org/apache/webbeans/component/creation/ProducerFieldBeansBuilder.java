@@ -67,7 +67,7 @@ public class ProducerFieldBeansBuilder<T>
      */
     public Set<ProducerFieldBean<?>> defineProducerFields(InjectionTargetBean<T> bean)
     {
-        Set<ProducerFieldBean<?>> producerBeans = new HashSet<ProducerFieldBean<?>>();
+        Set<ProducerFieldBean<?>> producerBeans = new HashSet<>();
         Set<AnnotatedField<? super T>> annotatedFields = annotatedType.getFields();        
         for(AnnotatedField<? super T> annotatedField: annotatedFields)
         {
@@ -83,8 +83,8 @@ public class ProducerFieldBeansBuilder<T>
                 {                    
                     //Check for valid resource annotation
                     //WebBeansUtil.checkForValidResources(annotatedField.getDeclaringType().getJavaClass(), field.getType(), field.getName(), anns);
-                    ResourceReference<T, Annotation> resourceRef = new ResourceReference<T, Annotation>(annotatedType.getJavaClass(), field.getName(),
-                                                                                                        (Class<T>)field.getType(), resourceAnnotation);
+                    ResourceReference<T, Annotation> resourceRef = new ResourceReference<>(annotatedType.getJavaClass(), field.getName(),
+                        (Class<T>) field.getType(), resourceAnnotation);
 
                     //Can not define EL name
                     if(annotatedField.isAnnotationPresent(Named.class))
@@ -96,7 +96,7 @@ public class ProducerFieldBeansBuilder<T>
                     if (processBeanAttributes != null)
                     {
                         ResourceBeanBuilder<T, Annotation> resourceBeanCreator
-                                = new ResourceBeanBuilder<T, Annotation>(bean, resourceRef, annotatedField, processBeanAttributes.getAttributes());
+                                = new ResourceBeanBuilder<>(bean, resourceRef, annotatedField, processBeanAttributes.getAttributes());
                         ResourceBean<T, Annotation> resourceBean = resourceBeanCreator.getBean();
                         resourceBean.setProducerField(field);
                         producerBeans.add(resourceBean);

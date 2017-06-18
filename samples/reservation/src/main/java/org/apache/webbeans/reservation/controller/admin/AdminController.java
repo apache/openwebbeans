@@ -119,7 +119,7 @@ public class AdminController
         
         User user = (User)query.getSingleResult();
         
-        Set<Hotel> hotels = new HashSet<Hotel>();
+        Set<Hotel> hotels = new HashSet<>();
         
         Set<Reservation> reservations = user.getReservations();
         

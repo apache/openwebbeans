@@ -39,7 +39,7 @@ public class AdminListBean implements Serializable
 
     private static final long serialVersionUID = 2552807646330035889L;
 
-    private List<Hotel> hotels = new ArrayList<Hotel>();
+    private List<Hotel> hotels = new ArrayList<>();
     
     private HtmlDataTable model;
     

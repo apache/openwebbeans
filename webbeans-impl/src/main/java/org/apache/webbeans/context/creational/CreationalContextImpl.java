@@ -128,7 +128,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     {
         if (injectionPoints == null)
         {
-            injectionPoints = new Stack<InjectionPoint>();
+            injectionPoints = new Stack<>();
         }
         injectionPoints.push(injectionPoint);
     }
@@ -155,7 +155,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     {
         if (eventMetadata == null)
         {
-            eventMetadata = new Stack<EventMetadata>();
+            eventMetadata = new Stack<>();
         }
         eventMetadata.push(metadata);
     }
@@ -190,14 +190,14 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     {
         if(instance != null)
         {
-            DependentCreationalContext<K> dependentCreational = new DependentCreationalContext<K>(dependent);
+            DependentCreationalContext<K> dependentCreational = new DependentCreationalContext<>(dependent);
             dependentCreational.setInstance(instance);
 
             synchronized(this)
             {
                 if (dependentObjects == null)
                 {
-                    dependentObjects = new ArrayList<DependentCreationalContext<?>>();
+                    dependentObjects = new ArrayList<>();
                 }
 
                 if (dependent == bean)

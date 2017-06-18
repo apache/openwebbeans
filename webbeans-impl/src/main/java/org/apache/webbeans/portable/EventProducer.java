@@ -56,7 +56,7 @@ public class EventProducer<T> extends AbstractProducer<Event<T>>
         }
 
         Type type = EventImpl.class.cast(instance).getMetadata().getType();
-        ArrayList<Decorator<?>> list = new ArrayList<Decorator<?>>(decorators.size());
+        ArrayList<Decorator<?>> list = new ArrayList<>(decorators.size());
         for (Decorator<?> original : decorators)
         {
             Type event = original.getDelegateType();
@@ -99,7 +99,7 @@ public class EventProducer<T> extends AbstractProducer<Event<T>>
             
             try
             {
-                instance = new EventImpl<T>(new EventMetadataImpl(null, eventType, injectionPoint, qualifiers, webBeansContext), webBeansContext);
+                instance = new EventImpl<>(new EventMetadataImpl(null, eventType, injectionPoint, qualifiers, webBeansContext), webBeansContext);
             }
             catch (Exception e)
             {

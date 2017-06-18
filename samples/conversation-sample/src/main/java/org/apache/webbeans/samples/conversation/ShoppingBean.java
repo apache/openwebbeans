@@ -40,7 +40,7 @@ public class ShoppingBean implements Serializable
     
     private @Inject Conversation conversation;
 
-    private List<Item> items = new ArrayList<Item>();
+    private List<Item> items = new ArrayList<>();
         
     private UIData uiTable;
     

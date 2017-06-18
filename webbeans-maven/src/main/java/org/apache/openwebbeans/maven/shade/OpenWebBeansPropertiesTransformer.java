@@ -31,7 +31,7 @@ import java.util.zip.ZipEntry;
 
 public class OpenWebBeansPropertiesTransformer implements ResourceTransformer
 {
-    private final List<Properties> configurations = new ArrayList<Properties>();
+    private final List<Properties> configurations = new ArrayList<>();
 
     private String resource = "META-INF/openwebbeans/openwebbeans.properties";
     private String ordinalKey = "configuration.ordinal";
@@ -89,7 +89,7 @@ public class OpenWebBeansPropertiesTransformer implements ResourceTransformer
 
     private List<Properties> sortProperties(List<Properties> allProperties)
     {
-        List<Properties> sortedProperties = new ArrayList<Properties>();
+        List<Properties> sortedProperties = new ArrayList<>();
         for (Properties p : allProperties)
         {
             int configOrder = getConfigurationOrdinal(p);

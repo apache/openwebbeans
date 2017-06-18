@@ -64,14 +64,14 @@ public class OsgiMetaDataScannerService implements ScannerService
     private static final String WEB_INF_BEANS_XML = "WEB-INF/beans.xml";
 
     /** All classes which have to be scanned for Bean information */
-    private Set<Class<?>> beanClasses = new HashSet<Class<?>>();
+    private Set<Class<?>> beanClasses = new HashSet<>();
 
     /** the paths of all META-INF/beans.xml files */
     private UrlSet beanXMLs = new UrlSet();
 
     /**contains all the JARs we found with valid beans.xml in it */
-    private Set<String> beanArchiveJarNames = new HashSet<String>();
-    private Map<String, Set<String>> classAnnotations = new HashMap<String, Set<String>>();
+    private Set<String> beanArchiveJarNames = new HashSet<>();
+    private Map<String, Set<String>> classAnnotations = new HashMap<>();
 
     @Override
     public void init(Object object)
@@ -85,9 +85,9 @@ public class OsgiMetaDataScannerService implements ScannerService
     @Override
     public void release()
     {
-        beanClasses = new HashSet<Class<?>>();
+        beanClasses = new HashSet<>();
         beanXMLs = new UrlSet();
-        beanArchiveJarNames = new HashSet<String>();
+        beanArchiveJarNames = new HashSet<>();
         classAnnotations.clear();
     }
 
@@ -174,7 +174,7 @@ public class OsgiMetaDataScannerService implements ScannerService
 
     private Set<String> collectAnnotations(Class<?> cls)
     {
-        Set<String> annotations = new HashSet<String>();
+        Set<String> annotations = new HashSet<>();
 
         addAnnotations(annotations, cls.getAnnotations());
 

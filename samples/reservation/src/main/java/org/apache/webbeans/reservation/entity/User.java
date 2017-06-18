@@ -58,7 +58,7 @@ public class User
     private Date registerDate;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<Reservation> reservations = new HashSet<Reservation>();
+    private Set<Reservation> reservations = new HashSet<>();
     
     @Version
     private int version;

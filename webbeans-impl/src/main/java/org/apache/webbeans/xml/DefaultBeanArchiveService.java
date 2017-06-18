@@ -58,7 +58,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
     /**
      * Contains a map from the URL externalForm to the stored BeanArchiveInformation
      */
-    private Map<String, BeanArchiveInformation> beanArchiveInformations = new HashMap<String, BeanArchiveInformation>();
+    private Map<String, BeanArchiveInformation> beanArchiveInformations = new HashMap<>();
 
     private UrlSet registeredBeanArchives = new UrlSet();
 
@@ -176,7 +176,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
             return null;
         }
 
-        List<String> mergedList = new ArrayList<String>(list1);
+        List<String> mergedList = new ArrayList<>(list1);
 
         for (String val : list2)
         {

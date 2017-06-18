@@ -73,7 +73,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     private InjectionPoint injectionPoint;
 
     /** Qualifier annotations appeared on the injection point */
-    private Set<Annotation> qualifierAnnotations = new HashSet<Annotation>();
+    private Set<Annotation> qualifierAnnotations = new HashSet<>();
 
     private WebBeansContext webBeansContext;
 
@@ -192,9 +192,9 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         }
 
         Annotation[] newQualifiersArray = qualifiers;
-        return new InstanceImpl<T>(
-                injectionClazz, injectionPoint == null ? null : new InstanceInjectionPoint(injectionPoint, newQualifiersArray),
-                webBeansContext, parentCreationalContext, newQualifiersArray);
+        return new InstanceImpl<>(
+            injectionClazz, injectionPoint == null ? null : new InstanceInjectionPoint(injectionPoint, newQualifiersArray),
+            webBeansContext, parentCreationalContext, newQualifiersArray);
     }
 
     /**
@@ -219,8 +219,8 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         {
             mergedQualifiers.add(qualifier);
         }
-        return new InstanceImpl<U>(sub, injectionPoint, webBeansContext, parentCreationalContext,
-                                   mergedQualifiers.toArray(new Annotation[mergedQualifiers.size()]));
+        return new InstanceImpl<>(sub, injectionPoint, webBeansContext, parentCreationalContext,
+            mergedQualifiers.toArray(new Annotation[mergedQualifiers.size()]));
     }
 
     /**
@@ -239,7 +239,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     public Iterator<T> iterator()
     {
         Set<Bean<?>> beans = resolveBeans();
-        List<T> instances = new ArrayList<T>();
+        List<T> instances = new ArrayList<>();
         parentCreationalContext.putInjectionPoint(injectionPoint);
         try
         {
@@ -304,7 +304,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             T reference = (T) beanManager.getReference(bean, injectionClazz, creationalContext);
             if (creationalContexts == null)
             {
-                creationalContexts = new IdentityHashMap<Object, CreationalContextImpl<?>>();
+                creationalContexts = new IdentityHashMap<>();
             }
             creationalContexts.put(reference, creationalContext);
             return reference;
@@ -379,7 +379,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         protected InstanceInjectionPoint(InjectionPoint injectionPoint, Annotation[] newQualifiersArray)
         {
             this.delegate = injectionPoint;
-            this.qualifiers = Collections.unmodifiableSet(new HashSet<Annotation>(Arrays.asList(newQualifiersArray)));
+            this.qualifiers = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(newQualifiersArray)));
         }
 
         @Override

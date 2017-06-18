@@ -78,7 +78,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
      * We store this information since not all containers and storages do support
      * new URL(...).
      */
-    private final Map<String, URL> beanDeploymentUrls = new HashMap<String, URL>();
+    private final Map<String, URL> beanDeploymentUrls = new HashMap<>();
 
     /**
      * for having proper scan mode 'SCOPED' support we need to know which bean class
@@ -374,11 +374,11 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
     {
         if (beanClassesPerBda == null)
         {
-            beanClassesPerBda = new HashMap<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>>();
+            beanClassesPerBda = new HashMap<>();
 
             for (CdiArchive.FoundClasses foundClasses : archive.classesByUrl().values())
             {
-                Set<Class<?>> classSet = new HashSet<Class<?>>();
+                Set<Class<?>> classSet = new HashSet<>();
                 boolean scanModeAnnotated = BeanDiscoveryMode.ANNOTATED == foundClasses.getBeanArchiveInfo().getBeanDiscoveryMode();
                 for (String className : foundClasses.getClassNames())
                 {
