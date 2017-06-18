@@ -20,7 +20,6 @@ package org.apache.webbeans.component;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Decorator;
-import javax.enterprise.inject.spi.PassivationCapable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
@@ -32,7 +31,7 @@ import org.apache.webbeans.container.DecoratorInjectionTargetFactory;
 /**
  * Decorator Bean implementation.
  */
-public class DecoratorBean<T> extends InjectionTargetBean<T> implements Decorator<T>, PassivationCapable
+public class DecoratorBean<T> extends InjectionTargetBean<T> implements Decorator<T>
 {
     /**
      * The Types the decorator itself implements

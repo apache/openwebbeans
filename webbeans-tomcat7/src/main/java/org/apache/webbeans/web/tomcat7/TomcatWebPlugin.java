@@ -34,7 +34,6 @@ import java.util.EventListener;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
-import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
 /**
  * Tomcat plugin for OWB.
@@ -42,7 +41,7 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
  * @version $Rev: 940336 $ $Date: 2010-05-03 02:32:18 +0300 (Mon, 03 May 2010) $
  *
  */
-public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansPlugin
+public class TomcatWebPlugin extends AbstractOwbPlugin
 {
     //Security service implementation.
     private final TomcatSecurityService securityService = new TomcatSecurityService();

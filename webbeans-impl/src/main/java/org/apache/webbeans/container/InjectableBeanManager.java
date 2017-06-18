@@ -22,7 +22,6 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -66,7 +65,7 @@ import org.apache.webbeans.config.WebBeansContext;
  * This class is Serializable and always resolves the current
  * instance of the central BeanManager automatically.
  */
-public class InjectableBeanManager implements BeanManager, Serializable, Externalizable
+public class InjectableBeanManager implements BeanManager, Externalizable
 {
 
     private static final long serialVersionUID = 1L;

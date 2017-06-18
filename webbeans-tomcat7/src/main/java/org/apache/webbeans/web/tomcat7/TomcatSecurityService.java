@@ -21,9 +21,8 @@ package org.apache.webbeans.web.tomcat7;
 import java.security.Principal;
 
 import org.apache.webbeans.corespi.security.SimpleSecurityService;
-import org.apache.webbeans.spi.SecurityService;
 
-public class TomcatSecurityService extends SimpleSecurityService implements SecurityService
+public class TomcatSecurityService extends SimpleSecurityService
 {
 
     @Override

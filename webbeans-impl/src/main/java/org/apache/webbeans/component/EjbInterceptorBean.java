@@ -21,8 +21,6 @@ package org.apache.webbeans.component;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.InterceptionType;
-import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.inject.spi.PassivationCapable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -36,7 +34,7 @@ import org.apache.webbeans.config.WebBeansContext;
  * This is Interceptors which got defined by being referenced via
  * &#064;{@link javax.interceptor.Interceptors}.</p>
  */
-public class EjbInterceptorBean<T> extends InterceptorBean<T> implements Interceptor<T>, PassivationCapable
+public class EjbInterceptorBean<T> extends InterceptorBean<T>
 {
 
     public EjbInterceptorBean(WebBeansContext webBeansContext,

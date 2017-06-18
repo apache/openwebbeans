@@ -23,7 +23,7 @@ import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.config.WebBeansContext;
 
-class WrappedCreationalContext<T> extends CreationalContextImpl<T> implements CreationalContext<T>
+class WrappedCreationalContext<T> extends CreationalContextImpl<T>
 {
     private static final long serialVersionUID = 3580925478881669439L;
     

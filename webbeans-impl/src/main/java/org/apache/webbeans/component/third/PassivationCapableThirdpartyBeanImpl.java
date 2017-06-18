@@ -23,7 +23,7 @@ import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.config.WebBeansContext;
 
-public class PassivationCapableThirdpartyBeanImpl<T> extends ThirdpartyBeanImpl<T> implements PassivationCapable
+public class PassivationCapableThirdpartyBeanImpl<T> extends ThirdpartyBeanImpl<T>
 {
     private final String id;
     

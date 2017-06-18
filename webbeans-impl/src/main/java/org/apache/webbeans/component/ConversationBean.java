@@ -24,7 +24,6 @@ import java.util.Collections;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationImpl;
@@ -37,7 +36,7 @@ import org.apache.webbeans.util.CollectionUtil;
  * @version $Rev$ $Date$
  *
  */
-public class ConversationBean extends BuiltInOwbBean<ConversationImpl> implements InterceptedMarker, PassivationCapable
+public class ConversationBean extends BuiltInOwbBean<ConversationImpl> implements InterceptedMarker
 {
     /**
      * Default constructor.

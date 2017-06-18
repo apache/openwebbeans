@@ -21,7 +21,6 @@ package org.apache.webbeans.component;
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
 
-import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.Producer;
 
 import javax.enterprise.inject.spi.BeanAttributes;
@@ -35,7 +34,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @version $Rev$ $Date$
  * @param <T> bean type info
  */
-public class AbstractProducerBean<T> extends AbstractOwbBean<T> implements PassivationCapable
+public class AbstractProducerBean<T> extends AbstractOwbBean<T>
 {
     private Class<T> returnType;
     private Producer<T> producer;

@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +36,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * Base class for passivating contexts.
  * It basically provides serialisation support
  */
-public abstract class PassivatingContext extends AbstractContext implements Serializable, Externalizable
+public abstract class PassivatingContext extends AbstractContext implements Externalizable
 {
 
     public PassivatingContext(Class<? extends Annotation> scopeType)

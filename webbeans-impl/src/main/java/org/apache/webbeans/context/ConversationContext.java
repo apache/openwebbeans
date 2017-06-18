@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.context;
 
-import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.ConversationScoped;
@@ -34,7 +33,7 @@ import org.apache.webbeans.conversation.ConversationImpl;
  * It should not be confused with the Map of conversationId -> Conversation
  * which we internally store in the SessionContext.
  */
-public class ConversationContext extends PassivatingContext implements Serializable
+public class ConversationContext extends PassivatingContext
 {
     private static final long serialVersionUID = 2L;
 

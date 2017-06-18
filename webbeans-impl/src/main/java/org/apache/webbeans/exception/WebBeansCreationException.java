@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.exception;
 
-import org.apache.webbeans.exception.helper.DescriptiveException;
 import org.apache.webbeans.exception.helper.ExceptionMessageBuilder;
 
 /**
@@ -26,7 +25,7 @@ import org.apache.webbeans.exception.helper.ExceptionMessageBuilder;
  * 
  * @since 1.0
  */
-public class WebBeansCreationException extends WebBeansException implements DescriptiveException
+public class WebBeansCreationException extends WebBeansException
 {
     private static final long serialVersionUID = 1863095663133791175L;
 

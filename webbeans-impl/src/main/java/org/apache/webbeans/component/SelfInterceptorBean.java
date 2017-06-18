@@ -22,7 +22,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.InterceptionType;
-import javax.enterprise.inject.spi.Interceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -40,7 +39,7 @@ import org.apache.webbeans.exception.WebBeansException;
  * all business method invocations on that bean are intercepted via those methods
  * in the bean.</p>
  */
-public class SelfInterceptorBean<T> extends InterceptorBean<T> implements Interceptor<T>
+public class SelfInterceptorBean<T> extends InterceptorBean<T>
 {
 
     public SelfInterceptorBean(WebBeansContext webBeansContext,

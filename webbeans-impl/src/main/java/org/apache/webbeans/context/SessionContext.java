@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.context;
 
-import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.SessionScoped;
@@ -30,7 +29,7 @@ import org.apache.webbeans.intercept.SessionScopedBeanInterceptorHandler;
 /**
  * Session context implementation.
  */
-public class SessionContext extends PassivatingContext implements Serializable
+public class SessionContext extends PassivatingContext
 {
     private static final long serialVersionUID = 2L;
 

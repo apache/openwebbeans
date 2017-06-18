@@ -28,7 +28,6 @@ import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class OwbSWClassLoader extends URLClassLoader implements Closeable
+public class OwbSWClassLoader extends URLClassLoader
 {
     // Collections.emptyEnumeration only exists in java7++
     private static final Enumeration EMPTY_ENUMERATION = new Enumeration()
