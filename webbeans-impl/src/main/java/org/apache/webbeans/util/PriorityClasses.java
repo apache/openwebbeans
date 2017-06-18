@@ -34,7 +34,7 @@ public class PriorityClasses
     private final List<PriorityClass> raw = new ArrayList<PriorityClass>();
     private List<Class<?>> sorted;
 
-    public void add(final Class<?> clazz, final Priority priority)
+    public void add(Class<?> clazz, Priority priority)
     {
         raw.add(new PriorityClass(clazz, priority.value()));
         sorted = null;
@@ -58,7 +58,7 @@ public class PriorityClasses
         return sorted;
     }
 
-    public boolean contains(final Class<?> beanType)
+    public boolean contains(Class<?> beanType)
     {
         return getSorted().contains(beanType);
     }

@@ -157,8 +157,8 @@ public class InterceptorsManager
         Asserts.assertNotNull(src, "src");
         Asserts.assertNotNull(target, "target");
 
-        final int p1 = priorityInterceptors.getSorted().indexOf(src);
-        final int p2 = priorityInterceptors.getSorted().indexOf(target);
+        int p1 = priorityInterceptors.getSorted().indexOf(src);
+        int p2 = priorityInterceptors.getSorted().indexOf(target);
 
         int srcIndex = p1;
         if (srcIndex == -1)
@@ -229,7 +229,7 @@ public class InterceptorsManager
 
             // first check AT since it can override some methods (@NonBinding)
             boolean found = false;
-            for (final AnnotatedType<?> at : additionalInterceptorBindingTypesAnnotatedTypes)
+            for (AnnotatedType<?> at : additionalInterceptorBindingTypesAnnotatedTypes)
             {
                 if (interceptorBinding.annotationType().equals(at.getJavaClass()))
                 {
@@ -252,9 +252,9 @@ public class InterceptorsManager
         return true;
     }
 
-    private boolean inBindingArray(final AnnotatedType<?> at, final Annotation interceptorBinding, final Annotation[] requestedInterceptorBindings)
+    private boolean inBindingArray(AnnotatedType<?> at, Annotation interceptorBinding, Annotation[] requestedInterceptorBindings)
     {
-        for (final Annotation requestedBinding : requestedInterceptorBindings)
+        for (Annotation requestedBinding : requestedInterceptorBindings)
         {
             if (AnnotationUtil.isCdiAnnotationEqual(at, requestedBinding, interceptorBinding))
             {
@@ -305,7 +305,7 @@ public class InterceptorsManager
         return additionalInterceptorClasses.contains(clazz);
     }
 
-    public void addInterceptorBindingType(final AnnotatedType<? extends Annotation> annotatedType)
+    public void addInterceptorBindingType(AnnotatedType<? extends Annotation> annotatedType)
     {
         additionalInterceptorBindingTypesAnnotatedTypes.add(annotatedType);
     }
@@ -323,12 +323,12 @@ public class InterceptorsManager
 
     public boolean hasInterceptorBindingType(Class<? extends Annotation> bindingType)
     {
-        final boolean contains = additionalInterceptorBindingTypes.keySet().contains(bindingType);
+        boolean contains = additionalInterceptorBindingTypes.keySet().contains(bindingType);
         if (contains)
         {
             return true;
         }
-        for (final AnnotatedType<?> at : additionalInterceptorBindingTypesAnnotatedTypes)
+        for (AnnotatedType<?> at : additionalInterceptorBindingTypesAnnotatedTypes)
         {
             if (bindingType.equals(at.getJavaClass()))
             {
@@ -359,7 +359,7 @@ public class InterceptorsManager
         return priorityInterceptors.getSorted();
     }
 
-    public void addPriorityClazzInterceptor(final Class<?> javaClass, final Priority priority)
+    public void addPriorityClazzInterceptor(Class<?> javaClass, Priority priority)
     {
         priorityInterceptors.add(javaClass, priority);
     }

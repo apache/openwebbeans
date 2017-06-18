@@ -71,7 +71,7 @@ public abstract class EmptyAnnotationLiteral<T extends Annotation> extends Annot
      * as there are no members in this annotation at all.
      */
     @Override
-    public boolean equals(final Object other)
+    public boolean equals(Object other)
     {
         // implemented for performance reasons
         return Annotation.class.isInstance(other) &&

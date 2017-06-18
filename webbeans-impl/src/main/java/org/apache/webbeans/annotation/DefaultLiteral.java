@@ -32,7 +32,7 @@ import javax.enterprise.inject.Default;
 public class DefaultLiteral extends EmptyAnnotationLiteral<Default> implements Default
 {
     public static final DefaultLiteral INSTANCE = new DefaultLiteral();
-    public static final Annotation[] ARRAY = {DefaultLiteral.INSTANCE};
+    public static final Annotation[] ARRAY = {INSTANCE};
     public static final Set<Annotation> SET = Collections.<Annotation>singleton(INSTANCE); 
 
     private static final String TOSTRING = "@javax.enterprise.inject.Default()";

@@ -68,7 +68,7 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
         WebBeansUtil.checkGenericType(annotatedType.getJavaClass(), beanAttributes.getScope());
         webBeansContext.getWebBeansUtil().validateBeanInjection(bean);
 
-        final UnproxyableResolutionException lazyException = webBeansContext.getDeploymentValidationService().validateProxyable(bean, ignoreFinalMethods);
+        UnproxyableResolutionException lazyException = webBeansContext.getDeploymentValidationService().validateProxyable(bean, ignoreFinalMethods);
         if (lazyException == null)
         {
             return bean;

@@ -504,7 +504,7 @@ public class WebBeansContext
                     {
                         r.run();
                     }
-                    catch (final RuntimeException re)
+                    catch (RuntimeException re)
                     {
                         logger.warning(re.getMessage());
                     }
@@ -528,7 +528,7 @@ public class WebBeansContext
         return applicationBoundaryService;
     }
 
-    public boolean findMissingAnnotatedType(final Class<?> missing)
+    public boolean findMissingAnnotatedType(Class<?> missing)
     {
         return false; // used in hierarchical WBC
     }

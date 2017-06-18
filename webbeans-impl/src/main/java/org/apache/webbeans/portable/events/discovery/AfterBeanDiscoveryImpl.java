@@ -162,7 +162,7 @@ public class AfterBeanDiscoveryImpl extends EventBase implements AfterBeanDiscov
             }
 
             boolean found = false;
-            for (final InjectionPoint ip : bean.getInjectionPoints())
+            for (InjectionPoint ip : bean.getInjectionPoints())
             {
                 if (ip.isDelegate())
                 {

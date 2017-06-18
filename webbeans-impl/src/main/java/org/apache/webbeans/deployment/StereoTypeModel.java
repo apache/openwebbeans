@@ -96,7 +96,7 @@ public class StereoTypeModel implements IStereoTypeModel
             }            
         }
 
-        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         Annotation[] qualifiers = annotationManager.getQualifierAnnotations(annotations);
         
         if(qualifiers != null)

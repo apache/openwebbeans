@@ -139,7 +139,7 @@ public class ConversationImpl implements Conversation, Serializable
         }
 
         // now store this conversation in the SessionContext
-        final ConversationManager conversationManager = webBeansContext.getConversationManager();
+        ConversationManager conversationManager = webBeansContext.getConversationManager();
         ConversationContext conversationContext = (ConversationContext) webBeansContext.getContextsService().getCurrentContext(ConversationScoped.class);
         conversationManager.addToConversationStorage(conversationContext, id);
     }
@@ -166,7 +166,7 @@ public class ConversationImpl implements Conversation, Serializable
         }
 
         // now store this conversation in the SessionContext
-        final ConversationManager conversationManager = webBeansContext.getConversationManager();
+        ConversationManager conversationManager = webBeansContext.getConversationManager();
         ConversationContext conversationContext = (ConversationContext) webBeansContext.getContextsService().getCurrentContext(ConversationScoped.class);
         conversationManager.removeConversationFromStorage(conversationContext);
     }

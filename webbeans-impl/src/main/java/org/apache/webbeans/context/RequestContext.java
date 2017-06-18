@@ -93,7 +93,7 @@ public class RequestContext extends AbstractContext
         return httpSession;
     }
 
-    public void setHttpSession(final Object httpSession)
+    public void setHttpSession(Object httpSession)
     {
         this.httpSession = httpSession;
     }

@@ -166,7 +166,7 @@ public final class JmsUtil
     {
         try
         {
-            final Class<?>[] interfaces = {Closable.class, Serializable.class, intf};
+            Class<?>[] interfaces = {Closable.class, Serializable.class, intf};
 
             //X TODO do we still need this?
             throw new WebBeansException("Support got temporarily removed while moving from Javassist to ASM");

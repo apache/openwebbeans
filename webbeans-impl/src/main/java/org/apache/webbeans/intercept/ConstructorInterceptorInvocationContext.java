@@ -32,10 +32,10 @@ public class ConstructorInterceptorInvocationContext<T> extends InterceptorInvoc
 {
     protected Object newInstance;
 
-    public ConstructorInterceptorInvocationContext(final Provider<T> provider,
-                                                   final List<Interceptor<?>> aroundConstructInterceptors,
-                                                   final Map<Interceptor<?>, ?> interceptorInstances,
-                                                   final Constructor<T> cons, final Object[] parameters)
+    public ConstructorInterceptorInvocationContext(Provider<T> provider,
+                                                   List<Interceptor<?>> aroundConstructInterceptors,
+                                                   Map<Interceptor<?>, ?> interceptorInstances,
+                                                   Constructor<T> cons, Object[] parameters)
     {
         super(provider, InterceptionType.AROUND_CONSTRUCT, aroundConstructInterceptors, interceptorInstances, cons, parameters);
     }
@@ -57,7 +57,7 @@ public class ConstructorInterceptorInvocationContext<T> extends InterceptorInvoc
             newInstance = getConstructor().newInstance(parameters);
             return null;
         }
-        catch (final InvocationTargetException ite)
+        catch (InvocationTargetException ite)
         {
             // unpack the reflection Exception
             throw ExceptionUtil.throwAsRuntimeException(ite.getCause());

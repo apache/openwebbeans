@@ -36,17 +36,17 @@ public class LazyInterceptorDefinedInjectionTarget<T> extends InjectionTargetImp
 {
     private volatile boolean init;
 
-    public LazyInterceptorDefinedInjectionTarget(final AnnotatedType<T> annotatedType,
-                                                 final Set<InjectionPoint> injectionPoints,
-                                                 final WebBeansContext webBeansContext,
-                                                 final List<AnnotatedMethod<?>> postConstructMethods,
-                                                 final List<AnnotatedMethod<?>> preDestroyMethods)
+    public LazyInterceptorDefinedInjectionTarget(AnnotatedType<T> annotatedType,
+                                                 Set<InjectionPoint> injectionPoints,
+                                                 WebBeansContext webBeansContext,
+                                                 List<AnnotatedMethod<?>> postConstructMethods,
+                                                 List<AnnotatedMethod<?>> preDestroyMethods)
     {
         super(annotatedType, injectionPoints, webBeansContext, postConstructMethods, preDestroyMethods);
     }
 
     @Override
-    public T produce(final CreationalContext<T> creationalContext)
+    public T produce(CreationalContext<T> creationalContext)
     {
         if (!init)
         {
@@ -54,13 +54,13 @@ public class LazyInterceptorDefinedInjectionTarget<T> extends InjectionTargetImp
             {
                 if (!init)
                 {
-                    final CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>) creationalContext;
+                    CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>) creationalContext;
                     Bean<T> bean = creationalContextImpl.getBean();
                     if (bean == null) // try to find it
                     {
-                        final BeanManagerImpl bm = webBeansContext.getBeanManagerImpl();
-                        final Set<Annotation> annotations = new HashSet<Annotation>();
-                        for (final Annotation a : annotatedType.getAnnotations())
+                        BeanManagerImpl bm = webBeansContext.getBeanManagerImpl();
+                        Set<Annotation> annotations = new HashSet<Annotation>();
+                        for (Annotation a : annotatedType.getAnnotations())
                         {
                             if (bm.isQualifier(a.annotationType()))
                             {
@@ -69,10 +69,10 @@ public class LazyInterceptorDefinedInjectionTarget<T> extends InjectionTargetImp
                         }
                         try
                         {
-                            final Set<Bean<?>> beans = bm.getBeans(annotatedType.getJavaClass(), annotations.toArray(new Annotation[annotations.size()]));
+                            Set<Bean<?>> beans = bm.getBeans(annotatedType.getJavaClass(), annotations.toArray(new Annotation[annotations.size()]));
                             bean = (Bean<T>) bm.resolve(beans);
                         }
-                        catch (final Exception e)
+                        catch (Exception e)
                         {
                             // no-op: whatever can be thrown we don't want it
                         }

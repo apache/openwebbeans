@@ -118,11 +118,11 @@ public abstract class AbstractOwbBean<T>
                 creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(creationalContext, this);
             }
 
-            final Producer<T> producer = getProducer();
-            final T instance = producer.produce(creationalContext);
+            Producer<T> producer = getProducer();
+            T instance = producer.produce(creationalContext);
             if (producer instanceof InjectionTarget && instance != null) // @AroundConstruct can skip proceed and then it returns null
             {
-                final InjectionTarget<T> injectionTarget = (InjectionTarget<T>)producer;
+                InjectionTarget<T> injectionTarget = (InjectionTarget<T>)producer;
                 injectionTarget.inject(instance, creationalContext);
                 injectionTarget.postConstruct(instance);
             }
@@ -325,7 +325,7 @@ public abstract class AbstractOwbBean<T>
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        final String simpleName = getReturnType().getSimpleName();
+        String simpleName = getReturnType().getSimpleName();
         builder.append(simpleName);
         builder.append(", WebBeansType:").append(getWebBeansType()).append(", Name:").append(getName());
         builder.append(", API Types:[");

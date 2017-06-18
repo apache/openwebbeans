@@ -83,9 +83,9 @@ public class ObserverMethodsBuilder<T>
 
         if (!definedObservers.isEmpty())
         {
-            for (final InjectionPoint ip : ownerBean.getInjectionPoints())
+            for (InjectionPoint ip : ownerBean.getInjectionPoints())
             {
-                final Set<Annotation> qualifiers = ip.getQualifiers();
+                Set<Annotation> qualifiers = ip.getQualifiers();
                 if (EventMetadata.class == ip.getType()
                         && qualifiers != null && ip.getQualifiers().size() == 1
                         && Default.class == qualifiers.iterator().next().annotationType())

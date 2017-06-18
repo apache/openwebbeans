@@ -77,7 +77,7 @@ public class AnnotatedTypeImpl<X>
         }
         else
         {
-            final BeanManager bm = webBeansContext.getBeanManagerImpl();
+            BeanManager bm = webBeansContext.getBeanManagerImpl();
             Set<Class<? extends Annotation>> annotationTypes = new HashSet<Class<? extends Annotation>>();
             List<Annotation> annotations = new ArrayList<Annotation>();
             boolean hasScope = false;
@@ -92,7 +92,7 @@ public class AnnotatedTypeImpl<X>
             }
             for (Annotation annotation : supertype.getAnnotations())
             {
-                final Class<? extends Annotation> annotationType = annotation.annotationType();
+                Class<? extends Annotation> annotationType = annotation.annotationType();
                 if (annotationType.isAnnotationPresent(Inherited.class)
                     && !annotationTypes.contains(annotationType)
                     && (!bm.isScope(annotationType) || !hasScope))
@@ -227,9 +227,9 @@ public class AnnotatedTypeImpl<X>
             Constructor<?>[] decCtxs =
                 getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructors(annotatedClass);
 
-            final Set<AnnotatedConstructor<X>> constructors = new HashSet<AnnotatedConstructor<X>>();
-            final Set<AnnotatedField<? super X>> fields = new HashSet<AnnotatedField<? super X>>();
-            final Set<AnnotatedMethod<? super X>> methods = new HashSet<AnnotatedMethod<? super X>>();
+            Set<AnnotatedConstructor<X>> constructors = new HashSet<AnnotatedConstructor<X>>();
+            Set<AnnotatedField<? super X>> fields = new HashSet<AnnotatedField<? super X>>();
+            Set<AnnotatedMethod<? super X>> methods = new HashSet<AnnotatedMethod<? super X>>();
 
             this.constructors = Collections.unmodifiableSet(constructors);
             this.fields = Collections.unmodifiableSet(fields);

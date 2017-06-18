@@ -153,14 +153,14 @@ public class BeansDeployer
             getPackage = ClassLoader.class.getDeclaredMethod("getDefinedPackage", String.class);
             getPackage.setAccessible(true);
         }
-        catch (final NoSuchMethodException e)
+        catch (NoSuchMethodException e)
         {
             try
             {
                 getPackage = ClassLoader.class.getDeclaredMethod("getPackage", String.class);
                 getPackage.setAccessible(true);
             }
-            catch (final NoSuchMethodException ex)
+            catch (NoSuchMethodException ex)
             {
                 throw new IllegalStateException(ex);
             }
@@ -272,7 +272,7 @@ public class BeansDeployer
                 addAdditionalAnnotatedTypes(fireAfterTypeDiscoveryEvent(), globalBdaAnnotatedTypes);
 
 
-                final Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> beanAttributesPerBda
+                Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> beanAttributesPerBda
                     = getBeanAttributes(annotatedTypesPerBda);
 
                 // shouldn't be used anymore, view is now beanAttributes
@@ -291,7 +291,7 @@ public class BeansDeployer
                         new SpecializationUtil.BeanAttributesProvider()
                         {
                             @Override
-                            public <T> BeanAttributes get(final AnnotatedType<T> at)
+                            public <T> BeanAttributes get(AnnotatedType<T> at)
                             {
                                 ExtendedBeanAttributes<?> data = null;
                                 for (Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> beanAttributes : beanAttributesPerBda.values())
@@ -383,9 +383,9 @@ public class BeansDeployer
      */
     private void validateNames()
     {
-        final Collection<String> names = new HashSet<>();
-        final Collection<String> partials = new HashSet<>();
-        for (final Bean<?> bean : webBeansContext.getBeanManagerImpl().getBeans())
+        Collection<String> names = new HashSet<>();
+        Collection<String> partials = new HashSet<>();
+        for (Bean<?> bean : webBeansContext.getBeanManagerImpl().getBeans())
         {
             // the skip logic needs some revisit but this validation is not useful enough to justify to resolve all alternatives here
             if (bean.isAlternative())
@@ -397,12 +397,12 @@ public class BeansDeployer
                 continue;
             }
 
-            final String name = bean.getName();
+            String name = bean.getName();
             if (name != null)
             {
                 if (name.contains("."))
                 {
-                    final String[] segments = name.split("\\.");
+                    String[] segments = name.split("\\.");
                     String current = "";
                     for (int i = 0; i < segments.length - 1; i++)
                     {
@@ -424,9 +424,9 @@ public class BeansDeployer
     }
 
     private Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> getBeanAttributes(
-                                final Map<BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda)
+                                Map<BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda)
     {
-        final Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> beanAttributesPerBda
+        Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> beanAttributesPerBda
             = new HashMap<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>>();
 
         for (Map.Entry<BeanArchiveInformation, List<AnnotatedType<?>>> atEntry : annotatedTypesPerBda.entrySet())
@@ -436,23 +436,23 @@ public class BeansDeployer
 
             boolean onlyScopedBeans = BeanDiscoveryMode.TRIM == bdaInfo.getBeanDiscoveryMode();
 
-            final Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> bdaBeanAttributes = new IdentityHashMap<AnnotatedType<?>, ExtendedBeanAttributes<?>>(annotatedTypes.size());
-            final Iterator<AnnotatedType<?>> iterator = annotatedTypes.iterator();
+            Map<AnnotatedType<?>, ExtendedBeanAttributes<?>> bdaBeanAttributes = new IdentityHashMap<AnnotatedType<?>, ExtendedBeanAttributes<?>>(annotatedTypes.size());
+            Iterator<AnnotatedType<?>> iterator = annotatedTypes.iterator();
             while (iterator.hasNext())
             {
-                final AnnotatedType<?> at = iterator.next();
-                final Class beanClass = at.getJavaClass();
-                final boolean isEjb = discoverEjb && EJBWebBeansConfigurator.isSessionBean(beanClass, webBeansContext);
+                AnnotatedType<?> at = iterator.next();
+                Class beanClass = at.getJavaClass();
+                boolean isEjb = discoverEjb && EJBWebBeansConfigurator.isSessionBean(beanClass, webBeansContext);
                 try
                 {
                     if (isEjb || (ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(at)) && isValidManagedBean(at))
                     {
-                        final BeanAttributesImpl beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(at, onlyScopedBeans).build();
+                        BeanAttributesImpl beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(at, onlyScopedBeans).build();
                         if (beanAttributes != null &&
                                 (!beanAttributes.isAlternative() || webBeansContext.getAlternativesManager()
                                         .isAlternative(at.getJavaClass(), beanAttributes.getStereotypes())))
                         {
-                            final ProcessBeanAttributesImpl<?> processBeanAttributes
+                            ProcessBeanAttributesImpl<?> processBeanAttributes
                                 = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(at, at.getJavaClass(), beanAttributes);
                             if (processBeanAttributes != null)
                             {
@@ -478,7 +478,7 @@ public class BeansDeployer
                         iterator.remove();
                     }
                 }
-                catch (final NoClassDefFoundError ncdfe)
+                catch (NoClassDefFoundError ncdfe)
                 {
                     logger.info("Skipping deployment of Class " + beanClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
                 }
@@ -493,16 +493,16 @@ public class BeansDeployer
 
     private void validateDisposeParameters()
     {
-        final WebBeansUtil webBeansUtil = webBeansContext.getWebBeansUtil();
-        for (final Bean<?> bean : webBeansContext.getBeanManagerImpl().getBeans())
+        WebBeansUtil webBeansUtil = webBeansContext.getWebBeansUtil();
+        for (Bean<?> bean : webBeansContext.getBeanManagerImpl().getBeans())
         {
             if (ProducerMethodBean.class.isInstance(bean))
             {
-                final Producer<?> producer = AbstractProducerBean.class.cast(bean).getProducer();
+                Producer<?> producer = AbstractProducerBean.class.cast(bean).getProducer();
                 if (BaseProducerProducer.class.isInstance(producer))
                 {
-                    final BaseProducerProducer producerProducer = BaseProducerProducer.class.cast(producer);
-                    final Set<InjectionPoint> disposalIPs = producerProducer.getDisposalIPs();
+                    BaseProducerProducer producerProducer = BaseProducerProducer.class.cast(producer);
+                    Set<InjectionPoint> disposalIPs = producerProducer.getDisposalIPs();
                     if (disposalIPs != null && !producerProducer.isAnyDisposal()) // any can be ambiguous but that's not an issue
                     {
                         webBeansUtil.validate(disposalIPs, bean);
@@ -530,26 +530,26 @@ public class BeansDeployer
     // avoid delegate implementing Foo<A> and decorator implementing Foo<B> with no link between A and B
     private void validateDecoratorGenericTypes()
     {
-        for (final Decorator<?> decorator : decoratorsManager.getDecorators())
+        for (Decorator<?> decorator : decoratorsManager.getDecorators())
         {
-            final Type type = decorator.getDelegateType();
+            Type type = decorator.getDelegateType();
 
             // capture ParameterizedType from decorator type
-            final Collection<Type> types = new HashSet<Type>();
+            Collection<Type> types = new HashSet<Type>();
             if (Class.class.isInstance(type))
             {
                 Class<?> c = Class.class.cast(type);
                 while (c != Object.class && c != null)
                 {
                     types.add(c);
-                    for (final Type t : asList(c.getGenericInterfaces()))
+                    for (Type t : asList(c.getGenericInterfaces()))
                     {
                         if (ParameterizedType.class.isInstance(t))
                         {
                             types.add(t);
                         }
                     }
-                    final Type genericSuperclass = c.getGenericSuperclass();
+                    Type genericSuperclass = c.getGenericSuperclass();
                     if (ParameterizedType.class.isInstance(genericSuperclass))
                     {
                         types.add(genericSuperclass);
@@ -559,19 +559,19 @@ public class BeansDeployer
             } // else?
 
             // check arguments matches with decorator API
-            for (final Type api : decorator.getTypes())
+            for (Type api : decorator.getTypes())
             {
                 if (!ParameterizedType.class.isInstance(api)) // no need to check here
                 {
                     continue;
                 }
 
-                final ParameterizedType pt1 = ParameterizedType.class.cast(api);
-                for (final Type t : types)
+                ParameterizedType pt1 = ParameterizedType.class.cast(api);
+                for (Type t : types)
                 {
                     if (ParameterizedType.class.isInstance(t))
                     {
-                        final ParameterizedType pt2 = ParameterizedType.class.cast(t);
+                        ParameterizedType pt2 = ParameterizedType.class.cast(t);
 
                         if (pt1.getRawType() == pt2.getRawType() &&
                             !GenericsUtil.isAssignableFrom(true, false, pt1, pt2))
@@ -623,7 +623,7 @@ public class BeansDeployer
                 Priority priority = annotatedType.getAnnotation(Priority.class);
                 if (priority != null)
                 {
-                    final Class<?> javaClass = annotatedType.getJavaClass();
+                    Class<?> javaClass = annotatedType.getJavaClass();
                     interceptorsManager.addPriorityClazzInterceptor(javaClass, priority);
                 }
             }
@@ -632,7 +632,7 @@ public class BeansDeployer
                 Priority priority = annotatedType.getAnnotation(Priority.class);
                 if (priority != null)
                 {
-                    final Class<?> javaClass = annotatedType.getJavaClass();
+                    Class<?> javaClass = annotatedType.getJavaClass();
                     decoratorsManager.addPriorityClazzDecorator(javaClass, priority);
                 }
             }
@@ -706,7 +706,7 @@ public class BeansDeployer
         {
             if(System.getSecurityManager() != null)
             {
-                final Constructor<?> c = webBeansContext.getSecurityService().doPrivilegedGetConstructor(clazz, WebBeansContext.class);
+                Constructor<?> c = webBeansContext.getSecurityService().doPrivilegedGetConstructor(clazz, WebBeansContext.class);
                 if (c == null)
                 {
                     return webBeansContext.getSecurityService().doPrivilegedObjectCreate(clazz);
@@ -720,7 +720,7 @@ public class BeansDeployer
                 {
                     return clazz.getConstructor(new Class<?>[] { WebBeansContext.class }).newInstance(wbc);
                 }
-                catch (final Exception e)
+                catch (Exception e)
                 {
                     return clazz.newInstance();
                 }
@@ -779,7 +779,7 @@ public class BeansDeployer
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         manager.setAfterBeanDiscoveryStart();
-        final AfterBeanDiscoveryImpl event = new AfterBeanDiscoveryImpl(webBeansContext);
+        AfterBeanDiscoveryImpl event = new AfterBeanDiscoveryImpl(webBeansContext);
         manager.fireLifecycleEvent(event);
 
         event.deployConfiguredBeans();
@@ -796,18 +796,18 @@ public class BeansDeployer
      */
     private List<AnnotatedType<?>> fireAfterTypeDiscoveryEvent()
     {
-        final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        final List<AnnotatedType<?>> newAt = new LinkedList<AnnotatedType<?>>();
-        final List<Class<?>> interceptors = interceptorsManager.getPrioritizedInterceptors();
-        final List<Class<?>> decorators = decoratorsManager.getPrioritizedDecorators();
-        final List<Class<?>> alternatives = webBeansContext.getAlternativesManager().getPrioritizedAlternatives();
+        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
+        List<AnnotatedType<?>> newAt = new LinkedList<AnnotatedType<?>>();
+        List<Class<?>> interceptors = interceptorsManager.getPrioritizedInterceptors();
+        List<Class<?>> decorators = decoratorsManager.getPrioritizedDecorators();
+        List<Class<?>> alternatives = webBeansContext.getAlternativesManager().getPrioritizedAlternatives();
 
         // match AfterTypeDiscovery expected order (1, 2, 3...)
         Collections.reverse(interceptors);
         Collections.reverse(decorators);
         Collections.reverse(alternatives);
 
-        final AfterTypeDiscoveryImpl event = new AfterTypeDiscoveryImpl(webBeansContext, newAt,
+        AfterTypeDiscoveryImpl event = new AfterTypeDiscoveryImpl(webBeansContext, newAt,
                 interceptors, decorators, alternatives);
         manager.fireLifecycleEvent(event);
 
@@ -841,9 +841,9 @@ public class BeansDeployer
      */
     private void fireAfterDeploymentValidationEvent()
     {
-        final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
+        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         manager.setAfterDeploymentValidationFired(true);
-        final AfterDeploymentValidationImpl event = new AfterDeploymentValidationImpl(manager);
+        AfterDeploymentValidationImpl event = new AfterDeploymentValidationImpl(manager);
         manager.fireLifecycleEvent(event);
 
         webBeansContext.getWebBeansUtil().inspectDeploymentErrorStack(
@@ -1006,11 +1006,11 @@ public class BeansDeployer
                     {
                         if (BuiltInOwbBean.class.isInstance(bean))
                         {
-                            final Class<?> proxyable = BuiltInOwbBean.class.cast(bean).proxyableType();
+                            Class<?> proxyable = BuiltInOwbBean.class.cast(bean).proxyableType();
                             if (proxyable != null)
                             {
-                                final AbstractProducer producer = AbstractProducer.class.cast(OwbBean.class.cast(bean).getProducer());
-                                final AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(proxyable);
+                                AbstractProducer producer = AbstractProducer.class.cast(OwbBean.class.cast(bean).getProducer());
+                                AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(proxyable);
                                 producer.defineInterceptorStack(bean, annotatedType, webBeansContext);
                             }
                         }
@@ -1204,7 +1204,7 @@ public class BeansDeployer
                         // fire injection point events and forget
                         AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(implClass);
                         InjectionTarget<?> it = webBeansContext.getBeanManagerImpl().createInjectionTarget(annotatedType);
-                        for (final InjectionPoint ip : it.getInjectionPoints())
+                        for (InjectionPoint ip : it.getInjectionPoints())
                         {
                             webBeansContext.getWebBeansUtil().fireProcessInjectionPointEvent(ip);
                         }
@@ -1252,13 +1252,13 @@ public class BeansDeployer
         return annotatedTypes;
     }
 
-    private boolean isEEComponent(final Class<?> impl)
+    private boolean isEEComponent(Class<?> impl)
     {
         OpenWebBeansJavaEEPlugin eePlugin = webBeansContext.getPluginLoader().getJavaEEPlugin();
         return eePlugin != null && eePlugin.isEEComponent(impl);
     }
 
-    private boolean isVetoed(final Class<?> implClass)
+    private boolean isVetoed(Class<?> implClass)
     {
         if (implClass.getAnnotation(Vetoed.class) != null)
         {
@@ -1279,9 +1279,9 @@ public class BeansDeployer
         do
         {
             // yes we cache result with potentially different classloader but this is not portable by spec
-            final String name = pckge.getName();
+            String name = pckge.getName();
             {
-                final Boolean result = packageVetoCache.get(name);
+                Boolean result = packageVetoCache.get(name);
                 if (result != null && result)
                 {
                     return result;
@@ -1297,11 +1297,11 @@ public class BeansDeployer
                 packageVetoCache.put(pckge.getName(), false);
             }
 
-            final int idx = name.lastIndexOf('.');
+            int idx = name.lastIndexOf('.');
             if (idx > 0)
             {
-                final String previousPackage = name.substring(0, idx);
-                final Boolean result = packageVetoCache.get(previousPackage);
+                String previousPackage = name.substring(0, idx);
+                Boolean result = packageVetoCache.get(previousPackage);
                 if (result != null && result)
                 {
                     return result;
@@ -1310,7 +1310,7 @@ public class BeansDeployer
                 {
                     pckge = Package.class.cast(GET_PACKAGE.invoke(classLoader, previousPackage));
                 }
-                catch (final Exception e)
+                catch (Exception e)
                 {
                     throw new IllegalStateException(e);
                 }
@@ -1426,10 +1426,10 @@ public class BeansDeployer
         }
     }
 
-    private boolean isValidManagedBean(final AnnotatedType<?> type)
+    private boolean isValidManagedBean(AnnotatedType<?> type)
     {
-        final Class<?> beanClass = type.getJavaClass();
-        final WebBeansUtil webBeansUtil = webBeansContext.getWebBeansUtil();
+        Class<?> beanClass = type.getJavaClass();
+        WebBeansUtil webBeansUtil = webBeansContext.getWebBeansUtil();
 
         // done separately to be able to swallow the logging when not relevant and avoid to pollute logs
         try
@@ -1439,7 +1439,7 @@ public class BeansDeployer
                 return false;
             }
         }
-        catch (final TypeNotPresentException cnfe)
+        catch (TypeNotPresentException cnfe)
         {
             return false;
         }
@@ -1448,7 +1448,7 @@ public class BeansDeployer
         {
             webBeansUtil.checkManagedBean(beanClass);
         }
-        catch (final DefinitionException e)
+        catch (DefinitionException e)
         {
             logger.log(Level.FINE, "skipped deployment of: " + beanClass.getName() + " reason: " + e.getMessage());
             logger.log(Level.FINER, "skipped deployment of: " + beanClass.getName() + " details: ", e);
@@ -1833,10 +1833,10 @@ public class BeansDeployer
                     logger.log(Level.FINE, "Found Managed Bean with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
 
-                final Set<ObserverMethod<?>> observerMethods;
-                final AnnotatedType<T> beanAnnotatedType = bean.getAnnotatedType();
-                final AnnotatedType<T> defaultAt = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(beanAnnotatedType.getJavaClass());
-                final boolean ignoreProducer = defaultAt != beanAnnotatedType && annotatedTypes.containsKey(defaultAt);
+                Set<ObserverMethod<?>> observerMethods;
+                AnnotatedType<T> beanAnnotatedType = bean.getAnnotatedType();
+                AnnotatedType<T> defaultAt = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(beanAnnotatedType.getJavaClass());
+                boolean ignoreProducer = defaultAt != beanAnnotatedType && annotatedTypes.containsKey(defaultAt);
                 if(bean.isEnabled())
                 {
                     observerMethods = new ObserverMethodsBuilder<T>(webBeansContext, beanAnnotatedType).defineObserverMethods(bean);
@@ -1846,7 +1846,7 @@ public class BeansDeployer
                     observerMethods = new HashSet<ObserverMethod<?>>();
                 }
 
-                final WebBeansContext wbc = bean.getWebBeansContext();
+                WebBeansContext wbc = bean.getWebBeansContext();
                 Set<ProducerFieldBean<?>> producerFields =
                         ignoreProducer ? Collections.emptySet() : new ProducerFieldBeansBuilder(wbc, beanAnnotatedType).defineProducerFields(bean);
                 Set<ProducerMethodBean<?>> producerMethods =
@@ -1858,7 +1858,7 @@ public class BeansDeployer
 
                 if (!producerFields.isEmpty() || !producerMethods.isEmpty())
                 {
-                    final Priority priority = annotatedType.getAnnotation(Priority.class);
+                    Priority priority = annotatedType.getAnnotation(Priority.class);
                     if (priority != null && !webBeansContext.getAlternativesManager()
                             .isAlternative(annotatedType.getJavaClass(), Collections.<Class<? extends Annotation>>emptySet()))
                     {

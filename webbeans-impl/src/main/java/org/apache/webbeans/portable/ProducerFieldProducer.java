@@ -86,7 +86,7 @@ public class ProducerFieldProducer<T, P> extends BaseProducerProducer<T, P>
 
                 if (OwbInterceptorProxy.class.isInstance(parentInstance))
                 {
-                    final InterceptorHandler handler = webBeansContext.getInterceptorDecoratorProxyFactory()
+                    InterceptorHandler handler = webBeansContext.getInterceptorDecoratorProxyFactory()
                         .getInterceptorHandler(OwbInterceptorProxy.class.cast(parentInstance));
                     if (DefaultInterceptorHandler.class.isInstance(handler))
                     {

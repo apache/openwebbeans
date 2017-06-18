@@ -123,11 +123,11 @@ public abstract class AbstractProducer<T> implements Producer<T>
     @Override
     public T produce(CreationalContext<T> creationalContext)
     {
-        final CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>) creationalContext;
+        CreationalContextImpl<T> creationalContextImpl = (CreationalContextImpl<T>) creationalContext;
 
-        final Contextual<T> oldContextual = creationalContextImpl.getContextual();
+        Contextual<T> oldContextual = creationalContextImpl.getContextual();
 
-        final Map<Interceptor<?>, Object> interceptorInstances = creationalContextImpl.getWebBeansContext()
+        Map<Interceptor<?>, Object> interceptorInstances = creationalContextImpl.getWebBeansContext()
                 .getInterceptorResolutionService().createInterceptorInstances(interceptorInfo, creationalContextImpl);
         creationalContextImpl.putContextual(oldContextual);
 
@@ -145,7 +145,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
         return instance;
     }
 
-    protected List<Decorator<?>> filterDecorators(final T instance, final List<Decorator<?>> decorators)
+    protected List<Decorator<?>> filterDecorators(T instance, List<Decorator<?>> decorators)
     {
         return decorators;
     }
@@ -177,9 +177,9 @@ public abstract class AbstractProducer<T> implements Producer<T>
         return interceptorInfo != null && proxyClass != null;
     }
 
-    protected boolean isDelegateInjection(final CreationalContextImpl<?> cc)
+    protected boolean isDelegateInjection(CreationalContextImpl<?> cc)
     {
-        final InjectionPoint ip = cc.getInjectionPoint();
+        InjectionPoint ip = cc.getInjectionPoint();
         if (ip == null)
         {
             return false;

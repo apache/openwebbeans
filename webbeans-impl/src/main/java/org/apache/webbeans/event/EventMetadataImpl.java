@@ -87,8 +87,8 @@ public class EventMetadataImpl implements EventMetadata, Serializable
         if (selectType != null
                 && ParameterizedType.class.isInstance(selectType))
         {
-            final ParameterizedType parameterizedType = ParameterizedType.class.cast(selectType);
-            final Type rawType = parameterizedType.getRawType();
+            ParameterizedType parameterizedType = ParameterizedType.class.cast(selectType);
+            Type rawType = parameterizedType.getRawType();
             if (rawType == type)
             {
                 return selectType;

@@ -114,7 +114,7 @@ public class InjectionResolver
         this.startup = false;
     }
 
-    public void setFastMatching(final boolean fastMatching)
+    public void setFastMatching(boolean fastMatching)
     {
         this.fastMatching = fastMatching;
     }
@@ -163,7 +163,7 @@ public class InjectionResolver
         }
 
         // not that happy about this check here and at runtime but few TCKs test Weld behavior only...
-        final Bean<?> bean = resolve(implResolveByType(false, type, injectionPoint.getQualifiers().toArray(new Annotation[injectionPoint.getQualifiers().size()])),
+        Bean<?> bean = resolve(implResolveByType(false, type, injectionPoint.getQualifiers().toArray(new Annotation[injectionPoint.getQualifiers().size()])),
                                      injectionPoint);
         if (bean != null && ManagedBean.class.isInstance(bean))
         {
@@ -171,7 +171,7 @@ public class InjectionResolver
             {
                 ManagedBean.class.cast(bean).valid();
             }
-            catch (final UnproxyableResolutionException ure)
+            catch (UnproxyableResolutionException ure)
             {
                 throw new WebBeansDeploymentException(ure);
             }

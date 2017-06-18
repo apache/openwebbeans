@@ -112,7 +112,7 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
         {
             return getMethod().invoke(target.get(), parameters);
         }
-        catch (final InvocationTargetException ite)
+        catch (InvocationTargetException ite)
         {
             // unpack the reflection Exception
             throw ExceptionUtil.throwAsRuntimeException(ite.getCause());

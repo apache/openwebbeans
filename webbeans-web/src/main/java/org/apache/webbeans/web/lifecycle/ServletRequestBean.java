@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 
 class ServletRequestBean extends BuiltInOwbBean<HttpServletRequest>
 {
-    ServletRequestBean(final WebBeansContext ctx, final WebContextsService contexts)
+    ServletRequestBean(WebBeansContext ctx, WebContextsService contexts)
     {
         super(ctx, WebBeansType.SERVLET_REQUEST, HttpServletRequest.class, new SimpleProducerFactory<HttpServletRequest>(
                 new ProviderBasedProducer<>(ctx, HttpServletRequest.class, new Provider<HttpServletRequest>()
@@ -39,7 +39,7 @@ class ServletRequestBean extends BuiltInOwbBean<HttpServletRequest>
                     @Override
                     public HttpServletRequest get()
                     {
-                        final ServletRequestContext requestContext = contexts.getRequestContext(false);
+                        ServletRequestContext requestContext = contexts.getRequestContext(false);
                         return requestContext == null ? null : requestContext.getServletRequest();
                     }
                 }, true)));

@@ -31,9 +31,9 @@ class UnproxyableBean<T> extends ManagedBean<T>
 {
     private final UnproxyableResolutionException exception;
 
-    UnproxyableBean(final WebBeansContext webBeansContext, final WebBeansType webBeansType,
-                           final BeanAttributes<T> beanAttributes, final AnnotatedType<T> at, final Class<T> beanClass,
-                           final UnproxyableResolutionException error)
+    UnproxyableBean(WebBeansContext webBeansContext, WebBeansType webBeansType,
+                    BeanAttributes<T> beanAttributes, AnnotatedType<T> at, Class<T> beanClass,
+                    UnproxyableResolutionException error)
     {
         super(webBeansContext, webBeansType, at, beanAttributes, beanClass);
         this.exception = error;
@@ -46,7 +46,7 @@ class UnproxyableBean<T> extends ManagedBean<T>
     }
 
     @Override
-    public T create(final CreationalContext<T> creationalContext)
+    public T create(CreationalContext<T> creationalContext)
     {
         throw exception;
     }

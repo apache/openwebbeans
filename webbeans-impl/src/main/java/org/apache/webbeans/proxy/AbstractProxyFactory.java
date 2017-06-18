@@ -197,7 +197,7 @@ public abstract class AbstractProxyFactory
      * If so, move it to org.apache.webbeans.custom.
      * @param forbiddenPackagePrefix including the '.', e.g. 'javax.'
      */
-    private String fixPreservedPackage(final String className, final String forbiddenPackagePrefix)
+    private String fixPreservedPackage(String className, String forbiddenPackagePrefix)
     {
         String fixedClassName = className;
 
@@ -231,7 +231,7 @@ public abstract class AbstractProxyFactory
     {
         String proxyClassFileName = proxyClassName.replace('.', '/');
 
-        final byte[] proxyBytes = generateProxy(classLoader,
+        byte[] proxyBytes = generateProxy(classLoader,
                 classToProxy,
                 proxyClassName,
                 proxyClassFileName,
@@ -359,7 +359,7 @@ public abstract class AbstractProxyFactory
 
         try
         {
-            final Class<T> definedClass;
+            Class<T> definedClass;
 
             if (defineClassMethod != null)
             {
@@ -405,7 +405,7 @@ public abstract class AbstractProxyFactory
     /**
      * @return the wrapper type for a primitive, e.g. java.lang.Integer for int
      */
-    protected String getWrapperType(final Class<?> type)
+    protected String getWrapperType(Class<?> type)
     {
         if (Integer.TYPE.equals(type))
         {
@@ -453,7 +453,7 @@ public abstract class AbstractProxyFactory
      * @param type Type to load
      * @return Bytecode instruction to use
      */
-    protected int getVarInsn(final Class<?> type)
+    protected int getVarInsn(Class<?> type)
     {
         if (type.isPrimitive())
         {
@@ -500,7 +500,7 @@ public abstract class AbstractProxyFactory
      * @param mv
      * @param i
      */
-    protected void pushIntOntoStack(final MethodVisitor mv, final int i)
+    protected void pushIntOntoStack(MethodVisitor mv, int i)
     {
         if (i == 0)
         {
@@ -542,7 +542,7 @@ public abstract class AbstractProxyFactory
      * @param type Type the needs to be returned
      * @return The matching bytecode instruction
      */
-    protected int getReturnInsn(final Class<?> type)
+    protected int getReturnInsn(Class<?> type)
     {
         if (type.isPrimitive())
         {
@@ -593,7 +593,7 @@ public abstract class AbstractProxyFactory
      * @param returnType The type to cast to with CHECKCAST
      * @return CHECKCAST parameter
      */
-    protected String getCastType(final Class<?> returnType)
+    protected String getCastType(Class<?> returnType)
     {
         if (returnType.isPrimitive())
         {
@@ -611,7 +611,7 @@ public abstract class AbstractProxyFactory
      * @param type Type whose primitive method we want to lookup
      * @return The name of the method to use
      */
-    protected String getPrimitiveMethod(final Class<?> type)
+    protected String getPrimitiveMethod(Class<?> type)
     {
         if (Integer.TYPE.equals(type))
         {
@@ -651,7 +651,7 @@ public abstract class AbstractProxyFactory
 
     protected void generateReturn(MethodVisitor mv, Method delegatedMethod)
     {
-        final Class<?> returnType = delegatedMethod.getReturnType();
+        Class<?> returnType = delegatedMethod.getReturnType();
         mv.visitInsn(getReturnInsn(returnType));
     }
 
@@ -690,7 +690,7 @@ public abstract class AbstractProxyFactory
 
     private void initializeUnsafe()
     {
-        final Class<?> unsafeClass;
+        Class<?> unsafeClass;
         try
         {
             unsafeClass = AccessController.doPrivileged(new PrivilegedAction<Class<?>>()
@@ -799,7 +799,7 @@ public abstract class AbstractProxyFactory
             // keep copy of array on stack
             mv.visitInsn(Opcodes.DUP);
 
-            final Class<?> parameterType = parameterTypes[i];
+            Class<?> parameterType = parameterTypes[i];
 
             // push number onto stack
             pushIntOntoStack(mv, i);
@@ -840,7 +840,7 @@ public abstract class AbstractProxyFactory
      * @param type Type of array to create
      * @throws ProxyGenerationException
      */
-    protected void createArrayDefinition(final MethodVisitor mv, final int size, final Class<?> type)
+    protected void createArrayDefinition(MethodVisitor mv, int size, Class<?> type)
             throws ProxyGenerationException
     {
         // create a new array of java.lang.class (2)

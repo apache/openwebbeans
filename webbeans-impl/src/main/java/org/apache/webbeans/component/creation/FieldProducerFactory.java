@@ -47,10 +47,10 @@ public class FieldProducerFactory<P> extends BaseProducerFactory<P>
             throw new IllegalArgumentException("producer field has @Inject annotation: " + producerField);
         }
 
-        final Type type = producerField.getJavaMember().getGenericType();
+        Type type = producerField.getJavaMember().getGenericType();
         if (ParameterizedType.class.isInstance(type))
         {
-            for (final Type arg : ParameterizedType.class.cast(type).getActualTypeArguments())
+            for (Type arg : ParameterizedType.class.cast(type).getActualTypeArguments())
             {
                 if (ClassUtil.isWildCardType(arg))
                 {
@@ -66,8 +66,8 @@ public class FieldProducerFactory<P> extends BaseProducerFactory<P>
     @Override
     public <T> Producer<T> createProducer(Bean<T> bean)
     {
-        final Set<InjectionPoint> disposalIPs = getInjectionPoints(bean);
-        final Producer<T> producer = new ProducerFieldProducer<T, P>(parent, producerField, disposalMethod, disposalIPs, webBeansContext);
+        Set<InjectionPoint> disposalIPs = getInjectionPoints(bean);
+        Producer<T> producer = new ProducerFieldProducer<T, P>(parent, producerField, disposalMethod, disposalIPs, webBeansContext);
         return webBeansContext.getWebBeansUtil().fireProcessProducerEvent(producer, producerField);
     }
 

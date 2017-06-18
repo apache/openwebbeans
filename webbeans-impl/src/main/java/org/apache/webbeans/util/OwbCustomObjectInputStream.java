@@ -49,7 +49,7 @@ public class OwbCustomObjectInputStream extends ObjectInputStream
     @Override
     protected Class resolveProxyClass(String[] interfaces) throws IOException, ClassNotFoundException
     {
-        final Class[] cinterfaces = new Class[interfaces.length];
+        Class[] cinterfaces = new Class[interfaces.length];
         for (int i = 0; i < interfaces.length; i++)
         {
             cinterfaces[i] = Class.forName(interfaces[i], false, classLoader);
@@ -65,7 +65,7 @@ public class OwbCustomObjectInputStream extends ObjectInputStream
         }
     }
 
-    private static String[] toArray(final String property)
+    private static String[] toArray(String property)
     {
         return property == null ? null : property.split(" *, *");
     }
@@ -75,18 +75,18 @@ public class OwbCustomObjectInputStream extends ObjectInputStream
         private final String[] blacklist;
         private final String[] whitelist;
 
-        protected BlacklistClassResolver(final String[] blacklist, final String[] whitelist)
+        protected BlacklistClassResolver(String[] blacklist, String[] whitelist)
         {
             this.whitelist = whitelist;
             this.blacklist = blacklist;
         }
 
-        protected boolean isBlacklisted(final String name)
+        protected boolean isBlacklisted(String name)
         {
             return (whitelist != null && !contains(whitelist, name)) || contains(blacklist, name);
         }
 
-        public final String check(final String name)
+        public final String check(String name)
         {
             if (isBlacklisted(name))
             {
@@ -95,11 +95,11 @@ public class OwbCustomObjectInputStream extends ObjectInputStream
             return name;
         }
 
-        private static boolean contains(final String[] list, String name)
+        private static boolean contains(String[] list, String name)
         {
             if (list != null)
             {
-                for (final String white : list)
+                for (String white : list)
                 {
                     if (name.startsWith(white))
                     {

@@ -38,7 +38,7 @@ public class OwbArquillianSingletonService implements SingletonService<WebBeansC
 
     private WebBeansContext webBeansContext;
 
-    public OwbArquillianSingletonService(final Properties props)
+    public OwbArquillianSingletonService(Properties props)
     {
         initialConfig = props;
         initOwb(props);
@@ -49,7 +49,7 @@ public class OwbArquillianSingletonService implements SingletonService<WebBeansC
         initOwb(initialConfig);
     }
 
-    public synchronized void initOwb(final Properties initialConfig)
+    public synchronized void initOwb(Properties initialConfig)
     {
         ScannerService dummyScannerService = new OwbArquillianScannerService();
 

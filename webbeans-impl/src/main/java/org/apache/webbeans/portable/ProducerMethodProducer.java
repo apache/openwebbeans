@@ -58,7 +58,7 @@ public class ProducerMethodProducer<T, P> extends BaseProducerProducer<T, P>
                 throw new IllegalArgumentException("owner may not be null for non-static producer method " + producerMethod);
             }
         }
-        final OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
+        OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
         if (ejbPlugin != null)
         {
             this.producerMethod = ejbPlugin.resolveViewMethod(owner, producerMethod.getJavaMember());

@@ -77,7 +77,7 @@ public class PluginLoader
             {
                 if (logger.isLoggable(Level.INFO))
                 {
-                    final Class<? extends OpenWebBeansPlugin> pluginClass = plugin.getClass();
+                    Class<? extends OpenWebBeansPlugin> pluginClass = plugin.getClass();
                     if (!Proxy.isProxyClass(pluginClass))
                     {
                         logger.log(Level.INFO, OWBLogConst.INFO_0004, pluginClass.getSimpleName());

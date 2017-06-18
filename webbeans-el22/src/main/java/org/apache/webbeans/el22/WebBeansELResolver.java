@@ -177,13 +177,13 @@ public class WebBeansELResolver extends ELResolver
         return contextualInstance;
     }
 
-    private static Type bestType(final Bean<?> bean)
+    private static Type bestType(Bean<?> bean)
     {
         if (bean == null)
         {
             return Object.class;
         }
-        final Class<?> bc = bean.getBeanClass();
+        Class<?> bc = bean.getBeanClass();
         if (bc != null)
         {
             return bc;

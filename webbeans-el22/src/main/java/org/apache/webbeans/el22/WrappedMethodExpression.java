@@ -31,20 +31,20 @@ public class WrappedMethodExpression extends MethodExpression
 {
     private final MethodExpression delegate;
 
-    public WrappedMethodExpression(final MethodExpression methodExpression)
+    public WrappedMethodExpression(MethodExpression methodExpression)
     {
         this.delegate = methodExpression;
     }
 
     @Override
-    public MethodInfo getMethodInfo(final ELContext context)
+    public MethodInfo getMethodInfo(ELContext context)
             throws NullPointerException, PropertyNotFoundException, MethodNotFoundException, ELException
     {
         return delegate.getMethodInfo(context);
     }
 
     @Override
-    public Object invoke(final ELContext context, final Object[] params)
+    public Object invoke(ELContext context, Object[] params)
             throws NullPointerException, PropertyNotFoundException, MethodNotFoundException, ELException
     {
         try
@@ -53,7 +53,7 @@ public class WrappedMethodExpression extends MethodExpression
         }
         finally
         {
-            final ELContextStore store = ELContextStore.getInstance(false);
+            ELContextStore store = ELContextStore.getInstance(false);
             if (store != null)
             {
                 store.destroyDependents();
@@ -62,7 +62,7 @@ public class WrappedMethodExpression extends MethodExpression
     }
 
     @Override
-    public boolean equals(final Object obj)
+    public boolean equals(Object obj)
     {
         return obj == this || delegate.equals(obj);
     }

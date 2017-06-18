@@ -92,7 +92,7 @@ public class ProducerFieldBeansBuilder<T>
                         throw new WebBeansConfigurationException("Resource producer annotated field : " + annotatedField + " can not define EL name");
                     }
 
-                    final ProcessBeanAttributesImpl<T> processBeanAttributes = fireProcessBeanAttributes(annotatedField);
+                    ProcessBeanAttributesImpl<T> processBeanAttributes = fireProcessBeanAttributes(annotatedField);
                     if (processBeanAttributes != null)
                     {
                         ResourceBeanBuilder<T, Annotation> resourceBeanCreator
@@ -111,7 +111,7 @@ public class ProducerFieldBeansBuilder<T>
                         = new ProducerFieldBeanBuilder<>(bean, annotatedField, processBeanAttributes.getAttributes());
                     ProducerFieldBean<T> producerFieldBean = producerFieldBeanCreator.getBean();
 
-                    final UnproxyableResolutionException lazyException = webBeansContext.getDeploymentValidationService()
+                    UnproxyableResolutionException lazyException = webBeansContext.getDeploymentValidationService()
                             .validateProxyable(producerFieldBean, processBeanAttributes.isIgnoreFinalMethods());
                     if (lazyException != null) // should we use UnproxyableBean there too? if not required by TCK, better to fail eagerly
                     {

@@ -152,7 +152,7 @@ public final class NotificationManager
         // instead of a direct spi
         //
         // logic is: if an Executor is registered as a spi use it, otherwise use JVM default one
-        final Executor service = webBeansContext.getService(Executor.class);
+        Executor service = webBeansContext.getService(Executor.class);
         return service != null ? service : new CloseableExecutor();
     }
 
@@ -329,7 +329,7 @@ public final class NotificationManager
                     return true;
                 }
 
-                for (final Annotation meta : annotation.annotationType().getAnnotations())
+                for (Annotation meta : annotation.annotationType().getAnnotations())
                 {
                     if (withAnnotation.isAssignableFrom(meta.annotationType()))
                     {
@@ -667,7 +667,7 @@ public final class NotificationManager
      */
     public <T> CompletionStage<T> fireEvent(Object event, EventMetadataImpl metadata, boolean isLifecycleEvent, NotificationOptions notificationOptions)
     {
-        final boolean async = notificationOptions != null;
+        boolean async = notificationOptions != null;
 
         if (!isLifecycleEvent && webBeansContext.getWebBeansUtil().isContainerEventType(event))
         {
@@ -778,13 +778,13 @@ public final class NotificationManager
         return async ? complete(completableFutures, (T) event) : null;
     }
 
-    private <T> CompletableFuture<T> complete(final List<CompletableFuture<Void>> completableFutures, T event)
+    private <T> CompletableFuture<T> complete(List<CompletableFuture<Void>> completableFutures, T event)
     {
         if (completableFutures == null)
         {
             return null;
         }
-        final CDICompletionFuture<T> future = new CDICompletionFuture<>(event, completableFutures.size());
+        CDICompletionFuture<T> future = new CDICompletionFuture<>(event, completableFutures.size());
         completableFutures.forEach(f -> f.handle((t, e) ->
         {
             future.addResult(e);
@@ -805,7 +805,7 @@ public final class NotificationManager
                 runAsync(event, metadata, observer);
                 future.complete(null);
             }
-            catch (final WebBeansException wbe)
+            catch (WebBeansException wbe)
             {
                 future.completeExceptionally(wbe.getCause());
             }
@@ -827,7 +827,7 @@ public final class NotificationManager
         }
     }
 
-    private <T> void invokeObserverMethod(final T event, final EventMetadataImpl metadata, ObserverMethod<?> observer)
+    private <T> void invokeObserverMethod(T event, EventMetadataImpl metadata, ObserverMethod<?> observer)
     {
         observer.notify(new EventContextImpl(event, metadata));
     }
@@ -877,14 +877,14 @@ public final class NotificationManager
         return observer;
     }
 
-    public boolean isContainerEvent(final AnnotatedParameter<?> annotatedParameter)
+    public boolean isContainerEvent(AnnotatedParameter<?> annotatedParameter)
     {
-        final AnnotatedCallable<?> method = annotatedParameter.getDeclaringCallable();
+        AnnotatedCallable<?> method = annotatedParameter.getDeclaringCallable();
         if (!AnnotatedMethod.class.isInstance(method) || method.getParameters().size() == 0)
         {
             return false;
         }
-        final Class<?> paramType = AnnotatedMethod.class.cast(method).getJavaMember().getParameterTypes()[0];
+        Class<?> paramType = AnnotatedMethod.class.cast(method).getJavaMember().getParameterTypes()[0];
         return CONTAINER_EVENT_CLASSES.contains(paramType);
     }
 
@@ -895,13 +895,13 @@ public final class NotificationManager
         private final AtomicInteger counter;
         private AtomicReference<CompletionException> error = new AtomicReference<>();
 
-        private CDICompletionFuture(final T event, final int total)
+        private CDICompletionFuture(T event, int total)
         {
             this.event = event;
             this.counter = new AtomicInteger(total);
         }
 
-        CDICompletionFuture<T> addResult(final Throwable t)
+        CDICompletionFuture<T> addResult(Throwable t)
         {
             if (t != null)
             {
@@ -940,7 +940,7 @@ public final class NotificationManager
                 {
                     r.run();
                 }
-                catch (final RuntimeException re)
+                catch (RuntimeException re)
                 {
                     WebBeansLoggerFacade.getLogger(NotificationManager.class).warning(re.getMessage());
                 }
@@ -948,7 +948,7 @@ public final class NotificationManager
         }
 
         @Override
-        public void execute(final Runnable command)
+        public void execute(Runnable command)
         {
             if (reject)
             {

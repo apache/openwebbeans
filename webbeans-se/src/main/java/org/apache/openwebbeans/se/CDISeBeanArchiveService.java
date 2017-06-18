@@ -29,13 +29,13 @@ public class CDISeBeanArchiveService extends DefaultBeanArchiveService
 
     private final DefaultBeanArchiveInformation embeddedBai;
 
-    public CDISeBeanArchiveService(final DefaultBeanArchiveInformation bai)
+    public CDISeBeanArchiveService(DefaultBeanArchiveInformation bai)
     {
         embeddedBai = bai;
     }
 
     @Override
-    public BeanArchiveInformation getBeanArchiveInformation(final URL beanArchiveUrl)
+    public BeanArchiveInformation getBeanArchiveInformation(URL beanArchiveUrl)
     {
         if ("openwebbeans".equals(beanArchiveUrl.getProtocol()))
         {

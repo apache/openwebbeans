@@ -106,7 +106,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         this.webBeansContext = webBeansContext;
     }
 
-    public BeanAttributesBuilder<T, A> alternative(final boolean alternative)
+    public BeanAttributesBuilder<T, A> alternative(boolean alternative)
     {
         this.alternative = alternative;
         return this;
@@ -218,7 +218,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     private void defineQualifiers(Annotated annotated, Set<Class<? extends Annotation>> qualifiedTypes)
     {
         Annotation[] annotations = AnnotationUtil.asArray(annotated.getAnnotations());
-        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
         for (Annotation annotation : annotations)
         {
@@ -298,7 +298,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     }
 
     // we don't want to do the getRepeatableMethod() logic *again* if we can but we can need for custom AT
-    private boolean isRepetable(final Annotated annotated, final Annotation annotation)
+    private boolean isRepetable(Annotated annotated, Annotation annotation)
     {
         return AbstractAnnotated.class.isInstance(annotated) ?
                 AbstractAnnotated.class.cast(annotated).getRepeatables().contains(annotation.annotationType()) :
@@ -567,7 +567,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     {
         Set<Class<? extends Annotation>> stereos  = null;
         Annotation[] anns = AnnotationUtil.asArray(annot.getAnnotations());
-        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         if (annotationManager.hasStereoTypeMetaAnnotation(anns))
         {
             Annotation[] steroAnns =

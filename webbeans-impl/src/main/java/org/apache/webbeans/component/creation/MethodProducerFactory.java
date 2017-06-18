@@ -56,8 +56,8 @@ public class MethodProducerFactory<P> extends BaseProducerFactory<P>
     @Override
     public <T> Producer<T> createProducer(Bean<T> bean)
     {
-        final Set<InjectionPoint> disposalIPs = getInjectionPoints(bean);
-        final Producer<T> producer = new ProducerMethodProducer<T, P>(parent, producerMethod, disposalMethod, createInjectionPoints(bean), disposalIPs, webBeansContext);
+        Set<InjectionPoint> disposalIPs = getInjectionPoints(bean);
+        Producer<T> producer = new ProducerMethodProducer<T, P>(parent, producerMethod, disposalMethod, createInjectionPoints(bean), disposalIPs, webBeansContext);
         return webBeansContext.getWebBeansUtil().fireProcessProducerEvent(producer, producerMethod);
     }
 

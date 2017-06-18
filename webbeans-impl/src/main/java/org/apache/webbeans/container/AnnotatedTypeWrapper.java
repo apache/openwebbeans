@@ -33,7 +33,7 @@ public class AnnotatedTypeWrapper<T> implements AnnotatedType<T>
     private final AnnotatedType<T> original;
     private final Extension source;
 
-    public AnnotatedTypeWrapper(final Extension source, final AnnotatedType<T> annotatedType)
+    public AnnotatedTypeWrapper(Extension source, AnnotatedType<T> annotatedType)
     {
         this.source = source;
         this.original = annotatedType;
@@ -88,7 +88,7 @@ public class AnnotatedTypeWrapper<T> implements AnnotatedType<T>
     }
 
     @Override
-    public boolean isAnnotationPresent(final Class<? extends Annotation> aClass)
+    public boolean isAnnotationPresent(Class<? extends Annotation> aClass)
     {
         return original.isAnnotationPresent(aClass);
     }

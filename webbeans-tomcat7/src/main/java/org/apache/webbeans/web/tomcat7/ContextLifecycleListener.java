@@ -117,7 +117,7 @@ public class ContextLifecycleListener implements LifecycleListener, ServletConte
     }
 
 
-    private void wrapInstanceManager(final StandardContext context)
+    private void wrapInstanceManager(StandardContext context)
     {
         if (context.getInstanceManager() instanceof TomcatInstanceManager)
         {
@@ -138,7 +138,7 @@ public class ContextLifecycleListener implements LifecycleListener, ServletConte
         { // used as a hook to know we can override eagerly the InstanceManager
             try
             {
-                final StandardContext context = (StandardContext) getContext(servletContextAttributeEvent.getServletContext());
+                StandardContext context = (StandardContext) getContext(servletContextAttributeEvent.getServletContext());
                 wrapInstanceManager(context);
             }
             catch (NoSuchFieldException e)
@@ -152,10 +152,10 @@ public class ContextLifecycleListener implements LifecycleListener, ServletConte
         }
     }
 
-    private static Object getContext(final Object o) throws NoSuchFieldException, IllegalAccessException
+    private static Object getContext(Object o) throws NoSuchFieldException, IllegalAccessException
     {
-        final Field getContext = o.getClass().getDeclaredField("context");
-        final boolean acc = getContext.isAccessible();
+        Field getContext = o.getClass().getDeclaredField("context");
+        boolean acc = getContext.isAccessible();
         getContext.setAccessible(true);
         try
         {

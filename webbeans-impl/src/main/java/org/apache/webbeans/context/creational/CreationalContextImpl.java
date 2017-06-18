@@ -368,7 +368,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     public String toString()
     {
 
-        final StringBuilder sb = new StringBuilder("CreationalContext{bean=");
+        StringBuilder sb = new StringBuilder("CreationalContext{bean=");
 
         sb.append(bean != null ? bean.toString() : "null");
 

@@ -30,12 +30,12 @@ public class TomcatUtil
 {
     public static Object inject(Object object, ClassLoader loader)
     {
-        final ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
+        ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(loader);
         CreationalContext<?> context = null;
         try
         {
-            final BeanManager beanManager = WebBeansContext.currentInstance().getBeanManagerImpl();
+            BeanManager beanManager = WebBeansContext.currentInstance().getBeanManagerImpl();
             context = beanManager.createCreationalContext(null);
             OWBInjector.inject(beanManager, object, context);
         }
@@ -48,13 +48,13 @@ public class TomcatUtil
     
     public static void destroy(Object injectorInstance, ClassLoader loader)
     {
-        final Instance instance = (TomcatUtil.Instance) injectorInstance;
-        final ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
+        Instance instance = (TomcatUtil.Instance) injectorInstance;
+        ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(loader);
         try
         {
-            final BeanManagerImpl beanManager = WebBeansContext.currentInstance().getBeanManagerImpl();
-            final Producer producer = beanManager.getProducerForJavaEeComponent(instance.object.getClass());
+            BeanManagerImpl beanManager = WebBeansContext.currentInstance().getBeanManagerImpl();
+            Producer producer = beanManager.getProducerForJavaEeComponent(instance.object.getClass());
             if (producer != null)
             {
                 producer.dispose(instance.object);

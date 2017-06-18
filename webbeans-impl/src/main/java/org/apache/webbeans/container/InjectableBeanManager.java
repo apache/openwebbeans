@@ -374,7 +374,7 @@ public class InjectableBeanManager implements BeanManager, Externalizable
     @Override
     public int hashCode()
     {
-        final int prime = 31;
+        int prime = 31;
         int result = 1;
         result = prime * result + ((bm == null) ? 0 : System.identityHashCode(bm));
         return result;

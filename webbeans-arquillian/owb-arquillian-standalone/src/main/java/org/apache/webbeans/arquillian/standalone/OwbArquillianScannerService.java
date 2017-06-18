@@ -101,7 +101,7 @@ public class OwbArquillianScannerService implements BdaScannerService
             return;
         }
 
-        final String archiveName = archive.getName();
+        String archiveName = archive.getName();
         if (archiveName.endsWith(".jar"))
         {
             scanJarArchive(archive);
@@ -149,7 +149,7 @@ public class OwbArquillianScannerService implements BdaScannerService
 
     // --------- private implementation -----------
 
-    private void scanWebArchive(final Archive<?> archive)
+    private void scanWebArchive(Archive<?> archive)
     {
         URL webBeansXmlUrl = getBeanXmlUrl(archive, "WEB-INF/beans.xml");
         if (webBeansXmlUrl != null)
@@ -165,7 +165,7 @@ public class OwbArquillianScannerService implements BdaScannerService
 
         if (metainfBeansXmlUrl != null || webBeansXmlUrl != null)
         {
-            final BeanArchiveService.BeanArchiveInformation info = beanArchiveService.getBeanArchiveInformation(webBeansXmlUrl != null ? webBeansXmlUrl : metainfBeansXmlUrl);
+            BeanArchiveService.BeanArchiveInformation info = beanArchiveService.getBeanArchiveInformation(webBeansXmlUrl != null ? webBeansXmlUrl : metainfBeansXmlUrl);
 
             // in this case we need to scan the WEB-INF/classses folder for .class files
             Map<ArchivePath, Node> classes = archive.getContent(Filters.include(WEB_INF_CLASS_FOLDER + ".*\\.class"));
@@ -196,7 +196,7 @@ public class OwbArquillianScannerService implements BdaScannerService
         }
     }
 
-    private void scanJarArchive(final Archive<?> archive)
+    private void scanJarArchive(Archive<?> archive)
     {
         URL beansXmlUrl = getBeanXmlUrl(archive, "META-INF/beans.xml");
 
@@ -219,8 +219,8 @@ public class OwbArquillianScannerService implements BdaScannerService
      * @param classes the scanned classes
      * @param classBasePath the base class in which the classes are, or null if they are directly in the root
      */
-    private void scanClasses(final BeanArchiveService.BeanArchiveInformation info,
-                             final Map<ArchivePath, Node> classes, String classBasePath)
+    private void scanClasses(BeanArchiveService.BeanArchiveInformation info,
+                             Map<ArchivePath, Node> classes, String classBasePath)
     {
         Set<Class<?>> bdaClasses = beanClassesPerBda.get(info);
         if (bdaClasses == null)
@@ -301,7 +301,7 @@ public class OwbArquillianScannerService implements BdaScannerService
 
     private URL getBeanXmlUrl(Archive archive, String beansXmlPath)
     {
-        final Node beansXml = archive.get(beansXmlPath);
+        Node beansXml = archive.get(beansXmlPath);
 
         if (beansXml == null)
         {

@@ -87,25 +87,25 @@ public abstract class AbstractAnnotated implements Annotated
         this.annotations.addAll(annotated.getAnnotations());
     }
 
-    protected void buildRepeatableAnnotations(final Set<Annotation> annotations)
+    protected void buildRepeatableAnnotations(Set<Annotation> annotations)
     {
         if (annotations.isEmpty())
         {
             return;
         }
-        final List<Annotation> repeatables = annotations.stream()
+        List<Annotation> repeatables = annotations.stream()
                 .map(a -> {
-                    final Class<?> type = a.annotationType();
+                    Class<?> type = a.annotationType();
                     try
                     {
-                        final Method repeatableMethod = webBeansContext.getAnnotationManager().getRepeatableMethod(type);
+                        Method repeatableMethod = webBeansContext.getAnnotationManager().getRepeatableMethod(type);
                         if (repeatableMethod == null)
                         {
                             return null;
                         }
                         return (Annotation[]) repeatableMethod.invoke(a);
                     }
-                    catch (final Exception e)
+                    catch (Exception e)
                     {
                         return null;
                     }
@@ -230,7 +230,7 @@ public abstract class AbstractAnnotated implements Annotated
         }
     }
 
-    protected Set<Type> extractTypeClojure(final Type baseType)
+    protected Set<Type> extractTypeClojure(Type baseType)
     {
         return GenericsUtil.getTypeClosure(baseType, getOwningClass());
     }

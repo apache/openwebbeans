@@ -45,8 +45,8 @@ public class InterceptionFactoryImpl<T> implements InterceptionFactory<T> /*todo
     private boolean ignoreFinals;
     private volatile boolean called;
 
-    public InterceptionFactoryImpl(final WebBeansContext context, final AnnotatedType<T> at,
-                                   final Set<Annotation> qualifiers, final CreationalContextImpl<T> cc)
+    public InterceptionFactoryImpl(WebBeansContext context, AnnotatedType<T> at,
+                                   Set<Annotation> qualifiers, CreationalContextImpl<T> cc)
     {
         this.context = context;
         this.configurator = new AnnotatedTypeConfiguratorImpl<>(context, at);
@@ -68,7 +68,7 @@ public class InterceptionFactoryImpl<T> implements InterceptionFactory<T> /*todo
     }
 
     @Override
-    public T createInterceptedInstance(final T originalInstance)
+    public T createInterceptedInstance(T originalInstance)
     {
         check();
 
@@ -78,21 +78,21 @@ public class InterceptionFactoryImpl<T> implements InterceptionFactory<T> /*todo
             classLoader = WebBeansUtil.getCurrentClassLoader();
         }
 
-        final InterceptorDecoratorProxyFactory factory = context.getInterceptorDecoratorProxyFactory();
-        final AnnotatedTypeImpl<T> newAnnotatedType = configurator.getNewAnnotatedType();
-        final InterceptorResolutionService.BeanInterceptorInfo interceptorInfo =
+        InterceptorDecoratorProxyFactory factory = context.getInterceptorDecoratorProxyFactory();
+        AnnotatedTypeImpl<T> newAnnotatedType = configurator.getNewAnnotatedType();
+        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo =
                 context.getInterceptorResolutionService()
                     .calculateInterceptorInfo(newAnnotatedType.getTypeClosure(), qualifiers, newAnnotatedType, !ignoreFinals);
-        final Class<T> subClass = factory.getCachedProxyClass(interceptorInfo, newAnnotatedType, classLoader);
+        Class<T> subClass = factory.getCachedProxyClass(interceptorInfo, newAnnotatedType, classLoader);
 
-        final Map<Interceptor<?>,Object> interceptorInstances  = context.getInterceptorResolutionService()
+        Map<Interceptor<?>,Object> interceptorInstances  = context.getInterceptorResolutionService()
                 .createInterceptorInstances(interceptorInfo, creationalContext);
 
-        final Map<Method, List<Interceptor<?>>> methodInterceptors =
+        Map<Method, List<Interceptor<?>>> methodInterceptors =
                 context.getInterceptorResolutionService().createMethodInterceptors(interceptorInfo);
 
         // this is a good question actually, should we even support it?
-        final String passivationId = InterceptionFactory.class.getName() + ">>" + newAnnotatedType.toString();
+        String passivationId = InterceptionFactory.class.getName() + ">>" + newAnnotatedType.toString();
 
         return context.getInterceptorResolutionService().createProxiedInstance(
                 originalInstance, creationalContext, creationalContext, interceptorInfo, subClass,

@@ -161,9 +161,9 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
     @SuppressWarnings("unused")
     Object readResolve() throws ObjectStreamException
     {
-        final WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        final BeanManager beanManager = webBeansContext.getBeanManagerImpl();
-        final Bean<T> bean = (Bean<T>) beanManager.getPassivationCapableBean(beanPassivationId);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        BeanManager beanManager = webBeansContext.getBeanManagerImpl();
+        Bean<T> bean = (Bean<T>) beanManager.getPassivationCapableBean(beanPassivationId);
 
         return webBeansContext.getInterceptorDecoratorProxyFactory().createProxyInstance(
             webBeansContext.getInterceptorDecoratorProxyFactory().getCachedProxyClass(bean),
@@ -173,11 +173,11 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
     }
 
     @Override
-    public void writeExternal(final ObjectOutput out) throws IOException
+    public void writeExternal(ObjectOutput out) throws IOException
     {
         out.writeObject(target);
 
-        final boolean noDecorator = target == delegate;
+        boolean noDecorator = target == delegate;
         out.writeBoolean(noDecorator);
         if (!noDecorator)
         {
@@ -185,9 +185,9 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
         }
 
         out.writeInt(instances.size());
-        for (final Map.Entry<Interceptor<?>, ?> entry : instances.entrySet())
+        for (Map.Entry<Interceptor<?>, ?> entry : instances.entrySet())
         {
-            final Interceptor<?> key = entry.getKey();
+            Interceptor<?> key = entry.getKey();
             if (serializeInterceptor(out, key))
             {
                 out.writeObject(entry.getValue());
@@ -195,16 +195,16 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
         }
 
         out.writeInt(interceptors.size());
-        for (final Map.Entry<Method, List<Interceptor<?>>> entry : interceptors.entrySet())
+        for (Map.Entry<Method, List<Interceptor<?>>> entry : interceptors.entrySet())
         {
-            final Method key = entry.getKey();
+            Method key = entry.getKey();
             out.writeObject(key.getDeclaringClass());
             out.writeUTF(key.getName());
             out.writeObject(key.getParameterTypes());
 
-            final List<Interceptor<?>> value = entry.getValue();
+            List<Interceptor<?>> value = entry.getValue();
             out.writeInt(value.size());
-            for (final Interceptor<?> i : value)
+            for (Interceptor<?> i : value)
             {
                 serializeInterceptor(out, i);
             }
@@ -214,7 +214,7 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
     }
 
     @Override
-    public void readExternal(final ObjectInput in) throws IOException, ClassNotFoundException
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
     {
         target = (T) in.readObject();
         if (in.readBoolean())
@@ -226,17 +226,17 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
             delegate = (T) in.readObject();
         }
 
-        final int instancesSize = in.readInt();
-        final WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        final BeanManager beanManager = webBeansContext.getBeanManagerImpl();
+        int instancesSize = in.readInt();
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        BeanManager beanManager = webBeansContext.getBeanManagerImpl();
 
-        final Map<Interceptor<?>, Object> tmpInstances = new HashMap<Interceptor<?>, Object>();
+        Map<Interceptor<?>, Object> tmpInstances = new HashMap<Interceptor<?>, Object>();
         for (int i = 0; i < instancesSize; i++)
         {
-            final Interceptor<?> interceptor = readInterceptor(in.readUTF(), beanManager);
+            Interceptor<?> interceptor = readInterceptor(in.readUTF(), beanManager);
             if (!SelfInterceptorBean.class.isInstance(interceptor))
             {
-                final Object value = in.readObject();
+                Object value = in.readObject();
                 tmpInstances.put(interceptor, value);
             }
             else
@@ -246,25 +246,25 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
         }
         instances = tmpInstances;
 
-        final int interceptorsSize = in.readInt();
+        int interceptorsSize = in.readInt();
         interceptors = new HashMap<Method, List<Interceptor<?>>>(interceptorsSize);
         for (int i = 0; i < interceptorsSize; i++)
         {
-            final Class<?> declaringClass = (Class<?>) in.readObject();
-            final String name = in.readUTF();
-            final Class<?>[] parameters = (Class<?>[]) in.readObject();
-            final Method method;
+            Class<?> declaringClass = (Class<?>) in.readObject();
+            String name = in.readUTF();
+            Class<?>[] parameters = (Class<?>[]) in.readObject();
+            Method method;
             try
             {
                 method = declaringClass.getDeclaredMethod(name, parameters);
             }
-            catch (final NoSuchMethodException e)
+            catch (NoSuchMethodException e)
             {
                 throw new NotSerializableException(target.getClass().getName());
             }
 
-            final int interceptorListSize = in.readInt();
-            final List<Interceptor<?>> interceptorList = new ArrayList<Interceptor<?>>(interceptorListSize);
+            int interceptorListSize = in.readInt();
+            List<Interceptor<?>> interceptorList = new ArrayList<Interceptor<?>>(interceptorListSize);
             for (int j = 0; j < interceptorListSize; j++)
             {
                 interceptorList.add(readInterceptor(in.readUTF(), beanManager));
@@ -278,17 +278,17 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
     /**
      * @return false if the interceptor value can be ignored
      */
-    private static boolean serializeInterceptor(final ObjectOutput out, final Interceptor<?> key) throws IOException
+    private static boolean serializeInterceptor(ObjectOutput out, Interceptor<?> key) throws IOException
     {
         if (SelfInterceptorBean.class.isInstance(key))
         {
-            final String beanName = WebBeansUtil.getPassivationId(key)
+            String beanName = WebBeansUtil.getPassivationId(key)
                 .replace(WebBeansType.INTERCEPTOR.name(), WebBeansType.MANAGED.name());
             out.writeUTF(SELF_KEY + beanName);
             return false;
         }
 
-        final String id = WebBeansUtil.getPassivationId(key);
+        String id = WebBeansUtil.getPassivationId(key);
         if (id == null)
         {
             throw new NotSerializableException(key + " is not serializable");
@@ -297,17 +297,17 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
         return true;
     }
 
-    private static Interceptor<?> readInterceptor(final String id, final BeanManager beanManager) throws IOException
+    private static Interceptor<?> readInterceptor(String id, BeanManager beanManager) throws IOException
     {
         if (id.startsWith(SELF_KEY))
         {
-            final Bean<?> bean = beanManager.getPassivationCapableBean(id.substring(SELF_KEY.length()));
+            Bean<?> bean = beanManager.getPassivationCapableBean(id.substring(SELF_KEY.length()));
             if (InjectionTargetBean.class.isInstance(bean))
             {
-                final InjectionTarget<?> it = InjectionTargetBean.class.cast(bean).getInjectionTarget();
+                InjectionTarget<?> it = InjectionTargetBean.class.cast(bean).getInjectionTarget();
                 if (InjectionTargetImpl.class.isInstance(it))
                 {
-                    final InterceptorResolutionService.BeanInterceptorInfo info = InjectionTargetImpl.class.cast(it)
+                    InterceptorResolutionService.BeanInterceptorInfo info = InjectionTargetImpl.class.cast(it)
                                                                                                 .getInterceptorInfo();
                     return info.getSelfInterceptorBean();
                 }
@@ -328,7 +328,7 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
     {
         private final T value;
 
-        public InstanceProvider(final T delegate)
+        public InstanceProvider(T delegate)
         {
             this.value = delegate;
         }

@@ -50,14 +50,14 @@ public abstract class AbstractBeanBuilder<T>
                                                      Set<ProducerFieldBean<?>> producerFields,
                                                      Collection<AnnotatedMethod<?>> ignoredProducers)
     {
-        for (final AnnotatedMethod<?> annotatedMethod : annotatedMethods)
+        for (AnnotatedMethod<?> annotatedMethod : annotatedMethods)
         {
-            for (final AnnotatedParameter<?> param : annotatedMethod.getParameters())
+            for (AnnotatedParameter<?> param : annotatedMethod.getParameters())
             {
                 if (param.isAnnotationPresent(Disposes.class))
                 {
                     boolean found = false;
-                    for (final ProducerMethodBean<?> producer : producerBeans)
+                    for (ProducerMethodBean<?> producer : producerBeans)
                     {
                         if (GenericsUtil.satisfiesDependency(false, true, producer.getCreatorMethod().getGenericReturnType(), param.getBaseType()))
                         {
@@ -67,7 +67,7 @@ public abstract class AbstractBeanBuilder<T>
                     }
                     if (!found)
                     {
-                        for (final ProducerFieldBean<?> field : producerFields)
+                        for (ProducerFieldBean<?> field : producerFields)
                         {
                             if (GenericsUtil.satisfiesDependency(false, true, field.getCreatorField().getType(), param.getBaseType()))
                             {
@@ -79,7 +79,7 @@ public abstract class AbstractBeanBuilder<T>
                         if (!found)
                         {
                             // see if @Disposes should just be ignored as well - no inheritance
-                            for (final AnnotatedMethod<?> producer : ignoredProducers)
+                            for (AnnotatedMethod<?> producer : ignoredProducers)
                             {
                                 if (GenericsUtil.satisfiesDependency(false, true, producer.getJavaMember().getGenericReturnType(), param.getBaseType()))
                                 {
@@ -108,7 +108,7 @@ public abstract class AbstractBeanBuilder<T>
     protected void validateNoProducerOrObserverMethod(AnnotatedType<T> annotatedType)
     {
         Set<AnnotatedMethod<? super T>> annotatedMethods = annotatedType.getMethods();
-        for (final AnnotatedMethod<?> annotatedMethod : annotatedMethods)
+        for (AnnotatedMethod<?> annotatedMethod : annotatedMethods)
         {
             if (annotatedMethod.isAnnotationPresent(Produces.class))
             {
@@ -125,7 +125,7 @@ public abstract class AbstractBeanBuilder<T>
         }
 
         Set<AnnotatedField<? super T>> annotatedFields = annotatedType.getFields();
-        for (final AnnotatedField<? super T> annotatedField : annotatedFields)
+        for (AnnotatedField<? super T> annotatedField : annotatedFields)
         {
             if (annotatedField.isAnnotationPresent(Produces.class))
             {

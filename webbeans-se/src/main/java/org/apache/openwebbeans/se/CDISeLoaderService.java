@@ -29,22 +29,22 @@ public class CDISeLoaderService extends DefaultLoaderService
     private final Collection<Extension> extensions;
     private final ClassLoader loader;
 
-    public CDISeLoaderService(final Collection<Extension> extensions, final ClassLoader loader)
+    public CDISeLoaderService(Collection<Extension> extensions, ClassLoader loader)
     {
         this.extensions = extensions;
         this.loader = loader;
     }
 
     @Override
-    public <T> List<T> load(final Class<T> serviceType)
+    public <T> List<T> load(Class<T> serviceType)
     {
         return load(serviceType, loader);
     }
 
     @Override
-    public <T> List<T> load(final Class<T> serviceType, final ClassLoader classLoader)
+    public <T> List<T> load(Class<T> serviceType, ClassLoader classLoader)
     {
-        final List<T> loaded = super.load(serviceType, classLoader);
+        List<T> loaded = super.load(serviceType, classLoader);
         if (Extension.class == serviceType)
         {
             loaded.addAll(Collection.class.cast(extensions));

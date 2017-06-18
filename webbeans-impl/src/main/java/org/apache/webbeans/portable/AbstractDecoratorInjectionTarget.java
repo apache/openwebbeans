@@ -63,7 +63,7 @@ public class AbstractDecoratorInjectionTarget<T> extends InjectionTargetImpl<T>
         {
             parentCtor = classToProxy.getConstructor(ct.getParameterTypes());
         }
-        catch (final NoSuchMethodException e)
+        catch (NoSuchMethodException e)
         {
             throw new IllegalStateException(e);
         }
@@ -91,10 +91,10 @@ public class AbstractDecoratorInjectionTarget<T> extends InjectionTargetImpl<T>
     {
         private final Constructor<T> parentConstructor;
 
-        public SubClassAnnotatedConstructorImpl(final WebBeansContext webBeansContext,
-                                                final Constructor<T> parentConstructor,
-                                                final Constructor<T> javaMember,
-                                                final AnnotatedType<T> declaringType)
+        public SubClassAnnotatedConstructorImpl(WebBeansContext webBeansContext,
+                                                Constructor<T> parentConstructor,
+                                                Constructor<T> javaMember,
+                                                AnnotatedType<T> declaringType)
         {
             super(webBeansContext, javaMember, declaringType);
             this.parentConstructor = parentConstructor;
@@ -105,9 +105,9 @@ public class AbstractDecoratorInjectionTarget<T> extends InjectionTargetImpl<T>
     {
         private final Constructor<T> parent;
 
-        public AbstractDecoratorInjectableConstructor(final Constructor<T> parentConstructor,
-                                                      final Constructor<T> cons, final InjectionTarget<T> owner,
-                                                      final CreationalContextImpl<T> creationalContext)
+        public AbstractDecoratorInjectableConstructor(Constructor<T> parentConstructor,
+                                                      Constructor<T> cons, InjectionTarget<T> owner,
+                                                      CreationalContextImpl<T> creationalContext)
         {
             super(cons, owner, creationalContext);
             this.parent = parentConstructor;

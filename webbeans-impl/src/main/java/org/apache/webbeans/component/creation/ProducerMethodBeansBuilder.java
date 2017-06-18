@@ -67,13 +67,13 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
      */
     public Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<T> bean, Set<ProducerFieldBean<?>> producerFields)
     {
-        final Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
-        final Set<AnnotatedMethod<? super T>> annotatedMethods = webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType);
-        final Collection<AnnotatedMethod<?>> skipMethods = new HashSet<AnnotatedMethod<?>>();
+        Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
+        Set<AnnotatedMethod<? super T>> annotatedMethods = webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType);
+        Collection<AnnotatedMethod<?>> skipMethods = new HashSet<AnnotatedMethod<?>>();
 
         for(AnnotatedMethod<? super T> annotatedMethod: annotatedMethods)
         {
-            final boolean isProducer = annotatedMethod.isAnnotationPresent(Produces.class);
+            boolean isProducer = annotatedMethod.isAnnotationPresent(Produces.class);
             if(isProducer &&
                 annotatedMethod.getJavaMember().getDeclaringClass().equals(annotatedType.getJavaClass()))
             {
@@ -89,8 +89,8 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
                     specialize = true;
                 }
 
-                final AnnotatedMethod<T> method = (AnnotatedMethod<T>) annotatedMethod;
-                final ProcessBeanAttributesImpl<T> processBeanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(
+                AnnotatedMethod<T> method = (AnnotatedMethod<T>) annotatedMethod;
+                ProcessBeanAttributesImpl<T> processBeanAttributes = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(
                         annotatedMethod, annotatedMethod.getJavaMember().getReturnType(),
                         BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(method).build());
                 if (processBeanAttributes != null)
@@ -99,7 +99,7 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
 
                     ProducerMethodBean<T> producerMethodBean = producerMethodBeanCreator.getBean();
 
-                    final UnproxyableResolutionException lazyException = webBeansContext.getDeploymentValidationService()
+                    UnproxyableResolutionException lazyException = webBeansContext.getDeploymentValidationService()
                             .validateProxyable(producerMethodBean, processBeanAttributes.isIgnoreFinalMethods());
                     if (lazyException != null) // should we use UnproxyableBean there too? if not required by TCK, better to fail eagerly
                     {

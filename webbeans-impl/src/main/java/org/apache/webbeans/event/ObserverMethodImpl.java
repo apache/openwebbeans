@@ -174,7 +174,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
             priority = priorityAnn.value();
         }
         
-        final OpenWebBeansEjbPlugin ejbPlugin = getWebBeansContext().getPluginLoader().getEjbPlugin();
+        OpenWebBeansEjbPlugin ejbPlugin = getWebBeansContext().getPluginLoader().getEjbPlugin();
         if (ejbPlugin != null && ejbPlugin.isNewSessionBean(ownerBean.getBeanClass()))
         {
             view = ejbPlugin.resolveViewMethod(ownerBean , annotatedObserverMethod.getJavaMember());
@@ -394,7 +394,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
 
     }
 
-    protected void invoke(final Object object, final Object[] args) throws IllegalAccessException, InvocationTargetException
+    protected void invoke(Object object, Object[] args) throws IllegalAccessException, InvocationTargetException
     {
         view.invoke(object, args);
     }
@@ -413,8 +413,8 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
             param.instance = event;
             list.add(param);
         }
-        final WebBeansContext webBeansContext = ownerBean.getWebBeansContext();
-        final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
+        WebBeansContext webBeansContext = ownerBean.getWebBeansContext();
+        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
 
         for (InjectionPoint injectionPoint: injectionPoints)
         {

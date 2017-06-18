@@ -31,7 +31,7 @@ class ThirdpartyBeanAttributesImpl<T> extends BeanAttributesImpl<T>
 {
     private final Set<Annotation> qualifiers;
 
-    ThirdpartyBeanAttributesImpl(final BeanAttributes<T> beanAttributes)
+    ThirdpartyBeanAttributesImpl(BeanAttributes<T> beanAttributes)
     {
         super(beanAttributes, false);
         this.qualifiers = calculateQualifiers(beanAttributes);
@@ -43,7 +43,7 @@ class ThirdpartyBeanAttributesImpl<T> extends BeanAttributesImpl<T>
         return qualifiers;
     }
 
-    private Set<Annotation> calculateQualifiers(final BeanAttributes<T> beanAttributes)
+    private Set<Annotation> calculateQualifiers(BeanAttributes<T> beanAttributes)
     {
         Set<Annotation> originalQualifiers = beanAttributes.getQualifiers();
         if (originalQualifiers != null && originalQualifiers.contains(AnyLiteral.INSTANCE))

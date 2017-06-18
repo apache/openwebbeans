@@ -283,7 +283,7 @@ public final class GenericsUtil
         {
             if (isProducer)
             {
-                for (final Type t : injectionPointType.getActualTypeArguments())
+                for (Type t : injectionPointType.getActualTypeArguments())
                 {
                     if (!TypeVariable.class.isInstance(t) || !isNotBound(TypeVariable.class.cast(t).getBounds()))
                     {
@@ -316,12 +316,12 @@ public final class GenericsUtil
 
     private static boolean isAssignableFrom(boolean isDelegateOrEvent, boolean isProducer, ParameterizedType injectionPointType, TypeVariable<?> beanType)
     {
-        final Type[] types = beanType.getBounds();
+        Type[] types = beanType.getBounds();
         if (isNotBound(types))
         {
             return true;
         }
-        for (final Type bounds: types)
+        for (Type bounds: types)
         {
             if (isAssignableFrom(isDelegateOrEvent, isProducer, injectionPointType, bounds))
             {
@@ -354,11 +354,11 @@ public final class GenericsUtil
                 (injectionPointTypeArgument instanceof Class || injectionPointTypeArgument instanceof TypeVariable) &&
                 beanTypeArgument instanceof TypeVariable)
             {
-                final Type[] bounds = ((TypeVariable<?>) beanTypeArgument).getBounds();
-                final boolean isNotBound = isNotBound(bounds);
+                Type[] bounds = ((TypeVariable<?>) beanTypeArgument).getBounds();
+                boolean isNotBound = isNotBound(bounds);
                 if (!isNotBound)
                 {
-                    for (final Type upperBound : bounds)
+                    for (Type upperBound : bounds)
                     {
                         if (!isAssignableFrom(true, false, upperBound, injectionPointTypeArgument))
                         {
@@ -385,7 +385,7 @@ public final class GenericsUtil
         return true;
     }
 
-    private static boolean isNotBound(final Type... bounds)
+    private static boolean isNotBound(Type... bounds)
     {
         return bounds == null || bounds.length == 0 || (bounds.length == 1 && Object.class == bounds[0]);
     }
@@ -405,8 +405,8 @@ public final class GenericsUtil
     // rules are a bit different when in an array so we handle ParameterizedType manually (not reusing isAssignableFrom)
     private static boolean isAssignableFrom(boolean isDelegateOrEvent, GenericArrayType injectionPointType, Type beanType)
     {
-        final Type genericComponentType = injectionPointType.getGenericComponentType();
-        final Class componentType = Class.class.cast(beanType).getComponentType();
+        Type genericComponentType = injectionPointType.getGenericComponentType();
+        Class componentType = Class.class.cast(beanType).getComponentType();
         if (Class.class.isInstance(genericComponentType))
         {
             return Class.class.cast(genericComponentType).isAssignableFrom(componentType);
@@ -668,7 +668,7 @@ public final class GenericsUtil
         Type[] resolvedTypeArguments = new Type[types.length];
         for (int i = 0; i < types.length; i++)
         {
-            final Type type = resolveType(types[i], actualType, seen);
+            Type type = resolveType(types[i], actualType, seen);
             if (type != null) // means a stackoverflow was avoided, just keep what we have
             {
                 resolvedTypeArguments[i] = type;
@@ -754,7 +754,7 @@ public final class GenericsUtil
         return getDirectTypeClosure(type, actualType);
     }
 
-    public static Set<Type> getDirectTypeClosure(final Type type, final Type actualType)
+    public static Set<Type> getDirectTypeClosure(Type type, Type actualType)
     {
         Set<Type> typeClosure = new HashSet<Type>();
         typeClosure.add(Object.class);
@@ -768,9 +768,9 @@ public final class GenericsUtil
         {
            return;
         }
-        Type resolvedType = GenericsUtil.resolveType(type, actualType, newSeenList());
+        Type resolvedType = resolveType(type, actualType, newSeenList());
         set.add(resolvedType);
-        Class<?> resolvedClass = GenericsUtil.getRawType(resolvedType, actualType);
+        Class<?> resolvedClass = getRawType(resolvedType, actualType);
         if (resolvedClass.getSuperclass() != null)
         {
             fillTypeHierarchy(set, resolvedClass.getGenericSuperclass(), resolvedType);

@@ -63,17 +63,17 @@ public class InterceptionFactoryBean extends BuiltInOwbBean<InterceptionFactory>
     {
         private final WebBeansContext context;
 
-        private InterceptionFactoryProducer(final WebBeansContext webBeansContext)
+        private InterceptionFactoryProducer(WebBeansContext webBeansContext)
         {
             this.context = webBeansContext;
         }
 
         @Override
-        protected InterceptionFactory<?> produce(final Map<Interceptor<?>, ?> interceptorInstances,
-                                                 final CreationalContextImpl<InterceptionFactory<?>> creationalContext)
+        protected InterceptionFactory<?> produce(Map<Interceptor<?>, ?> interceptorInstances,
+                                                 CreationalContextImpl<InterceptionFactory<?>> creationalContext)
         {
-            final InjectionPoint ip = creationalContext.getInjectionPoint();
-            final AnnotatedType<?> at = context.getBeanManagerImpl().createAnnotatedType(
+            InjectionPoint ip = creationalContext.getInjectionPoint();
+            AnnotatedType<?> at = context.getBeanManagerImpl().createAnnotatedType(
                     // already validated at startup so let's be brutal at runtime
                     Class.class.cast(ParameterizedType.class.cast(ip.getType()).getActualTypeArguments()[0]));
             return new InterceptionFactoryImpl(context, at, ip.getQualifiers(), creationalContext);

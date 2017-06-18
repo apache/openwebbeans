@@ -60,7 +60,7 @@ public abstract class BaseProducerFactory<P> implements ProducerFactory<P>
         this.webBeansContext = webBeansContext;
     }
 
-    protected <T> Set<InjectionPoint> getInjectionPoints(final Bean<T> bean)
+    protected <T> Set<InjectionPoint> getInjectionPoints(Bean<T> bean)
     {
         Set<InjectionPoint> disposalIPs = null;
         if (disposalMethod != null)
@@ -72,7 +72,7 @@ public abstract class BaseProducerFactory<P> implements ProducerFactory<P>
 
     protected void defineDisposalMethod()
     {
-        final AnnotatedMember<? super P> producer = producerType();
+        AnnotatedMember<? super P> producer = producerType();
         Set<Annotation> producerQualifiers = webBeansContext.getAnnotationManager().getQualifierAnnotations(producer.getAnnotations());
         if (producerQualifiers.size() == 1 && producerQualifiers.iterator().next().annotationType().equals(Default.class))
         {
@@ -87,9 +87,9 @@ public abstract class BaseProducerFactory<P> implements ProducerFactory<P>
             }
         }
 
-        final AnnotatedType declaringType = producer.getDeclaringType();
-        final Type producerBaseType = producerType().getBaseType();
-        final Set<AnnotatedMethod<? super P>> annotatedMethods =
+        AnnotatedType declaringType = producer.getDeclaringType();
+        Type producerBaseType = producerType().getBaseType();
+        Set<AnnotatedMethod<? super P>> annotatedMethods =
                 webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(declaringType);
 
         AnnotatedMethod<? super P> anyDisposal = null;
@@ -167,7 +167,7 @@ public abstract class BaseProducerFactory<P> implements ProducerFactory<P>
         }
     }
 
-    private void validateDisposalMethod(final AnnotatedType declaringType, final AnnotatedMethod<? super P> annotatedMethod)
+    private void validateDisposalMethod(AnnotatedType declaringType, AnnotatedMethod<? super P> annotatedMethod)
     {
         if (!annotatedMethod.getDeclaringType().equals(declaringType))
         {

@@ -111,7 +111,7 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
         OwbArquillianScannerService dummyScannerService = (OwbArquillianScannerService) webBeansContext.getScannerService();
         dummyScannerService.setArchive(archive);
 
-        final ClassLoader parentLoader = Thread.currentThread().getContextClassLoader();
+        ClassLoader parentLoader = Thread.currentThread().getContextClassLoader();
         originalLoader.set(parentLoader);
         Thread.currentThread().setContextClassLoader(new OwbSWClassLoader(parentLoader, archive, useOnlyArchiveResources, useOnlyArchiveResourcesExcludes));
 
@@ -138,14 +138,14 @@ public class OwbStandaloneContainer implements DeployableContainer<OwbStandalone
             lifecycle.stopApplication(null);
         }
 
-        final ClassLoader current = Thread.currentThread().getContextClassLoader();
+        ClassLoader current = Thread.currentThread().getContextClassLoader();
         if (OwbSWClassLoader.class.isInstance(current))
         { // should be the case
             try
             {
                 OwbSWClassLoader.class.cast(current).close();
             }
-            catch (final IOException e)
+            catch (IOException e)
             {
                 // no-op
             }

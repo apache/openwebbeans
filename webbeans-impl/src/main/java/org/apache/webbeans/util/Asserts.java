@@ -73,7 +73,7 @@ public final class Asserts
      */
     public static void nullCheckForClass(Class<?> clazz)
     {
-        Asserts.assertNotNull(clazz, "clazz argument");
+        assertNotNull(clazz, "clazz argument");
     }
 
     /**
@@ -83,7 +83,7 @@ public final class Asserts
      */
     public static void nullCheckForClass(Class<?> clazz, String message)
     {
-        Asserts.assertNotNull(clazz, message);
+        assertNotNull(clazz, message);
     }
 
     /**
@@ -93,7 +93,7 @@ public final class Asserts
      */
     public static void nullCheckForMethod(Method method)
     {
-        Asserts.assertNotNull(method, "method argument can not be null");
+        assertNotNull(method, "method argument can not be null");
     }
 
 }

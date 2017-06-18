@@ -91,8 +91,8 @@ public class InjectableConstructor<T> extends AbstractInjectable<T>
             return params;
         }
 
-        final List<Object> list = new ArrayList<Object>();
-        final List<InjectionPoint> injectedPoints = getInjectionPoints(con);
+        List<Object> list = new ArrayList<Object>();
+        List<InjectionPoint> injectedPoints = getInjectionPoints(con);
 
         for (int i=0; i<injectedPoints.size(); i++)
         {

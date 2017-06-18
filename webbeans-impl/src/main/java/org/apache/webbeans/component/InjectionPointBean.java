@@ -35,7 +35,7 @@ public class InjectionPointBean extends BuiltInOwbBean<InjectionPoint>
         {
             PROXY_CLASS = BuiltInOwbBean.class.getClassLoader().loadClass("org.apache.webbeans.inject.impl.InjectionPointImpl");
         }
-        catch (final ClassNotFoundException e)
+        catch (ClassNotFoundException e)
         {
             throw new IllegalStateException(e);
         }

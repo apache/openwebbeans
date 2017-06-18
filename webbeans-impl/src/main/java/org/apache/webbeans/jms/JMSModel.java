@@ -101,7 +101,7 @@ public class JMSModel
     @Override
     public int hashCode()
     {
-        final int prime = 31;
+        int prime = 31;
         int result = 1;
         result = prime * result + ((bindings == null) ? 0 : bindings.hashCode());
         result = prime * result + ((jmsType == null) ? 0 : jmsType.hashCode());

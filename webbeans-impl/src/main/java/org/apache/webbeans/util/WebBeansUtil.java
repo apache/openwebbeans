@@ -420,7 +420,7 @@ public final class WebBeansUtil
     {
         Asserts.nullCheckForClass(type);
 
-        final OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
+        OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
         if (ejbPlugin != null && ejbPlugin.isNewSessionBean(type))
         {
             return ejbPlugin.defineNewSessionBean(type);
@@ -1030,7 +1030,7 @@ public final class WebBeansUtil
      */
     public <T> GProcessInjectionTarget fireProcessInjectionTargetEvent(InjectionTargetImpl<T> injectionTarget, AnnotatedType<T> annotatedType)
     {
-        final GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget, annotatedType);
+        GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget, annotatedType);
         return fireProcessInjectionTargetEvent(processInjectionTargetEvent);
     }
 
@@ -1048,9 +1048,9 @@ public final class WebBeansUtil
      */
     public <T> GProcessInjectionTarget fireProcessInjectionTargetEventForJavaEeComponents(Class<T> componentClass)
     {
-        final AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(componentClass);
-        final InjectionTargetImpl<T> injectionTarget = InjectionTargetImpl.class.cast(webBeansContext.getBeanManagerImpl().createInjectionTarget(annotatedType));
-        final GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget,annotatedType);
+        AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(componentClass);
+        InjectionTargetImpl<T> injectionTarget = InjectionTargetImpl.class.cast(webBeansContext.getBeanManagerImpl().createInjectionTarget(annotatedType));
+        GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget,annotatedType);
 
         //Fires ProcessInjectionTarget
         return fireProcessInjectionTargetEvent(processInjectionTargetEvent);
@@ -1642,7 +1642,7 @@ public final class WebBeansUtil
         return builder.toString();
     }
 
-    public void validate(final Set<InjectionPoint> injectionPoints, Bean<?> bean)
+    public void validate(Set<InjectionPoint> injectionPoints, Bean<?> bean)
     {
 
         boolean isDecorator = false;
@@ -1685,12 +1685,12 @@ public final class WebBeansUtil
                         throw new WebBeansConfigurationException(
                                 "No type specified for the interception factory, ensure to paramterize it");
                     }
-                    final ParameterizedType pt = ParameterizedType.class.cast(injectionPoint.getType());
+                    ParameterizedType pt = ParameterizedType.class.cast(injectionPoint.getType());
                     if (pt.getActualTypeArguments() == null || pt.getActualTypeArguments().length != 1)
                     {
                         throw new WebBeansConfigurationException("No explicit type specified for the interception factory");
                     }
-                    final Type type = pt.getActualTypeArguments()[0];
+                    Type type = pt.getActualTypeArguments()[0];
                     if (!Class.class.isInstance(type))
                     {
                         throw new WebBeansConfigurationException("InterceptionFactory only works with Class, no generics");
@@ -1767,9 +1767,9 @@ public final class WebBeansUtil
 
 
 
-    public void checkTypeVariables(final TypeLiteral<?> subtype)
+    public void checkTypeVariables(TypeLiteral<?> subtype)
     {
-        final Type t = subtype.getType();
+        Type t = subtype.getType();
         Boolean result = noTypeVariables.get(t);
         if (result != null)
         {
@@ -1782,7 +1782,7 @@ public final class WebBeansUtil
 
         if (ParameterizedType.class.isInstance(t))
         {
-            for (final Type arg : ParameterizedType.class.cast(t).getActualTypeArguments())
+            for (Type arg : ParameterizedType.class.cast(t).getActualTypeArguments())
             {
                 if (TypeVariable.class.isInstance(arg))
                 {
@@ -1794,9 +1794,9 @@ public final class WebBeansUtil
         noTypeVariables.putIfAbsent(t, true);
     }
 
-    public void validEventType(final Type eventType, final Type metadataType)
+    public void validEventType(Type eventType, Type metadataType)
     {
-        final EventCacheKey key = new EventCacheKey(eventType, metadataType);
+        EventCacheKey key = new EventCacheKey(eventType, metadataType);
         if (validEventType.containsKey(key))
         {
             return;
@@ -1804,10 +1804,10 @@ public final class WebBeansUtil
 
         if (GenericsUtil.hasTypeParameters(eventType))
         {
-            final Type et = GenericsUtil.resolveType(GenericsUtil.getParameterizedType(eventType), metadataType);
+            Type et = GenericsUtil.resolveType(GenericsUtil.getParameterizedType(eventType), metadataType);
             if (OwbParametrizedTypeImpl.class.isInstance(et))
             {
-                for (final Type t : OwbParametrizedTypeImpl.class.cast(et).getActualTypeArguments())
+                for (Type t : OwbParametrizedTypeImpl.class.cast(et).getActualTypeArguments())
                 {
                     if (OwbWildcardTypeImpl.class.isInstance(t))
                     {
@@ -1819,14 +1819,14 @@ public final class WebBeansUtil
         validEventType.putIfAbsent(key, true); // we don't care about the value but that's thread safe to use this map
     }
 
-    public boolean isContainerEventType(final Object event)
+    public boolean isContainerEventType(Object event)
     {
         if (event == null)
         {
             return false;
         }
 
-        final Class<?> eventType = event.getClass();
+        Class<?> eventType = event.getClass();
         if (notContainerEvents.containsKey(eventType))
         {
             return false;
@@ -1854,15 +1854,15 @@ public final class WebBeansUtil
         return false;
     }
 
-    public <T> ProcessBeanAttributesImpl<T> fireProcessBeanAttributes(final Annotated annotatedType, final Class<?> type, final BeanAttributes<T> ba)
+    public <T> ProcessBeanAttributesImpl<T> fireProcessBeanAttributes(Annotated annotatedType, Class<?> type, BeanAttributes<T> ba)
     {
         // we don't use bm stack since it is actually quite useless
-        final ProcessBeanAttributesImpl event = new GProcessBeanAttributes(webBeansContext, type, annotatedType, ba);
+        ProcessBeanAttributesImpl event = new GProcessBeanAttributes(webBeansContext, type, annotatedType, ba);
         try
         {
             webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         }
-        catch (final Exception e)
+        catch (Exception e)
         {
             throw new WebBeansConfigurationException("event ProcessBeanAttributes thrown an exception for " + annotatedType, e);
         }
@@ -1872,7 +1872,7 @@ public final class WebBeansUtil
             throw new WebBeansConfigurationException(event.getDefinitionError());
         }
 
-        final BeanAttributes<T> beanAttributes;
+        BeanAttributes<T> beanAttributes;
         if (event.getAttributes() != ba)
         {
             beanAttributes = event.getAttributes();
@@ -1889,21 +1889,21 @@ public final class WebBeansUtil
         return event;
     }
 
-    public void validateBeanInjection(final Bean<?> bean)
+    public void validateBeanInjection(Bean<?> bean)
     {
-        for (final InjectionPoint injectionPoint : bean.getInjectionPoints())
+        for (InjectionPoint injectionPoint : bean.getInjectionPoints())
         {
-            final Type type = injectionPoint.getType();
+            Type type = injectionPoint.getType();
             if (type instanceof ParameterizedType)
             {
-                final Bean injectionPointBean = injectionPoint.getBean();
+                Bean injectionPointBean = injectionPoint.getBean();
                 ParameterizedType pt = (ParameterizedType) type;
 
                 if (pt.getRawType() == Bean.class)
                 {
-                    final Class<?> beanClass = AbstractOwbBean.class.isInstance(injectionPointBean) ?
+                    Class<?> beanClass = AbstractOwbBean.class.isInstance(injectionPointBean) ?
                             AbstractOwbBean.class.cast(injectionPointBean).getReturnType() : injectionPointBean.getBeanClass();
-                    final Type beanType = pt.getActualTypeArguments()[0];
+                    Type beanType = pt.getActualTypeArguments()[0];
                     if (!GenericsUtil.isAssignableFrom(false, AbstractProducerBean.class.isInstance(bean), beanClass, beanType))
                     {
                         throw new WebBeansConfigurationException("@Inject Bean<X> can only be done in X, found " + beanType + " and " + beanClass);
@@ -1962,7 +1962,7 @@ public final class WebBeansUtil
         private final Type metadata;
         private final int hashCache;
 
-        private EventCacheKey(final Type event, final Type metadata)
+        private EventCacheKey(Type event, Type metadata)
         {
             this.event = event;
             this.metadata = metadata;
@@ -1973,7 +1973,7 @@ public final class WebBeansUtil
         }
 
         @Override
-        public boolean equals(final Object o)
+        public boolean equals(Object o)
         {
             if (this == o)
             {
@@ -1984,7 +1984,7 @@ public final class WebBeansUtil
                 return false;
             }
 
-            final EventCacheKey that = EventCacheKey.class.cast(o);
+            EventCacheKey that = EventCacheKey.class.cast(o);
             if (event != null ? !event.equals(that.event) : that.event != null)
             {
                 return false;

@@ -135,7 +135,7 @@ public class InjectionPointFactory
 
         if (fireEvent)
         {
-            final GProcessInjectionPoint event = webBeansContext.getWebBeansUtil().fireProcessInjectionPointEvent(injectionPoint);
+            GProcessInjectionPoint event = webBeansContext.getWebBeansUtil().fireProcessInjectionPointEvent(injectionPoint);
             injectionPoint = event.getInjectionPoint();
             event.setStarted();
         }

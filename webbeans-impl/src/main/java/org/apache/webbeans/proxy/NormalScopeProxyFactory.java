@@ -117,7 +117,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
 
     public <T> T createNormalScopeProxy(Bean<T> bean)
     {
-        final ClassLoader classLoader;
+        ClassLoader classLoader;
         if (bean.getBeanClass() != null)
         {
             classLoader = getProxyClassLoader(bean.getBeanClass());
@@ -323,8 +323,8 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
                 superDefaultCt = classToProxy.getDeclaredConstructor(null);
             }
 
-            final String descriptor = Type.getConstructorDescriptor(superDefaultCt);
-            final MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
+            String descriptor = Type.getConstructorDescriptor(superDefaultCt);
+            MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
             mv.visitCode();
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitMethodInsn(Opcodes.INVOKESPECIAL, parentClassFileName, "<init>", descriptor, false);
@@ -417,13 +417,13 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             int offset = 1;
             for (Class<?> aClass : delegatedMethod.getParameterTypes())
             {
-                final Type type = Type.getType(aClass);
+                Type type = Type.getType(aClass);
                 mv.visitVarInsn(type.getOpcode(Opcodes.ILOAD), offset);
                 offset += type.getSize();
             }
 
             // and finally invoke the target method on the provided Contextual Instance
-            final Type declaringClass = Type.getType(delegatedMethod.getDeclaringClass());
+            Type declaringClass = Type.getType(delegatedMethod.getDeclaringClass());
             boolean interfaceMethod = Modifier.isInterface(delegatedMethod.getDeclaringClass().getModifiers());
             mv.visitMethodInsn(interfaceMethod ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKEVIRTUAL,
                                declaringClass.getInternalName(), delegatedMethod.getName(), methodDescriptor, interfaceMethod);
@@ -439,9 +439,9 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
 
     private void generateDelegationMethod(ClassWriter cw, Method method, int methodIndex, Class<?> classToProxy, String proxyClassFileName)
     {
-        final Class<?> returnType = method.getReturnType();
-        final Class<?>[] parameterTypes = method.getParameterTypes();
-        final int modifiers = method.getModifiers();
+        Class<?> returnType = method.getReturnType();
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        int modifiers = method.getModifiers();
 
         // push the method definition
         int modifier = modifiers & (Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED | Opcodes.ACC_VARARGS);

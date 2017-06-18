@@ -80,7 +80,7 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T>
     @Override
     public T create(CreationalContext<T> context)
     {
-        final CreationalContextImpl<T> contextImpl;
+        CreationalContextImpl<T> contextImpl;
         if(!CreationalContextImpl.class.isInstance(context))
         {
             contextImpl = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(context, this);
@@ -90,8 +90,8 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T>
             contextImpl = CreationalContextImpl.class.cast(context);
         }
 
-        final T t;
-        final Bean<T> oldBean = contextImpl.putBean(this);
+        T t;
+        Bean<T> oldBean = contextImpl.putBean(this);
         try
         {
             t = bean.create(contextImpl);

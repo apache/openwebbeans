@@ -125,21 +125,21 @@ public class DecoratorHandler implements InterceptorHandler, Externalizable
     }
 
     @Override
-    public void writeExternal(final ObjectOutput out) throws IOException
+    public void writeExternal(ObjectOutput out) throws IOException
     {
         out.writeInt(index);
         out.writeObject(target);
 
         out.writeInt(instances.size());
-        for (final Map.Entry<Decorator<?>, ?> entry : instances.entrySet())
+        for (Map.Entry<Decorator<?>, ?> entry : instances.entrySet())
         {
-            final Decorator<?> key = entry.getKey();
+            Decorator<?> key = entry.getKey();
             serializeDecorator(out, key);
             out.writeObject(entry.getValue());
         }
 
         out.writeInt(decorators.size());
-        for (final Decorator<?> decorator : decorators)
+        for (Decorator<?> decorator : decorators)
         {
             serializeDecorator(out, decorator);
         }
@@ -149,9 +149,9 @@ public class DecoratorHandler implements InterceptorHandler, Externalizable
 
     Object readResolve() throws ObjectStreamException
     {
-        final WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        final BeanManager beanManager = webBeansContext.getBeanManagerImpl();
-        final Bean<?> bean = beanManager.getPassivationCapableBean(passivationId);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        BeanManager beanManager = webBeansContext.getBeanManagerImpl();
+        Bean<?> bean = beanManager.getPassivationCapableBean(passivationId);
 
         return webBeansContext.getInterceptorDecoratorProxyFactory().createProxyInstance(
             webBeansContext.getInterceptorDecoratorProxyFactory().getCachedProxyClass(bean),
@@ -161,25 +161,25 @@ public class DecoratorHandler implements InterceptorHandler, Externalizable
     }
 
     @Override
-    public void readExternal(final ObjectInput in) throws IOException, ClassNotFoundException
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
     {
         index = in.readInt();
         target = in.readObject();
 
-        final int instancesSize = in.readInt();
-        final WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        final BeanManager beanManager = webBeansContext.getBeanManagerImpl();
+        int instancesSize = in.readInt();
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        BeanManager beanManager = webBeansContext.getBeanManagerImpl();
 
-        final Map<Decorator<?>, Object> tmpInstances = new HashMap<Decorator<?>, Object>();
+        Map<Decorator<?>, Object> tmpInstances = new HashMap<Decorator<?>, Object>();
         for (int i = 0; i < instancesSize; i++)
         {
-            final Decorator<?> bean = (Decorator<?>) beanManager.getPassivationCapableBean(in.readUTF());
-            final Object value = in.readObject();
+            Decorator<?> bean = (Decorator<?>) beanManager.getPassivationCapableBean(in.readUTF());
+            Object value = in.readObject();
             tmpInstances.put(bean, value);
         }
         instances = tmpInstances;
 
-        final int decoratorsSize = in.readInt();
+        int decoratorsSize = in.readInt();
         decorators = new CopyOnWriteArrayList<Decorator<?>>();
         for (int i = 0; i < decoratorsSize; i++)
         {
@@ -187,10 +187,10 @@ public class DecoratorHandler implements InterceptorHandler, Externalizable
         }
 
         passivationId = in.readUTF();
-        final Bean<?> bean = beanManager.getPassivationCapableBean(passivationId);
+        Bean<?> bean = beanManager.getPassivationCapableBean(passivationId);
         if (bean instanceof OwbBean)
         {
-            final Producer<?> producer = ((OwbBean<?>)bean).getProducer();
+            Producer<?> producer = ((OwbBean<?>)bean).getProducer();
             if (producer instanceof AbstractProducer)
             {
                 interceptorInfo = ((AbstractProducer<?>)producer).getInterceptorInfo();
@@ -198,9 +198,9 @@ public class DecoratorHandler implements InterceptorHandler, Externalizable
         }
     }
 
-    private static void serializeDecorator(final ObjectOutput out, final Decorator<?> key) throws IOException
+    private static void serializeDecorator(ObjectOutput out, Decorator<?> key) throws IOException
     {
-        final String id = WebBeansUtil.getPassivationId(key);
+        String id = WebBeansUtil.getPassivationId(key);
         if (id == null)
         {
             throw new NotSerializableException(key + " is not serializable");

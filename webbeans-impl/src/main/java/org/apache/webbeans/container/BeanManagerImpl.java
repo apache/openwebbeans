@@ -504,17 +504,17 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * {@inheritDoc}
      */
     @Override
-    public List<Decorator<?>> resolveDecorators(final Set<Type> types, final Annotation... bindingTypes)
+    public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
         webBeansContext.getAnnotationManager().checkDecoratorResolverParams(types, bindingTypes);
         return unsafeResolveDecorators(types, bindingTypes);
     }
 
-    public List<Decorator<?>> unsafeResolveDecorators(final Set<Type> types, final Annotation[] bindingTypes)
+    public List<Decorator<?>> unsafeResolveDecorators(Set<Type> types, Annotation[] bindingTypes)
     {
         webBeansContext.getAnnotationManager().checkQualifiersParams(types, bindingTypes); // checkDecoratorResolverParams is too restrictive for repeatable bindings
-        final Set<Decorator<?>> intsSet = webBeansContext.getDecoratorsManager().findDeployedWebBeansDecorator(types, bindingTypes);
-        final List<Decorator<?>> decoratorList = new ArrayList<Decorator<?>>(intsSet);
+        Set<Decorator<?>> intsSet = webBeansContext.getDecoratorsManager().findDeployedWebBeansDecorator(types, bindingTypes);
+        List<Decorator<?>> decoratorList = new ArrayList<Decorator<?>>(intsSet);
         Collections.sort(decoratorList, new DecoratorComparator(webBeansContext));
         return decoratorList;
     }
@@ -579,7 +579,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * {@inheritDoc}
      */
     @Override
-    public <T> AnnotatedType<T> createAnnotatedType(final Class<T> type)
+    public <T> AnnotatedType<T> createAnnotatedType(Class<T> type)
     {
         return annotatedElementFactory.newAnnotatedType(type);
     }
@@ -751,7 +751,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Check type if bean type is given
         if(beanType != null && beanType != Object.class)
         {
-            final boolean isProducer = AbstractProducerBean.class.isInstance(bean);
+            boolean isProducer = AbstractProducerBean.class.isInstance(bean);
             if(!isProducer && // we have different rules for producers
                !isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean, isProducer) &&
                !GenericsUtil.satisfiesDependency(false, isProducer, beanType, bean.getBeanClass()) &&
@@ -848,12 +848,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             {
                 validate(injectionPoint);
             }
-            catch (final Exception e)
+            catch (Exception e)
             {
                 throw new IllegalArgumentException(e);
             }
         } // TODO else constructor rules are a bit different
-        final GProcessInjectionPoint event = webBeansContext.getWebBeansUtil().fireProcessInjectionPointEvent(injectionPoint);
+        GProcessInjectionPoint event = webBeansContext.getWebBeansUtil().fireProcessInjectionPointEvent(injectionPoint);
         injectionPoint = event.getInjectionPoint();
         event.setStarted();
         return injectionPoint;
@@ -874,14 +874,14 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return new InjectionTargetFactoryImpl<X>(type, webBeansContext);
     }
 
-    public <T> Bean<T> createBean(final BeanAttributes<T> attributes, final Class<T> type, final InjectionTargetFactory<T> factory)
+    public <T> Bean<T> createBean(BeanAttributes<T> attributes, Class<T> type, InjectionTargetFactory<T> factory)
     {
-        final AnnotatedType annotatedType = InjectionTargetFactoryImpl.class.isInstance(factory) ?
+        AnnotatedType annotatedType = InjectionTargetFactoryImpl.class.isInstance(factory) ?
                 InjectionTargetFactoryImpl.class.cast(factory).getAnnotatedType() : getOrCreateAnnotatedType(type);
 
         if (WebBeansUtil.isDecorator(annotatedType))
         {
-            final DecoratorBeanBuilder<T> dbb = new DecoratorBeanBuilder<T>(webBeansContext, annotatedType, attributes);
+            DecoratorBeanBuilder<T> dbb = new DecoratorBeanBuilder<T>(webBeansContext, annotatedType, attributes);
             DecoratorBean<T> decorator = null;
             if (dbb.isDecoratorEnabled())
             {
@@ -893,7 +893,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
         else if(WebBeansUtil.isCdiInterceptor(annotatedType))
         {
-            final CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType, attributes);
+            CdiInterceptorBeanBuilder<T> ibb = new CdiInterceptorBeanBuilder<T>(webBeansContext, annotatedType, attributes);
             CdiInterceptorBean<T> interceptor = null;
             if (ibb.isInterceptorEnabled())
             {
@@ -904,7 +904,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             return interceptor;
         }
 
-        final InjectionTargetBean<T> bean = new InjectionTargetBean<T>(
+        InjectionTargetBean<T> bean = new InjectionTargetBean<T>(
                 webBeansContext,
                 WebBeansType.THIRDPARTY,
                 annotatedType,
@@ -918,7 +918,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return bean;
     }
 
-    private <T> AnnotatedType<T> getOrCreateAnnotatedType(final Class<T> type)
+    private <T> AnnotatedType<T> getOrCreateAnnotatedType(Class<T> type)
     {
         AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(type);
         if (annotatedType == null)
@@ -931,7 +931,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     private boolean isBeanTypeAssignableToGivenType(Set<Type> beanTypes, Type givenType, boolean newBean, boolean producer)
     {
-        for (final Type beanApiType : beanTypes)
+        for (Type beanApiType : beanTypes)
         {
             if (GenericsUtil.satisfiesDependency(false, producer, givenType, beanApiType))
             {
@@ -1139,7 +1139,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     public <T> BeanAttributes<T> createBeanAttributes(AnnotatedType<T> type)
     {
-        final OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
+        OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
         if (ejbPlugin != null && ejbPlugin.isSessionBean(type.getJavaClass()))
         {
             return ejbPlugin.createBeanAttributes(type);
@@ -1148,7 +1148,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
 
-    public <T, X> Bean<T> createBean(final BeanAttributes<T> attributes, final Class<X> type, final ProducerFactory<X> factory)
+    public <T, X> Bean<T> createBean(BeanAttributes<T> attributes, Class<X> type, ProducerFactory<X> factory)
     {
         return new ProducerAwareInjectionTargetBean<T>(
                 webBeansContext,
@@ -1159,7 +1159,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 factory);
     }
 
-    private Class<?> findClass(final ProducerFactory<?> factory, final Class<?> type)
+    private Class<?> findClass(ProducerFactory<?> factory, Class<?> type)
     {
         if (MethodProducerFactory.class.isInstance(factory))
         {
@@ -1174,7 +1174,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public <T extends Extension> T getExtension(Class<T> type)
     {
-        final T extension = webBeansContext.getExtensionLoader().getExtension(type);
+        T extension = webBeansContext.getExtensionLoader().getExtension(type);
         if (extension == null)
         {
             throw new IllegalArgumentException("extension " + type + " not registered");
@@ -1238,9 +1238,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
-        final InjectionTargetFactoryImpl<T> factory = new InjectionTargetFactoryImpl<T>(type, webBeansContext);
-        final InterceptorUtil interceptorUtil = webBeansContext.getInterceptorUtil();
-        final InjectionTargetImpl<T> injectionTarget = new LazyInterceptorDefinedInjectionTarget<T>(
+        InjectionTargetFactoryImpl<T> factory = new InjectionTargetFactoryImpl<T>(type, webBeansContext);
+        InterceptorUtil interceptorUtil = webBeansContext.getInterceptorUtil();
+        InjectionTargetImpl<T> injectionTarget = new LazyInterceptorDefinedInjectionTarget<T>(
                         type,
                         factory.createInjectionPoints(null),
                         webBeansContext,
@@ -1252,21 +1252,21 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             {
                 webBeansContext.getWebBeansUtil().validate(injectionTarget.getInjectionPoints(), null);
             }
-            catch (final InjectionException ie)
+            catch (InjectionException ie)
             {
                 throw new IllegalArgumentException(ie);
             }
-            catch (final WebBeansConfigurationException ie)
+            catch (WebBeansConfigurationException ie)
             {
                 throw new IllegalArgumentException(ie);
             }
-            catch (final DeploymentException ie)
+            catch (DeploymentException ie)
             {
                 throw new IllegalArgumentException(ie);
             }
         }
         GProcessInjectionTarget event = webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, type);
-        final InjectionTarget it = event.getInjectionTarget();
+        InjectionTarget it = event.getInjectionTarget();
         event.setStarted();
         return it;
     }
@@ -1329,7 +1329,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             return;
         }
 
-        final AnnotatedType<T> annotatedType = new AnnotatedTypeWrapper<T>(Extension.class.cast(extension), inAnnotatedType);
+        AnnotatedType<T> annotatedType = new AnnotatedTypeWrapper<T>(Extension.class.cast(extension), inAnnotatedType);
         if (annotatedType.getAnnotation(Vetoed.class) != null)
         {
             // we could check package here too but would be a lost of time 99.99% of the time
@@ -1417,12 +1417,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return (AnnotatedType<T>)annotatedTypes.get(id);
     }
 
-    public <T> String getId(final Class<T> type, final AnnotatedType<T> at)
+    public <T> String getId(Class<T> type, AnnotatedType<T> at)
     {
-        final ConcurrentMap<String, AnnotatedType<?>> additionals = additionalAnnotatedTypes.get(type);
+        ConcurrentMap<String, AnnotatedType<?>> additionals = additionalAnnotatedTypes.get(type);
         if (additionals != null)
         {
-            for (final Map.Entry<String, AnnotatedType<?>> entry : additionals.entrySet())
+            for (Map.Entry<String, AnnotatedType<?>> entry : additionals.entrySet())
             {
                 if (entry.getValue() == at)
                 {
@@ -1433,14 +1433,14 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return null;
     }
 
-    public <T> Iterable<AnnotatedType<T>> getAnnotatedTypes(final Class<T> type)
+    public <T> Iterable<AnnotatedType<T>> getAnnotatedTypes(Class<T> type)
     {
-        final Collection<AnnotatedType<T>> types = new ArrayList<AnnotatedType<T>>(2);
+        Collection<AnnotatedType<T>> types = new ArrayList<AnnotatedType<T>>(2);
         types.add(annotatedElementFactory.getAnnotatedType(type));
-        final ConcurrentMap<String, AnnotatedType<?>> aTypes = additionalAnnotatedTypes.get(type);
+        ConcurrentMap<String, AnnotatedType<?>> aTypes = additionalAnnotatedTypes.get(type);
         if (aTypes != null)
         {
-            for (final AnnotatedType at : aTypes.values())
+            for (AnnotatedType at : aTypes.values())
             {
                 types.add(at);
             }

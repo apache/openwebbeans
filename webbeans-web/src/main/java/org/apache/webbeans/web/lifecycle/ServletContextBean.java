@@ -29,7 +29,7 @@ import javax.servlet.ServletContext;
 
 class ServletContextBean extends BuiltInOwbBean<ServletContext>
 {
-    ServletContextBean(final WebBeansContext ctx, final ServletContext context)
+    ServletContextBean(WebBeansContext ctx, ServletContext context)
     {
         super(ctx, WebBeansType.SERVLET_CONTEXT, ServletContext.class, new SimpleProducerFactory<ServletContext>(
                 new ProviderBasedProducer<>(ctx, ServletContext.class, new Provider<ServletContext>()

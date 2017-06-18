@@ -102,7 +102,7 @@ public class LifecycleInterceptorInvocationContext<T> implements InvocationConte
                     {
                         m.invoke(getTarget());
                     }
-                    catch (final InvocationTargetException ite)
+                    catch (InvocationTargetException ite)
                     {
                         throw ExceptionUtil.throwAsRuntimeException(ite.getCause());
                     }

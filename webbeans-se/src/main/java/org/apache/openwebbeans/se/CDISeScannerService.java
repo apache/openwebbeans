@@ -46,23 +46,23 @@ public class CDISeScannerService extends AbstractMetaDataDiscovery
     private boolean autoScanning;
     private final Collection<Class<?>> classes = new ArrayList<>();
 
-    public void loader(final ClassLoader loader)
+    public void loader(ClassLoader loader)
     {
         this.loader = loader;
     }
 
-    public void classes(final Class<?>[] classes)
+    public void classes(Class<?>[] classes)
     {
         this.classes.addAll(asList(classes));
     }
 
-    public void packages(final boolean recursive, final Class<?>[] markers)
+    public void packages(boolean recursive, Class<?>[] markers)
     {
         Stream.of(markers)
                 .forEach(c -> this.addPackages(recursive, c.getName().replace('.', '/') + ".class", c.getPackage().getName()));
     }
 
-    public void packages(final boolean recursive, final Package[] packages)
+    public void packages(boolean recursive, Package[] packages)
     {
         Stream.of(packages)
                 .forEach(p -> this.addPackages(recursive, p.getName().replace('.', '/'), p.getName()));
@@ -88,13 +88,13 @@ public class CDISeScannerService extends AbstractMetaDataDiscovery
                 addDeploymentUrl(CDISeBeanArchiveService.EMBEDDED_URL, new URL("openwebbeans", null, 0, "cdise", new URLStreamHandler()
                 {
                     @Override
-                    protected URLConnection openConnection(final URL u) throws IOException
+                    protected URLConnection openConnection(URL u) throws IOException
                     {
                         return null;
                     }
                 }));
             }
-            catch (final MalformedURLException e)
+            catch (MalformedURLException e)
             {
                 throw new IllegalArgumentException(e); // quite unlikely
             }
@@ -108,19 +108,19 @@ public class CDISeScannerService extends AbstractMetaDataDiscovery
     }
 
     // not sure why it is in the spec, no way to make it portable
-    private void addPackages(final boolean recursive, final String resource, final String pack)
+    private void addPackages(boolean recursive, String resource, String pack)
     {
         try
         {
-            final Enumeration<URL> urls = loader.getResources(resource);
+            Enumeration<URL> urls = loader.getResources(resource);
             if (!urls.hasMoreElements())
             {
                 throw new IllegalArgumentException("No matching jar for '" + resource + "'");
             }
             while (urls.hasMoreElements())
             {
-                final URL url = urls.nextElement();
-                final CaptureClasses capturedClasses = new CaptureClasses(pack, classes, recursive, loader);
+                URL url = urls.nextElement();
+                CaptureClasses capturedClasses = new CaptureClasses(pack, classes, recursive, loader);
                 switch (url.getProtocol())
                 {
                     case "jar":
@@ -159,7 +159,7 @@ public class CDISeScannerService extends AbstractMetaDataDiscovery
         }
     }
 
-    private void consume(final FilteredArchive entries)
+    private void consume(FilteredArchive entries)
     {
         StreamSupport.stream(entries.spliterator(), false).forEach(e ->
         {
@@ -174,7 +174,7 @@ public class CDISeScannerService extends AbstractMetaDataDiscovery
         private final long prefixSegments;
         private final ClassLoader loader;
 
-        private CaptureClasses(final String prefix, final Collection<Class<?>> classes, final boolean recursive, final ClassLoader loader)
+        private CaptureClasses(String prefix, Collection<Class<?>> classes, boolean recursive, ClassLoader loader)
         {
             this.prefix = prefix == null ? "" : prefix;
             this.prefixSegments = this.prefix.chars().filter(c -> c == '.').count();
@@ -184,16 +184,16 @@ public class CDISeScannerService extends AbstractMetaDataDiscovery
         }
 
         @Override
-        public boolean accept(final String name)
+        public boolean accept(String name)
         {
-            final boolean accepts = name.startsWith(prefix) && (recursive || name.chars().filter(c -> c == '.').count() == prefixSegments + 1);
+            boolean accepts = name.startsWith(prefix) && (recursive || name.chars().filter(c -> c == '.').count() == prefixSegments + 1);
             if (accepts)
             {
                 try
                 {
                     classes.add(loader.loadClass(name));
                 }
-                catch (final ClassNotFoundException e)
+                catch (ClassNotFoundException e)
                 {
                     logger.warning(e.getMessage());
                 }

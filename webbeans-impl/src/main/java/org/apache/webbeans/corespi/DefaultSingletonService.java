@@ -60,7 +60,7 @@ public class DefaultSingletonService implements SingletonService<WebBeansContext
         }
     }
 
-    public void register(final ClassLoader key, final WebBeansContext context)
+    public void register(ClassLoader key, WebBeansContext context)
     {
         if (singletonMap.containsKey(key))
         {

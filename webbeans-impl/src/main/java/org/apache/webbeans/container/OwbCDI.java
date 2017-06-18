@@ -40,9 +40,9 @@ public class OwbCDI extends CDI<Object>
 
     protected Instance<Object> instance()
     {
-        final WebBeansContext webBeansContext = getWebBeansContext();
-        final BeanManagerImpl bm = webBeansContext.getBeanManagerImpl();
-        final CreationalContextImpl<Instance<Object>> creationalContext = bm.createCreationalContext(null);
+        WebBeansContext webBeansContext = getWebBeansContext();
+        BeanManagerImpl bm = webBeansContext.getBeanManagerImpl();
+        CreationalContextImpl<Instance<Object>> creationalContext = bm.createCreationalContext(null);
         return new InstanceBean<Object>(webBeansContext).create(creationalContext).select(DefaultLiteral.INSTANCE);
     }
 
@@ -53,7 +53,7 @@ public class OwbCDI extends CDI<Object>
     }
 
     @Override
-    public Instance<Object> select(final Annotation... qualifiers)
+    public Instance<Object> select(Annotation... qualifiers)
     {
         return instance().select(qualifiers);
     }
@@ -71,19 +71,19 @@ public class OwbCDI extends CDI<Object>
     }
 
     @Override
-    public void destroy(final Object instance)
+    public void destroy(Object instance)
     {
         InstanceImpl.class.cast(instance).destroy(instance);
     }
 
     @Override
-    public <U> Instance<U> select(final TypeLiteral<U> subtype, final Annotation... qualifiers)
+    public <U> Instance<U> select(TypeLiteral<U> subtype, Annotation... qualifiers)
     {
         return instance().select(subtype, qualifiers);
     }
 
     @Override
-    public <U> Instance<U> select(final Class<U> subtype, final Annotation... qualifiers)
+    public <U> Instance<U> select(Class<U> subtype, Annotation... qualifiers)
     {
         return instance().select(subtype, qualifiers);
     }

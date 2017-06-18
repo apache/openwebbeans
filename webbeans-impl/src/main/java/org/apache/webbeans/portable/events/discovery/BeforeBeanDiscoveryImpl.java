@@ -186,7 +186,7 @@ public class BeforeBeanDiscoveryImpl extends EventBase implements BeforeBeanDisc
         beanManager.addAdditionalQualifier(annotatedType);
     }
 
-    public void setExtension(final Extension extension)
+    public void setExtension(Extension extension)
     {
         this.extension = extension;
     }

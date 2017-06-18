@@ -58,7 +58,7 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
     }
 
     @Override
-    public void setBeanAttributes(final BeanAttributes<T> tBeanAttributes)
+    public void setBeanAttributes(BeanAttributes<T> tBeanAttributes)
     {
         checkState();
         attributes = tBeanAttributes;
@@ -73,7 +73,7 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
     }
 
     @Override
-    public void addDefinitionError(final Throwable throwable)
+    public void addDefinitionError(Throwable throwable)
     {
         checkState();
         definitionError = throwable;

@@ -52,20 +52,20 @@ public class CdiArchive implements Archive
 
     private final Archive delegate;
 
-    public CdiArchive(BeanArchiveService beanArchiveService, final ClassLoader loader, final Map<String, URL> urls,
-                      final Filter userFilter, final Archive customArchive)
+    public CdiArchive(BeanArchiveService beanArchiveService, ClassLoader loader, Map<String, URL> urls,
+                      Filter userFilter, Archive customArchive)
     {
-        final Collection<Archive> archives = new ArrayList<Archive>();
+        Collection<Archive> archives = new ArrayList<Archive>();
         if (customArchive != null)
         {
             archives.add(userFilter != null ? new FilteredArchive(customArchive, userFilter) : customArchive);
         }
-        for (final URL url : urls.values())
+        for (URL url : urls.values())
         {
-            final List<String> urlClasses = new ArrayList<String>();
+            List<String> urlClasses = new ArrayList<String>();
 
             BeanArchiveInformation beanArchiveInfo = beanArchiveService.getBeanArchiveInformation(url);
-            final Archive archive = new FilteredArchive(
+            Archive archive = new FilteredArchive(
                     "openwebbeans".equals(url.getProtocol()) ? customArchive : ClasspathArchive.archive(loader, url),
                     new BeanArchiveFilter(beanArchiveInfo, urlClasses, userFilter));
 
@@ -82,13 +82,13 @@ public class CdiArchive implements Archive
     }
 
     @Override
-    public InputStream getBytecode(final String className) throws IOException, ClassNotFoundException
+    public InputStream getBytecode(String className) throws IOException, ClassNotFoundException
     {
         return delegate.getBytecode(className);
     }
 
     @Override
-    public Class<?> loadClass(final String className) throws ClassNotFoundException
+    public Class<?> loadClass(String className) throws ClassNotFoundException
     {
         return delegate.loadClass(className);
     }

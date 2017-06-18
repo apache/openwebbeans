@@ -227,7 +227,7 @@ public final class AnnotationManager
         Asserts.assertNotNull(anns, Asserts.PARAM_NAME_ANNOTATION);
         List<Annotation> interAnns = new ArrayList<Annotation>();
 
-        for (final Annotation ann : anns)
+        for (Annotation ann : anns)
         {
             if (ann.annotationType().getName().startsWith("java.lang."))
             {
@@ -650,7 +650,7 @@ public final class AnnotationManager
             {
                 return true;
             }
-            final IStereoTypeModel model = webBeansContext.getStereoTypeManager().getStereoTypeModel(ann.getName());
+            IStereoTypeModel model = webBeansContext.getStereoTypeManager().getStereoTypeModel(ann.getName());
             if (model != null && model.isNamed())
             {
                 return true;
@@ -736,7 +736,7 @@ public final class AnnotationManager
     {
         checkQualifiersParams(apiTypes, qualifiers);
         Annotation old = null;
-        for (final Annotation qualifier : qualifiers)
+        for (Annotation qualifier : qualifiers)
         {
             if (old == null)
             {
@@ -764,7 +764,7 @@ public final class AnnotationManager
             throw new IllegalArgumentException("method parameter api types argument can not be empty");
         }
 
-        for (final Annotation qualifier : qualifiers)
+        for (Annotation qualifier : qualifiers)
         {
             if (!isQualifierAnnotation(qualifier.annotationType()))
             {
@@ -930,14 +930,14 @@ public final class AnnotationManager
         }
     }
 
-    public Method getRepeatableMethod(final Class<?> type)
+    public Method getRepeatableMethod(Class<?> type)
     {
-        final Method value;
+        Method value;
         try
         {
             value = type.getMethod("value");
         }
-        catch (final NoSuchMethodException e)
+        catch (NoSuchMethodException e)
         {
             return null;
         }
@@ -945,8 +945,8 @@ public final class AnnotationManager
         {
             return null;
         }
-        final Class<?> componentType = value.getReturnType().getComponentType();
-        final Repeatable repeatable = componentType.getAnnotation(Repeatable.class);
+        Class<?> componentType = value.getReturnType().getComponentType();
+        Repeatable repeatable = componentType.getAnnotation(Repeatable.class);
         if (repeatable == null || repeatable.value() != type)
         {
             return null;

@@ -69,7 +69,7 @@ public class OwbSWClassLoader extends URLClassLoader
     private final Archive<?> archive;
     private final Collection<String> useOnlyArchiveResourcesExcludes;
 
-    public OwbSWClassLoader(final ClassLoader parent, final Archive<?> archive, final boolean useOnlyArchiveResources, final Collection<String> useOnlyArchiveResourcesExcludes)
+    public OwbSWClassLoader(ClassLoader parent, Archive<?> archive, boolean useOnlyArchiveResources, Collection<String> useOnlyArchiveResourcesExcludes)
     {
         super(new URL[0], parent);
 
@@ -90,18 +90,18 @@ public class OwbSWClassLoader extends URLClassLoader
         { // add it to find classes if used this way
             addURL(new URL(null, "archive:" + archive.getName() + "/", new ArchiveStreamHandler()));
         }
-        catch (final MalformedURLException e)
+        catch (MalformedURLException e)
         {
             throw new RuntimeException("Could not create URL for archive: " + archive.getName(), e);
         }
     }
 
     @Override
-    public URL getResource(final String name)
+    public URL getResource(String name)
     {
         if (useOnlyArchiveResources)
         {
-            final URL url = findResource(name);
+            URL url = findResource(name);
             if (url != null)
             {
                 return url;
@@ -111,14 +111,14 @@ public class OwbSWClassLoader extends URLClassLoader
     }
 
     @Override
-    public Enumeration<URL> getResources(final String name) throws IOException
+    public Enumeration<URL> getResources(String name) throws IOException
     {
         if (useOnlyArchiveResources)
         {
-            final Enumeration<URL> urls = findResources(name);
+            Enumeration<URL> urls = findResources(name);
             if (useOnlyArchiveResourcesExcludes.contains(name))
             {
-                final Collection<URL> returnValue = new ArrayList<URL>(Collections.list(urls));
+                Collection<URL> returnValue = new ArrayList<URL>(Collections.list(urls));
                 returnValue.addAll(Collections.list(super.getResources(name)));
                 return Collections.enumeration(returnValue);
             }
@@ -131,7 +131,7 @@ public class OwbSWClassLoader extends URLClassLoader
     }
 
     @Override
-    public URL findResource(final String name)
+    public URL findResource(String name)
     {
         Set<String> nodes = findNodes(archive, name);
         if (!nodes.isEmpty())
@@ -140,7 +140,7 @@ public class OwbSWClassLoader extends URLClassLoader
             {
                 return new URL(null, "archive:" + nodes.iterator().next());
             }
-            catch (final MalformedURLException e)
+            catch (MalformedURLException e)
             {
                 // no-op: let reuse parent method
             }
@@ -153,9 +153,9 @@ public class OwbSWClassLoader extends URLClassLoader
     }
 
     @Override
-    public Enumeration<URL> findResources(final String name) throws IOException
+    public Enumeration<URL> findResources(String name) throws IOException
     {
-        final Set<String> nodes = findNodes(archive, name);
+        Set<String> nodes = findNodes(archive, name);
         List<URL> urls = new ArrayList<>(nodes.size());
         for (String node : nodes)
         {
@@ -174,7 +174,7 @@ public class OwbSWClassLoader extends URLClassLoader
         return Collections.enumeration(urls);
     }
 
-    private Set<String> findNodes(Archive arch, final String name)
+    private Set<String> findNodes(Archive arch, String name)
     {
         Set<String> nodes = new HashSet<>();
 
@@ -216,9 +216,9 @@ public class OwbSWClassLoader extends URLClassLoader
         return nodes;
     }
 
-    private String path(final String... parts)
+    private String path(String... parts)
     {
-        final StringBuilder builder = new StringBuilder(parts[0]);
+        StringBuilder builder = new StringBuilder(parts[0]);
         for (int i = 1; i < parts.length; i++)
         {
             if (!parts[i - 1].endsWith("/") && !parts[i].startsWith("/"))
@@ -235,13 +235,13 @@ public class OwbSWClassLoader extends URLClassLoader
     {
         synchronized (this)
         {
-            for (final InputStream stream : openedStreams)
+            for (InputStream stream : openedStreams)
             {
                 try
                 {
                     stream.close();
                 }
-                catch (final Exception e)
+                catch (Exception e)
                 {
                     // no-op
                 }
@@ -253,7 +253,7 @@ public class OwbSWClassLoader extends URLClassLoader
     protected class ArchiveStreamHandler extends URLStreamHandler
     {
         @Override
-        protected URLConnection openConnection(final URL u) throws IOException
+        protected URLConnection openConnection(URL u) throws IOException
         {
             return new URLConnection(u)
             {
@@ -266,7 +266,7 @@ public class OwbSWClassLoader extends URLClassLoader
                 @Override
                 public InputStream getInputStream() throws IOException
                 {
-                    final ArchivePath path = convertToArchivePath(u);
+                    ArchivePath path = convertToArchivePath(u);
                     Node node = archive.get(prefix + path.get());
                     if (node == null && !prefix.isEmpty())
                     { // WEB-INF/lib/x.jar!*
@@ -279,13 +279,13 @@ public class OwbSWClassLoader extends URLClassLoader
                         throw new FileNotFoundException("Requested path: " + path + " does not exist in " + archive.toString());
                     }
 
-                    final Asset asset = node.getAsset();
+                    Asset asset = node.getAsset();
                     if (asset == null)
                     {
                         return null;
                     }
 
-                    final InputStream input = asset.openStream();
+                    InputStream input = asset.openStream();
                     synchronized (this)
                     {
                         openedStreams.add(input);
@@ -294,7 +294,7 @@ public class OwbSWClassLoader extends URLClassLoader
 
                 }
 
-                private ArchivePath convertToArchivePath(final URL url)
+                private ArchivePath convertToArchivePath(URL url)
                 {
                     return ArchivePaths.create(url.getPath().replace(archive.getName(), ""));
                 }

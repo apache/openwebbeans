@@ -186,7 +186,7 @@ public abstract class AbstractContext implements AlterableContext, Serializable
         CreationalContext<Object> cc = (CreationalContext<Object>)instance.getBeanCreationalContext();
 
         //Destroy instance
-        final Object beanInstance = instance.getBeanInstance();
+        Object beanInstance = instance.getBeanInstance();
         if (beanInstance != null)
         {
             destroyInstance((Contextual<Object>)contextual, beanInstance, cc);

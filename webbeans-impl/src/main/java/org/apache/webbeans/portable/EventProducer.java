@@ -48,22 +48,22 @@ public class EventProducer<T> extends AbstractProducer<Event<T>>
     }
 
     @Override
-    protected List<Decorator<?>> filterDecorators(final Event<T> instance, final List<Decorator<?>> decorators)
+    protected List<Decorator<?>> filterDecorators(Event<T> instance, List<Decorator<?>> decorators)
     {
         if (!EventImpl.class.isInstance(instance)) // is this test useless?
         {
             return decorators;
         }
 
-        final Type type = EventImpl.class.cast(instance).getMetadata().getType();
-        final ArrayList<Decorator<?>> list = new ArrayList<Decorator<?>>(decorators.size());
-        for (final Decorator<?> original : decorators)
+        Type type = EventImpl.class.cast(instance).getMetadata().getType();
+        ArrayList<Decorator<?>> list = new ArrayList<Decorator<?>>(decorators.size());
+        for (Decorator<?> original : decorators)
         {
-            final Type event = original.getDelegateType();
+            Type event = original.getDelegateType();
             if (ParameterizedType.class.isInstance(event))
             {
-                final ParameterizedType arg = ParameterizedType.class.cast(event);
-                final Type[] actualTypeArguments = arg.getActualTypeArguments();
+                ParameterizedType arg = ParameterizedType.class.cast(event);
+                Type[] actualTypeArguments = arg.getActualTypeArguments();
                 if (actualTypeArguments.length > 0 && GenericsUtil.isAssignableFrom(true, false, actualTypeArguments[0], type))
                 {
                     list.add(original);

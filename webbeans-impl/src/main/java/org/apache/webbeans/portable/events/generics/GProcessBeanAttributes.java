@@ -28,14 +28,14 @@ public class GProcessBeanAttributes extends ProcessBeanAttributesImpl implements
 {
     private final Class<?> type;
 
-    public GProcessBeanAttributes(WebBeansContext webBeansContext, final Class<?> type, final Annotated annotated, final BeanAttributes attributes)
+    public GProcessBeanAttributes(WebBeansContext webBeansContext, Class<?> type, Annotated annotated, BeanAttributes attributes)
     {
         super(webBeansContext, annotated, attributes);
         this.type = type;
     }
 
     @Override
-    public Class<?> getBeanClassFor(final Class<?> eventClass)
+    public Class<?> getBeanClassFor(Class<?> eventClass)
     {
         return type;
     }

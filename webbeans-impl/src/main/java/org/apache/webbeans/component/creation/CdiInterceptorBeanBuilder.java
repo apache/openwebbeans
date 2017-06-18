@@ -68,7 +68,7 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
 
     private void validateTarget()
     {
-        final boolean isLifecycleOnly = ( // spec seems to be more strict but breaks apps + does it really makes sense?
+        boolean isLifecycleOnly = ( // spec seems to be more strict but breaks apps + does it really makes sense?
                         interceptionMethods.containsKey(InterceptionType.POST_CONSTRUCT)
                         || interceptionMethods.containsKey(InterceptionType.PRE_DESTROY))
                             &&

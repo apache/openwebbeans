@@ -44,7 +44,7 @@ public final class BeanCacheKey
         this.isDelegate = isDelegate;
         this.type = type;
         this.path = path;
-        final int length = qualifiers != null ? qualifiers.length : 0;
+        int length = qualifiers != null ? qualifiers.length : 0;
         if (length == 0)
         {
             qualifier = null;
@@ -241,9 +241,9 @@ public final class BeanCacheKey
         @Override
         public int compare(Annotation annotation1, Annotation annotation2)
         {
-            final Class<? extends Annotation> type1 = annotation1.annotationType();
-            final Class<? extends Annotation> type2 = annotation2.annotationType();
-            final int temp = type1.getName().compareTo(type2.getName());
+            Class<? extends Annotation> type1 = annotation1.annotationType();
+            Class<? extends Annotation> type2 = annotation2.annotationType();
+            int temp = type1.getName().compareTo(type2.getName());
             if (temp != 0)
             {
                 return temp;
@@ -255,15 +255,15 @@ public final class BeanCacheKey
                 return 0;
             }
 
-            final Method[] member1 = type1.getDeclaredMethods();
-            final Method[] member2 = type2.getDeclaredMethods();
+            Method[] member1 = type1.getDeclaredMethods();
+            Method[] member2 = type2.getDeclaredMethods();
 
             // TBD: the order of the list of members seems to be deterministic
 
             int i = 0;
             int j = 0;
-            final int length1 = member1.length;
-            final int length2 = member2.length;
+            int length1 = member1.length;
+            int length2 = member2.length;
 
             // find next nonbinding
             for (;; i++, j++)
@@ -295,8 +295,8 @@ public final class BeanCacheKey
                     {
                         return c;
                     }
-                    final Object value1 = callMethod(annotation1, member1[i]);
-                    final Object value2 = callMethod(annotation2, member2[j]);
+                    Object value1 = callMethod(annotation1, member1[i]);
+                    Object value2 = callMethod(annotation2, member2[j]);
                     assert value1.getClass().equals(value2.getClass());
 
                     if (value1 instanceof Comparable)
@@ -316,7 +316,7 @@ public final class BeanCacheKey
                             return c;
                         }
 
-                        final int length = Array.getLength(value1);
+                        int length = Array.getLength(value1);
                         c = length - Array.getLength(value2);
                         if (c != 0)
                         {

@@ -136,11 +136,11 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         preDestroyInterceptors
             = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getCdiInterceptors(), InterceptionType.PRE_DESTROY);
 
-        final InterceptorResolutionService.BusinessMethodInterceptorInfo constructorInterceptorInfo =
+        InterceptorResolutionService.BusinessMethodInterceptorInfo constructorInterceptorInfo =
                                 interceptorInfo.getConstructorInterceptorInfos().get(getConstructor().getJavaMember());
-        final Interceptor<?>[] constructorEjbInterceptorArray = constructorInterceptorInfo == null ?
+        Interceptor<?>[] constructorEjbInterceptorArray = constructorInterceptorInfo == null ?
                                             null : constructorInterceptorInfo.getEjbInterceptors();
-        final List<Interceptor<?>> constructorEjbInterceptors = constructorEjbInterceptorArray == null ?
+        List<Interceptor<?>> constructorEjbInterceptors = constructorEjbInterceptorArray == null ?
                                             Collections.<Interceptor<?>>emptyList() : asList(constructorEjbInterceptorArray);
         aroundConstructInterceptors = getLifecycleInterceptors(
                 constructorEjbInterceptors,
@@ -155,10 +155,10 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         {
             try
             {
-                final Constructor<T> cons = getConstructor().getJavaMember();
-                final InjectableConstructor<T> injectableConstructor = new InjectableConstructor<T>(cons, this, creationalContext);
-                final ConstructorInstanceProvider provider = new ConstructorInstanceProvider();
-                final ConstructorInterceptorInvocationContext<T> invocationContext = new ConstructorInterceptorInvocationContext<T>(
+                Constructor<T> cons = getConstructor().getJavaMember();
+                InjectableConstructor<T> injectableConstructor = new InjectableConstructor<T>(cons, this, creationalContext);
+                ConstructorInstanceProvider provider = new ConstructorInstanceProvider();
+                ConstructorInterceptorInvocationContext<T> invocationContext = new ConstructorInterceptorInvocationContext<T>(
                         provider, aroundConstructInterceptors, interceptorInstances, cons, injectableConstructor.createParameters());
                 provider.setContext(invocationContext);
                 invocationContext.proceed();
@@ -170,7 +170,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                 }
                 return (T) newInstance;
             }
-            catch (final Exception e) // CDI 1.0
+            catch (Exception e) // CDI 1.0
             {
                 throw ExceptionUtil.throwAsRuntimeException(e);
             }
@@ -203,7 +203,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         inject(instance.getClass(), unwrapProxyInstance(instance), (CreationalContextImpl<T>) context);
     }
 
-    private void inject(Class<?> type, final T instance, CreationalContextImpl<T> context)
+    private void inject(Class<?> type, T instance, CreationalContextImpl<T> context)
     {
         if (type == null || type.equals(Object.class))
         {
@@ -293,7 +293,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     }
 
     @Override
-    public void postConstruct(final T instance)
+    public void postConstruct(T instance)
     {
         Map<Interceptor<?>, ?> interceptorInstances = null;
         T internalInstance = instance;
@@ -388,7 +388,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
             }
         }
 
-        final Constructor<T> defaultConstructor = getDefaultConstructor();
+        Constructor<T> defaultConstructor = getDefaultConstructor();
         if (defaultConstructor == null)
         {
             throw new WebBeansCreationException("No default constructor for " + annotatedType.getJavaClass().getName());
@@ -479,7 +479,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         }
 
         // this dependency sucks, we should find something a bit more sexy
-        public void setContext(final ConstructorInterceptorInvocationContext<T> context)
+        public void setContext(ConstructorInterceptorInvocationContext<T> context)
         {
             this.context = context;
         }

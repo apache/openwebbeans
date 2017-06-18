@@ -107,7 +107,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             beanArchiveService = webBeansContext().getBeanArchiveService();
         }
 
-        final Filter userFilter = webBeansContext().getService(Filter.class);
+        Filter userFilter = webBeansContext().getService(Filter.class);
         archive = new CdiArchive(beanArchiveService, WebBeansUtil.getCurrentClassLoader(), getBeanDeploymentUrls(), userFilter, getAdditionalArchive());
         finder = new OwbAnnotationFinder(archive);
 
@@ -246,14 +246,14 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
 
     protected void filterExcludedJars(Set<URL> classPathUrls)
     {
-        final Iterator<URL> it = classPathUrls.iterator();
+        Iterator<URL> it = classPathUrls.iterator();
         while (it.hasNext())
         {
-            final URL url = it.next();
-            final String path = url.toExternalForm();
+            URL url = it.next();
+            String path = url.toExternalForm();
             // TODO: should extract file path and test file.getName(), not the whole path
             // + should be configurable
-            final int knownJarIdx = isExcludedJar(path);
+            int knownJarIdx = isExcludedJar(path);
             // -Prun-its openwebbeans-tomcat7 in path but WEB-INF/classes
             if (knownJarIdx > 0 && knownJarIdx < path.indexOf(".jar"))
             {
@@ -264,14 +264,14 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         }
     }
 
-    protected int isExcludedJar(final String path)
+    protected int isExcludedJar(String path)
     {
         // lazy init - required when using DS CdiTestRunner
         initScanningExcludes();
 
-        for (final String p : scanningExcludes)
+        for (String p : scanningExcludes)
         {
-            final int i = path.indexOf(p);
+            int i = path.indexOf(p);
             if (i > 0)
             {
                 return i;
@@ -350,7 +350,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         doAddWebBeansXmlLocation(beanArchiveUrl);
     }
 
-    protected void doAddWebBeansXmlLocation(final URL beanArchiveUrl)
+    protected void doAddWebBeansXmlLocation(URL beanArchiveUrl)
     {
         beanArchiveLocations.add(beanArchiveUrl);
 

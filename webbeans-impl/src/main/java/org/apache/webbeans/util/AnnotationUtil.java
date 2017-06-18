@@ -155,12 +155,12 @@ public final class AnnotationUtil
         throw new IllegalArgumentException("annotation @" + annotation.getName() + " not found on any parameter");
     }
 
-    private static boolean areParamEquals(final Annotation annotation1, final Annotation annotation2, final List<Method> bindingCdiAnnotationMethods)
+    private static boolean areParamEquals(Annotation annotation1, Annotation annotation2, List<Method> bindingCdiAnnotationMethods)
     {
-        for (final Method method : bindingCdiAnnotationMethods)
+        for (Method method : bindingCdiAnnotationMethods)
         {
-            final Object value1 = callMethod(annotation1, method);
-            final Object value2 = callMethod(annotation2, method);
+            Object value1 = callMethod(annotation1, method);
+            Object value2 = callMethod(annotation2, method);
             if (!checkEquality(value1, value2))
             {
                 return false;
@@ -179,7 +179,7 @@ public final class AnnotationUtil
      * @param annotation2
      * @return 
      */
-    public static boolean isCdiAnnotationEqual(final AnnotatedType<?> at, final Annotation annotation1, final Annotation annotation2)
+    public static boolean isCdiAnnotationEqual(AnnotatedType<?> at, Annotation annotation1, Annotation annotation2)
     {
         Asserts.assertNotNull(annotation1, "annotation1 argument");
         Asserts.assertNotNull(annotation2, "annotation2 argument");
@@ -412,10 +412,10 @@ public final class AnnotationUtil
         return Collections.emptyList();
     }
 
-    private static List<Method> getBindingCdiAnnotationMethods(final AnnotatedType<?> at)
+    private static List<Method> getBindingCdiAnnotationMethods(AnnotatedType<?> at)
     {
-        final List<Method> bindingMethods = new ArrayList<Method>();
-        for (final AnnotatedMethod<?> method : at.getMethods())
+        List<Method> bindingMethods = new ArrayList<Method>();
+        for (AnnotatedMethod<?> method : at.getMethods())
         {
             if (method.isAnnotationPresent(Nonbinding.class))
             {

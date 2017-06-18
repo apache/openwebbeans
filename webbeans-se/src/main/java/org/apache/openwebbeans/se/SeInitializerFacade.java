@@ -42,79 +42,79 @@ public class SeInitializerFacade extends SeContainerInitializer
     }
 
     @Override
-    public SeContainerInitializer addBeanClasses(final Class<?>... classes)
+    public SeContainerInitializer addBeanClasses(Class<?>... classes)
     {
         return delegate.addBeanClasses(classes);
     }
 
     @Override
-    public SeContainerInitializer addPackages(final Class<?>... packageClasses)
+    public SeContainerInitializer addPackages(Class<?>... packageClasses)
     {
         return delegate.addPackages(packageClasses);
     }
 
     @Override
-    public SeContainerInitializer addPackages(final boolean scanRecursively, final Class<?>... packageClasses)
+    public SeContainerInitializer addPackages(boolean scanRecursively, Class<?>... packageClasses)
     {
         return delegate.addPackages(scanRecursively, packageClasses);
     }
 
     @Override
-    public SeContainerInitializer addPackages(final Package... packages)
+    public SeContainerInitializer addPackages(Package... packages)
     {
         return delegate.addPackages(packages);
     }
 
     @Override
-    public SeContainerInitializer addPackages(final boolean scanRecursively, final Package... packages)
+    public SeContainerInitializer addPackages(boolean scanRecursively, Package... packages)
     {
         return delegate.addPackages(scanRecursively, packages);
     }
 
     @Override
-    public SeContainerInitializer addExtensions(final Extension... extensions)
+    public SeContainerInitializer addExtensions(Extension... extensions)
     {
         return delegate.addExtensions(extensions);
     }
 
     @Override
-    public SeContainerInitializer addExtensions(final Class<? extends Extension>... extensions)
+    public SeContainerInitializer addExtensions(Class<? extends Extension>... extensions)
     {
         return delegate.addExtensions(extensions);
     }
 
     @Override
-    public SeContainerInitializer enableInterceptors(final Class<?>... interceptorClasses)
+    public SeContainerInitializer enableInterceptors(Class<?>... interceptorClasses)
     {
         return delegate.enableInterceptors(interceptorClasses);
     }
 
     @Override
-    public SeContainerInitializer enableDecorators(final Class<?>... decoratorClasses)
+    public SeContainerInitializer enableDecorators(Class<?>... decoratorClasses)
     {
         return delegate.enableDecorators(decoratorClasses);
     }
 
     @Override
-    public SeContainerInitializer selectAlternatives(final Class<?>... alternativeClasses)
+    public SeContainerInitializer selectAlternatives(Class<?>... alternativeClasses)
     {
         return delegate.selectAlternatives(alternativeClasses);
     }
 
     @Override
-    public SeContainerInitializer selectAlternativeStereotypes(final Class<? extends Annotation>... alternativeStereotypeClasses)
+    public SeContainerInitializer selectAlternativeStereotypes(Class<? extends Annotation>... alternativeStereotypeClasses)
     {
         return delegate.selectAlternativeStereotypes(alternativeStereotypeClasses);
     }
 
     @Override
-    public SeContainerInitializer addProperty(final String key, final Object value)
+    public SeContainerInitializer addProperty(String key, Object value)
     {
         return delegate.addProperty(key, value);
     }
 
     @Override
-    public SeContainerInitializer setProperties(final Map<String, Object> properties)
+    public SeContainerInitializer setProperties(Map<String, Object> properties)
     {
         return delegate.setProperties(properties);
     }
@@ -126,7 +126,7 @@ public class SeInitializerFacade extends SeContainerInitializer
     }
 
     @Override
-    public SeContainerInitializer setClassLoader(final ClassLoader classLoader)
+    public SeContainerInitializer setClassLoader(ClassLoader classLoader)
     {
         return delegate.setClassLoader(classLoader);
     }

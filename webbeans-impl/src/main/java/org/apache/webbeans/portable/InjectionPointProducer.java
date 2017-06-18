@@ -57,7 +57,7 @@ public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
 
         // the first injection point on the stack is of type InjectionPoint, so we need the second one
         InjectionPoint first = creationalContextImpl.removeInjectionPoint();
-        final InjectionPoint injectionPoint;
+        InjectionPoint injectionPoint;
         if (!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(first.getType())))
         {
             if (!ThirdpartyBeanImpl.class.isInstance(creationalContextImpl.getBean()))
@@ -78,13 +78,13 @@ public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
 
         try
         {
-            final Type type = injectionPoint.getType();
+            Type type = injectionPoint.getType();
             if (ParameterizedType.class.isInstance(type))
             {
-                final ParameterizedType parameterizedType = ParameterizedType.class.cast(type);
+                ParameterizedType parameterizedType = ParameterizedType.class.cast(type);
                 if (parameterizedType.getRawType() == Instance.class)
                 {
-                    final Bean<InjectionPoint> bean = creationalContextImpl.getBean();
+                    Bean<InjectionPoint> bean = creationalContextImpl.getBean();
                     return new InjectionPointDelegate(
                             injectionPoint,
                             bean.getBeanClass() != null ? bean.getBeanClass() : parameterizedType.getActualTypeArguments()[0]);
@@ -109,7 +109,7 @@ public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
         private InjectionPoint ip;
         private Type type;
 
-        public InjectionPointDelegate(final InjectionPoint injectionPoint, final Type type)
+        public InjectionPointDelegate(InjectionPoint injectionPoint, Type type)
         {
             this.ip = injectionPoint;
             this.type = type;
@@ -157,16 +157,16 @@ public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
             return ip.isTransient();
         }
 
-        private void readObject(final ObjectInputStream inp) throws IOException, ClassNotFoundException
+        private void readObject(ObjectInputStream inp) throws IOException, ClassNotFoundException
         {
-            final OwbCustomObjectInputStream owbCustomObjectInputStream = new OwbCustomObjectInputStream(inp, WebBeansUtil.getCurrentClassLoader());
+            OwbCustomObjectInputStream owbCustomObjectInputStream = new OwbCustomObjectInputStream(inp, WebBeansUtil.getCurrentClassLoader());
             type = Type.class.cast(owbCustomObjectInputStream.readObject());
             ip = InjectionPoint.class.cast(owbCustomObjectInputStream.readObject());
         }
 
-        private void writeObject(final ObjectOutputStream op) throws IOException
+        private void writeObject(ObjectOutputStream op) throws IOException
         {
-            final ObjectOutputStream out = new ObjectOutputStream(op);
+            ObjectOutputStream out = new ObjectOutputStream(op);
             out.writeObject(type);
             out.writeObject(ip);
         }

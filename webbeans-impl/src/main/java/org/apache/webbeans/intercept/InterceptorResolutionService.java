@@ -168,7 +168,7 @@ public class InterceptorResolutionService
         }
         for (AnnotatedConstructor annotatedConstructor : annotatedType.getConstructors())
         {
-            final BusinessMethodInterceptorInfo constructorInterceptorInfo = new BusinessMethodInterceptorInfo();
+            BusinessMethodInterceptorInfo constructorInterceptorInfo = new BusinessMethodInterceptorInfo();
             calculateEjbMethodInterceptors(constructorInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, annotatedConstructor, failOnFinal);
             if (constructorInterceptorInfo.isEmpty() && (selfInterceptorBean == null || !selfInterceptorBean.isAroundInvoke()))
             {
@@ -271,7 +271,7 @@ public class InterceptorResolutionService
                                                       Set<Interceptor<?>> allUsedCdiInterceptors,
                                                       Set<Interceptor<?>> allUsedConstructorCdiInterceptors)
     {
-        final BeanManagerImpl beanManagerImpl = webBeansContext.getBeanManagerImpl();
+        BeanManagerImpl beanManagerImpl = webBeansContext.getBeanManagerImpl();
 
         Annotation[] interceptorBindings = null;
         if (classInterceptorBindings.size() > 0)
@@ -285,7 +285,7 @@ public class InterceptorResolutionService
         AnnotatedConstructor<?> constructorToUse = null;
         if (!annotatedType.getConstructors().isEmpty()) // avoid to use class annotations for not used constructors
         {
-            for (final AnnotatedConstructor<?> c : annotatedType.getConstructors())
+            for (AnnotatedConstructor<?> c : annotatedType.getConstructors())
             {
                 if (constructorToUse == null && c.getParameters().isEmpty())
                 {
@@ -300,11 +300,11 @@ public class InterceptorResolutionService
         }
         if (constructorToUse != null)
         {
-            final Set<Annotation> constructorAnnot = webBeansContext.getAnnotationManager().getInterceptorAnnotations(constructorToUse.getAnnotations());
-            for (final Annotation classA : classInterceptorBindings)
+            Set<Annotation> constructorAnnot = webBeansContext.getAnnotationManager().getInterceptorAnnotations(constructorToUse.getAnnotations());
+            for (Annotation classA : classInterceptorBindings)
             {
                 boolean overriden = false;
-                for (final Annotation consA : constructorAnnot)
+                for (Annotation consA : constructorAnnot)
                 {
                     if (classA.annotationType() == consA.annotationType())
                     {
@@ -444,10 +444,10 @@ public class InterceptorResolutionService
         }
     }
 
-    private boolean isUnproxyable(final AnnotatedCallable annotatedMethod, final boolean failOnFinal)
+    private boolean isUnproxyable(AnnotatedCallable annotatedMethod, boolean failOnFinal)
     {
         int modifiers = annotatedMethod.getJavaMember().getModifiers();
-        final boolean isFinal = Modifier.isFinal(modifiers);
+        boolean isFinal = Modifier.isFinal(modifiers);
         if (failOnFinal && isFinal)
         {
             throw new UnproxyableResolutionException(annotatedMethod + " is not proxyable");
@@ -760,9 +760,9 @@ public class InterceptorResolutionService
         return interceptableAnnotatedMethods;
     }
 
-    public Map<Method, List<Interceptor<?>>> createMethodInterceptors(final BeanInterceptorInfo interceptorInfo)
+    public Map<Method, List<Interceptor<?>>> createMethodInterceptors(BeanInterceptorInfo interceptorInfo)
     {
-        final Map<Method, List<Interceptor<?>>> methodInterceptors = new HashMap<>(interceptorInfo.getBusinessMethodsInfo().size());
+        Map<Method, List<Interceptor<?>>> methodInterceptors = new HashMap<>(interceptorInfo.getBusinessMethodsInfo().size());
         for (Map.Entry<Method, BusinessMethodInterceptorInfo> miEntry : interceptorInfo.getBusinessMethodsInfo().entrySet())
         {
             Method interceptedMethod = miEntry.getKey();
@@ -798,28 +798,28 @@ public class InterceptorResolutionService
         return methodInterceptors;
     }
 
-    public <T> Map<Interceptor<?>, Object> createInterceptorInstances(final BeanInterceptorInfo interceptorInfo,
-                                                                      final CreationalContextImpl<T> creationalContextImpl)
+    public <T> Map<Interceptor<?>, Object> createInterceptorInstances(BeanInterceptorInfo interceptorInfo,
+                                                                      CreationalContextImpl<T> creationalContextImpl)
     {
-        final Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<>();
+        Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<>();
         if (interceptorInfo != null)
         {
             // apply interceptorInfo
 
             // create EJB-style interceptors
-            for (final Interceptor interceptorBean : interceptorInfo.getEjbInterceptors())
+            for (Interceptor interceptorBean : interceptorInfo.getEjbInterceptors())
             {
                 creationalContextImpl.putContextual(interceptorBean);
                 interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContextImpl));
             }
 
             // create CDI-style interceptors
-            for (final Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
+            for (Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
             {
                 creationalContextImpl.putContextual(interceptorBean);
                 interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContextImpl));
             }
-            for (final Interceptor interceptorBean : interceptorInfo.getConstructorCdiInterceptors())
+            for (Interceptor interceptorBean : interceptorInfo.getConstructorCdiInterceptors())
             {
                 creationalContextImpl.putContextual(interceptorBean);
                 interceptorInstances.put(interceptorBean, interceptorBean.create(creationalContextImpl));
@@ -828,13 +828,13 @@ public class InterceptorResolutionService
         return interceptorInstances;
     }
 
-    public <T> T createProxiedInstance(final T instance, final CreationalContextImpl<T> creationalContextImpl,
-                                       final CreationalContext<T> creationalContext,
-                                       final BeanInterceptorInfo interceptorInfo,
-                                       final Class<? extends T> proxyClass, final Map<Method, List<Interceptor<?>>> methodInterceptors,
-                                       final String passivationId, final Map<Interceptor<?>, Object> interceptorInstances,
-                                       final Function<CreationalContextImpl<?>, Boolean> isDelegateInjection,
-                                       final BiFunction<T, List<Decorator<?>>, List<Decorator<?>>> filterDecorators)
+    public <T> T createProxiedInstance(T instance, CreationalContextImpl<T> creationalContextImpl,
+                                       CreationalContext<T> creationalContext,
+                                       BeanInterceptorInfo interceptorInfo,
+                                       Class<? extends T> proxyClass, Map<Method, List<Interceptor<?>>> methodInterceptors,
+                                       String passivationId, Map<Interceptor<?>, Object> interceptorInstances,
+                                       Function<CreationalContextImpl<?>, Boolean> isDelegateInjection,
+                                       BiFunction<T, List<Decorator<?>>, List<Decorator<?>>> filterDecorators)
     {
         // register the bean itself for self-interception
         if (interceptorInfo.getSelfInterceptorBean() != null)

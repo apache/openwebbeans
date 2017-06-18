@@ -167,8 +167,8 @@ public class SubclassProxyFactory extends AbstractProxyFactory
                 }
             }
 
-            final String descriptor = Type.getConstructorDescriptor(superDefaultCt);
-            final MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, exceptions);
+            String descriptor = Type.getConstructorDescriptor(superDefaultCt);
+            MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, exceptions);
             mv.visitCode();
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             if (constructor != null)
@@ -241,13 +241,13 @@ public class SubclassProxyFactory extends AbstractProxyFactory
             int offset = 1;
             for (Class<?> aClass : delegatedMethod.getParameterTypes())
             {
-                final Type type = Type.getType(aClass);
+                Type type = Type.getType(aClass);
                 mv.visitVarInsn(type.getOpcode(Opcodes.ILOAD), offset);
                 offset += type.getSize();
             }
 
             // and finally invoke the target method on the provided Contextual Instance
-            final Type declaringClass = Type.getType(delegatedMethod.getDeclaringClass());
+            Type declaringClass = Type.getType(delegatedMethod.getDeclaringClass());
             if (!abstractMethod)
             {
                 // invoke the method on the super class;

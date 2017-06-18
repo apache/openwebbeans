@@ -283,7 +283,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         }
         else
         {
-            final CreationalContextImpl<?> creationalContext = creationalContexts.remove(instance);
+            CreationalContextImpl<?> creationalContext = creationalContexts.remove(instance);
             if (creationalContext == null)
             {
                 throw new IllegalArgumentException("instance " + instance + " not produced with this Instance<?>");
@@ -301,7 +301,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         creationalContext.putInjectionPoint(injectionPoint);
         try
         {
-            final T reference = (T) beanManager.getReference(bean, injectionClazz, creationalContext);
+            T reference = (T) beanManager.getReference(bean, injectionClazz, creationalContext);
             if (creationalContexts == null)
             {
                 creationalContexts = new IdentityHashMap<Object, CreationalContextImpl<?>>();
@@ -328,7 +328,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
     {
         webBeansContext = WebBeansContext.currentInstance();
-        final ObjectInputStream inputStream = new OwbCustomObjectInputStream(in, WebBeansUtil.getCurrentClassLoader());
+        ObjectInputStream inputStream = new OwbCustomObjectInputStream(in, WebBeansUtil.getCurrentClassLoader());
         injectionClazz = (Type)inputStream.readObject();
         qualifierAnnotations = (Set<Annotation>)inputStream.readObject();
         injectionPoint = (InjectionPoint) inputStream.readObject();
@@ -376,7 +376,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         private InjectionPoint delegate;
         private Set<Annotation> qualifiers;
 
-        protected InstanceInjectionPoint(final InjectionPoint injectionPoint, final Annotation[] newQualifiersArray)
+        protected InstanceInjectionPoint(InjectionPoint injectionPoint, Annotation[] newQualifiersArray)
         {
             this.delegate = injectionPoint;
             this.qualifiers = Collections.unmodifiableSet(new HashSet<Annotation>(Arrays.asList(newQualifiersArray)));
@@ -424,16 +424,16 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             return delegate.isTransient();
         }
 
-        private void readObject(final ObjectInputStream inp) throws IOException, ClassNotFoundException
+        private void readObject(ObjectInputStream inp) throws IOException, ClassNotFoundException
         {
-            final OwbCustomObjectInputStream owbCustomObjectInputStream = new OwbCustomObjectInputStream(inp, WebBeansUtil.getCurrentClassLoader());
+            OwbCustomObjectInputStream owbCustomObjectInputStream = new OwbCustomObjectInputStream(inp, WebBeansUtil.getCurrentClassLoader());
             qualifiers = Set.class.cast(owbCustomObjectInputStream.readObject());
             delegate = InjectionPoint.class.cast(owbCustomObjectInputStream.readObject());
         }
 
-        private void writeObject(final ObjectOutputStream op) throws IOException
+        private void writeObject(ObjectOutputStream op) throws IOException
         {
-            final ObjectOutputStream out = new ObjectOutputStream(op);
+            ObjectOutputStream out = new ObjectOutputStream(op);
             out.writeObject(qualifiers);
             out.writeObject(delegate);
         }

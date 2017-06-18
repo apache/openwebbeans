@@ -35,8 +35,8 @@ public class ContainerEventObserverMethodImpl<T> extends ObserverMethodImpl<T>
 {
     private final Class[] withAnnotations;
 
-    public ContainerEventObserverMethodImpl(final AbstractOwbBean<?> bean, final AnnotatedMethod<T> annotatedObserverMethod,
-                                            final AnnotatedParameter<T> annotatedObservesParameter)
+    public ContainerEventObserverMethodImpl(AbstractOwbBean<?> bean, AnnotatedMethod<T> annotatedObserverMethod,
+                                            AnnotatedParameter<T> annotatedObservesParameter)
     {
         super(bean, annotatedObserverMethod, annotatedObservesParameter);
         WithAnnotations withAnnotationsAnn = annotatedObservesParameter.getAnnotation(WithAnnotations.class);
@@ -69,7 +69,7 @@ public class ContainerEventObserverMethodImpl<T> extends ObserverMethodImpl<T>
     }
 
     @Override
-    protected void invoke(final Object object, final Object[] args) throws IllegalAccessException, InvocationTargetException
+    protected void invoke(Object object, Object[] args) throws IllegalAccessException, InvocationTargetException
     {
         ExtensionAware extensionAware = null;
         if (args.length > 0)

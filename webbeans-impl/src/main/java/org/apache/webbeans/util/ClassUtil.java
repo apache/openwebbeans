@@ -283,7 +283,7 @@ public final class ClassUtil
         if (!clazz.isAnnotation() && clazz.isInterface())
         {
             addNonPrivateMethods(topClass, excludeFinalMethods, methodMap, allMethods, clazz);
-            for (final Class<?> parent : clazz.getInterfaces())
+            for (Class<?> parent : clazz.getInterfaces())
             {
                 addNonPrivateMethods(topClass, excludeFinalMethods, methodMap, allMethods, parent);
             }
@@ -326,7 +326,7 @@ public final class ClassUtil
                 continue;
             }
 
-            final int modifiers = method.getModifiers();
+            int modifiers = method.getModifiers();
 
             if (Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers))
             {
@@ -461,9 +461,9 @@ public final class ClassUtil
      * @param subclassMethods
      * @param superclassMethod
      */
-    public static boolean isOverridden(final List<Method> subclassMethods, final Method superclassMethod)
+    public static boolean isOverridden(List<Method> subclassMethods, Method superclassMethod)
     {
-        for (final Method m : subclassMethods)
+        for (Method m : subclassMethods)
         {
             if (isOverridden(m, superclassMethod))
             {
@@ -658,7 +658,7 @@ public final class ClassUtil
                 }
             }                    
         }
-        else if(ClassUtil.isTypeVariable(beanTypeArg))
+        else if(isTypeVariable(beanTypeArg))
         {
             TypeVariable<?> tvBeanTypeArg = (TypeVariable<?>)beanTypeArg;
             Type tvBound = tvBeanTypeArg.getBounds()[0];

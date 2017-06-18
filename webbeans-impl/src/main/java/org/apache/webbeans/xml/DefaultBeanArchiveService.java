@@ -445,33 +445,33 @@ public class DefaultBeanArchiveService implements BeanArchiveService
 
     private void fillExcludes(DefaultBeanArchiveInformation bdaInfo, Element scanElement)
     {
-        final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        final NodeList childNodes = scanElement.getChildNodes();
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        NodeList childNodes = scanElement.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++)
         {
-            final Node nd = childNodes.item(i);
+            Node nd = childNodes.item(i);
             if (!Element.class.isInstance(nd))
             {
                 continue;
             }
 
-            final Element child = Element.class.cast(nd);
+            Element child = Element.class.cast(nd);
             if (WebBeansConstants.WEB_BEANS_XML_EXCLUDE.equalsIgnoreCase(child.getLocalName()))
             {
-                final String name = getTrimmedAttribute(child, "name");
-                final NodeList children = child.getChildNodes();
+                String name = getTrimmedAttribute(child, "name");
+                NodeList children = child.getChildNodes();
                 boolean skip = false;
                 for (int j = 0; j < children.getLength(); j++)
                 {
-                    final Node ndChild = children.item(j);
+                    Node ndChild = children.item(j);
                     if (!Element.class.isInstance(ndChild))
                     {
                         continue;
                     }
 
-                    final Element condition = Element.class.cast(ndChild);
+                    Element condition = Element.class.cast(ndChild);
 
-                    final String localName = condition.getLocalName();
+                    String localName = condition.getLocalName();
                     if (WebBeansConstants.WEB_BEANS_XML_IF_CLASS_AVAILABLE.equalsIgnoreCase(localName))
                     {
                         if (!isClassAvailable(loader, getTrimmedAttribute(condition, "name")))
@@ -490,8 +490,8 @@ public class DefaultBeanArchiveService implements BeanArchiveService
                     }
                     else if (WebBeansConstants.WEB_BEANS_XML_IF_SYSTEM_PROPERTY.equalsIgnoreCase(localName))
                     {
-                        final String value = getTrimmedAttribute(condition, "value");
-                        final String systProp = System.getProperty(getTrimmedAttribute(condition, "name"));
+                        String value = getTrimmedAttribute(condition, "value");
+                        String systProp = System.getProperty(getTrimmedAttribute(condition, "name"));
                         if ((value == null && systProp == null) || !(value != null && value.equals(systProp)))
                         {
                             skip = true;
@@ -542,7 +542,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
 
 
 
-    private static boolean isClassAvailable(final ClassLoader loader, final String name)
+    private static boolean isClassAvailable(ClassLoader loader, String name)
     {
         try
         {
@@ -550,7 +550,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
             loader.loadClass(name);
             return true;
         }
-        catch (final Throwable e) // NoClassDefFoundError or ClassNotFoundException
+        catch (Throwable e) // NoClassDefFoundError or ClassNotFoundException
         {
             return false;
         }

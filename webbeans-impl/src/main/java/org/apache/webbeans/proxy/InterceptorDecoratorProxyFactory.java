@@ -190,14 +190,14 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         return proxyClass;
     }
 
-    public synchronized <T> Class<T> createProxyClass(final InterceptorResolutionService.BeanInterceptorInfo interceptorInfo,
-                                                      final AnnotatedType<T> at, final ClassLoader classLoader)
+    public synchronized <T> Class<T> createProxyClass(InterceptorResolutionService.BeanInterceptorInfo interceptorInfo,
+                                                      AnnotatedType<T> at, ClassLoader classLoader)
             throws ProxyGenerationException
     {
-        final Collection<Method> intercepted = interceptorInfo.getBusinessMethodsInfo().keySet();
-        final Collection<Method> others = interceptorInfo.getNonInterceptedMethods();
+        Collection<Method> intercepted = interceptorInfo.getBusinessMethodsInfo().keySet();
+        Collection<Method> others = interceptorInfo.getNonInterceptedMethods();
 
-        final Class<T> proxyClass = createProxyClass(
+        Class<T> proxyClass = createProxyClass(
                 classLoader, at.getJavaClass(),
                 intercepted.toArray(new Method[intercepted.size()]), others.toArray(new Method[others.size()]));
         cachedProxyClassesByAt.put(at, proxyClass);
@@ -227,8 +227,8 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         return clazz;
     }
 
-    public <T> Class<T> getCachedProxyClass(final InterceptorResolutionService.BeanInterceptorInfo interceptorInfo,
-                                            final AnnotatedType<T> at, final ClassLoader classLoader)
+    public <T> Class<T> getCachedProxyClass(InterceptorResolutionService.BeanInterceptorInfo interceptorInfo,
+                                            AnnotatedType<T> at, ClassLoader classLoader)
     {
         Class<T> value = (Class<T>) cachedProxyClassesByAt.get(at);
         if (value == null)
@@ -318,7 +318,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
 
         // was: final String descriptor = Type.getConstructorDescriptor(classToProxy.getDeclaredConstructor());
         // but we need to get a default constructor even if the bean uses constructor injection
-        final MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitMethodInsn(Opcodes.INVOKESPECIAL, parentClassFileName, "<init>", descriptor, false);
@@ -351,7 +351,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
                 continue;
             }
 
-            final int modifiers = delegatedMethod.getModifiers();
+            int modifiers = delegatedMethod.getModifiers();
             if (Modifier.isProtected(modifiers)
                 && !delegatedMethod.getDeclaringClass().getPackage().getName()
                 .equals(classToProxy.getPackage().getName()))
@@ -383,12 +383,12 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
             int offset = 1;
             for (Class<?> aClass : delegatedMethod.getParameterTypes())
             {
-                final Type type = Type.getType(aClass);
+                Type type = Type.getType(aClass);
                 mv.visitVarInsn(type.getOpcode(Opcodes.ILOAD), offset);
                 offset += type.getSize();
             }
 
-            final Type declaringClass = Type.getType(delegatedMethod.getDeclaringClass());
+            Type declaringClass = Type.getType(delegatedMethod.getDeclaringClass());
             boolean isItf = delegatedMethod.getDeclaringClass().isInterface();
             mv.visitMethodInsn(
                     isItf ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKEVIRTUAL, declaringClass.getInternalName(),
@@ -421,10 +421,10 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
             return;
         }
 
-        final Class<?> returnType = method.getReturnType();
-        final Class<?>[] parameterTypes = method.getParameterTypes();
-        final Class<?>[] exceptionTypes = method.getExceptionTypes();
-        final int modifiers = method.getModifiers();
+        Class<?> returnType = method.getReturnType();
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        Class<?>[] exceptionTypes = method.getExceptionTypes();
+        int modifiers = method.getModifiers();
 
         if (Modifier.isFinal(modifiers) || Modifier.isStatic(modifiers))
         {
@@ -439,9 +439,9 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         mv.visitCode();
 
         // push try/catch block, to catch declared exceptions, and to catch java.lang.Throwable
-        final Label l0 = new Label();
-        final Label l1 = new Label();
-        final Label l2 = new Label();
+        Label l0 = new Label();
+        Label l1 = new Label();
+        Label l2 = new Label();
 
         if (exceptionTypes.length > 0)
         {
@@ -450,7 +450,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
 
         // push try code
         mv.visitLabel(l0);
-        final String classNameToOverride = method.getDeclaringClass().getName().replace('.', '/');
+        String classNameToOverride = method.getDeclaringClass().getName().replace('.', '/');
         mv.visitLdcInsn(Type.getType("L" + classNameToOverride + ";"));
 
         // the following code generates the bytecode for this line of Java:
@@ -470,7 +470,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
             // keep copy of array on stack
             mv.visitInsn(Opcodes.DUP);
 
-            final Class<?> parameterType = parameterTypes[i];
+            Class<?> parameterType = parameterTypes[i];
 
             // push number onto stack
             pushIntOntoStack(mv, i);
@@ -500,7 +500,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         // the following code generates bytecode equivalent to:
         // return ((<returntype>) invocationHandler.invoke(this, {methodIndex}, new Object[] { <function arguments }))[.<primitive>Value()];
 
-        final Label l4 = new Label();
+        Label l4 = new Label();
         mv.visitLabel(l4);
 
         mv.visitVarInsn(Opcodes.ALOAD, 0);
@@ -566,12 +566,12 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
             mv.visitLabel(l2);
             mv.visitVarInsn(Opcodes.ASTORE, length);
 
-            final Label l5 = new Label();
+            Label l5 = new Label();
             mv.visitLabel(l5);
 
             for (int i = 0; i < exceptionTypes.length; i++)
             {
-                final Class<?> exceptionType = exceptionTypes[i];
+                Class<?> exceptionType = exceptionTypes[i];
 
                 mv.visitLdcInsn(Type.getType("L" + exceptionType.getCanonicalName().replace('.', '/') + ";"));
                 mv.visitVarInsn(Opcodes.ALOAD, length);
@@ -580,10 +580,10 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "getClass", "()Ljava/lang/Class;", false);
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "equals", "(Ljava/lang/Object;)Z", false);
 
-                final Label l6 = new Label();
+                Label l6 = new Label();
                 mv.visitJumpInsn(Opcodes.IFEQ, l6);
 
-                final Label l7 = new Label();
+                Label l7 = new Label();
                 mv.visitLabel(l7);
 
                 mv.visitVarInsn(Opcodes.ALOAD, length);

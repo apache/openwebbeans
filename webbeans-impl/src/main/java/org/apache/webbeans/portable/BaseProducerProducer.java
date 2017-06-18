@@ -58,7 +58,7 @@ public abstract class BaseProducerProducer<T, P> extends AbstractProducer<T>
         this.webBeansContext = webBeansContext;
         this.disposalIPs = disposalIPs;
 
-        final OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
+        OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
         if (ejbPlugin != null)
         {
             if (disposerMethod != null)
@@ -75,7 +75,7 @@ public abstract class BaseProducerProducer<T, P> extends AbstractProducer<T>
         }
         if (disposerMethod != null)
         {
-            for (final AnnotatedParameter<?> param : disposerMethod.getParameters())
+            for (AnnotatedParameter<?> param : disposerMethod.getParameters())
             {
                 if (param.isAnnotationPresent(Disposes.class))
                 {
@@ -93,7 +93,7 @@ public abstract class BaseProducerProducer<T, P> extends AbstractProducer<T>
     }
 
     @Override
-    public void defineInterceptorStack(final Bean<T> bean, final AnnotatedType<T> annotatedType, final WebBeansContext webBeansContext)
+    public void defineInterceptorStack(Bean<T> bean, AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
         if (webBeansContext.getOpenWebBeansConfiguration().supportsInterceptionOnProducers())
         {

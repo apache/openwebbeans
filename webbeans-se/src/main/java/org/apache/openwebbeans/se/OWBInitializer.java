@@ -61,33 +61,33 @@ public class OWBInitializer extends SeContainerInitializer
     @Override
     public SeContainer initialize()
     {
-        final Thread thread = Thread.currentThread();
-        final ClassLoader old = thread.getContextClassLoader();
+        Thread thread = Thread.currentThread();
+        ClassLoader old = thread.getContextClassLoader();
         thread.setContextClassLoader(loader);
         try
         {
             services.putIfAbsent(ScannerService.class.getName(), scannerService);
             services.putIfAbsent(LoaderService.class.getName(), new CDISeLoaderService(extensions, loader));
             services.putIfAbsent(BeanArchiveService.class.getName(), new CDISeBeanArchiveService(bai));
-            final Map<Class<?>, Object> preparedServices = services.entrySet().stream()
+            Map<Class<?>, Object> preparedServices = services.entrySet().stream()
                     .collect(toMap(e ->
                     {
                         try
                         {
                             return loader.loadClass(e.getKey());
                         }
-                        catch (final ClassNotFoundException e1)
+                        catch (ClassNotFoundException e1)
                         {
                             throw new IllegalArgumentException(e1);
                         }
                     }, Map.Entry::getValue));
 
-            final WebBeansContext context = new WebBeansContext(preparedServices, properties);
+            WebBeansContext context = new WebBeansContext(preparedServices, properties);
 
-            final SingletonService<WebBeansContext> singletonInstance = WebBeansFinder.getSingletonService();
+            SingletonService<WebBeansContext> singletonInstance = WebBeansFinder.getSingletonService();
             DefaultSingletonService.class.cast(singletonInstance).register(loader, context);
 
-            final Object startObj = new Object();
+            Object startObj = new Object();
             context.getService(ContainerLifecycle.class).startApplication(startObj);
             return new OWBContainer(context, startObj);
         }
@@ -98,75 +98,75 @@ public class OWBInitializer extends SeContainerInitializer
     }
 
     @Override
-    public SeContainerInitializer addBeanClasses(final Class<?>... classes)
+    public SeContainerInitializer addBeanClasses(Class<?>... classes)
     {
         scannerService.classes(classes);
         return this;
     }
 
     @Override
-    public SeContainerInitializer addPackages(final Package... packages)
+    public SeContainerInitializer addPackages(Package... packages)
     {
         return addPackages(false, packages);
     }
 
     @Override
-    public SeContainerInitializer addPackages(final boolean scanRecursively, final Package... packages)
+    public SeContainerInitializer addPackages(boolean scanRecursively, Package... packages)
     {
         scannerService.packages(scanRecursively, packages);
         return this;
     }
 
     @Override
-    public SeContainerInitializer addPackages(final Class<?>... packageClasses)
+    public SeContainerInitializer addPackages(Class<?>... packageClasses)
     {
         return addPackages(false, packageClasses);
     }
 
     @Override
-    public SeContainerInitializer addPackages(final boolean scanRecursively, final Class<?>... packageClasses)
+    public SeContainerInitializer addPackages(boolean scanRecursively, Class<?>... packageClasses)
     {
         scannerService.packages(scanRecursively, packageClasses);
         return this;
     }
 
     @Override
-    public SeContainerInitializer enableInterceptors(final Class<?>... interceptorClasses)
+    public SeContainerInitializer enableInterceptors(Class<?>... interceptorClasses)
     {
         bai.getInterceptors().addAll(Stream.of(interceptorClasses).map(Class::getName).collect(toList()));
         return this;
     }
 
     @Override
-    public SeContainerInitializer enableDecorators(final Class<?>... decoratorClasses)
+    public SeContainerInitializer enableDecorators(Class<?>... decoratorClasses)
     {
         bai.getDecorators().addAll(Stream.of(decoratorClasses).map(Class::getName).collect(toList()));
         return this;
     }
 
     @Override
-    public SeContainerInitializer selectAlternatives(final Class<?>... alternativeClasses)
+    public SeContainerInitializer selectAlternatives(Class<?>... alternativeClasses)
     {
         bai.getAlternativeClasses().addAll(Stream.of(alternativeClasses).map(Class::getName).collect(toList()));
         return this;
     }
 
     @Override
-    public SeContainerInitializer selectAlternativeStereotypes(final Class<? extends Annotation>... alternativeStereotypeClasses)
+    public SeContainerInitializer selectAlternativeStereotypes(Class<? extends Annotation>... alternativeStereotypeClasses)
     {
         bai.getAlternativeStereotypes().addAll(Stream.of(alternativeStereotypeClasses).map(Class::getName).collect(toList()));
         return this;
     }
 
     @Override
-    public SeContainerInitializer addExtensions(final Extension... extensions)
+    public SeContainerInitializer addExtensions(Extension... extensions)
     {
         this.extensions.addAll(asList(extensions));
         return this;
     }
 
     @Override
-    public SeContainerInitializer addExtensions(final Class<? extends Extension>... extensions)
+    public SeContainerInitializer addExtensions(Class<? extends Extension>... extensions)
     {
         this.extensions.addAll(Stream.of(extensions).map(e ->
         {
@@ -174,11 +174,11 @@ public class OWBInitializer extends SeContainerInitializer
             {
                 return e.getConstructor().newInstance();
             }
-            catch (final InstantiationException | IllegalAccessException | NoSuchMethodException e1)
+            catch (InstantiationException | IllegalAccessException | NoSuchMethodException e1)
             {
                 throw new IllegalArgumentException(e1);
             }
-            catch (final InvocationTargetException e1)
+            catch (InvocationTargetException e1)
             {
                 throw new IllegalArgumentException(e1.getCause());
             }
@@ -187,7 +187,7 @@ public class OWBInitializer extends SeContainerInitializer
     }
 
     @Override
-    public SeContainerInitializer addProperty(final String key, final Object value)
+    public SeContainerInitializer addProperty(String key, Object value)
     {
         if (String.class.isInstance(value))
         {
@@ -201,7 +201,7 @@ public class OWBInitializer extends SeContainerInitializer
     }
 
     @Override
-    public SeContainerInitializer setProperties(final Map<String, Object> properties)
+    public SeContainerInitializer setProperties(Map<String, Object> properties)
     {
         properties.forEach(this::addProperty);
         return this;
@@ -215,7 +215,7 @@ public class OWBInitializer extends SeContainerInitializer
     }
 
     @Override
-    public SeContainerInitializer setClassLoader(final ClassLoader classLoader)
+    public SeContainerInitializer setClassLoader(ClassLoader classLoader)
     {
         loader = classLoader;
         scannerService.loader(loader);

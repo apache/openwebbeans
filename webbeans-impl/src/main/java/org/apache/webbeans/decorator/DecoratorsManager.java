@@ -75,8 +75,8 @@ public class DecoratorsManager
         Asserts.assertNotNull(src, "src parameter");
         Asserts.assertNotNull(target, "target parameter");
 
-        final int p1 = priorityDecorators.getSorted().indexOf(src);
-        final int p2 = priorityDecorators.getSorted().indexOf(target);
+        int p1 = priorityDecorators.getSorted().indexOf(src);
+        int p2 = priorityDecorators.getSorted().indexOf(target);
 
         int srcIndex = p1;
         if (srcIndex == -1)
@@ -260,7 +260,7 @@ public class DecoratorsManager
         return priorityDecorators.getSorted();
     }
 
-    public void addPriorityClazzDecorator(final Class<?> javaClass, final Priority priority)
+    public void addPriorityClazzDecorator(Class<?> javaClass, Priority priority)
     {
         priorityDecorators.add(javaClass, priority);
     }

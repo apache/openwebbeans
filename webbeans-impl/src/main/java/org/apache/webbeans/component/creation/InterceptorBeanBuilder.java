@@ -168,7 +168,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
                     {
                         if (aroundInvokeMethod != null)
                         {
-                            for (final Method ai : aroundInvokeMethod)
+                            for (Method ai : aroundInvokeMethod)
                             {
                                 if (ai.getDeclaringClass() == m.getJavaMember().getDeclaringClass())
                                 {

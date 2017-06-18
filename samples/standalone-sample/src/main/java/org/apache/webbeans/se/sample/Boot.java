@@ -86,7 +86,7 @@ public class Boot
             {
                 try
                 {
-                    Boot.shutdown(e);
+                    shutdown(e);
                 }
                 catch (Exception e1)
                 {

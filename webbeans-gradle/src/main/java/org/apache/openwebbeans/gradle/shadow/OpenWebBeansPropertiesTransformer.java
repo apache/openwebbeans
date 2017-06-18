@@ -40,20 +40,20 @@ public class OpenWebBeansPropertiesTransformer implements Transformer
     private boolean reverseOrder;
 
     @Override
-    public boolean canTransformResource(final FileTreeElement s)
+    public boolean canTransformResource(FileTreeElement s)
     {
         return resource.equals(s.getPath());
     }
 
     @Override
-    public void transform(final String s, final InputStream inputStream, final List<Relocator> list)
+    public void transform(String s, InputStream inputStream, List<Relocator> list)
     {
-        final Properties p = new Properties();
+        Properties p = new Properties();
         try
         {
             p.load(inputStream);
         }
-        catch (final IOException e)
+        catch (IOException e)
         {
             throw new IllegalStateException(e);
         }
@@ -67,52 +67,52 @@ public class OpenWebBeansPropertiesTransformer implements Transformer
     }
 
     @Override
-    public void modifyOutputStream(final ZipOutputStream zipOutputStream)
+    public void modifyOutputStream(ZipOutputStream zipOutputStream)
     {
-        final Properties out = mergeProperties(sortProperties(configurations));
+        Properties out = mergeProperties(sortProperties(configurations));
         try
         {
             zipOutputStream.putNextEntry(new org.apache.tools.zip.ZipEntry(resource));
             out.store(zipOutputStream, "# gradle " + resource + " merge");
             zipOutputStream.closeEntry();
         }
-        catch (final IOException ioe)
+        catch (IOException ioe)
         {
             throw new IllegalStateException(ioe);
         }
     }
 
-    public void setReverseOrder(final boolean reverseOrder)
+    public void setReverseOrder(boolean reverseOrder)
     {
         this.reverseOrder = reverseOrder;
     }
 
-    public void setResource(final String resource)
+    public void setResource(String resource)
     {
         this.resource = resource;
     }
 
-    public void setOrdinalKey(final String ordinalKey)
+    public void setOrdinalKey(String ordinalKey)
     {
         this.ordinalKey = ordinalKey;
     }
 
-    public void setDefaultOrdinal(final int defaultOrdinal)
+    public void setDefaultOrdinal(int defaultOrdinal)
     {
         this.defaultOrdinal = defaultOrdinal;
     }
 
     private List<Properties> sortProperties(List<Properties> allProperties)
     {
-        final List<Properties> sortedProperties = new ArrayList<Properties>();
-        for (final Properties p : allProperties)
+        List<Properties> sortedProperties = new ArrayList<Properties>();
+        for (Properties p : allProperties)
         {
-            final int configOrder = getConfigurationOrdinal(p);
+            int configOrder = getConfigurationOrdinal(p);
 
             int i;
             for (i = 0; i < sortedProperties.size(); i++)
             {
-                final int listConfigOrder = getConfigurationOrdinal(sortedProperties.get(i));
+                int listConfigOrder = getConfigurationOrdinal(sortedProperties.get(i));
                 if ((!reverseOrder && listConfigOrder > configOrder) || (reverseOrder && listConfigOrder < configOrder))
                 {
                     break;
@@ -123,9 +123,9 @@ public class OpenWebBeansPropertiesTransformer implements Transformer
         return sortedProperties;
     }
 
-    private int getConfigurationOrdinal(final Properties p)
+    private int getConfigurationOrdinal(Properties p)
     {
-        final String configOrderString = p.getProperty(ordinalKey);
+        String configOrderString = p.getProperty(ordinalKey);
         if (configOrderString != null && configOrderString.length() > 0)
         {
             return Integer.parseInt(configOrderString);
@@ -133,10 +133,10 @@ public class OpenWebBeansPropertiesTransformer implements Transformer
         return defaultOrdinal;
     }
 
-    private static Properties mergeProperties(final List<Properties> sortedProperties)
+    private static Properties mergeProperties(List<Properties> sortedProperties)
     {
-        final Properties mergedProperties = new Properties();
-        for (final Properties p : sortedProperties)
+        Properties mergedProperties = new Properties();
+        for (Properties p : sortedProperties)
         {
             mergedProperties.putAll(p);
         }

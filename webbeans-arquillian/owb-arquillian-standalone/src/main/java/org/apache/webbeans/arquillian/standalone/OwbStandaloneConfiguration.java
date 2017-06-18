@@ -53,7 +53,7 @@ public class OwbStandaloneConfiguration implements ContainerConfiguration
         return useOnlyArchiveResources;
     }
 
-    public void setUseOnlyArchiveResources(final boolean useOnlyArchiveResources)
+    public void setUseOnlyArchiveResources(boolean useOnlyArchiveResources)
     {
         this.useOnlyArchiveResources = useOnlyArchiveResources;
     }
@@ -63,7 +63,7 @@ public class OwbStandaloneConfiguration implements ContainerConfiguration
         return useOnlyArchiveResourcesExcludes;
     }
 
-    public void setUseOnlyArchiveResourcesExcludes(final String useOnlyArchiveResourcesExcludes)
+    public void setUseOnlyArchiveResourcesExcludes(String useOnlyArchiveResourcesExcludes)
     {
         this.useOnlyArchiveResourcesExcludes = useOnlyArchiveResourcesExcludes;
     }
@@ -73,25 +73,25 @@ public class OwbStandaloneConfiguration implements ContainerConfiguration
         return properties;
     }
 
-    public void setProperties(final String properties)
+    public void setProperties(String properties)
     {
         this.properties = properties;
     }
 
     public Properties properties()
     {
-        final Properties instance = new Properties();
+        Properties instance = new Properties();
         if (properties == null)
         {
             return instance;
         }
 
-        final ByteArrayInputStream bais = new ByteArrayInputStream(properties.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(properties.getBytes());
         try
         {
             instance.load(bais);
         }
-        catch (final IOException e)
+        catch (IOException e)
         {
             // no-op
         }

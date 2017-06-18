@@ -89,7 +89,7 @@ public class WebContainerLifecycle extends AbstractLifeCycle
         {
             webBeansContext.getBeanManagerImpl().addInternalBean(new ServletContextBean(webBeansContext, servletContext));
 
-            final ContextsService contextsService = webBeansContext.getContextsService();
+            ContextsService contextsService = webBeansContext.getContextsService();
             if (WebContextsService.class.isInstance(contextsService))
             {
                 webBeansContext.getBeanManagerImpl().addInternalBean(new ServletRequestBean(webBeansContext, WebContextsService.class.cast(contextsService)));
@@ -112,7 +112,7 @@ public class WebContainerLifecycle extends AbstractLifeCycle
      * {@inheritDoc}
      */
     @Override
-    protected void afterStartApplication(final Object startupObject)
+    protected void afterStartApplication(Object startupObject)
     {
         //Application is configured as JSP
         if(getWebBeansContext().getOpenWebBeansConfiguration().isJspApplication())
@@ -253,13 +253,13 @@ public class WebContainerLifecycle extends AbstractLifeCycle
                 {   // no need of using the tccl since in OSGi it is init elsewhere and using container shortcut can just make it faster
                     Class.forName("org.apache.jasper.servlet.JasperInitializer", true, WebContainerLifecycle.class.getClassLoader());
                 }
-                catch (final Throwable th)
+                catch (Throwable th)
                 {
                     Class.forName("org.apache.jasper.compiler.JspRuntimeContext", true, WebContainerLifecycle.class.getClassLoader());
                 }
                 factory = JspFactory.getDefaultFactory();
             }
-            catch (final Exception e)
+            catch (Exception e)
             {
                 // ignore
             }

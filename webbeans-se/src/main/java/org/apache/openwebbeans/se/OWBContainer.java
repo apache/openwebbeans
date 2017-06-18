@@ -42,7 +42,7 @@ public class OWBContainer implements SeContainer
     private AtomicBoolean running = new AtomicBoolean(true);
 
     // let's it be public in case we extend it
-    public OWBContainer(final WebBeansContext context, final Object startObj)
+    public OWBContainer(WebBeansContext context, Object startObj)
     {
         this.context = context;
         this.startEvent = startObj;
@@ -70,7 +70,7 @@ public class OWBContainer implements SeContainer
     }
 
     @Override
-    public Instance<Object> select(final Annotation... qualifiers)
+    public Instance<Object> select(Annotation... qualifiers)
     {
         return instance().select(qualifiers);
     }
@@ -88,19 +88,19 @@ public class OWBContainer implements SeContainer
     }
 
     @Override
-    public void destroy(final Object instance) // not sure it is the right impl
+    public void destroy(Object instance) // not sure it is the right impl
     {
         InstanceImpl.class.cast(instance).destroy(instance);
     }
 
     @Override
-    public <U> Instance<U> select(final TypeLiteral<U> subtype, final Annotation... qualifiers)
+    public <U> Instance<U> select(TypeLiteral<U> subtype, Annotation... qualifiers)
     {
         return instance().select(subtype, qualifiers);
     }
 
     @Override
-    public <U> Instance<U> select(final Class<U> subtype, final Annotation... qualifiers)
+    public <U> Instance<U> select(Class<U> subtype, Annotation... qualifiers)
     {
         return instance().select(subtype, qualifiers);
     }
@@ -119,8 +119,8 @@ public class OWBContainer implements SeContainer
 
     private Instance<Object> instance()
     {
-        final BeanManagerImpl bm = context.getBeanManagerImpl();
-        final CreationalContextImpl<Instance<Object>> creationalContext = bm.createCreationalContext(null);
+        BeanManagerImpl bm = context.getBeanManagerImpl();
+        CreationalContextImpl<Instance<Object>> creationalContext = bm.createCreationalContext(null);
         return new InstanceBean<>(context).create(creationalContext).select(DefaultLiteral.INSTANCE);
     }
 }

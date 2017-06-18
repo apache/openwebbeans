@@ -129,7 +129,7 @@ public class DeploymentValidationService
                     }
                     else if (Modifier.isPrivate(cons.getModifiers()))
                     {
-                        final boolean containsViolation = violationMessage.containsViolation();
+                        boolean containsViolation = violationMessage.containsViolation();
                         violationMessage.addLine(beanClass.getName(), " has a >private< no-arg constructor! CDI doesn't allow to proxy that.");
                         if (!containsViolation)
                         { // lazy
@@ -210,7 +210,7 @@ public class DeploymentValidationService
         }
     }
 
-    private <T> void validatePassivationCapableInterceptorInfo(final OwbBean<T> bean, final BeanInterceptorInfo interceptorInfo)
+    private <T> void validatePassivationCapableInterceptorInfo(OwbBean<T> bean, BeanInterceptorInfo interceptorInfo)
     {
         if (interceptorInfo != null)
         {

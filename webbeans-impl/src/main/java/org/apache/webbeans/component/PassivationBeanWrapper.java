@@ -28,7 +28,7 @@ public class PassivationBeanWrapper
 
     private final String passivationId;
 
-    public PassivationBeanWrapper(final String passivationId)
+    public PassivationBeanWrapper(String passivationId)
     {
         this.passivationId = passivationId;
     }

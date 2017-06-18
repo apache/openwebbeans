@@ -50,7 +50,7 @@ public final class WebBeansLoggerFacade
 
     static
     {
-        final String factoryClassname = System.getProperty(OPENWEBBEANS_LOGGING_FACTORY_PROP);
+        String factoryClassname = System.getProperty(OPENWEBBEANS_LOGGING_FACTORY_PROP);
         WebBeansLoggerFactory factory = null;
         Exception error = null;
         if (factoryClassname != null)
@@ -81,7 +81,7 @@ public final class WebBeansLoggerFacade
             FACTORY = new JULLoggerFactory();
         }
 
-        final Logger logger = FACTORY.getLogger(WebBeansLoggerFacade.class);
+        Logger logger = FACTORY.getLogger(WebBeansLoggerFacade.class);
         if (error != null && logger.isLoggable(Level.SEVERE))
         {
             logger.log(Level.SEVERE, OWBLogConst.ERROR_0028, error);
@@ -147,7 +147,7 @@ public final class WebBeansLoggerFacade
     }
 
     // helper method
-    public static Object[] args(final Object... values)
+    public static Object[] args(Object... values)
     {
         return values;
     }

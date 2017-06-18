@@ -67,7 +67,7 @@ public class AnnotatedMethodImpl<X> extends AbstractAnnotatedCallable<X> impleme
     }
 
     @Override
-    protected Set<Type> extractTypeClojure(final Type baseType)
+    protected Set<Type> extractTypeClojure(Type baseType)
     {   // we want to skip hasTypeParameters() check which is already done for methods
         return GenericsUtil.getDirectTypeClosure(baseType, getOwningClass());
     }

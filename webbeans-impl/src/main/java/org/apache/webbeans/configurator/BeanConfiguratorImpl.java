@@ -492,7 +492,7 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
         public String toString()
         {
             StringBuilder builder = new StringBuilder();
-            final String simpleName = getReturnType().getSimpleName();
+            String simpleName = getReturnType().getSimpleName();
             builder.append(simpleName);
             builder.append(", WebBeansType:").append(getWebBeansType()).append(", Name:").append(getName());
             builder.append(", API Types:[");

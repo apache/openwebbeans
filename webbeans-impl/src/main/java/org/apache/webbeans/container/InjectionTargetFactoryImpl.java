@@ -62,14 +62,14 @@ public class InjectionTargetFactoryImpl<T> implements InjectionTargetFactory<T>
     public InjectionTarget<T> createInjectionTarget(Bean<T> bean)
     {
         AnnotatedType<T> at = getAnnotatedType();
-        final InjectionTargetImpl<T> injectionTarget
+        InjectionTargetImpl<T> injectionTarget
             = new InjectionTargetImpl<T>(at, createInjectionPoints(bean), webBeansContext, getPostConstructMethods(), getPreDestroyMethods());
         if (ManagedBean.class.isInstance(bean))
         {
             ManagedBean.class.cast(bean).setOriginalInjectionTarget(injectionTarget);
         }
-        final GProcessInjectionTarget event = webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, at);
-        final InjectionTarget it = event.getInjectionTarget();
+        GProcessInjectionTarget event = webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(injectionTarget, at);
+        InjectionTarget it = event.getInjectionTarget();
         event.setStarted();
 
         // creating the InjectionTarget must only be done once.
