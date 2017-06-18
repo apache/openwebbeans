@@ -84,7 +84,7 @@ public class InterceptorResolutionService
      * Enforcing that interceptor callbacks should not be
      * able to throw checked exceptions is configurable
      */
-    private static volatile Boolean enforceCheckedException;
+    private volatile Boolean enforceCheckedException;
 
 
     public InterceptorResolutionService(WebBeansContext webBeansContext)
