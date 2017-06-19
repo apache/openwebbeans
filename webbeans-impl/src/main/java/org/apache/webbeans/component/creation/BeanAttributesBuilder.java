@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.decorator.Decorator;
 import javax.enterprise.context.Dependent;
@@ -505,33 +506,25 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
 
     protected abstract void defineName();
 
-    protected void defineName(Annotated annotated, String name)
+    protected void defineName(Annotated annotated, Supplier<String> name)
     {
-        Annotation[] anns = AnnotationUtil.asArray(annotated.getAnnotations());
-        Named nameAnnot = null;
+        Named nameAnnot = annotated.getAnnotation(Named.class);
         boolean isDefault = false;
-        for (Annotation ann : anns)
-        {
-            if (ann.annotationType().equals(Named.class))
-            {
-                nameAnnot = (Named) ann;
-                break;
-            }
-        }
 
-        if (nameAnnot == null) // no @Named
+        if (nameAnnot == null)
         {
+            // no @Named
+
             // Check for stereottype
             if (webBeansContext.getAnnotationManager().hasNamedOnStereoTypes(stereotypes))
             {
                 isDefault = true;
             }
-
         }
         else
-        // yes @Named
         {
-            if (nameAnnot.value().equals(""))
+            // yes @Named
+            if (nameAnnot.value().length() == 0)
             {
                 isDefault = true;
             }
@@ -539,12 +532,11 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
             {
                 this.name = nameAnnot.value();
             }
-
         }
 
         if (isDefault)
         {
-            this.name = name;
+            this.name = name.get();
         }
     }
 
@@ -661,11 +653,12 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
                 } while(annotatedToSpecialize.getAnnotation(Specializes.class) != null);
 
 
-                defineName(annotatedToSpecialize, WebBeansUtil.getManagedBeanDefaultName(annotatedToSpecialize.getJavaClass().getSimpleName()));
+                AnnotatedType<? super C> finalAnnotatedToSpecialize = annotatedToSpecialize;
+                defineName(annotatedToSpecialize, () -> getManagedBeanDefaultName(finalAnnotatedToSpecialize));
             }
             if (name == null)
             {
-                defineName(getAnnotated(), WebBeansUtil.getManagedBeanDefaultName(getAnnotated().getJavaClass().getSimpleName()));
+                defineName(getAnnotated(), () -> getManagedBeanDefaultName(getAnnotated()));
             }
             else
             {
@@ -721,7 +714,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         @Override
         protected void defineName()
         {
-            defineName(getAnnotated(), WebBeansUtil.getProducerDefaultName(getAnnotated().getJavaMember().getName()));
+            defineName(getAnnotated(), () -> getProducerDefaultName(getAnnotated()));
         }
         
         @Override
@@ -766,11 +759,11 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
             if (getAnnotated().isAnnotationPresent(Specializes.class))
             {
                 AnnotatedMethod<? super M> superAnnotated = getSuperAnnotated();
-                defineName(superAnnotated, WebBeansUtil.getProducerDefaultName(superAnnotated.getJavaMember().getName()));
+                defineName(superAnnotated, () -> getProducerDefaultName(superAnnotated));
             }
             if (name == null)
             {
-                defineName(getAnnotated(), WebBeansUtil.getProducerDefaultName(getAnnotated().getJavaMember().getName()));
+                defineName(getAnnotated(), () -> getProducerDefaultName(getAnnotated()));
             }
             else
             {
@@ -820,6 +813,54 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         }
     }
 
+    protected String getManagedBeanDefaultName(AnnotatedType<?> annotatedType)
+    {
+        String clazzName = annotatedType.getJavaClass().getSimpleName();
+        Asserts.assertNotNull(annotatedType);
+
+        if(clazzName.length() > 0)
+        {
+            StringBuilder name = new StringBuilder(clazzName);
+            name.setCharAt(0, Character.toLowerCase(name.charAt(0)));
+
+            return name.toString();
+        }
+
+        return clazzName;
+    }
+
+    protected String getProducerDefaultName(AnnotatedMember<?> annotatedMember)
+    {
+        String memberName = annotatedMember.getJavaMember().getName();
+        StringBuilder buffer = new StringBuilder(memberName);
+
+        if (buffer.length() > 3 &&  (buffer.substring(0, 3).equals("get") || buffer.substring(0, 3).equals("set")))
+        {
+
+            if(Character.isUpperCase(buffer.charAt(3)))
+            {
+                buffer.setCharAt(3, Character.toLowerCase(buffer.charAt(3)));
+            }
+
+            return buffer.substring(3);
+        }
+        else if ((buffer.length() > 2 &&  buffer.substring(0, 2).equals("is")))
+        {
+            if(Character.isUpperCase(buffer.charAt(2)))
+            {
+                buffer.setCharAt(2, Character.toLowerCase(buffer.charAt(2)));
+            }
+
+            return buffer.substring(2);
+        }
+
+        else
+        {
+            buffer.setCharAt(0, Character.toLowerCase(buffer.charAt(0)));
+            return buffer.toString();
+        }
+    }
+
     private abstract static class AnnotatedMemberBeanAttributesBuilder<M, A extends AnnotatedMember<M>> extends BeanAttributesBuilder<M, A>
     {
         protected AnnotatedMemberBeanAttributesBuilder(WebBeansContext webBeansContext, A annotated)
@@ -837,4 +878,6 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
             return webBeansContext.getAnnotatedElementFactory().getAnnotatedType(superclass);
         }
     }
+
+
 }

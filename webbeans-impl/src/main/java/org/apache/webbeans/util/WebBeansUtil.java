@@ -575,53 +575,6 @@ public final class WebBeansUtil
         return new InjectionPointBean(webBeansContext);
     }
 
-    public static String getManagedBeanDefaultName(String clazzName)
-    {
-        Asserts.assertNotNull(clazzName);
-
-        if(clazzName.length() > 0)
-        {
-            StringBuilder name = new StringBuilder(clazzName);
-            name.setCharAt(0, Character.toLowerCase(name.charAt(0)));
-
-            return name.toString();
-        }
-
-        return clazzName;
-    }
-
-    public static String getProducerDefaultName(String methodName)
-    {
-        StringBuilder buffer = new StringBuilder(methodName);
-
-        if (buffer.length() > 3 &&  (buffer.substring(0, 3).equals("get") || buffer.substring(0, 3).equals("set")))
-        {
-
-            if(Character.isUpperCase(buffer.charAt(3)))
-            {
-                buffer.setCharAt(3, Character.toLowerCase(buffer.charAt(3)));
-            }
-
-            return buffer.substring(3);
-        }
-        else if ((buffer.length() > 2 &&  buffer.substring(0, 2).equals("is")))
-        {
-            if(Character.isUpperCase(buffer.charAt(2)))
-            {
-                buffer.setCharAt(2, Character.toLowerCase(buffer.charAt(2)));
-            }
-
-            return buffer.substring(2);
-        }
-
-        else
-        {
-            buffer.setCharAt(0, Character.toLowerCase(buffer.charAt(0)));
-            return buffer.toString();
-        }
-    }
-
-
     /**
      * Configure a list of producer method beans, which override the same method
      * and the bean classes are directly extended each other.
