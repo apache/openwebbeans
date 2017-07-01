@@ -24,6 +24,7 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanAttributes;
+import javax.enterprise.inject.spi.CDI;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.Producer;
@@ -32,6 +33,7 @@ import javax.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -65,7 +67,7 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
     private Function<CreationalContext<?>, ?> createWithCallback;
     private BiConsumer<T, CreationalContext<T>> destroyWithCallback;
 
-    private Function<Instance<Object>, ?> produceWithCallback;
+    private Function<Instance<Object>, ? extends T> produceWithCallback;
     private BiConsumer<T, Instance<Object>> disposeWithCallback;
 
     public BeanConfiguratorImpl(WebBeansContext webBeansContext)
@@ -90,10 +92,7 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
     @Override
     public BeanConfigurator<T> addInjectionPoints(InjectionPoint... injectionPoints)
     {
-        for (InjectionPoint injectionPoint : injectionPoints)
-        {
-            this.injectionPoints.add(injectionPoint);
-        }
+        this.injectionPoints.addAll(Arrays.asList(injectionPoints));
         return this;
     }
 
@@ -292,10 +291,7 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
     @Override
     public BeanConfigurator<T> addStereotypes(Set<Class<? extends Annotation>> stereotypes)
     {
-        for (Class<? extends Annotation> stereotype : stereotypes)
-        {
-            this.stereotypes.add(stereotype);
-        }
+        this.stereotypes.addAll(stereotypes);
         return this;
     }
 
@@ -378,7 +374,31 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
         public Producer<T> getProducer()
         {
             //X TODO
-            return null;
+            return new Producer<T>()
+            {
+                private final Instance<Object> instance = CDI.current();
+
+                @Override
+                public T produce(final CreationalContext<T> creationalContext)
+                {
+                    return produceWithCallback.apply(instance);
+                }
+
+                @Override
+                public void dispose(final T instance)
+                {
+                    if (disposeWithCallback != null)
+                    {
+                        disposeWithCallback.accept(instance, this.instance);
+                    }
+                }
+
+                @Override
+                public Set<InjectionPoint> getInjectionPoints()
+                {
+                    return injectionPoints;
+                }
+            };
         }
 
         @Override
@@ -444,7 +464,10 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
         @Override
         public void destroy(T instance, CreationalContext<T> context)
         {
-            destroyWithCallback.accept(instance, context);
+            if (destroyWithCallback != null)
+            {
+                destroyWithCallback.accept(instance, context);
+            }
         }
 
         @Override
