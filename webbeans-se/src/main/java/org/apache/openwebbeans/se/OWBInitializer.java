@@ -66,7 +66,7 @@ public class OWBInitializer extends SeContainerInitializer
         thread.setContextClassLoader(loader);
         try
         {
-            services.putIfAbsent(ScannerService.class.getName(), scannerService);
+            services.putIfAbsent(ScannerService.class.getName(), getScannerService());
             services.putIfAbsent(LoaderService.class.getName(), new CDISeLoaderService(extensions, loader));
             services.putIfAbsent(BeanArchiveService.class.getName(), new CDISeBeanArchiveService(bai));
             Map<Class<?>, Object> preparedServices = services.entrySet().stream()
@@ -95,6 +95,11 @@ public class OWBInitializer extends SeContainerInitializer
         {
             thread.setContextClassLoader(old);
         }
+    }
+
+    protected CDISeScannerService getScannerService()
+    {
+        return scannerService;
     }
 
     @Override
