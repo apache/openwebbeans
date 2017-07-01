@@ -69,6 +69,7 @@ public class OWBInitializer extends SeContainerInitializer
             services.putIfAbsent(ScannerService.class.getName(), getScannerService());
             services.putIfAbsent(LoaderService.class.getName(), new CDISeLoaderService(extensions, loader));
             services.putIfAbsent(BeanArchiveService.class.getName(), new CDISeBeanArchiveService(bai));
+            addCustomServices(services);
             Map<Class<?>, Object> preparedServices = services.entrySet().stream()
                     .collect(toMap(e ->
                     {
@@ -93,6 +94,11 @@ public class OWBInitializer extends SeContainerInitializer
         {
             thread.setContextClassLoader(old);
         }
+    }
+
+    protected void addCustomServices(final Map<String, Object> services)
+    {
+        // for children classes
     }
 
     protected SeContainer newContainer(final WebBeansContext context)
