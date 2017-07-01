@@ -46,12 +46,12 @@ import static java.util.stream.Collectors.toMap;
 
 public class OWBInitializer extends SeContainerInitializer
 {
-    private final CDISeScannerService scannerService = new CDISeScannerService();
-    private final Properties properties = new Properties();
-    private final Map<String, Object> services = new HashMap<>();
-    private final Collection<Extension> extensions = new ArrayList<>();
-    private final DefaultBeanArchiveInformation bai = new DefaultBeanArchiveInformation(CDISeBeanArchiveService.EMBEDDED_URL);
-    private ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    protected final CDISeScannerService scannerService = new CDISeScannerService();
+    protected final Properties properties = new Properties();
+    protected final Map<String, Object> services = new HashMap<>();
+    protected final Collection<Extension> extensions = new ArrayList<>();
+    protected final DefaultBeanArchiveInformation bai = new DefaultBeanArchiveInformation(CDISeBeanArchiveService.EMBEDDED_URL);
+    protected ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
     public OWBInitializer()
     {
