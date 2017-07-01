@@ -87,9 +87,7 @@ public class OWBInitializer extends SeContainerInitializer
             SingletonService<WebBeansContext> singletonInstance = WebBeansFinder.getSingletonService();
             DefaultSingletonService.class.cast(singletonInstance).register(loader, context);
 
-            Object startObj = new Object();
-            context.getService(ContainerLifecycle.class).startApplication(startObj);
-            return new OWBContainer(context, startObj);
+            return newContainer(context);
         }
         finally
         {
@@ -97,7 +95,14 @@ public class OWBInitializer extends SeContainerInitializer
         }
     }
 
-    protected CDISeScannerService getScannerService()
+    protected SeContainer newContainer(final WebBeansContext context)
+    {
+        Object startObj = new Object();
+        context.getService(ContainerLifecycle.class).startApplication(startObj);
+        return new OWBContainer(context, startObj);
+    }
+
+    protected ScannerService getScannerService()
     {
         return scannerService;
     }
