@@ -37,8 +37,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OWBContainer implements SeContainer
 {
-    private final WebBeansContext context;
-    private final Object startEvent;
+    protected final WebBeansContext context;
+    protected final Object startEvent;
     private AtomicBoolean running = new AtomicBoolean(true);
 
     // let's it be public in case we extend it
@@ -48,12 +48,17 @@ public class OWBContainer implements SeContainer
         this.startEvent = startObj;
     }
 
+    protected void doClose()
+    {
+        context.getService(ContainerLifecycle.class).stopApplication(startEvent);
+    }
+
     @Override
     public void close()
     {
         if (running.compareAndSet(true, false))
         {
-            context.getService(ContainerLifecycle.class).stopApplication(startEvent);
+            doClose();
         }
     }
 
