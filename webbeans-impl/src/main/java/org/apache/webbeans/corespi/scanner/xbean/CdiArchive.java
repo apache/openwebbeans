@@ -56,23 +56,28 @@ public class CdiArchive implements Archive
                       Filter userFilter, Archive customArchive)
     {
         Collection<Archive> archives = new ArrayList<>();
-        if (customArchive != null)
-        {
-            archives.add(userFilter != null ? new FilteredArchive(customArchive, userFilter) : customArchive);
-        }
+        boolean customAdded = false;
         for (URL url : urls.values())
         {
             List<String> urlClasses = new ArrayList<>();
 
             BeanArchiveInformation beanArchiveInfo = beanArchiveService.getBeanArchiveInformation(url);
+            final boolean custom = "openwebbeans".equals(url.getProtocol());
             Archive archive = new FilteredArchive(
-                    "openwebbeans".equals(url.getProtocol()) ? customArchive : ClasspathArchive.archive(loader, url),
+                    custom ? customArchive : ClasspathArchive.archive(loader, url),
                     new BeanArchiveFilter(beanArchiveInfo, urlClasses, userFilter));
+            if (!customAdded && custom)
+            {
+                customAdded = true;
+            }
 
             classesByUrl.put(url.toExternalForm(), new FoundClasses(url, urlClasses, beanArchiveInfo));
             archives.add(archive);
         }
-
+        if (!customAdded && customArchive != null)
+        {
+            archives.add(userFilter != null ? new FilteredArchive(customArchive, userFilter) : customArchive);
+        }
         delegate = new CompositeArchive(archives);
     }
 
