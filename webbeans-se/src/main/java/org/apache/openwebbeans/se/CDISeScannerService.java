@@ -107,6 +107,11 @@ public class CDISeScannerService extends AbstractMetaDataDiscovery
         }
     }
 
+    public Collection<Class<?>> configuredClasses()
+    {
+        return classes;
+    }
+
     @Override
     protected Archive getAdditionalArchive()
     {
