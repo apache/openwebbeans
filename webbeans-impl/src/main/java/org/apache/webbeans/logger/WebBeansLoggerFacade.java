@@ -23,6 +23,7 @@ package org.apache.webbeans.logger;
  */
 
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.util.WebBeansConstants;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -46,7 +47,7 @@ public final class WebBeansLoggerFacade
 
     private static final WebBeansLoggerFactory FACTORY;
 
-    static final ResourceBundle WB_BUNDLE = ResourceBundle.getBundle("openwebbeans/Messages");
+    static final ResourceBundle WB_BUNDLE = ResourceBundle.getBundle(WebBeansConstants.WEB_BEANS_MESSAGES);
 
     static
     {

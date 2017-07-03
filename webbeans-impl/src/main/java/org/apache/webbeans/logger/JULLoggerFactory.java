@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.logger;
 
+import org.apache.webbeans.util.WebBeansConstants;
+
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -27,12 +29,12 @@ public class JULLoggerFactory implements WebBeansLoggerFactory
     @Override
     public Logger getLogger(Class<?> clazz, Locale desiredLocale)
     {
-        return Logger.getLogger(clazz.getName(), ResourceBundle.getBundle("openwebbeans/Messages", desiredLocale).toString());
+        return Logger.getLogger(clazz.getName(), ResourceBundle.getBundle(WebBeansConstants.WEB_BEANS_MESSAGES, desiredLocale).toString());
     }
 
     @Override
     public Logger getLogger(Class<?> clazz)
     {
-        return Logger.getLogger(clazz.getName(),"openwebbeans/Messages");
+        return Logger.getLogger(clazz.getName(),WebBeansConstants.WEB_BEANS_MESSAGES);
     }
 }

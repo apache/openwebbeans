@@ -55,5 +55,6 @@ public final class WebBeansConstants
 
     /**JNDI name of the {@link javax.enterprise.inject.spi.BeanManager} instance*/
     public static final String WEB_BEANS_MANAGER_JNDI_NAME = "java:comp/BeanManager";
+        public final static String WEB_BEANS_MESSAGES = "openwebbeans/Messages";
 
 }
