@@ -43,6 +43,8 @@ import javax.inject.Inject;
 public class SubclassProxyFactory extends AbstractProxyFactory
 {
 
+    private static final String SUB_CLASS_NAME_SUFFIX = "$$OwbSubClass";
+
     public SubclassProxyFactory(WebBeansContext webBeansContext)
     {
         super(webBeansContext);
@@ -95,9 +97,9 @@ public class SubclassProxyFactory extends AbstractProxyFactory
     {
         if (classToProxy.getSigners() != null)
         {
-            return getSignedClassProxyName(classToProxy);
+            return getSignedClassProxyName(classToProxy) + SUB_CLASS_NAME_SUFFIX;
         }
-        return fixPreservedPackages(classToProxy.getName() + "$$OwbSubClass");
+        return fixPreservedPackages(classToProxy.getName() + SUB_CLASS_NAME_SUFFIX);
     }
 
     /**
