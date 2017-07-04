@@ -95,9 +95,7 @@ public class SubclassProxyFactory extends AbstractProxyFactory
     {
         if (classToProxy.getSigners() != null)
         {
-            // avoid java.lang.SecurityException: class's signer information
-            // does not match signer information of other classes in the same package
-            return "org.apache.webbeans.custom.signed." + classToProxy.getName();
+            return getSignedClassProxyName(classToProxy);
         }
         return fixPreservedPackages(classToProxy.getName() + "$$OwbSubClass");
     }

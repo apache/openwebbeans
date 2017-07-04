@@ -232,7 +232,9 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
     public <T> Class<T> createProxyClass(ClassLoader classLoader, Class<T> classToProxy)
             throws ProxyGenerationException
     {
-        String proxyClassName = getUnusedProxyClassName(classLoader, classToProxy.getName() + "$$OwbNormalScopeProxy");
+        String proxyClassName = getUnusedProxyClassName(
+                classLoader,
+                (classToProxy.getSigners() != null ? getSignedClassProxyName(classToProxy) : classToProxy.getName()) + "$$OwbNormalScopeProxy");
 
         Method[] nonInterceptedMethods;
         Method[] interceptedMethods = null;

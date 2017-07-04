@@ -184,6 +184,13 @@ public abstract class AbstractProxyFactory
         throw new WebBeansException("Unable to detect a free proxy class name based on: " + proxyClassName);
     }
 
+    protected  <T> String getSignedClassProxyName(final Class<T> classToProxy)
+    {
+        // avoid java.lang.SecurityException: class's signer information
+        // does not match signer information of other classes in the same package
+        return "org.apache.webbeans.custom.signed." + classToProxy.getName();
+    }
+
     protected String fixPreservedPackages(String proxyClassName)
     {
         proxyClassName = fixPreservedPackage(proxyClassName, "java.");
