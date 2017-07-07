@@ -1,12 +1,12 @@
 -------------------------------
-Apache OpenWebBeans 1.7.3
+Apache OpenWebBeans 1.7.4
 -------------------------------
 Welcome!
 
 Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.7.3 release of Apache OpenWebBeans.
+This document is based on the 1.7.4 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -23,10 +23,10 @@ http://openwebbeans.apache.org
 
 
 --------------------------------
-OpenWebBeans 1.7.3 Release Features
+OpenWebBeans 1.7.4 Release Features
 --------------------------------
 
-- The 1.7.3 release supports the following features
+- The 1.7.4 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -60,6 +60,21 @@ only effective for this very bean archive but for the whole BeanManager in contr
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.7.4
+-------------------------------------------
+
+Bug
+
+    [OWB-1194] - @Interceptors (EJB style) + @AroundConstruct not fully supported
+    [OWB-1196] - Signed classes can't be proxied: java.lang.SecurityException: class "com.Foo$$OwbNormalScopeProxy0"'s signer information does not match signer information of other classes in the same package
+
+Improvement
+
+    [OWB-1180] - Use getDefinedPackage instead of getPackage if available (java 9)
+    [OWB-1181] - fallback on unsafe when defineClass is not accessible from ClassLoader
 
 
 -------------------------------------------
