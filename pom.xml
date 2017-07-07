@@ -34,8 +34,8 @@
     <url>openwebbeans.apache.org</url>
 
     <description>
-        Apache OpenWebBeans is an open source implementation of
-        JSR-299 WebBeans
+        Apache OpenWebBeans-1.7.x is an open source implementation of the
+        JSR-346 CDI-1.1 specification 
     </description>
 
     <organization>
@@ -46,9 +46,9 @@
     <inceptionYear>2008</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openwebbeans/trunk</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openwebbeans/trunk</developerConnection>
-        <url>https://svn.apache.org/repos/asf/openwebbeans/trunk</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openwebbeans/branches/owb_1.7.x</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openwebbeans/branches/owb_1.7.x</developerConnection>
+        <url>https://svn.apache.org/repos/asf/openwebbeans/branches/owb_1.7.x</url>
     </scm>
 
     <issueManagement>
