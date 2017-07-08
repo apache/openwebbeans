@@ -1,32 +1,32 @@
 -------------------------------
-Apache OpenWebBeans 1.7.3
+Apache OpenWebBeans 2.0.0
 -------------------------------
 Welcome!
 
-Thanks for downloading and using OpenWebBeans. 
+Thanks for downloading and using OpenWebBeans.
+
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.7.3 release of Apache OpenWebBeans.
+This document is based on the 2.0.0 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
 --------------------------------
-OpenWebBeans is an Apache License V 2.0 licensed implementation of the JSR-346,
-Contexts and Dependency Injection for the Java EE platform 1.2.
+OpenWebBeans is an Apache License V 2.0 licensed implementation of the JSR-365,
+Contexts and Dependency Injection 2.0 specification.
 
-CDI-1.2 is a maintenance release of CDI-1.1 and backward compatible to
-JSR-299 CDI-1.0.
+CDI-2.0 backward compatible to JSR-346 CDI-2.0 and JSR-299 CDI-1.0.
 
 Our project's web page can be found at:
-http://openwebbeans.apache.org
+https://openwebbeans.apache.org
 
 
 
 --------------------------------
-OpenWebBeans 1.7.3 Release Features
+OpenWebBeans 2.0.0 Release Features
 --------------------------------
 
-- The 1.7.3 release supports the following features
+- The 2.0.0 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -43,7 +43,7 @@ OpenWebBeans 1.7.3 Release Features
 * @Alternative support
 * OSGi environment support with an own plugable bundle ClassPath scanner
 * plugable SecurityManager integration doubles speed if no SecurityManager is being used
-* support for direct CDI usage in tomcat-7, tomcat-8 and other Servlet environments
+* support for direct CDI usage in tomcat-8, tomcat-9 and other Servlet environments
 
 
 
@@ -60,6 +60,37 @@ only effective for this very bean archive but for the whole BeanManager in contr
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.0
+-------------------------------------------
+Sub-task
+
+    [OWB-1185] - implement Annotated#getAnnotations
+    [OWB-1186] - update logic for bootstrapping-events
+    [OWB-1187] - implement configurators
+    [OWB-1188] - implement async events
+    [OWB-1189] - add new parts to the event-api
+    [OWB-1190] - implement java-se support
+    [OWB-1192] - update logic for Instance
+    [OWB-1193] - implement InterceptionFactory
+
+Bug
+
+    [OWB-1183] - OWB-Arquillian does not supports implicit bean discovery mode
+    [OWB-1184] - arquillian connector doesn't support BDAs
+    [OWB-1196] - Signed classes can't be proxied: java.lang.SecurityException: class "com.Foo$$OwbNormalScopeProxy0"'s signer information does not match signer information of other classes in the same package
+
+Improvement
+
+    [OWB-1135] - Remove duplication for openwebbeans/Messages
+    [OWB-1195] - do a codestyle analysis check and apply fidings before releasing OWB-2.0.0
+
+Task
+
+    [OWB-1087] - fix failing integration tests with java 8
+    [OWB-1182] - Implement the CDI-2.0 API
 
 
 -------------------------------------------
