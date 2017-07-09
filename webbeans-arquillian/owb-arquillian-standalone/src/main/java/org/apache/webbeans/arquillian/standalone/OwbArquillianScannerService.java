@@ -46,12 +46,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  *
  */
 public class OwbArquillianScannerService implements BdaScannerService
 {
+    private static final Logger logger = Logger.getLogger(OwbArquillianScannerService.class.getName());
+
 
     private static final String WEB_INF_CLASS_FOLDER = "/WEB-INF/classes/";
 
@@ -262,6 +265,11 @@ public class OwbArquillianScannerService implements BdaScannerService
             catch (ClassNotFoundException cnfe)
             {
                 throw new RuntimeException("Could not scan class", cnfe);
+            }
+            catch (NoClassDefFoundError | UnsatisfiedLinkError ce)
+            {
+                logger.info("Error while loading class - ignoring class " + className + " " + ce.getMessage());
+                continue;
             }
 
             if (info != null && info.isClassExcluded(className))

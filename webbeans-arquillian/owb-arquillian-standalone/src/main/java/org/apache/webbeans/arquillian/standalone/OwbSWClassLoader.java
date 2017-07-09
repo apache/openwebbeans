@@ -162,15 +162,6 @@ public class OwbSWClassLoader extends URLClassLoader
             urls.add(new URL(null, "archive:" + node, new ArchiveStreamHandler()));
         }
 
-        if (!useOnlyArchiveResources)
-        {
-            Enumeration<URL> parentResources = getParent().getResources(name);
-            while (parentResources.hasMoreElements())
-            {
-                urls.add(parentResources.nextElement());
-            }
-        }
-
         return Collections.enumeration(urls);
     }
 
