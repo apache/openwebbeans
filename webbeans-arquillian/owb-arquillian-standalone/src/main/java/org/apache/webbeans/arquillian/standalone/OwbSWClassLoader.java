@@ -138,11 +138,11 @@ public class OwbSWClassLoader extends URLClassLoader
         {
             try
             {
-                return new URL(null, "archive:" + nodes.iterator().next());
+                return new URL(null, "archive:" + nodes.iterator().next(), new ArchiveStreamHandler());
             }
             catch (MalformedURLException e)
             {
-                // no-op: let reuse parent method
+                throw new RuntimeException(e);
             }
         }
         if (useOnlyArchiveResources)
