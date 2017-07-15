@@ -44,7 +44,7 @@ import static java.util.Arrays.asList;
 
 public class CDISeScannerService extends AbstractMetaDataDiscovery
 {
-    private boolean autoScanning;
+    private boolean autoScanning = true;
     private final Collection<Class<?>> classes = new ArrayList<>();
 
     public OwbAnnotationFinder getFinder()
