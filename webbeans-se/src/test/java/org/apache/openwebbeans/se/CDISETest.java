@@ -20,6 +20,7 @@ package org.apache.openwebbeans.se;
 
 import org.junit.Test;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.se.SeContainer;
 import javax.enterprise.inject.se.SeContainerInitializer;
 
@@ -63,7 +64,20 @@ public class CDISETest
         }
     }
 
-    public static class ImNotScanned {
+    @Test
+    public void discovery() {
+        // regular discovery
+        try (final SeContainer container = SeContainerInitializer.newInstance()
+                .initialize()) {
+            assertTrue(container.isRunning());
+            assertTrue(container.select(Scanned.class).isResolvable());
+        }
+    }
 
+    public static class ImNotScanned {
+    }
+
+    @ApplicationScoped
+    public static class Scanned {
     }
 }
