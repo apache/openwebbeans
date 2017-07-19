@@ -80,6 +80,7 @@ import org.apache.webbeans.portable.events.generics.GProcessProducerField;
 import org.apache.webbeans.portable.events.generics.GProcessProducerMethod;
 import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
 import org.apache.webbeans.portable.events.generics.GProcessSyntheticAnnotatedType;
+import org.apache.webbeans.portable.events.generics.GProcessSyntheticBean;
 import org.apache.webbeans.portable.events.generics.GProcessSyntheticObserverMethod;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
@@ -126,6 +127,7 @@ import javax.enterprise.inject.spi.ProcessProducerField;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.ProcessSessionBean;
 import javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType;
+import javax.enterprise.inject.spi.ProcessSyntheticBean;
 import javax.enterprise.inject.spi.ProcessSyntheticObserverMethod;
 import javax.enterprise.inject.spi.Producer;
 import javax.enterprise.util.TypeLiteral;
@@ -1208,7 +1210,8 @@ public final class WebBeansUtil
             GProcessBeanAttributes.class,
             GProcessManagedBean.class,
             GProcessSessionBean.class,
-            GProcessBean.class}));
+            GProcessBean.class,
+            GProcessSyntheticBean.class}));
     public static boolean isExtensionBeanEventType(Type type)
     {
         return EXTENSION_BEAN_EVENT_TYPES.contains(type);
@@ -1223,7 +1226,8 @@ public final class WebBeansUtil
             ProcessBeanAttributes.class,
             ProcessManagedBean.class,
             ProcessBean.class,
-            ProcessSessionBean.class}));
+            ProcessSessionBean.class,
+            ProcessSyntheticBean.class}));
     public static boolean isDefaultExtensionBeanEventType(Class<?> clazz)
     {
         return DEFAULT_EXTENSION_BEAN_EVENT_TYPE.contains(clazz);
