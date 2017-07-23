@@ -1152,7 +1152,6 @@ public class BeansDeployer
 
             for (Map.Entry<BeanArchiveInformation, Set<Class<?>>> bdaEntry : beanClassesPerBda.entrySet())
             {
-                BeanArchiveInformation bdaInfo = bdaEntry.getKey();
                 List<AnnotatedType<?>> annotatedTypes = annotatedTypesFromBdaClassPath(bdaEntry.getValue(), foundClasses);
                 annotatedTypesPerBda.put(bdaEntry.getKey(), annotatedTypes);
             }

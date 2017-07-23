@@ -22,10 +22,11 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.OWBInjector;
-import org.apache.webbeans.lifecycle.test.OpenWebBeansTestLifeCycle;
+import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.ContextsService;
+import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -39,14 +40,18 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 
 public abstract class AbstractUnitTest
 {
-    private OpenWebBeansTestLifeCycle testLifecycle;
-    private List<Extension>  extensions = new ArrayList<Extension>();
+    private StandaloneLifeCycle testLifecycle;
+    private Map<Class<?>, Object> services = new HashMap<>();
+    private List<Extension>  extensions = new ArrayList<>();
     private List<Class<?>> interceptors = new ArrayList<Class<?>>();
     private List<Class<?>> decorators = new ArrayList<Class<?>>();
     private WebBeansContext webBeansContext;
@@ -107,7 +112,25 @@ public abstract class AbstractUnitTest
 
         WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
         //Creates a new container
-        testLifecycle = new OpenWebBeansTestLifeCycle();
+        testLifecycle = new StandaloneLifeCycle()
+        {
+            @Override
+            public void beforeInitApplication(final Properties properties)
+            {
+                final WebBeansContext instance = WebBeansContext.getInstance();
+                services.forEach((k, v) ->
+                {
+                    final Class key = k;
+                    instance.registerService(key, v);
+                });
+                if (!services.containsKey(ScannerService.class))
+                {
+                    instance.registerService(ScannerService.class, new OpenWebBeansTestMetaDataDiscoveryService());
+                }
+
+                super.beforeInitApplication(properties);
+            }
+        };
         
         webBeansContext = WebBeansContext.getInstance();
         for (Extension ext : extensions)
@@ -134,11 +157,14 @@ public abstract class AbstractUnitTest
         }
 
         //Deploy bean classes
-        OpenWebBeansTestMetaDataDiscoveryService discoveryService = (OpenWebBeansTestMetaDataDiscoveryService)webBeansContext.getScannerService();
-        discoveryService.deployClasses(beanClasses);
-        if (beanXmls != null)
+        if (!beanClasses.isEmpty() || beanXmls != null)
         {
-            discoveryService.deployXMLs(beanXmls);
+            OpenWebBeansTestMetaDataDiscoveryService discoveryService = (OpenWebBeansTestMetaDataDiscoveryService)webBeansContext.getScannerService();
+            discoveryService.deployClasses(beanClasses);
+            if (beanXmls != null)
+            {
+                discoveryService.deployXMLs(beanXmls);
+            }
         }
 
         //Start application
@@ -223,6 +249,11 @@ public abstract class AbstractUnitTest
         return (T) getBeanManager().getReference(bean, Object.class, getBeanManager().createCreationalContext(bean));
     }
 
+
+    protected <T> void addService(final Class<T> type, final T instance)
+    {
+        this.services.put(type, instance);
+    }
 
     /**
      * @param packageName package of the beans.xml file

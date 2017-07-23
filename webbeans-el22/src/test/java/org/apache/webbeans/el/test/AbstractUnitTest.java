@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.Bean;
@@ -31,16 +32,17 @@ import javax.enterprise.inject.spi.Extension;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.lifecycle.test.OpenWebBeansTestLifeCycle;
+import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
 import org.apache.webbeans.spi.ContainerLifecycle;
+import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Assert;
 
 
 public abstract class AbstractUnitTest
 {
-    private OpenWebBeansTestLifeCycle testLifecycle;
+    private StandaloneLifeCycle testLifecycle;
     private List<Extension>  extensions = new ArrayList<Extension>();
     private WebBeansContext webBeansContext;
 
@@ -58,7 +60,14 @@ public abstract class AbstractUnitTest
     {
         WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
         //Creates a new container
-        testLifecycle = new OpenWebBeansTestLifeCycle();
+        testLifecycle = new StandaloneLifeCycle()
+        {
+            @Override
+            public void beforeInitApplication(final Properties object)
+            {
+                WebBeansContext.getInstance().registerService(ScannerService.class, new OpenWebBeansTestMetaDataDiscoveryService());
+            }
+        };
         
         webBeansContext = WebBeansContext.getInstance();
         for (Extension ext : extensions)

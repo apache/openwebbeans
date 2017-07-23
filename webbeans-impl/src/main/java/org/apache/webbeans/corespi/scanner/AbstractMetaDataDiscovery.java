@@ -38,6 +38,8 @@ import org.apache.xbean.finder.ClassLoaders;
 import org.apache.xbean.finder.archive.Archive;
 import org.apache.xbean.finder.filter.Filter;
 
+import javax.decorator.Decorator;
+import javax.interceptor.Interceptor;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
@@ -446,7 +448,9 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         // check whether this class has 'scope' annotations or a stereotype
         for (AnnotationFinder.AnnotationInfo annotationInfo : classInfo.getAnnotations())
         {
-            if (isBeanAnnotation(annotationInfo))
+            if (Interceptor.class.getName().equals(annotationInfo.getName()) ||
+                    Decorator.class.getName().equals(annotationInfo.getName()) ||
+                    isBeanAnnotation(annotationInfo))
             {
                 return true;
             }
@@ -464,7 +468,10 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         {
             Class<? extends Annotation> annotationType = (Class<? extends Annotation>) WebBeansUtil.getCurrentClassLoader().loadClass(annotationName);
             boolean isBeanAnnotation = webBeansContext().getBeanManagerImpl().isScope(annotationType);
-            isBeanAnnotation = isBeanAnnotation || webBeansContext().getBeanManagerImpl().isStereotype(annotationType);
+            if (!isBeanAnnotation)
+            {
+                isBeanAnnotation = webBeansContext().getBeanManagerImpl().isStereotype(annotationType);
+            }
 
             return isBeanAnnotation;
         }

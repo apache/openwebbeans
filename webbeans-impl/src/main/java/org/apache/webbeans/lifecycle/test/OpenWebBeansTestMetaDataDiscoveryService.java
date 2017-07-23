@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import static java.util.Collections.emptySet;
+
 /**
  * Used by each test. 
  * @version $Rev$ $Date$
@@ -61,7 +63,7 @@ public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDi
     @Override
     public Set<Class<?>> getBeanClasses()
     {
-        return new HashSet<>(classes);
+        return classes == null ? emptySet() : new HashSet<>(classes);
     }
 
     /**
