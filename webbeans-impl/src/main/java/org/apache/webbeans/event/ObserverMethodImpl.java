@@ -134,6 +134,11 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
      */
     public ObserverMethodImpl(AbstractOwbBean<?> ownerBean, AnnotatedMethod<T> annotatedObserverMethod, AnnotatedParameter<T> annotatedObservesParameter)
     {
+        this(ownerBean, annotatedObserverMethod, annotatedObservesParameter, true);
+    }
+
+    protected ObserverMethodImpl(AbstractOwbBean<?> ownerBean, AnnotatedMethod<T> annotatedObserverMethod, AnnotatedParameter<T> annotatedObservesParameter, boolean fireEvent)
+    {
         this.ownerBean = ownerBean;
         this.annotatedObservesParameter = annotatedObservesParameter;
         this.annotatedObserverMethod = annotatedObserverMethod;
@@ -189,7 +194,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         {
             if (!parameter.isAnnotationPresent(observerAnnotation))
             {
-                injectionPoints.add(getWebBeansContext().getInjectionPointFactory().buildInjectionPoint(ownerBean, parameter, true));
+                injectionPoints.add(getWebBeansContext().getInjectionPointFactory().buildInjectionPoint(ownerBean, parameter, fireEvent));
             }
         }
 

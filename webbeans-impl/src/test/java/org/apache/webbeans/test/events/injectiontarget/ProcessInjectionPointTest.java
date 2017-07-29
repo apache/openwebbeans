@@ -20,6 +20,8 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Typed;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
 import javax.inject.Inject;
@@ -30,6 +32,15 @@ import org.junit.Test;
 
 public class ProcessInjectionPointTest extends AbstractUnitTest
 {
+    @Test
+    public void testBeforeBeanDiscoveryMustNotTriggerProcessInjectionPoint()
+    {
+        addExtension(new TestExtension2());
+        startContainer(X.class);
+
+        TestExtension2 extensionBeanInstance = getInstance(TestExtension2.class);
+        Assert.assertNotNull(extensionBeanInstance);
+    }
 
     @Test
     public void testConsumerAScanning()
@@ -43,6 +54,9 @@ public class ProcessInjectionPointTest extends AbstractUnitTest
 
         Assert.assertFalse(extension.isBInjectionPointParsed());
         Assert.assertFalse(extension.isOtherInjectionPointParsed());
+
+        TestExtension extensionBeanInstance = getInstance(TestExtension.class);
+        Assert.assertNotNull(extensionBeanInstance);
     }
 
     @Test
@@ -110,11 +124,13 @@ public class ProcessInjectionPointTest extends AbstractUnitTest
         Assert.assertTrue(extension.isRawInstanceInjectionPointParsed());
     }
 
-    public interface SomeInterface {
+    public interface SomeInterface
+    {
         void doSomething();
     }
 
-    public static class SomeImpl implements SomeInterface {
+    public static class SomeImpl implements SomeInterface
+    {
         @Override
         public void doSomething()
         {
@@ -275,5 +291,22 @@ public class ProcessInjectionPointTest extends AbstractUnitTest
         {
             return explicitInstanceInjectionPointParsed;
         }
+    }
+
+    public static class TestExtension2 implements Extension
+    {
+        void TestWeirdBeforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd, BeanManager unusedBeanManager)
+        {
+            // all fine, this is just to test an old problem with firing
+            // ProcessInjectionPoint for Extension observers as well.
+            // Which created a problem because the Extensions are not yet ready.
+        }
+
+        void testExplicitInstance(@Observes ProcessInjectionPoint<?, ?> pip, BeanManager unusedBeanManager)
+        {
+            // nothing to do
+        }
+
+
     }
 }

@@ -38,7 +38,9 @@ public class ContainerEventObserverMethodImpl<T> extends ObserverMethodImpl<T>
     public ContainerEventObserverMethodImpl(AbstractOwbBean<?> bean, AnnotatedMethod<T> annotatedObserverMethod,
                                             AnnotatedParameter<T> annotatedObservesParameter)
     {
-        super(bean, annotatedObserverMethod, annotatedObservesParameter);
+        // we do NOT fire any further events while building this ObserverMethod, e.g for ProcessInjectionPoint...
+        super(bean, annotatedObserverMethod, annotatedObservesParameter, false);
+
         WithAnnotations withAnnotationsAnn = annotatedObservesParameter.getAnnotation(WithAnnotations.class);
         if (withAnnotationsAnn != null)
         {
