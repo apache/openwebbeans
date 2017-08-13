@@ -78,9 +78,14 @@ public abstract class AbstractUnitTest
         shutDownContainer();
     }
 
+    /**
+     * Take all the inner classes of this very test class
+     * and boot OWB with them.
+     * Also inject all the fields of the Testclass afterwards.
+     */
     protected void startContainerInnerClasses()
     {
-        startContainer(getClass().getClasses());
+        startContainer(Arrays.asList(getClass().getClasses()), null, true);
     }
 
     protected void startContainer(Class<?>... beanClasses)

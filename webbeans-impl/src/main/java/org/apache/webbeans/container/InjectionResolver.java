@@ -67,7 +67,6 @@ import static org.apache.webbeans.util.InjectionExceptionUtil.throwAmbiguousReso
 
 /**
  * Injection point resolver class.
- * <p/>
  * <p>
  * It is a singleton class per BeanManager. It is
  * responsible for resolving the bean instances at the injection points for
@@ -99,7 +98,12 @@ public class InjectionResolver
      */
     private Map<String, Set<Bean<?>>> resolvedBeansByName = new ConcurrentHashMap<>();
 
+    /**
+     * Whether the container is in startup mode.
+     * Set to {@code false} immediately before the BeforeDeploymentValidation event gets fired.
+     */
     private boolean startup;
+
     private boolean fastMatching;
 
     /**
@@ -111,7 +115,7 @@ public class InjectionResolver
     {
         this.webBeansContext = webBeansContext;
         this.alternativesManager = webBeansContext.getAlternativesManager();
-        this.startup = false;
+        this.startup = true;
     }
 
     public void setFastMatching(boolean fastMatching)
@@ -456,17 +460,26 @@ public class InjectionResolver
             }
         }
 
-        validateInjectionPointType(injectionPointType);
-
-        BeanCacheKey cacheKey = new BeanCacheKey(isDelegate, injectionPointType, bdaBeansXMLFilePath, qualifiers);
-
-        Set<Bean<?>> resolvedComponents = resolvedBeansByType.get(cacheKey);
-        if (resolvedComponents != null)
+        Set<Bean<?>> resolvedComponents = null;
+        BeanCacheKey cacheKey = null;
+        if (!startup)
         {
-            return resolvedComponents;
+            validateInjectionPointType(injectionPointType);
+
+            cacheKey = new BeanCacheKey(isDelegate, injectionPointType, bdaBeansXMLFilePath, qualifiers);
+
+            resolvedComponents = resolvedBeansByType.get(cacheKey);
+            if (resolvedComponents != null)
+            {
+                return resolvedComponents;
+            }
+
         }
 
-        resolvedComponents = new HashSet<>();
+        if (resolvedComponents  == null)
+        {
+            resolvedComponents = new HashSet<>();
+        }
 
         boolean returnAll = injectionPointType.equals(Object.class) && currentQualifier;
 
@@ -531,12 +544,7 @@ public class InjectionResolver
             }
         }
 
-        if (startup && (resolvedComponents == null || resolvedComponents.isEmpty()))
-        {
-            // skip cache on startup when resolvedComponents are null or empty
-            // see https://issues.apache.org/jira/browse/OWB-1095
-        }
-        else
+        if (!startup && resolvedComponents != null && !resolvedComponents.isEmpty())
         {
             resolvedBeansByType.put(cacheKey, resolvedComponents);
         }
