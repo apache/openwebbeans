@@ -50,7 +50,7 @@ public final class AnnotationUtil
     
     public static final Annotation[] DEFAULT_AND_ANY_ANNOTATION_ARRAY = {DefaultLiteral.INSTANCE, AnyLiteral.INSTANCE};
 
-    public static final Set<Annotation> DEFAULT_AND_ANY_ANNOTATION = Collections.unmodifiableSet(ArrayUtil.asSet(DEFAULT_AND_ANY_ANNOTATION_ARRAY));
+    public static final Set<Annotation> DEFAULT_AND_ANY_ANNOTATION_SET = Collections.unmodifiableSet(ArrayUtil.asSet(DEFAULT_AND_ANY_ANNOTATION_ARRAY));
     
 
     // No instantiate

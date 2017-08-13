@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.reflect.Type;
-
 import javax.enterprise.inject.Instance;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Provider;
@@ -27,31 +25,19 @@ import javax.inject.Provider;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.inject.instance.InstanceImpl;
 import org.apache.webbeans.portable.InstanceProducer;
-import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
 
 public class InstanceBean<T> extends BuiltInOwbBean<Instance<T>>
 {
-    
     @SuppressWarnings("serial")
     public InstanceBean(WebBeansContext webBeansContext)
     {
         super(webBeansContext,
             WebBeansType.INSTANCE,
-            new BeanAttributesImpl<>(CollectionUtil.<Type>unmodifiableSet(
-                new TypeLiteral<Instance<T>>()
-                {
-                }.getRawType(),
-                new TypeLiteral<Provider<T>>()
-                {
-                }.getRawType(),
-                Object.class)),
+            new BeanAttributesImpl(CollectionUtil.unmodifiableSet(Instance.class, Provider.class, Object.class)),
             new TypeLiteral<Instance<T>>(){}.getRawType(),
             false,
-            new SimpleProducerFactory<>(
-                new InstanceProducer<>(new TypeLiteral<Instance<T>>()
-                {
-                }.getRawType(), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION, webBeansContext)));
+            new SimpleProducerFactory(new InstanceProducer(webBeansContext)));
     }
 
     /* (non-Javadoc)

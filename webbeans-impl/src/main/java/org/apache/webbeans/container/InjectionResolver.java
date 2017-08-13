@@ -106,6 +106,9 @@ public class InjectionResolver
 
     private boolean fastMatching;
 
+    private Bean<Instance<Object>> instanceBean;
+    private Bean<Event<Object>> eventBean;
+
     /**
      * Creates a new injection resolve for given bean manager.
      *
@@ -114,8 +117,11 @@ public class InjectionResolver
     public InjectionResolver(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-        this.alternativesManager = webBeansContext.getAlternativesManager();
-        this.startup = true;
+        alternativesManager = webBeansContext.getAlternativesManager();
+        startup = true;
+        fastMatching = false;
+        instanceBean = webBeansContext.getWebBeansUtil().getInstanceBean();
+        eventBean = webBeansContext.getWebBeansUtil().getEventBean();
     }
 
     public void setFastMatching(boolean fastMatching)
@@ -271,10 +277,6 @@ public class InjectionResolver
 
         Set<Annotation> qualSet = injectionPoint.getQualifiers();
         Annotation[] qualifiers = qualSet.toArray(new Annotation[qualSet.size()]);
-        if (isInstanceOrEventInjection(type))
-        {
-            qualifiers = AnyLiteral.ARRAY;
-        }
 
         Set<Bean<?>> beanSet = implResolveByType(injectionPoint.isDelegate(), type, clazz, qualifiers);
 
@@ -330,22 +332,25 @@ public class InjectionResolver
     }
 
 
-    private boolean isInstanceOrEventInjection(Type type)
+    private Bean<?> getInstanceOrEventInjectionBean(Type type)
     {
         Class<?> clazz;
-        boolean injectInstanceOrEventProvider = false;
         if (type instanceof ParameterizedType)
         {
             ParameterizedType pt = (ParameterizedType) type;
             clazz = (Class<?>) pt.getRawType();
 
-            if (clazz.isAssignableFrom(Instance.class) || clazz.isAssignableFrom(Event.class))
+            if (clazz.isAssignableFrom(Instance.class))
             {
-                injectInstanceOrEventProvider = true;
+                return instanceBean;
+            }
+            if (clazz.isAssignableFrom(Event.class))
+            {
+                return eventBean;
             }
         }
 
-        return injectInstanceOrEventProvider;
+        return null;
     }
 
 
@@ -447,23 +452,18 @@ public class InjectionResolver
 
         boolean currentQualifier = false;
 
-        if (isInstanceOrEventInjection(injectionPointType))
+        if (qualifiers.length == 0)
         {
-            qualifiers = AnyLiteral.ARRAY;
-        }
-        else
-        {
-            if (qualifiers.length == 0)
-            {
-                qualifiers = DefaultLiteral.ARRAY;
-                currentQualifier = true;
-            }
+            qualifiers = DefaultLiteral.ARRAY;
+            currentQualifier = true;
         }
 
         Set<Bean<?>> resolvedComponents = null;
         BeanCacheKey cacheKey = null;
+
         if (!startup)
         {
+            // we only cache and validate once the set of Beans is final, otherwise we would cache crap
             validateInjectionPointType(injectionPointType);
 
             cacheKey = new BeanCacheKey(isDelegate, injectionPointType, bdaBeansXMLFilePath, qualifiers);
@@ -473,7 +473,6 @@ public class InjectionResolver
             {
                 return resolvedComponents;
             }
-
         }
 
         if (resolvedComponents  == null)
@@ -544,7 +543,23 @@ public class InjectionResolver
             }
         }
 
-        if (!startup && resolvedComponents != null && !resolvedComponents.isEmpty())
+        if (resolvedComponents.isEmpty())
+        {
+            // for Instance or Event creation we provided special Beans
+            // because they actually needs to fit every Qualifier
+            Bean<?> specialBean = getInstanceOrEventInjectionBean(injectionPointType);
+            if (specialBean != null)
+            {
+                resolvedComponents.add(specialBean);
+            }
+        }
+
+        if (resolvedComponents.isEmpty())
+        {
+            findNewBean(resolvedComponents, injectionPointType, qualifiers);
+        }
+
+        if (!startup && !resolvedComponents.isEmpty())
         {
             resolvedBeansByType.put(cacheKey, resolvedComponents);
         }
@@ -555,6 +570,27 @@ public class InjectionResolver
         }
 
         return resolvedComponents;
+    }
+
+    private void findNewBean(Set<Bean<?>> resolvedComponents, Type injectionPointType, Annotation[] qualifiers)
+    {
+        if (qualifiers.length == 1 && New.class.equals(qualifiers[0].annotationType()))
+        {
+            // happen in TCKs, shouldn't be the case in real apps
+            New newQualifier = (New)qualifiers[0];
+            Class<?> beanClass;
+            if (newQualifier.value() != New.class)
+            {
+                beanClass = newQualifier.value();
+            }
+            else
+            {
+                beanClass = GenericsUtil.getRawType(injectionPointType);
+            }
+
+            resolvedComponents.add(webBeansContext.getWebBeansUtil().createNewComponent(beanClass));
+        }
+
     }
 
     private Set<Bean<?>> findByBeanType(Set<Bean<?>> allComponents, Type injectionPointType, boolean isDelegate)
@@ -797,21 +833,6 @@ public class InjectionResolver
             {
                 result.add(component);
             }
-        }
-
-        if (result.isEmpty() && annotations.length == 1 && New.class.equals(annotations[0].annotationType()))
-        { // happen in TCKs, shouldn't be the case in real apps
-            New newQualifier = (New)annotations[0];
-            Class<?> beanClass;
-            if (newQualifier.value() != New.class)
-            {
-                beanClass = newQualifier.value(); 
-            }
-            else
-            {
-                beanClass = GenericsUtil.getRawType(type);
-            }
-            result.add(webBeansContext.getWebBeansUtil().createNewComponent(beanClass));
         }
 
         return result;

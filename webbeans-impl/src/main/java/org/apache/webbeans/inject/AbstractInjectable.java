@@ -34,7 +34,6 @@ import javax.enterprise.inject.spi.Producer;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -76,10 +75,8 @@ public abstract class AbstractInjectable<T>
         T injected;
         BeanManagerImpl beanManager = creationalContext.getWebBeansContext().getBeanManagerImpl();
 
-        //Injected contextual beam
-        InjectionResolver instance = beanManager.getInjectionResolver();
-
-        Bean<?> injectedBean = instance.getInjectionPointBean(injectionPoint);
+        //Injected contextual bean
+        Bean<?> injectedBean = beanManager.getInjectionResolver().getInjectionPointBean(injectionPoint);
         
         //Injection for dependent instance InjectionPoint fields
         boolean dependentProducer = false;

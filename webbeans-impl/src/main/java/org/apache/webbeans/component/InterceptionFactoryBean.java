@@ -41,7 +41,7 @@ public class InterceptionFactoryBean extends BuiltInOwbBean<InterceptionFactory>
                 WebBeansType.INTERCEPTIONFACTORY,
                 new BeanAttributesImpl<>(
                         CollectionUtil.<Type>unmodifiableSet(InterceptionFactory.class, Object.class),
-                        AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION),
+                        AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION_SET),
                 InterceptionFactory.class,
                 false,
                 new SimpleProducerFactory<>(new InterceptionFactoryProducer(webBeansContext)));

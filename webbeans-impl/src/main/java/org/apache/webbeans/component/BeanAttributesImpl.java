@@ -67,7 +67,7 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
 
     public BeanAttributesImpl(Set<Type> types)
     {
-        this(types, AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION, Dependent.class, null, false, Collections.<Class<? extends Annotation>>emptySet(), false);
+        this(types, AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION_SET, Dependent.class, null, false, Collections.<Class<? extends Annotation>>emptySet(), false);
     }
 
     public BeanAttributesImpl(Set<Type> types, Set<Annotation> qualifiers)

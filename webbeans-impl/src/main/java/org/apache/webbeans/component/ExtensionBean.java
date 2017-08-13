@@ -44,7 +44,7 @@ public class ExtensionBean<T> extends BuiltInOwbBean<T>
               WebBeansType.EXTENSION,
               new BeanAttributesImpl<>(
               webBeansContext.getAnnotatedElementFactory().getAnnotatedType(returnType).getTypeClosure(),
-              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+              AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION_SET,
               ApplicationScoped.class),
               returnType,
               false,

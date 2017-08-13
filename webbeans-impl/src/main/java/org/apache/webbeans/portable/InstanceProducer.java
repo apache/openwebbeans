@@ -28,6 +28,7 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -35,15 +36,11 @@ import org.apache.webbeans.inject.instance.InstanceImpl;
 
 public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
 {
-    private Class<Instance<T>> returnType;
-    private Set<Annotation> qualifiers;
     private WebBeansContext webBeansContext;
 
 
-    public InstanceProducer(Class<Instance<T>> returnType, Set<Annotation> qualifiers, WebBeansContext webBeansContext)
+    public InstanceProducer(WebBeansContext webBeansContext)
     {
-        this.returnType = returnType;
-        this.qualifiers = qualifiers;
         this.webBeansContext = webBeansContext;
     }
 
@@ -75,8 +72,9 @@ public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
             }
             else
             {
-                qualifiers = this.qualifiers;
-                type = returnType;
+                // an 'empty' directly resolved Instance always is for Default qualified Objects
+                qualifiers = DefaultLiteral.SET;
+                type = Object.class;
             }
 
             return new InstanceImpl<>(type, injectionPoint, webBeansContext, creationalContextImpl, qualifiers.toArray(new Annotation[qualifiers.size()]));

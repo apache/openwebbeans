@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.svtest.unittests.event.component;
+package org.apache.webbeans.test.unittests.event.component;
 
 import javax.enterprise.util.AnnotationLiteral;
 

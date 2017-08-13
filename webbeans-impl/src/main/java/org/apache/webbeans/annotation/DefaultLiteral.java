@@ -33,7 +33,7 @@ public class DefaultLiteral extends EmptyAnnotationLiteral<Default> implements D
 {
     public static final DefaultLiteral INSTANCE = new DefaultLiteral();
     public static final Annotation[] ARRAY = {INSTANCE};
-    public static final Set<Annotation> SET = Collections.<Annotation>singleton(INSTANCE); 
+    public static final Set<Annotation> SET = Collections.singleton(INSTANCE);
 
     private static final String TOSTRING = "@javax.enterprise.inject.Default()";
     private static final long serialVersionUID = 6788272256977634238L;

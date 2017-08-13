@@ -653,10 +653,10 @@ public class BeansDeployer
         
         // Register InjectionPoint bean
         beanManager.addInternalBean(webBeansUtil.getInjectionPointBean());
-        
+
         //Register Instance Bean
         beanManager.addInternalBean(webBeansUtil.getInstanceBean());
-        
+
         //Register Event Bean
         beanManager.addInternalBean(webBeansUtil.getEventBean());
         beanManager.addInternalBean(webBeansUtil.getEventMetadataBean());

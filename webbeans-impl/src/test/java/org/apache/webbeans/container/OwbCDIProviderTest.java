@@ -34,18 +34,18 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class OwbCDIProviderTest extends AbstractUnitTest
 {
     @Test
     public void run()
     {
-        startContainer(OwbCDIProviderTest.class);
+        startContainer(OwbCDIProviderTest.class, QualifiedBean.class);
         assertNotNull(CDI.current());
         assertNotNull(CDI.current().getBeanManager());
         assertFalse(CDI.current().isUnsatisfied());
-        assertFalse(CDI.current().isAmbiguous());
-        assertNotNull(CDI.current().get());
+        assertTrue(CDI.current().isAmbiguous());
     }
 
     @Test

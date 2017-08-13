@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.container;
 
-import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.instance.InstanceImpl;
@@ -43,7 +41,7 @@ public class OwbCDI extends CDI<Object>
         WebBeansContext webBeansContext = getWebBeansContext();
         BeanManagerImpl bm = webBeansContext.getBeanManagerImpl();
         CreationalContextImpl<Instance<Object>> creationalContext = bm.createCreationalContext(null);
-        return new InstanceBean<>(webBeansContext).create(creationalContext).select(DefaultLiteral.INSTANCE);
+        return webBeansContext.getWebBeansUtil().getInstanceBean().create(creationalContext);
     }
 
     @Override

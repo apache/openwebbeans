@@ -170,9 +170,15 @@ public final class WebBeansUtil
     private final ConcurrentMap<EventCacheKey, Boolean> validEventType = new ConcurrentHashMap<>();
     private final ConcurrentMap<Type, Boolean> notContainerEvents = new ConcurrentHashMap<>();
 
+    private InstanceBean instanceBean;
+    private EventBean eventBean;
+
     public WebBeansUtil(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
+
+        instanceBean = new InstanceBean(webBeansContext);
+        eventBean = new EventBean<>(webBeansContext);
     }
 
     /**
@@ -490,7 +496,7 @@ public final class WebBeansUtil
      */
     public <T> InstanceBean<T> getInstanceBean()
     {
-        return new InstanceBean<>(webBeansContext);
+        return instanceBean;
     }
 
     /**
@@ -499,7 +505,7 @@ public final class WebBeansUtil
      */
     public <T> EventBean<T> getEventBean()
     {
-        return new EventBean<>(webBeansContext);
+        return eventBean;
     }
 
     /**

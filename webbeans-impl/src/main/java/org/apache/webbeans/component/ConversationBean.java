@@ -48,7 +48,7 @@ public class ConversationBean extends BuiltInOwbBean<ConversationImpl> implement
               WebBeansType.CONVERSATION,
                   new BeanAttributesImpl<>(
                     CollectionUtil.<Type>unmodifiableSet(Conversation.class, ConversationImpl.class, Object.class),
-                    AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+                    AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION_SET,
                     RequestScoped.class,
                     "javax.enterprise.context.conversation",
                     false,

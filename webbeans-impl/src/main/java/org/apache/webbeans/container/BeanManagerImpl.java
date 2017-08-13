@@ -1192,7 +1192,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public <T> InterceptionFactory<T> createInterceptionFactory(CreationalContext<T> creationalContext, Class<T> clazz)
     {
         return new InterceptionFactoryImpl(
-                webBeansContext, createAnnotatedType(clazz), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION,
+                webBeansContext, createAnnotatedType(clazz), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION_SET,
                 // ok, we can need to not cast that brutally
                 CreationalContextImpl.class.cast(creationalContext));
     }
