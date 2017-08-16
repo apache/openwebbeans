@@ -20,6 +20,7 @@ package org.apache.webbeans.test.producer;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
+import java.net.URI;
 
 public class ProducerBean {
 
@@ -57,5 +58,11 @@ public class ProducerBean {
     @Named("name6")
     public boolean isName6() {
         return true;
+    }
+
+    @Produces
+    public URI createUri()
+    {
+        return URI.create("http://invalid.invalid");
     }
 }
