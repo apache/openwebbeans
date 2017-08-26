@@ -31,4 +31,6 @@ public class RequestedScopeLiteral extends EmptyAnnotationLiteral<RequestScoped>
     public static final RequestedScopeLiteral INSTANCE = new RequestedScopeLiteral();
 
     private static final long serialVersionUID = -7333612898060695008L;
+
+
 }

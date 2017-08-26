@@ -30,10 +30,20 @@ import java.lang.reflect.Type;
 public abstract class EmptyAnnotationLiteral<T extends Annotation> extends AnnotationLiteral<T>
 {
     private Class<T> annotationType;
+    private String tostring;
 
     protected EmptyAnnotationLiteral()
     {
+        annotationType = getAnnotationType(getClass());
+
         // Leave this constructor protected, because an EmptyAnnotationLiteral may never directly be instantiated
+        tostring = "@" + annotationType().getName() + "()";
+    }
+
+    @Override
+    public String toString()
+    {
+        return tostring;
     }
 
     /**
@@ -43,10 +53,6 @@ public abstract class EmptyAnnotationLiteral<T extends Annotation> extends Annot
     @Override
     public Class<? extends Annotation> annotationType()
     {
-        if (annotationType == null)
-        {
-            annotationType = getAnnotationType(getClass());
-        }
         return annotationType;
     }
 

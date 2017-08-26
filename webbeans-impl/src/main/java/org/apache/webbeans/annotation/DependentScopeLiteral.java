@@ -19,7 +19,6 @@
 package org.apache.webbeans.annotation;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.util.AnnotationLiteral;
 
 /**
  * {@link Dependent} literal annotation.
@@ -27,8 +26,9 @@ import javax.enterprise.util.AnnotationLiteral;
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-public class DependentScopeLiteral extends AnnotationLiteral<Dependent> implements Dependent
+public class DependentScopeLiteral extends EmptyAnnotationLiteral<Dependent> implements Dependent
 {
 
     private static final long serialVersionUID = -2677299920840834714L;
+
 }

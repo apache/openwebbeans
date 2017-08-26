@@ -19,7 +19,6 @@
 package org.apache.webbeans.annotation;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.util.AnnotationLiteral;
 
 /**
  * {@link javax.enterprise.context.RequestScoped} literal annotation.
@@ -27,7 +26,7 @@ import javax.enterprise.util.AnnotationLiteral;
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-public class ApplicationScopeLiteral extends AnnotationLiteral<ApplicationScoped> implements ApplicationScoped
+public class ApplicationScopeLiteral extends EmptyAnnotationLiteral<ApplicationScoped> implements ApplicationScoped
 {
     public static final ApplicationScopeLiteral INSTANCE = new ApplicationScopeLiteral();
 

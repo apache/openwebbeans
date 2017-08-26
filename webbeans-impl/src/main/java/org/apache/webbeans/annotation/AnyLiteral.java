@@ -27,14 +27,5 @@ public class AnyLiteral extends EmptyAnnotationLiteral<Any> implements Any
     public static final AnyLiteral INSTANCE = new AnyLiteral();
     public static final Annotation[] ARRAY = {INSTANCE};
 
-    private static final String TOSTRING = "@javax.enterprise.inject.Any()";
     private static final long serialVersionUID = -8922048102786275371L;
-
-    @Override
-    public String toString()
-    {
-        // implemented for performance reasons
-        return TOSTRING;
-    }
-
 }
