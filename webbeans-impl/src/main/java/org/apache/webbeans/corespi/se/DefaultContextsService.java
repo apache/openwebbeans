@@ -31,6 +31,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 import javax.inject.Singleton;
 
+import org.apache.webbeans.annotation.BeforeDestroyedLiteral;
 import org.apache.webbeans.annotation.DestroyedLiteral;
 import org.apache.webbeans.annotation.InitializedLiteral;
 import org.apache.webbeans.config.WebBeansContext;
@@ -370,6 +371,9 @@ public class DefaultContextsService extends AbstractContextsService
     {
         if(applicationContext != null && !applicationContext.isDestroyed())
         {
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                    new Object(), BeforeDestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
+
             applicationContext.destroy();
 
             // this is needed to get rid of ApplicationScoped beans which are cached inside the proxies...
@@ -402,7 +406,8 @@ public class DefaultContextsService extends AbstractContextsService
             conversationContext.remove();
         }
 
-
+        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                new Object(), BeforeDestroyedLiteral.INSTANCE_REQUEST_SCOPED);
         if(requestContext.get() != null)
         {
             requestContext.get().destroy();   
@@ -418,6 +423,8 @@ public class DefaultContextsService extends AbstractContextsService
     
     private void stopSessionContext()
     {
+        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                new Object(), BeforeDestroyedLiteral.INSTANCE_SESSION_SCOPED);
         if(sessionContext.get() != null)
         {
             sessionContext.get().destroy();   
@@ -433,6 +440,8 @@ public class DefaultContextsService extends AbstractContextsService
     
     private void stopSingletonContext()
     {
+        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+            new Object(), BeforeDestroyedLiteral.INSTANCE_SINGLETON_SCOPED);
         if(singletonContext.get() != null)
         {
             singletonContext.get().destroy();   
