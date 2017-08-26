@@ -88,18 +88,27 @@ public abstract class AbstractUnitTest
         startContainer(Arrays.asList(getClass().getClasses()), null, true);
     }
 
+    /**
+     * Start OWB with the given Classes but with just an empty beans.xml
+     */
     protected void startContainer(Class<?>... beanClasses)
     {
-        startContainer(new ArrayList<Class<?>>(Arrays.asList(beanClasses)), null);
+        startContainer(new ArrayList<>(Arrays.asList(beanClasses)), null);
     }
 
-    protected void startContainer(String beansXml, Class<?>... beanClasses)
+    /**
+     * Start up OWB with a beansXml file name and the given classes
+     */
+    protected void startContainer(String beansXmlResourceName, Class<?>... beanClasses)
     {
         List<String> beansXmls = new ArrayList<String>(1);
-        beansXmls.add(getXmlUrl(beansXml));
+        beansXmls.add(getXmlUrl(beansXmlResourceName));
         startContainer(new ArrayList<Class<?>>(Arrays.asList(beanClasses)), beansXmls);
     }
 
+    /**
+     * Start OWB with the given Classes but with just an empty beans.xml
+     */
     protected void startContainer(Collection<Class<?>> beanClasses)
     {
         startContainer(beanClasses, null);

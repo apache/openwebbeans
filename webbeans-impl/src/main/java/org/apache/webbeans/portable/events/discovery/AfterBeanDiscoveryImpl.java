@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.portable.events.discovery;
 
+import javax.annotation.Priority;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
@@ -29,6 +30,7 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.Prioritized;
 import javax.enterprise.inject.spi.ProcessSyntheticBean;
 import javax.enterprise.inject.spi.configurator.BeanConfigurator;
 import javax.enterprise.inject.spi.configurator.ObserverMethodConfigurator;
@@ -89,6 +91,18 @@ public class AfterBeanDiscoveryImpl extends EventBase implements AfterBeanDiscov
     public void addBean(Bean<?> bean)
     {
         checkState();
+
+        if (bean.isAlternative() && !webBeansContext.getAlternativesManager().isAlternative(bean)
+            && !(bean instanceof Prioritized) && !bean.getBeanClass().isAnnotationPresent(Priority.class))
+        {
+            // if the given Bean is an alternative, then at least one of the following
+            // conditions must be met:
+            // * Alternative is enabled via beans.xml
+            // * implements Prioritized
+            // * beanClass has a @Priority annotation
+            // , otherwise the bean is not active
+            return;
+        }
 
         AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(bean.getBeanClass());
 
