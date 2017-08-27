@@ -37,7 +37,7 @@ public abstract class EmptyAnnotationLiteral<T extends Annotation> extends Annot
         annotationType = getAnnotationType(getClass());
 
         // Leave this constructor protected, because an EmptyAnnotationLiteral may never directly be instantiated
-        tostring = "@" + annotationType().getName() + "()";
+        tostring = "@" + annotationType.getName() + "()";
     }
 
     @Override
@@ -53,6 +53,12 @@ public abstract class EmptyAnnotationLiteral<T extends Annotation> extends Annot
     @Override
     public Class<? extends Annotation> annotationType()
     {
+        if (annotationType == null)
+        {
+            // lazy initialisation in case the annotationType
+            // is already used in the super constructor (RI API case)
+            annotationType = getAnnotationType(getClass());
+        }
         return annotationType;
     }
 
@@ -88,7 +94,7 @@ public abstract class EmptyAnnotationLiteral<T extends Annotation> extends Annot
     {
         Type superClazz = definedClazz.getGenericSuperclass();
 
-        Class<T> clazz = null;
+        Class<T> clazz;
 
         if (superClazz.equals(Object.class))
         {
