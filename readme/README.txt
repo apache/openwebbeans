@@ -1,5 +1,5 @@
 -------------------------------
-Apache OpenWebBeans 2.0.0
+Apache OpenWebBeans 2.0.1
 -------------------------------
 Welcome!
 
@@ -7,7 +7,7 @@ Thanks for downloading and using OpenWebBeans.
 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 2.0.0 release of Apache OpenWebBeans.
+This document is based on the 2.0.1 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -15,7 +15,7 @@ What is Apache OpenWebBeans?
 OpenWebBeans is an Apache License V 2.0 licensed implementation of the JSR-365,
 Contexts and Dependency Injection 2.0 specification.
 
-CDI-2.0 backward compatible to JSR-346 CDI-2.0 and JSR-299 CDI-1.0.
+CDI-2.0 backward compatible to JSR-346 CDI-1.2 and JSR-299 CDI-1.0.
 
 Our project's web page can be found at:
 https://openwebbeans.apache.org
@@ -23,10 +23,10 @@ https://openwebbeans.apache.org
 
 
 --------------------------------
-OpenWebBeans 2.0.0 Release Features
+OpenWebBeans 2.0.1 Release Features
 --------------------------------
 
-- The 2.0.0 release supports the following features
+- The 2.0.1 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -60,6 +60,27 @@ only effective for this very bean archive but for the whole BeanManager in contr
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.1
+-------------------------------------------
+
+Bug
+
+    [OWB-1199] - CDISeScannerService.autoScanning should be true by default
+    [OWB-1203] - GProcessSyntheticBean not handled correctly for extensions leading to incorrect ProcessBean behavior
+    [OWB-1204] - Interceptor and Decorator ignored in annotated mode if not decorated with @Dependent
+    [OWB-1205] - We should not fire ProcessInjectionPoint for CDI Extension Observers
+    [OWB-1207] - Inconsistent behavior of the instance behind CDI.current()
+    [OWB-1209] - Custom bean with isAlternative()=true should not be automatically enabled
+    [OWB-1210] - Providing an own alternative implementation of Provider<T> might disable some Instance<T> resolving
+    [OWB-1211] - OWB is not firing BeforeDestroyed on contexts
+    [OWB-1213] - producer of URI or other classes with private ct blow up with a NPE
+
+Task
+
+    [OWB-1086] - initial setup for cdi-2.0
 
 
 -------------------------------------------
