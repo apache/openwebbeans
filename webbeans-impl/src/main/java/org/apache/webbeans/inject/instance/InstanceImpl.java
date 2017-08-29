@@ -214,13 +214,15 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         {
             sub = injectionClazz;
         }
-        Set<Annotation> mergedQualifiers = new HashSet<>(qualifierAnnotations);
-        for (Annotation qualifier : qualifiers)
+        if (qualifiers== null || qualifiers.length == 0)
         {
-            mergedQualifiers.add(qualifier);
+
         }
-        return new InstanceImpl<>(sub, injectionPoint, webBeansContext, parentCreationalContext,
-            mergedQualifiers.toArray(new Annotation[mergedQualifiers.size()]));
+        Annotation[] effectiveQualifiers = qualifiers != null && qualifiers.length > 0
+            ? qualifiers
+            : qualifierAnnotations.toArray(new Annotation[qualifierAnnotations.size()]);
+
+        return new InstanceImpl<>(sub, injectionPoint, webBeansContext, parentCreationalContext, effectiveQualifiers);
     }
 
     /**
