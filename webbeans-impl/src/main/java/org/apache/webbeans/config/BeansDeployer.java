@@ -245,6 +245,8 @@ public class BeansDeployer
 
                 // Register Manager built-in component
                 webBeansContext.getBeanManagerImpl().addInternalBean(webBeansContext.getWebBeansUtil().getManagerBean());
+                // Register built-in RequestContextController
+                webBeansContext.getBeanManagerImpl().addInternalBean(webBeansContext.getWebBeansUtil().getRequestContextControllerBean());
 
                 //Fire Event
                 fireBeforeBeanDiscoveryEvent();
