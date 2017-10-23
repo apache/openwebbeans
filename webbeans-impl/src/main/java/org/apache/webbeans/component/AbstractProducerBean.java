@@ -53,8 +53,8 @@ public class AbstractProducerBean<T> extends AbstractOwbBean<T>
     {
         super(ownerComponent.webBeansContext, webBeansType, beanAttributes, ownerComponent.getBeanClass(), !returnType.isPrimitive());
         this.returnType = returnType;
-        producer = producerFactory.createProducer(this);
         this.ownerComponent = ownerComponent;
+        producer = producerFactory.createProducer(this);
     }
 
     @Override
@@ -111,5 +111,16 @@ public class AbstractProducerBean<T> extends AbstractOwbBean<T>
         }
 
         return true;
+    }
+
+    /**
+     * For producer beans we add the info about the owner component
+     */
+    @Override
+    protected void addToStringInfo(StringBuilder builder)
+    {
+        Class<?> returnType = ownerComponent.getBeanClass();
+        builder.append(", OwnerBean Class: ")
+            .append(returnType != null ? returnType.getName() : "null");
     }
 }
