@@ -18,6 +18,9 @@
  */
 package org.apache.webbeans.proxy;
 
+import static org.apache.xbean.asm6.ClassReader.SKIP_DEBUG;
+
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -34,10 +37,12 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.xbean.asm5.ClassWriter;
-import org.apache.xbean.asm5.MethodVisitor;
-import org.apache.xbean.asm5.Opcodes;
-import org.apache.xbean.asm5.Type;
+import org.apache.xbean.asm6.ClassReader;
+import org.apache.xbean.asm6.ClassWriter;
+import org.apache.xbean.asm6.MethodVisitor;
+import org.apache.xbean.asm6.Opcodes;
+import org.apache.xbean.asm6.Type;
+import org.apache.xbean.asm6.shade.commons.EmptyVisitor;
 
 /**
  * Base class for all OWB Proxy factories
@@ -82,31 +87,30 @@ public abstract class AbstractProxyFactory
     protected AbstractProxyFactory(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-        javaVersion = determineJavaVersion();
+        javaVersion = determineDefaultJavaVersion();
         initializeUnsafe();
     }
 
-    private int determineJavaVersion()
+    private int determineDefaultJavaVersion()
     {
         String javaVersionProp = webBeansContext.getOpenWebBeansConfiguration().getGeneratorJavaVersion();
+        if (javaVersionProp == null)  // try to align on the runtime
+        {
+            javaVersionProp = System.getProperty("java.version");
+        }
         if (javaVersionProp != null)
         {
-            if (javaVersionProp.startsWith("1.7"))
-            {
-                return Opcodes.V1_7;
-            }
-            else if (javaVersionProp.startsWith("1.8"))
+            if (javaVersionProp.startsWith("1.8"))
             {
                 return Opcodes.V1_8;
             }
-            else if (javaVersionProp.startsWith("1.9"))
+            else if (javaVersionProp.startsWith("9") || javaVersionProp.startsWith("1.9"))
             {
-                // TODO upgrade to Java9 as soon as ASM really supports it!
-                return Opcodes.V1_8;
+                return Opcodes.V9;
             }
         }
 
-        // the fallback default is V1_6
+        // the fallback is the lowest one to ensure it supports all possible classes of current environments
         return Opcodes.V1_6;
     }
 
@@ -299,7 +303,7 @@ public abstract class AbstractProxyFactory
             superClassName = Type.getInternalName(Object.class);
         }
 
-        cw.visit(javaVersion, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER + Opcodes.ACC_SYNTHETIC, proxyClassFileName, null, superClassName, interfaceNames);
+        cw.visit(findJavaVersion(classToProxy), Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER + Opcodes.ACC_SYNTHETIC, proxyClassFileName, null, superClassName, interfaceNames);
         cw.visitSource(classFileName + ".java", null);
 
         createInstanceVariables(cw, classToProxy, classFileName);
@@ -325,6 +329,31 @@ public abstract class AbstractProxyFactory
         }
 
         return cw.toByteArray();
+    }
+
+    private int findJavaVersion(final Class<?> from)
+    {
+        final String resource = from.getName().replace('.', '/') + ".class";
+        try (final InputStream stream = from.getClassLoader().getResourceAsStream(resource))
+        {
+            if (stream == null)
+            {
+                return javaVersion;
+            }
+            final ClassReader reader = new ClassReader(stream);
+            final VersionVisitor visitor = new VersionVisitor();
+            reader.accept(visitor, SKIP_DEBUG);
+            if (visitor.version != 0)
+            {
+                return visitor.version;
+            }
+        }
+        catch (final Exception e)
+        {
+            // no-op
+        }
+        // mainly for JVM classes - outside the classloader, find to fallback on the JVM version
+        return javaVersion;
     }
 
 
@@ -863,4 +892,16 @@ public abstract class AbstractProxyFactory
     }
 
 
+    private static class VersionVisitor extends EmptyVisitor
+    {
+        private int version;
+
+        @Override
+        public void visit(final int version, final int access, final String name,
+                          final String signature, final String superName, final String[] interfaces)
+        {
+            super.visit(version, access, name, signature, superName, interfaces);
+            this.version = version;
+        }
+    }
 }
