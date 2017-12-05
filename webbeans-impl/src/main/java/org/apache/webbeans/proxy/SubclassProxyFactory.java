@@ -168,7 +168,7 @@ public class SubclassProxyFactory extends AbstractProxyFactory
                     exceptions = exceptionTypes.length == 0 ? null : new String[exceptionTypes.length];
                     for (int i = 0; i < exceptionTypes.length; i++)
                     {
-                        exceptions[i] = Type.getDescriptor(exceptionTypes[i]);
+                        exceptions[i] = Type.getInternalName(exceptionTypes[i]);
                     }
                 }
             }
