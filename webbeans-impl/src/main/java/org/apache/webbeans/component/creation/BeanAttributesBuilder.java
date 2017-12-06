@@ -581,7 +581,10 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     // these alternatives can be not activated
     protected void defineAlternative()
     {
-        alternative = alternative == null || !alternative ? WebBeansUtil.isAlternative(annotated, stereotypes) : alternative;
+        if (alternative == null)
+        {
+            alternative = WebBeansUtil.isAlternative(annotated, stereotypes);
+        }
     }
 
 

@@ -1143,8 +1143,29 @@ public final class WebBeansUtil
     public boolean isBeanEnabled(AnnotatedType<?> at, Set<Class<? extends Annotation>> stereotypes)
     {
         boolean isAlternative = isAlternative(at, stereotypes);
+        if (!isAlternative)
+        {
+            return true;
+        }
 
-        return !isAlternative || webBeansContext.getAlternativesManager().isAlternative(at.getJavaClass(), stereotypes);
+        AlternativesManager alternativesManager = webBeansContext.getAlternativesManager();
+        if (alternativesManager.isAlternative(at.getJavaClass(), stereotypes))
+        {
+            return true;
+        }
+        if (stereotypes != null && !stereotypes.isEmpty() && at.getAnnotation(Priority.class) != null)
+        {
+            for (Class<? extends Annotation> stereotype : stereotypes)
+            {
+                if (alternativesManager.isAlternativeStereotype(stereotype))
+                {
+                    return true;
+                }
+            }
+
+        }
+        return false;
+
     }
 
     public static boolean isAlternative(Annotated annotated, Set<Class<? extends Annotation>> stereotypes)

@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.test.xml.strict;
 
-@AlternativeStereotype
-public class Alternative2 implements SomeInterface
+public class OriginalBean implements SomeInterface
 {
-
 }

@@ -21,7 +21,7 @@ package org.apache.webbeans.test.xml.strict;
 import javax.enterprise.inject.Alternative;
 
 @Alternative
-public class Alternative1
+public class Alternative1 implements SomeInterface
 {
 
 }

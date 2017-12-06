@@ -18,8 +18,11 @@
  */
 package org.apache.webbeans.test.xml.strict;
 
+import javax.annotation.Priority;
+
 @AlternativeStereotype
-public class Alternative2 implements SomeInterface
+@Priority(1000)
+public class Alternative3 implements SomeInterface
 {
 
 }

@@ -21,6 +21,10 @@ package org.apache.webbeans.test.unittests.xml.strict;
 
 import javax.enterprise.inject.spi.Bean;
 
+import org.apache.webbeans.test.xml.strict.Alternative3;
+import org.apache.webbeans.test.xml.strict.AlternativeStereotype;
+import org.apache.webbeans.test.xml.strict.OriginalBean;
+import org.apache.webbeans.test.xml.strict.SomeInterface;
 import org.junit.Assert;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -49,6 +53,16 @@ public class AlternativesTest extends AbstractUnitTest
         
         manager.clear();
         
+    }
+
+    @Test
+    public void testPriorityEnabledStereotypeAlternative()
+    {
+        startContainer(Alternative3.class, AlternativeStereotype.class, OriginalBean.class);
+
+        SomeInterface instance = getInstance(SomeInterface.class);
+        Assert.assertNotNull(instance);
+        Assert.assertTrue(instance instanceof Alternative3);
     }
     
     @Test(expected=WebBeansConfigurationException.class)
@@ -86,5 +100,5 @@ public class AlternativesTest extends AbstractUnitTest
     {        
         startContainer("org/apache/webbeans/test/xml/strict/alternatives_failed6.xml");
     }
-    
+
 }

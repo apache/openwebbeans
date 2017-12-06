@@ -43,13 +43,7 @@ public class AlternativeInstanceTest extends AbstractUnitTest
     @Test
     public void testAlternativeDisabled()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(SimpleBean.class);
-        beanClasses.add(AlternativeBean.class);
-        beanClasses.add(SimpleInjectionTarget.class);
-
-        startContainer(beanClasses, beanXmls);
+        startContainer(SimpleBean.class, AlternativeBean.class, SimpleInjectionTarget.class);
 
         Bean<?> simpleInjectionTargetBean = getBeanManager().getBeans(SimpleInjectionTarget.class).iterator().next();
         CreationalContext<?> context = getBeanManager().createCreationalContext(simpleInjectionTargetBean);

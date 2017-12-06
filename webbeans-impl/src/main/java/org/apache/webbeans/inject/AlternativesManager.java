@@ -19,8 +19,10 @@
 package org.apache.webbeans.inject;
 
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Priority;
@@ -66,6 +68,13 @@ public class AlternativesManager
      * Please note that &#064;Priority on a stereotype does <b>not</b> automatically enable it!
      */
     private final Set<Class<? extends Annotation>> configuredStereotypeAlternatives = new HashSet<>();
+
+    /**
+     * Contains all Alternative Stereotypes which are NOT enabled via beans.xml
+     * We need those for classes which  have a @Priority.
+     */
+    private final Map<Class<? extends Annotation>, Boolean> notEnabledStereotypeAlternatives = new HashMap<>();
+
 
     private final PriorityClasses priorityAlternatives = new PriorityClasses();
 
@@ -192,11 +201,24 @@ public class AlternativesManager
         return configuredAlternatives;
     }
 
+    public boolean isAlternativeStereotype(Class<? extends Annotation> stereo)
+    {
+        Boolean isAlternative = notEnabledStereotypeAlternatives.get(stereo);
+        if (isAlternative == null)
+        {
+            isAlternative = AnnotationUtil.hasClassAnnotation(stereo, Alternative.class);
+            notEnabledStereotypeAlternatives.putIfAbsent(stereo, isAlternative);
+        }
+
+        return isAlternative;
+    }
+
     public void clear()
     {
         configuredAlternatives.clear();
         configuredStereotypeAlternatives.clear();
         priorityAlternatives.clear();
+        notEnabledStereotypeAlternatives.clear();
     }
 
 }

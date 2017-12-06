@@ -450,8 +450,7 @@ public class BeansDeployer
                     {
                         BeanAttributesImpl beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(at, onlyScopedBeans).build();
                         if (beanAttributes != null &&
-                                (!beanAttributes.isAlternative() || webBeansContext.getAlternativesManager()
-                                        .isAlternative(at.getJavaClass(), beanAttributes.getStereotypes())))
+                                (!beanAttributes.isAlternative() || isEnabledAlternative(at, beanAttributes.getStereotypes())))
                         {
                             ProcessBeanAttributesImpl<?> processBeanAttributes
                                 = webBeansContext.getWebBeansUtil().fireProcessBeanAttributes(at, at.getJavaClass(), beanAttributes);
@@ -490,6 +489,28 @@ public class BeansDeployer
 
 
         return beanAttributesPerBda;
+    }
+
+    private boolean isEnabledAlternative(AnnotatedType<?> at, Set<Class<? extends Annotation>> stereotypes)
+    {
+        AlternativesManager alternativesManager = webBeansContext.getAlternativesManager();
+
+        if (alternativesManager.isAlternative(at.getJavaClass(), stereotypes))
+        {
+            return true;
+        }
+        if (stereotypes != null && !stereotypes.isEmpty() && at.getAnnotations(Priority.class) != null)
+        {
+            for (Class<? extends Annotation> stereotype : stereotypes)
+            {
+                if (alternativesManager.isAlternativeStereotype(stereotype))
+                {
+                    return true;
+                }
+            }
+
+        }
+        return false;
     }
 
     private void validateDisposeParameters()
