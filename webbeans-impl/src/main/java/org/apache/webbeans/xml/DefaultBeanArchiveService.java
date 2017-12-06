@@ -84,7 +84,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
             {
                 // we have to 'normalise' both values and remove the beans.xml string to be compareable
                 String entryUrl = stripProtocol(entry.getKey());
-                if (entryUrl.length() > META_INF_BEANS_XML.length() &&
+                if (entryUrl.length(   ) > META_INF_BEANS_XML.length() &&
                     entryUrl.substring(entryUrl.length() - META_INF_BEANS_XML.length()).equalsIgnoreCase(META_INF_BEANS_XML))
                 {
                     entryUrl = entryUrl.substring(0, entryUrl.length() - META_INF_BEANS_XML.length());

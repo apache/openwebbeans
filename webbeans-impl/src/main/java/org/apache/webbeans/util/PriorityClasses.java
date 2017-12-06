@@ -34,9 +34,22 @@ public class PriorityClasses
     private final List<PriorityClass> raw = new ArrayList<>();
     private List<Class<?>> sorted;
 
+    /**
+     * Used for Classes which are annotated with &#064;Priority
+     */
     public void add(Class<?> clazz, Priority priority)
     {
         raw.add(new PriorityClass(clazz, priority.value()));
+        sorted = null;
+    }
+
+    /**
+     * Used for Classes which are added by Beans which implement the
+     * {@link javax.enterprise.inject.spi.Prioritized} interface
+     */
+    public void add(Class<?> clazz, int priority)
+    {
+        raw.add(new PriorityClass(clazz, priority));
         sorted = null;
     }
 

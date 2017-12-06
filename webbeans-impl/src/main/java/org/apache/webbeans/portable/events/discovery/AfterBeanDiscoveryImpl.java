@@ -195,6 +195,11 @@ public class AfterBeanDiscoveryImpl extends EventBase implements AfterBeanDiscov
         }
         else
         {
+            if (bean.isAlternative() && bean instanceof Prioritized)
+            {
+                webBeansContext.getAlternativesManager().addPrioritizedAlternativeBean(bean);
+            }
+
             beanManager.addBean(bean);
         }                
     }

@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Prioritized;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -120,6 +121,23 @@ public class AlternativesManager
     public void addPriorityClazzAlternative(Class<?> clazz, Priority priority)
     {
         priorityAlternatives.add(clazz, priority);
+    }
+
+    /**
+     * This method is used to add Alternative Beans which implement the {@link Prioritized} interface
+     * This is performed after the Bean get's added.
+     */
+    public void addPrioritizedAlternativeBean(Bean<?> prioritizedBean)
+    {
+        if (prioritizedBean instanceof Prioritized)
+        {
+            priorityAlternatives.add(prioritizedBean.getBeanClass(), ((Prioritized) prioritizedBean).getPriority());
+        }
+        else
+        {
+            throw new WebBeansConfigurationException("Given Bean : " + prioritizedBean + " doesn't implement " +
+                        Prioritized.class.getName());
+        }
     }
 
     /**
