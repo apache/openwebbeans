@@ -40,6 +40,7 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.util.UrlSet;
 import org.apache.webbeans.util.WebBeansConstants;
+import org.apache.xbean.finder.archive.FileArchive;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -66,7 +67,9 @@ public class DefaultBeanArchiveService implements BeanArchiveService
     @Override
     public BeanArchiveInformation getBeanArchiveInformation(URL beanArchiveUrl)
     {
-        String beanArchiveLocation = beanArchiveUrl.toExternalForm();
+        // Sometimes we need to decode the URL. See OWB-1220
+        String beanArchiveLocation = FileArchive.decode(beanArchiveUrl.toExternalForm());
+
         BeanArchiveInformation bdaInfo = beanArchiveInformations.get(beanArchiveLocation);
 
         if (bdaInfo == null && !beanArchiveLocation.contains(".xml"))
