@@ -562,11 +562,11 @@ public class InjectionResolver
         if (!startup && !resolvedComponents.isEmpty())
         {
             resolvedBeansByType.put(cacheKey, resolvedComponents);
-        }
 
-        if (logger.isLoggable(Level.FINE))
-        {
-            logger.log(Level.FINE, "DEBUG_ADD_BYTYPE_CACHE_BEANS", cacheKey);
+            if (logger.isLoggable(Level.FINE))
+            {
+                logger.log(Level.FINE, "DEBUG_ADD_BYTYPE_CACHE_BEANS", cacheKey);
+            }
         }
 
         return resolvedComponents;
