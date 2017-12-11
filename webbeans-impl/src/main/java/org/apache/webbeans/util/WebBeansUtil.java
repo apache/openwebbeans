@@ -651,7 +651,7 @@ public final class WebBeansUtil
         // collect all producer method beans
         Set<Bean<?>> beans = webBeansContext.getBeanManagerImpl().getBeans();
         List<ProducerMethodBean> producerBeans = new ArrayList<>();
-        Set<Class> classesDisabledDueToSpecialization = new HashSet<>();
+        Set<String> methodsDisabledDueToSpecialization = new HashSet<>();
 
         for(Bean b : beans)
         {
@@ -661,17 +661,25 @@ public final class WebBeansUtil
 
                 if (((ProducerMethodBean) b).isSpecializedBean())
                 {
-                    Class superClass = b.getBeanClass().getSuperclass();
-                    if (classesDisabledDueToSpecialization.contains(superClass))
+                    Method creatorMethod = ((ProducerMethodBean) b).getCreatorMethod();
+                    Method overloadedMethod = getParentClassMethod(creatorMethod.getDeclaringClass(), creatorMethod.getName(), creatorMethod.getParameterTypes());
+                    if (overloadedMethod == null)
+                    {
+                        throw new WebBeansDeploymentException("Specialized producer method doesn't override method from a parent class"
+                            + b.toString());
+                    }
+
+                    String superMethod = overloadedMethod.toString();
+                    if (methodsDisabledDueToSpecialization.contains(superMethod))
                     {
                         throw new WebBeansDeploymentException("Multiple specializations for the same producer method got detected for type"
                                 + b.toString());
                     }
-                    classesDisabledDueToSpecialization.add(superClass);
+                    methodsDisabledDueToSpecialization.add(superMethod);
                 }
             }
         }
-        classesDisabledDueToSpecialization.clear(); // not needed any longer
+        methodsDisabledDueToSpecialization.clear(); // not needed any longer
 
         // create sorted bean helper.
         SortedListHelper<ProducerMethodBean> producerBeanListHelper = new
@@ -793,6 +801,27 @@ public final class WebBeansUtil
         }
     }
 
+    /**
+     * Get the overloaded method with the exact signature as the given method from the parent class.
+     */
+    private Method getParentClassMethod(Class<?> clazz, String methodName, Class[] paramTypes)
+    {
+        Class<?> superClass = clazz.getSuperclass();
+        if (superClass != null && !superClass.equals(Object.class))
+        {
+            try
+            {
+                return superClass.getDeclaredMethod(methodName, paramTypes);
+            }
+            catch (NoSuchMethodException e)
+            {
+                // recurse further to the superclass
+                return getParentClassMethod(superClass, methodName, paramTypes);
+            }
+        }
+
+        return null;
+    }
 
 
     public <T> Constructor<T> getNoArgConstructor(Class<T> clazz)
