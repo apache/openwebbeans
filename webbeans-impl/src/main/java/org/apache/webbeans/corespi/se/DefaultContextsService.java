@@ -62,7 +62,6 @@ public class DefaultContextsService extends AbstractContextsService
     private static ThreadLocal<DependentContext> dependentContext;
 
 
-    private final boolean supportsConversation;
 
     static
     {
@@ -76,7 +75,6 @@ public class DefaultContextsService extends AbstractContextsService
     public DefaultContextsService(WebBeansContext webBeansContext)
     {
         super(webBeansContext);
-        this.supportsConversation = webBeansContext.getOpenWebBeansConfiguration().supportsConversation();
     }
 
     /**

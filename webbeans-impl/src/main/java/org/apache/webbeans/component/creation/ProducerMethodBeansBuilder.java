@@ -107,9 +107,9 @@ public class ProducerMethodBeansBuilder<T> extends AbstractBeanBuilder
                     }
                     producerMethodBeanCreator.validate();
 
-                    if(specialize)
+                    if (specialize)
                     {
-                        producerMethodBeanCreator.configureProducerSpecialization(producerMethodBean, (AnnotatedMethod<T>) annotatedMethod);
+                        producerMethodBean.setSpecializedBean(true);
                     }
                     producerMethodBean.setCreatorMethod(annotatedMethod.getJavaMember());
 

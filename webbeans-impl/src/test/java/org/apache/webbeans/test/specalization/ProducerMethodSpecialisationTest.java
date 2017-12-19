@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.test.specalization;
 
+import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.util.AnnotationLiteral;
@@ -46,8 +47,14 @@ public class ProducerMethodSpecialisationTest extends AbstractUnitTest
         assertEquals("A-three", getInstance(String.class, new AnnotationLiteral<ThreeProducesMethod>(){}));
     }
 
+    @Test
+    public void testProducerMethodSpecialisation_NotEnabledAlternative()
+    {
+        startContainer(A.class, C.class);
+        assertEquals("A-one", getInstance(String.class, new AnnotationLiteral<OneProducesMethod>(){}));
+    }
 
-    public static class A 
+    public static class A
     {
         @Produces
         @OneProducesMethod
@@ -90,6 +97,18 @@ public class ProducerMethodSpecialisationTest extends AbstractUnitTest
         }
     }
 
+
+    public static class C extends A
+    {
+        @Produces
+        @Specializes
+        @OneProducesMethod
+        @Alternative // not enabled!
+        public String getX()
+        {
+            return "C-one";
+        }
+    }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD, ElementType.TYPE})

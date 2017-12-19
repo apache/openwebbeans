@@ -78,7 +78,7 @@ public class SpecializeDeactivationTest extends AbstractUnitTest
         assertTrue(Impl2.called);
     }
 
-    public static interface API
+    public interface API
     {
         void init();
     }

@@ -106,4 +106,14 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     {
         return isPassivationCapable(creatorMethod.getReturnType(), creatorMethod.getModifiers());
     }
+
+    /**
+     * For producer beans we add the info about the owner component
+     */
+    @Override
+    protected void addToStringInfo(StringBuilder builder)
+    {
+        builder.append(", Producer Method: " + creatorMethod);
+    }
+
 }

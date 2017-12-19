@@ -127,6 +127,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.apache.webbeans.spi.BeanArchiveService.BeanDiscoveryMode;
@@ -311,7 +312,7 @@ public class BeansDeployer
                 // create beans from the discovered AnnotatedTypes
                 deployFromBeanAttributes(beanAttributesPerBda);
 
-                webBeansContext.getWebBeansUtil().configureProducerMethodSpecializations();
+                configureProducerMethodSpecializations();
 
                 // all beans which got 'overridden' by a Specialized version can be removed now
                 removeDisabledBeans();
@@ -956,6 +957,126 @@ public class BeansDeployer
         }
 
         return false;
+    }
+
+    /**
+     * Configure direct/indirect specialized producer method beans.
+     * Also disable 'overwritten' producer method beans.
+     * But only if they got overwritten in an enabled alternative.
+     */
+    public void configureProducerMethodSpecializations()
+    {
+        Set<Bean<?>> beans = webBeansContext.getBeanManagerImpl().getBeans();
+
+        // Collect all producer method beans
+        // and sort them with subclasses first
+        // This is important as we can later go top-down and
+        // disable all 'overwritten' producer methods which must be
+        // further down in the list
+        List<ProducerMethodBean> producerMethodBeans = beans.stream()
+            .filter(ProducerMethodBean.class::isInstance)
+            .map(ProducerMethodBean.class::cast)
+            .sorted((e1, e2) ->
+                {
+                    if (e1.getBeanClass().isAssignableFrom(e2.getBeanClass()))
+                    {
+                        return 1;
+                    }
+                    else if (e1.equals(e2))
+                    {
+                        return 0;
+                    }
+                    return -1;
+                })
+            .collect(Collectors.toList());
+
+        checkSpecializedProducerMethodConditions(producerMethodBeans);
+
+        for (int i = 0; i < producerMethodBeans.size(); i++)
+        {
+            ProducerMethodBean<?> producerMethodBean = producerMethodBeans.get(i);
+            if (!producerMethodBean.isEnabled())
+            {
+                continue;
+            }
+
+            for (int j = i+1; j < producerMethodBeans.size(); j++)
+            {
+                ProducerMethodBean<?> otherProducerMethodBean = producerMethodBeans.get(j);
+
+                if (!otherProducerMethodBean.isEnabled())
+                {
+                    // already disabled
+                    continue;
+                }
+
+                if (producerMethodBean.getBeanClass().equals(otherProducerMethodBean.getBeanClass()))
+                {
+                    // must be another producerMethod from the same class. Probably different qualifier?
+                    continue;
+                }
+
+                if (otherProducerMethodBean.getBeanClass().isAssignableFrom(producerMethodBean.getBeanClass()))
+                {
+                    // yikes we did hit a superclass!
+
+                    if (producerMethodBean.getCreatorMethod().getName().equals(otherProducerMethodBean.getCreatorMethod().getName()))
+                    {
+                        // disable the other bean as it got 'specialized' with the current bean.
+                        otherProducerMethodBean.setEnabled(false);
+                    }
+                }
+                else
+                {
+                    // since all the producermethods are sorted we can stop
+                    // once we leave the 'block' of superclasses for a bean
+                    break;
+                }
+
+            }
+        }
+    }
+
+    /**
+     * Verify that all conditions for Specialized producer methdods are met.
+     * See spec section 3.3.3. Specializing a producer method
+     */
+    private void checkSpecializedProducerMethodConditions(List<ProducerMethodBean> producerBeans)
+    {
+        Set<String> methodsDisabledDueToSpecialization = new HashSet<>();
+        for (ProducerMethodBean producerBean : producerBeans)
+        {
+            if (producerBean.isSpecializedBean())
+            {
+                Method creatorMethod = producerBean.getCreatorMethod();
+
+                Method overloadedMethod = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(
+                        creatorMethod.getDeclaringClass().getSuperclass(),
+                        creatorMethod.getName(),
+                        creatorMethod.getParameterTypes());
+                if (overloadedMethod == null)
+                {
+                    throw new WebBeansConfigurationException("Annotated producer method specialization failed : " + creatorMethod.getName()
+                        + " not found in super class : " + creatorMethod.getDeclaringClass().getSuperclass().getName()
+                        + " for annotated method : " + creatorMethod);
+                }
+
+                if (!AnnotationUtil.hasAnnotation(creatorMethod.getAnnotations(), Produces.class))
+                {
+                    throw new WebBeansConfigurationException("Annotated producer method specialization failed : " + creatorMethod.getName()
+                        + " found in super class : " + creatorMethod.getDeclaringClass().getSuperclass().getName()
+                        + " is not annotated with @Produces" + " for annotated method : " + creatorMethod);
+                }
+
+                String superMethod = overloadedMethod.toString();
+                if (methodsDisabledDueToSpecialization.contains(superMethod))
+                {
+                    throw new WebBeansDeploymentException("Multiple specializations for the same producer method got detected for type"
+                        + producerBean);
+                }
+                methodsDisabledDueToSpecialization.add(superMethod);
+            }
+        }
     }
 
 

@@ -99,4 +99,14 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T>
         }
         return passivatingId;
     }
+
+    /**
+     * For producer beans we add the info about the owner component
+     */
+    @Override
+    protected void addToStringInfo(StringBuilder builder)
+    {
+        builder.append(", Producer Field: " + producerField);
+    }
+
 }
