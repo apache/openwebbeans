@@ -976,18 +976,6 @@ public class BeansDeployer
         List<ProducerMethodBean> producerMethodBeans = beans.stream()
             .filter(ProducerMethodBean.class::isInstance)
             .map(ProducerMethodBean.class::cast)
-            .sorted((e1, e2) ->
-                {
-                    if (e1.getBeanClass().isAssignableFrom(e2.getBeanClass()))
-                    {
-                        return 1;
-                    }
-                    else if (e1.equals(e2))
-                    {
-                        return 0;
-                    }
-                    return -1;
-                })
             .collect(Collectors.toList());
 
         checkSpecializedProducerMethodConditions(producerMethodBeans);
@@ -1000,9 +988,15 @@ public class BeansDeployer
                 continue;
             }
 
-            for (int j = i+1; j < producerMethodBeans.size(); j++)
+            for (int j = 0; j < producerMethodBeans.size(); j++)
             {
                 ProducerMethodBean<?> otherProducerMethodBean = producerMethodBeans.get(j);
+
+                if (i==j)
+                {
+                    // makes no sense to compare with ourselves
+                    continue;
+                }
 
                 if (!otherProducerMethodBean.isEnabled())
                 {
@@ -1026,13 +1020,6 @@ public class BeansDeployer
                         otherProducerMethodBean.setEnabled(false);
                     }
                 }
-                else
-                {
-                    // since all the producermethods are sorted we can stop
-                    // once we leave the 'block' of superclasses for a bean
-                    break;
-                }
-
             }
         }
     }

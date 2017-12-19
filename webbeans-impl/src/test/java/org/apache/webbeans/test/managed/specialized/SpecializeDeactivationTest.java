@@ -70,15 +70,20 @@ public class SpecializeDeactivationTest extends AbstractUnitTest
     @Test
     public void specializeProducers()
     {
-        startContainer(Arrays.<Class<?>>asList(Init.class, API.class, Prod1.class, Prod2.class, Spe1.class),
-            Collections.<String>emptyList(), true);
+        startContainer(Arrays.asList(Init.class, API.class, Prod1.class, Prod2.class, Spe1.class, Prod3.class, Prod4.class),
+            Collections.emptyList(), true);
 
-        assertEquals(2, init.init());
+        assertEquals(4, init.init());
         assertTrue(SpeImpl1.called);
         assertTrue(Impl2.called);
     }
 
     public interface API
+    {
+        void init();
+    }
+
+    public interface API2
     {
         void init();
     }
@@ -90,6 +95,32 @@ public class SpecializeDeactivationTest extends AbstractUnitTest
         {
             return new Impl1();
         }
+
+        @Produces
+        public API2 api2()
+        {
+            return new Impl1();
+        }
+    }
+
+    public static class Prod3
+    {
+        @Produces
+        public API api1()
+        {
+            return new Impl1();
+        }
+
+    }
+
+    public static class Prod4
+    {
+        @Produces
+        public API api1()
+        {
+            return new Impl1();
+        }
+
     }
 
     public static class Spe1 extends Prod1
@@ -98,6 +129,14 @@ public class SpecializeDeactivationTest extends AbstractUnitTest
         @Override
         @Specializes
         public API api1()
+        {
+            return new SpeImpl1();
+        }
+
+        @Produces
+        @Override
+        @Specializes
+        public API2 api2()
         {
             return new SpeImpl1();
         }
@@ -110,9 +149,15 @@ public class SpecializeDeactivationTest extends AbstractUnitTest
         {
             return new Impl2();
         }
+
+        @Produces
+        public API2 api2()
+        {
+            return new Impl2();
+        }
     }
 
-    public static class Impl1 implements API
+    public static class Impl1 implements API, API2
     {
         public static boolean called = false;
 
@@ -135,7 +180,7 @@ public class SpecializeDeactivationTest extends AbstractUnitTest
         }
     }
 
-    public static class Impl2 implements API
+    public static class Impl2 implements API, API2
     {
         public static boolean called = false;
 
