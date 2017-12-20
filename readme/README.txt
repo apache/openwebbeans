@@ -1,5 +1,5 @@
 -------------------------------
-Apache OpenWebBeans 2.0.1
+Apache OpenWebBeans 2.0.3
 -------------------------------
 Welcome!
 
@@ -7,7 +7,7 @@ Thanks for downloading and using OpenWebBeans.
 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 2.0.1 release of Apache OpenWebBeans.
+This document is based on the 2.0.3 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -15,7 +15,7 @@ What is Apache OpenWebBeans?
 OpenWebBeans is an Apache License V 2.0 licensed implementation of the JSR-365,
 Contexts and Dependency Injection 2.0 specification.
 
-CDI-2.0 backward compatible to JSR-346 CDI-1.2 and JSR-299 CDI-1.0.
+CDI-2.0 is backward compatible to JSR-346 CDI-1.2 and JSR-299 CDI-1.0.
 
 Our project's web page can be found at:
 https://openwebbeans.apache.org
@@ -23,10 +23,10 @@ https://openwebbeans.apache.org
 
 
 --------------------------------
-OpenWebBeans 2.0.1 Release Features
+OpenWebBeans 2.0.3 Release Features
 --------------------------------
 
-- The 2.0.1 release supports the following features
+- The 2.0.3 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -60,6 +60,27 @@ only effective for this very bean archive but for the whole BeanManager in contr
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.3
+-------------------------------------------
+
+Bug
+
+    [OWB-1171] - @Priority and @Alternative as sterotype
+    [OWB-1219] - Prioritized custom Bean gets ignored if ManagedBean with @Priority exists
+    [OWB-1220] - URL-encoding issue in AbstractMetaDataDiscovery
+    [OWB-1222] - subclass proxy fails with Java9
+
+Improvement
+
+    [OWB-1218] - improve toString of producer beans to also log owner class
+
+Task
+
+    [OWB-1221] - Upgrade to asm 6
+
 
 
 -------------------------------------------
