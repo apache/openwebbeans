@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.web.context;
 
+import org.apache.webbeans.annotation.BeforeDestroyedLiteral;
 import org.apache.webbeans.annotation.DestroyedLiteral;
 import org.apache.webbeans.annotation.InitializedLiteral;
 import org.apache.webbeans.config.OWBLogConst;
@@ -614,6 +615,9 @@ public class WebContextsService extends AbstractContextsService
         //Destroy context
         if(applicationContext != null && !applicationContext.isDestroyed())
         {
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                endObject, BeforeDestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
+
             applicationContext.destroy();
             // this is needed to get rid of ApplicationScoped beans which are cached inside the proxies...
             webBeansContext.getBeanManagerImpl().clearCacheProxies();
