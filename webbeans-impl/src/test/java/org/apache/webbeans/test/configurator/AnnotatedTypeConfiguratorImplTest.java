@@ -23,6 +23,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
@@ -34,9 +36,11 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -54,6 +58,15 @@ public class AnnotatedTypeConfiguratorImplTest extends AbstractUnitTest
                 Set<Annotation> annotations = pba.getAnnotated().getAnnotations();
                 assertEquals(1, annotations.size());
                 assertEquals(TheQualifier.class, annotations.iterator().next().annotationType());
+                assertTrue(pba.getAnnotated() instanceof AnnotatedType);
+                AnnotatedMethod<? super AnnotatedTypeConfigClass> methodWithParameters = ((AnnotatedType<AnnotatedTypeConfigClass>) pba.getAnnotated()).getMethods().stream()
+                        .filter(am -> am.getJavaMember().getName().equals("methodWithParameters"))
+                        .findFirst().get();
+                TheQualifier param1Annotation = methodWithParameters.getParameters().stream()
+                        .filter(ap -> ap.getPosition() == 0)
+                        .findFirst().get().getAnnotation(TheQualifier.class);
+                assertNotNull(param1Annotation);
+                assertEquals("blub", param1Annotation.value());
             },
             AnnotatedTypeConfigClass.class);
     }
@@ -286,7 +299,7 @@ public class AnnotatedTypeConfiguratorImplTest extends AbstractUnitTest
             return "method 2";
         }
 
-        public String methodWithParameters(String param1, Integer param2)
+        public String methodWithParameters(@TheQualifier("blub") String param1, Integer param2)
         {
             return "parameters: " + param1 + ", " + param2;
         }

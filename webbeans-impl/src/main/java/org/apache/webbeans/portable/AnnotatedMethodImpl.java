@@ -47,7 +47,7 @@ public class AnnotatedMethodImpl<X> extends AbstractAnnotatedCallable<X> impleme
      */
     AnnotatedMethodImpl(WebBeansContext webBeansContext, Method javaMember, AnnotatedType<X> declaringType)
     {        
-        super(webBeansContext, GenericsUtil.resolveReturnType(declaringType.getJavaClass(), javaMember), javaMember,declaringType);
+        super(webBeansContext, GenericsUtil.resolveReturnType(declaringType.getJavaClass(), javaMember), javaMember, declaringType);
         setAnnotations(javaMember.getDeclaredAnnotations());
         setAnnotatedParameters(GenericsUtil.resolveParameterTypes(declaringType.getJavaClass(), javaMember), javaMember.getParameterAnnotations());
     }
@@ -55,14 +55,14 @@ public class AnnotatedMethodImpl<X> extends AbstractAnnotatedCallable<X> impleme
     /**
      * Copy ct for Configurators
      */
-    public AnnotatedMethodImpl(WebBeansContext webBeansContext, AnnotatedMethod<? super X> originalAnnotatedMethod, AnnotatedType<X> declaringType)
+    AnnotatedMethodImpl(WebBeansContext webBeansContext, AnnotatedMethod<? super X> originalAnnotatedMethod, AnnotatedType<X> declaringType)
     {
         super(webBeansContext, originalAnnotatedMethod.getBaseType(), originalAnnotatedMethod.getJavaMember(), declaringType);
 
         getAnnotations().addAll(originalAnnotatedMethod.getAnnotations());
-        for (AnnotatedParameter<? super X> annotatedParameter : originalAnnotatedMethod.getParameters())
+        for (AnnotatedParameter<? super X> originalAnnotatedParameter : originalAnnotatedMethod.getParameters())
         {
-            getParameters().add(new AnnotatedParameterImpl<>(webBeansContext, annotatedParameter.getBaseType(), this, annotatedParameter.getPosition()));
+            getParameters().add(new AnnotatedParameterImpl(webBeansContext, originalAnnotatedParameter, this));
         }
     }
 

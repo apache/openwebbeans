@@ -47,6 +47,17 @@ public class AnnotatedParameterImpl<X> extends AbstractAnnotated implements Anno
         this.position = position;
     }
 
+
+    /**
+     * Copy ct for Configurators
+     */
+    AnnotatedParameterImpl(WebBeansContext webBeansContext, AnnotatedParameter<X> originalAnnotatedParameter, AnnotatedMethodImpl declaringCallable)
+    {
+        super(webBeansContext, originalAnnotatedParameter);
+        this.declaringCallable = declaringCallable;
+        this.position = originalAnnotatedParameter.getPosition();
+    }
+
     /**
      * {@inheritDoc}
      */

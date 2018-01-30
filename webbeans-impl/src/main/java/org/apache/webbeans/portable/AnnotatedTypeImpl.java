@@ -258,8 +258,6 @@ public class AnnotatedTypeImpl<X>
             }
 
             Field[] decFields = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredFields(annotatedClass);
-            Method[] decMethods =
-                getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(annotatedClass);
             for (Field f : decFields)
             {
                 if (!f.isSynthetic())
@@ -269,6 +267,8 @@ public class AnnotatedTypeImpl<X>
                 }
             }
 
+            Method[] decMethods =
+                    getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(annotatedClass);
             for (Method m : decMethods)
             {
                 if (!m.isSynthetic() && !m.isBridge())
