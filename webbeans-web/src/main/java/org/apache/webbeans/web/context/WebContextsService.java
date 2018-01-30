@@ -616,7 +616,8 @@ public class WebContextsService extends AbstractContextsService
         if(applicationContext != null && !applicationContext.isDestroyed())
         {
             webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
-                endObject, BeforeDestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
+                endObject != null ? endObject : new Object(),
+                BeforeDestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
 
             applicationContext.destroy();
             // this is needed to get rid of ApplicationScoped beans which are cached inside the proxies...
