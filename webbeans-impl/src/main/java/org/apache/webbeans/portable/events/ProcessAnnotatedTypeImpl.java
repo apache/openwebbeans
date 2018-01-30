@@ -90,10 +90,10 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
     public void setAnnotatedType(AnnotatedType<X> type)
     {
         checkState();
+
         annotatedType = type;
         modifiedAnnotatedType = true;
 
-        //X TODO test
         // reset configurator
         configurator = null;
     }
@@ -114,12 +114,16 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
     @Override
     public void veto()
     {
+        checkState();
+
         veto = true;
     }
 
     @Override
     public AnnotatedTypeConfigurator<X> configureAnnotatedType()
     {
+        checkState();
+
         if (configurator == null)
         {
             configurator = new AnnotatedTypeConfiguratorImpl(webBeansContext, annotatedType);

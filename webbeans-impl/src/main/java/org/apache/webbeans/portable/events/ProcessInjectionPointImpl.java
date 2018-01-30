@@ -83,6 +83,8 @@ public class ProcessInjectionPointImpl<T, X> extends EventBase implements Proces
     @Override
     public InjectionPointConfigurator configureInjectionPoint()
     {
+        checkState();
+
         if (injectionPointConfigurator == null)
         {
             this.injectionPointConfigurator = new InjectionPointConfiguratorImpl(injectionPoint);

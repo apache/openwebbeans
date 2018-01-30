@@ -88,6 +88,8 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
     @Override
     public BeanAttributesConfigurator<T> configureBeanAttributes()
     {
+        checkState();
+
         if (beanAttributesConfigurator == null)
         {
             beanAttributesConfigurator = new BeanAttributesConfiguratorImpl(webBeansContext, attributes);

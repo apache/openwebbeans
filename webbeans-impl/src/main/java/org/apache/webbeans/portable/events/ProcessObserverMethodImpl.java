@@ -77,6 +77,8 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
     @Override
     public ObserverMethodConfigurator<T> configureObserverMethod()
     {
+        checkState();
+
         if (observerMethodConfigurator == null)
         {
             this.observerMethodConfigurator = new ObserverMethodConfiguratorImpl(webBeansContext, extension, observerMethod);
