@@ -449,7 +449,7 @@ public class BeansDeployer
                 {
                     if (isEjb || (ClassUtil.isConcrete(beanClass) || WebBeansUtil.isDecorator(at)) && isValidManagedBean(at))
                     {
-                        BeanAttributesImpl beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(at, onlyScopedBeans).build();
+                        BeanAttributesImpl beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(at, onlyScopedBeans && !isEjb).build();
                         if (beanAttributes != null &&
                                 (!beanAttributes.isAlternative() || isEnabledAlternative(at, beanAttributes.getStereotypes())))
                         {
