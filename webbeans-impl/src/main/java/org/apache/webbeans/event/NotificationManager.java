@@ -907,7 +907,7 @@ public final class NotificationManager
             {
                 if (error.get() == null)
                 {
-                    error.compareAndSet(null, new CompletionException(null));
+                    error.compareAndSet(null, new CompletionException(t));
                 }
                 error.get().addSuppressed(t);
             }
