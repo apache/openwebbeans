@@ -18,19 +18,30 @@
  */
 package org.apache.webbeans.test.component.event.normal;
 
+import javax.enterprise.inject.Intercepted;
+import javax.enterprise.inject.spi.Bean;
+import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.io.Serializable;
+
+import org.junit.Assert;
 
 @Interceptor
 @Transactional
 public class TransactionalInterceptor implements Serializable
 {
 
+    private @Inject @Intercepted Bean<?> interceptedBean;
+    private @Inject Bean<TransactionalInterceptor> bean;
+    private @Inject javax.enterprise.inject.spi.Interceptor <TransactionalInterceptor> interceptor;
+
+
     @AroundInvoke
     public Object caller(InvocationContext context) throws Exception
     {
+        checkInjections();
         try
         {
             ComponentWithObserves2.hasBeenIntercepted = true;
@@ -43,4 +54,12 @@ public class TransactionalInterceptor implements Serializable
         
         return null;
     }
+
+    private void checkInjections()
+    {
+        Assert.assertNotNull(interceptedBean);
+        Assert.assertNotNull(bean);
+        Assert.assertNotNull(interceptor);
+    }
+
 }
