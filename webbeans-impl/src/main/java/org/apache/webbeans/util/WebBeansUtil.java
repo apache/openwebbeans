@@ -1696,7 +1696,7 @@ public final class WebBeansUtil
             if (types.length != 1 ||
                     !((javax.enterprise.inject.spi.Decorator) bean).getDecoratedTypes().contains(types[0]))
             {
-                throw new WebBeansConfigurationException("ParametrizedType must be a DecoratedType");
+                throw new WebBeansConfigurationException("ParametrizedType must be a DecoratedTyp at InjectionPoint " + injectionPoint);
             }
         }
         else
