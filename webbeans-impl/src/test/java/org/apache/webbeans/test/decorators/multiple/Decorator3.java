@@ -18,10 +18,15 @@
  */
 package org.apache.webbeans.test.decorators.multiple;
 
+import org.apache.webbeans.component.DecoratorBean;
+import org.junit.Assert;
+
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Decorated;
 import javax.enterprise.inject.Default;
+import javax.enterprise.inject.spi.Bean;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -32,10 +37,17 @@ public abstract class Decorator3 implements IOutputProvider
     @Inject @Delegate @Default @Any @Named IOutputProvider op;
     @Inject @Default RequestStringBuilder rsb;
 
+
+    @Inject javax.enterprise.inject.spi.Decorator<Decorator3> decoratorMetadata;
+    @Inject @Decorated Bean<IOutputProvider> beanMetadata;
+
     @Override
     public String getOutput()
     {
         rsb.addOutput("Decorator3\n");
+        Assert.assertTrue(decoratorMetadata instanceof DecoratorBean);
+        Assert.assertTrue(beanMetadata instanceof Bean);
+
         return op.getOutput();
     }
 }
