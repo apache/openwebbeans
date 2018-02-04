@@ -407,7 +407,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             Bean<?> oldBean = passivationBeans.putIfAbsent(id, bean);
             if (oldBean != null)
             {
-                throw new DuplicateDefinitionException("PassivationCapable bean id is not unique: " + id + " bean:" + bean);
+                throw new DuplicateDefinitionException("PassivationCapable bean id is not unique: " +
+                        id + " bean:" + bean + ", existing: " + oldBean);
             }
         }
     }
