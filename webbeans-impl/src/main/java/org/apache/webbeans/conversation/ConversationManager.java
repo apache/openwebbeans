@@ -31,6 +31,7 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
+import org.apache.webbeans.annotation.BeforeDestroyedLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DestroyedLiteral;
 import org.apache.webbeans.config.OWBLogConst;
@@ -194,7 +195,11 @@ public class ConversationManager
      */
     public void destroyConversationContext(ConversationContext ctx)
     {
+        webBeansContext.getBeanManagerImpl().fireEvent(
+                getLifecycleEventPayload(ctx), BeforeDestroyedLiteral.INSTANCE_CONVERSATION_SCOPED);
+
         ctx.destroy();
+
         webBeansContext.getBeanManagerImpl().fireEvent(
             getLifecycleEventPayload(ctx), DestroyedLiteral.INSTANCE_CONVERSATION_SCOPED);
     }

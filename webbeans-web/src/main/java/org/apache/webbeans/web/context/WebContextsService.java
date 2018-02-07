@@ -424,6 +424,20 @@ public class WebContextsService extends AbstractContextsService
 
         }
 
+        Object payload = null;
+        if (shouldFireRequestLifecycleEvents())
+        {
+            if (endObject != null && endObject instanceof ServletRequestEvent)
+            {
+                payload = ((ServletRequestEvent) endObject).getServletRequest();
+            }
+
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                    payload != null ? payload : new Object(), BeforeDestroyedLiteral.INSTANCE_REQUEST_SCOPED);
+
+        }
+
+
         context.destroy();
 
         // clean up the EL caches after each request
@@ -435,12 +449,6 @@ public class WebContextsService extends AbstractContextsService
 
         if (shouldFireRequestLifecycleEvents())
         {
-            Object payload = null;
-
-            if (endObject != null && endObject instanceof ServletRequestEvent)
-            {
-                payload = ((ServletRequestEvent) endObject).getServletRequest();
-            }
             webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
                 payload != null ? payload : new Object(), DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
         }
@@ -787,7 +795,8 @@ public class WebContextsService extends AbstractContextsService
             NotificationManager notificationManager = webBeansContext.getNotificationManager();
             fireRequestLifecycleEvents
                 = notificationManager.hasContextLifecycleObserver(InitializedLiteral.INSTANCE_REQUEST_SCOPED) ||
-                  notificationManager.hasContextLifecycleObserver(DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
+                  notificationManager.hasContextLifecycleObserver(BeforeDestroyedLiteral.INSTANCE_REQUEST_SCOPED) ||
+                  notificationManager.hasContextLifecycleObserver(DestroyedLiteral.INSTANCE_REQUEST_SCOPED) ;
         }
 
         return fireRequestLifecycleEvents;
