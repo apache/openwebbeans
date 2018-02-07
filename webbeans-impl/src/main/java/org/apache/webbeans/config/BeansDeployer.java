@@ -1965,7 +1965,6 @@ public class BeansDeployer
                 Set<ObserverMethod<?>> observerMethods;
                 AnnotatedType<T> beanAnnotatedType = bean.getAnnotatedType();
                 AnnotatedType<T> defaultAt = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(beanAnnotatedType.getJavaClass());
-                boolean ignoreProducer = defaultAt != beanAnnotatedType && annotatedTypes.containsKey(defaultAt);
                 if(bean.isEnabled())
                 {
                     observerMethods = new ObserverMethodsBuilder<>(webBeansContext, beanAnnotatedType).defineObserverMethods(bean);
@@ -1976,10 +1975,8 @@ public class BeansDeployer
                 }
 
                 WebBeansContext wbc = bean.getWebBeansContext();
-                Set<ProducerFieldBean<?>> producerFields =
-                        ignoreProducer ? Collections.emptySet() : new ProducerFieldBeansBuilder(wbc, beanAnnotatedType).defineProducerFields(bean);
-                Set<ProducerMethodBean<?>> producerMethods =
-                        ignoreProducer ? Collections.emptySet() : new ProducerMethodBeansBuilder(wbc, beanAnnotatedType).defineProducerMethods(bean, producerFields);
+                Set<ProducerFieldBean<?>> producerFields = new ProducerFieldBeansBuilder(wbc, beanAnnotatedType).defineProducerFields(bean);
+                Set<ProducerMethodBean<?>> producerMethods = new ProducerMethodBeansBuilder(wbc, beanAnnotatedType).defineProducerMethods(bean, producerFields);
 
                 ManagedBean<T> managedBean = (ManagedBean<T>)bean;
                 Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods =

@@ -67,18 +67,11 @@ public class BeforeBeanDiscoveryTest extends AbstractUnitTest
     @Test
     public void testAddAdditionalAnnotatedTypeWithPresentClass()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
-
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(AddAdditionalAnnotatedTypeExtension.MyBean.class);
-
         addExtension(new AddAdditionalAnnotatedTypeExtension());
 
-        startContainer(beanClasses, beanXmls);
+        startContainer(AddAdditionalAnnotatedTypeExtension.MyBean.class);
 
-        Bean<?> bean = getBeanManager().getBeans(AddAdditionalAnnotatedTypeExtension.MyBean.class, new AnnotationLiteral<Default>()
-        {
-        }).iterator().next();
+        Bean<?> bean = getBeanManager().getBeans(AddAdditionalAnnotatedTypeExtension.MyBean.class).iterator().next();
 
         // Bean should not be null, as we added it as an additional annotated
         // type during before bean discovery in the extension

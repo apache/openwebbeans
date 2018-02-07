@@ -18,7 +18,10 @@
  */
 package org.apache.webbeans.test.portable.addannotated.extension;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
@@ -29,9 +32,16 @@ import org.apache.webbeans.annotation.RequestedScopeLiteral;
 
 public class AddAdditionalAnnotatedTypeExtension implements Extension
 {
+    @RequestScoped
     public static class MyBean
     {
 
+        @Produces
+        @Dependent
+        public String create()
+        {
+            return "dings";
+        }
     }
 
     public static class MyConfigBean1
@@ -53,7 +63,7 @@ public class AddAdditionalAnnotatedTypeExtension implements Extension
 
     public void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd, BeanManager bm)
     {
-        bbd.addAnnotatedType(bm.createAnnotatedType(MyBean.class));
+        bbd.addAnnotatedType(bm.createAnnotatedType(MyBean.class), "modified");
 
         bbd.addAnnotatedType(MyConfigBean1.class, "hi1")
             .add(RequestedScopeLiteral.INSTANCE);

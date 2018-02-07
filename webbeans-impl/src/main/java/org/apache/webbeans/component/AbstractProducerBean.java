@@ -25,6 +25,8 @@ import javax.enterprise.inject.spi.Producer;
 
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.ProducerFactory;
+
+import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.util.WebBeansUtil;
 
 
@@ -72,6 +74,17 @@ public class AbstractProducerBean<T> extends AbstractOwbBean<T>
     public InjectionTargetBean<?> getOwnerComponent()
     {
         return ownerComponent;
+    }
+
+    @Override
+    protected String providedId()
+    {
+        if (ownerComponent.getAnnotatedType() instanceof AnnotatedTypeWrapper)
+        {
+            return ((AnnotatedTypeWrapper) ownerComponent.getAnnotatedType()).getId();
+        }
+
+        return null;
     }
 
     /**

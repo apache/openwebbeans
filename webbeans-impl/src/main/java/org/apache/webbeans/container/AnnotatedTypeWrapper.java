@@ -32,17 +32,24 @@ public class AnnotatedTypeWrapper<T> implements AnnotatedType<T>
 {
     private final AnnotatedType<T> original;
     private final Extension source;
+    private final String id;
 
-    public AnnotatedTypeWrapper(Extension source, AnnotatedType<T> annotatedType)
+    public AnnotatedTypeWrapper(Extension source, AnnotatedType<T> annotatedType, String id)
     {
         this.source = source;
         this.original = annotatedType;
+        this.id = id;
     }
 
     @Override
     public Class<T> getJavaClass()
     {
         return original.getJavaClass();
+    }
+
+    public String getId()
+    {
+        return id;
     }
 
     @Override

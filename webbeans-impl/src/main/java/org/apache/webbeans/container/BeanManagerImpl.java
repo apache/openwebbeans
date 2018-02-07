@@ -1330,7 +1330,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             return;
         }
 
-        AnnotatedType<T> annotatedType = new AnnotatedTypeWrapper<>(Extension.class.cast(extension), inAnnotatedType);
+        AnnotatedType<T> annotatedType = new AnnotatedTypeWrapper<>(Extension.class.cast(extension), inAnnotatedType, id);
         if (annotatedType.getAnnotation(Vetoed.class) != null)
         {
             // we could check package here too but would be a lost of time 99.99% of the time

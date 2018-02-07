@@ -100,7 +100,7 @@ public class BeforeBeanDiscoveryImplTest extends AbstractUnitTest
             final Set<Annotation> annotations = annotatedType1.getAnnotations();
             annotations.add(new EmptyAnnotationLiteral<InterceptorBinding>() {});
 
-            final AnnotatedType<OwbMethodBinding> annotatedType = new AnnotatedTypeWrapper<OwbMethodBinding>(this, annotatedType1) {
+            final AnnotatedType<OwbMethodBinding> annotatedType = new AnnotatedTypeWrapper<OwbMethodBinding>(this, annotatedType1, "x") {
                 @Override
                 public Set<Annotation> getAnnotations()
                 {
@@ -157,7 +157,7 @@ public class BeforeBeanDiscoveryImplTest extends AbstractUnitTest
             final Set<Annotation> annotations = annotatedType1.getAnnotations();
             annotations.add(new EmptyAnnotationLiteral<InterceptorBinding>() {});
 
-            final AnnotatedType<TheBindingType> annotatedType = new AnnotatedTypeWrapper<TheBindingType>(this, annotatedType1) {
+            final AnnotatedType<TheBindingType> annotatedType = new AnnotatedTypeWrapper<TheBindingType>(this, annotatedType1, "x") {
                 @Override
                 public Set<Annotation> getAnnotations()
                 {
@@ -171,7 +171,7 @@ public class BeforeBeanDiscoveryImplTest extends AbstractUnitTest
                 }
             };
 
-            final AnnotatedTypeWrapper<TheBindingType> wrapper = new AnnotatedTypeWrapper<TheBindingType>(this, annotatedType) {
+            final AnnotatedTypeWrapper<TheBindingType> wrapper = new AnnotatedTypeWrapper<TheBindingType>(this, annotatedType, "x") {
                 @Override
                 public Set<AnnotatedMethod<? super TheBindingType>> getMethods() {
                     final Set<AnnotatedMethod<? super TheBindingType>> methods = super.getMethods();
