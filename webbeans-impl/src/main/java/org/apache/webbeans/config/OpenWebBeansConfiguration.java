@@ -128,7 +128,21 @@ public class OpenWebBeansConfiguration
     /**EL Adaptor*/
     public static final String EL_ADAPTOR_SERVICE = "org.apache.webbeans.spi.adaptor.ELAdaptor";
 
-    /** prefix followed by the fully qualified scope name, for configuring InterceptorHandlers for our proxies.*/
+    /**
+     * prefix followed by the fully qualified scope name, for configuring NormalScopedBeanInterceptorHandler
+     * for our proxies.
+     *
+     * The format is like the following:
+     * 'org.apache.webbeans.proxy.mapping.' followed by the scope annotation = a subclass of a NormalScopedBeanInterceptorHandler
+     *
+     * Example:
+     * <pre>
+     * org.apache.webbeans.proxy.mapping.javax.enterprise.context.ApplicationScoped=org.apache.webbeans.intercept.ApplicationScopedBeanInterceptorHandler
+     * org.apache.webbeans.proxy.mapping.javax.enterprise.context.RequestScoped=org.apache.webbeans.intercept.RequestScopedBeanInterceptorHandler
+     * org.apache.webbeans.proxy.mapping.javax.enterprise.context.SessionScoped=org.apache.webbeans.intercept.SessionScopedBeanInterceptorHandler
+     * </pre>
+     *
+     */
     public static final String PROXY_MAPPING_PREFIX = "org.apache.webbeans.proxy.mapping.";
 
     /**
