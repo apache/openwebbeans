@@ -159,7 +159,10 @@ public class OpenWebBeansConfiguration
 
     /**
      * Flag which indicates that only jars with an explicit META-INF/beans.xml marker file shall get parsed.
-     * Default is {@code false}
+     * Default is {@code false}.
+     *
+     * This might be switched on to improve boot time in cases where you always have beans.xml in
+     * your jars or classpath entries.
      */
     public static final String SCAN_ONLY_BEANS_XML_JARS = "org.apache.webbeans.scanBeansXmlOnly";
 
@@ -169,6 +172,13 @@ public class OpenWebBeansConfiguration
      * weaving or bytecode modification.
      */
     public static final String IGNORED_INTERFACES = "org.apache.webbeans.ignoredDecoratorInterfaces";
+
+    /**
+     * A comma-separated list of fully qualified class names of CDI Extensions that should be ignored.
+     *
+     *
+     */
+    public static final String IGNORED_EXTENSIONS = "org.apache.webbeans.ignoredExtensions";
 
     /**
      * By default we do _not_ force session creation in our WebBeansConfigurationListener. We only create the
@@ -205,7 +215,15 @@ public class OpenWebBeansConfiguration
     private final Properties configProperties = new Properties();
 
 
+    /**
+     * @see #IGNORED_INTERFACES
+     */
     private Set<String> ignoredInterfaces;
+
+    /**
+     * @see #IGNORED_EXTENSIONS
+     */
+    private Set<String> ignoredExtensions;
 
     /**
      * All configured lists per key.
@@ -414,17 +432,28 @@ public class OpenWebBeansConfiguration
     {
         if (ignoredInterfaces == null)
         {
-            String ignoredInterfacesString = getProperty(IGNORED_INTERFACES);
-            if (ignoredInterfacesString != null)
-            {
-                ignoredInterfaces = new HashSet<>(Arrays.asList(ignoredInterfacesString.split("[,\\p{javaWhitespace}]")));
-            }
-            else
-            {
-                ignoredInterfaces = Collections.emptySet();
-            }
+            ignoredInterfaces = getPropertyList(IGNORED_INTERFACES);
         }
         return ignoredInterfaces;
+    }
+
+    public synchronized Set<String> getIgnoredExtensions()
+    {
+        if (ignoredExtensions == null)
+        {
+            ignoredExtensions = getPropertyList(IGNORED_EXTENSIONS);
+        }
+        return ignoredExtensions;
+    }
+
+    private Set<String> getPropertyList(String configKey)
+    {
+        String configValue = getProperty(configKey);
+        if (configValue != null)
+        {
+            return new HashSet<>(Arrays.asList(configValue.split("[,\\p{javaWhitespace}]")));
+        }
+        return Collections.emptySet();
     }
 
     /**

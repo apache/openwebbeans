@@ -44,6 +44,8 @@ public class Bootstrap
         log.info(OWBLogConst.INFO_0006);
         //this relies on DefaultSingletonService to instantiate the WebBeansContext
         containerLifecycle = WebBeansContext.getInstance().getService(ContainerLifecycle.class);
+
+        this.properties = properties;
     }
     
     public void start() throws InterruptedException

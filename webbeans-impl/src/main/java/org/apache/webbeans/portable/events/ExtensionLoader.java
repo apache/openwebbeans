@@ -23,15 +23,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -44,6 +47,9 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class ExtensionLoader
 {
+    /**Logger instance*/
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(ExtensionLoader.class);
+
     /**Map of extensions*/
     private final  Map<Class<?>, Object> extensions = new ConcurrentHashMap<>();
     private final Set<Class<? extends Extension>> extensionClasses = new HashSet<>();
@@ -76,9 +82,22 @@ public class ExtensionLoader
      */
     public void loadExtensionServices(ClassLoader classLoader)
     {
+        Set<String> ignoredExtensions = webBeansContext.getOpenWebBeansConfiguration().getIgnoredExtensions();
+        if (!ignoredExtensions.isEmpty())
+        {
+            logger.info("Ignoring the following CDI Extensions. See " + OpenWebBeansConfiguration.IGNORED_EXTENSIONS +
+                " " + ignoredExtensions.toString());
+        }
+
         List<Extension> loader = webBeansContext.getLoaderService().load(Extension.class, classLoader);
         for (Extension extension : loader)
         {
+            if (ignoredExtensions.contains(extension.getClass().getName()))
+            {
+                logger.info("Skipping CDI Extension due to exclusion: " + extension.getClass().getName());
+                continue;
+            }
+
             if (!extensionClasses.contains(extension.getClass()))
             {
                 extensionClasses.add(extension.getClass());

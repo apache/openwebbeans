@@ -32,14 +32,14 @@ public class ConfigurationTest
         OpenWebBeansConfiguration cfg = WebBeansContext.getInstance().getOpenWebBeansConfiguration();
         
         // not overloaded
-        String ts = cfg.getProperty("org.apache.webbeans.spi.TransactionService");
-        Assert.assertNotNull(ts);
-        Assert.assertEquals("org.apache.webbeans.corespi.ee.TransactionServiceJndiImpl", ts);
-        
+        String esi = cfg.getProperty("org.apache.webbeans.web.eagerSessionInitialisation");
+        Assert.assertNotNull(esi);
+        Assert.assertEquals("false", esi);
+
         // overloaded version 1
         String wbf = cfg.getProperty("org.apache.webbeans.spi.JNDIService");
         Assert.assertNotNull(wbf);
-        Assert.assertEquals("org.apache.webbeans.corespi.ee.JNDIServiceEnterpriseImpl", wbf);
+        Assert.assertEquals("org.apache.webbeans.corespi.se.DefaultJndiService", wbf);
         
         // property which is only in the specialised openwebbeans.properties
         String testProperty = cfg.getProperty("test.property");
