@@ -1,5 +1,5 @@
 -------------------------------
-Apache OpenWebBeans 2.0.3
+Apache OpenWebBeans 2.0.4
 -------------------------------
 Welcome!
 
@@ -7,7 +7,7 @@ Thanks for downloading and using OpenWebBeans.
 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 2.0.3 release of Apache OpenWebBeans.
+This document is based on the 2.0.4 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -23,10 +23,10 @@ https://openwebbeans.apache.org
 
 
 --------------------------------
-OpenWebBeans 2.0.3 Release Features
+OpenWebBeans 2.0.4 Release Features
 --------------------------------
 
-- The 2.0.3 release supports the following features
+- The 2.0.4 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -60,6 +60,22 @@ only effective for this very bean archive but for the whole BeanManager in contr
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.4
+-------------------------------------------
+
+Bug
+
+    [OWB-1223] - WebContextsService does not fire BeforeDestroyed(ApplicationScoped.class) event
+    [OWB-1224] - AnnotatedTypeConfigurator does not copy parameter annotations
+    [OWB-1225] - configureXxx should must throw IAE if called outside respective event
+    [OWB-1226] - upgrade maven-bundle-plugin to more recent version
+    [OWB-1227] - can't add a bean through an extension and let it being scanned
+    [OWB-1228] - OWB ignores producer methods on custom annotatedTypes
+    [OWB-1229] - WebContextsService should fire BeforeDestroyed(RequestScoped.class) event
+    [OWB-1230] - introduce a way to block certain Extensions from getting picked up
 
 
 -------------------------------------------
