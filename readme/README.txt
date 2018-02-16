@@ -76,6 +76,7 @@ Bug
     [OWB-1228] - OWB ignores producer methods on custom annotatedTypes
     [OWB-1229] - WebContextsService should fire BeforeDestroyed(RequestScoped.class) event
     [OWB-1230] - introduce a way to block certain Extensions from getting picked up
+    [OWB-1231] - update jcdi-spec to 1.0.1 version
 
 
 -------------------------------------------
