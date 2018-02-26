@@ -22,6 +22,7 @@ import javax.annotation.Priority;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.OptionalInt;
 
 public class PriorityClasses
 {
@@ -33,6 +34,11 @@ public class PriorityClasses
      */
     private final List<PriorityClass> raw = new ArrayList<>();
     private List<Class<?>> sorted;
+
+    public OptionalInt getPriority(final Class<?> type)
+    {
+        return raw.stream().filter(it -> it.getClazz() == type).mapToInt(PriorityClass::getPriority).findFirst();
+    }
 
     /**
      * Used for Classes which are annotated with &#064;Priority

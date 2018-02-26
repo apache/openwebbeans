@@ -1754,7 +1754,13 @@ public class BeansDeployer
                 if ((!isBDAScanningEnabled && interceptorsManager.isInterceptorClassEnabled(clazz)) ||
                         (isBDAScanningEnabled && !scannerService.getBDABeansXmlScanner().addInterceptor(clazz, bdaLocation.toExternalForm())))
                 {
-                    logger.warning( "Interceptor class : " + interceptor + " is already defined");
+                    int priority = -1;
+                    if (!isBDAScanningEnabled)
+                    {
+                        priority = interceptorsManager.getPriority(clazz);
+                    }
+                    logger.fine( "Interceptor class : " + interceptor + " is already defined" +
+                            (priority >= 0 ? " with priority " + priority : ""));
                 }
                 else
                 {

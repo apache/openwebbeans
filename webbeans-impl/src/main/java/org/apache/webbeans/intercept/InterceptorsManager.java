@@ -354,6 +354,11 @@ public class InterceptorsManager
         }
     }
 
+    public int getPriority(final Class<?> type)
+    {
+        return priorityInterceptors.getPriority(type).orElseGet(() -> getPrioritizedInterceptors().indexOf(type));
+    }
+
     public List<Class<?>> getPrioritizedInterceptors()
     {
         return priorityInterceptors.getSorted();
