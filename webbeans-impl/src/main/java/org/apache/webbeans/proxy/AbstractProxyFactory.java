@@ -318,15 +318,17 @@ public abstract class AbstractProxyFactory
     private int findJavaVersion(final Class<?> from)
     {
         final String resource = from.getName().replace('.', '/') + ".class";
-        final InputStream stream = from.getClassLoader().getResourceAsStream(resource);
-
-        if (stream == null)
-        {
-            return javaVersion;
-        }
+        InputStream stream = null;
 
         try
         {
+            stream = from.getClassLoader().getResourceAsStream(resource);
+
+            if (stream == null)
+            {
+                return javaVersion;
+            }
+
             final ClassReader reader = new ClassReader(stream);
             final VersionVisitor visitor = new VersionVisitor();
             reader.accept(visitor, SKIP_DEBUG);
