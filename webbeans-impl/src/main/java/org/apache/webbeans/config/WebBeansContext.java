@@ -77,9 +77,9 @@ public class WebBeansContext
     private final DecoratorsManager decoratorsManager = new DecoratorsManager(this);
     private final ExtensionLoader extensionLoader = new ExtensionLoader(this);
     private final InterceptorsManager interceptorsManager = new InterceptorsManager(this);
-    private final InterceptorDecoratorProxyFactory interceptorDecoratorProxyFactory = new InterceptorDecoratorProxyFactory(this);
-    private final NormalScopeProxyFactory normalScopeProxyFactory = new NormalScopeProxyFactory(this);
-    private final SubclassProxyFactory subclassProxyFactory = new SubclassProxyFactory(this);
+    private final InterceptorDecoratorProxyFactory interceptorDecoratorProxyFactory;
+    private final NormalScopeProxyFactory normalScopeProxyFactory;
+    private final SubclassProxyFactory subclassProxyFactory;
     private final OpenWebBeansConfiguration openWebBeansConfiguration;
     private final PluginLoader pluginLoader = new PluginLoader();
     private final SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
@@ -139,6 +139,11 @@ public class WebBeansContext
         loaderService = getService(LoaderService.class);
         securityService = getService(SecurityService.class);
         applicationBoundaryService = getService(ApplicationBoundaryService.class);
+
+        interceptorDecoratorProxyFactory = new InterceptorDecoratorProxyFactory(this);
+        normalScopeProxyFactory = new NormalScopeProxyFactory(this);
+        subclassProxyFactory = new SubclassProxyFactory(this);
+
 
 
         // Allow the WebBeansContext itself to be looked up

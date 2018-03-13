@@ -78,11 +78,11 @@
         <geronimo_interceptor.version>1.0</geronimo_interceptor.version>
         <geronimo_validation.version>1.1</geronimo_validation.version>
         <tomcat6.version>6.0.35</tomcat6.version>
-        <tomcat7.version>7.0.54</tomcat7.version>
-        <openejb.version>3.1.4</openejb.version>
+        <tomcat7.version>7.0.85</tomcat7.version>
+        <openejb.version>4.7.5</openejb.version>
         <myfaces.version>1.2.9</myfaces.version>
         <myfaces2.version>2.2.3</myfaces2.version>
-        <xbean.version>4.1</xbean.version>
+        <xbean.version>4.6</xbean.version>
     </properties>
     
     <mailingLists>
@@ -584,7 +584,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.xbean</groupId>
-                <artifactId>xbean-asm5-shaded</artifactId>
+                <artifactId>xbean-asm6-shaded</artifactId>
                 <version>${xbean.version}</version>
             </dependency>
 
