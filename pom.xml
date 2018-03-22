@@ -82,7 +82,7 @@
         <openejb.version>3.1.4</openejb.version>
         <myfaces.version>1.2.9</myfaces.version>
         <myfaces2.version>2.2.3</myfaces2.version>
-        <xbean.version>4.6</xbean.version>
+        <xbean.version>4.7</xbean.version>
     </properties>
     
     <mailingLists>
