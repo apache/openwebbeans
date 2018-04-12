@@ -95,7 +95,11 @@ public class WrappedValueExpression extends ValueExpression
 
     @Override
     public boolean equals(Object arg0)
-    {        
+    {
+        if (arg0 instanceof WrappedValueExpression)
+        {
+            return valueExpression.equals(WrappedValueExpression.class.cast(arg0).valueExpression);
+        }
         return valueExpression.equals(arg0);
     }
 
