@@ -86,10 +86,10 @@ public class NormalScopedBeanInterceptorHandler implements Provider, Serializabl
         Object webbeansInstance;
 
         //Context of the bean
-        Context webbeansContext = beanManager.getContext(bean.getScope());
+        Context context = beanManager.getContext(bean.getScope());
 
         //Already saved in context?
-        webbeansInstance = webbeansContext.get(bean);
+        webbeansInstance = context.get(bean);
         if (webbeansInstance != null)
         {
             // voila, we are finished if we found an existing contextual instance
@@ -98,7 +98,7 @@ public class NormalScopedBeanInterceptorHandler implements Provider, Serializabl
 
         // finally, we create a new contextual instance
         CreationalContext cc = beanManager.createCreationalContext(bean);
-        webbeansInstance = webbeansContext.get(bean, cc);
+        webbeansInstance = context.get(bean, cc);
 
         if (webbeansInstance == null)
         {
