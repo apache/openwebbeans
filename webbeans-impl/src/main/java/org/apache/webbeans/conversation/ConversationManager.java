@@ -73,7 +73,7 @@ public class ConversationManager
         BeanManagerImpl bm = webBeansContext.getBeanManagerImpl();
         bm.addInternalBean(convBean);
 
-        // this will returned the internally wrapped ThirdPartyBean. 
+        // this will return the internally wrapped ThirdPartyBean.
         conversationStorageBean = (Bean<Set<ConversationContext>>)
                 bm.resolve(bm.getBeans(ConversationStorageBean.OWB_INTERNAL_CONVERSATION_STORAGE_BEAN_PASSIVATION_ID));
     }
