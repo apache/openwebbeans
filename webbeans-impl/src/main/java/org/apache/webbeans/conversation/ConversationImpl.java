@@ -70,9 +70,10 @@ public class ConversationImpl implements Conversation, Serializable
     private transient RuntimeException problemDuringCreation;
 
     /**
-     * This instance is under used and by which threads, Atomicinteger would be great but then contract of ContextsService but be enhanced to
+     * This instance is in use and by which threads.
+     * Atomicinteger would be great but then contract of ContextsService would need to be enhanced to
      * be compatible wih WBPhaseListeners. Using thread allow to call iUseIt() multiple times.
-     * String to be serializable.
+     * Long to be serializable.
      * TODO: serialization should be done manually to use the manager otherwise all is broken
      */
     private transient Set<Long> threadsUsingIt = new HashSet<>();

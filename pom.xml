@@ -70,7 +70,7 @@
         <geronimo_interceptor.version>1.0</geronimo_interceptor.version>
         <geronimo_validation.version>1.1</geronimo_validation.version>
         <tomcat7.version>7.0.73</tomcat7.version>
-        <myfaces.version>2.2.12</myfaces.version>
+        <myfaces.version>2.3.0</myfaces.version>
         <xbean.version>4.7</xbean.version>
         <arquillian.version>1.1.13.Final</arquillian.version>
         <cdi.tck.version>2.0.3.Final</cdi.tck.version>

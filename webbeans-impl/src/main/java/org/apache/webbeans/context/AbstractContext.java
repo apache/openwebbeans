@@ -274,6 +274,7 @@ public abstract class AbstractContext implements AlterableContext, Serializable
     throws IOException
     {
         s.writeObject(scopeType);
+        s.writeBoolean(active);
 
         // we need to repack the Contextual<T> from the componentInstanceMap into Serializable ones
         if (componentInstanceMap != null)
@@ -305,6 +306,7 @@ public abstract class AbstractContext implements AlterableContext, Serializable
     throws IOException, ClassNotFoundException
     {
         scopeType = (Class<? extends Annotation>) s.readObject();
+        active = s.readBoolean();
 
         HashMap<Contextual<?>, BeanInstanceBag<?>> serializableInstanceMap =
                 (HashMap<Contextual<?>, BeanInstanceBag<?>>) s.readObject();

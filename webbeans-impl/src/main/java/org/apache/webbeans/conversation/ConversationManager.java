@@ -36,6 +36,7 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DestroyedLiteral;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -57,7 +58,7 @@ public class ConversationManager
 
 
     private final WebBeansContext webBeansContext;
-    private final ConversationStorageBean conversationStorageBean;
+    private final Bean<Set<ConversationContext>> conversationStorageBean;
 
     /**
      * Creates new conversation manager
@@ -66,8 +67,15 @@ public class ConversationManager
     {
         this.webBeansContext = webBeansContext;
 
-        conversationStorageBean = new ConversationStorageBean(webBeansContext);
-        webBeansContext.getBeanManagerImpl().addInternalBean(conversationStorageBean);
+        // We cannot use this directly since it will change after passivation
+        ConversationStorageBean convBean = new ConversationStorageBean(webBeansContext);
+
+        BeanManagerImpl bm = webBeansContext.getBeanManagerImpl();
+        bm.addInternalBean(convBean);
+
+        // this will returned the internally wrapped ThirdPartyBean. 
+        conversationStorageBean = (Bean<Set<ConversationContext>>)
+                bm.resolve(bm.getBeans(ConversationStorageBean.OWB_INTERNAL_CONVERSATION_STORAGE_BEAN_PASSIVATION_ID));
     }
 
 
@@ -100,6 +108,7 @@ public class ConversationManager
                             conversationContext.getConversation().setProblemDuringCreation(problem);
                         }
 
+                        conversationContext.setActive(true);
                         return conversationContext;
                     }
                 }

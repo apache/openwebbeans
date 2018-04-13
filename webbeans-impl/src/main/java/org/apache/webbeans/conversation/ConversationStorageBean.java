@@ -28,7 +28,6 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,7 +40,7 @@ import org.apache.webbeans.context.ConversationContext;
  */
 public class ConversationStorageBean implements Bean<Set<ConversationContext>>, PassivationCapable, Serializable
 {
-    private static final String OWB_INTERNAL_CONVERSATION_STORAGE_BEAN_PASSIVATION_ID = "OwbInternalConversationStorageBean";
+    public static final String OWB_INTERNAL_CONVERSATION_STORAGE_BEAN_PASSIVATION_ID = "apache.openwebbeans.OwbInternalConversationStorageBean";
     private final transient WebBeansContext webBeansContext;
 
     public ConversationStorageBean()
@@ -84,7 +83,7 @@ public class ConversationStorageBean implements Bean<Set<ConversationContext>>, 
     @Override
     public Class<?> getBeanClass()
     {
-        return Map.class;
+        return Set.class;
     }
 
     @Override
@@ -114,7 +113,7 @@ public class ConversationStorageBean implements Bean<Set<ConversationContext>>, 
     @Override
     public String getName()
     {
-        return null;
+        return OWB_INTERNAL_CONVERSATION_STORAGE_BEAN_PASSIVATION_ID;
     }
 
     @Override
@@ -157,4 +156,6 @@ public class ConversationStorageBean implements Bean<Set<ConversationContext>>, 
     {
         return getId().hashCode();
     }
+
+
 }

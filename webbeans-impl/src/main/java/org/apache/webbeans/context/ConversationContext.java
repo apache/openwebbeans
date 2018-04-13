@@ -18,6 +18,9 @@
  */
 package org.apache.webbeans.context;
 
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.ConversationScoped;
@@ -63,4 +66,18 @@ public class ConversationContext extends PassivatingContext
         return conversation;
     }
 
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
+    {
+        this.conversation = (ConversationImpl) in.readObject();
+        super.readExternal(in);
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException
+    {
+        out.writeObject(conversation);
+        super.writeExternal(out);
+    }
 }
