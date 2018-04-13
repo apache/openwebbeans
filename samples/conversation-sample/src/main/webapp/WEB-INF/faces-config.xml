@@ -33,7 +33,6 @@ under the License.
     </navigation-rule>
     
          <application>
-  <view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
  </application>
     
 
