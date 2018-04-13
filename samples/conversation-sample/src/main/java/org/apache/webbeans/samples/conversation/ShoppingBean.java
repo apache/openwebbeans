@@ -22,9 +22,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.faces.component.UIData;
 import javax.inject.Inject;
@@ -42,17 +42,14 @@ public class ShoppingBean implements Serializable
 
     private List<Item> items = new ArrayList<>();
         
-    private UIData uiTable;
+    private transient UIData uiTable;
     
     
-    public ShoppingBean()
+
+    @PostConstruct
+    public void init()
     {
-        
-    }
-    
-    @Inject
-    public ShoppingBean(@New Item defaultItem)
-    {
+        Item defaultItem = new Item();
         defaultItem.setName("Default Item");
         defaultItem.setPrice(1000L);
         
@@ -62,14 +59,20 @@ public class ShoppingBean implements Serializable
     
     public String startShopping()
     {
-        this.conversation.begin();
+        if (this.conversation.isTransient())
+        {
+            this.conversation.begin();
+        }
         
         return null;
     }
     
     public String checkout()
     {
-        this.conversation.end();
+        if (!this.conversation.isTransient())
+        {
+            this.conversation.end();
+        }
         
         return null;
     }
