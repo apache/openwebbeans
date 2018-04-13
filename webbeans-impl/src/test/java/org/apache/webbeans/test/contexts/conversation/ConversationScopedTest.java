@@ -18,12 +18,21 @@
 */
 package org.apache.webbeans.test.contexts.conversation;
 
+import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.spi.Context;
 
 import org.junit.Assert;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * test for CDI Conversations
@@ -32,7 +41,7 @@ public class ConversationScopedTest extends AbstractUnitTest
 {
 
     @Test
-    public void testTransientConversation()
+    public void testTransientConversation() throws Exception
     {
         try
         {
@@ -41,9 +50,13 @@ public class ConversationScopedTest extends AbstractUnitTest
 
             ConversationScopedBean instance = getInstance(ConversationScopedBean.class);
             instance.setValue("a");
+            instance.begin();
+            ensureSerialisableContext();
 
             restartContext(RequestScoped.class);
 
+
+            instance.end();
             Assert.assertNull(instance.getValue());
 
         }
@@ -55,7 +68,7 @@ public class ConversationScopedTest extends AbstractUnitTest
 
 
     @Test
-    public void testConversationEvents()
+    public void testConversationEvents() throws Exception
     {
         try
         {
@@ -70,6 +83,8 @@ public class ConversationScopedTest extends AbstractUnitTest
 
             Assert.assertTrue(ConversationScopedInitBean.gotStarted);
 
+            ensureSerialisableContext();
+
             shutDownContainer();
 
             Assert.assertTrue(EndConversationObserver.endConversationCalled);
@@ -78,6 +93,20 @@ public class ConversationScopedTest extends AbstractUnitTest
         {
             System.clearProperty(OpenWebBeansConfiguration.APPLICATION_SUPPORTS_CONVERSATION);
         }
+    }
+
+    private void ensureSerialisableContext() throws IOException, ClassNotFoundException
+    {
+        Context context = getBeanManager().getContext(ConversationScoped.class);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(context);
+        byte[] ba = baos.toByteArray();
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(ba);
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        Context newContext =  (Context) ois.readObject();
+        Assert.assertNotNull(newContext);
     }
 
 

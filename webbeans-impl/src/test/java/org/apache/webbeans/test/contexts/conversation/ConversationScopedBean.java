@@ -44,4 +44,20 @@ public class ConversationScopedBean implements Serializable
     {
         return conversation;
     }
+
+    public void begin()
+    {
+        if (conversation.isTransient())
+        {
+            conversation.begin();
+        }
+    }
+
+    public void end()
+    {
+        if (!conversation.isTransient())
+        {
+            conversation.end();
+        }
+    }
 }
