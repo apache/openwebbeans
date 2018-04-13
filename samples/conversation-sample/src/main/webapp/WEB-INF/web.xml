@@ -19,14 +19,10 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
     version="2.5">
 
-    <context-param>
-        <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
-        <param-value>.xhtml</param-value>
-    </context-param>
-
     <listener>
         <listener-class>
-            org.apache.webbeans.servlet.WebBeansConfigurationListener</listener-class>
+            org.apache.webbeans.servlet.WebBeansConfigurationListener
+        </listener-class>
     </listener>
 
     <servlet>
@@ -37,7 +33,7 @@
 
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
-        <url-pattern>*.jsf</url-pattern>
+        <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
 
 </web-app>
