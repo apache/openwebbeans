@@ -326,7 +326,13 @@ public class InterceptorResolutionService
     private <T> SelfInterceptorBean<T> resolveSelfInterceptorBean(AnnotatedType<T> annotatedType)
     {
         BeanAttributesImpl<T> beanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
-        SelfInterceptorBeanBuilder<T>sibb = new SelfInterceptorBeanBuilder<T>(webBeansContext, annotatedType, beanAttributes);
+        if (beanAttributes == null)
+        {
+            // might happen if a proxying rule defines that this is not a valid bean type.
+            return null;
+        }
+
+        SelfInterceptorBeanBuilder<T> sibb = new SelfInterceptorBeanBuilder<>(webBeansContext, annotatedType, beanAttributes);
         sibb.defineSelfInterceptorRules();
         if (!sibb.isInterceptorEnabled())
         {
