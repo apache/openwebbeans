@@ -389,8 +389,19 @@ public abstract class AbstractOwbBean<T>
         }
         
         builder.append("]");
+
+        addToStringInfo(builder);
         
         return builder.toString();
+    }
+
+    /**
+     * This method can be used to add additional info about the Bean
+     * @param builder
+     */
+    protected void addToStringInfo(StringBuilder builder)
+    {
+        // by default we do nothing
     }
 
     /**
