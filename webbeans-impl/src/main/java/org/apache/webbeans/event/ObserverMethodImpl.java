@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -54,7 +53,6 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.OwbNormalScopeProxy;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
@@ -87,7 +85,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     private static final Logger logger = WebBeansLoggerFacade.getLogger(ObserverMethodImpl.class);
 
     /**Observer owner bean that defines observer method*/
-    private final AbstractOwbBean<?> bean;
+    private final AbstractOwbBean<?> ownerBean;
 
     /**Using existing bean instance or not*/
     private final boolean ifExist;
@@ -125,12 +123,17 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
 
     /**
      * used if the qualifiers and event type are already known, e.g. from the XML.
-     * @param bean
+     * @param ownerBean
      * @param annotatedObserverMethod
      */
-    public ObserverMethodImpl(AbstractOwbBean<?> bean, AnnotatedMethod<T> annotatedObserverMethod, AnnotatedParameter<T> annotatedObservesParameter)
+    public ObserverMethodImpl(AbstractOwbBean<?> ownerBean, AnnotatedMethod<T> annotatedObserverMethod, AnnotatedParameter<T> annotatedObservesParameter)
     {
-        this.bean = bean;
+        this(ownerBean, annotatedObserverMethod, annotatedObservesParameter, true);
+    }
+
+    protected ObserverMethodImpl(AbstractOwbBean<?> ownerBean, AnnotatedMethod<T> annotatedObserverMethod, AnnotatedParameter<T> annotatedObservesParameter, boolean fireEvent)
+    {
+        this.ownerBean = ownerBean;
         this.annotatedObservesParameter = annotatedObservesParameter;
         this.annotatedObserverMethod = annotatedObserverMethod;
         observedEventType = annotatedObservesParameter.getBaseType();
@@ -140,16 +143,16 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         observedQualifiers = new HashSet<Annotation>();
         for (Annotation annotation: annotatedObservesParameter.getAnnotations())
         {
-            if (bean.getWebBeansContext().getAnnotationManager().isQualifierAnnotation(annotation.annotationType()))
+            if (ownerBean.getWebBeansContext().getAnnotationManager().isQualifierAnnotation(annotation.annotationType()))
             {
                 observedQualifiers.add(annotation);
             }
         }
         
         final OpenWebBeansEjbPlugin ejbPlugin = getWebBeansContext().getPluginLoader().getEjbPlugin();
-        if (ejbPlugin != null && ejbPlugin.isNewSessionBean(bean.getBeanClass()))
+        if (ejbPlugin != null && ejbPlugin.isNewSessionBean(ownerBean.getBeanClass()))
         {
-            view = ejbPlugin.resolveViewMethod(bean , annotatedObserverMethod.getJavaMember());
+            view = ejbPlugin.resolveViewMethod(ownerBean , annotatedObserverMethod.getJavaMember());
         }
         else
         {
@@ -161,9 +164,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         {
             if (!parameter.isAnnotationPresent(Observes.class))
             {
-                Collection<Annotation> qualifierAnnots = getWebBeansContext().getAnnotationManager().getQualifierAnnotations(parameter.getAnnotations());
-
-                injectionPoints.add(InjectionPointFactory.getPartialInjectionPoint(bean, parameter, qualifierAnnots));
+                injectionPoints.add(getWebBeansContext().getInjectionPointFactory().buildInjectionPoint(ownerBean, parameter, fireEvent));
             }
         }
 
@@ -204,8 +205,8 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     @SuppressWarnings("unchecked")
     public void notify(T event, EventMetadata metadata)
     {
-        AbstractOwbBean<Object> component = (AbstractOwbBean<Object>) bean;
-        if (!bean.isEnabled())
+        AbstractOwbBean<Object> component = (AbstractOwbBean<Object>) ownerBean;
+        if (!ownerBean.isEnabled())
         {
             return;
         }
@@ -214,7 +215,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         
         List<ObserverParams> methodArgsMap = getMethodArguments(event, metadata);
         
-        BeanManagerImpl manager = bean.getWebBeansContext().getBeanManagerImpl();
+        BeanManagerImpl manager = ownerBean.getWebBeansContext().getBeanManagerImpl();
         CreationalContextImpl<Object> creationalContext = manager.createCreationalContext(component);
         if (metadata != null)
         {
@@ -258,7 +259,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
                         return;
                     }
                     // this may happen if we try to e.g. send an event to a @ConversationScoped bean from a ServletListener
-                    logger.log(Level.INFO, OWBLogConst.INFO_0010, bean);
+                    logger.log(Level.INFO, OWBLogConst.INFO_0010, ownerBean);
                     return;
                 }
                 
@@ -296,7 +297,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
                 {
                     if (!view.isAccessible())
                     {
-                        bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(view, true);
+                        ownerBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(view, true);
                     }
 
                     if (Modifier.isPrivate(view.getModifiers()))
@@ -361,7 +362,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
             param.instance = event;
             list.add(param);
         }
-        final WebBeansContext webBeansContext = bean.getWebBeansContext();
+        final WebBeansContext webBeansContext = ownerBean.getWebBeansContext();
         final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
 
         for (InjectionPoint injectionPoint: injectionPoints)
@@ -411,7 +412,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
     @SuppressWarnings("unchecked")
     public Class<?> getBeanClass()
     {
-        return bean.getBeanClass();
+        return ownerBean.getBeanClass();
     }
 
     /** 
@@ -454,7 +455,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
 
     protected WebBeansContext getWebBeansContext()
     {
-        return bean.getWebBeansContext();
+        return ownerBean.getWebBeansContext();
     }
     
     /**
