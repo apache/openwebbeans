@@ -151,15 +151,17 @@ public class AlternativesManager
         {
             return true;
         }
-        
-        for(Class<? extends Annotation> ann : stereotypes)
+
+        if (stereotypes != null && !stereotypes.isEmpty())
         {
-            if(configuredStereotypeAlternatives.contains(ann))
+            for (Class<? extends Annotation> ann : stereotypes)
             {
-                return true;
+                if (configuredStereotypeAlternatives.contains(ann))
+                {
+                    return true;
+                }
             }
         }
-
 
         return false;
     }

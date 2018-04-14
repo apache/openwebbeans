@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.portable.events.discovery;
 
+import javax.annotation.Priority;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
@@ -78,6 +79,18 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         if (started)
         {
             throw new IllegalStateException("Don't call AfterBeanDiscovery.addBean(bean) after the event is fired");
+        }
+
+        if (bean.isAlternative() && !webBeansContext.getAlternativesManager().isAlternative(bean)
+            && !bean.getBeanClass().isAnnotationPresent(Priority.class))
+        {
+            // if the given Bean is an alternative, then at least one of the following
+            // conditions must be met:
+            // * Alternative is enabled via beans.xml
+            // * implements Prioritized
+            // * beanClass has a @Priority annotation
+            // , otherwise the bean is not active
+            return;
         }
 
         AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(bean.getBeanClass());
