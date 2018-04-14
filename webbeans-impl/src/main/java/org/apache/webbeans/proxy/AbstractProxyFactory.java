@@ -18,7 +18,9 @@
  */
 package org.apache.webbeans.proxy;
 
+import static org.apache.xbean.asm6.ClassReader.SKIP_CODE;
 import static org.apache.xbean.asm6.ClassReader.SKIP_DEBUG;
+import static org.apache.xbean.asm6.ClassReader.SKIP_FRAMES;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -342,7 +344,7 @@ public abstract class AbstractProxyFactory
             }
             final ClassReader reader = new ClassReader(stream);
             final VersionVisitor visitor = new VersionVisitor();
-            reader.accept(visitor, SKIP_DEBUG);
+            reader.accept(visitor, SKIP_DEBUG + SKIP_CODE + SKIP_FRAMES);
             if (visitor.version != 0)
             {
                 return visitor.version;
@@ -900,7 +902,6 @@ public abstract class AbstractProxyFactory
         public void visit(final int version, final int access, final String name,
                           final String signature, final String superName, final String[] interfaces)
         {
-            super.visit(version, access, name, signature, superName, interfaces);
             this.version = version;
         }
     }
