@@ -19,7 +19,6 @@
 package org.apache.webbeans.test.unittests.definition;
 
 import org.apache.webbeans.test.AbstractUnitTest;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.lang.annotation.ElementType;
@@ -27,14 +26,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import static org.junit.Assert.assertNull;
+
 public class NonStaticInnerClassTest extends AbstractUnitTest
 {
 
     @Test
-    @Ignore
     public void testNonStaticInnerClassShouldBeIgnored()
     {
         startContainer(InnerClass.class);
+        assertNull(getBean(InnerClass.class));
     }
 
 

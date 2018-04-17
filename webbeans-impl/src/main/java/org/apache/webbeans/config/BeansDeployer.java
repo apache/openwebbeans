@@ -1295,6 +1295,17 @@ public class BeansDeployer
         final Class<?> beanClass = type.getJavaClass();
         final WebBeansUtil webBeansUtil = webBeansContext.getWebBeansUtil();
 
+        try
+        {
+            webBeansUtil.checkManagedBean(beanClass);
+        }
+        catch (final DefinitionException e)
+        {
+            logger.log(Level.FINE, "skipped deployment of: " + beanClass.getName() + " reason: " + e.getMessage());
+            logger.log(Level.FINER, "skipped deployment of: " + beanClass.getName() + " details: ", e);
+            return false;
+        }
+
         // done separately to be able to swallow the logging when not relevant and avoid to pollute logs
         try
         {
@@ -1308,16 +1319,6 @@ public class BeansDeployer
             return false;
         }
 
-        try
-        {
-            webBeansUtil.checkManagedBean(beanClass);
-        }
-        catch (final DefinitionException e)
-        {
-            logger.log(Level.FINE, "skipped deployment of: " + beanClass.getName() + " reason: " + e.getMessage());
-            logger.log(Level.FINER, "skipped deployment of: " + beanClass.getName() + " details: ", e);
-            return false;
-        }
         //we are not allowed to catch possible exceptions thrown by the following method
         webBeansUtil.checkManagedBeanCondition(beanClass);
         return true;
