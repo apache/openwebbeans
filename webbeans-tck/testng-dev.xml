@@ -18,7 +18,11 @@
 <suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue">
   <test name="JSR-346 TCK">
     <classes>
-          <class name="org.jboss.cdi.tck.tests.lookup.dynamic.DynamicLookupTest" />
+        <class name="org.jboss.cdi.tck.tests.lookup.dynamic.DynamicLookupTest">
+          <methods>
+            <include name="testNewBean"/>
+          </methods>
+        </class>
       <!--
       <class name="org.jboss.cdi.tck.tests.event.parameterized.ParameterizedEventTest" />
       <class name="org.jboss.cdi.tck.tests.event.fires.FireEventTest" />
