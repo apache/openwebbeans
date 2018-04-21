@@ -541,7 +541,9 @@ public final class WebBeansUtil
      */
     public PrincipalBean getPrincipalBean()
     {
-        return new PrincipalBean(webBeansContext);
+        return new PrincipalBean(webBeansContext,
+                Boolean.parseBoolean(webBeansContext.getOpenWebBeansConfiguration()
+                        .getProperty("org.apache.webbeans.component.PrincipalBean.proxy", "true")));
     }
 
     /**
