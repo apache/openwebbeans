@@ -89,7 +89,8 @@ public class InjectionResolver
     /**
      * This Map contains all resolved beans via it's type and qualifiers.
      * If a bean have resolved as not existing, the entry will contain <code>null</code> as value.
-     * The Long key is a hashCode, see {@link BeanCacheKey#BeanCacheKey(boolean, Type, String, Annotation...)}
+     * The Long key is a hashCode, see
+     * {@link BeanCacheKey#BeanCacheKey(boolean, Type, String, java.util.function.Function, Annotation...)}
      */
     private Map<BeanCacheKey, Set<Bean<?>>> resolvedBeansByType = new ConcurrentHashMap<>();
 
@@ -458,7 +459,7 @@ public class InjectionResolver
             currentQualifier = true;
         }
 
-        Set<Bean<?>> resolvedComponents = null;
+        Set<Bean<?>> resolvedComponents;
         BeanCacheKey cacheKey = null;
 
         if (!startup)
@@ -466,7 +467,7 @@ public class InjectionResolver
             // we only cache and validate once the set of Beans is final, otherwise we would cache crap
             validateInjectionPointType(injectionPointType);
 
-            cacheKey = new BeanCacheKey(isDelegate, injectionPointType, bdaBeansXMLFilePath, qualifiers);
+            cacheKey = new BeanCacheKey(isDelegate, injectionPointType, bdaBeansXMLFilePath, this::findQualifierModel, qualifiers);
 
             resolvedComponents = resolvedBeansByType.get(cacheKey);
             if (resolvedComponents != null)
@@ -475,10 +476,7 @@ public class InjectionResolver
             }
         }
 
-        if (resolvedComponents  == null)
-        {
-            resolvedComponents = new HashSet<>();
-        }
+        resolvedComponents = new HashSet<>();
 
         boolean returnAll = injectionPointType.equals(Object.class) && currentQualifier;
 
@@ -809,7 +807,7 @@ public class InjectionResolver
                     Annotation qualifier = itQualifiers.next();
                     if (annot.annotationType().equals(qualifier.annotationType()))
                     {
-                        AnnotatedType<?> at = webBeansContext.getBeanManagerImpl().getAdditionalAnnotatedTypeQualifiers().get(qualifier.annotationType());
+                        AnnotatedType<?> at = findQualifierModel(qualifier.annotationType());
                         if (at == null)
                         {
                             if (AnnotationUtil.isCdiAnnotationEqual(qualifier, annot))
@@ -836,5 +834,10 @@ public class InjectionResolver
         }
 
         return result;
+    }
+
+    private AnnotatedType<? extends Annotation> findQualifierModel(final Class<?> qualifier)
+    {
+        return webBeansContext.getBeanManagerImpl().getAdditionalAnnotatedTypeQualifiers().get(qualifier);
     }
 }

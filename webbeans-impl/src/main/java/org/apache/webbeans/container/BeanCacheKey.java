@@ -21,6 +21,7 @@ package org.apache.webbeans.container;
 import org.apache.webbeans.annotation.EmptyAnnotationLiteral;
 import org.apache.webbeans.util.AnnotationUtil;
 
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.util.Nonbinding;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -28,22 +29,30 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public final class BeanCacheKey
 {
+    private static final Comparator<Annotation> ANNOTATION_COMPARATOR = new AnnotationComparator();
+
     private final boolean isDelegate;
     private final Type type;
     private final String path;
     private final Annotation qualifier;
     private final Annotation qualifiers[];
     private final int hashCode;
-    private static final Comparator<Annotation> ANNOTATION_COMPARATOR = new AnnotationComparator();
+    private volatile LazyAnnotatedTypes lazyAnnotatedTypes; // only needed for the "main" key
+    private final Function<Class<?>, AnnotatedType<?>> lazyAtLoader;
 
-    public BeanCacheKey(boolean isDelegate, Type type, String path, Annotation... qualifiers)
+    public BeanCacheKey(boolean isDelegate, Type type, String path,
+                        Function<Class<?>, AnnotatedType<?>> lazyAtLoader,
+                        Annotation... qualifiers)
     {
         this.isDelegate = isDelegate;
         this.type = type;
         this.path = path;
+        this.lazyAtLoader = lazyAtLoader;
         int length = qualifiers != null ? qualifiers.length : 0;
         if (length == 0)
         {
@@ -90,20 +99,43 @@ public final class BeanCacheKey
         {
             return false;
         }
-        if (qualifier != null && cacheKey.qualifier != null ? !qualifierEquals(qualifier, cacheKey.qualifier) : false)
+        if (qualifier != null && cacheKey.qualifier != null)
         {
-            return false;
+            ensureQualifierAtAreLoaded();
+            if (!qualifierEquals(lazyAnnotatedTypes.qualifierAt, qualifier, cacheKey.qualifier))
+            {
+                return false;
+            }
         }
         if (!qualifierArrayEquals(qualifiers, cacheKey.qualifiers))
         {
             return false;
         }
-        if (path != null ? !path.equals(cacheKey.path) : cacheKey.path != null)
-        {
-            return false;
-        }
+        return path != null ? path.equals(cacheKey.path) : cacheKey.path == null;
+    }
 
-        return true;
+    private void ensureQualifierAtAreLoaded()
+    {
+        if (lazyAnnotatedTypes == null)
+        {
+            synchronized (this)
+            {
+                if (lazyAnnotatedTypes == null)
+                {
+                    if (qualifier != null)
+                    {
+                        lazyAnnotatedTypes = new LazyAnnotatedTypes(lazyAtLoader.apply(qualifier.annotationType()), null);
+                    }
+                    else
+                    {
+                        lazyAnnotatedTypes = new LazyAnnotatedTypes(null, Stream.of(qualifiers)
+                                .map(Annotation::annotationType)
+                                .map(lazyAtLoader)
+                                .toArray(AnnotatedType[]::new));
+                    }
+                }
+            }
+        }
     }
 
     private boolean qualifierArrayEquals(Annotation[] qualifiers1, Annotation[] qualifiers2)
@@ -120,11 +152,12 @@ public final class BeanCacheKey
         {
             return false;
         }
+        ensureQualifierAtAreLoaded();
         for (int i = 0; i < qualifiers1.length; i++)
         {
             Annotation a1 = qualifiers1[i];
             Annotation a2 = qualifiers2[i];
-            if (a1 == null ? a2 != null : !qualifierEquals(a1, a2))
+            if (a1 == null ? a2 != null : !qualifierEquals(lazyAnnotatedTypes.qualifierAts[i], a1, a2))
             {
                 return false;
             }
@@ -193,9 +226,13 @@ public final class BeanCacheKey
     /**
      * Implements the equals() method for qualifiers, which ignores {@link Nonbinding} members.
      */
-    private boolean qualifierEquals(Annotation qualifier1, Annotation qualifier2)
+    private boolean qualifierEquals(AnnotatedType<?> at, Annotation qualifier1, Annotation qualifier2)
     {
-        return ANNOTATION_COMPARATOR.compare(qualifier1, qualifier2) == 0;
+        if (at == null)
+        {
+            return AnnotationUtil.isCdiAnnotationEqual(qualifier1, qualifier2);
+        }
+        return AnnotationUtil.isCdiAnnotationEqual(at, qualifier1, qualifier2);
     }
 
 
@@ -348,6 +385,19 @@ public final class BeanCacheKey
                     }
                 }
             }
+        }
+    }
+
+    private static final class LazyAnnotatedTypes
+    {
+        private final AnnotatedType<?> qualifierAt;
+        private final AnnotatedType<?>[] qualifierAts;
+
+        private LazyAnnotatedTypes(final AnnotatedType<?> qualifierAt,
+                                   final AnnotatedType<?>[] qualifierAts)
+        {
+            this.qualifierAt = qualifierAt;
+            this.qualifierAts = qualifierAts;
         }
     }
 }
