@@ -33,6 +33,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
@@ -50,7 +51,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     /**
      * The injection point objects to be injected into injection points of type InjectionPoint
      */
-    private transient Stack<InjectionPoint> injectionPoints;
+    private transient LinkedList<InjectionPoint> injectionPoints;
     
     /**
      * The EventMetadata objects to be injected into injection points of type EventMetadata
@@ -128,7 +129,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     {
         if (injectionPoints == null)
         {
-            injectionPoints = new Stack<>();
+            injectionPoints = new LinkedList<>();
         }
         injectionPoints.push(injectionPoint);
     }
