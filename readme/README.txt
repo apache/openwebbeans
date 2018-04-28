@@ -1,12 +1,12 @@
 -------------------------------
-Apache OpenWebBeans 1.7.4
+Apache OpenWebBeans 1.7.5
 -------------------------------
 Welcome!
 
 Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.7.4 release of Apache OpenWebBeans.
+This document is based on the 1.7.5 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -20,10 +20,10 @@ JSR-299 CDI-1.0.
 Our project's web page can be found at:
 http://openwebbeans.apache.org
 
-
+For the CDI-2.0 version please use Apache OpenWebBeans-2.x
 
 --------------------------------
-OpenWebBeans 1.7.4 Release Features
+OpenWebBeans 1.7.5 Release Features
 --------------------------------
 
 - The 1.7.4 release supports the following features
@@ -60,6 +60,32 @@ only effective for this very bean archive but for the whole BeanManager in contr
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.7.5
+-------------------------------------------
+Bug
+
+    [OWB-1197] - OwbSWClassLoader creates wrong URL
+    [OWB-1205] - We should not fire ProcessInjectionPoint for CDI Extension Observers
+    [OWB-1209] - Custom bean with isAlternative()=true should not be automatically enabled
+    [OWB-1213] - producer of URI or other classes with private ct blow up with a NPE
+    [OWB-1222] - subclass proxy fails with Java9
+
+Improvement
+
+    [OWB-1218] - improve toString of producer beans to also log owner class
+
+Task
+
+    [OWB-1239] - update owb-1.7.x to java7
+    [OWB-1240] - Non-static inner classes should not get picked up as CDI Beans
+
+Dependency upgrade
+
+    [OWB-1236] - Update to XBean Asm 6 Shaded 4.7
+    [OWB-1237] - upgrade to xbean-4.8
 
 
 -------------------------------------------
