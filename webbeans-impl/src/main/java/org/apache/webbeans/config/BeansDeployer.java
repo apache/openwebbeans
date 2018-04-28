@@ -124,7 +124,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -1119,7 +1118,7 @@ public class BeansDeployer
 
         if (beans != null && beans.size() > 0)
         {
-            Stack<String> beanNames = new Stack<>();
+            LinkedList<String> beanNames = new LinkedList<>();
             for (Bean<?> bean : beans)
             {
                 try
@@ -1220,7 +1219,7 @@ public class BeansDeployer
         }
     }
 
-    private void validateBeanNames(Stack<String> beanNames)
+    private void validateBeanNames(LinkedList<String> beanNames)
     {
         if(beanNames.size() > 0)
         {   
