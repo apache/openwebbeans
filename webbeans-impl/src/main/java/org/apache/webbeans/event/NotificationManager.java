@@ -688,7 +688,10 @@ public final class NotificationManager
         }
 
         // new in CDI-2.0: sort observers
-        observerMethods.sort(Comparator.comparingInt(ObserverMethod::getPriority));
+        if (observerMethods.size() > 1)
+        {
+            observerMethods.sort(Comparator.comparingInt(ObserverMethod::getPriority));
+        }
 
         List<CompletableFuture<Void>> completableFutures = async ? new ArrayList<>() : null;
 
