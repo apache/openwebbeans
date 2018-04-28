@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 /** {@inheritDoc} */
 public class CreationalContextImpl<T> implements CreationalContext<T>, Serializable
@@ -56,7 +55,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     /**
      * The EventMetadata objects to be injected into injection points of type EventMetadata
      */
-    private transient Stack<EventMetadata> eventMetadata;
+    private transient LinkedList<EventMetadata> eventMetadata;
 
     /**
      * Contextual bean dependent instances
@@ -156,7 +155,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     {
         if (eventMetadata == null)
         {
-            eventMetadata = new Stack<>();
+            eventMetadata = new LinkedList<>();
         }
         eventMetadata.push(metadata);
     }
