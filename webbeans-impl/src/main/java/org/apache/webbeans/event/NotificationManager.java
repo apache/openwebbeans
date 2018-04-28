@@ -676,14 +676,18 @@ public final class NotificationManager
 
         LinkedList<ObserverMethod<? super Object>> observerMethods = new LinkedList<>(resolveObservers(event, metadata, isLifecycleEvent));
 
-        // filter for all async or all synchronous observermethods
-        // oldschool and not Streams, because of performance and avoiding tons of temporary objects
-        Iterator<ObserverMethod<? super Object>> observerMethodIterator = observerMethods.iterator();
-        while (observerMethodIterator.hasNext())
+        // async doesn't apply to Extension lifecycle events
+        if (!isLifecycleEvent)
         {
-            if (async != observerMethodIterator.next().isAsync())
+            // filter for all async or all synchronous observermethods
+            // oldschool and not Streams, because of performance and avoiding tons of temporary objects
+            Iterator<ObserverMethod<? super Object>> observerMethodIterator = observerMethods.iterator();
+            while (observerMethodIterator.hasNext())
             {
-                observerMethodIterator.remove();
+                if (async != observerMethodIterator.next().isAsync())
+                {
+                    observerMethodIterator.remove();
+                }
             }
         }
 
