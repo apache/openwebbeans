@@ -1,5 +1,5 @@
 -------------------------------
-Apache OpenWebBeans 2.0.4
+Apache OpenWebBeans 2.0.5
 -------------------------------
 Welcome!
 
@@ -7,7 +7,7 @@ Thanks for downloading and using OpenWebBeans.
 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 2.0.4 release of Apache OpenWebBeans.
+This document is based on the 2.0.5 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -23,10 +23,10 @@ https://openwebbeans.apache.org
 
 
 --------------------------------
-OpenWebBeans 2.0.4 Release Features
+OpenWebBeans 2.0.5 Release Features
 --------------------------------
 
-- The 2.0.4 release supports the following features
+- The 2.0.5 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -60,6 +60,36 @@ only effective for this very bean archive but for the whole BeanManager in contr
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.5
+-------------------------------------------
+
+Bug
+
+    [OWB-1233] - WrappedValueExpression.equals(Object arg0) always false if arg0 is an instance of WrappedValueExpression
+    [OWB-1235] - ConversationScope destroyed upon session serialization/deserialization
+    [OWB-1241] - Bean cache ignores qualifier model defined through an AnnotatedType
+
+New Feature
+
+    [OWB-1242] - Add a configuration option to not proxy Principal
+
+Improvement
+
+    [OWB-1232] - replace warning about interceptors
+    [OWB-1238] - Our VersionVisitor shouldn't visit code
+    [OWB-1243] - improve event performance
+
+Task
+
+    [OWB-1240] - Non-static inner classes should not get picked up as CDI Beans
+
+Dependency upgrade
+
+    [OWB-1236] - Update to XBean Asm 6 Shaded 4.7
+    [OWB-1237] - upgrade to xbean-4.8
 
 
 -------------------------------------------
