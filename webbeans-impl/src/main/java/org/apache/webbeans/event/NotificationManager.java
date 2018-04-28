@@ -140,6 +140,17 @@ public final class NotificationManager
             ProcessSyntheticAnnotatedType.class,
         }));
 
+    // this is actually faster than a lambda Comparator.comparingInt(ObserverMethod::getPriority)
+    private Comparator<? super ObserverMethod<? super Object>> observerMethodComparator
+        = new Comparator<ObserverMethod<? super Object>>()
+            {
+                @Override
+                public int compare(ObserverMethod<? super Object> o1, ObserverMethod<? super Object> o2)
+                {
+                    return Integer.compare(o1.getPriority(), o2.getPriority());
+                }
+            };
+
     public NotificationManager(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
@@ -694,7 +705,7 @@ public final class NotificationManager
         // new in CDI-2.0: sort observers
         if (observerMethods.size() > 1)
         {
-            observerMethods.sort(Comparator.comparingInt(ObserverMethod::getPriority));
+            observerMethods.sort(observerMethodComparator);
         }
 
         List<CompletableFuture<Void>> completableFutures = async ? new ArrayList<>() : null;

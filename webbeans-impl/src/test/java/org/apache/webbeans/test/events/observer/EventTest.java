@@ -157,9 +157,7 @@ public class EventTest extends AbstractUnitTest {
     @Ignore("only for manual performance testing and debugging")
     public void testEventPerformance()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(Painter.class);
-        startContainer(beanClasses, null);
+        startContainer(Painter.class, Litographer.class);
 
         final Orange orange = new Orange();
 
