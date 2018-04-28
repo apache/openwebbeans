@@ -220,10 +220,10 @@ public final class NotificationManager
     }
 
 
-    public <T> Set<ObserverMethod<? super T>> resolveObservers(T event, EventMetadataImpl metadata, boolean isLifecycleEvent)
+    public <T> Collection<ObserverMethod<? super T>> resolveObservers(T event, EventMetadataImpl metadata, boolean isLifecycleEvent)
     {
         Type eventType = metadata.validatedType();
-        Set<ObserverMethod<? super T>> observersMethods = filterByType(event, eventType, isLifecycleEvent);
+        Collection<ObserverMethod<? super T>> observersMethods = filterByType(event, eventType, isLifecycleEvent);
 
         observersMethods = filterByQualifiers(observersMethods, metadata.getQualifiers());
 
@@ -242,9 +242,9 @@ public final class NotificationManager
         return observersMethods;
     }
 
-    private <T> Set<ObserverMethod<? super T>> filterByWithAnnotations(Set<ObserverMethod<? super T>> observersMethods, AnnotatedType annotatedType)
+    private <T> Collection<ObserverMethod<? super T>> filterByWithAnnotations(Collection<ObserverMethod<? super T>> observersMethods, AnnotatedType annotatedType)
     {
-        Set<ObserverMethod<? super T>> observerMethodsWithAnnotations = new HashSet<>();
+        List<ObserverMethod<? super T>> observerMethodsWithAnnotations = new ArrayList<>();
 
         for (ObserverMethod<? super T> observerMethod : observersMethods)
         {
@@ -618,9 +618,9 @@ public final class NotificationManager
      * filter out all {@code ObserverMethod}s which do not fit the given
      * qualifiers.
      */
-    private <T> Set<ObserverMethod<? super T>> filterByQualifiers(Set<ObserverMethod<? super T>> observers, Set<Annotation> eventQualifiers)
+    private <T> Collection<ObserverMethod<? super T>> filterByQualifiers(Collection<ObserverMethod<? super T>> observers, Set<Annotation> eventQualifiers)
     {
-        Set<ObserverMethod<? super T>> matching = new HashSet<>();
+        List<ObserverMethod<? super T>> matching = new ArrayList<>(observers.size());
 
         search: for (ObserverMethod<? super T> ob : observers)
         {

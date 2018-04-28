@@ -20,9 +20,12 @@ package org.apache.webbeans.test.events.observer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class EventTest extends AbstractUnitTest {
@@ -148,6 +151,33 @@ public class EventTest extends AbstractUnitTest {
         Assert.assertEquals("Superclass", testEvent.getCalledObservers().iterator().next());
 
         shutDownContainer();
-
     }
+
+    @Test
+    @Ignore("only for manual performance testing and debugging")
+    public void testEventPerformance()
+    {
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Painter.class);
+        startContainer(beanClasses, null);
+
+        final Orange orange = new Orange();
+
+        Logger.getLogger(EventTest.class.getName()).info("Starting performance test");
+
+        long start = System.nanoTime();
+        for (int i = 0; i < 5_000_000; i++)
+        {
+            getBeanManager().fireEvent(orange);
+        }
+
+        long end = System.nanoTime();
+
+        Logger.getLogger(EventTest.class.getName())
+            .info("firing Events took " + TimeUnit.NANOSECONDS.toMillis(end - start));
+
+        shutDownContainer();
+    }
+
+
 }

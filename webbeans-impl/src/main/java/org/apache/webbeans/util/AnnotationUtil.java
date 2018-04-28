@@ -213,6 +213,11 @@ public final class AnnotationUtil
             return false;
         }
 
+        if (annotation1 == annotation2)
+        {
+            return true;
+        }
+
         Class<? extends Annotation> qualifier1AnnotationType
                 = annotation1.annotationType();
 
