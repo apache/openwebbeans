@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.7.5</version>
+        <version>1.7.6-SNAPSHOT</version>
     </parent>
     <groupId>org.apache.openwebbeans.arquillian</groupId>
     <artifactId>owb-arquillian-parent</artifactId>

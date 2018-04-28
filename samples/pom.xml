@@ -22,7 +22,7 @@ under the License.
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.7.5</version>
+        <version>1.7.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
