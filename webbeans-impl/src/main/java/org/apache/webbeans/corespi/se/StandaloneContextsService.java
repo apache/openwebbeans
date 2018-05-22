@@ -23,58 +23,31 @@ import javax.enterprise.context.spi.Context;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.SingletonContext;
 
-
-public class DefaultContextsService extends BaseSeContextsService
+public class StandaloneContextsService extends BaseSeContextsService
 {
-    private static ThreadLocal<SingletonContext> singletonContext;
+    private SingletonContext singletonContext;
 
-    static
-    {
-        singletonContext = new ThreadLocal<>();
-    }
-
-    public DefaultContextsService(final WebBeansContext webBeansContext)
+    public StandaloneContextsService(final WebBeansContext webBeansContext)
     {
         super(webBeansContext);
     }
 
     @Override
-    protected void destroyGlobalContexts()
+    protected void createSingletonContext()
     {
-        SingletonContext singletonCtx = singletonContext.get();
-        if (singletonCtx != null)
-        {
-            singletonCtx.destroy();
-            singletonContext.set(null);
-            singletonContext.remove();
-        }
-        super.destroyGlobalContexts();
+        singletonContext = new SingletonContext();
+        singletonContext.setActive(true);
     }
 
     @Override
     protected Context getCurrentSingletonContext()
-    {        
-        return singletonContext.get();
-    }
-
-    @Override
-    protected void createSingletonContext()
     {
-        final SingletonContext ctx = new SingletonContext();
-        ctx.setActive(true);
-        
-        singletonContext.set(ctx);
+        return singletonContext;
     }
 
     @Override
     protected void destroySingletonContext()
     {
-        if(singletonContext.get() != null)
-        {
-            singletonContext.get().destroy();   
-        }
-
-        singletonContext.set(null);
-        singletonContext.remove();
+        singletonContext.destroy();
     }
 }
