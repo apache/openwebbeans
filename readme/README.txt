@@ -63,6 +63,14 @@ for the whole Application.
 
 
 -------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.6
+-------------------------------------------
+
+Bug
+    [OWB-1245] - Add a StandaloneContextsService where singleton context is not bound to a thread local for standalone case
+
+
+-------------------------------------------
 Release Notes - OpenWebBeans - Version 2.0.5
 -------------------------------------------
 
