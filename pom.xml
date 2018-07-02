@@ -71,7 +71,7 @@
         <geronimo_validation.version>1.1</geronimo_validation.version>
         <tomcat7.version>7.0.73</tomcat7.version>
         <myfaces.version>2.3.0</myfaces.version>
-        <xbean.version>4.8</xbean.version>
+        <xbean.version>4.9</xbean.version>
         <arquillian.version>1.1.13.Final</arquillian.version>
         <cdi.tck.version>2.0.3.Final</cdi.tck.version>
         <httpclient.version>4.5.2</httpclient.version>
