@@ -329,9 +329,14 @@ public class OpenWebBeansConfiguration
             String value = (String) property.getValue();
 
             value = systemProperties.getProperty(key) != null ? systemProperties.getProperty(key) : value;
-            value = systemEnvironment.get(key) != null ? systemEnvironment.get(key) : value;
 
-            configProperties.put(key, value);
+            String envKey = key.replace('.', '_');
+            value = systemEnvironment.get(envKey) != null ? systemEnvironment.get(envKey) : value;
+
+            if (value != null)
+            {
+                configProperties.put(key, value);
+            }
         }
     }
 
