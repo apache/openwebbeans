@@ -409,7 +409,14 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
                     }
                     catch (NoClassDefFoundError e)
                     {
-                        if (logger.isLoggable(Level.WARNING))
+                        if (isAnonymous(className))
+                        {
+                            if (logger.isLoggable(Level.FINE))
+                            {
+                                logger.log(Level.FINE, OWBLogConst.WARN_0018, new Object[]{className, e.toString()});
+                            }
+                        }
+                        else if (logger.isLoggable(Level.WARNING))
                         {
                             logger.log(Level.WARNING, OWBLogConst.WARN_0018, new Object[]{className, e.toString()});
                         }
@@ -421,6 +428,24 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
 
         }
         return beanClassesPerBda;
+    }
+
+    private boolean isAnonymous(final String className)
+    {
+        final int start = className.lastIndexOf('$');
+        if (start <= 0)
+        {
+            return false;
+        }
+        try
+        {
+            Integer.parseInt(className.substring(start + 1));
+            return true;
+        }
+        catch (final NumberFormatException nfe)
+        {
+            return false;
+        }
     }
 
     /* (non-Javadoc)
