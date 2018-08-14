@@ -802,6 +802,10 @@ public final class NotificationManager
         {
             return null;
         }
+        if (completableFutures.isEmpty())
+        {
+            return CompletableFuture.completedFuture(event);
+        }
         CDICompletionFuture<T> future = new CDICompletionFuture<>(event, completableFutures.size());
         completableFutures.forEach(f -> f.handle((t, e) ->
         {

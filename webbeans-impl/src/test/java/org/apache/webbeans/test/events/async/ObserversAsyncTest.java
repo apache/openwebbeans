@@ -42,6 +42,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ObserversAsyncTest extends AbstractUnitTest
 {
@@ -117,6 +119,27 @@ public class ObserversAsyncTest extends AbstractUnitTest
         System.out.println("took ms: " + durationMs);
     }
 
+    @Test
+    public void testNoObserver() throws ExecutionException, InterruptedException
+    {
+        startContainer();
+        final CompletableFuture<ObserversAsyncTest> completionStage = getBeanManager()
+                .getEvent()
+                .fireAsync(new ObserversAsyncTest())
+                .handle((r, e) ->
+                {
+                    if (r != null)
+                    {
+                        return r;
+                    }
+                    fail();
+                    return null;
+                })
+                .toCompletableFuture();
+
+        assertTrue(completionStage.isDone());
+        assertTrue(ObserversAsyncTest.class.isInstance(completionStage.get()));
+    }
 
     public static class VisitorCollectorEvent
     {
