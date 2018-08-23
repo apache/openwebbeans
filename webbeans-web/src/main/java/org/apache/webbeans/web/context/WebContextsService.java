@@ -255,6 +255,11 @@ public class WebContextsService extends AbstractContextsService
     @Override
     public Context getCurrentContext(Class<? extends Annotation> scopeType, boolean createIfNotExists)
     {
+        if(scopeType.equals(RequestScoped.class))
+        {
+            return getRequestContext(createIfNotExists);
+        }
+
         if(scopeType.equals(SessionScoped.class))
         {
             return getSessionContext(createIfNotExists);
@@ -732,6 +737,7 @@ public class WebContextsService extends AbstractContextsService
         if (requestContext == null && create)
         {
             initRequestContext(null);
+            requestContext = requestContexts.get();
         }
         return requestContext;
     }
