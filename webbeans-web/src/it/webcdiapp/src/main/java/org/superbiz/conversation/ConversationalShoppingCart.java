@@ -16,17 +16,42 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openwebbeans.web.it.beans;
+package org.superbiz.conversation;
+
+import javax.enterprise.context.Conversation;
+import javax.enterprise.context.ConversationScoped;
+import javax.inject.Inject;
+import java.io.Serializable;
 
 /**
- * This bean is _not_ annotated with a bean scope
- * but we are in a BDA with implicit bean-discovery mode ALL.
- * That means this class should get picked up as dependent scoped bean
+ *
  */
-public class NonAnnotatedDependentBean
+@ConversationScoped
+public class ConversationalShoppingCart implements Serializable
 {
-    public int meaningOfLife()
+    private @Inject Conversation conversation;
+
+    private String content = "empty";
+
+    public Conversation getConversation()
     {
-        return 42;
+        return conversation;
+    }
+
+    public String getContent()
+    {
+        return content;
+    }
+
+    public void setContent(String content)
+    {
+        this.content = content;
+    }
+
+    @Override
+    public String toString()
+    {
+        return conversation.getId() + "/" + conversation.isTransient() + "/" + content + "/" + System.identityHashCode(this);
     }
 }
+

@@ -18,7 +18,7 @@ under the License.
 -->
 <%@ page import="java.util.Date" %>
 <%@ page import="javax.enterprise.inject.spi.CDI" %>
-<%@ page import="org.apache.openwebbeans.web.it.beans.RequestScopedBean" %>
+<%@ page import="org.superbiz.beans.RequestScopedBean" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     System.out.println("entering target.jsp page");

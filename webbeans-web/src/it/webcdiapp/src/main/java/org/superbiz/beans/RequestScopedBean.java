@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openwebbeans.web.it.beans;
+package org.superbiz.beans;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ContextNotActiveException;
@@ -31,8 +31,8 @@ import javax.inject.Named;
 public class RequestScopedBean
 {
 
-    private static int requestInstanceCounter = 0;
-    private static int requestContextCounter = 0;
+    private static volatile int requestInstanceCounter = 0;
+    private static volatile int requestContextCounter = 0;
 
     private @Inject NonAnnotatedDependentBean nonAnnotatedBean;
     private @Inject SessionScopedCounter sessionScopedCounter;

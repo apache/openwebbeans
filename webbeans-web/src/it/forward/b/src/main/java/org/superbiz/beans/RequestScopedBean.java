@@ -16,42 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openwebbeans.web.it.conversation;
+package org.superbiz.beans;
 
-import javax.enterprise.context.Conversation;
-import javax.enterprise.context.ConversationScoped;
-import javax.inject.Inject;
-import java.io.Serializable;
+import javax.enterprise.context.RequestScoped;
 
-/**
- *
- */
-@ConversationScoped
-public class ConversationalShoppingCart implements Serializable
+@RequestScoped
+public class RequestScopedBean
 {
-    private @Inject Conversation conversation;
 
-    private String content = "empty";
-
-    public Conversation getConversation()
+    public String ping()
     {
-        return conversation;
+        return "me";
     }
 
-    public String getContent()
-    {
-        return content;
-    }
-
-    public void setContent(String content)
-    {
-        this.content = content;
-    }
-
-    @Override
-    public String toString()
-    {
-        return conversation.getId() + "/" + conversation.isTransient() + "/" + content + "/" + System.identityHashCode(this);
-    }
 }
-

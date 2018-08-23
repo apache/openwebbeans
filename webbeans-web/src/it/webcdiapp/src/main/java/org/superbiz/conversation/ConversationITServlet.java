@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openwebbeans.web.it.conversation;
+package org.superbiz.conversation;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.servlet.ServletException;

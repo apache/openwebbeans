@@ -16,27 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openwebbeans.web.it.beans;
-
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
-import java.io.Serializable;
+package org.superbiz.beans;
 
 /**
+ * This bean is _not_ annotated with a bean scope
+ * but we are in a BDA with implicit bean-discovery mode ALL.
+ * That means this class should get picked up as dependent scoped bean
  */
-@SessionScoped
-@Named
-public class SessionScopedCounter implements Serializable
+public class NonAnnotatedDependentBean
 {
-    private int count = 0;
-
-    public void increment()
+    public int meaningOfLife()
     {
-        count++;
-    }
-
-    public int getCount()
-    {
-        return count;
+        return 42;
     }
 }

@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openwebbeans.web.it;
+package org.superbiz;
 
-import org.apache.openwebbeans.web.it.beans.ContextEventCounter;
-import org.apache.openwebbeans.web.it.beans.RequestScopedBean;
+import org.superbiz.beans.ContextEventCounter;
+import org.superbiz.beans.RequestScopedBean;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

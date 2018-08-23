@@ -16,17 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openwebbeans.web.it.beans;
+package org.superbiz.beans;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
+import java.io.Serializable;
 
-@RequestScoped
-public class RequestScopedBean
+/**
+ */
+@SessionScoped
+@Named
+public class SessionScopedCounter implements Serializable
 {
+    private int count = 0;
 
-    public String ping()
+    public void increment()
     {
-        return "me";
+        count++;
     }
 
+    public int getCount()
+    {
+        return count;
+    }
 }
