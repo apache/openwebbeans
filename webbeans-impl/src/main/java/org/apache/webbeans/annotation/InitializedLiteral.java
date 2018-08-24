@@ -70,4 +70,28 @@ public class InitializedLiteral extends AnnotationLiteral<Initialized> implement
         return TOSTRING + value.getName() + ")";
     }
 
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (! (o instanceof Initialized))
+        {
+            return false;
+        }
+
+        Initialized that = (Initialized) o;
+
+        return this.value != null ? this.value.equals(that.value()) : that.value() == null;
+    }
+
+    // just to make checkstyle happy
+    @Override
+    public int hashCode()
+    {
+        return super.hashCode();
+    }
 }
