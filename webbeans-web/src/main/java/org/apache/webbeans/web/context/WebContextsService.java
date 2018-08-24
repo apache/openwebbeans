@@ -411,7 +411,6 @@ public class WebContextsService extends AbstractContextsService
         if (context.getPropagatedSessionContext() != null)
         {
             SessionContext sessionContext = context.getPropagatedSessionContext();
-            sessionContext.destroy();
 
             Object payload = null;
             if (context.getServletRequest() != null)
@@ -423,6 +422,11 @@ public class WebContextsService extends AbstractContextsService
                     payload = context.getServletRequest().getSession(false);
                 }
             }
+
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                payload != null ? payload : new Object(), BeforeDestroyedLiteral.INSTANCE_SESSION_SCOPED);
+
+            sessionContext.destroy();
 
             webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
                 payload != null ? payload : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
@@ -558,7 +562,11 @@ public class WebContextsService extends AbstractContextsService
                 || requestContext.getServletRequest().getSession(false) == null
                 || sessionIsExpiring)
             {
+                webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                    session != null ? session : new Object(), BeforeDestroyedLiteral.INSTANCE_SESSION_SCOPED);
+
                 context.destroy();
+
                 webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
                     session != null ? session : new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
 
@@ -675,9 +683,13 @@ public class WebContextsService extends AbstractContextsService
     {
         if (singletonContext != null)
         {
-            singletonContext.destroy();
-            singletonContext = null;
             Object payload = endObject != null ? endObject : new Object();
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                payload, BeforeDestroyedLiteral.INSTANCE_SINGLETON_SCOPED);
+
+            singletonContext.destroy();
+
+            singletonContext = null;
             webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
                 payload, DestroyedLiteral.INSTANCE_SINGLETON_SCOPED);
         }
