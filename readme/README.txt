@@ -1,13 +1,14 @@
 -------------------------------
-Apache OpenWebBeans 2.0.5
+Apache OpenWebBeans 2.0.7
 -------------------------------
+
 Welcome!
 
 Thanks for downloading and using OpenWebBeans.
 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 2.0.5 release of Apache OpenWebBeans.
+This document is based on the 2.0.7 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -23,10 +24,10 @@ https://openwebbeans.apache.org
 
 
 --------------------------------
-OpenWebBeans 2.0.5 Release Features
+OpenWebBeans 2.0.7 Release Features
 --------------------------------
 
-- The 2.0.5 release supports the following features
+- The 2.0.7 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -63,83 +64,27 @@ for the whole Application.
 
 
 -------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.7
+-------------------------------------------
+
+Bug
+
+    [OWB-1247] - Update to XBean Asm 6 Shaded 4.9
+    [OWB-1248] - defineClass used which is not supported by java 11
+    [OWB-1251] - event.fireAsync hangs when there is no observer
+
+Improvement
+
+    [OWB-1249] - org.apache.webbeans.config.OpenWebBeansConfiguration#overrideWithGlobalSettings environment overriding is not supported
+    [OWB-1250] - Reduce the log level of anymous classes message when it cant be loaded
+    [OWB-1252] - WebContextsService lazyStartRequestContext fails on first access.
+    [OWB-1253] - Improve performance of BeforeDestroyed and Initialized Literals
+    [OWB-1254] - destroying the Session doesn't fire BeforeDestroyed(SessionScoped.class) in our WebContextsService
+    [OWB-1255] - update to apache-parent-21 for sha512
+
+
+-------------------------------------------
 Release Notes - OpenWebBeans - Version 2.0.6
--------------------------------------------
-
-Bug
-    [OWB-1245] - Add a StandaloneContextsService where singleton context is not bound to a thread local for standalone case
-
-
--------------------------------------------
-Release Notes - OpenWebBeans - Version 2.0.5
--------------------------------------------
-
-Bug
-
-    [OWB-1233] - WrappedValueExpression.equals(Object arg0) always false if arg0 is an instance of WrappedValueExpression
-    [OWB-1235] - ConversationScope destroyed upon session serialization/deserialization
-    [OWB-1241] - Bean cache ignores qualifier model defined through an AnnotatedType
-
-New Feature
-
-    [OWB-1242] - Add a configuration option to not proxy Principal
-
-Improvement
-
-    [OWB-1232] - replace warning about interceptors
-    [OWB-1238] - Our VersionVisitor shouldn't visit code
-    [OWB-1243] - improve event performance
-
-Task
-
-    [OWB-1240] - Non-static inner classes should not get picked up as CDI Beans
-
-Dependency upgrade
-
-    [OWB-1236] - Update to XBean Asm 6 Shaded 4.7
-    [OWB-1237] - upgrade to xbean-4.8
-
-
--------------------------------------------
-Release Notes - OpenWebBeans - Version 2.0.4
--------------------------------------------
-
-Bug
-
-    [OWB-1223] - WebContextsService does not fire BeforeDestroyed(ApplicationScoped.class) event
-    [OWB-1224] - AnnotatedTypeConfigurator does not copy parameter annotations
-    [OWB-1225] - configureXxx should must throw IAE if called outside respective event
-    [OWB-1226] - upgrade maven-bundle-plugin to more recent version
-    [OWB-1227] - can't add a bean through an extension and let it being scanned
-    [OWB-1228] - OWB ignores producer methods on custom annotatedTypes
-    [OWB-1229] - WebContextsService should fire BeforeDestroyed(RequestScoped.class) event
-    [OWB-1230] - introduce a way to block certain Extensions from getting picked up
-    [OWB-1231] - update jcdi-spec to 1.0.1 version
-
-
--------------------------------------------
-Release Notes - OpenWebBeans - Version 2.0.3
--------------------------------------------
-
-Bug
-
-    [OWB-1171] - @Priority and @Alternative as sterotype
-    [OWB-1219] - Prioritized custom Bean gets ignored if ManagedBean with @Priority exists
-    [OWB-1220] - URL-encoding issue in AbstractMetaDataDiscovery
-    [OWB-1222] - subclass proxy fails with Java9
-
-Improvement
-
-    [OWB-1218] - improve toString of producer beans to also log owner class
-
-Task
-
-    [OWB-1221] - Upgrade to asm 6
-
-
-
--------------------------------------------
-Release Notes - OpenWebBeans - Version 2.0.1
 -------------------------------------------
 
 Bug
