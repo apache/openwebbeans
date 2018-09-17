@@ -51,7 +51,7 @@ public final class WebBeansConstants
     public static final String WEB_BEANS_XML_EXCLUDE = "exclude";
     public static final String WEB_BEANS_XML_IF_CLASS_NOT_AVAILABLE = "if-class-not-available";
     public static final String WEB_BEANS_XML_IF_CLASS_AVAILABLE = "if-class-available";
-    public static final String WEB_BEANS_XML_IF_SYSTEM_PROPERTY = "if-system-property ";
+    public static final String WEB_BEANS_XML_IF_SYSTEM_PROPERTY = "if-system-property";
 
     /**JNDI name of the {@link javax.enterprise.inject.spi.BeanManager} instance*/
     public static final String WEB_BEANS_MANAGER_JNDI_NAME = "java:comp/BeanManager";
