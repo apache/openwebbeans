@@ -26,11 +26,11 @@ import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ExceptionUtil;
-import org.apache.xbean.asm6.ClassWriter;
-import org.apache.xbean.asm6.Label;
-import org.apache.xbean.asm6.MethodVisitor;
-import org.apache.xbean.asm6.Opcodes;
-import org.apache.xbean.asm6.Type;
+import org.apache.xbean.asm7.ClassWriter;
+import org.apache.xbean.asm7.Label;
+import org.apache.xbean.asm7.MethodVisitor;
+import org.apache.xbean.asm7.Opcodes;
+import org.apache.xbean.asm7.Type;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;

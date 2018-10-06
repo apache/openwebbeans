@@ -74,6 +74,15 @@ public class CDISETest
         }
     }
 
+    @Test // main for OWB-1260 and enable java 11 testing
+    public void fire() {
+        try (final SeContainer container = SeContainerInitializer.newInstance()
+                .disableDiscovery()
+                .initialize()) {
+            container.getBeanManager().fireEvent(new Object());
+        }
+    }
+
     public static class ImNotScanned {
     }
 
