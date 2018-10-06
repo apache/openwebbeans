@@ -118,6 +118,10 @@ public abstract class AbstractProxyFactory
             {
                 return Opcodes.V11;
             }
+            else if (javaVersionProp.startsWith("12"))
+            {
+                return Opcodes.V12;
+            }
         }
 
         // the fallback is the lowest one to ensure it supports all possible classes of current environments
