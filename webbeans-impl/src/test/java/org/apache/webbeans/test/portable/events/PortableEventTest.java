@@ -25,7 +25,9 @@ import org.junit.Assert;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.portable.events.beans.Apple;
+import org.apache.webbeans.test.portable.events.beans.Cherry;
 import org.apache.webbeans.test.portable.events.extensions.AppleExtension;
+import org.apache.webbeans.test.portable.events.extensions.AppleExtension1;
 import org.apache.webbeans.test.portable.events.extensions.MessageReceiverExtension;
 import org.apache.webbeans.test.portable.events.extensions.MessageSenderExtension;
 import org.apache.webbeans.test.portable.events.extensions.NotAppleExtnsion;
@@ -166,4 +168,67 @@ public class PortableEventTest extends AbstractUnitTest
         startContainer();
     }
 
+    
+    @Test
+    public void testNumberCallsNegative()
+    {
+        AppleExtension1.reset();
+        
+        Collection<String> beanXmls = new ArrayList<String>();
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        
+        addExtension(new AppleExtension1());        
+        startContainer(beanClasses, beanXmls);
+        
+        Assert.assertSame(AppleExtension1.CALLED, 0);
+        Assert.assertSame(AppleExtension1.TYPED_CALLED, 0);
+        Assert.assertSame(AppleExtension1.MANAGED_CALLED, 0);
+        Assert.assertSame(AppleExtension1.MANAGED_TYPED_CALLED, 0);
+        
+        shutDownContainer();
+    }
+    
+    @Test
+    public void testNumberCallsPositive()
+    {
+        AppleExtension1.reset();
+        
+        Collection<String> beanXmls = new ArrayList<String>();
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Apple.class);
+        
+        addExtension(new AppleExtension1());        
+        startContainer(beanClasses, beanXmls);
+        
+        Assert.assertSame(AppleExtension1.CALLED, 1);
+        Assert.assertSame(AppleExtension1.TYPED_CALLED, 1);
+        Assert.assertSame(AppleExtension1.MANAGED_CALLED, 1);
+        Assert.assertSame(AppleExtension1.MANAGED_TYPED_CALLED, 1);
+        
+        shutDownContainer();
+    }
+    
+    @Test
+    public void testNumberCallsPositiveMultipleTypes()
+    {
+        AppleExtension1.reset();
+        
+        Collection<String> beanXmls = new ArrayList<String>();
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Apple.class);
+        beanClasses.add(Cherry.class);
+        
+        addExtension(new AppleExtension1());        
+        startContainer(beanClasses, beanXmls);
+        
+        Assert.assertSame(AppleExtension1.CALLED, 2);
+        Assert.assertSame(AppleExtension1.TYPED_CALLED, 1);
+        Assert.assertSame(AppleExtension1.MANAGED_CALLED, 2);
+        Assert.assertSame(AppleExtension1.MANAGED_TYPED_CALLED, 1);
+        
+        shutDownContainer();
+    }
 }
