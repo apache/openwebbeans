@@ -1970,7 +1970,6 @@ public class BeansDeployer
 
                 Set<ObserverMethod<?>> observerMethods;
                 AnnotatedType<T> beanAnnotatedType = bean.getAnnotatedType();
-                AnnotatedType<T> defaultAt = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(beanAnnotatedType.getJavaClass());
                 if(bean.isEnabled())
                 {
                     observerMethods = new ObserverMethodsBuilder<>(webBeansContext, beanAnnotatedType).defineObserverMethods(bean);
