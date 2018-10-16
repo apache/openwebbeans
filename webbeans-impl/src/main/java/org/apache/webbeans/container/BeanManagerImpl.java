@@ -1468,6 +1468,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         webBeansContext.getAnnotatedElementFactory().clear();
 
         injectionResolver.clearCaches();
+        webBeansContext.getAnnotationManager().clearCaches();
 
         // finally destroy all SPI services
         webBeansContext.clear();

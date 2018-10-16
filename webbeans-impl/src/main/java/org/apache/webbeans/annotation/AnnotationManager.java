@@ -934,7 +934,7 @@ public final class AnnotationManager
         }
     }
     
-    public void clearStartupCache()
+    public void clearCaches()
     {
         repeatableMethodCheckedTypes.clear();
         repeatableMethodCache.clear();

@@ -329,9 +329,6 @@ public class BeansDeployer
 
                 validateNames();
 
-                webBeansContext.getNotificationManager().clearCaches();
-                webBeansContext.getAnnotationManager().clearStartupCache();
-
                 if (webBeansContext.getNotificationManager().getObserverMethods().stream()
                         .anyMatch(ObserverMethod::isAsync))
                 {
@@ -349,6 +346,8 @@ public class BeansDeployer
                 // do some cleanup after the deployment
                 scanner.release();
                 webBeansContext.getAnnotatedElementFactory().clear();
+                webBeansContext.getNotificationManager().clearCaches();
+                webBeansContext.getAnnotationManager().clearCaches();
             }
         }
         catch (UnsatisfiedResolutionException e)
