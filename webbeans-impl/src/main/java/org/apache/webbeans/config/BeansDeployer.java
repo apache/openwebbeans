@@ -1223,6 +1223,8 @@ public class BeansDeployer
     {
         if(beanNames.size() > 0)
         {   
+            InjectionResolver resolver = webBeansContext.getBeanManagerImpl().getInjectionResolver();
+
             for(String beanName : beanNames)
             {
                 for(String other : beanNames)
@@ -1236,7 +1238,6 @@ public class BeansDeployer
                     
                     if(beanName.equals(other))
                     {
-                        InjectionResolver resolver = webBeansContext.getBeanManagerImpl().getInjectionResolver();
                         Set<Bean<?>> beans = resolver.implResolveByName(beanName);
                         if(beans.size() > 1)
                         {
