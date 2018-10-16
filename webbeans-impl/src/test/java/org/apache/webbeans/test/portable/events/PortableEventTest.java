@@ -240,7 +240,7 @@ public class PortableEventTest extends AbstractUnitTest
     @Test
     public void testNumberCallsGenerics()
     {
-        AppleExtension1.reset();
+        TreeExtension.reset();
         
         Collection<String> beanXmls = new ArrayList<String>();
 
