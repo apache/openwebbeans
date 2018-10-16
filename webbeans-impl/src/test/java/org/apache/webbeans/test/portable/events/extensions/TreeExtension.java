@@ -20,45 +20,44 @@ package org.apache.webbeans.test.portable.events.extensions;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.ProcessBean;
-import javax.enterprise.inject.spi.ProcessManagedBean;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
 
 import org.apache.webbeans.test.portable.events.beans.Apple;
+import org.apache.webbeans.test.portable.events.beans.Cherry;
+import org.apache.webbeans.test.portable.events.beans.Tree;
 
-public class AppleExtension1 implements Extension
+public class TreeExtension implements Extension
 {
-    public static int TYPED_CALLED = 0;
-    public static int CALLED = 0;
-    
-    public static int MANAGED_TYPED_CALLED = 0;
-    public static int MANAGED_CALLED = 0;
+    public static int GENERIC_CALLED = 0;
+    public static int TREE_CALLED = 0;
+    public static int APPLE_TREE_CALLED = 0;
+    public static int CHERRY_TREE_CALLED = 0;
     
     public static void reset()
     {
-        TYPED_CALLED = 0;
-        CALLED = 0;
-        MANAGED_TYPED_CALLED = 0;
-        MANAGED_CALLED = 0;
+        GENERIC_CALLED = 0;
+        TREE_CALLED = 0;
+        APPLE_TREE_CALLED = 0;
+        CHERRY_TREE_CALLED = 0;
     }
     
-    public void typedProcessBean(@Observes ProcessBean<Apple> event)
+    public void generic(@Observes ProcessAnnotatedType event)
     {
-        TYPED_CALLED++;
-    }
-    
-    public void processBean(@Observes ProcessBean event)
-    {
-        CALLED++;
+        GENERIC_CALLED++;
     } 
     
-    
-    public void typedProcessManagedBean(@Observes ProcessManagedBean<Apple> event)
+    public void tree(@Observes ProcessAnnotatedType<Tree> event)
     {
-        MANAGED_TYPED_CALLED++;
+        TREE_CALLED++;
     }
     
-    public void processManagedBean(@Observes ProcessManagedBean event)
+    public void appleTree(@Observes ProcessAnnotatedType<Tree<Apple>> event)
     {
-        MANAGED_CALLED++;
+        APPLE_TREE_CALLED++;
+    } 
+
+    public void cherryTree(@Observes ProcessAnnotatedType<Tree<Cherry>> event)
+    {
+        CHERRY_TREE_CALLED++;
     } 
 }

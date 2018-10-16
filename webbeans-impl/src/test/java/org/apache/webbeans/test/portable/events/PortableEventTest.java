@@ -25,13 +25,17 @@ import org.junit.Assert;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.portable.events.beans.Apple;
+import org.apache.webbeans.test.portable.events.beans.AppleTree;
 import org.apache.webbeans.test.portable.events.beans.Cherry;
+import org.apache.webbeans.test.portable.events.beans.CherryTree;
+import org.apache.webbeans.test.portable.events.beans.Tree;
 import org.apache.webbeans.test.portable.events.extensions.AppleExtension;
 import org.apache.webbeans.test.portable.events.extensions.AppleExtension1;
 import org.apache.webbeans.test.portable.events.extensions.MessageReceiverExtension;
 import org.apache.webbeans.test.portable.events.extensions.MessageSenderExtension;
 import org.apache.webbeans.test.portable.events.extensions.NotAppleExtnsion;
 import org.apache.webbeans.test.portable.events.extensions.RawTypeExtension;
+import org.apache.webbeans.test.portable.events.extensions.TreeExtension;
 import org.apache.webbeans.test.portable.events.extensions.TypeVariableExtension;
 import org.apache.webbeans.test.portable.events.extensions.WildcardExtension;
 import org.apache.webbeans.test.portable.events.extensions.WrongTypeVariableExtension;
@@ -228,6 +232,30 @@ public class PortableEventTest extends AbstractUnitTest
         Assert.assertSame(AppleExtension1.TYPED_CALLED, 1);
         Assert.assertSame(AppleExtension1.MANAGED_CALLED, 2);
         Assert.assertSame(AppleExtension1.MANAGED_TYPED_CALLED, 1);
+        
+        shutDownContainer();
+    }
+    
+    
+    @Test
+    public void testNumberCallsGenerics()
+    {
+        AppleExtension1.reset();
+        
+        Collection<String> beanXmls = new ArrayList<String>();
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Tree.class);
+        beanClasses.add(AppleTree.class);
+        beanClasses.add(CherryTree.class);
+        
+        addExtension(new TreeExtension());        
+        startContainer(beanClasses, beanXmls);
+        
+        Assert.assertSame(3, TreeExtension.GENERIC_CALLED);
+        Assert.assertSame(3, TreeExtension.TREE_CALLED);
+        Assert.assertSame(1, TreeExtension.APPLE_TREE_CALLED);
+        Assert.assertSame(1, TreeExtension.CHERRY_TREE_CALLED);
         
         shutDownContainer();
     }
