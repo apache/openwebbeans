@@ -256,6 +256,8 @@ public class PortableEventTest extends AbstractUnitTest
         Assert.assertSame(3, TreeExtension.TREE_CALLED);
         Assert.assertSame(1, TreeExtension.APPLE_TREE_CALLED);
         Assert.assertSame(1, TreeExtension.CHERRY_TREE_CALLED);
+        Assert.assertSame(1, TreeExtension.APPLE_TREE_GENERIC_CALLED);
+        Assert.assertSame(1, TreeExtension.CHERRY_TREE_GENERIC_CALLED);
         
         shutDownContainer();
     }

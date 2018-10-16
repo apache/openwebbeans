@@ -23,13 +23,17 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 
 import org.apache.webbeans.test.portable.events.beans.Apple;
+import org.apache.webbeans.test.portable.events.beans.AppleTree;
 import org.apache.webbeans.test.portable.events.beans.Cherry;
+import org.apache.webbeans.test.portable.events.beans.CherryTree;
 import org.apache.webbeans.test.portable.events.beans.Tree;
 
 public class TreeExtension implements Extension
 {
     public static int GENERIC_CALLED = 0;
     public static int TREE_CALLED = 0;
+    public static int APPLE_TREE_GENERIC_CALLED = 0;
+    public static int CHERRY_TREE_GENERIC_CALLED = 0;
     public static int APPLE_TREE_CALLED = 0;
     public static int CHERRY_TREE_CALLED = 0;
     
@@ -37,6 +41,8 @@ public class TreeExtension implements Extension
     {
         GENERIC_CALLED = 0;
         TREE_CALLED = 0;
+        APPLE_TREE_GENERIC_CALLED = 0;
+        CHERRY_TREE_GENERIC_CALLED = 0;
         APPLE_TREE_CALLED = 0;
         CHERRY_TREE_CALLED = 0;
     }
@@ -51,12 +57,22 @@ public class TreeExtension implements Extension
         TREE_CALLED++;
     }
     
-    public void appleTree(@Observes ProcessAnnotatedType<Tree<Apple>> event)
+    public void genericAppleTree(@Observes ProcessAnnotatedType<Tree<Apple>> event)
+    {
+        APPLE_TREE_GENERIC_CALLED++;
+    } 
+
+    public void genericCherryTree(@Observes ProcessAnnotatedType<Tree<Cherry>> event)
+    {
+        CHERRY_TREE_GENERIC_CALLED++;
+    }
+    
+    public void appleTree(@Observes ProcessAnnotatedType<AppleTree> event)
     {
         APPLE_TREE_CALLED++;
     } 
 
-    public void cherryTree(@Observes ProcessAnnotatedType<Tree<Cherry>> event)
+    public void cherryTree(@Observes ProcessAnnotatedType<CherryTree> event)
     {
         CHERRY_TREE_CALLED++;
     } 
