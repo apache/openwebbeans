@@ -536,6 +536,10 @@ public final class NotificationManager
                 return true;
             }
         }
+        else if (observerTypeActualArg instanceof ParameterizedType)
+        {
+            return GenericsUtil.isAssignableFrom(false, true, observerTypeActualArg, beanClass);
+        }
         
         return false;
     }
