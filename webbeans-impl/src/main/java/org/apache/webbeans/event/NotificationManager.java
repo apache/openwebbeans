@@ -27,7 +27,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -52,31 +51,17 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.NotificationOptions;
 import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.TransactionPhase;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
-import javax.enterprise.inject.spi.AfterTypeDiscovery;
 import javax.enterprise.inject.spi.AnnotatedCallable;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.inject.spi.ProcessBean;
-import javax.enterprise.inject.spi.ProcessBeanAttributes;
-import javax.enterprise.inject.spi.ProcessInjectionPoint;
-import javax.enterprise.inject.spi.ProcessInjectionTarget;
-import javax.enterprise.inject.spi.ProcessManagedBean;
-import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.inject.spi.ProcessProducer;
-import javax.enterprise.inject.spi.ProcessProducerField;
-import javax.enterprise.inject.spi.ProcessProducerMethod;
-import javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType;
-import javax.enterprise.inject.spi.ProcessSyntheticBean;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.OWBLogConst;
@@ -85,7 +70,6 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
 import org.apache.webbeans.portable.events.generics.GProcessObserverMethod;
 import org.apache.webbeans.portable.events.generics.GenericBeanEvent;
 import org.apache.webbeans.portable.events.generics.GenericProducerObserverEvent;
@@ -115,30 +99,6 @@ public final class NotificationManager
      */
     private final ConcurrentHashMap<Class<?>, Set<ObserverMethod<?>>> observersByRawType
         = new ConcurrentHashMap<>();
-
-
-
-    public static final Set<Class> CONTAINER_EVENT_CLASSES = new HashSet<>(
-        Arrays.asList(new Class[]{
-            AfterBeanDiscovery.class,
-            AfterDeploymentValidation.class,
-            AfterTypeDiscovery.class,
-            BeforeBeanDiscovery.class,
-            BeforeShutdown.class,
-            ProcessAnnotatedType.class,
-            ProcessBean.class,
-            ProcessBeanAttributes.class,
-            ProcessSyntheticBean.class,
-            ProcessInjectionPoint.class,
-            ProcessInjectionTarget.class,
-            ProcessManagedBean.class,
-            ProcessObserverMethod.class,
-            ProcessProducer.class,
-            ProcessProducerField.class,
-            ProcessProducerMethod.class,
-            ProcessSessionBeanImpl.class,
-            ProcessSyntheticAnnotatedType.class,
-        }));
 
     // this is actually faster than a lambda Comparator.comparingInt(ObserverMethod::getPriority)
     private Comparator<? super ObserverMethod<? super Object>> observerMethodComparator
@@ -911,7 +871,7 @@ public final class NotificationManager
             return false;
         }
         Class<?> paramType = AnnotatedMethod.class.cast(method).getJavaMember().getParameterTypes()[0];
-        return CONTAINER_EVENT_CLASSES.contains(paramType);
+        return webBeansContext.getWebBeansUtil().isContainerEventType(paramType);
     }
 
     // this behaves as a future aggregator, we don't strictly need to represent it but found it more expressive

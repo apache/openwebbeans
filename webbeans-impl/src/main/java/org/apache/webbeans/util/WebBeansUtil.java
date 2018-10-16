@@ -155,6 +155,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import javax.enterprise.inject.spi.AfterTypeDiscovery;
 
 
 /**
@@ -162,7 +163,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 @SuppressWarnings("unchecked")
 public final class WebBeansUtil
-{
+{   
     private final WebBeansContext webBeansContext;
 
     // cache to skip some validations
@@ -1595,6 +1596,34 @@ public final class WebBeansUtil
         validEventType.putIfAbsent(key, true); // we don't care about the value but that's thread safe to use this map
     }
 
+    private static final Class[] CONTAINER_EVENT_CLASSES = new Class[] {
+            AfterBeanDiscovery.class,
+            AfterDeploymentValidation.class,
+            AfterTypeDiscovery.class,
+            BeforeBeanDiscovery.class,
+            BeforeShutdown.class,
+            ProcessAnnotatedType.class,
+            ProcessBean.class,
+            ProcessBeanAttributes.class,
+            ProcessSyntheticBean.class,
+            ProcessInjectionPoint.class,
+            ProcessInjectionTarget.class,
+            ProcessManagedBean.class,
+            ProcessObserverMethod.class,
+            ProcessProducer.class,
+            ProcessProducerField.class,
+            ProcessProducerMethod.class,
+            ProcessSessionBean.class,
+            ProcessSyntheticAnnotatedType.class
+        };
+    
+    private static final Set<Class> CONTAINER_EVENT_CLASSES_SET = new HashSet<>(Arrays.asList(CONTAINER_EVENT_CLASSES));
+    
+    public boolean isContainerEventType(Class<?> type)
+    {
+        return CONTAINER_EVENT_CLASSES_SET.contains(type);
+    }
+            
     public boolean isContainerEventType(Object event)
     {
         if (event == null)
@@ -1608,24 +1637,14 @@ public final class WebBeansUtil
             return false;
         }
 
-        if (AfterBeanDiscovery.class.isInstance(event)
-                || AfterDeploymentValidation.class.isInstance(event)
-                || BeforeShutdown.class.isInstance(event)
-                || ProcessAnnotatedType.class.isInstance(event)
-                || ProcessInjectionPoint.class.isInstance(event)
-                || ProcessInjectionTarget.class.isInstance(event)
-                || ProcessBeanAttributes.class.isInstance(event)
-                || ProcessBean.class.isInstance(event)
-                || ProcessObserverMethod.class.isInstance(event)
-                || ProcessSessionBean.class.isInstance(event)
-                || ProcessProducer.class.isInstance(event)
-                || ProcessProducerField.class.isInstance(event)
-                || ProcessProducerMethod.class.isInstance(event)
-                || BeforeBeanDiscovery.class.isInstance(event))
+        for (Class<?> eventClass : CONTAINER_EVENT_CLASSES)
         {
-            return true;
+            if (eventClass.isInstance(event))
+            {
+                return true;
+            }
         }
-
+ 
         notContainerEvents.putIfAbsent(eventType, true);
         return false;
     }
