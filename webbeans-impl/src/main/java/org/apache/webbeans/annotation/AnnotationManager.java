@@ -61,6 +61,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Manages annotation usage by classes in this application.
@@ -71,6 +72,9 @@ public final class AnnotationManager
         new ConcurrentHashMap<>();
     private Map<Class<? extends Annotation>, Boolean> checkedStereotypeAnnotations =
         new ConcurrentHashMap<>();
+
+    private CopyOnWriteArraySet<Class<?>> repeatableMethodCheckedTypes = new CopyOnWriteArraySet<>();
+    private Map<Class<?>, Method> repeatableMethodCache = new ConcurrentHashMap<>();
 
     private final BeanManagerImpl beanManagerImpl;
     private final WebBeansContext webBeansContext;
@@ -929,8 +933,29 @@ public final class AnnotationManager
             }
         }
     }
+    
+    public void clearStartupCache()
+    {
+        repeatableMethodCheckedTypes.clear();
+        repeatableMethodCache.clear();
+    }
 
     public Method getRepeatableMethod(Class<?> type)
+    {
+        if (repeatableMethodCheckedTypes.contains(type))
+        {
+            return repeatableMethodCache.get(type);
+        }
+
+        Method method = resolveRepeatableMethod(type);
+        
+        repeatableMethodCheckedTypes.add(type);
+        repeatableMethodCache.put(type, method);
+        
+        return method;
+    }
+        
+    protected Method resolveRepeatableMethod(Class<?> type)
     {
         Method value;
         try
@@ -953,4 +978,6 @@ public final class AnnotationManager
         }
         return value;
     }
+    
+    
 }

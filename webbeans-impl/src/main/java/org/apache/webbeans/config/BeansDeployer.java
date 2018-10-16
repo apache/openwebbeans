@@ -330,6 +330,7 @@ public class BeansDeployer
                 validateNames();
 
                 webBeansContext.getNotificationManager().clearCaches();
+                webBeansContext.getAnnotationManager().clearStartupCache();
 
                 if (webBeansContext.getNotificationManager().getObserverMethods().stream()
                         .anyMatch(ObserverMethod::isAsync))
