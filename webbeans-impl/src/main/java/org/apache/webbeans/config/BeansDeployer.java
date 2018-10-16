@@ -1355,6 +1355,10 @@ public class BeansDeployer
                         continue;
                     }
 
+                    // trigger a NoClassDefFoundError here, otherwise it would be thrown in observer methods
+                    annotatedType.getJavaClass().getDeclaredMethods();
+                    annotatedType.getJavaClass().getDeclaredFields();
+
                     // Fires ProcessAnnotatedType
                     if (!annotatedType.getJavaClass().isAnnotation())
                     {
