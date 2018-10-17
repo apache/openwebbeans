@@ -319,6 +319,9 @@ public class BeansDeployer
                 // We are finally done with our bean discovery
                 fireAfterBeanDiscoveryEvent();
 
+                // activate InjectionResolver cache now
+                webBeansContext.getBeanManagerImpl().getInjectionResolver().setStartup(false);
+                
                 validateAlternatives(beanAttributesPerBda);
 
                 validateInjectionPoints();
@@ -336,8 +339,6 @@ public class BeansDeployer
                     webBeansContext.getNotificationManager().getDefaultNotificationOptions()
                             .getExecutor().execute(() -> {});
                 }
-
-                webBeansContext.getBeanManagerImpl().getInjectionResolver().setStartup(false);
 
                 // fire event
                 fireAfterDeploymentValidationEvent();
