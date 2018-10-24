@@ -64,6 +64,24 @@ for the whole Application.
 
 
 -------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.8
+-------------------------------------------
+
+Bug
+
+    [OWB-1257] - Conditional exclusion of beans in beans.xml does not honor system property
+    [OWB-1263] - Generic observers not called correctly
+    [OWB-1264] - Observers method throws NoClassDefFoundError for optional classes
+
+Improvement
+
+    [OWB-1261] - Upgrade ASM to version 7
+    [OWB-1262] - [perf] cache lifecycleEvent observers in NotificationManager
+    [OWB-1265] - [perf] cache AnnotationManager#getRepeatableMethod
+    [OWB-1266] - [perf] InjectionResolver cache can be activated earlier
+
+
+-------------------------------------------
 Release Notes - OpenWebBeans - Version 2.0.7
 -------------------------------------------
 
@@ -544,9 +562,9 @@ Bug
     [OWB-911] - SelfInterceptorBean not serialized correctly in DefaultInterceptorHandler
 
 Documentation
-    
+
 	[OWB-783] - No documentation available in the project webpage
-	
+
 Improvement
 
     [OWB-652] - Introduce HierarchicBeanManager
@@ -1305,7 +1323,7 @@ How to Configure OpenWebBeans
 ---------------------------------------------
 
 This section explains a content of the distribution bundle, OWB plugins and its
-dependent libraries. 
+dependent libraries.
 
 ---------------------------------------------
 1.1.6 Distribution Content
@@ -1337,8 +1355,8 @@ How OWB Plugins Work
 ------------------------------------------
 
 OpenWebBeans has been developed with a plugin architecture. The Core dependency injection service
-is provided with openwebbeans-impl. If you need further service functionality, 
-you have to add respective plugin jars into the application classpath. OpenWebBeans 
+is provided with openwebbeans-impl. If you need further service functionality,
+you have to add respective plugin jars into the application classpath. OpenWebBeans
 uses the Java SE 6.0 java.util.ServiceLoader mechanism to pickup plugins at runtime.
 If you run under Java SE 5.0, an similar hand written implementation will be used.
 Please do not confuse OWB plugins with portable Extensions! OWB plugins are for
@@ -1384,7 +1402,7 @@ validation (Validation Specification)
 Dependencies of OpenWebBeans Maven Modules&Plugins
 --------------------------------------------------
 
-openwebbeans-impl : 
+openwebbeans-impl :
 ------------------
 Third party        : javassist, scannotation, openwebbeans-spi
 Container Provided : jcdi-api, at-inject, servlet, el, jsr-250, interceptor, jta, jsp, validation
@@ -1406,9 +1424,9 @@ openwebbeans-jsf:
 Third party        : openwebbeans-impl and its dependencies
 Container Provided : jsf
 
-NOTE : We are trying to decrease dependent libraries of the our core, i.e, openwebbeans-impl. 
+NOTE : We are trying to decrease dependent libraries of the our core, i.e, openwebbeans-impl.
 At 1.1.6, dependent third party libraries will be decreased. We have a plan to create profile
-plugins, therefore each profile plugin provides its own dependent libraries. For example, in 
+plugins, therefore each profile plugin provides its own dependent libraries. For example, in
 fully Java EE Profile Plugin, Transaction API is supported but this will not be the case
 for Java Web Profile Plugin or Java SE Profile Plugin. Stay Tuned!
 
@@ -1418,20 +1436,20 @@ openwebbeans-impl will not depend on any Java EE APIs. Those APIs will be provid
 by OpenWebBeans profiles/plugins that openwebbeans-impl will be used. Therefore,
 you will able to use OpenWebBeans in your own runtime environment easily by writing
 your own plugins and contributing it to OpenWebBeans :)
-        
+
 ------------------------------------------
 Library Configuration
 ------------------------------------------
-To run openwebbeans applications in the Java EE based application server, 
+To run openwebbeans applications in the Java EE based application server,
 you could add the JSR-299 API and JSR-330 API into the server common classpath, and
-implementation, plugins and dependent jars into your "WEB-INF/lib" directory 
+implementation, plugins and dependent jars into your "WEB-INF/lib" directory
 of the Java EE Web Application.
 
 In this release, we can not support the OpenWebBeans as an integrated
 functionality of the Java EE Application Servers. So, you have to manage the
 configuration of the OpenWebBeans within your application's "web.xml" file. A sample "web.xml"
 file can be found in the "config" directory. To use EJB functionality, you also have to
-add OWB specific interceptor into your EJB beans. Look at the EJB section of this readme 
+add OWB specific interceptor into your EJB beans. Look at the EJB section of this readme
 for further details.
 
 ---------------------------------------------
@@ -1461,7 +1479,7 @@ Override default value of ResourceInjectionService
 -------------------------------------------------
 org.apache.webbeans.spi.ResourceInjectionService=org.apache.webbeans.ejb.resource.OpenEjbResourceInjectionService
 
-OpenWebBeans uses the "OpenEjbResourceInjectionService" class to inject resources into the managed bean instances. 
+OpenWebBeans uses the "OpenEjbResourceInjectionService" class to inject resources into the managed bean instances.
 
 Configuration Names and Their Default Values :
 
@@ -1501,7 +1519,7 @@ Configuration Names and Their Default Values :
    Values        : org.apache.webbeans.spi.se.DefaultTransactionService or CUSTOM
    Default       : org.apache.webbeans.spi.se.DefaultTransactionService
 
-- "org.apache.webbeans.spi.ResourceInjectionService" 
+- "org.apache.webbeans.spi.ResourceInjectionService"
    Description   : Implementation of org.apache.webbeans.spi.ResourceInjectionService. It is used for injection Java EE enviroment resource into the
                    Managed Bean instances.
    Values        : org.apache.webbeans.se.DefaultResourceInjectionService or CUSTOM
@@ -1552,23 +1570,23 @@ Configuration Names and Their Default Values :
 How to Run Samples
 ---------------------------------------------
 
-In this release, there are several sample applications located in the "/samples" directory 
+In this release, there are several sample applications located in the "/samples" directory
 of the distribution. You can run those samples via simple maven command.
 
-1) "Guess Application" : Simple usage of the OWB + JSF. 
-It can be run in the jetty web container via maven jetty plugin from source. 
+1) "Guess Application" : Simple usage of the OWB + JSF.
+It can be run in the jetty web container via maven jetty plugin from source.
 Look at "Compile and Run Samples via Jetty&Tomcat Plugin" section.
 
-2) "Hotel Reservation Application" : Show usage of JSF + JPA + OWB  
-It can be run in the jetty web container via maven jetty plugin from source. 
+2) "Hotel Reservation Application" : Show usage of JSF + JPA + OWB
+It can be run in the jetty web container via maven jetty plugin from source.
 Look at "Compile and Run Samples via Jetty&Tomcat Plugin" section.
 
 3) "JMS Injection Sample" : Show JMS injections. JMS injection currently uses
    ConnectionFactory as JMS connection factory jndi name. You can change this
    via configuration file. Look above explanation for how to configure JMS jndi. Also,
    JMS injection requires to use of a JMS provider. Generally Java EE servers contains
-   default JMS provider. It can be run on JBoss and Geronimo. It uses Queue with jndi_name = "queue/A". 
-   So you have to create a queue destination in your JMS provider with name "queue/A" to run example. 
+   default JMS provider. It can be run on JBoss and Geronimo. It uses Queue with jndi_name = "queue/A".
+   So you have to create a queue destination in your JMS provider with name "queue/A" to run example.
    If you want to change queue jndi name, then look at source and change it from "WEB-INF/beans.xml" file.
 
 4) "Conversation Sample" : Shows usage of JSF conversations.
@@ -1599,14 +1617,14 @@ contains the all source code of the OpenWebBeans.
 
 To install the Maven artifacts of the project from the source, Maven must be installed
 in your runtime. After Maven installation, just run the following command in the top level
-directory that contains the main "pom.xml" : 
+directory that contains the main "pom.xml" :
 
 > mvn clean install
 
 This command will install all the Maven artifacts into your local Maven repository.
 
 If you wish to package all artifacts of the project, just run the following command
-in in the top level directory that contains the main "pom.xml" : 
+in in the top level directory that contains the main "pom.xml" :
 
 > mvn clean package
 
