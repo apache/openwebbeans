@@ -76,7 +76,6 @@ Bug
 Improvement
 
     [OWB-1261] - Upgrade ASM to version 7
-    [OWB-1262] - [perf] cache lifecycleEvent observers in NotificationManager
     [OWB-1265] - [perf] cache AnnotationManager#getRepeatableMethod
     [OWB-1266] - [perf] InjectionResolver cache can be activated earlier
 
