@@ -24,22 +24,14 @@ import static org.apache.xbean.asm7.ClassReader.SKIP_FRAMES;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Logger;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.xbean.asm7.ClassReader;
 import org.apache.xbean.asm7.ClassWriter;
 import org.apache.xbean.asm7.MethodVisitor;
@@ -61,19 +53,9 @@ public abstract class AbstractProxyFactory
      */
     public static final int MODIFIER_VARARGS = 0x00000080;
 
-
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(AbstractProxyFactory.class);
+    protected final Unsafe unsafe;
 
     protected WebBeansContext webBeansContext;
-
-    /**
-     * contains the instance of sun.misc.Unsafe.
-     * We use it for creating the proxy instance without fully
-     * initializing the class.
-     */
-    private Object unsafe;
-    private Method unsafeAllocateInstance;
-    private AtomicReference<Method> unsafeDefineClass;
 
     private final int javaVersion;
 
@@ -90,7 +72,7 @@ public abstract class AbstractProxyFactory
     {
         this.webBeansContext = webBeansContext;
         javaVersion = determineDefaultJavaVersion();
-        initializeUnsafe();
+        unsafe = new Unsafe();
     }
 
     private int determineDefaultJavaVersion()
@@ -264,7 +246,7 @@ public abstract class AbstractProxyFactory
                 sortOutDuplicateMethods(nonInterceptedMethods),
                 constructor);
 
-        return defineAndLoadClass(classLoader, proxyClassName, proxyBytes);
+        return unsafe.defineAndLoadClass(classLoader, proxyClassName, proxyBytes);
     }
 
     private Method[] sortOutDuplicateMethods(Method[] methods)
@@ -370,109 +352,6 @@ public abstract class AbstractProxyFactory
         return javaVersion;
     }
 
-
-    /**
-     * The 'defineClass' method on the ClassLoader is protected, thus we need to invoke it via reflection.
-     * @return the Class which got loaded in the classloader
-     */
-    private <T> Class<T> defineAndLoadClass(ClassLoader classLoader, String proxyName, byte[] proxyBytes)
-            throws ProxyGenerationException
-    {
-        Class<?> clazz = classLoader.getClass();
-
-        Method defineClassMethod = null;
-        do
-        {
-            try
-            {
-                defineClassMethod = clazz.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
-            }
-            catch (NoSuchMethodException e)
-            {
-                // do nothing, we need to search the superclass
-            }
-
-            clazz = clazz.getSuperclass();
-        } while (defineClassMethod == null && clazz != Object.class);
-
-        if (defineClassMethod != null && !defineClassMethod.isAccessible())
-        {
-            try
-            {
-                defineClassMethod.setAccessible(true);
-            }
-            catch (RuntimeException re) // likely j9, let's use unsafe
-            {
-                defineClassMethod = null;
-            }
-        }
-
-        try
-        {
-            Class<T> definedClass;
-
-            if (defineClassMethod != null)
-            {
-                definedClass = (Class<T>) defineClassMethod.invoke(classLoader, proxyName, proxyBytes, 0, proxyBytes.length);
-            }
-            else
-            {
-
-                definedClass = (Class<T>) unsafeDefineClass().invoke(unsafe, proxyName, proxyBytes, 0, proxyBytes.length, classLoader, null);
-            }
-
-            return (Class<T>) Class.forName(definedClass.getName(), true, classLoader);
-        }
-        catch (InvocationTargetException le) // if concurrent calls are done then ensure to just reload the created one
-        {
-            if (LinkageError.class.isInstance(le.getCause()))
-            {
-                try
-                {
-                    return (Class<T>) Class.forName(proxyName.replace('/', '.'), true, classLoader);
-                }
-                catch (ClassNotFoundException e)
-                {
-                    // default error handling
-                }
-            }
-            throw new ProxyGenerationException(le.getCause());
-        }
-        catch (Throwable e)
-        {
-            throw new ProxyGenerationException(e);
-        }
-    }
-
-    private Method unsafeDefineClass()
-    {
-        Method value = unsafeDefineClass.get();
-        if (value == null)
-        {
-            synchronized (this)
-            {
-                final Class<?> unsafeClass = getUnsafeClass();
-                value = AccessController.doPrivileged(new PrivilegedAction<Method>()
-                {
-                    @Override
-                    public Method run()
-                    {
-                        try
-                        {
-                            return unsafeClass.getDeclaredMethod("defineClass",
-                                    String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class);
-                        }
-                        catch (final Exception e)
-                        {
-                            throw new IllegalStateException("Cannot get Unsafe.defineClass or equivalent", e);
-                        }
-                    }
-                });
-                unsafeDefineClass.compareAndSet(null, value);
-            }
-        }
-        return value;
-    }
 
 
     protected boolean unproxyableMethod(Method delegatedMethod)
@@ -734,121 +613,6 @@ public abstract class AbstractProxyFactory
     {
         Class<?> returnType = delegatedMethod.getReturnType();
         mv.visitInsn(getReturnInsn(returnType));
-    }
-
-    protected <T> T unsafeNewInstance(Class<T> clazz)
-    {
-        try
-        {
-            if (unsafeAllocateInstance != null)
-            {
-                return (T) unsafeAllocateInstance.invoke(unsafe, clazz);
-            }
-            else
-            {
-                try
-                {
-                    return clazz.getConstructor().newInstance();
-                }
-                catch (final Exception e)
-                {
-                    throw new IllegalStateException("Failed to allocateInstance of Proxy class " + clazz.getName(), e);
-                }
-            }
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new IllegalStateException("Failed to allocateInstance of Proxy class " + clazz.getName(), e);
-        }
-        catch (InvocationTargetException e)
-        {
-            Throwable throwable = e.getTargetException() != null ? e.getTargetException() : e;
-            throw new IllegalStateException("Failed to allocateInstance of Proxy class " + clazz.getName(),
-                    throwable);
-        }
-    }
-
-
-    private void initializeUnsafe()
-    {
-        final Class<?> unsafeClass = getUnsafeClass();
-
-        Object unsafe = AccessController.doPrivileged(new PrivilegedAction<Object>()
-        {
-            @Override
-            public Object run()
-            {
-                try
-                {
-                    Field field = unsafeClass.getDeclaredField("theUnsafe");
-                    field.setAccessible(true);
-                    return field.get(null);
-                }
-                catch (Exception e)
-                {
-                    logger.info("Cannot get sun.misc.Unsafe - will use newInstance() instead!");
-                    return null;
-                }
-            }
-        });
-
-        this.unsafe = unsafe;
-
-        if (unsafe != null)
-        {
-            unsafeAllocateInstance = AccessController.doPrivileged(new PrivilegedAction<Method>()
-            {
-                @Override
-                public Method run()
-                {
-                    try
-                    {
-                        Method mtd = unsafeClass.getDeclaredMethod("allocateInstance", Class.class);
-                        mtd.setAccessible(true);
-                        return mtd;
-                    }
-                    catch (Exception e)
-                    {
-                        return null; // use newInstance()
-                    }
-                }
-            });
-        }
-    }
-
-    private Class<?> getUnsafeClass()
-    {
-        Class<?> unsafeClass;
-        try
-        {
-            unsafeClass = AccessController.doPrivileged(new PrivilegedAction<Class<?>>()
-            {
-                @Override
-                public Class<?> run()
-                {
-                    try
-                    {
-                        return Thread.currentThread().getContextClassLoader().loadClass("sun.misc.Unsafe");
-                    }
-                    catch (Exception e)
-                    {
-                        try
-                        {
-                            return ClassLoader.getSystemClassLoader().loadClass("sun.misc.Unsafe");
-                        }
-                        catch (ClassNotFoundException e1)
-                        {
-                            throw new IllegalStateException("Cannot get sun.misc.Unsafe", e);
-                        }
-                    }
-                }
-            });
-        }
-        catch (final Exception e)
-        {
-            throw new IllegalStateException("Cannot get sun.misc.Unsafe class", e);
-        }
-        return unsafeClass;
     }
 
     /**
