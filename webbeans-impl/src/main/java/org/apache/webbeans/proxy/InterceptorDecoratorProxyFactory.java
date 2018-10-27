@@ -84,7 +84,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
 
         try
         {
-            T proxy = unsafeNewInstance(proxyClass);
+            T proxy = unsafe.unsafeNewInstance(proxyClass);
 
             Field delegateField = proxy.getClass().getDeclaredField(FIELD_PROXIED_INSTANCE);
             delegateField.setAccessible(true);
