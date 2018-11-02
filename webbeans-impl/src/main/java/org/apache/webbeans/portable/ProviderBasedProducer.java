@@ -63,7 +63,7 @@ public class ProviderBasedProducer<T> extends AbstractProducer<T>
             }
             else
             {
-                proxyInstance = provider.get();
+                return provider.get();
             }
         }
         return proxyInstance;
