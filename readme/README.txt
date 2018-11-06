@@ -79,6 +79,10 @@ Improvement
     [OWB-1265] - [perf] cache AnnotationManager#getRepeatableMethod
     [OWB-1266] - [perf] InjectionResolver cache can be activated earlier
 
+Task
+
+    [OWB-1268] - Upgrade to xbean 4.12
+
 
 -------------------------------------------
 Release Notes - OpenWebBeans - Version 2.0.7
