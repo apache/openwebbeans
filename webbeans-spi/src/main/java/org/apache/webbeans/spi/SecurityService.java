@@ -42,7 +42,9 @@ import java.util.Properties;
 public interface SecurityService
 {
     /**
-     * Gets the current caller identity.
+     * Gets the current caller identity. Note that it must be a contextual (proxy) instance
+     * to respect the scope of the enclosing bean.
+     *
      * @return current caller identity or <code>null</code> if none provided.
      */
     Principal getCurrentPrincipal();

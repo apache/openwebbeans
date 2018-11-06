@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.web.tomcat7;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 import java.security.Principal;
 
 import org.apache.webbeans.corespi.security.SimpleSecurityService;
@@ -25,10 +27,37 @@ import org.apache.webbeans.corespi.security.SimpleSecurityService;
 public class TomcatSecurityService extends SimpleSecurityService
 {
 
+    private final Principal proxy = Principal.class.cast(Proxy.newProxyInstance(
+            TomcatSecurityService.class.getClassLoader(),
+            new Class<?>[]{Principal.class, Unwrap.class}, (proxy, method, args) ->
+            {
+                try
+                {
+                    final Principal principal = TomcatSecurityFilter.getPrincipal();
+                    if (principal == null)
+                    {
+                        return null;
+                    }
+                    if (Unwrap.class == method.getDeclaringClass())
+                    {
+                        return principal;
+                    }
+                    return method.invoke(principal, args);
+                }
+                catch (final InvocationTargetException ite)
+                {
+                    throw ite.getTargetException();
+                }
+            }));
+
     @Override
     public Principal getCurrentPrincipal()
     {
-        return TomcatSecurityFilter.getPrincipal();
+        return proxy;
     }
 
+    public interface Unwrap
+    {
+        Principal get();
+    }
 }
