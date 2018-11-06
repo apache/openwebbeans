@@ -72,6 +72,7 @@ Bug
     [OWB-1257] - Conditional exclusion of beans in beans.xml does not honor system property
     [OWB-1263] - Generic observers not called correctly
     [OWB-1264] - Observers method throws NoClassDefFoundError for optional classes
+	[OWB-1269] - TomcatSecurityService principal is not the contextual one out of request scope beans
 
 Improvement
 
