@@ -1,5 +1,5 @@
--------------------------------
-Apache OpenWebBeans 2.0.7
+﻿-------------------------------
+Apache OpenWebBeans 2.0.8
 -------------------------------
 
 Welcome!
@@ -8,7 +8,7 @@ Thanks for downloading and using OpenWebBeans.
 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 2.0.7 release of Apache OpenWebBeans.
+This document is based on the 2.0.8 release of Apache OpenWebBeans.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -24,10 +24,10 @@ https://openwebbeans.apache.org
 
 
 --------------------------------
-OpenWebBeans 2.0.7 Release Features
+OpenWebBeans 2.0.8 Release Features
 --------------------------------
 
-- The 2.0.7 release supports the following features
+- The 2.0.8 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -72,7 +72,7 @@ Bug
     [OWB-1257] - Conditional exclusion of beans in beans.xml does not honor system property
     [OWB-1263] - Generic observers not called correctly
     [OWB-1264] - Observers method throws NoClassDefFoundError for optional classes
-	[OWB-1269] - TomcatSecurityService principal is not the contextual one out of request scope beans
+    [OWB-1269] - TomcatSecurityService principal is not the contextual one out of request scope beans
 
 Improvement
 
