@@ -101,7 +101,7 @@ public abstract class AbstractProxyFactory
         }
 
         // the fallback is the lowest one to ensure it supports all possible classes of current environments
-        return Opcodes.V1_8;
+        return Opcodes.V1_6;
     }
 
 
