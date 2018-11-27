@@ -110,6 +110,7 @@ import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.BeforeShutdown;
+import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -1127,7 +1128,16 @@ public final class WebBeansUtil
             if(stack.hasErrors())
             {
                 stack.logErrors();
-                throw new WebBeansDeploymentException(logMessage);
+
+                // just because of some TCK and spec insanity v2...reversed compared to previous one
+                if (stack.iterator().next() instanceof DefinitionException)
+                {
+                    throw new WebBeansConfigurationException(logMessage);
+                }
+                else
+                {
+                    throw new WebBeansDeploymentException(logMessage);
+                }
             }
         }
         finally
