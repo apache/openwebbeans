@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -98,12 +99,13 @@ public abstract class AbstractAnnotated implements Annotated
                     Class<?> type = a.annotationType();
                     try
                     {
-                        Method repeatableMethod = webBeansContext.getAnnotationManager().getRepeatableMethod(type);
-                        if (repeatableMethod == null)
+                        Optional<Method> repeatableMethod =
+                                webBeansContext.getAnnotationManager().getRepeatableMethod(type);
+                        if (!repeatableMethod.isPresent())
                         {
                             return null;
                         }
-                        return (Annotation[]) repeatableMethod.invoke(a);
+                        return (Annotation[]) repeatableMethod.orElseThrow(IllegalStateException::new).invoke(a);
                     }
                     catch (Exception e)
                     {

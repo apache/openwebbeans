@@ -59,6 +59,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -74,7 +75,7 @@ public final class AnnotationManager
         new ConcurrentHashMap<>();
 
     private CopyOnWriteArraySet<Class<?>> repeatableMethodCheckedTypes = new CopyOnWriteArraySet<>();
-    private Map<Class<?>, Method> repeatableMethodCache = new ConcurrentHashMap<>();
+    private Map<Class<?>, Optional<Method>> repeatableMethodCache = new ConcurrentHashMap<>();
 
     private final BeanManagerImpl beanManagerImpl;
     private final WebBeansContext webBeansContext;
@@ -940,17 +941,17 @@ public final class AnnotationManager
         repeatableMethodCache.clear();
     }
 
-    public Method getRepeatableMethod(Class<?> type)
+    public Optional<Method> getRepeatableMethod(Class<?> type)
     {
         if (repeatableMethodCheckedTypes.contains(type))
         {
             return repeatableMethodCache.get(type);
         }
 
-        Method method = resolveRepeatableMethod(type);
+        Optional<Method> method = Optional.ofNullable(resolveRepeatableMethod(type));
         
         repeatableMethodCheckedTypes.add(type);
-        repeatableMethodCache.put(type, method);
+        repeatableMethodCache.put(type, method); // don't put null here!
         
         return method;
     }

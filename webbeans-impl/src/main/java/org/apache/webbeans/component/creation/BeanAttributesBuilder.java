@@ -303,7 +303,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
     {
         return AbstractAnnotated.class.isInstance(annotated) ?
                 AbstractAnnotated.class.cast(annotated).getRepeatables().contains(annotation.annotationType()) :
-                webBeansContext.getAnnotationManager().getRepeatableMethod(annotation.annotationType()) != null;
+                webBeansContext.getAnnotationManager().getRepeatableMethod(annotation.annotationType()).isPresent();
     }
 
     /**
