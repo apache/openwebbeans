@@ -313,6 +313,9 @@ public class BeansDeployer
                 // We are finally done with our bean discovery
                 fireAfterBeanDiscoveryEvent();
 
+                // activate InjectionResolver cache now
+                webBeansContext.getBeanManagerImpl().getInjectionResolver().setStartup(false);
+
                 validateAlternatives(beanAttributesPerBda);
 
                 validateInjectionPoints();
@@ -330,7 +333,6 @@ public class BeansDeployer
                 // do some cleanup after the deployment
                 scanner.release();
                 webBeansContext.getAnnotatedElementFactory().clear();
-                webBeansContext.getBeanManagerImpl().getInjectionResolver().setStartup(false);
             }
         }
         catch (UnsatisfiedResolutionException e)
