@@ -62,7 +62,7 @@ public class ConversationStorageBean implements Bean<Set<ConversationContext>>, 
     @Override
     public void destroy(Set<ConversationContext> instance, CreationalContext<Set<ConversationContext>> context)
     {
-        if (instance == null || instance.size() == 0)
+        if (instance == null || instance.isEmpty())
         {
             return;
         }

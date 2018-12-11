@@ -184,7 +184,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     @Override
     protected boolean needsProxy()
     {
-        return super.needsProxy() || postConstructInterceptors.size() != 0 || preDestroyInterceptors.size() != 0;
+        return super.needsProxy() || !postConstructInterceptors.isEmpty() || !preDestroyInterceptors.isEmpty();
     }
     
     protected boolean hasAroundConstruct()
@@ -308,7 +308,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                 internalInstance = (T) dih.getTarget();
             }
         }
-        else if (postConstructMethods == null || postConstructMethods.size() == 0)
+        else if (postConstructMethods == null || postConstructMethods.isEmpty())
         {
             return;
         }
@@ -347,7 +347,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                 internalInstance = (T) dih.getTarget();
             }
         }
-        else if (preDestroyMethods == null || preDestroyMethods.size() == 0)
+        else if (preDestroyMethods == null || preDestroyMethods.isEmpty())
         {
             return;
         }

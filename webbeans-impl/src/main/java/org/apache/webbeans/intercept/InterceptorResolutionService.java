@@ -113,7 +113,7 @@ public class InterceptorResolutionService
 
         // pick up the decorators
         List<Decorator<?>> decorators = beanManager.unsafeResolveDecorators(beanTypes, AnnotationUtil.asArray(qualifiers));
-        if (decorators.size() == 0)
+        if (decorators.isEmpty())
         {
             decorators = Collections.emptyList(); // less to store
         }
@@ -371,7 +371,7 @@ public class InterceptorResolutionService
         {
             verifyLifecycleMethod(lifeycleAnnotation, lifecycleMethod);
 
-            if (lifecycleMethod.getParameters().size() == 0)
+            if (lifecycleMethod.getParameters().isEmpty())
             {
                 foundMethods.add(lifecycleMethod);
                 calculateEjbMethodInterceptors(methodInterceptorInfo, allUsedEjbInterceptors, classLevelEjbInterceptors, lifecycleMethod, failOnFinal);
@@ -637,7 +637,7 @@ public class InterceptorResolutionService
             }
         }
 
-        if (cummulatedInterceptorBindings.size() == 0)
+        if (cummulatedInterceptorBindings.isEmpty())
         {
             return;
         }

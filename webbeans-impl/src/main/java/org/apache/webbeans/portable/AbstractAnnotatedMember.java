@@ -94,11 +94,12 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
         return javaMember.getDeclaringClass();
     }
 
+    @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder(super.toString());
         builder.append(",");
-        builder.append("Java Member Name : " + javaMember.getName());
+        builder.append("Java Member Name : ").append(javaMember.getName());
         
         return builder.toString();
     }

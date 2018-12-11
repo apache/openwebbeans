@@ -169,7 +169,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
     
     protected boolean needsProxy()
     {
-        return methodInterceptors.size() != 0;
+        return !methodInterceptors.isEmpty();
     }
 
     protected boolean hasInterceptorInfo()

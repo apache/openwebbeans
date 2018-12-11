@@ -900,7 +900,7 @@ public final class WebBeansUtil
         {
             String value = namedQualifier.value();
 
-            if(value == null || value.equals(""))
+            if(value == null || value.isEmpty())
             {
                 Member member = injectionPoint.getMember();
                 if(!(member instanceof Field))

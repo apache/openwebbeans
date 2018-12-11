@@ -106,7 +106,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T>
     @Override
     protected void addToStringInfo(StringBuilder builder)
     {
-        builder.append(", Producer Field: " + producerField);
+        builder.append(", Producer Field: ").append(producerField);
     }
 
 }

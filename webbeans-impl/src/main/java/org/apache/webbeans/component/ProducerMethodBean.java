@@ -113,7 +113,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     @Override
     protected void addToStringInfo(StringBuilder builder)
     {
-        builder.append(", Producer Method: " + creatorMethod);
+        builder.append(", Producer Method: ").append(creatorMethod);
     }
 
 }

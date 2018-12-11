@@ -866,7 +866,7 @@ public final class NotificationManager
     public boolean isContainerEvent(AnnotatedParameter<?> annotatedParameter)
     {
         AnnotatedCallable<?> method = annotatedParameter.getDeclaringCallable();
-        if (!AnnotatedMethod.class.isInstance(method) || method.getParameters().size() == 0)
+        if (!AnnotatedMethod.class.isInstance(method) || method.getParameters().isEmpty())
         {
             return false;
         }

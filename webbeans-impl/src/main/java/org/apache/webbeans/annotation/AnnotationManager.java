@@ -764,7 +764,7 @@ public final class AnnotationManager
 
     public void checkQualifiersParams(Set<Type> apiTypes, Annotation... qualifiers)
     {
-        if (apiTypes == null || apiTypes.size() == 0)
+        if (apiTypes == null || apiTypes.isEmpty())
         {
             throw new IllegalArgumentException("method parameter api types argument can not be empty");
         }

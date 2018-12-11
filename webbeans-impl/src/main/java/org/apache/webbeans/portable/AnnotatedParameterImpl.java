@@ -76,13 +76,14 @@ public class AnnotatedParameterImpl<X> extends AbstractAnnotated implements Anno
         return position;
     }
 
+    @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
         builder.append("Annotated Parameter");
         builder.append(",");
-        builder.append(super.toString()+ ",");
-        builder.append("Position : " + position);
+        builder.append(super.toString()).append(",");
+        builder.append("Position : ").append(position);
         
         return builder.toString();
     }

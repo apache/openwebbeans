@@ -177,7 +177,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     {
         Set<Bean<?>> beans = resolveBeans();
         
-        return beans.size() == 0;
+        return beans.isEmpty();
     }
 
     /**

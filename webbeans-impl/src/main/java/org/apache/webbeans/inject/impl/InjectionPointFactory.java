@@ -120,7 +120,7 @@ public class InjectionPointFactory
                 Named named = (Named) qualifier;
                 String value = named.value();
 
-                if (value == null || value.equals(""))
+                if (value == null || value.isEmpty())
                 {
                     NamedLiteral namedLiteral = new NamedLiteral();
                     namedLiteral.setValue(annotField.getJavaMember().getName());

@@ -263,11 +263,11 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         }
         
         // No-binding annotation
-        if (qualifiers.size() == 0 )
+        if (qualifiers.isEmpty())
         {
             qualifiers.add(DefaultLiteral.INSTANCE);
         }
-        else if(qualifiers.size() == 1)
+        else if (qualifiers.size() == 1)
         {
             // section 2.3.1
             // If a bean does not explicitly declare a qualifier other than @Named or @Any,
