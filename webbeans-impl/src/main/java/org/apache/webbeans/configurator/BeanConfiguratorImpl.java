@@ -40,6 +40,8 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.apache.webbeans.annotation.AnyLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
@@ -319,6 +321,22 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
 
     public Bean<?> getBean()
     {
+        if (qualifiers.isEmpty())
+        {
+            qualifiers.add(DefaultLiteral.INSTANCE);
+            qualifiers.add(AnyLiteral.INSTANCE);
+        }
+        if (scope != null && webBeansContext.getBeanManagerImpl().isPassivatingScope(scope) && passivationId == null)
+        {
+            final StringBuilder sb = new StringBuilder("CONFIGURATOR#");
+            sb.append(beanClass != null ? beanClass : typeClosures.stream().filter(Class.class::isInstance).findFirst()
+                    .orElse(Object.class)).append('#');
+            for (final Annotation qualifier : qualifiers)
+            {
+                sb.append(qualifier.toString()).append(',');
+            }
+            passivationId = sb.toString();
+        }
         return new ConstructedBean();
     }
 

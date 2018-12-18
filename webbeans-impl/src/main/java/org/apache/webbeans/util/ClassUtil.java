@@ -638,25 +638,25 @@ public final class ClassUtil
                 if(clazzUpperBoundTypeArg != Object.class)
                 {
                     if(!clazzUpperBoundTypeArg.isAssignableFrom(clazzBeanTypeArg))
-                    {                                       
+                    {
                         return false;
                     }
                 }
-                
+
                 //Check lower bounds
                 if(lowerBoundRequiredTypeArgs.length > 0 &&  lowerBoundRequiredTypeArgs[0] instanceof Class)
                 {
                     Class<?> clazzLowerBoundTypeArg = (Class<?>)lowerBoundRequiredTypeArgs[0];
-                    
+
                     if(clazzLowerBoundTypeArg != Object.class)
                     {
                         if(!clazzBeanTypeArg.isAssignableFrom(clazzLowerBoundTypeArg))
                         {
                             return false;
-                        }                                
+                        }
                     }
                 }
-            }                    
+            }
         }
         else if(isTypeVariable(beanTypeArg))
         {
@@ -692,6 +692,35 @@ public final class ClassUtil
                         }
                     }                    
                 }                                    
+            }
+        }
+        else if (beanTypeArg instanceof ParameterizedType)
+        {
+            final ParameterizedType pt = (ParameterizedType) beanTypeArg;
+            if(pt.getRawType() instanceof Class && upperBoundRequiredTypeArg instanceof Class)
+            {
+                final Class<?> beanRawClass = (Class) pt.getRawType();
+
+                //Check upper bounds
+                Class<?> clazzUpperBoundTypeArg = (Class<?>)upperBoundRequiredTypeArg;
+                if(clazzUpperBoundTypeArg != Object.class)
+                {
+                    if(!clazzUpperBoundTypeArg.isAssignableFrom(beanRawClass))
+                    {
+                        return false;
+                    }
+                }
+
+                //Check lower bounds
+                if(lowerBoundRequiredTypeArgs.length > 0 &&  lowerBoundRequiredTypeArgs[0] instanceof Class)
+                {
+                    Class<?> clazzLowerBoundTypeArg = (Class<?>)lowerBoundRequiredTypeArgs[0];
+
+                    if(clazzLowerBoundTypeArg != Object.class && !beanRawClass.isAssignableFrom(clazzLowerBoundTypeArg))
+                    {
+                        return false;
+                    }
+                }
             }
         }
          
