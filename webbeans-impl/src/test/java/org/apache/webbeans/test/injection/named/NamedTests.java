@@ -18,11 +18,17 @@
  */
 package org.apache.webbeans.test.injection.named;
 
+import static org.apache.webbeans.util.Asserts.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.literal.NamedLiteral;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Extension;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Assert;
@@ -51,9 +57,26 @@ public class NamedTests extends AbstractUnitTest {
         Assert.assertEquals("NamedBean", consumer.getNamed().getName());
         Assert.assertEquals("DefaultNamedBean", consumer.getDefaultNamedBeanWithNamedInjectionPoint().getName());
         Assert.assertEquals("DefaultNamedBean", consumer.getDefaultNamedBean().getName());
-        
+
         shutDownContainer();       
         
     }
 
+    @Test
+    public void beanConfiguratorNamedQualifier()
+    {
+        addExtension(new Extension()
+        {
+            void addBean(@Observes final AfterBeanDiscovery afterBeanDiscovery)
+            {
+                afterBeanDiscovery.addBean()
+                                  .qualifiers(NamedLiteral.of("test"))
+                                  .beanClass(NamedInterface.class)
+                                  .types(NamedInterface.class)
+                                  .createWith(it -> new NamedBean());
+            }
+        });
+        startContainer();
+        assertNotNull(getInstance(NamedInterface.class));
+    }
 }

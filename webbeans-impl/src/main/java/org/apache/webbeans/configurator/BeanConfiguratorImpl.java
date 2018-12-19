@@ -20,6 +20,7 @@ package org.apache.webbeans.configurator;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
@@ -30,6 +31,8 @@ import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.Producer;
 import javax.enterprise.inject.spi.configurator.BeanConfigurator;
 import javax.enterprise.util.TypeLiteral;
+import javax.inject.Named;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -47,7 +50,10 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.GenericsUtil;
+
+import static java.util.stream.Collectors.joining;
 
 //X TODO finish. Impossible to implement right now as the spec is ambiguous
 //X TODO producer part
@@ -253,10 +259,7 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
     @Override
     public BeanConfigurator<T> addQualifiers(Annotation... qualifiers)
     {
-        for (Annotation qualifier : qualifiers)
-        {
-            this.qualifiers.add(qualifier);
-        }
+        this.qualifiers.addAll(Arrays.asList(qualifiers));
         return this;
     }
 
@@ -321,23 +324,52 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
 
     public Bean<?> getBean()
     {
+        updateQualifiers();
+        setPassivationIdIfNeeded();
+        return new ConstructedBean();
+    }
+
+    private void setPassivationIdIfNeeded()
+    {
+        if (!webBeansContext.getBeanManagerImpl().isPassivatingScope(scope) || passivationId != null)
+        {
+            return;
+        }
+        final StringBuilder sb = new StringBuilder("CONFIGURATOR#");
+        sb.append(beanClass != null ? beanClass : typeClosures.stream().filter(Class.class::isInstance).findFirst()
+                .filter(it -> it != Object.class)
+                .orElse(Object.class)).append('#').append(qualifiers.stream().map(Annotation::toString).collect(
+                joining(",")));
+        for (final Annotation qualifier : qualifiers)
+        {
+            sb.append(qualifier.toString()).append(',');
+        }
+        passivationId = sb.toString();
+    }
+
+    // same as org.apache.webbeans.component.creation.BeanAttributesBuilder#defineQualifiers
+    private void updateQualifiers()
+    {
         if (qualifiers.isEmpty())
         {
             qualifiers.add(DefaultLiteral.INSTANCE);
+        }
+        else if (qualifiers.size() == 1)
+        {
+            final Class<? extends Annotation> annotationType = qualifiers.iterator().next().annotationType();
+            if (annotationType == Named.class || annotationType == Any.class)
+            {
+                qualifiers.add(DefaultLiteral.INSTANCE);
+            }
+        }
+        else if (qualifiers.size() == 2 && qualifiers.stream().allMatch(it -> it.annotationType() == Named.class))
+        {
+            qualifiers.add(DefaultLiteral.INSTANCE);
+        }
+        if (AnnotationUtil.getAnnotation(qualifiers, Any.class) == null)
+        {
             qualifiers.add(AnyLiteral.INSTANCE);
         }
-        if (scope != null && webBeansContext.getBeanManagerImpl().isPassivatingScope(scope) && passivationId == null)
-        {
-            final StringBuilder sb = new StringBuilder("CONFIGURATOR#");
-            sb.append(beanClass != null ? beanClass : typeClosures.stream().filter(Class.class::isInstance).findFirst()
-                    .orElse(Object.class)).append('#');
-            for (final Annotation qualifier : qualifiers)
-            {
-                sb.append(qualifier.toString()).append(',');
-            }
-            passivationId = sb.toString();
-        }
-        return new ConstructedBean();
     }
 
     /**
@@ -354,7 +386,9 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
         {
             //X TODO calculate return type from the typeClosures properly
             this.returnType = beanClass != null ? Class.class.cast(beanClass) : (typeClosures.isEmpty() ? null :
-                    Class.class.cast(typeClosures.stream().filter(Class.class::isInstance).findFirst().orElse(null)));
+                    Class.class.cast(typeClosures.stream().filter(Class.class::isInstance).findFirst()
+                                                 .filter(it -> it != Object.class)
+                                                 .orElse(Object.class)));
 
             dependent = !webBeansContext.getBeanManagerImpl().isNormalScope(scope);
 
