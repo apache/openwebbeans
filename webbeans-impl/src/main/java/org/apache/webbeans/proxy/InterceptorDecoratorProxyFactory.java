@@ -338,6 +338,11 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         mv.visitEnd();
     }
 
+    private boolean isIgnoredMethod(final Method delegatedMethod)
+    {
+        return "writeReplace".equals(delegatedMethod.getName());
+    }
+
     /**
      * Directly delegate all non intercepted nor decorated methods to the internal instance.
      *
@@ -348,7 +353,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
     {
         for (Method delegatedMethod : noninterceptedMethods)
         {
-            if (unproxyableMethod(delegatedMethod))
+            if (unproxyableMethod(delegatedMethod) || isIgnoredMethod(delegatedMethod))
             {
                 continue;
             }
@@ -419,6 +424,10 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
             throws ProxyGenerationException
     {
         if ("<init>".equals(method.getName()))
+        {
+            return;
+        }
+        if (isIgnoredMethod(method))
         {
             return;
         }

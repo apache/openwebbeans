@@ -387,6 +387,11 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
 
         for (Method delegatedMethod : noninterceptedMethods)
         {
+            if (isIgnoredMethod(delegatedMethod))
+            {
+                return;
+            }
+
             String methodDescriptor = Type.getMethodDescriptor(delegatedMethod);
 
             //X TODO handle generic exception types?
@@ -439,8 +444,18 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
 
     }
 
+    private boolean isIgnoredMethod(final Method delegatedMethod)
+    {
+        return "writeReplace".equals(delegatedMethod.getName());
+    }
+
     private void generateDelegationMethod(ClassWriter cw, Method method, int methodIndex, Class<?> classToProxy, String proxyClassFileName)
     {
+        if (isIgnoredMethod(method))
+        {
+            return;
+        }
+
         Class<?> returnType = method.getReturnType();
         Class<?>[] parameterTypes = method.getParameterTypes();
         int modifiers = method.getModifiers();

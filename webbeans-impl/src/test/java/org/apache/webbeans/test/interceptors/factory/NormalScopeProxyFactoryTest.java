@@ -21,27 +21,39 @@ package org.apache.webbeans.test.interceptors.factory;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.InjectableBeanManager;
+import org.apache.webbeans.context.ApplicationContext;
+import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.interceptors.factory.beans.ClassInterceptedClass;
 import org.apache.webbeans.test.interceptors.factory.beans.SomeBaseClass;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
+import org.apache.webbeans.test.util.Serializations;
 import org.junit.Assert;
 import org.junit.Test;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.spi.Context;
+import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 import javax.inject.Provider;
+
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import org.apache.webbeans.test.interceptors.factory.beans.PartialBeanClass;
 import org.apache.webbeans.test.interceptors.factory.beans.PartialBeanInterface;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * Test for the {@link NormalScopeProxyFactory}
@@ -209,6 +221,30 @@ public class NormalScopeProxyFactoryTest extends AbstractUnitTest
 
     }
 
+    // ensure we don't get:
+    // java.lang.ClassFormatError: Duplicate method name "writeReplace" with signature
+    // "()Ljava.lang.Object;" in class file org/apache/webbeans/test/interceptors/factory/
+    // NormalScopeProxyFactoryTest$IHaveAWriteReplace$$OwbNormalScopeProxy0
+    @Test
+    public void writeReplaceIsIgnoredWhenPresentInDelegate() throws Exception
+    {
+        MapBackedProxyHandler.map = null;
+        final NormalScopeProxyFactory pf = new NormalScopeProxyFactory(new WebBeansContext());
+        final ClassLoader classLoader = new URLClassLoader(new URL[0]);
+        final Class<IHaveAWriteReplace> proxyClass = pf.createProxyClass(classLoader, IHaveAWriteReplace.class);
+        proxyClass.getDeclaredMethod("writeReplace"); // ensure it exists
+
+        MapBackedProxyHandler.map = new HashMap<>();
+        final IHaveAWriteReplace proxy = pf.createProxyInstance(proxyClass, new MapBackedProxyHandler());
+        assertNotNull(proxy);
+        MapBackedProxyHandler.map.put(IHaveAWriteReplace.class, proxy);
+
+        final Object deserialized = Serializations.deserialize(Serializations.serialize(proxy));
+        assertNotNull(deserialized);
+        assertSame(proxy, deserialized);
+        MapBackedProxyHandler.map = null;
+    }
+
     @Test
     public void testPartialBeanProxyCreation() throws Exception
     {
@@ -287,6 +323,22 @@ public class NormalScopeProxyFactoryTest extends AbstractUnitTest
         Assert.assertEquals(Integer.valueOf(42), protectedUsage.getProtectedIntegerMeaningOfLife());
     }
 
+    public static class SerializableProvider<T> implements Serializable, Provider<T>
+    {
+
+        private final T value;
+
+        private SerializableProvider(final T value)
+        {
+            this.value = value;
+        }
+
+        @Override
+        public T get()
+        {
+            return value;
+        }
+    }
     public static class TestContextualInstanceProvider<T> implements Provider<T>
     {
         private T instance;
@@ -326,5 +378,44 @@ public class NormalScopeProxyFactoryTest extends AbstractUnitTest
         SubPackageInterceptedClass subPackageInstance = getInstance(SubPackageInterceptedClass.class);
         Assert.assertNotNull(subPackageInstance);
         instance.getFloat();
+    }
+
+    public static class IHaveAWriteReplace implements Serializable
+    {
+        Object writeReplace()
+        {
+            return null;
+        }
+    }
+
+    private static class MapBackedProxyHandler extends NormalScopedBeanInterceptorHandler
+    {
+        // ensure it is not serialized otherwise we break out test
+        private static Map<Class<?>, Object> map;
+
+        private MapBackedProxyHandler()
+        {
+            super(new InjectableBeanManager(null) // used as a mock without a WBC
+            {
+
+                @Override
+                public Context getContext(final Class<? extends Annotation> scope)
+                {
+                    return new ApplicationContext();
+                }
+
+                @Override
+                public <T> CreationalContext<T> createCreationalContext(final Contextual<T> contextual)
+                {
+                    return null;
+                }
+            }, null);
+        }
+
+        @Override
+        protected Object readResolve() throws ObjectStreamException
+        {
+            return map.get(IHaveAWriteReplace.class);
+        }
     }
 }
