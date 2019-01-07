@@ -37,6 +37,7 @@ import org.apache.xbean.finder.AnnotationFinder;
 import org.apache.xbean.finder.ClassLoaders;
 import org.apache.xbean.finder.archive.Archive;
 import org.apache.xbean.finder.filter.Filter;
+import org.apache.xbean.finder.util.Files;
 
 import javax.decorator.Decorator;
 import javax.interceptor.Interceptor;
@@ -262,6 +263,15 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
                 //X TODO this should be much more actually
                 //X TODO we might need to configure it via files
                 it.remove();
+            }
+            else
+            {
+                // we could check for META-INF/maven/org.apache.geronimo.specs presence there but this is faster
+                final String filename = Files.toFile(url).getName();
+                if (filename.startsWith("geronimo-") && filename.contains("_spec"))
+                {
+                    it.remove();
+                }
             }
         }
     }
