@@ -282,7 +282,6 @@ public class AfterBeanDiscoveryImpl extends EventBase implements AfterBeanDiscov
         return beanConfigurator;
     }
 
-    //X TODO OWB-1182 CDI 2.0
     @Override
     public <T> ObserverMethodConfigurator<T> addObserverMethod()
     {
