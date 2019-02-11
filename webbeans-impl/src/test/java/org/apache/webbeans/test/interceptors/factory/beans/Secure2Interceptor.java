@@ -18,16 +18,26 @@
  */
 package org.apache.webbeans.test.interceptors.factory.beans;
 
-public final class UnproxyableClass implements UnproxyableClassInterface {
-	
-	private final String name;
-	
-	public UnproxyableClass(String name) {
-		this.name = name;
-	}
-	
-	@Override
-	public String getName() {
-		return name;
-	}
+import java.io.Serializable;
+
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.Interceptor;
+import javax.interceptor.InvocationContext;
+
+import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure2;
+
+@Interceptor
+@Secure2
+public class Secure2Interceptor implements Serializable
+{
+
+    @AroundInvoke
+    public Object caller(InvocationContext context) throws Exception
+    {
+        Object result = context.proceed();
+        if (result instanceof String) {
+        	result = result + " secured";
+        }
+        return result;
+    }
 }

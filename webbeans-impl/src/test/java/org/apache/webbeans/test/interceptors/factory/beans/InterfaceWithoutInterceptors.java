@@ -18,17 +18,11 @@
  */
 package org.apache.webbeans.test.interceptors.factory.beans;
 
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.InterceptionFactory;
-import javax.enterprise.util.AnnotationLiteral;
-
-import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
-
-public class UnproxyableClassProducer {
+public interface InterfaceWithoutInterceptors {
 	
-	@Produces
-	public UnproxyableClassInterface unproxyableClass(InterceptionFactory<UnproxyableClassInterface> factory) {
-		factory.configure().add(new AnnotationLiteral<Transactional>() {});
-		return factory.createInterceptedInstance(new UnproxyableClass("dummy"));
+	String getName();
+	
+	default String getDefaultName() {
+		return "John Doe";
 	}
 }

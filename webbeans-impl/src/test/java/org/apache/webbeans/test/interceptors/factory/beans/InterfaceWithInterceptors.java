@@ -18,7 +18,15 @@
  */
 package org.apache.webbeans.test.interceptors.factory.beans;
 
-public interface UnproxyableClassInterface {
+import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
+
+public interface InterfaceWithInterceptors {
 	
+	@Transactional
 	String getName();
+	
+	@Transactional
+	default String getDefaultName() {
+		return "John Doe";
+	}
 }
