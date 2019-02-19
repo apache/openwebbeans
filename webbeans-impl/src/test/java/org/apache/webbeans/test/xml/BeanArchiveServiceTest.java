@@ -40,7 +40,7 @@ public class BeanArchiveServiceTest
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
-    public void testNotExistingBeansXml() throws Exception
+    public void testNotExistingBeansXml()
     {
         BeanArchiveInformation bai = scanBeansXml("");
         Assert.assertEquals(BeanDiscoveryMode.ANNOTATED, bai.getBeanDiscoveryMode());
@@ -51,7 +51,7 @@ public class BeanArchiveServiceTest
     }
 
     @Test
-    public void testEmptyBeansXml() throws Exception
+    public void testEmptyBeansXml()
     {
         BeanArchiveInformation bai = scanBeansXml("empty.xml");
         Assert.assertEquals(BeanDiscoveryMode.ALL, bai.getBeanDiscoveryMode());
@@ -72,7 +72,7 @@ public class BeanArchiveServiceTest
     }
 
     @Test
-    public void testAlternativesBeansXml() throws Exception
+    public void testAlternativesBeansXml()
     {
         BeanArchiveInformation bai = scanBeansXml("alternatives_correct.xml");
         Assert.assertEquals(BeanDiscoveryMode.ALL, bai.getBeanDiscoveryMode());
@@ -87,7 +87,7 @@ public class BeanArchiveServiceTest
     }
 
     @Test
-    public void testDecoratorsBeansXml() throws Exception
+    public void testDecoratorsBeansXml()
     {
         BeanArchiveInformation bai = scanBeansXml("decorators.xml");
         Assert.assertEquals(BeanDiscoveryMode.ALL, bai.getBeanDiscoveryMode());
@@ -100,7 +100,7 @@ public class BeanArchiveServiceTest
     }
 
     @Test
-    public void testInterceptorsBeansXml() throws Exception
+    public void testInterceptorsBeansXml()
     {
         BeanArchiveInformation bai = scanBeansXml("interceptors.xml");
         Assert.assertEquals(BeanDiscoveryMode.ALL, bai.getBeanDiscoveryMode());
@@ -114,13 +114,13 @@ public class BeanArchiveServiceTest
 
 
     @Test(expected = DeploymentException.class)
-    public void testCdi11_Fail_without_discovery_mode() throws Exception
+    public void testCdi11_Fail_without_discovery_mode()
     {
         scanBeansXml("cdi11_failed.xml");
     }
 
     @Test
-    public void testCdi11_discovery_none() throws Exception
+    public void testCdi11_discovery_none()
     {
         BeanArchiveInformation bai = scanBeansXml("cdi11_discovery_none.xml");
         Assert.assertEquals(BeanDiscoveryMode.NONE, bai.getBeanDiscoveryMode());
@@ -131,7 +131,7 @@ public class BeanArchiveServiceTest
     }
 
     @Test
-    public void testCdi11_discovery_scopedBeansOnly() throws Exception
+    public void testCdi11_discovery_scopedBeansOnly()
     {
         BeanArchiveInformation bai = scanBeansXml("cdi11_discovery_scopedBeansOnly.xml");
         Assert.assertEquals(BeanDiscoveryMode.TRIM, bai.getBeanDiscoveryMode());
@@ -142,7 +142,7 @@ public class BeanArchiveServiceTest
     }
 
     @Test
-    public void testExclude() throws Exception
+    public void testExclude()
     {
         BeanArchiveInformation bai = scanBeansXml("cdi11_exclude.xml");
         Assert.assertEquals(BeanDiscoveryMode.ALL, bai.getBeanDiscoveryMode());
