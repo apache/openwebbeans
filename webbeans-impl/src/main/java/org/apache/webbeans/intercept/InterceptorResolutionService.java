@@ -209,9 +209,11 @@ public class InterceptorResolutionService
         List<Interceptor<?>> cdiConstructorInterceptors = new ArrayList<>(allUsedConstructorCdiInterceptors);
         Collections.sort(cdiConstructorInterceptors, new InterceptorComparator(webBeansContext));
 
-        boolean interceptedBean = allUsedEjbInterceptors.size() > 0 ||
-                                  allUsedCdiInterceptors.size() > 0 ||
-                                  lifecycleMethodInterceptorInfos.size() > 0;
+        boolean interceptedBean = !annotatedType.getJavaClass().isInterface() && (
+                                      allUsedEjbInterceptors.size() > 0 ||
+                                      allUsedCdiInterceptors.size() > 0 ||
+                                      lifecycleMethodInterceptorInfos.size() > 0
+                                  );
 
         if ((interceptedBean || decorators.size() > 0) && Modifier.isFinal(annotatedType.getJavaClass().getModifiers()))
         {

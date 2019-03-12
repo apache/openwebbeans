@@ -133,7 +133,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
 
         T instance = produce(interceptorInstances, creationalContextImpl);
 
-        if (hasInterceptorInfo())
+        if (hasInterceptorInfo() && !(instance instanceof OwbInterceptorProxy))
         {
             instance = creationalContextImpl.getWebBeansContext().getInterceptorResolutionService()
                 .createProxiedInstance(instance, creationalContextImpl, creationalContext,
