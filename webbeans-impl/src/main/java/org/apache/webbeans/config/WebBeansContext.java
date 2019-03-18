@@ -36,6 +36,11 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.conversation.DefaultConversationService;
+import org.apache.webbeans.corespi.se.DefaultApplicationBoundaryService;
+import org.apache.webbeans.corespi.se.DefaultContextsService;
+import org.apache.webbeans.corespi.se.DefaultJndiService;
+import org.apache.webbeans.corespi.security.SimpleSecurityService;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.event.NotificationManager;
@@ -63,6 +68,7 @@ import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.webbeans.xml.DefaultBeanArchiveService;
 
 /**
  * This is the central point to manage the whole CDI container
@@ -128,7 +134,7 @@ public class WebBeansContext
         if (initialServices == null || !initialServices.containsKey(LoaderService.class))
         {
             String implementationLoaderServiceName =
-                    openWebBeansConfiguration.getProperty(LoaderService.class.getName());
+                    this.openWebBeansConfiguration.getProperty(LoaderService.class.getName());
             if (implementationLoaderServiceName == null)
             {
                 serviceMap.put(LoaderService.class, new DefaultLoaderService());
@@ -162,28 +168,6 @@ public class WebBeansContext
         conversationManager = new ConversationManager(this);
 
         notificationManager = new NotificationManager(this);
-
-        // Allow the WebBeansContext itself to be looked up
-        managerMap.put(getClass(), this);
-
-        // Add them all into the map for backwards compatibility
-        managerMap.put(AlternativesManager.class, alternativesManager);
-        managerMap.put(AnnotatedElementFactory.class, annotatedElementFactory);
-        managerMap.put(BeanManagerImpl.class, beanManagerImpl);
-        managerMap.put(ConversationManager.class, conversationManager);
-        managerMap.put(CreationalContextFactory.class, creationalContextFactory);
-        managerMap.put(DecoratorsManager.class, decoratorsManager);
-        managerMap.put(ExtensionLoader.class, extensionLoader);
-        managerMap.put(InterceptorsManager.class, interceptorsManager);
-        managerMap.put(InterceptorDecoratorProxyFactory.class, interceptorDecoratorProxyFactory);
-        managerMap.put(NormalScopeProxyFactory.class, normalScopeProxyFactory);
-        managerMap.put(SubclassProxyFactory.class, subclassProxyFactory);
-        managerMap.put(OpenWebBeansConfiguration.class, openWebBeansConfiguration);
-        managerMap.put(PluginLoader.class, pluginLoader);
-        managerMap.put(SerializableBeanVault.class, serializableBeanVault);
-        managerMap.put(StereoTypeManager.class, stereoTypeManager);
-        managerMap.put(InterceptorResolutionService.class, interceptorResolutionService);
-        managerMap.put(NotificationManager.class, notificationManager);
 
         beanManagerImpl.getInjectionResolver().setFastMatching(!"false".equalsIgnoreCase(getOpenWebBeansConfiguration()
                 .getProperty(OpenWebBeansConfiguration.FAST_MATCHING)));
@@ -419,17 +403,132 @@ public class WebBeansContext
         /* No singleton for this application, create one */
         if (object == null)
         {
-            object = createInstance(clazz);
+            object = backwardCompatibilityLookup(clazz);
+            if (object == null)
+            {
+                object = createInstance(clazz);
+            }
 
-            //Save it
+            // Save it for future usages
             managerMap.put(clazz, object);
         }
 
         return object;
     }
 
+    private <T> T backwardCompatibilityLookup(final Class<T> clazz)
+    {
+        if (clazz.isInstance(this)) // Allow the WebBeansContext itself to be looked up
+        {
+            return clazz.cast(this);
+        }
+
+        // Add them all into the map for backwards compatibility
+
+        if (clazz == AlternativesManager.class)
+        {
+            return clazz.cast(alternativesManager);
+        }
+        if (clazz == AnnotatedElementFactory.class)
+        {
+            return clazz.cast(annotatedElementFactory);
+        }
+        if (clazz == BeanManagerImpl.class)
+        {
+            return clazz.cast(beanManagerImpl);
+        }
+        if (clazz == ConversationManager.class)
+        {
+            return clazz.cast(conversationManager);
+        }
+        if (clazz == CreationalContextFactory.class)
+        {
+            return clazz.cast(creationalContextFactory);
+        }
+        if (clazz == DecoratorsManager.class)
+        {
+            return clazz.cast(decoratorsManager);
+        }
+        if (clazz == ExtensionLoader.class)
+        {
+            return clazz.cast(extensionLoader);
+        }
+        if (clazz == InterceptorsManager.class)
+        {
+            return clazz.cast(interceptorsManager);
+        }
+        if (clazz == InterceptorDecoratorProxyFactory.class)
+        {
+            return clazz.cast(interceptorDecoratorProxyFactory);
+        }
+        if (clazz == NormalScopeProxyFactory.class)
+        {
+            return clazz.cast(normalScopeProxyFactory);
+        }
+        if (clazz == SubclassProxyFactory.class)
+        {
+            return clazz.cast(subclassProxyFactory);
+        }
+        if (clazz == OpenWebBeansConfiguration.class)
+        {
+            return clazz.cast(openWebBeansConfiguration);
+        }
+        if (clazz == PluginLoader.class)
+        {
+            return clazz.cast(pluginLoader);
+        }
+        if (clazz == SerializableBeanVault.class)
+        {
+            return clazz.cast(serializableBeanVault);
+        }
+        if (clazz == StereoTypeManager.class)
+        {
+            return clazz.cast(stereoTypeManager);
+        }
+        if (clazz == InterceptorResolutionService.class)
+        {
+            return clazz.cast(interceptorResolutionService);
+        }
+        if (clazz == NotificationManager.class)
+        {
+            return clazz.cast(notificationManager);
+        }
+        return null;
+    }
+
     private <T> T createInstance(Class<T> clazz)
     {
+        // skip the reflection for know classes
+        if (DefaultLoaderService.class == clazz)
+        {
+            return clazz.cast(new DefaultLoaderService());
+        }
+        if (SimpleSecurityService.class == clazz)
+        {
+            return clazz.cast(new SimpleSecurityService());
+        }
+        if (DefaultApplicationBoundaryService.class == clazz)
+        {
+            return clazz.cast(new DefaultApplicationBoundaryService());
+        }
+        if (DefaultBeanArchiveService.class == clazz)
+        {
+            return clazz.cast(new DefaultBeanArchiveService());
+        }
+        if (DefaultJndiService.class == clazz)
+        {
+            return clazz.cast(new DefaultJndiService());
+        }
+        if (DefaultContextsService.class == clazz)
+        {
+            return clazz.cast(new DefaultContextsService(this));
+        }
+        if (DefaultConversationService.class == clazz)
+        {
+            return clazz.cast(new DefaultConversationService());
+        }
+
+        // try by reflection for extensions
         try
         {
 
