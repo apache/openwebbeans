@@ -1,0 +1,71 @@
+= OpenWebBeans CDI SE implementation
+
+It is a plain CDI SE implementation but with a few specific features:
+
+. It enables to be extended through `org.apache.openwebbeans.se.SeContainerSelector`,
+. It has specific properties intended to be used to configured the container,
+. It provides a generic `main(String[])`
+
+== `SeContainer` OpenWebBeans properties
+
+[opts="header"]
+|===
+| Name | Description
+| `openwebbeans.disableDiscovery`|`true` to disable the automatic discovery, false otherwise
+| `openwebbeans.classes`|Comma separated values of fully qualified classes names to register in the container
+| `openwebbeans.packages`|Comma separated values of fully qualified packages (either direct packages if `package-info` exists or a class of this package if not) names to register in the container
+| `openwebbeans.packages.recursive`|Comma separated values of fully qualified packages (either direct packages if `package-info` exists or a class of this package if not) names to register in the container recursively
+| `openwebbeans.decorators`|List of decorators to enable
+| `openwebbeans.interceptors`|List of interceptors to enable
+| `openwebbeans.alternatives`|List of alternatives to enable
+| `openwebbeans.stereotypes`|List of alternative stereotypes to enable
+| `openwebbeans.properties`|Properties to enable - in `java.util.Properties` format
+| `openwebbeans.property.${key}`|A property to enable, this is not useful by itself in programmatic mode but `CDILauncher` can rely on it.
+|===
+
+== Generic Launcher
+
+`org.apache.openwebbeans.se.CDILauncher` is a reusable main to launch any CDI application.
+In other words you can launch. It reuses the previous part properties prefixed with `--`
+and getting their value using a space as separator.
+This main also takes a new property `--openwebbeans.main` to specify an optional
+main. The value is either a bean name or a fully qualified class name using `@Default` qualifier.
+The method executed is either `Runnable#run` if the bean implements it
+or a `run()` method or a `main()` method or a `main(String...)̀  method taking
+the cleaned up arguments.
+
+Example:
+
+[source,sh]
+----
+java -cp .... \
+    org.apache.openwebbeans.se.CDILauncher \
+    --openwebbeans.main myNamedMain \
+    --openwebbeans.disableDiscovery true \
+    --openwebbeans.packaged com.company.myapp
+    --cli-opt opt-value \
+    other thing
+----
+
+If the bean named `myNamedMain` is the following one:
+
+[source,java]
+----
+@Named("myNamedMain")
+@ApplicationScoped
+public class MyMain {
+  public void main(String... args) {
+      Stream.of(args).forEach(System.out::println);
+  }
+}
+----
+
+Then the execution will print:
+
+[source]
+----
+--cli-opt
+opt-value
+other
+thing
+----
