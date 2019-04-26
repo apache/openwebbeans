@@ -70,6 +70,8 @@
         <geronimo_interceptor.version>1.0</geronimo_interceptor.version>
         <geronimo_validation.version>1.1</geronimo_validation.version>
         <tomcat7.version>7.0.73</tomcat7.version>
+        <!-- jetty 9.4.13+ broke session persistence: https://github.com/eclipse/jetty.project/issues/3597 -->
+        <jetty.version>9.4.12.v20180830</jetty.version>
         <myfaces.version>2.3.0</myfaces.version>
         <xbean.version>4.13</xbean.version>
         <arquillian.version>1.1.13.Final</arquillian.version>
@@ -540,7 +542,8 @@
         <module>webbeans-ejb</module>
         <module>webbeans-ee</module>
         <module>webbeans-tomcat7</module>
-        <module>webbeans-jms</module>       
+        <module>webbeans-jetty9</module>
+        <module>webbeans-jms</module>
         <module>webbeans-jsf</module>
         <module>webbeans-el22</module>
         <module>webbeans-resource</module>

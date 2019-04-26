@@ -1,0 +1,218 @@
+== Jetty 9 Module for Apache OpenWebBeans
+
+There are two ways to use Apache OpenWebBeans with Jetty 9.
+You can:
+
+* Exclude the Apache OpenWebBeans implementation from your `.war` file, this is known as a skinny `.war`
+* Include the Apache OpenWebBeans implementation in your `.war` file, this is known as a fat `.war`
+
+=== Fat `.war`
+
+Bundle the Apache OpenWebBeans `.jar` files in your `WEB-INF/lib`.
+
+Add (or augment your existing) `WEB-INF/jetty-web.xml`:
+
+[source,xml]
+----
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
+<Configure id="wac" class="org.eclipse.jetty.webapp.WebAppContext">
+    <Call name="prependServerClass">
+        <Arg>-org.eclipse.jetty.util.Decorator</Arg>
+    </Call>
+    <Call name="prependServerClass">
+        <Arg>-org.eclipse.jetty.util.DecoratedObjectFactory</Arg>
+    </Call>
+    <Call name="prependServerClass">
+        <Arg>-org.eclipse.jetty.server.handler.ContextHandler</Arg>
+    </Call>
+    <Call name="prependServerClass">
+        <Arg>-org.eclipse.jetty.servlet.ServletContextHandler$Context</Arg>
+    </Call>
+    <Call name="prependServerClass">
+        <Arg>-org.eclipse.jetty.servlet.ServletContextHandler</Arg>
+    </Call>
+    <Call name="prependServerClass">
+        <Arg>-org.eclipse.jetty.webapp.WebAppContext</Arg>
+    </Call>
+    <Get id="wal" name="classLoader"/>
+    <Get id="objf" name="objectFactory">
+        <Call name="addDecorator">
+            <Arg>
+                <New class="org.apache.webbeans.web.jetty9.JettyDecorator">
+                <Arg><Ref refid="wal"/></Arg>
+            </New>
+            </Arg>
+        </Call>
+    </Get>
+</Configure>
+----
+
+Add the listener to your `WEB-INF/web.xml`:
+
+[source,xml]
+----
+<web-app id="owb-it" version="3.0"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    ...
+    <listener>
+        <listener-class>org.apache.webbeans.servlet.WebBeansConfigurationListener</listener-class>
+    </listener>
+    ...
+</web-app>
+----
+
+The resulting `.war` will run on vanilla Jetty
+
+=== Skinny `.war`
+
+In this case you exclude the Apache OpenWebBeans `.jar` files from your `WEB-INF/lib` and do nothing with deploytment descriptors or adding listeners.
+
+You will need to configure your target Jetty to activate Apache OpenWebBeans.
+This depends on your target Jetty.
+
+NOTE: A regression in Jetty 9.4.13 (link:https://github.com/eclipse/jetty.project/issues/3597[#3597]) means that skinny `.war` deployments will not be able to persist session scoped context.
+The recommendation is to use fat `.war` deployments if you need to use a version of Jetty with this regression.
+
+=== Standard Jetty Deployment
+
+Should just be a case of adding the module to your Jetty Home and then activating it.
+
+[source,shell]
+----
+export JETTY_BASE=...
+export JETTY_HOME=...
+
+# Add the module to your Jetty Home
+cd "${JETTY_HOME}"
+curl -O https://repo1.maven.org/maven2/org/apache/openwebbeans/openwebbeans-jetty9/2.0.11/openwebbeans-jetty9-2.0.11-config.jar
+unzip openwebbeans-jetty9-2.0.11-config.jar
+rm openwebbeans-jetty9-2.0.11-config.jar
+cd "${JETTY_BASE}"
+
+# Add the module to your Jetty Base
+java -jar "${JETTY_HOME}/start.jar" --add-to-start=apache-owb apache-owb.version=2.0.11
+
+ALERT: There are enabled module(s) with licenses.
+The following 1 module(s):
+ + contains software not provided by the Eclipse Foundation!
+ + contains software not covered by the Eclipse Public License!
+ + has not been audited for compliance with its license
+
+ Module: apache-owb
+  + Apache OpenWebBeans is an open source project hosted by the Apache Software Foundation and released under the Apache 2.0 license.
+  + https://openwebbeans.apache.org/
+  + http://www.apache.org/licenses/LICENSE-2.0.html
+
+Proceed (y/N)? y
+INFO  : apache-owb      initialized in ${jetty.base}/start.ini
+MKDIR : ${jetty.base}/lib/apache-owb
+COPY  : .../.m2/repository/org/apache/openwebbeans/openwebbeans-spi/2.0.11/openwebbeans-spi-2.0.11.jar to ${jetty.base}/lib/apache-owb/openwebbeans-spi-2.0.11.jar
+COPY  : .../.m2/repository/org/apache/openwebbeans/openwebbeans-impl/2.0.11/openwebbeans-impl-2.0.11.jar to ${jetty.base}/lib/apache-owb/openwebbeans-impl-2.0.11.jar
+COPY  : .../.m2/repository/org/apache/openwebbeans/openwebbeans-web/2.0.11/openwebbeans-web-2.0.11.jar to ${jetty.base}/lib/apache-owb/openwebbeans-web-2.0.11.jar
+COPY  : .../.m2/repository/org/apache/openwebbeans/openwebbeans-el22/2.0.11/openwebbeans-el22-2.0.11.jar to ${jetty.base}/lib/apache-owb/openwebbeans-el22-2.0.11.jar
+COPY  : .../.m2/repository/org/apache/openwebbeans/openwebbeans-jetty9/2.0.11/openwebbeans-jetty9-2.0.11.jar to ${jetty.base}/lib/apache-owb/openwebbeans-jetty9-2.0.11.jar
+COPY  : .../.m2/repository/org/apache/geronimo/specs/geronimo-jcdi_2.0_spec/1.0/geronimo-jcdi_2.0_spec-1.0.jar to ${jetty.base}/lib/apache-owb/geronimo-jcdi_2.0_spec-1.0.jar
+COPY  : .../.m2/repository/org/apache/geronimo/specs/geronimo-atinject_1.0_spec/1.0/geronimo-atinject_1.0_spec-1.0.jar to ${jetty.base}/lib/apache-owb/geronimo-atinject_1.0_spec-1.0.jar
+COPY  : .../.m2/repository/org/apache/geronimo/specs/geronimo-interceptor_1.2_spec/1.0/geronimo-interceptor_1.2_spec-1.0.jar to ${jetty.base}/lib/apache-owb/geronimo-interceptor_1.2_spec-1.0.jar
+COPY  : .../.m2/repository/org/apache/xbean/xbean-finder-shaded/4.13/xbean-finder-shaded-4.13.jar to ${jetty.base}/lib/apache-owb/xbean-finder-shaded-4.13.jar
+COPY  : .../.m2/repository/org/apache/xbean/xbean-asm7-shaded/4.13/xbean-asm7-shaded-4.13.jar to ${jetty.base}/lib/apache-owb/xbean-asm7-shaded-4.13.jar
+INFO  : Base directory was modified
+----
+
+==== Jetty Embedded
+
+Just add the `org.apache.webbeans.web.jetty9.OwbConfiguration` to your context's configuration classes e.g.
+
+[source,java]
+----
+Server jetty;
+WebAppContext ctx;
+
+...
+
+Configuration.ClassList classList = Configuration.ClassList.serverDefault(jetty);
+classList.addBefore(
+        "org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
+        "org.eclipse.jetty.annotations.AnnotationConfiguration",
+        "org.apache.webbeans.web.jetty9.OwbConfiguration"
+);
+ctx.setConfigurationClasses(classList);
+----
+
+==== Jetty Maven Plugin
+
+NOTE: The following only applies if if you are using a skinny `.war`
+
+Add the dependencies to your `jetty-maven-plugin` definnition and add the `org.apache.webbeans.web.jetty9.OwbConfiguration` to your context's configuration classes.
+
+NOTE: This will require you to specify all the configuration classes
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-maven-plugin</artifactId>
+    ...
+    <dependencies>
+        ...
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-spi</artifactId>
+            <version>${openwebbeans.version}/version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-impl</artifactId>
+            <version>${openwebbeans.version}/version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-web</artifactId>
+            <version>${openwebbeans.version}/version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-jetty9</artifactId>
+            <version>${openwebbeans.version}/version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jcdi_2.0_spec</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-atinject_1.0_spec</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-interceptor_1.2_spec</artifactId>
+            <version>1.0</version>
+        </dependency>
+        ...
+    </dependencies>
+    ...
+    <configuration>
+        ...
+        <webApp>
+            ...
+            <configurationClasses>
+                <configurationClass>org.eclipse.jetty.maven.plugin.MavenWebInfConfiguration</configurationClass>
+                <configurationClass>org.eclipse.jetty.webapp.WebXmlConfiguration</configurationClass>
+                <configurationClass>org.eclipse.jetty.webapp.MetaInfConfiguration</configurationClass>
+                <configurationClass>org.eclipse.jetty.webapp.FragmentConfiguration</configurationClass>
+                <configurationClass>org.eclipse.jetty.plus.webapp.EnvConfiguration</configurationClass>
+                <configurationClass>org.eclipse.jetty.plus.webapp.PlusConfiguration</configurationClass>
+                <configurationClass>org.eclipse.jetty.annotations.AnnotationConfiguration</configurationClass>
+                <configurationClass>org.apache.webbeans.web.jetty9.OwbConfiguration</configurationClass>
+                <configurationClass>org.eclipse.jetty.webapp.JettyWebXmlConfiguration</configurationClass>
+            </configurationClasses>
+            ...
+        </webApp>
+        ...
+    </configuration>
+</plugin>
+----
