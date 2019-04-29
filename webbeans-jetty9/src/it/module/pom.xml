@@ -252,17 +252,6 @@
                 <configuration>
                     <webApp>
                         <contextPath>/${project.build.finalName}</contextPath>
-                        <configurationClasses>
-                            <configurationClass>org.eclipse.jetty.maven.plugin.MavenWebInfConfiguration</configurationClass>
-                            <configurationClass>org.eclipse.jetty.webapp.WebXmlConfiguration</configurationClass>
-                            <configurationClass>org.eclipse.jetty.webapp.MetaInfConfiguration</configurationClass>
-                            <configurationClass>org.eclipse.jetty.webapp.FragmentConfiguration</configurationClass>
-                            <configurationClass>org.eclipse.jetty.plus.webapp.EnvConfiguration</configurationClass>
-                            <configurationClass>org.eclipse.jetty.plus.webapp.PlusConfiguration</configurationClass>
-                            <configurationClass>org.eclipse.jetty.annotations.AnnotationConfiguration</configurationClass>
-                            <configurationClass>org.apache.webbeans.web.jetty9.OwbConfiguration</configurationClass>
-                            <configurationClass>org.eclipse.jetty.webapp.JettyWebXmlConfiguration</configurationClass>
-                        </configurationClasses>
                     </webApp>
                     <jvmArgs>-Dorg.apache.myfaces.PROJECT_STAGE=${projectStage} -Dfaces.PROJECT_STAGE=${projectStage}</jvmArgs>
                     <waitForChild>false</waitForChild>
