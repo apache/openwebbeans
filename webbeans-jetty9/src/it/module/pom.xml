@@ -215,7 +215,8 @@
                                 <argument>--add-to-start=apache-jsp</argument>
                                 <argument>--add-to-start=apache-jstl</argument>
                                 <argument>--add-to-start=apache-owb</argument>
-                                <argument>maven.repo.uri=@repository.proxy.url@</argument>
+                                <argument>maven.local.repo=@local.repository.path@</argument>
+                                <argument>maven.repo.uri=@repository.proxy.url@/</argument>
                                 <argument>--approve-all-licenses</argument>
                                 <argument>jetty.home=${project.build.directory}/jetty-distribution-@jettyVersion@</argument>
                                 <argument>jetty.base=${project.build.directory}/jetty-template</argument>

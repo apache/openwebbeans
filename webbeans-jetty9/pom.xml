@@ -214,6 +214,7 @@
                     <filterProperties>
                         <jettyVersion>${jetty.version}</jettyVersion>
                         <repository.proxy.url>${repository.proxy.url}</repository.proxy.url>
+                        <local.repository.path>${project.build.directory}/local-repo</local.repository.path>
                     </filterProperties>
                     <pomIncludes>
                         <pomInclude>*/pom.xml</pomInclude>
