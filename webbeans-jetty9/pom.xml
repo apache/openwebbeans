@@ -98,6 +98,12 @@
             <artifactId>openwebbeans-web</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-el22</artifactId>
+            <version>${project.version}</version>
+            <scope>optional</scope>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

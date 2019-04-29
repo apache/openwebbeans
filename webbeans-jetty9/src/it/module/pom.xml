@@ -87,50 +87,7 @@
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-maven-plugin</artifactId>
                     <version>@jettyVersion@</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.openwebbeans</groupId>
-                            <artifactId>openwebbeans-spi</artifactId>
-                            <version>@project.version@</version>
-                        </dependency>
-
-                        <dependency>
-                            <groupId>org.apache.openwebbeans</groupId>
-                            <artifactId>openwebbeans-impl</artifactId>
-                            <version>@project.version@</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.apache.openwebbeans</groupId>
-                            <artifactId>openwebbeans-web</artifactId>
-                            <version>@project.version@</version>
-                        </dependency>
-
-                        <dependency>
-                            <groupId>org.apache.openwebbeans</groupId>
-                            <artifactId>openwebbeans-jetty9</artifactId>
-                            <version>@project.version@</version>
-                        </dependency>
-
-                        <dependency>
-                            <groupId>org.apache.geronimo.specs</groupId>
-                            <artifactId>geronimo-jcdi_2.0_spec</artifactId>
-                            <version>1.0</version>
-                        </dependency>
-
-                        <dependency>
-                            <groupId>org.apache.geronimo.specs</groupId>
-                            <artifactId>geronimo-atinject_1.0_spec</artifactId>
-                            <version>1.0</version>
-                        </dependency>
-
-                        <dependency>
-                            <groupId>org.apache.geronimo.specs</groupId>
-                            <artifactId>geronimo-interceptor_1.2_spec</artifactId>
-                            <version>1.0</version>
-                        </dependency>
-                    </dependencies>
                 </plugin>
-
             </plugins>
         </pluginManagement>
 
@@ -262,6 +219,7 @@
                     <jettyProperties>
                         <jettyProperty>jetty.http.port=${jetty.port.it}</jettyProperty>
                         <jettyProperty>maven.repo.uri=@repository.proxy.url@</jettyProperty>
+                        <jettyProperty>maven.local.repo=@local.repository.path@</jettyProperty>
                     </jettyProperties>
                     <modules>
                         <module>apache-jsp</module>
