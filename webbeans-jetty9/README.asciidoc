@@ -73,6 +73,7 @@ You will need to configure your target Jetty to activate Apache OpenWebBeans.
 This depends on your target Jetty.
 
 NOTE: A regression in Jetty 9.4.13 (link:https://github.com/eclipse/jetty.project/issues/3597[#3597]) means that skinny `.war` deployments will not be able to persist session scoped context.
+This regression was fixed in Jetty 9.4.18.
 The recommendation is to use fat `.war` deployments if you need to use a version of Jetty with this regression.
 
 === Standard Jetty Deployment
