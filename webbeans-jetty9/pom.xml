@@ -98,6 +98,12 @@
             <artifactId>openwebbeans-web</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-el22</artifactId>
+            <version>${project.version}</version>
+            <scope>optional</scope>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -129,30 +135,103 @@
 
     <build>
         <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <dependencies>
-                <dependency>
-                    <groupId>org.eclipse.jetty.toolchain</groupId>
-                    <artifactId>jetty-assembly-descriptors</artifactId>
-                    <version>1.0</version>
-                </dependency>
-            </dependencies>
-            <executions>
-                <execution>
-                    <phase>package</phase>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <!-- TODO switch back to jetty descriptors once https://github.com/eclipse/jetty.project/issues/3514
+                       is resolved -->
+                <!--<dependencies>-->
+                <!--    <dependency>-->
+                <!--        <groupId>org.eclipse.jetty.toolchain</groupId>-->
+                <!--        <artifactId>jetty-assembly-descriptors</artifactId>-->
+                <!--        <version>1.0</version>-->
+                <!--    </dependency>-->
+                <!--</dependencies>-->
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <!--<descriptorRefs>-->
+                            <!--    <descriptorRef>config</descriptorRef>-->
+                            <!--</descriptorRefs>-->
+                            <descriptors>
+                                <descriptor>src/main/assembly/config.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- NOTE may need to switch to a different plugin if
+                       https://github.com/eclipse/jetty.project/issues/3514 provides a solution for transitive
+                       dependencies -->
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/config</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/config</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                            <useDefaultDelimiters>false</useDefaultDelimiters>
+                            <delimiters>
+                                <delimiter>@</delimiter>
+                            </delimiters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>mrm-maven-plugin</artifactId>
+                <version>1.2.0</version>
+                <configuration>
+                    <propertyName>repository.proxy.url</propertyName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>start</goal>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-invoker-plugin</artifactId>
+                <configuration>
+                    <debug>false</debug><!-- unless we want to debug the jetty-maven-plugin-->
+                    <projectsDirectory>src/it</projectsDirectory>
+                    <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+                    <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+                    <settingsFile>src/it/settings.xml</settingsFile>
+                    <filterProperties>
+                        <jettyVersion>${jetty.version}</jettyVersion>
+                        <repository.proxy.url>${repository.proxy.url}</repository.proxy.url>
+                        <local.repository.path>${project.build.directory}/local-repo</local.repository.path>
+                    </filterProperties>
+                    <pomIncludes>
+                        <pomInclude>*/pom.xml</pomInclude>
+                    </pomIncludes>
                     <goals>
-                        <goal>single</goal>
+                        <goal>install</goal>
                     </goals>
-                    <configuration>
-                        <descriptorRefs>
-                            <descriptorRef>config</descriptorRef>
-                        </descriptorRefs>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
+                    <!-- when run from the command line, we are likely debugging just one, so stream -->
+                    <streamLogs>true</streamLogs>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -166,20 +245,8 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-invoker-plugin</artifactId>
                         <configuration>
-                            <debug>false</debug><!-- unless we want to debug the jetty-maven-plugin-->
-                            <projectsDirectory>src/it</projectsDirectory>
-                            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-                            <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-                            <settingsFile>src/it/settings.xml</settingsFile>
-                            <filterProperties>
-                                <jettyVersion>${jetty.version}</jettyVersion>
-                            </filterProperties>
-                            <pomIncludes>
-                                <pomInclude>*/pom.xml</pomInclude>
-                            </pomIncludes>
-                            <goals>
-                                <goal>install</goal>
-                            </goals>
+                            <!-- we are the profile running all tests, send the logs to file only -->
+                            <streamLogs>false</streamLogs>
                         </configuration>
                         <executions>
                             <execution>

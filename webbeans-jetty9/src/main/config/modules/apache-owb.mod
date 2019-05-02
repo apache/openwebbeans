@@ -13,9 +13,9 @@ maven://org.apache.openwebbeans/openwebbeans-impl/${apache-owb.version}|lib/apac
 maven://org.apache.openwebbeans/openwebbeans-web/${apache-owb.version}|lib/apache-owb/openwebbeans-web-${apache-owb.version}.jar
 maven://org.apache.openwebbeans/openwebbeans-el22/${apache-owb.version}|lib/apache-owb/openwebbeans-el22-${apache-owb.version}.jar
 maven://org.apache.openwebbeans/openwebbeans-jetty9/${apache-owb.version}|lib/apache-owb/openwebbeans-jetty9-${apache-owb.version}.jar
-maven://org.apache.geronimo.specs/geronimo-jcdi_2.0_spec/${geronimo-cdi-spec.version}|lib/apache-owb/geronimo-jcdi_2.0_spec-${geronimo-cdi-spec.version}.jar
-maven://org.apache.geronimo.specs/geronimo-atinject_1.0_spec/${geronimo-atinject-spec.version}|lib/apache-owb/geronimo-atinject_1.0_spec-${geronimo-atinject-spec.version}.jar
-maven://org.apache.geronimo.specs/geronimo-interceptor_1.2_spec/${geronimo-interceptor-spec.version}|lib/apache-owb/geronimo-interceptor_1.2_spec-${geronimo-interceptor-spec.version}.jar
+maven://org.apache.geronimo.specs/geronimo-jcdi_2.0_spec/${geronimo-cdi.version}|lib/apache-owb/geronimo-jcdi_2.0_spec-${geronimo-cdi.version}.jar
+maven://org.apache.geronimo.specs/geronimo-atinject_1.0_spec/${geronimo-atinject.version}|lib/apache-owb/geronimo-atinject_1.0_spec-${geronimo-atinject.version}.jar
+maven://org.apache.geronimo.specs/geronimo-interceptor_1.2_spec/${geronimo-interceptor.version}|lib/apache-owb/geronimo-interceptor_1.2_spec-${geronimo-interceptor.version}.jar
 maven://org.apache.xbean/xbean-finder-shaded/${xbean.version}|lib/apache-owb/xbean-finder-shaded-${xbean.version}.jar
 maven://org.apache.xbean/xbean-asm7-shaded/${xbean.version}|lib/apache-owb/xbean-asm7-shaded-${xbean.version}.jar
 
@@ -32,8 +32,8 @@ https://openwebbeans.apache.org/
 http://www.apache.org/licenses/LICENSE-2.0.html
 
 [ini]
-apache-owb.version?=2.0.11
-geronimo-cdi-spec.version=1.0
-geronimo-atinject-spec.version=1.0
-geronimo-interceptor-spec.version=1.0
-xbean.version=4.13
+apache-owb.version?=@project.version@
+geronimo-cdi.version=@geronimo_cdi.version@
+geronimo-atinject.version=@geronimo_atinject.version@
+geronimo-interceptor.version=@geronimo_interceptor.version@
+xbean.version=@xbean.version@
