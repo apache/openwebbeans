@@ -228,9 +228,7 @@ public class AnnotatedTypeConfiguratorImplTest extends AbstractUnitTest
     {
         checkAnnotatedType(pat -> pat.configureAnnotatedType()
                                      .filterFields(af -> "field2".equals(af.getJavaMember().getName()))
-                                     .findFirst()
-                                     .get()
-                                     .remove(a -> a.annotationType() == TheQualifier.class),
+                                     .forEach(c -> c.remove(a -> a.annotationType() == TheQualifier.class)),
                            pba ->
                            {
                                Assert.assertTrue(pba.getAnnotated() instanceof AnnotatedType);

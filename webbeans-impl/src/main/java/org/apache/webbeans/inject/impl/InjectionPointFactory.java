@@ -21,6 +21,7 @@ package org.apache.webbeans.inject.impl;
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.NamedLiteral;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.portable.events.generics.GProcessInjectionPoint;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -30,6 +31,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.event.ObservesAsync;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedCallable;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
@@ -88,20 +90,35 @@ public class InjectionPointFactory
                             + owner.getBeanClass().getName());
                 }
             }                
-            if (field.isAnnotationPresent(Inject.class))
+            if (isInjecting(field))
             {
                 injectionPoints.add(buildInjectionPoint(owner, field));
             }
         }
         for (AnnotatedMethod<? super X> method: webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType))
         {
-            if (method.isAnnotationPresent(Inject.class) && !Modifier.isStatic(method.getJavaMember().getModifiers()))
+            if (!Modifier.isStatic(method.getJavaMember().getModifiers()) && isInjecting(method))
             {
                 validateInitializerMethod(method);
                 buildInjectionPoints(owner, method, injectionPoints);
             }
         }
         return injectionPoints;
+    }
+
+    private boolean isInjecting(final Annotated field)
+    {
+        if (field.isAnnotationPresent(Inject.class))
+        {
+            return true;
+        }
+        if (!webBeansContext.getOpenWebBeansConfiguration().supportsImplicitQualifierInjection())
+        {
+            return false;
+        }
+        final BeanManagerImpl mgr = webBeansContext.getBeanManagerImpl();
+        return field.getAnnotations().stream().anyMatch(a -> mgr.isQualifier(a.annotationType()))
+                && field.getAnnotations().stream().noneMatch(it -> it.annotationType() == Produces.class);
     }
 
     public <X> InjectionPoint buildInjectionPoint(Bean<?> owner, AnnotatedField<X> annotField, boolean fireEvent)

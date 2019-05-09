@@ -59,7 +59,7 @@ public class InjectionPointImpl implements InjectionPoint, Serializable
 {
     private static final long serialVersionUID = 1047233127758068484L;
 
-    private Set<Annotation> qualifierAnnotations = new HashSet<>();
+    private Set<Annotation> qualifierAnnotations;
     
     private Bean<?> ownerBean;
     
