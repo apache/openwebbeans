@@ -20,6 +20,8 @@ package org.apache.webbeans.test.qualifier;
 
 import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.test.AbstractUnitTest;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.enterprise.context.Dependent;
@@ -33,20 +35,42 @@ import java.util.function.Supplier;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.junit.Assert.assertEquals;
 
 public class QualifierWithOptionalInjectTest extends AbstractUnitTest
 {
-    @Test
-    public void run()
+    @Before
+    public void before()
     {
-        System.setProperty("org.apache.webbeans.application.supportsImplicitQualifierInjection", "true");
+        System.setProperty("org.apache.webbeans.service.DefaultInjectionPointService.implicitSupport", "true");
+    }
+
+    @After
+    public void after()
+    {
+        System.clearProperty("org.apache.webbeans.service.DefaultInjectionPointService.implicitSupport");
+    }
+
+    @Test
+    public void fields()
+    {
         startContainer(Producing.class, Injected.class);
+        doCheck();
+    }
+
+    @Test
+    public void constructor()
+    {
+        startContainer(Producing.class, ConstructorInjected.class);
+        doCheck();
+    }
+
+    private void doCheck() {
         final OwbParametrizedTypeImpl type = new OwbParametrizedTypeImpl(null, Supplier.class, String.class);
         final Supplier<String> injected = getInstance(type);
         assertEquals("yes/no", injected.get());
-        System.clearProperty("org.apache.webbeans.application.supportsImplicitQualifierInjection");
     }
 
     @Dependent
@@ -76,8 +100,24 @@ public class QualifierWithOptionalInjectTest extends AbstractUnitTest
         }
     }
 
+    @Dependent
+    public static class ConstructorInjected implements Supplier<String>
+    {
+        private final String value;
+
+        public ConstructorInjected(@TheQualifier("sey") final String yes, @TheQualifier("on") final String no) {
+            value = yes + '/' + no;
+        }
+
+        @Override
+        public String get()
+        {
+            return value;
+        }
+    }
+
     @Qualifier
-    @Target({FIELD, METHOD})
+    @Target({FIELD, METHOD, PARAMETER})
     @Retention(RUNTIME)
     public @interface TheQualifier
     {

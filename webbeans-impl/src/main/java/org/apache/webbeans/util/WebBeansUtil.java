@@ -83,6 +83,7 @@ import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
 import org.apache.webbeans.portable.events.generics.GProcessSyntheticAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessSyntheticBean;
 import org.apache.webbeans.portable.events.generics.GProcessSyntheticObserverMethod;
+import org.apache.webbeans.spi.InjectionPointService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
@@ -406,23 +407,33 @@ public final class WebBeansUtil
      */
     public boolean isConstructorOk(AnnotatedType<?> annotatedType) throws WebBeansConfigurationException
     {
-        Class<?> clazz = annotatedType.getJavaClass();
+        final Class<?> clazz = annotatedType.getJavaClass();
+        return getNoArgConstructor(clazz) != null || getInjectedConstructor(annotatedType) != null;
+    }
 
-        Constructor<?> defaultCt = getNoArgConstructor(clazz);
-        if (defaultCt != null )
+    public <T> AnnotatedConstructor<T> getInjectedConstructor(final AnnotatedType<T> type)
+    {
+        final Set<? extends AnnotatedConstructor<T>> constructors = type.getConstructors();
+        if (constructors.isEmpty())
         {
-            return true;
+            return null;
         }
-
-        Set<? extends AnnotatedConstructor<?>> constructors = annotatedType.getConstructors();
-        for (AnnotatedConstructor<?> constructor : constructors)
+        for (final AnnotatedConstructor<T> constructor : constructors)
         {
             if (constructor.getAnnotation(Inject.class) != null)
             {
-                return true;
+                return constructor;
             }
         }
-        return false;
+        final InjectionPointService service = webBeansContext.getService(InjectionPointService.class);
+        for (final AnnotatedConstructor<T> constructor : constructors)
+        {
+            if (constructor.getParameters().stream().anyMatch(service::hasInjection))
+            {
+                return constructor;
+            }
+        }
+        return null;
     }
 
     public <T> Bean<T> createNewComponent(Class<T> type)

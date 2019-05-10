@@ -34,7 +34,6 @@ import org.apache.xbean.asm7.Type;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.inject.Inject;
 
 /**
  * This factory creates subclasses for abstract classes.
@@ -123,15 +122,8 @@ public class SubclassProxyFactory extends AbstractProxyFactory
         List<Method> methods = ClassUtil.getNonPrivateMethods(classToProxy, true);
         Method[] businessMethods = methods.toArray(new Method[methods.size()]);
 
-        Constructor<T> cons = null;
-        for (AnnotatedConstructor<T> c : annotatedType.getConstructors())
-        {
-            if (c.isAnnotationPresent(Inject.class))
-            {
-                cons = c.getJavaMember();
-                break;
-            }
-        }
+        AnnotatedConstructor<T> aCons = webBeansContext.getWebBeansUtil().getInjectedConstructor(annotatedType);
+        Constructor<T> cons = aCons != null ? aCons.getJavaMember() : null;
 
         clazz = createProxyClass(classLoader, proxyClassName, classToProxy, businessMethods, new Method[0], cons);
 

@@ -57,6 +57,7 @@ import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.proxy.SubclassProxyFactory;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.NormalScopeProxyFactory;
+import org.apache.webbeans.service.DefaultInjectionPointService;
 import org.apache.webbeans.service.DefaultLoaderService;
 import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.ApplicationBoundaryService;
@@ -100,7 +101,7 @@ public class WebBeansContext
     private final SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
     private final StereoTypeManager stereoTypeManager = new StereoTypeManager();
     private final AnnotationManager annotationManager;
-    private final InjectionPointFactory injectionPointFactory = new InjectionPointFactory(this);
+    private final InjectionPointFactory injectionPointFactory;
     private final InterceptorUtil interceptorUtil = new InterceptorUtil(this);
     private final SecurityService securityService;
     private final LoaderService loaderService;
@@ -156,6 +157,7 @@ public class WebBeansContext
                 serviceMap.put(entry.getKey(), entry.getValue());
             }
         }
+        injectionPointFactory = new InjectionPointFactory(this);
         loaderService = getService(LoaderService.class);
         securityService = getService(SecurityService.class);
         applicationBoundaryService = getService(ApplicationBoundaryService.class);
@@ -384,7 +386,37 @@ public class WebBeansContext
 
     private Object get(String singletonName)
     {
-        //Load class
+        // skip reflection for these services
+        if (DefaultInjectionPointService.class.getName().equals(singletonName))
+        {
+            return new DefaultInjectionPointService(this);
+        }
+        if (SimpleSecurityService.class.getName().equals(singletonName))
+        {
+            return new SimpleSecurityService();
+        }
+        if (DefaultApplicationBoundaryService.class.getName().equals(singletonName))
+        {
+            return new DefaultApplicationBoundaryService();
+        }
+        if (DefaultBeanArchiveService.class.getName().equals(singletonName))
+        {
+            return new DefaultBeanArchiveService();
+        }
+        if (DefaultJndiService.class.getName().equals(singletonName))
+        {
+            return new DefaultJndiService();
+        }
+        if (DefaultContextsService.class.getName().equals(singletonName))
+        {
+            return new DefaultContextsService(this);
+        }
+        if (DefaultConversationService.class.getName().equals(singletonName))
+        {
+            return new DefaultConversationService();
+        }
+
+        // Load class by reflection
         Class<?> clazz = ClassUtil.getClassFromName(singletonName);
         if (clazz == null)
         {

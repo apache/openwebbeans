@@ -284,21 +284,13 @@ public class InterceptorResolutionService
             allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.PRE_DESTROY, interceptorBindings));
         }
 
-        AnnotatedConstructor<?> constructorToUse = null;
-        if (!annotatedType.getConstructors().isEmpty()) // avoid to use class annotations for not used constructors
+        AnnotatedConstructor<?> constructorToUse = webBeansContext.getWebBeansUtil().getInjectedConstructor(annotatedType);
+        if (constructorToUse == null)
         {
-            for (AnnotatedConstructor<?> c : annotatedType.getConstructors())
-            {
-                if (constructorToUse == null && c.getParameters().isEmpty())
-                {
-                    constructorToUse = c;
-                }
-                else if (c.getAnnotation(Inject.class) != null)
-                {
-                    constructorToUse = c;
-                    break;
-                }
-            }
+            constructorToUse = annotatedType.getConstructors().stream()
+                    .filter(it -> it.getParameters().isEmpty())
+                    .findFirst()
+                    .orElse(null);
         }
         if (constructorToUse != null)
         {

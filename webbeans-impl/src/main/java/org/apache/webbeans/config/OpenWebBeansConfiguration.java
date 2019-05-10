@@ -122,9 +122,6 @@ public class OpenWebBeansConfiguration
     /**Supports conversations*/
     public static final String APPLICATION_SUPPORTS_CONVERSATION = "org.apache.webbeans.application.supportsConversation";
 
-    public static final String APPLICATION_SUPPORTS_IMPLICIT_QUALIFIER_INJECTION =
-            "org.apache.webbeans.application.supportsImplicitQualifierInjection";
-
     /** @Produces with interceptor/decorator support */
     public static final String PRODUCER_INTERCEPTION_SUPPORT = "org.apache.webbeans.application.supportsProducerInterception";
 
@@ -244,8 +241,6 @@ public class OpenWebBeansConfiguration
      */
     private Map<String, Set<String>> configuredLists = new HashMap<>();
 
-    private boolean implicitQualifierInjection;
-
 
     /**
      * you can configure this externally as well.
@@ -288,8 +283,6 @@ public class OpenWebBeansConfiguration
 
             configProperties.putAll(newConfigProperties);
         }
-
-        implicitQualifierInjection = Boolean.parseBoolean(getProperty(APPLICATION_SUPPORTS_IMPLICIT_QUALIFIER_INJECTION));
     }
 
     /**
@@ -543,10 +536,5 @@ public class OpenWebBeansConfiguration
         }
 
         return generatorJavaVersion;
-    }
-
-    public boolean supportsImplicitQualifierInjection()
-    {
-        return implicitQualifierInjection;
     }
 }
