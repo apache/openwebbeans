@@ -19,9 +19,13 @@
 package org.apache.webbeans.test.contexts;
 
 
+import static org.junit.Assert.assertTrue;
+
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.SerializableBean;
 import org.apache.webbeans.context.SessionContext;
+import org.apache.webbeans.service.ClassLoaderProxyService;
+import org.apache.webbeans.spi.DefiningClassService;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.contexts.serialize.AppScopedBean;
 import org.apache.webbeans.test.contexts.serialize.SessScopedBean;
@@ -45,7 +49,9 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 import org.junit.Assert;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 
 import javax.enterprise.context.SessionScoped;
@@ -56,6 +62,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Properties;
 import java.util.Set;
 
 
@@ -64,6 +71,8 @@ import java.util.Set;
  */
 public class SerializationTest extends AbstractUnitTest
 {
+    @Rule
+    public final TestName testName = new TestName();
 
     @SuppressWarnings("unchecked")
     @Test
@@ -156,6 +165,20 @@ public class SerializationTest extends AbstractUnitTest
     @Test
     public void testProxySerialization() throws Exception
     {
+        doProxySerialization();
+    }
+
+    @Test
+    public void testProxySerializationWithClassLoaderProxy() throws Exception
+    {
+        addService(DefiningClassService.class, ClassLoaderProxyService.class);
+        doProxySerialization();
+        assertTrue(ClassLoaderProxyService.class.isInstance(
+                getWebBeansContext().getService(DefiningClassService.class)));
+    }
+
+    private void doProxySerialization() throws IOException, ClassNotFoundException
+    {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
 
         // add a few random classes
@@ -167,28 +190,28 @@ public class SerializationTest extends AbstractUnitTest
         Set<Bean<?>> beans = getBeanManager().getBeans(SessScopedBean.class);
         Assert.assertNotNull(beans);
         Assert.assertTrue(beans.size() == 1);
-        
+
         @SuppressWarnings("unchecked")
         Bean<SessScopedBean> bean = (Bean<SessScopedBean>) beans.iterator().next();
         CreationalContext<SessScopedBean> ssbCreational = getBeanManager().createCreationalContext(bean);
         Assert.assertNotNull(ssbCreational);
-        
+
         SessScopedBean reference = (SessScopedBean) getBeanManager().getReference(bean, SessScopedBean.class, ssbCreational);
         Assert.assertNotNull(reference);
         Assert.assertTrue(reference instanceof OwbNormalScopeProxy);
-        
+
         reference.getApp().setI(4711);
-        
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(reference);
         byte[] ba = baos.toByteArray();
-        
+
         ByteArrayInputStream bais = new ByteArrayInputStream(ba);
         ObjectInputStream ois = new ObjectInputStream(bais);
         SessScopedBean ssb2 =  (SessScopedBean) ois.readObject();
         Assert.assertNotNull(ssb2);
-        
+
         Assert.assertNotNull(ssb2.getApp());
         Assert.assertTrue(ssb2.getApp().getI() == 4711);
     }

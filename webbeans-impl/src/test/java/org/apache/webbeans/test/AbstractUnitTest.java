@@ -18,8 +18,12 @@
  */
 package org.apache.webbeans.test;
 
+import static java.util.stream.Collectors.toMap;
+
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.corespi.DefaultSingletonService;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
@@ -27,6 +31,7 @@ import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryServi
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.ScannerService;
+import org.apache.webbeans.spi.SingletonService;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -36,6 +41,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +51,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collector;
 
 
 public abstract class AbstractUnitTest
@@ -124,19 +132,46 @@ public abstract class AbstractUnitTest
         final Collection<Class<?>> beanClasses = new ArrayList<Class<?>>(); // ensure it is updatable
         beanClasses.addAll(rawBeanClasses);
 
-        WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
+        final ClassLoader currentClassLoader = WebBeansUtil.getCurrentClassLoader();
+        WebBeansFinder.clearInstances(currentClassLoader);
         //Creates a new container
+        final SingletonService<WebBeansContext> singletonInstance = WebBeansFinder.getSingletonService();
+        final boolean lateServiceRegistration = !DefaultSingletonService.class.isInstance(singletonInstance);
+        if (!lateServiceRegistration)
+        {
+            final Map<Class<?>, Object> servicesInstances = services.entrySet().stream()
+                    .filter(it -> !Class.class.isInstance(it.getValue()))
+                    .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+            final Map<Class<?>, Object> wbcAwareServices = new HashMap<>(services);
+            servicesInstances.keySet().forEach(wbcAwareServices::remove);
+
+            final Properties properties = wbcAwareServices.entrySet().stream()
+                    .collect(Collector.of(
+                        Properties::new,
+                        (p, e) -> p.setProperty(e.getKey().getName(), Class.class.cast(e.getValue()).getName()),
+                        (properties1, properties2) -> {
+                            properties1.putAll(properties2);
+                            return properties1;
+                        }));
+
+            final WebBeansContext context = new WebBeansContext(servicesInstances, properties);
+            DefaultSingletonService.class.cast(singletonInstance).register(currentClassLoader, context);
+        }
         testLifecycle = new StandaloneLifeCycle()
         {
             @Override
             public void beforeInitApplication(final Properties properties)
             {
                 final WebBeansContext instance = WebBeansContext.getInstance();
-                services.forEach((k, v) ->
+                if (lateServiceRegistration)
                 {
-                    final Class key = k;
-                    instance.registerService(key, v);
-                });
+                    services.forEach((k, v) ->
+                    {
+                        final Object impl = k.cast(getServiceInstance(instance, v));
+                        instance.registerService(Class.class.cast(k), impl);
+                    });
+                }
                 if (!services.containsKey(ScannerService.class))
                 {
                     instance.registerService(ScannerService.class, new OpenWebBeansTestMetaDataDiscoveryService());
@@ -194,6 +229,20 @@ public abstract class AbstractUnitTest
         if (inject)
         {
             inject(this);
+        }
+    }
+
+    private Object getServiceInstance(final WebBeansContext instance, final Object v)
+    {
+        try
+        {
+            return Class.class.isInstance(v) ?
+                    Class.class.cast(v).getConstructor(WebBeansContext.class).newInstance(instance) :
+                    v;
+        }
+        catch (final Exception e)
+        {
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -263,6 +312,10 @@ public abstract class AbstractUnitTest
         return (T) getBeanManager().getReference(bean, Object.class, getBeanManager().createCreationalContext(bean));
     }
 
+    protected <T> void addService(final Class<T> type, final Class<? extends T> instance)
+    {
+        this.services.put(type, instance);
+    }
 
     protected <T> void addService(final Class<T> type, final T instance)
     {
