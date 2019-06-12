@@ -32,6 +32,7 @@ import java.util.Arrays;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.spi.DefiningClassService;
 import org.apache.xbean.asm7.ClassReader;
 import org.apache.xbean.asm7.ClassWriter;
 import org.apache.xbean.asm7.MethodVisitor;
@@ -55,6 +56,8 @@ public abstract class AbstractProxyFactory
 
     protected final Unsafe unsafe;
 
+    private final DefiningClassService definingService;
+
     protected WebBeansContext webBeansContext;
 
     private final int javaVersion;
@@ -73,6 +76,7 @@ public abstract class AbstractProxyFactory
         this.webBeansContext = webBeansContext;
         javaVersion = determineDefaultJavaVersion();
         unsafe = new Unsafe();
+        definingService = webBeansContext.getService(DefiningClassService.class);
     }
 
     private int determineDefaultJavaVersion()
@@ -104,6 +108,25 @@ public abstract class AbstractProxyFactory
             {
                 return Opcodes.V12;
             }
+            else if (javaVersionProp.startsWith("13"))
+            {
+                return Opcodes.V13;
+            }
+            else
+            {
+                try
+                {
+                    final int i = Integer.parseInt(javaVersionProp);
+                    if (i > 13)
+                    {
+                        return Opcodes.V13 + (i - 13);
+                    }
+                }
+                catch (final NumberFormatException nfe)
+                {
+                    // let's default
+                }
+            }
         }
 
         // the fallback is the lowest one to ensure it supports all possible classes of current environments
@@ -113,6 +136,10 @@ public abstract class AbstractProxyFactory
 
     protected ClassLoader getProxyClassLoader(Class<?> beanClass)
     {
+        if (definingService != null)
+        {
+            return definingService.getProxyClassLoader(beanClass);
+        }
         return webBeansContext.getApplicationBoundaryService().getBoundaryClassLoader(beanClass);
     }
 
@@ -246,6 +273,10 @@ public abstract class AbstractProxyFactory
                 sortOutDuplicateMethods(nonInterceptedMethods),
                 constructor);
 
+        if (definingService != null)
+        {
+            return definingService.defineAndLoad(proxyClassName, proxyBytes, classToProxy);
+        }
         return unsafe.defineAndLoadClass(classLoader, proxyClassName, proxyBytes);
     }
 

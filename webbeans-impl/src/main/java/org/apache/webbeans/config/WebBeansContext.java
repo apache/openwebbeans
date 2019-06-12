@@ -211,7 +211,10 @@ public class WebBeansContext
 
     public <T> void registerService(Class<T> clazz, T t)
     {
-        serviceMap.put(clazz, t);
+        if (t != null)
+        {
+            serviceMap.put(clazz, t);
+        }
     }
 
     private <T> T doServiceLoader(Class<T> serviceInterface)
