@@ -77,7 +77,6 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         return OwbNormalScopeProxy.class;
     }
 
-
     public static <T> T unwrapInstance(T proxyInstance)
     {
         if (proxyInstance instanceof OwbNormalScopeProxy)

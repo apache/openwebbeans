@@ -18,10 +18,6 @@
  */
 package org.apache.webbeans.proxy;
 
-import static org.apache.xbean.asm7.ClassReader.SKIP_CODE;
-import static org.apache.xbean.asm7.ClassReader.SKIP_DEBUG;
-import static org.apache.xbean.asm7.ClassReader.SKIP_FRAMES;
-
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -33,12 +29,10 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.spi.DefiningClassService;
-import org.apache.xbean.asm7.ClassReader;
-import org.apache.xbean.asm7.ClassWriter;
-import org.apache.xbean.asm7.MethodVisitor;
-import org.apache.xbean.asm7.Opcodes;
-import org.apache.xbean.asm7.Type;
+import org.apache.xbean.asm7.*;
 import org.apache.xbean.asm7.shade.commons.EmptyVisitor;
+
+import static org.apache.xbean.asm7.ClassReader.*;
 
 /**
  * Base class for all OWB Proxy factories
@@ -147,6 +141,18 @@ public abstract class AbstractProxyFactory
      * @return the marker interface which should be used for this proxy.
      */
     protected abstract Class getMarkerInterface();
+
+    /**
+     * Tests if the supplied {@link ClassLoader} <em>in principal</em> has the {@link #getMarkerInterface()}.
+     *
+     * @param loader the classloader to check.
+     * @return {@code true} if the supplied classloader has the {@link #getMarkerInterface()} though this does not
+     *     imply that the class will load.
+     */
+    public boolean hasMarkerInterface(ClassLoader loader)
+    {
+        return loader.getResource(getMarkerInterface().toString().replace('.', '/') + ".class") != null;
+    }
 
     /**
      * generate the bytecode for creating the instance variables of the class
