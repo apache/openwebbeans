@@ -39,22 +39,25 @@ public class OwbJettyPluginIT
     public void testJettyRequest() throws Exception
     {
         DefaultHttpClient httpclient = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet("http://localhost:9081/owbjetty9it/test.test");
+        HttpGet httpGet = new HttpGet("http://localhost:9082/owbjetty9it/test.test");
 
         HttpResponse response = httpclient.execute(httpGet);
 
         // Get the response
-        BufferedReader rd = new BufferedReader
-                (new InputStreamReader(response.getEntity().getContent()));
+        try (BufferedReader rd = new BufferedReader
+                (new InputStreamReader(response.getEntity().getContent())))
+        {
 
-        StringBuilder builder = new StringBuilder();
-        String line = "";
-        while ((line = rd.readLine()) != null) {
-            builder.append(line);
+            StringBuilder builder = new StringBuilder();
+            String line = "";
+            while ((line = rd.readLine()) != null)
+            {
+                builder.append(line);
+            }
+
+            Assert.assertNotNull(response);
+            Assert.assertEquals("Got " + builder.toString(), 200, response.getStatusLine().getStatusCode());
         }
-
-        Assert.assertNotNull(response);
-        Assert.assertEquals("Got " + builder.toString(), 200, response.getStatusLine().getStatusCode());
     }
 
 }

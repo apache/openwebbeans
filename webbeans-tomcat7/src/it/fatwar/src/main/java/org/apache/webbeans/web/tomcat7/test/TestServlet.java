@@ -16,8 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.web.jetty9.test;
+package org.apache.webbeans.web.tomcat7.test;
 
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
@@ -36,9 +37,6 @@ public class TestServlet implements Servlet
     @Inject
     private TestBean tb;
 
-    @Inject
-    private ServletContext context;
-
     public void destroy()
     {
         // nothing to do
@@ -56,18 +54,29 @@ public class TestServlet implements Servlet
 
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException
     {
+        if (tb != null)
+        {
+            throw new RuntimeException("That's unexpected, we are in fatwar mode so cannot activate the tomcat7 " +
+                    "plugin and yet injection is working!");
+        }
+        // now grab the beans by hand
+        tb = CDI.current().select(TestBean.class).get();
+
+        ServletContext context = CDI.current().select(ServletContext.class).get();
+
         if (tb == null || tb.getI() != 4711)
         {
-            throw new RuntimeException("CDI Injection does not work!");
+            throw new RuntimeException("CDI Lookup does not work!");
         }
         if (context == null)
         {
-            throw new RuntimeException("CDI Injection missing servlet context!");
+            throw new RuntimeException("CDI Lookup missing servlet context!");
         }
         if (tb.getRequest() == null)
         {
             throw new RuntimeException("CDI Injection missing servlet request!");
         }
+        res.getWriter().write(":thumb_up:");
     }
 
     public String getServletInfo()

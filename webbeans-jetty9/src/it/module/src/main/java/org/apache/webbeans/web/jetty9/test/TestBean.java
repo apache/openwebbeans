@@ -19,6 +19,8 @@
 package org.apache.webbeans.web.jetty9.test;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Test bean which gets used in the TestServlet.
@@ -26,6 +28,10 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class TestBean
 {
+
+    @Inject
+    HttpServletRequest request;
+
     int i = 4711;
 
     public int getI()
@@ -36,5 +42,10 @@ public class TestBean
     public void setI(int i)
     {
         this.i = i;
+    }
+
+    public HttpServletRequest getRequest()
+    {
+        return request;
     }
 }

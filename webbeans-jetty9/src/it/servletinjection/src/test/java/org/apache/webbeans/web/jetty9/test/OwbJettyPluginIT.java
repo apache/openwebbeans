@@ -39,7 +39,7 @@ public class OwbJettyPluginIT
     public void testJettyRequest() throws Exception
     {
         DefaultHttpClient httpclient = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet("http://localhost:9081/owbjetty9it/test.test");
+        HttpGet httpGet = new HttpGet("http://localhost:9083/owbjetty9it/test.test");
 
         HttpResponse response = httpclient.execute(httpGet);
 
