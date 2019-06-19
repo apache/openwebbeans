@@ -105,6 +105,50 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>mrm-maven-plugin</artifactId>
+                <version>1.2.0</version>
+                <configuration>
+                    <propertyName>repository.proxy.url</propertyName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>start</goal>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-invoker-plugin</artifactId>
+                <configuration>
+                    <debug>false</debug><!-- unless we want to debug the tomcat7-maven-plugin-->
+                    <projectsDirectory>src/it</projectsDirectory>
+                    <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+                    <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+                    <settingsFile>src/it/settings.xml</settingsFile>
+                    <filterProperties>
+                        <tomcatVersion>${tomcat7.version}</tomcatVersion>
+                        <repository.proxy.url>${repository.proxy.url}</repository.proxy.url>
+                        <local.repository.path>${project.build.directory}/local-repo</local.repository.path>
+                    </filterProperties>
+                    <pomIncludes>
+                        <pomInclude>*/pom.xml</pomInclude>
+                    </pomIncludes>
+                    <goals>
+                        <goal>install</goal>
+                    </goals>
+                    <!-- when run from the command line, we are likely debugging just one, so stream -->
+                    <streamLogs>true</streamLogs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <profiles>
         <profile>
@@ -116,17 +160,8 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-invoker-plugin</artifactId>
                         <configuration>
-                            <debug>true</debug>
-                            <projectsDirectory>src/it</projectsDirectory>
-                            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-                            <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-                            <settingsFile>src/it/settings.xml</settingsFile>
-                            <pomIncludes>
-                                <pomInclude>*/pom.xml</pomInclude>
-                            </pomIncludes>
-                            <goals>
-                                <goal>install</goal>
-                            </goals>
+                            <!-- we are the profile running all tests, send the logs to file only -->
+                            <streamLogs>false</streamLogs>
                         </configuration>
                         <executions>
                             <execution>

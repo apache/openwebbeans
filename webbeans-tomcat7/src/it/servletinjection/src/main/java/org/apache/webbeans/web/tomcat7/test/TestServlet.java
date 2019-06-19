@@ -21,6 +21,7 @@ package org.apache.webbeans.web.tomcat7.test;
 import javax.inject.Inject;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -34,6 +35,9 @@ public class TestServlet implements Servlet
 
     @Inject
     private TestBean tb;
+
+    @Inject
+    private ServletContext context;
 
     public void destroy()
     {
@@ -54,7 +58,15 @@ public class TestServlet implements Servlet
     {
         if (tb == null || tb.getI() != 4711)
         {
-            throw new RuntimeException("CDI Injction doesn not work!");
+            throw new RuntimeException("CDI Injection does not work!");
+        }
+        if (context == null)
+        {
+            throw new RuntimeException("CDI Injection missing servlet context!");
+        }
+        if (tb.getRequest() == null)
+        {
+            throw new RuntimeException("CDI Injection missing servlet request!");
         }
     }
 
