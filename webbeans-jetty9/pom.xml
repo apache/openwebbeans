@@ -102,7 +102,7 @@
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-el22</artifactId>
             <version>${project.version}</version>
-            <scope>optional</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
