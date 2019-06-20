@@ -221,6 +221,8 @@
                         <jettyProperty>maven.repo.uri=@repository.proxy.url@</jettyProperty>
                         <jettyProperty>maven.local.repo=@local.repository.path@</jettyProperty>
                     </jettyProperties>
+                    <maxChildChecks>300</maxChildChecks> <!-- allow up to 30 seconds for jetty distro to start -->
+                    <maxChildCheckInterval>100</maxChildCheckInterval>
                     <modules>
                         <module>apache-jsp</module>
                         <module>apache-jstl</module>
