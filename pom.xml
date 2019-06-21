@@ -69,6 +69,7 @@
         <geronimo_atinject.version>1.0</geronimo_atinject.version>
         <geronimo_interceptor.version>1.0</geronimo_interceptor.version>
         <geronimo_validation.version>1.1</geronimo_validation.version>
+        <tomcat.version>9.0.21</tomcat.version>
         <tomcat7.version>7.0.73</tomcat7.version>
         <!-- jetty 9.4.13+ broke session persistence: https://github.com/eclipse/jetty.project/issues/3597 -->
         <jetty.version>9.4.12.v20180830</jetty.version>
@@ -541,6 +542,7 @@
         <module>webbeans-web</module>
         <module>webbeans-ejb</module>
         <module>webbeans-ee</module>
+        <module>webbeans-tomcat</module>
         <module>webbeans-tomcat7</module>
         <module>webbeans-jetty9</module>
         <module>webbeans-jms</module>
