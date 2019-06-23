@@ -29,6 +29,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -346,8 +347,8 @@ public final class NotificationManager
             for (Type eventType : eventTypes)
             {
                 if ((ParameterizedType.class.isInstance(eventType) && Class.class.isInstance(observedType)
-                        && GenericsUtil.isAssignableFrom(true, false, observedType, ParameterizedType.class.cast(eventType).getRawType()))
-                    || GenericsUtil.isAssignableFrom(true, false, observedType, eventType))
+                        && GenericsUtil.isAssignableFrom(true, false, observedType, ParameterizedType.class.cast(eventType).getRawType(), new HashMap<>()))
+                    || GenericsUtil.isAssignableFrom(true, false, observedType, eventType, new HashMap<>()))
                 {
                     Set<ObserverMethod<?>> observerMethods = observerEntry.getValue();
 
@@ -498,7 +499,7 @@ public final class NotificationManager
         }
         else if (observerTypeActualArg instanceof ParameterizedType)
         {
-            return GenericsUtil.isAssignableFrom(false, true, observerTypeActualArg, beanClass);
+            return GenericsUtil.isAssignableFrom(false, true, observerTypeActualArg, beanClass, new HashMap<>());
         }
         
         return false;
@@ -533,7 +534,7 @@ public final class NotificationManager
             if(checkEventTypeParameterForExtensions(beanClass, actualArgs[0])
                     && (secondParam == null || actualArgs.length == 1
                             || checkEventTypeParameterForExtensions(secondParam, actualArgs[1])
-                            || GenericsUtil.isAssignableFrom(true, false, actualArgs[1], secondParam)))
+                            || GenericsUtil.isAssignableFrom(true, false, actualArgs[1], secondParam, new HashMap<>())))
             {
                 addToMatching(type, matching);   
             }

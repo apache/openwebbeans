@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +65,8 @@ public class EventProducer<T> extends AbstractProducer<Event<T>>
             {
                 ParameterizedType arg = ParameterizedType.class.cast(event);
                 Type[] actualTypeArguments = arg.getActualTypeArguments();
-                if (actualTypeArguments.length > 0 && GenericsUtil.isAssignableFrom(true, false, actualTypeArguments[0], type))
+                if (actualTypeArguments.length > 0 && GenericsUtil.isAssignableFrom(
+                        true, false, actualTypeArguments[0], type, new HashMap<>()))
                 {
                     list.add(original);
                 }

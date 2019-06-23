@@ -43,6 +43,7 @@ import javax.inject.Named;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -102,7 +103,7 @@ public abstract class BaseProducerFactory<P> implements ProducerFactory<P>
                 {
                     if (annotatedParameter.isAnnotationPresent(Disposes.class))
                     {
-                        if (!GenericsUtil.satisfiesDependency(false, true, producerBaseType, annotatedParameter.getBaseType()))
+                        if (!GenericsUtil.satisfiesDependency(false, true, producerBaseType, annotatedParameter.getBaseType(), new HashMap<>()))
                         {
                             continue;
                         }

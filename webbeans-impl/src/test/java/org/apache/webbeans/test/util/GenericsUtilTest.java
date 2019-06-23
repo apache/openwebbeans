@@ -20,8 +20,11 @@ package org.apache.webbeans.test.util;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -30,6 +33,8 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.webbeans.config.OwbParametrizedTypeImpl;
@@ -85,6 +90,100 @@ public class GenericsUtilTest {
         Assert.assertFalse(GenericsUtil.containsWildcardType(StringObject.class));
         Assert.assertTrue(GenericsUtil.containsWildcardType(GenericNumberObject.class.getMethod("getObject").getGenericReturnType()));
         Assert.assertFalse(GenericsUtil.containsWildcardType(GenericObject.class.getMethod("getObject").getGenericReturnType()));
+    }
+
+    @Test
+    public void genericsLoop()
+    {
+        final ParameterizedType injectionPointType = new OwbParametrizedTypeImpl(null, GenericFoo.class, Long.class);
+        final TypeVariable<Class<?>> t = new TypeVariable<Class<?>>() {
+            @Override
+            public Type[] getBounds() {
+                final TypeVariable<?> ref = this;
+                return new Type[]{
+                    new OwbParametrizedTypeImpl(null, Comparable.class, new TypeVariable<Class<?>>() {
+                        @Override
+                        public <T extends Annotation> T getAnnotation(Class<T> annotationClass)
+                        {
+                            return null;
+                        }
+
+                        @Override
+                        public Annotation[] getAnnotations()
+                        {
+                            return new Annotation[0];
+                        }
+
+                        @Override
+                        public Annotation[] getDeclaredAnnotations()
+                        {
+                            return new Annotation[0];
+                        }
+
+                        @Override
+                        public Type[] getBounds()
+                        {
+                            return new Type[] { new OwbParametrizedTypeImpl(null, Comparable.class, ref) };
+                        }
+
+                        @Override
+                        public Class<?> getGenericDeclaration() {
+                            return GenericFoo.class;
+                        }
+
+                        @Override
+                        public String getName()
+                        {
+                            return "T";
+                        }
+
+                        @Override
+                        public AnnotatedType[] getAnnotatedBounds()
+                        {
+                            return new AnnotatedType[0];
+                        }
+                    })
+                };
+            }
+
+            @Override
+            public Class<?> getGenericDeclaration()
+            {
+                return GenericFoo.class;
+            }
+
+            @Override
+            public String getName()
+            {
+                return "T";
+            }
+
+            @Override
+            public AnnotatedType[] getAnnotatedBounds()
+            {
+                return new AnnotatedType[0];
+            }
+
+            @Override
+            public <T extends Annotation> T getAnnotation(Class<T> annotationClass)
+            {
+                return null;
+            }
+
+            @Override
+            public Annotation[] getAnnotations()
+            {
+                return new Annotation[0];
+            }
+
+            @Override
+            public Annotation[] getDeclaredAnnotations()
+            {
+                return new Annotation[0];
+            }
+        };
+        final ParameterizedType beanType = new OwbParametrizedTypeImpl(null, GenericFoo.class, t);
+        assertFalse(GenericsUtil.satisfiesDependency(false, false, injectionPointType, beanType, new HashMap<>()));
     }
 
     public static abstract class AbstractObject<V>
@@ -179,5 +278,24 @@ public class GenericsUtilTest {
         {
             return this;
         }
+    }
+
+    public interface GenericFoo<T extends Comparable<T>>
+    {
+        T someMethod();
+    }
+
+    public static class FooImpl<T extends Comparable<T>> implements GenericFoo<T>
+    {
+        @Override
+        public T someMethod()
+        {
+            return null;
+        }
+    }
+
+    public static class Bar
+    {
+        GenericFoo<Long> foo;
     }
 }

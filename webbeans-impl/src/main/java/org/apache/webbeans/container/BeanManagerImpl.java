@@ -755,8 +755,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             boolean isProducer = AbstractProducerBean.class.isInstance(bean);
             if(!isProducer && // we have different rules for producers
                !isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean, isProducer) &&
-               !GenericsUtil.satisfiesDependency(false, isProducer, beanType, bean.getBeanClass()) &&
-               !GenericsUtil.satisfiesDependencyRaw(false, isProducer, beanType, bean.getBeanClass()))
+               !GenericsUtil.satisfiesDependency(false, isProducer, beanType, bean.getBeanClass(), new HashMap<>()) &&
+               !GenericsUtil.satisfiesDependencyRaw(false, isProducer, beanType, bean.getBeanClass(), new HashMap<>()))
             {
                 throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
             }
@@ -934,7 +934,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         for (Type beanApiType : beanTypes)
         {
-            if (GenericsUtil.satisfiesDependency(false, producer, givenType, beanApiType))
+            if (GenericsUtil.satisfiesDependency(false, producer, givenType, beanApiType, new HashMap<>()))
             {
                 return true;
             }

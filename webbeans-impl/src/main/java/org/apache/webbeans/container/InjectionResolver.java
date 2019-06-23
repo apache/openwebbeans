@@ -54,6 +54,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -514,7 +515,7 @@ public class InjectionResolver
 
                         if (GenericsUtil.satisfiesDependency(
                                 isDelegate, AbstractProducerBean.class.isInstance(component),
-                                injectionPointType, componentApiType))
+                                injectionPointType, componentApiType, new HashMap<>()))
                         {
                             resolvedComponents.add(component);
                             break;
@@ -599,7 +600,7 @@ public class InjectionResolver
             boolean isProducer = AbstractProducerBean.class.isInstance(bean);
             for (Type type : bean.getTypes())
             {
-                if (GenericsUtil.satisfiesDependency(isDelegate, isProducer, injectionPointType, type))
+                if (GenericsUtil.satisfiesDependency(isDelegate, isProducer, injectionPointType, type, new HashMap<>()))
                 {
                     resolved.add(bean);
                 }
@@ -625,7 +626,7 @@ public class InjectionResolver
             for (Type componentApiType : component.getTypes())
             {
 
-                if (GenericsUtil.satisfiesDependency(isDelegate, isProducer, injectionPointType, componentApiType))
+                if (GenericsUtil.satisfiesDependency(isDelegate, isProducer, injectionPointType, componentApiType, new HashMap<>()))
                 {
                     resolvedComponents.add(component);
                     break;

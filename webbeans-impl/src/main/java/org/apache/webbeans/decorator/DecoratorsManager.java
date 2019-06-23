@@ -21,6 +21,7 @@ package org.apache.webbeans.decorator;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -238,7 +239,7 @@ public class DecoratorsManager
         boolean ok = false;
         for (Type apiType : apiTypes)
         {
-            if (GenericsUtil.satisfiesDependency(true, false, decorator.getDelegateType(), apiType))
+            if (GenericsUtil.satisfiesDependency(true, false, decorator.getDelegateType(), apiType, new HashMap<>()))
             {
                 ok = true;
                 break;

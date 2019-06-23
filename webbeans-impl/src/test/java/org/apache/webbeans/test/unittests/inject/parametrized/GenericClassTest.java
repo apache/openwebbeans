@@ -20,6 +20,7 @@ package org.apache.webbeans.test.unittests.inject.parametrized;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 
 import org.apache.webbeans.test.injection.generics.zoo.Horse;
 import org.apache.webbeans.test.injection.generics.zoo.HorseStable;
@@ -44,10 +45,10 @@ public class GenericClassTest
         Field check22Bound = Dao.class.getField("check22WithBound");
         Field check4 = WithTypeVariable.class.getField("check4");
 
-        Assert.assertFalse(GenericsUtil.satisfiesDependency(false, false, raw.getGenericType(), t.getGenericType()));
-        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, check4.getGenericType(), t.getGenericType()));
-        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, check22.getGenericType(), t.getGenericType()));
-        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, check22Bound.getGenericType(), t.getGenericType()));
+        Assert.assertFalse(GenericsUtil.satisfiesDependency(false, false, raw.getGenericType(), t.getGenericType(), new HashMap<>()));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, check4.getGenericType(), t.getGenericType(), new HashMap<>()));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, check22.getGenericType(), t.getGenericType(), new HashMap<>()));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, check22Bound.getGenericType(), t.getGenericType(), new HashMap<>()));
     }
     
     @Test
@@ -59,8 +60,8 @@ public class GenericClassTest
         Field f4 = UserDao.class.getField("field4");
 
 
-        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, f3.getGenericType(), f1.getGenericType()));
-        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, f4.getGenericType(), f1.getGenericType()));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, f3.getGenericType(), f1.getGenericType(), new HashMap<>()));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, f4.getGenericType(), f1.getGenericType(), new HashMap<>()));
     }
 
     @Test
@@ -74,8 +75,8 @@ public class GenericClassTest
         Type pigStableType = this.getClass().getDeclaredField("pigStable").getType().getGenericSuperclass();
         Type horseStableType = this.getClass().getDeclaredField("horseStable").getType().getGenericSuperclass();
 
-        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, horseStableType, parameterizedHorseStableType));
-        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, parameterizedPigStableType, pigStableType));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, horseStableType, parameterizedHorseStableType, new HashMap<>()));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, parameterizedPigStableType, pigStableType, new HashMap<>()));
     }
     // fields for {@link #testStable}
     private Stable<Horse> parameterizedHorseStable;
@@ -91,8 +92,8 @@ public class GenericClassTest
         Type parameterizedHorseStableType = this.getClass().getDeclaredField("parameterizedHorseStable").getGenericType();
         Type stableProducerMethodType = this.getClass().getDeclaredMethod("stableProducer").getGenericReturnType();
 
-        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, parameterizedPigStableType, stableProducerMethodType));
-        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, parameterizedHorseStableType, stableProducerMethodType));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, parameterizedPigStableType, stableProducerMethodType, new HashMap<>()));
+        Assert.assertTrue(GenericsUtil.satisfiesDependency(false, false, parameterizedHorseStableType, stableProducerMethodType, new HashMap<>()));
     }
     // method and field for {@link #testGenericProducerType}
     private <T> Stable<T> stableProducer()

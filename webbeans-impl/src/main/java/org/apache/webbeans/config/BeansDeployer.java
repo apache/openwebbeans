@@ -597,7 +597,7 @@ public class BeansDeployer
                         ParameterizedType pt2 = ParameterizedType.class.cast(t);
 
                         if (pt1.getRawType() == pt2.getRawType() &&
-                            !GenericsUtil.isAssignableFrom(true, false, pt1, pt2))
+                            !GenericsUtil.isAssignableFrom(true, false, pt1, pt2, new HashMap<>()))
                         {
                             throw new WebBeansConfigurationException("Generic error matching " + api + " and " + t);
                         }

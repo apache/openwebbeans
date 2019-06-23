@@ -27,6 +27,7 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Set;
 
 import org.apache.webbeans.component.ProducerFieldBean;
@@ -59,7 +60,7 @@ public abstract class AbstractBeanBuilder<T>
                     boolean found = false;
                     for (ProducerMethodBean<?> producer : producerBeans)
                     {
-                        if (GenericsUtil.satisfiesDependency(false, true, producer.getCreatorMethod().getGenericReturnType(), param.getBaseType()))
+                        if (GenericsUtil.satisfiesDependency(false, true, producer.getCreatorMethod().getGenericReturnType(), param.getBaseType(), new HashMap<>()))
                         {
                             found = true;
                             break;
@@ -69,7 +70,7 @@ public abstract class AbstractBeanBuilder<T>
                     {
                         for (ProducerFieldBean<?> field : producerFields)
                         {
-                            if (GenericsUtil.satisfiesDependency(false, true, field.getCreatorField().getType(), param.getBaseType()))
+                            if (GenericsUtil.satisfiesDependency(false, true, field.getCreatorField().getType(), param.getBaseType(), new HashMap<>()))
                             {
                                 found = true;
                                 break;
@@ -81,7 +82,7 @@ public abstract class AbstractBeanBuilder<T>
                             // see if @Disposes should just be ignored as well - no inheritance
                             for (AnnotatedMethod<?> producer : ignoredProducers)
                             {
-                                if (GenericsUtil.satisfiesDependency(false, true, producer.getJavaMember().getGenericReturnType(), param.getBaseType()))
+                                if (GenericsUtil.satisfiesDependency(false, true, producer.getJavaMember().getGenericReturnType(), param.getBaseType(), new HashMap<>()))
                                 {
                                     found = true;
                                     break;

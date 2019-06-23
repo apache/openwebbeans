@@ -151,6 +151,7 @@ import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1471,7 +1472,8 @@ public final class WebBeansUtil
                     rawType.equals(Interceptor.class))
                 {
                     Type[] types = ClassUtil.getActualTypeArguments(injectionPoint.getType());
-                    if (types.length != 1 || !GenericsUtil.isAssignableFrom(false, AbstractProducerBean.class.isInstance(bean), bean.getBeanClass(), types[0]))
+                    if (types.length != 1 || !GenericsUtil.isAssignableFrom(
+                            false, AbstractProducerBean.class.isInstance(bean), bean.getBeanClass(), types[0], new HashMap<>()))
                     {
                         throw new WebBeansConfigurationException("injected bean parameter must be " + rawType);
                     }
@@ -1720,7 +1722,8 @@ public final class WebBeansUtil
                     Class<?> beanClass = AbstractOwbBean.class.isInstance(injectionPointBean) ?
                             AbstractOwbBean.class.cast(injectionPointBean).getReturnType() : injectionPointBean.getBeanClass();
                     Type beanType = pt.getActualTypeArguments()[0];
-                    if (!GenericsUtil.isAssignableFrom(false, AbstractProducerBean.class.isInstance(bean), beanClass, beanType))
+                    if (!GenericsUtil.isAssignableFrom(
+                            false, AbstractProducerBean.class.isInstance(bean), beanClass, beanType, new HashMap<>()))
                     {
                         throw new WebBeansConfigurationException("@Inject Bean<X> can only be done in X, found " + beanType + " and " + beanClass);
                     }
