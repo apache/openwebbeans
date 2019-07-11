@@ -51,8 +51,7 @@ public class DefaultInjectionPointService implements InjectionPointService
     public DefaultInjectionPointService(final WebBeansContext context)
     {
         this.manager = context.getBeanManagerImpl();
-        this.implicitSupport = Boolean.parseBoolean(context.getOpenWebBeansConfiguration().getProperty(
-                DefaultInjectionPointService.class.getName() + ".implicitSupport"));
+        this.implicitSupport = Boolean.parseBoolean(context.getOpenWebBeansConfiguration().getProperty(DefaultInjectionPointService.class.getName() + ".implicitSupport"));
         this.delegates = ofNullable(context.getOpenWebBeansConfiguration().getProperty(
                     DefaultInjectionPointService.class.getName() + ".delegateClasses"))
                 .map(Stream::of)
