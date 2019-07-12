@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl"?>
+<rdf:RDF xml:lang="en"
+         xmlns="http://usefulinc.com/ns/doap#" 
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+         xmlns:asfext="http://projects.apache.org/ns/asfext#"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/">
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+   
+         http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+  <Project rdf:about="http://openwebbeans.apache.org">
+    <created>2011-03-06</created>
+    <license rdf:resource="http://usefulinc.com/doap/licenses/asl20" />
+    <name>Apache OpenWebBeans</name>
+    <homepage rdf:resource="http://openwebbeans.apache.org" />
+    <asfext:pmc rdf:resource="http://openwebbeans.apache.org" />
+    <shortdesc>Dependency Injection Platform.</shortdesc>
+    <description>OpenWebBeans is an ALv2-licensed implementation of the "Contexts and Dependency Injection for the Java EE platform" specification which is defined as JSR-299.</description>
+    <bug-database rdf:resource="http://issues.apache.org/jira/browse/OWB" />
+    <mailing-list rdf:resource="http://openwebbeans.apache.org/1.0.0-SNAPSHOT/mail-lists.html" />
+    <download-page rdf:resource="http://www.apache.org/dyn/closer.cgi/openwebbeans/" />
+    <programming-language>Java</programming-language>
+    <category rdf:resource="http://projects.apache.org/category/javaee" />
+    <release>
+      <Version>
+        <name>1.0.0 Release</name>
+        <created>2010-10-19</created>
+        <revision>1.0.0</revision>
+      </Version>
+    </release>
+    <repository>
+      <SVNRepository>
+        <location rdf:resource="https://svn.apache.org/repos/asf/openwebbeans"/>
+        <browse rdf:resource="http://svn.apache.org/viewvc/openwebbeans"/>
+      </SVNRepository>
+    </repository>
+    <maintainer>
+      <foaf:Person>
+        <foaf:name>Gurkan Erdogdu</foaf:name>
+          <foaf:mbox rdf:resource="mailto:gerdogdu@apache.org"/>
+      </foaf:Person>
+    </maintainer>
+    <asfext:implements><asfext:Standard>
+      <asfext:title>Contexts and Dependency Injection for the Java EE platform</asfext:title>
+      <asfext:body>JCP</asfext:body>
+      <asfext:id>JSR 299</asfext:id>
+      <asfext:url rdf:resource="http://jcp.org/en/jsr/detail?id=299"/>
+    </asfext:Standard></asfext:implements>
+  </Project>
+</rdf:RDF>
