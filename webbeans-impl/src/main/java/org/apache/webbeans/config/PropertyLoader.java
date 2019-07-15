@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -74,7 +75,8 @@ public final class PropertyLoader
      * @param propertyFileName the name of the properties file
      * @return the final property values
      */
-    public static synchronized Properties getProperties(String propertyFileName)
+    public static synchronized Properties getProperties(String propertyFileName,
+                                                        Function<List<Properties>, Properties> merger)
     {
         try
         {
@@ -83,16 +85,18 @@ public final class PropertyLoader
             {
                 return null;
             }
-            
-            List<Properties> sortedProperties = sortProperties(allProperties);
-            Properties properties = mergeProperties(sortedProperties);
-            return properties;
+            return merger.apply(sortProperties(allProperties));
         }
         catch (IOException e)
         {
             logger.log(Level.SEVERE, "Error while loading the propertyFile " + propertyFileName, e);
             return null;
         }
+    }
+
+    public static synchronized Properties getProperties(String propertyFileName)
+    {
+        return getProperties(propertyFileName, PropertyLoader::mergeProperties);
     }
 
     public static List<Properties> loadAllProperties(String propertyFileName)
@@ -204,7 +208,7 @@ public final class PropertyLoader
      * @param sortedProperties
      * @return the merged Properties
      */
-    private static Properties mergeProperties(List<Properties> sortedProperties)
+    public static Properties mergeProperties(List<Properties> sortedProperties)
     {
         Properties mergedProperties = new Properties();
         for (Properties p : sortedProperties)
