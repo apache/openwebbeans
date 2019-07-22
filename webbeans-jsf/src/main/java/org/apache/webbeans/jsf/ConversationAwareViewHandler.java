@@ -23,7 +23,7 @@ import java.util.Map;
 import javax.enterprise.context.ContextNotActiveException;
 
 import javax.enterprise.context.Conversation;
-import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 import javax.faces.application.ViewHandler;
 import javax.faces.application.ViewHandlerWrapper;
@@ -59,8 +59,8 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
         {
             WebBeansContext webBeansContext = WebBeansContext.currentInstance();
             
-            Context conversationContext = webBeansContext.getBeanManagerImpl().getContext(ConversationScoped.class);
-            if (conversationContext.isActive())
+            Context sessionContext = webBeansContext.getBeanManagerImpl().getContext(SessionScoped.class);
+            if (sessionContext.isActive())
             {
                 Conversation conversation = webBeansContext.getConversationManager().getConversationBeanReference();
                 if (conversation != null && !conversation.isTransient())
@@ -116,8 +116,8 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
         {
             WebBeansContext webBeansContext = WebBeansContext.currentInstance();
             
-            Context conversationContext = webBeansContext.getBeanManagerImpl().getContext(ConversationScoped.class);
-            if (conversationContext.isActive())
+            Context sessionContext = webBeansContext.getBeanManagerImpl().getContext(SessionScoped.class);
+            if (sessionContext.isActive())
             {
                 Conversation conversation = webBeansContext.getConversationManager().getConversationBeanReference();
                 if (conversation != null && !conversation.isTransient())
