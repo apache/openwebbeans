@@ -20,14 +20,16 @@ package org.apache.webbeans.jsf;
 
 import java.util.List;
 import java.util.Map;
+import javax.enterprise.context.ContextNotActiveException;
 
 import javax.enterprise.context.Conversation;
+import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.spi.Context;
 import javax.faces.application.ViewHandler;
 import javax.faces.application.ViewHandlerWrapper;
 import javax.faces.context.FacesContext;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.conversation.ConversationManager;
 
 public class ConversationAwareViewHandler extends ViewHandlerWrapper
 {
@@ -53,11 +55,23 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
         
         String url = delegate.getActionURL(context, viewId);
 
-        ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
-        Conversation conversation = conversationManager.getConversationBeanReference();
-        if (conversation != null && !conversation.isTransient())
+        try
         {
-            url = JSFUtil.getRedirectViewIdWithCid(url, conversation.getId());
+            WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+            
+            Context conversationContext = webBeansContext.getBeanManagerImpl().getContext(ConversationScoped.class);
+            if (conversationContext.isActive())
+            {
+                Conversation conversation = webBeansContext.getConversationManager().getConversationBeanReference();
+                if (conversation != null && !conversation.isTransient())
+                {
+                    url = JSFUtil.getRedirectViewIdWithCid(url, conversation.getId());
+                }
+            }
+        }
+        catch (ContextNotActiveException e)
+        {
+            // ignore
         }
 
         return url;
@@ -97,12 +111,26 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
                 return url;
             }
         }
-        ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
-        Conversation conversation = conversationManager.getConversationBeanReference();
-        if (conversation != null && !conversation.isTransient())
+        
+        try
         {
-            url = JSFUtil.getRedirectViewIdWithCid(url, conversation.getId());
+            WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+            
+            Context conversationContext = webBeansContext.getBeanManagerImpl().getContext(ConversationScoped.class);
+            if (conversationContext.isActive())
+            {
+                Conversation conversation = webBeansContext.getConversationManager().getConversationBeanReference();
+                if (conversation != null && !conversation.isTransient())
+                {
+                    url = JSFUtil.getRedirectViewIdWithCid(url, conversation.getId());
+                }
+            }
         }
+        catch (ContextNotActiveException e)
+        {
+            // ignore
+        }
+
         return url;
     }
     
