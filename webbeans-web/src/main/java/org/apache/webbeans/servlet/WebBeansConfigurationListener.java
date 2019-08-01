@@ -30,12 +30,16 @@ import org.apache.webbeans.web.util.ServletCompatibilityUtil;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,20 +82,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     @Override
     public void contextInitialized(ServletContextEvent event)
     {
-        this.lifeCycle = webBeansContext.getService(ContainerLifecycle.class);
-
-        try
-        {
-            this.lifeCycle.startApplication(event);
-        }
-        catch (Exception e)
-        {
-            logger.log(Level.SEVERE,
-                WebBeansLoggerFacade.constructMessage(
-                    OWBLogConst.ERROR_0018,
-                    ServletCompatibilityUtil.getServletInfo(event.getServletContext())));
-            WebBeansUtil.throwRuntimeExceptions(e);
-        }
+        doStart(event);
     }
 
 
@@ -202,6 +193,30 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
     }
 
+    private void doStart(final ServletContextEvent event)
+    {
+        if (event.getServletContext().getAttribute(getClass().getName()) != null)
+        {
+            return;
+        }
+
+        this.lifeCycle = webBeansContext.getService(ContainerLifecycle.class);
+
+        try
+        {
+            this.lifeCycle.startApplication(event);
+            event.getServletContext().setAttribute(getClass().getName(), true);
+        }
+        catch (Exception e)
+        {
+            logger.log(Level.SEVERE,
+                    WebBeansLoggerFacade.constructMessage(
+                            OWBLogConst.ERROR_0018,
+                            ServletCompatibilityUtil.getServletInfo(event.getServletContext())));
+            WebBeansUtil.throwRuntimeExceptions(e);
+        }
+    }
+
     private boolean ensureRequestScope()
     {
         Context context = this.lifeCycle.getContextService().getCurrentContext(RequestScoped.class);
@@ -226,4 +241,19 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
     }
 
+    public static class Auto implements ServletContainerInitializer
+    {
+        @Override
+        public void onStartup(final Set<Class<?>> set, final ServletContext servletContext)
+        {
+            final String key = "openwebbeans.web.sci.active";
+            if (!Boolean.parseBoolean(System.getProperty(key, servletContext.getInitParameter(key))))
+            {
+                return;
+            }
+            final WebBeansConfigurationListener listener = new WebBeansConfigurationListener();
+            listener.doStart(new ServletContextEvent(servletContext));
+            servletContext.addListener(listener);
+        }
+    }
 }
