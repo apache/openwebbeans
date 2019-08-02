@@ -6,4 +6,4 @@ Apache OpenWebBeans (OWB) is an implementation of the Contexts and Dependency In
 
 OWB is modularly built and a full CDI container in under 1 MB total.
 
-Please visit http://openwebbeans.apache.org for more documentation
+Please visit https://openwebbeans.apache.org for more documentation
