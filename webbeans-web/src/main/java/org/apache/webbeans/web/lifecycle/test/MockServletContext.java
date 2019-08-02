@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,6 +48,8 @@ public class MockServletContext implements ServletContext
 {
 
     private Map<String, Object> attributes = new HashMap<>();
+    private Map<String, String> initParams = new HashMap<>();
+
 
     @Override
     public String getContextPath()
@@ -159,19 +162,35 @@ public class MockServletContext implements ServletContext
     @Override
     public String getInitParameter(String name)
     {
-        return null;
+        return initParams.get(name);
     }
 
     @Override
     public Enumeration<String> getInitParameterNames()
     {
-        return null;
+        return new Enumeration<String>()
+        {
+            Iterator<String> it = initParams.keySet().iterator();
+
+            @Override
+            public boolean hasMoreElements()
+            {
+                return it.hasNext();
+            }
+
+            @Override
+            public String nextElement()
+            {
+                return it.next();
+            }
+        };
     }
 
     @Override
     public boolean setInitParameter(String name, String value)
     {
-        return false;
+        initParams.put(name, value);
+        return true;
     }
 
     @Override

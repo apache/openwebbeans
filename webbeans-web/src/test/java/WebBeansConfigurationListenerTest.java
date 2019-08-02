@@ -49,7 +49,7 @@ public class WebBeansConfigurationListenerTest
                 listener.set(ServletContextListener.class.cast(t));
             }
         };
-        context.setAttribute("openwebbeans.web.sci.active", "true");
+        context.setInitParameter("openwebbeans.web.sci.active", "true");
         System.setProperty(ScannerService.class.getName(), EmptyScanner.class.getName());
         System.setProperty(ContainerLifecycle.class.getName(), SingleStartContainerLifecycle.class.getName());
         auto.onStartup(emptySet(), context);
