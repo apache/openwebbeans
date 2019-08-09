@@ -65,8 +65,8 @@ public class PropertyLoaderTest
         try
         {
             final Properties p = PropertyLoader.getProperties(PROPERTY_FILE4, props ->
-                    props.stream().sorted(comparing(it -> Integer.parseInt(it.getProperty("order"))))
-                            .findFirst().orElseThrow(IllegalStateException::new));
+                    props.stream().min(comparing(it -> Integer.parseInt(it.getProperty("order"))))
+                            .orElseThrow(IllegalStateException::new), () -> {});
             Assert.assertNotNull(p);
 
             String testValue = p.getProperty("testConfig");

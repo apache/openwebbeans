@@ -72,15 +72,18 @@ public final class PropertyLoader
      * is not really defined. The Properties file which got found first will be
      * processed first and thus get overwritten by the one found later.</p> 
      *
-     * @param propertyFileName the name of the properties file
+     * @param propertyFileName the name of the properties file.
+     * @param merger how to merge conflicting properties sets.
+     * @param onMissing executed when no file is found.
      * @return the final property values
      */
     public static synchronized Properties getProperties(String propertyFileName,
-                                                        Function<List<Properties>, Properties> merger)
+                                                        Function<List<Properties>, Properties> merger,
+                                                        Runnable onMissing)
     {
         try
         {
-            List<Properties> allProperties = loadAllProperties(propertyFileName);
+            List<Properties> allProperties = loadAllProperties(propertyFileName, onMissing);
             if (allProperties == null)
             {
                 return null;
@@ -96,21 +99,32 @@ public final class PropertyLoader
 
     public static synchronized Properties getProperties(String propertyFileName)
     {
-        return getProperties(propertyFileName, PropertyLoader::mergeProperties);
+        return getProperties(propertyFileName, PropertyLoader::mergeProperties, () ->
+                onMissingConfiguration(propertyFileName));
+    }
+
+    private static void onMissingConfiguration(final String propertyFileName)
+    {
+        if (logger.isLoggable(Level.INFO))
+        {
+            logger.info("could not find any property files with name " + propertyFileName);
+        }
     }
 
     public static List<Properties> loadAllProperties(String propertyFileName)
+            throws IOException
+    {
+        return loadAllProperties(propertyFileName, () -> onMissingConfiguration(propertyFileName));
+    }
+
+    public static List<Properties> loadAllProperties(String propertyFileName, Runnable onMissing)
             throws IOException
     {
         ClassLoader cl = WebBeansUtil.getCurrentClassLoader();
         Enumeration<URL> propertyUrls = cl.getResources(propertyFileName);
         if (propertyUrls == null || !propertyUrls.hasMoreElements())
         {
-            if(logger.isLoggable(Level.INFO))
-            {
-                logger.info("could not find any property files with name " + propertyFileName);   
-            }
-            
+            onMissing.run();
             return null;
         }
 
