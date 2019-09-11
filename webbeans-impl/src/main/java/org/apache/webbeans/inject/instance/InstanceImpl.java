@@ -25,13 +25,11 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -240,23 +238,20 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     @Override
     public Iterator<T> iterator()
     {
-        Set<Bean<?>> beans = resolveBeans();
-        List<T> instances = new ArrayList<>();
-        parentCreationalContext.putInjectionPoint(injectionPoint);
-        try
-        {
-            for(Bean<?> bean : beans)
+        final Iterator<Bean<?>> beans = resolveBeans().iterator();
+        return new Iterator<T>() {
+            @Override
+            public boolean hasNext()
             {
-                T instance = create(bean);
-                instances.add(instance);
+                return beans.hasNext();
             }
-        }
-        finally
-        {
-            parentCreationalContext.removeInjectionPoint();
-        }
-        
-        return instances.iterator();
+
+            @Override
+            public T next()
+            {
+                return create(beans.next());
+            }
+        };
     }
 
     public void destroy(T instance)

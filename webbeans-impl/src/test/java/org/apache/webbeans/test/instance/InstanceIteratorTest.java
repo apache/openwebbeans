@@ -22,20 +22,30 @@ import org.junit.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.Bean;
 import javax.inject.Inject;
 import javax.inject.Qualifier;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.Collection;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.StreamSupport;
 
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static java.util.stream.Collectors.toList;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 public class InstanceIteratorTest extends AbstractUnitTest
 {
@@ -86,7 +96,62 @@ public class InstanceIteratorTest extends AbstractUnitTest
         Assert.assertTrue(instanceIteratorHolder.iterateOverContracts());
     }
 
+    @Test
+    public void testDestroyDependents()
+    {
+        ABean.COUNT.set(0);
+        startContainer(GetDependents.class, ABean.class);
 
+        final Set<Bean<?>> rbs = getBeanManager().getBeans(GetDependents.class);
+        final Bean<?> rb = getBeanManager().resolve(rbs);
+        final GetDependents getter = GetDependents.class.cast(getBeanManager().getReference(
+                rb, GetDependents.class, getBeanManager().createCreationalContext(rb)));
+        assertNotNull(getter);
+
+        final Collection<ABean> beans = getter.get();
+        assertEquals(1, beans.size());
+
+        final ABean bean = beans.iterator().next();
+        assertFalse(bean.isDestroyed());
+        assertEquals(0, ABean.COUNT.get());
+
+        final AlterableContext alterableContext = AlterableContext.class.cast(
+                getBeanManager().getContext(ApplicationScoped.class));
+        alterableContext.destroy(rb);
+
+        assertTrue(bean.isDestroyed());
+        assertEquals(1, ABean.COUNT.get());
+    }
+
+    public static class ABean
+    {
+        private static final AtomicInteger COUNT = new AtomicInteger();
+        private boolean destroyed;
+
+        public boolean isDestroyed()
+        {
+            return destroyed;
+        }
+
+        @PreDestroy
+        private void destroy()
+        {
+            destroyed = true;
+            COUNT.incrementAndGet();
+        }
+    }
+
+    @ApplicationScoped
+    public static class GetDependents
+    {
+        @Inject
+        private Instance<ABean> beans;
+
+        public Collection<ABean> get()
+        {
+            return StreamSupport.stream(beans.spliterator(), false).collect(toList());
+        }
+    }
 
     public static class InstanceHolder
     {
