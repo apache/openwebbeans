@@ -76,7 +76,6 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     private WebBeansContext webBeansContext;
 
     private Map<Object, CreationalContextImpl<?>> creationalContexts;
-    private CreationalContextImpl<?> parentCreationalContext;
 
     private boolean strictValidation;
 
@@ -86,15 +85,12 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
      * @param injectionClazz injection class type
      * @param injectionPoint null or injection point
      * @param webBeansContext
-     * @param creationalContext will get used for creating &#064;Dependent beans
      * @param qualifiers qualifier annotations
      */
-    public InstanceImpl(Type injectionClazz, InjectionPoint injectionPoint, WebBeansContext webBeansContext,
-                 CreationalContextImpl<?> creationalContext, Annotation... qualifiers)
+    public InstanceImpl(Type injectionClazz, InjectionPoint injectionPoint, WebBeansContext webBeansContext, Annotation... qualifiers)
     {
         this.injectionClazz = injectionClazz;
         this.injectionPoint = injectionPoint;
-        parentCreationalContext = creationalContext;
 
         this.webBeansContext = webBeansContext;
         strictValidation = webBeansContext.getOpenWebBeansConfiguration().strictDynamicValidation();
@@ -192,7 +188,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         Annotation[] newQualifiersArray = qualifiers;
         return new InstanceImpl<>(
             injectionClazz, injectionPoint == null ? null : new InstanceInjectionPoint(injectionPoint, newQualifiersArray),
-            webBeansContext, parentCreationalContext, newQualifiersArray);
+            webBeansContext, newQualifiersArray);
     }
 
     /**
@@ -220,7 +216,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             ? qualifiers
             : qualifierAnnotations.toArray(new Annotation[qualifierAnnotations.size()]);
 
-        return new InstanceImpl<>(sub, injectionPoint, webBeansContext, parentCreationalContext, effectiveQualifiers);
+        return new InstanceImpl<>(sub, injectionPoint, webBeansContext, effectiveQualifiers);
     }
 
     /**
@@ -329,7 +325,6 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         injectionClazz = (Type)inputStream.readObject();
         qualifierAnnotations = (Set<Annotation>)inputStream.readObject();
         injectionPoint = (InjectionPoint) inputStream.readObject();
-        parentCreationalContext = webBeansContext.getBeanManagerImpl().createCreationalContext(null); // TODO: check what we can do
     }
     
     public String toString()
