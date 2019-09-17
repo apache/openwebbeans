@@ -1,10 +1,17 @@
 package org.apache.webbeans.test.portable;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.util.AnnotationLiteral;
 
 import org.junit.Assert;
@@ -33,6 +40,23 @@ import org.junit.Test;
 
 public class BeforeBeanDiscoveryTest extends AbstractUnitTest
 {
+    @Test
+    public void testAddAdditionalAnnotatedTypeFallbackForNull()
+    {
+        addExtension(new Extension()
+        {
+            void addBean(@Observes final BeforeBeanDiscovery beforeBeanDiscovery, final BeanManager beanManager)
+            {
+                beforeBeanDiscovery.addAnnotatedType(beanManager.createAnnotatedType(Foo.class), null);
+            }
+        });
+        startContainer(Foo.class);
+
+        // just check we don't have :
+        // javax.enterprise.inject.AmbiguousResolutionException: There is more than one Bean @Default
+        final Foo instance = getInstance(Foo.class);
+        assertNotNull(instance);
+    }
 
     @Test
     public void testAddAdditionalAnnotatedType()
@@ -78,5 +102,10 @@ public class BeforeBeanDiscoveryTest extends AbstractUnitTest
         Assert.assertNotNull(bean);
 
         shutDownContainer();
+    }
+
+    @ApplicationScoped
+    public static class Foo
+    {
     }
 }

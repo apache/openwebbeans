@@ -104,4 +104,32 @@ public class AnnotatedTypeWrapper<T> implements AnnotatedType<T>
     {
         return source;
     }
+
+    @Override
+    public boolean equals(final Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null)
+        {
+            return false;
+        }
+        if (getClass() == o.getClass())
+        {
+            return false; // == should have worked
+        }
+        if (AnnotatedType.class.isInstance(o))
+        {
+            return original.equals(o);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return original.hashCode();
+    }
 }

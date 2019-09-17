@@ -183,6 +183,35 @@ public class AnnotatedTypeImpl<X>
         return getJavaClass();
     }
 
+    @Override
+    public boolean equals(final Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (null == o)
+        {
+            return false;
+        }
+        final Class<?> otherClass = o.getClass();
+        if (getClass() == otherClass)
+        {
+            return false; // == should have worked
+        }
+        if (AnnotatedType.class.isInstance(o))
+        {
+            return o.equals(this);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() // enough, no need to create a hashcode from attributes
+    {
+        return super.hashCode();
+    }
+
     private State getState()
     {
         State result = state;
