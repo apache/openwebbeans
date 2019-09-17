@@ -1387,7 +1387,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
     }
 
-
     public List<ExternalScope> getAdditionalScopes()
     {
         return additionalScopes;
@@ -1434,17 +1433,29 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return null;
     }
 
-    public <T> Iterable<AnnotatedType<T>> getAnnotatedTypes(Class<T> type)
+    public <T> Collection<AnnotatedType<T>> getUserAnnotatedTypes(Class<T> type)
     {
-        Collection<AnnotatedType<T>> types = new ArrayList<>(2);
-        types.add(annotatedElementFactory.getAnnotatedType(type));
-        ConcurrentMap<String, AnnotatedType<?>> aTypes = additionalAnnotatedTypes.get(type);
+        final ConcurrentMap<String, AnnotatedType<?>> aTypes = additionalAnnotatedTypes.get(type);
         if (aTypes != null)
         {
+            Collection<AnnotatedType<T>> types = new ArrayList<>(2);
             for (AnnotatedType at : aTypes.values())
             {
                 types.add(at);
             }
+            return types;
+        }
+        return null;
+    }
+
+    public <T> Iterable<AnnotatedType<T>> getAnnotatedTypes(Class<T> type)
+    {
+        final Collection<AnnotatedType<T>> types = new ArrayList<>(2);
+        types.add(annotatedElementFactory.getAnnotatedType(type));
+        final Collection<AnnotatedType<T>> userAnnotatedTypes = getUserAnnotatedTypes(type);
+        if (userAnnotatedTypes != null)
+        {
+            types.addAll(userAnnotatedTypes);
         }
         return types;
     }

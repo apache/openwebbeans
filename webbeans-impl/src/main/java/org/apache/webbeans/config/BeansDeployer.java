@@ -39,6 +39,7 @@ import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
 import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
 import org.apache.webbeans.component.creation.ProducerMethodBeansBuilder;
 import org.apache.webbeans.configurator.AnnotatedTypeConfiguratorImpl;
+import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
@@ -259,7 +260,9 @@ public class BeansDeployer
                 List<AnnotatedType<?>> globalBdaAnnotatedTypes = annotatedTypesPerBda.get(defaultBeanArchiveInformation);
 
                 // Deploy additional Annotated Types which got added via BeforeBeanDiscovery#addAnnotatedType
-                addAdditionalAnnotatedTypes(webBeansContext.getBeanManagerImpl().getAdditionalAnnotatedTypes(), globalBdaAnnotatedTypes);
+                final Collection<AnnotatedType<?>> additionalAnnotatedTypes =
+                        webBeansContext.getBeanManagerImpl().getAdditionalAnnotatedTypes();
+                addAdditionalAnnotatedTypes(additionalAnnotatedTypes, globalBdaAnnotatedTypes);
 
                 for (List<AnnotatedType<?>> at : annotatedTypesPerBda.values())
                 {
@@ -1493,7 +1496,7 @@ public class BeansDeployer
      * @param beanAttributesPerBda the AnnotatedTypes which got discovered so far and are not vetoed
      * @throws ClassNotFoundException if class not found
      */
-    protected void deployFromBeanAttributes( Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> beanAttributesPerBda)
+    protected void deployFromBeanAttributes( Map<BeanArchiveInformation, Map<AnnotatedType<?>, ExtendedBeanAttributes<?>>> beanAttributesPerBda )
     {
         logger.fine("Deploying configurations from class files has started.");
 
@@ -1504,19 +1507,31 @@ public class BeansDeployer
             // Start from the class
             for (Map.Entry<AnnotatedType<?>, ExtendedBeanAttributes<?>> annotatedType : beanAttributesMap.entrySet())
             {
+                final AnnotatedType<?> key = annotatedType.getKey();
+                final Collection<? extends AnnotatedType<?>> userAnnotatedTypes =
+                        bm.getUserAnnotatedTypes(key.getJavaClass());
+                // if we have a matching AT (same type+annotations+default id) we skip it since we already deployed it
+                if (userAnnotatedTypes != null && userAnnotatedTypes.stream().anyMatch(it ->
+                        it != key &&
+                        AnnotatedTypeWrapper.class.isInstance(it) &&
+                        AnnotatedTypeWrapper.class.cast(it).getId().endsWith(AnnotatedElementFactory.OWB_DEFAULT_KEY) &&
+                        it.getAnnotations().equals(key.getAnnotations()))) // strictly it is qualifiers only but faster
+                {
+                    continue;
+                }
                 try
                 {
-                    deploySingleAnnotatedType(annotatedType.getKey(), annotatedType.getValue(), beanAttributesMap);
+                    deploySingleAnnotatedType(key, annotatedType.getValue(), beanAttributesMap);
                 }
                 catch (NoClassDefFoundError ncdfe)
                 {
-                    logger.info("Skipping deployment of Class " + annotatedType.getKey().getJavaClass() + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
+                    logger.info("Skipping deployment of Class " + key.getJavaClass() + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
                 }
 
                 // if the implClass already gets processed as part of the
                 // standard BDA scanning, then we don't need to 'additionally'
                 // deploy it anymore.
-                bm.removeAdditionalAnnotatedType(annotatedType.getKey());
+                bm.removeAdditionalAnnotatedType(key);
 
             }
         }
@@ -1630,7 +1645,6 @@ public class BeansDeployer
     private void configureAlternatives(URL bdaLocation, List<String> alternatives, boolean isStereotype)
     {
         AlternativesManager manager = webBeansContext.getAlternativesManager();
-        AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
 
         // the alternatives in this beans.xml
         // this gets used to detect multiple definitions of the
