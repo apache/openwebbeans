@@ -19,6 +19,8 @@
 package org.apache.webbeans.corespi.scanner;
 
 
+import static java.util.stream.Collectors.toMap;
+
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
@@ -105,13 +107,27 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             return finder;
         }
 
+        final WebBeansContext webBeansContext = webBeansContext();
         if (beanArchiveService == null)
         {
-            beanArchiveService = webBeansContext().getBeanArchiveService();
+            beanArchiveService = webBeansContext.getBeanArchiveService();
         }
 
-        Filter userFilter = webBeansContext().getService(Filter.class);
-        archive = new CdiArchive(beanArchiveService, WebBeansUtil.getCurrentClassLoader(), getBeanDeploymentUrls(), userFilter, getAdditionalArchive());
+        final Filter userFilter = webBeansContext.getService(Filter.class);
+        Map<String, URL> beanDeploymentUrls = getBeanDeploymentUrls();
+        if (!webBeansContext.getOpenWebBeansConfiguration().getScanExtensionJars())
+        {
+            webBeansContext.getExtensionLoader().loadExtensionServices();
+
+            final Set<URL> extensionJars = webBeansContext.getExtensionLoader().getExtensionJars();
+            beanDeploymentUrls = extensionJars.isEmpty() ? beanDeploymentUrls : beanDeploymentUrls.entrySet().stream()
+                    .filter(it -> !extensionJars.contains(it.getValue()))
+                    .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+            extensionJars.clear(); // no more needed
+        }
+        archive = new CdiArchive(
+                beanArchiveService, WebBeansUtil.getCurrentClassLoader(),
+                beanDeploymentUrls, userFilter, getAdditionalArchive());
         finder = new OwbAnnotationFinder(archive);
 
         return finder;

@@ -181,6 +181,13 @@ public class OpenWebBeansConfiguration
     public static final String IGNORED_EXTENSIONS = "org.apache.webbeans.ignoredExtensions";
 
     /**
+     * A boolean to enable CDI 1.1 behavior to not scan extension jar.
+     *
+     * IMPORTANT: this can break CDI 1.0 extensions.
+     */
+    public static final String SCAN_EXTENSION_JARS = "org.apache.webbeans.scanExtensionJars";
+
+    /**
      * By default we do _not_ force session creation in our WebBeansConfigurationListener. We only create the
      * Session if we really need the SessionContext. E.g. when we create a Contextual Instance in it.
      * Sometimes this creates a problem as the HttpSession can only be created BEFORE anything got written back
@@ -224,6 +231,11 @@ public class OpenWebBeansConfiguration
      * @see #IGNORED_EXTENSIONS
      */
     private Set<String> ignoredExtensions;
+
+    /**
+     * @see #SCAN_EXTENSION_JARS
+     */
+    private Boolean scanExtensionJars;
 
     /**
      * All configured lists per key.
@@ -448,6 +460,17 @@ public class OpenWebBeansConfiguration
             ignoredExtensions = getPropertyList(IGNORED_EXTENSIONS);
         }
         return ignoredExtensions;
+    }
+
+    public synchronized boolean getScanExtensionJars()
+    {
+        if (scanExtensionJars == null)
+        {
+            final String property = getProperty(SCAN_EXTENSION_JARS);
+            // default must stay true for backward compatibility
+            scanExtensionJars = property == null || Boolean.parseBoolean(property.trim());
+        }
+        return scanExtensionJars;
     }
 
     private Set<String> getPropertyList(String configKey)

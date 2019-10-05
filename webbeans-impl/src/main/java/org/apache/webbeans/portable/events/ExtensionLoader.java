@@ -18,9 +18,16 @@
  */
 package org.apache.webbeans.portable.events;
 
+import static java.util.stream.Collectors.toSet;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -37,6 +44,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.xbean.finder.archive.FileArchive;
 
 /**
  * Loads META-INF/services/javax.enterprise.inject.spi.Extension
@@ -56,6 +64,8 @@ public class ExtensionLoader
     private final BeanManagerImpl manager;
 
     private final WebBeansContext webBeansContext;
+    private final Set<URL> extensionJars = new HashSet<>();
+    private boolean loaded;
 
     /**
      * Creates a new loader instance.
@@ -71,9 +81,13 @@ public class ExtensionLoader
     /**
      * Load extension services.
      */
-    public void loadExtensionServices()
+    public synchronized void loadExtensionServices()
     {
-        loadExtensionServices(WebBeansUtil.getCurrentClassLoader());
+        if (!loaded)
+        {
+            loadExtensionServices(WebBeansUtil.getCurrentClassLoader());
+            loaded = true;
+        }
     }
 
     /**
@@ -115,9 +129,61 @@ public class ExtensionLoader
                     throw new WebBeansException("Error occurred while reading Extension service list", e);
                 }
             }
-        }        
+        }
+
+        if (!webBeansContext.getOpenWebBeansConfiguration().getScanExtensionJars())
+        {
+            extensionJars.addAll(extensionClasses.stream()
+                    .map(clazz -> toJar(classLoader, clazz))
+                    .filter(Objects::nonNull)
+                    .collect(toSet()));
+        }
     }
-    
+
+    private URL toJar(final ClassLoader loader, final Class<?> clazz)
+    {
+        try
+        {
+            final String resource = clazz.getName().replace('.', '/') + ".class";
+            Enumeration<URL> urls = loader.getResources(resource);
+            while (urls.hasMoreElements())
+            {
+                URL url = urls.nextElement();
+                switch (url.getProtocol())
+                {
+                    case "jar":
+                    {
+                        final String spec = url.getFile();
+                        int separator = spec.indexOf('!');
+                        if (separator == -1)
+                        {
+                            break;
+                        }
+                        url = new URL(spec.substring(0, separator));
+                        return new File(FileArchive.decode(url.getFile())).toURI().toURL();
+                    }
+                    case "file":
+                    {
+                        String path = url.getFile();
+                        path = path.substring(0, path.length() - resource.length());
+                        return new File(FileArchive.decode(path)).toURI().toURL();
+                    }
+                    default:
+                }
+            }
+        }
+        catch (final IOException ioe)
+        {
+            logger.warning(ioe.getMessage());
+        }
+        return null;
+    }
+
+    public Set<URL> getExtensionJars()
+    {
+        return extensionJars;
+    }
+
     /**
      * Returns service bean instance.
      * 

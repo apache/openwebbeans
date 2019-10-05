@@ -59,6 +59,7 @@ public abstract class AbstractUnitTest
 {
     private StandaloneLifeCycle testLifecycle;
     private Map<Class<?>, Object> services = new HashMap<>();
+    private Properties configuration = new Properties();
     private List<Extension>  extensions = new ArrayList<>();
     private List<Class<?>> interceptors = new ArrayList<Class<?>>();
     private List<Class<?>> decorators = new ArrayList<Class<?>>();
@@ -75,6 +76,8 @@ public abstract class AbstractUnitTest
         extensions.clear();
         interceptors.clear();
         decorators.clear();
+        services.clear();
+        configuration.clear();
     }
 
     /**
@@ -148,7 +151,7 @@ public abstract class AbstractUnitTest
 
             final Properties properties = wbcAwareServices.entrySet().stream()
                     .collect(Collector.of(
-                        Properties::new,
+                            () -> configuration == null ? new Properties() : configuration,
                         (p, e) -> p.setProperty(e.getKey().getName(), Class.class.cast(e.getValue()).getName()),
                         (properties1, properties2) -> {
                             properties1.putAll(properties2);
@@ -320,6 +323,15 @@ public abstract class AbstractUnitTest
     protected <T> void addService(final Class<T> type, final T instance)
     {
         this.services.put(type, instance);
+    }
+
+    protected void addConfiguration(final String key, final String value)
+    {
+        if (configuration == null)
+        {
+            configuration = new Properties();
+        }
+        configuration.setProperty(key, value);
     }
 
     /**
