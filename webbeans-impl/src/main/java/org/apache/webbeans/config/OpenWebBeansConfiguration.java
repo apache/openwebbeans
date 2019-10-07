@@ -181,7 +181,8 @@ public class OpenWebBeansConfiguration
     public static final String IGNORED_EXTENSIONS = "org.apache.webbeans.ignoredExtensions";
 
     /**
-     * A boolean to enable CDI 1.1 behavior to not scan extension jar.
+     * A boolean to enable CDI 1.1 behavior to not scan "extension JARs".
+     * "extensions JARs" are JARs, without a beans.xml but with CDI extensions.
      *
      * IMPORTANT: this can break CDI 1.0 extensions.
      */
