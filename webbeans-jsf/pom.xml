@@ -88,9 +88,9 @@
                 <configuration>
                     <instructions>
                         <Import-Package>
-                            javax.servlet.*;version="${osgi.servlet.range}",
-                            javax.el.*;version="${osgi.el.range}",
-                            javax.faces.*;version="${osgi.faces.range}",
+                            javax.servlet.*;version="[${osgi.servlet.range},5)",
+                            javax.el.*;version="[${osgi.el.range},3)",
+                            javax.faces.*;version="[${osgi.faces.range},3)",
                             *
                         </Import-Package>
                     </instructions>

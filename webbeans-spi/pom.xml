@@ -61,7 +61,7 @@
                 <configuration>
                     <instructions>
                         <Import-Package>
-                            javax.el.*;version="${osgi.el.range}";resolution:=optional,
+                            javax.el.*;version="[${osgi.el.range},3)";resolution:=optional,
                             *
                         </Import-Package>
                     </instructions>

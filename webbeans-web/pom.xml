@@ -120,9 +120,9 @@
                 <configuration>
                     <instructions>
                         <Import-Package>
-                            javax.servlet.jsp*;version="2.1",
-                            javax.servlet.*;version="${osgi.servlet.range}",
-                            javax.el.*;version="${osgi.el.range}",
+                            javax.servlet.jsp*;version="[2.1,3)",
+                            javax.servlet.*;version="[${osgi.servlet.range},5)",
+                            javax.el.*;version="[${osgi.el.range},3)";resolution:="optional",
                             *
                         </Import-Package>
                     </instructions>

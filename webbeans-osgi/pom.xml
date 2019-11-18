@@ -81,7 +81,7 @@
                 <configuration>
                     <instructions>
                         <Import-Package>
-                            javax.servlet.*;version="${osgi.servlet.range}",
+                            javax.servlet.*;version="[${osgi.servlet.range},5)",
                             *
                         </Import-Package>
                     </instructions>
