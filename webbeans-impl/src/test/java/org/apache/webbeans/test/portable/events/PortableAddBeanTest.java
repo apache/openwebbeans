@@ -19,7 +19,9 @@
 package org.apache.webbeans.test.portable.events;
 
 import static java.util.Collections.emptyList;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 import java.util.ArrayList;
@@ -28,7 +30,11 @@ import java.util.Collection;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Inject;
 
 import org.junit.Assert;
 
@@ -62,20 +68,41 @@ public class PortableAddBeanTest extends AbstractUnitTest
         final MyBean myBean = new MyBean();
         addExtension(new Extension()
         {
-            public void addBean(@Observes AfterBeanDiscovery event)
+            void addType(@Observes BeforeBeanDiscovery beforeBeanDiscovery)
+            {
+                beforeBeanDiscovery.addAnnotatedType(Injected.class, Injected.class.getName());
+            }
+
+            void addBean(@Observes AfterBeanDiscovery event)
             {
                 event.addBean()
                         .scope(Dependent.class)
                         .addTypes(MyBean.class, Object.class)
                         .beanClass(MyBean.class)
-                        .produceWith(i -> myBean);
+                        .produceWith(i -> {
+                            assertNull(myBean.ip);
+                            myBean.ip = i.select(InjectionPoint.class).get();
+                            return myBean;
+                        });
             }
         });
         startContainer(emptyList(), emptyList());
-        assertSame(myBean, getInstance(MyBean.class));
+
+        final Injected instance = getInstance(Injected.class);
+        assertSame(myBean, instance.bean);
+        assertNotNull(instance.bean.ip);
+        assertEquals(MyBean.class, instance.bean.ip.getType());
+        assertEquals("bean", instance.bean.ip.getMember().getName());
+    }
+
+    public static class Injected
+    {
+        @Inject
+        private MyBean bean;
     }
 
     public static class MyBean
     {
+        private InjectionPoint ip;
     }
 }

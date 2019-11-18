@@ -35,6 +35,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 
+import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.ClassUtil;
@@ -60,7 +61,8 @@ public class InjectionPointProducer extends AbstractProducer<InjectionPoint>
         InjectionPoint injectionPoint;
         if (!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(first.getType())))
         {
-            if (!ThirdpartyBeanImpl.class.isInstance(creationalContextImpl.getBean()))
+            if (!ThirdpartyBeanImpl.class.isInstance(creationalContextImpl.getBean()) &&
+                !InjectionPointBean.class.isInstance(creationalContextImpl.getBean()))
             {
                 throw new IllegalStateException("Inconsistent injection point stack");
             }
