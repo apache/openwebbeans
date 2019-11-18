@@ -49,7 +49,9 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.inject.instance.InstanceImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.GenericsUtil;
 
@@ -486,6 +488,10 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
         @Override
         public T create(CreationalContext<T> context)
         {
+            if (produceWithCallback != null)
+            {
+                return produceWithCallback.apply(createInstance(context));
+            }
             return (T) createWithCallback.apply(context);
         }
 
@@ -516,6 +522,10 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
         @Override
         public void destroy(T instance, CreationalContext<T> context)
         {
+            if (disposeWithCallback != null)
+            {
+                disposeWithCallback.accept(instance, createInstance(context));
+            }
             if (destroyWithCallback != null)
             {
                 destroyWithCallback.accept(instance, context);
@@ -562,6 +572,13 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
         public WebBeansContext getWebBeansContext()
         {
             return webBeansContext;
+        }
+
+        private InstanceImpl<Object> createInstance(final CreationalContext<T> context)
+        {
+            return new InstanceImpl<>(
+                    Object.class, CreationalContextImpl.class.cast(context).getInjectionPoint(),
+                    webBeansContext, getQualifiers().toArray(new Annotation[0]));
         }
 
         public String toString()

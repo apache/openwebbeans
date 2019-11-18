@@ -18,8 +18,17 @@
  */
 package org.apache.webbeans.test.portable.events;
 
+import static java.util.Collections.emptyList;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+
 import java.util.ArrayList;
 import java.util.Collection;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.Extension;
 
 import org.junit.Assert;
 
@@ -47,4 +56,26 @@ public class PortableAddBeanTest extends AbstractUnitTest
         shutDownContainer();
     }
 
+    @Test
+    public void testAddBeanExtensionWithProduceInsteadOfCreateCallback()
+    {
+        final MyBean myBean = new MyBean();
+        addExtension(new Extension()
+        {
+            public void addBean(@Observes AfterBeanDiscovery event)
+            {
+                event.addBean()
+                        .scope(Dependent.class)
+                        .addTypes(MyBean.class, Object.class)
+                        .beanClass(MyBean.class)
+                        .produceWith(i -> myBean);
+            }
+        });
+        startContainer(emptyList(), emptyList());
+        assertSame(myBean, getInstance(MyBean.class));
+    }
+
+    public static class MyBean
+    {
+    }
 }
