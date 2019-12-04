@@ -23,6 +23,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.SerializableBean;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
 import javax.enterprise.context.Dependent;
@@ -34,8 +35,10 @@ import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.Producer;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -134,25 +137,30 @@ public abstract class AbstractOwbBean<T>
         }
         catch (Exception re)
         {
-            Throwable throwable = getRootException(re);
-            
-            if(!(throwable instanceof RuntimeException))
+            Throwable current = re;
+            Set<Throwable> visited = new HashSet<>();
+            while (current instanceof InvocationTargetException || current instanceof WebBeansException)
             {
-                throw new CreationException(throwable);
+                Throwable cause = current.getCause();
+                if (visited.add(cause))
+                {
+                    current = cause;
+                }
+                else
+                {
+                    break;
+                }
             }
-            throw (RuntimeException) throwable;
+            if(current != null && !(current instanceof RuntimeException))
+            {
+                throw new CreationException(current);
+            }
+            if (current == null) // just a guard but highly unlikely
+            {
+                throw new CreationException(re);
+            }
+            throw (RuntimeException) current;
         }
-
-    }
-
-    private Throwable getRootException(Throwable throwable)
-    {
-        Throwable current = throwable;
-        while (current.getCause() != null && current.getCause() != current)
-        {
-            current = current.getCause();
-        }
-        return current;
     }
 
     /*
