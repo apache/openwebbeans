@@ -18,10 +18,6 @@
  */
 package org.apache.webbeans.resource.spi.se;
 
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -33,12 +29,10 @@ import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.Bean;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import javax.xml.ws.WebServiceRef;
 
-import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
@@ -175,50 +169,5 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
     {
         processor.clear();       
     }
-    
-    /**
-     * delegation of serialization behavior
-     */
-    @Override
-    public <T> void writeExternal(Bean<T> bean, T actualResource, ObjectOutput out) throws IOException
-    {
-        // default behavior
-        if (actualResource instanceof Serializable)
-        {
-            // for remote ejb stub and other serializable resources
-            out.writeObject(actualResource);
-        }
-        else
-        {
-            // otherwise, write a dummy string.
-            out.writeObject(DUMMY_STRING);
-        }
-
-    }
-
-    /**
-     * delegation of serialization behavior
-     */
-    @Override
-    public <T> T readExternal(Bean<T> bean, ObjectInput in) throws IOException,
-            ClassNotFoundException
-    {
-        T actualResource = null;
-
-        // default behavior
-        actualResource = (T) in.readObject();
-        if (actualResource instanceof javax.rmi.CORBA.Stub)
-        {
-            // for remote ejb stub, reconnect after deserialization.
-            org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(new String[0], null);
-            ((javax.rmi.CORBA.Stub)actualResource).connect(orb);
-        }
-        else if (actualResource.equals(DUMMY_STRING))
-        {
-            actualResource = (T) ((ResourceBean)bean).getActualInstance();
-        }
-        return actualResource;
-    }
-
 
 }

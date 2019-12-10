@@ -83,13 +83,21 @@ public interface ResourceInjectionService
 
     /**
      * delegation of serialization behavior
+     * @deprecated has not been used since 1.1.x. We can finally remove it some day
      */
-    <T> void writeExternal(Bean<T> bean, T actualResource, ObjectOutput out) throws IOException;
+    default <T> void writeExternal(Bean<T> bean, T actualResource, ObjectOutput out) throws IOException
+    {
+        // do nothing
+    }
 
     /**
      * delegation of serialization behavior
+     * @deprecated has not been used since 1.1.x. We can finally remove it some day
      */
-    <T> T readExternal(Bean<T> bean, ObjectInput out) throws IOException,
-            ClassNotFoundException;
+    default <T> T readExternal(Bean<T> bean, ObjectInput out) throws IOException, ClassNotFoundException
+    {
+        // do nothing
+        return null;
+    }
         
 }
