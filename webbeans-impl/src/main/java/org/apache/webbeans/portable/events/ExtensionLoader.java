@@ -32,16 +32,19 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 
+import org.apache.webbeans.component.ExtensionBean;
+import org.apache.webbeans.component.creation.ExtensionBeanBuilder;
+import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.xbean.finder.archive.FileArchive;
@@ -201,13 +204,21 @@ public class ExtensionLoader
      * Add a CDI Extension to our internal list.
      * @param ext Extension to add
      */
-    public void addExtension(Extension ext)
+    public void addExtension(final Extension ext)
     {
-        Bean<?> bean = webBeansContext.getWebBeansUtil().createExtensionComponent(ext.getClass());
-        Class<?> extensionClass = ext.getClass();
+        final Class<Extension> extensionClass = (Class<Extension>) ext.getClass();
+        Asserts.nullCheckForClass(extensionClass);
         extensions.put(extensionClass, ext);
 
+        final ExtensionBeanBuilder<Extension> extensionBeanBuilder =
+                new ExtensionBeanBuilder<>(webBeansContext, extensionClass);
+        final ExtensionBean<Extension> bean = extensionBeanBuilder.getBean();
         manager.addBean(bean);
+
+        // since an extension can fire a ProcessInjectionPoint event when observing something else than a lifecycle event
+        // and at the same time observe it, we must ensure to build the observers only once the bean is available
+        new ObserverMethodsBuilder<>(webBeansContext, extensionBeanBuilder.getAnnotatedType())
+                .defineObserverMethods(bean);
     }
 
     /**

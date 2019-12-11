@@ -31,7 +31,6 @@ import org.apache.webbeans.component.DecoratorMetadataBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.EventMetadataBean;
-import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.InstanceBean;
@@ -47,7 +46,6 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
-import org.apache.webbeans.component.creation.ExtensionBeanBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
 import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
@@ -477,23 +475,6 @@ public final class WebBeansUtil
         //TODO XXX set producer
         return newBean;
     }
-
-    /**
-     * Creates a new extension bean.
-     *
-     * @param <T> extension service class
-     * @param clazz impl. class
-     * @return a new extension service bean
-     */
-    public <T> ExtensionBean<T> createExtensionComponent(Class<T> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        ExtensionBeanBuilder<T> extensionBeanBuilder = new ExtensionBeanBuilder<>(webBeansContext, clazz);
-        ExtensionBean<T> bean = extensionBeanBuilder.getBean();
-        new ObserverMethodsBuilder<>(webBeansContext, extensionBeanBuilder.getAnnotatedType()).defineObserverMethods(bean);
-        return bean;
-    }
-
 
     /**
      * Creates a new manager bean instance.
