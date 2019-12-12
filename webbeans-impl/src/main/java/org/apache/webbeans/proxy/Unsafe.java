@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.proxy;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -37,6 +38,7 @@ public class Unsafe
      * initializing the class.
      */
     private Object unsafe;
+    private Object internalUnsafe;
     private Method unsafeAllocateInstance;
     private final AtomicReference<Method> unsafeDefineClass = new AtomicReference<>();
 
@@ -58,13 +60,25 @@ public class Unsafe
                 return null;
             }
         });
+        this.internalUnsafe = AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+            try // j11, unwrap unsafe, it owns defineClass now and no more theUnsafe
+            {
+                final Field theInternalUnsafe = unsafeClass.getDeclaredField("theInternalUnsafe");
+                theInternalUnsafe.setAccessible(true);
+                return theInternalUnsafe.get(null).getClass();
+            }
+            catch (final Exception notJ11OrMore)
+            {
+                return unsafe;
+            }
+        });
 
         if (unsafe != null)
         {
             unsafeAllocateInstance = AccessController.doPrivileged((PrivilegedAction<Method>) () -> {
                 try
                 {
-                    Method mtd = unsafeClass.getDeclaredMethod("allocateInstance", Class.class);
+                    Method mtd = unsafe.getClass().getDeclaredMethod("allocateInstance", Class.class);
                     mtd.setAccessible(true);
                     return mtd;
                 }
@@ -73,6 +87,37 @@ public class Unsafe
                     return null; // use newInstance()
                 }
             });
+
+            try
+            {
+                final Class<?> rootLoaderClass = Class.forName("java.lang.ClassLoader");
+                rootLoaderClass.getDeclaredMethod(
+                    "defineClass", new Class[] { String.class, byte[].class, int.class, int.class })
+                    .setAccessible(true);
+                rootLoaderClass.getDeclaredMethod(
+                    "defineClass", new Class[] {
+                            String.class, byte[].class, int.class, int.class, ProtectionDomain.class })
+                    .setAccessible(true);
+            }
+            catch (final Exception e)
+            {
+                try // some j>8, since we have unsafe let's use it
+                {
+                    final Class<?> rootLoaderClass = Class.forName("java.lang.ClassLoader");
+                    final sun.misc.Unsafe un = sun.misc.Unsafe.class.cast(unsafe);
+                    final long accOffset = un.objectFieldOffset(AccessibleObject.class.getDeclaredField("override"));
+
+                    un.putBoolean(rootLoaderClass.getDeclaredMethod("defineClass",
+                            new Class[]{String.class, byte[].class, int.class, int.class}), accOffset, true);
+                    un.putBoolean(rootLoaderClass.getDeclaredMethod("defineClass",
+                            new Class[]{String.class, byte[].class, int.class, int.class, ProtectionDomain.class}),
+                            accOffset, true);
+                }
+                catch (final Exception ex)
+                {
+                    // no-op
+                }
+            }
         }
     }
 
@@ -156,7 +201,7 @@ public class Unsafe
         {
             synchronized (this)
             {
-                final Class<?> unsafeClass = getUnsafeClass();
+                final Class<?> unsafeClass = internalUnsafe.getClass();
                 value = AccessController.doPrivileged((PrivilegedAction<Method>) () -> {
                     try
                     {
@@ -208,10 +253,9 @@ public class Unsafe
 
     private Class<?> getUnsafeClass()
     {
-        Class<?> unsafeClass;
         try
         {
-            unsafeClass = AccessController.doPrivileged((PrivilegedAction<Class<?>>) () -> {
+            return AccessController.doPrivileged((PrivilegedAction<Class<?>>) () -> {
                 try
                 {
                     return Thread.currentThread().getContextClassLoader().loadClass("sun.misc.Unsafe");
@@ -233,6 +277,5 @@ public class Unsafe
         {
             throw new IllegalStateException("Cannot get sun.misc.Unsafe class", e);
         }
-        return unsafeClass;
     }
 }
