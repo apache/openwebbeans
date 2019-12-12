@@ -26,6 +26,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -104,13 +105,16 @@ public class Unsafe
                 try // some j>8, since we have unsafe let's use it
                 {
                     final Class<?> rootLoaderClass = Class.forName("java.lang.ClassLoader");
-                    final sun.misc.Unsafe un = sun.misc.Unsafe.class.cast(unsafe);
-                    final long accOffset = un.objectFieldOffset(AccessibleObject.class.getDeclaredField("override"));
-
-                    un.putBoolean(rootLoaderClass.getDeclaredMethod("defineClass",
-                            new Class[]{String.class, byte[].class, int.class, int.class}), accOffset, true);
-                    un.putBoolean(rootLoaderClass.getDeclaredMethod("defineClass",
-                            new Class[]{String.class, byte[].class, int.class, int.class, ProtectionDomain.class}),
+                    final Method objectFieldOffset = unsafe.getClass().getDeclaredMethod("objectFieldOffset", Field.class);
+                    final Method putBoolean = unsafe.getClass().getDeclaredMethod("putBoolean", Object.class, long.class, boolean.class);
+                    objectFieldOffset.setAccessible(true);
+                    final long accOffset = Long.class.cast(objectFieldOffset.invoke(unsafe, AccessibleObject.class.getDeclaredField("override")));
+                    putBoolean.invoke(unsafe, rootLoaderClass.getDeclaredMethod("defineClass",
+                            new Class[]{String.class, byte[].class, int.class, int.class}),
+                            accOffset, true);
+                    putBoolean.invoke(unsafe, rootLoaderClass
+                                    .getDeclaredMethod("defineClass", new Class[]{String.class, byte[].class,
+                                            int.class, int.class, ProtectionDomain.class}),
                             accOffset, true);
                 }
                 catch (final Exception ex)
@@ -255,27 +259,26 @@ public class Unsafe
     {
         try
         {
-            return AccessController.doPrivileged((PrivilegedAction<Class<?>>) () -> {
-                try
-                {
-                    return Thread.currentThread().getContextClassLoader().loadClass("sun.misc.Unsafe");
-                }
-                catch (Exception e)
-                {
-                    try
-                    {
-                        return ClassLoader.getSystemClassLoader().loadClass("sun.misc.Unsafe");
-                    }
-                    catch (ClassNotFoundException e1)
-                    {
-                        throw new IllegalStateException("Cannot get sun.misc.Unsafe", e);
-                    }
-                }
-            });
+            return AccessController.doPrivileged((PrivilegedAction<Class<?>>) () ->
+                    Stream.of(Thread.currentThread().getContextClassLoader(), ClassLoader.getSystemClassLoader())
+                            .flatMap(classloader -> Stream.of("sun.misc.Unsafe", "jdk.internal.misc.Unsafe")
+                            .flatMap(name ->
+                            {
+                                try
+                                {
+                                    return Stream.of(classloader.loadClass(name));
+                                }
+                                catch (final ClassNotFoundException e)
+                                {
+                                    return Stream.empty();
+                                }
+                            }))
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalStateException("Cannot get Unsafe")));
         }
         catch (final Exception e)
         {
-            throw new IllegalStateException("Cannot get sun.misc.Unsafe class", e);
+            throw new IllegalStateException("Cannot get Unsafe class", e);
         }
     }
 }
