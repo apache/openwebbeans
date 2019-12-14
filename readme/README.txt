@@ -1534,11 +1534,6 @@ Configuration Names and Their Default Values :
    Values        : Server specific JNDI name
    Default       : ConnectionFactory
 
-- "org.apache.webbeans.conversation.Conversation.periodicDelay"
-   Description   : Conversation removing thread periodic delay
-   Values        : Configured in millisecond
-   Default       : 150000 ms
-
 - "org.apache.webbeans.spi.deployer.useEjbMetaDataDiscoveryService"
    Description   : Use EJB functionality or not. If use OpenEJB configures to true
    Values        : false, true

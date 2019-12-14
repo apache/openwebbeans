@@ -54,11 +54,6 @@ public class OpenWebBeansConfiguration
     /**Logger instance*/
     private static final Logger logger = WebBeansLoggerFacade.getLogger(OpenWebBeansConfiguration.class);
 
-    /**
-     * Conversation periodic delay in ms. This is not used by OWB out of the box.
-     * Some Containers might implement it though.
-     */
-    public static final String CONVERSATION_PERIODIC_DELAY = "org.apache.webbeans.conversation.Conversation.periodicDelay";
 
     /**Timeout interval in ms*/
     public static final String CONVERSATION_TIMEOUT_INTERVAL = "org.apache.webbeans.conversation.Conversation.timeoutInterval";
