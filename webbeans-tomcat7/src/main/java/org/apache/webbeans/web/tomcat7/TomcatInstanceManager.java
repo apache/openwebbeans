@@ -27,6 +27,7 @@ import javax.naming.NamingException;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.apache.tomcat.InstanceManager;
+import org.apache.webbeans.util.ExceptionUtil;
 
 public class TomcatInstanceManager implements InstanceManager
 {
@@ -70,24 +71,40 @@ public class TomcatInstanceManager implements InstanceManager
     public Object newInstance(Class<?> aClass) throws IllegalAccessException, InvocationTargetException, NamingException, InstantiationException
     {
         // Creates a defaut instance
-        Object object = this.processor.newInstance(aClass);
+        try
+        {
+            Object object = this.processor.newInstance(aClass);
 
-        // Inject dependencies
-        inject(object);
+            // Inject dependencies
+            inject(object);
 
-        return object;
+            return object;
+        }
+        catch (Exception e)
+        {
+            // sadly this is required as the Tomcat InstanceManager introduced an additional Exception in their signature :(
+            throw ExceptionUtil.throwAsRuntimeException(e);
+        }
     }
 
     @Override
     public Object newInstance(String str) throws IllegalAccessException, InvocationTargetException, NamingException, InstantiationException, ClassNotFoundException
     {
-        // Creates a defaut instance
-        Object object = this.processor.newInstance(str);
+        try
+        {
+            // Creates a defaut instance
+            Object object = this.processor.newInstance(str);
 
-        // Inject dependencies
-        inject(object);
+            // Inject dependencies
+            inject(object);
 
-        return object;
+            return object;
+        }
+        catch (Exception e)
+        {
+            // sadly this is required as the Tomcat InstanceManager introduced an additional Exception in their signature :(
+            throw ExceptionUtil.throwAsRuntimeException(e);
+        }
     }
 
     @Override
@@ -100,13 +117,21 @@ public class TomcatInstanceManager implements InstanceManager
     @Override
     public Object newInstance(String str, ClassLoader cl) throws IllegalAccessException, InvocationTargetException, NamingException, InstantiationException, ClassNotFoundException
     {
-        // Creates a defaut instance
-        Object object = this.processor.newInstance(str, cl);
+        try
+        {
+            // Creates a defaut instance
+            Object object = this.processor.newInstance(str, cl);
 
-        // Inject dependencies
-        inject(object);
+            // Inject dependencies
+            inject(object);
 
-        return object;
+            return object;
+        }
+        catch (Exception e)
+        {
+            // sadly this is required as the Tomcat InstanceManager introduced an additional Exception in their signature :(
+            throw ExceptionUtil.throwAsRuntimeException(e);
+        }
     }
 
     private void inject(Object object)
