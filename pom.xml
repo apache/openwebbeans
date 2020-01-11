@@ -61,20 +61,20 @@
         <geronimo_jaxws.version>1.2</geronimo_jaxws.version>
         <geronimo_servlet.version>1.0</geronimo_servlet.version>
         <geronimo_ejb.version>1.0.2</geronimo_ejb.version>
-        <geronimo_el.version>1.0.4</geronimo_el.version>
-        <geronimo_annotation.version>1.0</geronimo_annotation.version>
+        <geronimo_el.version>1.1</geronimo_el.version>
+        <geronimo_annotation.version>1.2</geronimo_annotation.version>
         <geronimo_jpa.version>1.1</geronimo_jpa.version>
         <geronimo_jta.version>1.1.1</geronimo_jta.version>
         <geronimo_jsp.version>1.0.1</geronimo_jsp.version>
-        <geronimo_cdi.version>1.0.1</geronimo_cdi.version>
-        <geronimo_atinject.version>1.0</geronimo_atinject.version>
-        <geronimo_interceptor.version>1.0</geronimo_interceptor.version>
+        <geronimo_cdi.version>1.1</geronimo_cdi.version>
+        <geronimo_atinject.version>1.1</geronimo_atinject.version>
+        <geronimo_interceptor.version>1.1</geronimo_interceptor.version>
         <geronimo_validation.version>1.1</geronimo_validation.version>
         <tomcat7.version>7.0.73</tomcat7.version>
         <!-- jetty 9.4.13+ broke session persistence: https://github.com/eclipse/jetty.project/issues/3597 -->
         <jetty.version>9.4.12.v20180830</jetty.version>
-        <myfaces.version>2.3.0</myfaces.version>
-        <xbean.version>4.13</xbean.version>
+        <myfaces.version>2.3.6</myfaces.version>
+        <xbean.version>4.15</xbean.version>
         <arquillian.version>1.1.13.Final</arquillian.version>
         <cdi.tck.version>2.0.3.Final</cdi.tck.version>
         <httpclient.version>4.5.2</httpclient.version>
@@ -626,7 +626,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.12</version>
+                <version>4.13</version>
                 <scope>test</scope>
             </dependency>
 
