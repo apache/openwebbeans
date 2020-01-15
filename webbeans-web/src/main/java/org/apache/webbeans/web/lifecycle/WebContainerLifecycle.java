@@ -21,6 +21,7 @@ package org.apache.webbeans.web.lifecycle;
 import org.apache.webbeans.annotation.InitializedLiteral;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.AbstractContextsService;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.lifecycle.AbstractLifeCycle;
@@ -161,11 +162,16 @@ public class WebContainerLifecycle extends AbstractLifeCycle
     @Override
     protected void beforeStopApplication(Object stopObject)
     {
-        webBeansContext.getContextsService().endContext(RequestScoped.class, null);
-        webBeansContext.getContextsService().endContext(ConversationScoped.class, null);
-        webBeansContext.getContextsService().endContext(SessionScoped.class, null);
-        webBeansContext.getContextsService().endContext(ApplicationScoped.class, null);
-        webBeansContext.getContextsService().endContext(Singleton.class, null);
+        final ContextsService contextsService = webBeansContext.getContextsService();
+        contextsService.endContext(RequestScoped.class, null);
+        if (AbstractContextsService.class.isInstance(contextsService) &&
+                AbstractContextsService.class.cast(contextsService).isSupportsConversation())
+        {
+            contextsService.endContext(ConversationScoped.class, null);
+        }
+        contextsService.endContext(SessionScoped.class, null);
+        contextsService.endContext(ApplicationScoped.class, null);
+        contextsService.endContext(Singleton.class, null);
 
         // clean up the EL caches after each request
         ELContextStore elStore = ELContextStore.getInstance(false);

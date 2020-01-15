@@ -133,5 +133,8 @@ public abstract class AbstractContextsService implements ContextsService
         }
     }
 
-
+    public boolean isSupportsConversation()
+    {
+        return supportsConversation;
+    }
 }
