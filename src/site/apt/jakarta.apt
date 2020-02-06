@@ -1,0 +1,99 @@
+~~ Licensed to the Apache Software Foundation (ASF) under one or more
+~~ contributor license agreements. See the NOTICE file distributed with this
+~~ work for additional information regarding copyright ownership. The ASF
+~~ licenses this file to You under the Apache License, Version 2.0 (the
+~~ "License"); you may not use this file except in compliance with the License.
+~~ You may obtain a copy of the License at
+~~ http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
+~~ or agreed to in writing, software distributed under the License is
+~~ distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+~~ KIND, either express or implied. See the License for the specific language
+~~ governing permissions and limitations under the License.
+Sample pom to use Jakarta artifacts/namespace instead of Javax one
+
+
++-------------------------------+
+<dependencies>
+  <!-- jakarta specs: to update to jakarta ones once released -->
+  <dependency>
+    <groupId>org.apache.geronimo.specs</groupId>
+    <artifactId>geronimo-el_2.2_spec</artifactId>
+    <version>1.2</version>
+    <classifier>jakarta</classifier>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.geronimo.specs</groupId>
+    <artifactId>geronimo-annotation_1.3_spec</artifactId>
+    <version>1.3</version>
+    <classifier>jakarta</classifier>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.geronimo.specs</groupId>
+    <artifactId>geronimo-jcdi_2.0_spec</artifactId>
+    <version>1.2</version>
+    <classifier>jakarta</classifier>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.geronimo.specs</groupId>
+    <artifactId>geronimo-atinject_1.0_spec</artifactId>
+    <version>1.2</version>
+    <classifier>jakarta</classifier>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.geronimo.specs</groupId>
+    <artifactId>geronimo-interceptor_1.2_spec</artifactId>
+    <version>1.2</version>
+    <classifier>jakarta</classifier>
+  </dependency>
+
+  <!-- openwebbeans with jakarta classifier -->
+  <dependency>
+    <groupId>org.apache.openwebbeans</groupId>
+    <artifactId>openwebbeans-spi</artifactId>
+    <version>2.0.15</version>
+    <classifier>jakarta</classifier>
+    <exclusions>
+      <exclusion>
+        <groupId>org.apache.openwebbeans</groupId>
+        <artifactId>*</artifactId>
+      </exclusion>
+      <exclusion>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>*</artifactId>
+      </exclusion>
+    </exclusions>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.openwebbeans</groupId>
+    <artifactId>openwebbeans-impl</artifactId>
+    <version>2.0.15</version>
+    <classifier>jakarta</classifier>
+    <exclusions>
+      <exclusion>
+        <groupId>org.apache.openwebbeans</groupId>
+        <artifactId>*</artifactId>
+      </exclusion>
+      <exclusion>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>*</artifactId>
+      </exclusion>
+    </exclusions>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.openwebbeans</groupId>
+    <artifactId>openwebbeans-se</artifactId>
+    <version>2.0.15</version>
+    <classifier>jakarta</classifier>
+    <exclusions>
+      <exclusion>
+        <groupId>org.apache.openwebbeans</groupId>
+        <artifactId>*</artifactId>
+      </exclusion>
+      <exclusion>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>*</artifactId>
+      </exclusion>
+    </exclusions>
+  </dependency>
+</dependencies>
++-------------------------------+
