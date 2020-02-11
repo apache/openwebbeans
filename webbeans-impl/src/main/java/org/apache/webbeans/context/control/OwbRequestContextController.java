@@ -20,6 +20,8 @@
 package org.apache.webbeans.context.control;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.intercept.RequestScopedBeanInterceptorHandler;
+import org.apache.webbeans.spi.ContextsService;
 
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.RequestScoped;
@@ -28,26 +30,20 @@ import javax.enterprise.context.spi.Context;
 
 public class OwbRequestContextController implements RequestContextController
 {
-    private final WebBeansContext context;
-    private Object startParam = null;
+    private final ContextsService contextsService;
 
     OwbRequestContextController(WebBeansContext context)
     {
-        this.context = context;
+        this.contextsService = context.getContextsService();
     }
 
     @Override
     public boolean activate()
     {
-        if (startParam != null)
+        final Context ctx = contextsService.getCurrentContext(RequestScoped.class);
+        if (ctx == null || !ctx.isActive())
         {
-            return false;
-        }
-        Context ctx = context.getContextsService().getCurrentContext(RequestScoped.class);
-        if (ctx == null)
-        {
-            startParam = new Object();
-            context.getContextsService().startContext(RequestScoped.class, startParam);
+            contextsService.startContext(RequestScoped.class, null);
             return true;
         }
         return false;
@@ -56,10 +52,7 @@ public class OwbRequestContextController implements RequestContextController
     @Override
     public void deactivate() throws ContextNotActiveException
     {
-        if (startParam != null)
-        {
-            context.getContextsService().endContext(RequestScoped.class, startParam);
-            startParam = null;
-        }
+        contextsService.endContext(RequestScoped.class, null);
+        RequestScopedBeanInterceptorHandler.removeThreadLocals();
     }
 }
