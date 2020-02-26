@@ -41,6 +41,7 @@ import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.context.SessionContext;
+import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.intercept.RequestScopedBeanInterceptorHandler;
 import org.apache.webbeans.intercept.SessionScopedBeanInterceptorHandler;
@@ -311,10 +312,15 @@ public abstract class BaseSeContextsService extends AbstractContextsService
         ctx.setActive(true);
         conversationContext.set(ctx);
 
-        if (ctx.getConversation().isTransient())
+        final ConversationImpl conversation = ctx.getConversation();
+        if (conversation.isTransient())
         {
             webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
                 conversationManager.getLifecycleEventPayload(ctx), InitializedLiteral.INSTANCE_CONVERSATION_SCOPED);
+        }
+        else
+        {
+            conversation.updateLastAccessTime();
         }
     }
 

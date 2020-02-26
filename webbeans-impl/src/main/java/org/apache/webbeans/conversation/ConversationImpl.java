@@ -178,7 +178,12 @@ public class ConversationImpl implements Conversation, Serializable
         synchronized (this)
         {
             threadsUsingIt.add(thread);
-            return threadsUsingIt.size();
+            final int size = threadsUsingIt.size();
+            if (size == 1)
+            {
+                updateLastAccessTime();
+            }
+            return size;
         }
     }
 

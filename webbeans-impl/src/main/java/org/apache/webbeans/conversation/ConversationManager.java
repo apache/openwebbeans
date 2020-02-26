@@ -107,6 +107,10 @@ public class ConversationManager
                                     " is used by other request. It creates a new transient conversation");
                             conversationContext.getConversation().setProblemDuringCreation(problem);
                         }
+                        else
+                        {
+                            conversationContext.getConversation().updateLastAccessTime();
+                        }
 
                         conversationContext.setActive(true);
                         return conversationContext;
