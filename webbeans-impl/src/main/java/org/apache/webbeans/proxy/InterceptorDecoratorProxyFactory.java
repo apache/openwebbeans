@@ -87,7 +87,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
 
         try
         {
-            T proxy = unsafe.unsafeNewInstance(proxyClass);
+            T proxy = newInstance(proxyClass);
 
             Field delegateField = proxy.getClass().getDeclaredField(FIELD_PROXIED_INSTANCE);
             delegateField.setAccessible(true);
@@ -99,11 +99,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
 
             return proxy;
         }
-        catch (IllegalAccessException e)
-        {
-            throw new ProxyGenerationException(e);
-        }
-        catch (NoSuchFieldException e)
+        catch (IllegalAccessException | NoSuchFieldException e)
         {
             throw new ProxyGenerationException(e);
         }

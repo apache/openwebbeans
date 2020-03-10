@@ -291,7 +291,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
     {
         try
         {
-            T proxy = unsafe.unsafeNewInstance(proxyClass);
+            T proxy = newInstance(proxyClass);
 
             Field delegateField = proxy.getClass().getDeclaredField(FIELD_INSTANCE_PROVIDER);
             delegateField.setAccessible(true);

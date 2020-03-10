@@ -75,8 +75,8 @@ public abstract class AbstractProxyFactory
     {
         this.webBeansContext = webBeansContext;
         javaVersion = determineDefaultJavaVersion();
-        unsafe = new Unsafe();
         definingService = webBeansContext.getService(DefiningClassService.class);
+        unsafe = definingService == null ? new Unsafe() : null;
     }
 
     private int determineDefaultJavaVersion()
@@ -278,6 +278,25 @@ public abstract class AbstractProxyFactory
             return definingService.defineAndLoad(proxyClassName, proxyBytes, classToProxy);
         }
         return unsafe.defineAndLoadClass(classLoader, proxyClassName, proxyBytes);
+    }
+
+    protected  <T> T newInstance(final Class<? extends T> proxyClass)
+    {
+        if (unsafe != null)
+        {
+            return unsafe.unsafeNewInstance(proxyClass);
+        }
+        else
+        {
+            try
+            {
+                return proxyClass.getConstructor().newInstance();
+            }
+            catch (final Exception e)
+            {
+                throw new IllegalStateException("Failed to allocateInstance of Proxy class " + proxyClass.getName(), e);
+            }
+        }
     }
 
     private Method[] sortOutDuplicateMethods(Method[] methods)
