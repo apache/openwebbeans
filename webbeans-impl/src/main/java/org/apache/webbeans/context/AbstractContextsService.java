@@ -26,9 +26,13 @@ import javax.enterprise.context.ContextException;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 
+import org.apache.webbeans.annotation.BeforeDestroyedLiteral;
+import org.apache.webbeans.annotation.DestroyedLiteral;
+import org.apache.webbeans.annotation.InitializedLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.spi.ContextsService;
 
 public abstract class AbstractContextsService implements ContextsService
@@ -37,6 +41,7 @@ public abstract class AbstractContextsService implements ContextsService
 
     protected boolean supportsConversation;
 
+    protected Boolean fireRequestLifecycleEvents;
 
     protected AbstractContextsService(WebBeansContext webBeansContext)
     {
@@ -136,5 +141,19 @@ public abstract class AbstractContextsService implements ContextsService
     public boolean isSupportsConversation()
     {
         return supportsConversation;
+    }
+
+    protected boolean shouldFireRequestLifecycleEvents()
+    {
+        if (fireRequestLifecycleEvents == null)
+        {
+            NotificationManager notificationManager = webBeansContext.getNotificationManager();
+            fireRequestLifecycleEvents
+                    = notificationManager.hasContextLifecycleObserver(InitializedLiteral.INSTANCE_REQUEST_SCOPED) ||
+                    notificationManager.hasContextLifecycleObserver(BeforeDestroyedLiteral.INSTANCE_REQUEST_SCOPED) ||
+                    notificationManager.hasContextLifecycleObserver(DestroyedLiteral.INSTANCE_REQUEST_SCOPED) ;
+        }
+
+        return fireRequestLifecycleEvents;
     }
 }

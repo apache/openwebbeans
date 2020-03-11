@@ -33,7 +33,6 @@ import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.context.SingletonContext;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.ELContextStore;
-import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.intercept.SessionScopedBeanInterceptorHandler;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.intercept.RequestScopedBeanInterceptorHandler;
@@ -98,8 +97,6 @@ public class WebContextsService extends AbstractContextsService
     protected Boolean eagerSessionInitialisation;
     protected Pattern eagerSessionPattern;
 
-
-    protected Boolean fireRequestLifecycleEvents;
 
     /**
      * Creates a new instance.
@@ -804,20 +801,6 @@ public class WebContextsService extends AbstractContextsService
         }
 
         return conversationContext;
-    }
-
-    protected boolean shouldFireRequestLifecycleEvents()
-    {
-        if (fireRequestLifecycleEvents == null)
-        {
-            NotificationManager notificationManager = webBeansContext.getNotificationManager();
-            fireRequestLifecycleEvents
-                = notificationManager.hasContextLifecycleObserver(InitializedLiteral.INSTANCE_REQUEST_SCOPED) ||
-                  notificationManager.hasContextLifecycleObserver(BeforeDestroyedLiteral.INSTANCE_REQUEST_SCOPED) ||
-                  notificationManager.hasContextLifecycleObserver(DestroyedLiteral.INSTANCE_REQUEST_SCOPED) ;
-        }
-
-        return fireRequestLifecycleEvents;
     }
 
 

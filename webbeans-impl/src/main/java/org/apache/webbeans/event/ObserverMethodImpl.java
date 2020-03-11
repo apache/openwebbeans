@@ -199,6 +199,11 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         }
 
         checkObserverCondition(annotatedObservesParameter);
+
+        if (!view.isAccessible())
+        {
+            ownerBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(view, true);
+        }
     }
 
     protected void checkObserverCondition(AnnotatedParameter<T> annotatedObservesParameter)
@@ -278,22 +283,26 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
         ObserverParams[] obargs = null;
         try
         {
-            obargs = new ObserverParams[methodArgsMap.size()];
-            obargs = methodArgsMap.toArray(obargs);
-            Object[] args = new Object[obargs.length];
-            int i = 0;
-            for(ObserverParams param : obargs)
+            Object[] args;
+            if (methodArgsMap == null)
             {
-                args[i++] = param.instance;
+                args = new Object[]{event};
+            }
+            else
+            {
+                args = new Object[methodArgsMap.size()];
+                obargs = new ObserverParams[args.length];
+                obargs = methodArgsMap.toArray(obargs);
+                int i = 0;
+                for (ObserverParams param : obargs)
+                {
+                    args[i++] = param.instance;
+                }
             }
 
             //Static or not
             if (Modifier.isStatic(view.getModifiers()))
             {
-                if (!view.isAccessible())
-                {
-                    view.setAccessible(true);
-                }
                 //Invoke Method
                 view.invoke(null, args);
             }
@@ -347,14 +356,9 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
 
                 if (object != null)
                 {
-                    if (!view.isAccessible())
-                    {
-                        ownerBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(view, true);
-                    }
-
                     if (Modifier.isPrivate(view.getModifiers()))
                     {
-                        // since private methods cannot be intercepted, we have to unwrap anny possible proxy
+                        // since private methods cannot be intercepted, we have to unwrap any possible proxy
                         if (object instanceof OwbNormalScopeProxy)
                         {
                             object = getWebBeansContext().getInterceptorDecoratorProxyFactory().unwrapInstance(object);
@@ -385,7 +389,7 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
             }
             
             //Destroy observer method dependent instances
-            if(methodArgsMap != null)
+            if(methodArgsMap != null && obargs != null)
             {
                 for(ObserverParams param : obargs)
                 {
@@ -411,6 +415,11 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
      */
     protected List<ObserverParams> getMethodArguments(Object event, EventMetadata metadata)
     {
+        if (injectionPoints.isEmpty() && annotatedObservesParameter.getPosition() == 0)
+        {
+            return null; // special handling
+        }
+
         List<ObserverParams> list = new ArrayList<>();
         if (annotatedObservesParameter.getPosition() == 0)
         {

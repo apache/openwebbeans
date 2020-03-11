@@ -22,12 +22,19 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.NotificationOptions;
 import javax.enterprise.inject.spi.EventMetadata;
+import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -47,6 +54,13 @@ public class EventImpl<T> implements Event<T>, Serializable
 
     private transient WebBeansContext webBeansContext;
 
+    // cache for metadata != this.metadata
+    private volatile transient ConcurrentMap<ObserverCacheKey, List<ObserverMethod<? super Object>>> observers;
+    private volatile transient ConcurrentMap<ObserverCacheKey, List<ObserverMethod<? super Object>>> asyncObservers;
+    // cache for metadata == this.metadata (fast path)
+    private volatile transient List<ObserverMethod<? super Object>> defaultMetadataObservers;
+    private volatile transient List<ObserverMethod<? super Object>> defaultMetadataAsyncObservers;
+
     /**
      * Creates a new event.
      * 
@@ -57,6 +71,12 @@ public class EventImpl<T> implements Event<T>, Serializable
         Asserts.assertNotNull(metadata, "event metadata");
         this.metadata = wrapMetadata(metadata);
         this.webBeansContext = webBeansContext;
+        // earger validation to bypass it at runtime
+        this.webBeansContext.getWebBeansUtil().validEventType(metadata.getType(), metadata.getType());
+        if (webBeansContext.getWebBeansUtil().isContainerEventType(this.metadata.validatedType()))
+        {
+            throw new IllegalArgumentException("Firing container events is forbidden");
+        }
     }
 
     private EventMetadataImpl wrapMetadata(EventMetadata metadata)
@@ -79,8 +99,16 @@ public class EventImpl<T> implements Event<T>, Serializable
     public void fire(T event)
     {
         Type eventType = event.getClass();
-        webBeansContext.getWebBeansUtil().validEventType(eventType.getClass(), metadata.getType());
-        webBeansContext.getBeanManagerImpl().fireEvent(event, metadata.select(eventType), false);
+        if (metadata.validatedType() == eventType)
+        {
+            // already validated so don't recall validEventType()
+            doFireSyncEvent(event, metadata);
+        }
+        else
+        {
+            webBeansContext.getWebBeansUtil().validEventType(eventType.getClass(), metadata.getType());
+            doFireSyncEvent(event, metadata.select(eventType));
+        }
     }
 
     @Override
@@ -93,9 +121,13 @@ public class EventImpl<T> implements Event<T>, Serializable
     public <U extends T> CompletionStage<U> fireAsync(U event, NotificationOptions notificationOptions)
     {
         Type eventType = event.getClass();
-        webBeansContext.getWebBeansUtil().validEventType(eventType.getClass(), metadata.getType());
-        return webBeansContext.getNotificationManager().fireEvent(event, metadata.select(eventType), false,
-                    notificationOptions);
+        if (eventType != metadata.validatedType())
+        {
+            webBeansContext.getWebBeansUtil().validEventType(eventType.getClass(), metadata.getType());
+            return webBeansContext.getNotificationManager()
+                    .fireEvent(event, metadata.select(eventType), false, notificationOptions);
+        }
+        return doFireAsyncEvent(event, metadata, notificationOptions);
     }
 
     /**
@@ -134,5 +166,137 @@ public class EventImpl<T> implements Event<T>, Serializable
     public EventMetadataImpl getMetadata()
     {
         return metadata;
+    }
+
+    private void doFireSyncEvent(T event, EventMetadataImpl metadata)
+    {
+        final NotificationManager notificationManager = webBeansContext.getNotificationManager();
+        List<ObserverMethod<? super Object>> observerMethods;
+        if (metadata == this.metadata) // no validation of isContainerEventType, already done
+        {
+            if (defaultMetadataObservers == null)
+            {
+                final List<ObserverMethod<? super Object>> tmp = new ArrayList<>( // faster than LinkedList
+                        notificationManager.resolveObservers(event, metadata, false));
+                notificationManager.prepareObserverListForFire(false, false, tmp);
+                this.defaultMetadataObservers = tmp;
+            }
+            observerMethods = defaultMetadataObservers;
+        }
+        else
+        {
+            if (webBeansContext.getWebBeansUtil().isContainerEventType(event))
+            {
+                throw new IllegalArgumentException("Firing container events is forbidden");
+            }
+
+            if (observers == null)
+            {
+                synchronized (this)
+                {
+                    if (observers == null)
+                    {
+                        observers = new ConcurrentHashMap<>();
+                    }
+                }
+            }
+            final ObserverCacheKey key = new ObserverCacheKey(
+                    event.getClass(), metadata.validatedType(), metadata.getQualifiers());
+            observerMethods = observers.get(key);
+            if (observerMethods == null)
+            {
+                observerMethods = new ArrayList<>( // faster than LinkedList
+                        notificationManager.resolveObservers(event, metadata, false));
+                notificationManager.prepareObserverListForFire(false, false, observerMethods);
+                this.observers.putIfAbsent(key, observerMethods);
+            }
+        }
+        notificationManager.doFireSync(new EventContextImpl<>(event, metadata), false, observerMethods);
+    }
+
+    private <U extends T> CompletionStage<U> doFireAsyncEvent(T event, EventMetadataImpl metadata, NotificationOptions options)
+    {
+        final NotificationManager notificationManager = webBeansContext.getNotificationManager();
+        List<ObserverMethod<? super Object>> observerMethods;
+        if (metadata == this.metadata) // no validation of isContainerEventType, already done
+        {
+            if (defaultMetadataAsyncObservers == null)
+            {
+                final List<ObserverMethod<? super Object>> tmp = new ArrayList<>( // faster than LinkedList
+                        notificationManager.resolveObservers(event, metadata, false));
+                notificationManager.prepareObserverListForFire(false, true, tmp);
+                this.defaultMetadataAsyncObservers = tmp;
+            }
+            observerMethods = defaultMetadataAsyncObservers;
+        }
+        else
+        {
+            if (webBeansContext.getWebBeansUtil().isContainerEventType(event))
+            {
+                throw new IllegalArgumentException("Firing container events is forbidden");
+            }
+
+            if (asyncObservers == null)
+            {
+                synchronized (this)
+                {
+                    if (asyncObservers == null)
+                    {
+                        asyncObservers = new ConcurrentHashMap<>();
+                    }
+                }
+            }
+            final ObserverCacheKey key = new ObserverCacheKey(
+                    event.getClass(), metadata.validatedType(), metadata.getQualifiers());
+            observerMethods = asyncObservers.get(key);
+            if (observerMethods == null)
+            {
+                observerMethods = new ArrayList<>( // faster than LinkedList
+                        notificationManager.resolveObservers(event, metadata, false));
+                notificationManager.prepareObserverListForFire(false, true, observerMethods);
+                this.asyncObservers.putIfAbsent(key, observerMethods);
+            }
+        }
+        return notificationManager.doFireAsync(
+                new EventContextImpl<>(event, metadata), false, options, observerMethods);
+    }
+
+    private static class ObserverCacheKey
+    {
+        private final Class<?> clazz;
+        private final Type type;
+        private final Collection<Annotation> qualifiers;
+        private final int hash;
+
+        private ObserverCacheKey(Class<?> clazz, Type type, Collection<Annotation> qualifiers)
+        {
+            this.clazz = clazz;
+            this.type = type;
+            this.qualifiers = qualifiers;
+            this.hash = Objects.hash(clazz, type, qualifiers);
+        }
+
+        @Override
+        public boolean equals(final Object o)
+        {
+            if (this == o)
+            {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass())
+            {
+                return false;
+            }
+            ObserverCacheKey that = ObserverCacheKey.class.cast(o);
+            return Objects.equals(clazz, that.clazz) &&
+                    Objects.equals(type, that.type) &&
+                    Objects.equals(qualifiers, that.qualifiers);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return hash;
+        }
     }
 }

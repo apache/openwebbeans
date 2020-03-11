@@ -66,6 +66,7 @@ import org.apache.webbeans.spi.ConversationService;
 import org.apache.webbeans.spi.LoaderService;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.SecurityService;
+import org.apache.webbeans.spi.TransactionService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -114,6 +115,7 @@ public class WebBeansContext
     private ConversationService conversationService;
     private final ApplicationBoundaryService applicationBoundaryService;
     private final NotificationManager notificationManager;
+    private TransactionService transactionService;
 
 
     public WebBeansContext()
@@ -340,6 +342,16 @@ public class WebBeansContext
     public SubclassProxyFactory getSubclassProxyFactory()
     {
         return subclassProxyFactory;
+    }
+
+    public TransactionService getTransactionService() // used in event bus so ensure it is a plain getter at runtime
+    {
+        if (transactionService == null)
+        {
+            // lazy init
+            transactionService = getService(TransactionService.class);
+        }
+        return transactionService;
     }
 
     public ScannerService getScannerService()

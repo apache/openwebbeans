@@ -31,8 +31,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,6 +57,7 @@ import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.EventContext;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
@@ -75,6 +74,7 @@ import org.apache.webbeans.portable.events.generics.GProcessObserverMethod;
 import org.apache.webbeans.portable.events.generics.GenericBeanEvent;
 import org.apache.webbeans.portable.events.generics.GenericProducerObserverEvent;
 import org.apache.webbeans.portable.events.generics.TwoParametersGenericBeanEvent;
+import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.TransactionService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -195,9 +195,8 @@ public final class NotificationManager
     public <T> Collection<ObserverMethod<? super T>> resolveObservers(T event, EventMetadataImpl metadata, boolean isLifecycleEvent)
     {
         Type eventType = metadata.validatedType();
-        Collection<ObserverMethod<? super T>> observersMethods = filterByType(event, eventType, isLifecycleEvent);
-
-        observersMethods = filterByQualifiers(observersMethods, metadata.getQualifiers());
+        Collection<ObserverMethod<? super T>> observersMethods = filterByQualifiers(
+                filterByType(event, eventType, isLifecycleEvent), metadata.getQualifiers());
 
         if (isLifecycleEvent && event instanceof ProcessAnnotatedType)
         {
@@ -641,30 +640,130 @@ public final class NotificationManager
      * Fire the given event
      * @param notificationOptions if {@code null} then this is a synchronous event. Otherwise fireAsync
      */
-    public <T> CompletionStage<T> fireEvent(Object event, EventMetadataImpl metadata, boolean isLifecycleEvent, NotificationOptions notificationOptions)
+    public <T> CompletionStage<T> fireEvent(Object event, EventMetadataImpl metadata, boolean isLifecycleEvent,
+                                            NotificationOptions notificationOptions)
     {
         boolean async = notificationOptions != null;
-
         if (!isLifecycleEvent && webBeansContext.getWebBeansUtil().isContainerEventType(event))
         {
             throw new IllegalArgumentException("Firing container events is forbidden");
         }
+        return doFireEvent(
+                event, metadata, isLifecycleEvent, notificationOptions, async,
+                new ArrayList<>(resolveObservers(event, metadata, isLifecycleEvent)));
 
-        LinkedList<ObserverMethod<? super Object>> observerMethods = new LinkedList<>(resolveObservers(event, metadata, isLifecycleEvent));
+    }
 
+    public <T> CompletionStage<T> doFireEvent(Object event, EventMetadataImpl metadata, boolean isLifecycleEvent,
+                                              NotificationOptions notificationOptions, boolean async,
+                                              List<ObserverMethod<? super Object>> observerMethods)
+    {
+        prepareObserverListForFire(isLifecycleEvent, async, observerMethods);
+        EventContextImpl<Object> context = new EventContextImpl<>(event, metadata);
+        if (async)
+        {
+            return doFireAsync(context, isLifecycleEvent, notificationOptions, observerMethods);
+        }
+        doFireSync(context, isLifecycleEvent, observerMethods);
+        return null;
+
+    }
+
+    public <T> CompletionStage<T> doFireAsync(EventContext<?> context,
+                                              boolean isLifecycleEvent, NotificationOptions notificationOptions,
+                                              List<ObserverMethod<? super Object>> observerMethods)
+    {
+        List<CompletableFuture<Void>> completableFutures = new ArrayList<>();
+        for (ObserverMethod<? super Object> observer : observerMethods)
+        {
+            try
+            {
+                TransactionPhase phase = observer.getTransactionPhase();
+
+                if (phase == null || phase == TransactionPhase.IN_PROGRESS)
+                {
+                    completableFutures.add(invokeObserverMethodAsync(context, observer, notificationOptions));
+                }
+                else
+                {
+                    throw new WebBeansConfigurationException("Async Observer Methods can only use TransactionPhase.IN_PROGRESS!");
+                }
+            }
+            catch (WebBeansException e)
+            {
+                return onWebBeansException(context.getEvent(), isLifecycleEvent, e);
+            }
+            catch (RuntimeException e)
+            {
+                throw e;
+            }
+            catch (Exception e)
+            {
+                throw new WebBeansException(e);
+            }
+        }
+        return complete(completableFutures, (T) context.getEvent());
+    }
+
+    public void doFireSync(EventContext<?> context, boolean isLifecycleEvent,
+                           List<ObserverMethod<? super Object>> observerMethods)
+    {
+        if (observerMethods.isEmpty())
+        {
+            return;
+        }
+        // synchronous case
+        for (ObserverMethod<? super Object> observer : observerMethods)
+        {
+            try
+            {
+                TransactionPhase phase = observer.getTransactionPhase();
+
+                if (phase == null || phase != TransactionPhase.IN_PROGRESS)
+                {
+                    invokeObserverMethod(context, observer);
+                }
+                else
+                {
+                    TransactionService transactionService = webBeansContext.getTransactionService();
+                    if(transactionService != null)
+                    {
+                        transactionService.registerTransactionSynchronization(phase, observer, context.getEvent());
+                    }
+                    else
+                    {
+                        invokeObserverMethod(context, observer);
+                    }
+                }
+            }
+            catch (WebBeansException e)
+            {
+                onWebBeansException(context.getEvent(), isLifecycleEvent, e);
+            }
+            catch (RuntimeException e)
+            {
+                throw e;
+            }
+            catch (Exception e)
+            {
+                throw new WebBeansException(e);
+            }
+        }
+    }
+
+    public void prepareObserverListForFire(boolean isLifecycleEvent, boolean async,
+                                           List<ObserverMethod<? super Object>> observerMethods)
+    {
         // async doesn't apply to Extension lifecycle events
         if (!isLifecycleEvent)
         {
             // filter for all async or all synchronous observermethods
             // oldschool and not Streams, because of performance and avoiding tons of temporary objects
-            Iterator<ObserverMethod<? super Object>> observerMethodIterator = observerMethods.iterator();
-            while (observerMethodIterator.hasNext())
-            {
-                if (async != observerMethodIterator.next().isAsync())
-                {
-                    observerMethodIterator.remove();
-                }
-            }
+            observerMethods.removeIf(observerMethod -> async != observerMethod.isAsync());
+        }
+        else
+        {
+            observerMethods.removeIf(observer -> !Extension.class.isAssignableFrom(observer.getBeanClass()));
         }
 
         // new in CDI-2.0: sort observers
@@ -672,93 +771,36 @@ public final class NotificationManager
         {
             observerMethods.sort(observerMethodComparator);
         }
+    }
 
-        List<CompletableFuture<Void>> completableFutures = async ? new ArrayList<>() : null;
-
-        for (ObserverMethod<? super Object> observer : observerMethods)
+    private <T> CompletionStage<T> onWebBeansException(final Object event, final boolean isLifecycleEvent,
+                                                       final WebBeansException e)
+    {
+        Throwable exc = e.getCause();
+        if(exc instanceof InvocationTargetException)
         {
-            try
+            InvocationTargetException invt = (InvocationTargetException)exc;
+            exc = invt.getCause();
+        }
+
+        if (isLifecycleEvent)
+        {
+            if (event instanceof AfterDeploymentValidation)
             {
-                if (isLifecycleEvent && !Extension.class.isAssignableFrom(observer.getBeanClass()))
-                {
-                    // we must not fire Extension Lifecycle events to beans which are no Extensions
-                    continue;
-                }
-
-                TransactionPhase phase = observer.getTransactionPhase();
-                
-                if(phase != null && phase != TransactionPhase.IN_PROGRESS)
-                {
-                    if (async)
-                    {
-                        throw new WebBeansConfigurationException("Async Observer Methods can only use TransactionPhase.IN_PROGRESS!");
-                    }
-
-                    TransactionService transactionService = webBeansContext.getService(TransactionService.class);
-                    if(transactionService != null)
-                    {
-                        transactionService.registerTransactionSynchronization(phase, observer, event);
-                    }
-                    else
-                    {
-                        invokeObserverMethod(event, metadata, observer);
-                    }                    
-                }
-                else
-                {
-                    if (async)
-                    {
-                        completableFutures.add(invokeObserverMethodAsync(event, metadata, observer, notificationOptions));
-                    }
-                    else
-                    {
-                        invokeObserverMethod(event, metadata, observer);
-                    }
-                }
+                throw new WebBeansDeploymentException("Error while sending SystemEvent to a CDI Extension! " + event.toString(), e);
             }
-            catch (WebBeansException e)
+            else
             {
-                Throwable exc = e.getCause();
-                if(exc instanceof InvocationTargetException)
-                {
-                    InvocationTargetException invt = (InvocationTargetException)exc;
-                    exc = invt.getCause();
-                }
-
-                if (isLifecycleEvent)
-                {
-                    if (event instanceof AfterDeploymentValidation)
-                    {
-                        throw new WebBeansDeploymentException("Error while sending SystemEvent to a CDI Extension! " + event.toString(), e);
-                    }
-                    else
-                    {
-                        throw new WebBeansConfigurationException("Error while sending SystemEvent to a CDI Extension! " + event.toString(), e);
-                    }
-                }
-                
-                if (!RuntimeException.class.isAssignableFrom(exc.getClass()))
-                {
-                    throw new ObserverException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0008) + event.getClass().getName(), e);
-                }
-                else
-                {
-                    RuntimeException rte = (RuntimeException) exc;
-                    throw rte;
-                }
-            }
-            catch (RuntimeException e)
-            {
-                throw e;
-            }
-
-            catch (Exception e)
-            {
-                throw new WebBeansException(e);
+                throw new WebBeansConfigurationException("Error while sending SystemEvent to a CDI Extension! " + event.toString(), e);
             }
         }
 
-        return async ? complete(completableFutures, (T) event) : null;
+        if (!RuntimeException.class.isAssignableFrom(exc.getClass()))
+        {
+            throw new ObserverException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0008) + event.getClass().getName(), e);
+        }
+        RuntimeException rte = (RuntimeException) exc;
+        throw rte;
     }
 
     private <T> CompletableFuture<T> complete(List<CompletableFuture<Void>> completableFutures, T event)
@@ -780,8 +822,7 @@ public final class NotificationManager
         return future;
     }
 
-    private CompletableFuture invokeObserverMethodAsync(Object event,
-                                           EventMetadataImpl metadata,
+    private CompletableFuture invokeObserverMethodAsync(EventContext<?> context,
                                            ObserverMethod<? super Object> observer,
                                            NotificationOptions notificationOptions)
     {
@@ -789,7 +830,7 @@ public final class NotificationManager
         CompletableFuture.runAsync(() -> {
             try
             {
-                runAsync(event, metadata, observer);
+                runAsync(context, observer);
                 future.complete(null);
             }
             catch (WebBeansException wbe)
@@ -800,23 +841,25 @@ public final class NotificationManager
         return future;
     }
 
-    private void runAsync(Object event, EventMetadataImpl metadata, ObserverMethod<? super Object> observer)
+    private void runAsync(EventContext<?> context, ObserverMethod<? super Object> observer)
     {
         //X TODO set up threads, requestcontext etc
-        webBeansContext.getContextsService().startContext(RequestScoped.class, null);
+        final ContextsService contextsService = webBeansContext.getContextsService();
+        contextsService.getCurrentContext(RequestScoped.class);
+        contextsService.startContext(RequestScoped.class, null);
         try
         {
-            invokeObserverMethod(event, metadata, observer);
+            invokeObserverMethod(context, observer);
         }
         finally
         {
-            webBeansContext.getContextsService().endContext(RequestScoped.class, null);
+            contextsService.endContext(RequestScoped.class, null);
         }
     }
 
-    private <T> void invokeObserverMethod(T event, EventMetadataImpl metadata, ObserverMethod<?> observer)
+    private void invokeObserverMethod(EventContext context, ObserverMethod<?> observer)
     {
-        observer.notify(new EventContextImpl(event, metadata));
+        observer.notify(context);
     }
 
     /**

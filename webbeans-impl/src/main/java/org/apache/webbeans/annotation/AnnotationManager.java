@@ -417,6 +417,7 @@ public final class AnnotationManager
         {
             // performance hack to avoid Set creation
             checkQualifierConditions(qualifierAnnots[0]);
+            return;
         }
 
         Set<Annotation> annSet = ArrayUtil.asSet(qualifierAnnots);

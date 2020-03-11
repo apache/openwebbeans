@@ -332,8 +332,11 @@ public abstract class BaseSeContextsService extends AbstractContextsService
         ctx.setActive(true);
         
         requestContext.set(ctx);
-        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
-            new Object(), InitializedLiteral.INSTANCE_REQUEST_SCOPED);
+        if (shouldFireRequestLifecycleEvents())
+        {
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                    ctx, InitializedLiteral.INSTANCE_REQUEST_SCOPED);
+        }
     }
 
     
@@ -395,18 +398,28 @@ public abstract class BaseSeContextsService extends AbstractContextsService
             conversationContext.remove();
         }
 
-        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
-                new Object(), BeforeDestroyedLiteral.INSTANCE_REQUEST_SCOPED);
-        if(requestContext.get() != null)
+
+        if (shouldFireRequestLifecycleEvents())
         {
-            requestContext.get().destroy();   
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                    new Object(), BeforeDestroyedLiteral.INSTANCE_REQUEST_SCOPED);
         }
 
-        requestContext.set(null);
-        requestContext.remove();
+        final RequestContext ctx = BaseSeContextsService.requestContext.get();
+        if (ctx != null)
+        {
+            ctx.destroy();
+        }
+
+        BaseSeContextsService.requestContext.set(null);
+        BaseSeContextsService.requestContext.remove();
         RequestScopedBeanInterceptorHandler.removeThreadLocals();
-        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
-            new Object(), DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
+
+        if (shouldFireRequestLifecycleEvents())
+        {
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                    ctx, DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
+        }
     }
 
     
