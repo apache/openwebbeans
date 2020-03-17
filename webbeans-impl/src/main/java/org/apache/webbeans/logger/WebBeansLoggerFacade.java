@@ -25,12 +25,18 @@ package org.apache.webbeans.logger;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.util.WebBeansConstants;
 
+import javax.annotation.Priority;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.StreamSupport;
+
+import static java.util.Comparator.comparing;
+import static java.util.Optional.ofNullable;
 
 /**
  * Wrapper class around the JUL logger class to include some checks before the
@@ -79,7 +85,9 @@ public final class WebBeansLoggerFacade
         }
         else
         {
-            FACTORY = new JULLoggerFactory();
+            FACTORY = StreamSupport.stream(ServiceLoader.load(WebBeansLoggerFactory.class).spliterator(), false)
+                    .max(comparing(it -> ofNullable(it.getClass().getAnnotation(Priority.class)).map(Priority::value).orElse(0)))
+                    .orElseGet(JULLoggerFactory::new);
         }
 
         Logger logger = FACTORY.getLogger(WebBeansLoggerFacade.class);

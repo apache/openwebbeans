@@ -648,6 +648,7 @@
         <module>webbeans-gradle</module>
         <module>webbeans-se</module>
         <module>webbeans-junit5</module>
+        <module>webbeans-slf4j</module>
     </modules>
 
     <dependencyManagement>
