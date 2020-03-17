@@ -130,7 +130,7 @@ public final class CDILauncher
         }
         finally
         {
-            if (manager.isNormalScope(bean.getScope()))
+            if (!manager.isNormalScope(bean.getScope()))
             {
                 context.release();
             }
