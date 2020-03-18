@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 class Slf4jLogger extends Logger
 {
     private final org.slf4j.Logger logger;
-    private LocationAwareLogger locationAwareLogger;
+    private final LocationAwareLogger locationAwareLogger;
 
     Slf4jLogger(final String name, final String resourceBundleName)
     {
@@ -42,6 +42,10 @@ class Slf4jLogger extends Logger
         if (LocationAwareLogger.class.isInstance(logger))
         {
             locationAwareLogger = LocationAwareLogger.class.cast(logger);
+        }
+        else
+        {
+            locationAwareLogger = null;
         }
     }
 
