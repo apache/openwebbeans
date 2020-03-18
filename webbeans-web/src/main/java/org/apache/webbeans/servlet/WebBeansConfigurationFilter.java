@@ -163,7 +163,7 @@ public class WebBeansConfigurationFilter implements Filter
             this.lifeCycle.getContextService().startContext(RequestScoped.class,
                     new ServletRequestEvent(this.servletContext, servletRequest));
 
-            // we don't initialise the Session here but do it lazily if it gets requested
+            // we don't initialize the Session here but do it lazily if it gets requested
             // the first time. See OWB-457
         }
         catch (Exception e)
