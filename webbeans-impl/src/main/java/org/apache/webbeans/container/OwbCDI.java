@@ -19,8 +19,11 @@
 package org.apache.webbeans.container;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.corespi.DefaultSingletonService;
 import org.apache.webbeans.inject.instance.InstanceImpl;
+import org.apache.webbeans.spi.SingletonService;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
@@ -33,6 +36,14 @@ public class OwbCDI extends CDI<Object>
 {
     private WebBeansContext getWebBeansContext()
     {
+        // DON'T: return WebBeansContext.currentInstance();, it can trigger an implicit start
+        final SingletonService<WebBeansContext> singletonService = WebBeansFinder.getSingletonService();
+        if (DefaultSingletonService.class.isInstance(singletonService)
+                && !DefaultSingletonService.class.cast(singletonService).exists(WebBeansFinder.getCurrentKey()))
+        {
+            throw new IllegalStateException("No CDI container started");
+        }
+        // else let's default
         return WebBeansContext.currentInstance();
     }
 

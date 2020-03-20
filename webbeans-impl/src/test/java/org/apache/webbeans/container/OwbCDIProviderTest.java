@@ -74,6 +74,12 @@ public class OwbCDIProviderTest extends AbstractUnitTest
         assertNotNull(bean);
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void noImplicitStart()
+    {
+        CDI.current().getBeanManager();
+    }
+
     @ApplicationScoped
     public static class ABean
     {

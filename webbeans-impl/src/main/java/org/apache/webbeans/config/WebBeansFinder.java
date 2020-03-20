@@ -54,7 +54,12 @@ public final class WebBeansFinder
 
     public static WebBeansContext getSingletonInstance()
     {
-        return singletonService.get(WebBeansUtil.getCurrentClassLoader());
+        return singletonService.get(getCurrentKey());
+    }
+
+    public static ClassLoader getCurrentKey()
+    {
+        return WebBeansUtil.getCurrentClassLoader();
     }
 
     public static void clearInstances(Object key)

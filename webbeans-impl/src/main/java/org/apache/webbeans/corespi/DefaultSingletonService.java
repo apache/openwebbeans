@@ -35,7 +35,7 @@ public class DefaultSingletonService implements SingletonService<WebBeansContext
     
     /**
      * Gets singleton instance for deployment.
-     * @return signelton instance for this deployment
+     * @return singleton instance for this deployment
      */
     @Override
     public WebBeansContext get(Object key)
@@ -104,4 +104,8 @@ public class DefaultSingletonService implements SingletonService<WebBeansContext
         }
     }
 
+    public boolean exists(final Object key)
+    {
+        return ClassLoader.class.isInstance(key) && singletonMap.containsKey(key);
+    }
 }
