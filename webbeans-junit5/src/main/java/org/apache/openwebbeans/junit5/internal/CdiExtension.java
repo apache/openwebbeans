@@ -35,6 +35,8 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -45,7 +47,7 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
     private static SeContainer reusableContainer;
 
     private SeContainer container;
-    private CreationalContext<Object> creationalContext;
+    private Collection<CreationalContext<Object>> creationalContexts = new ArrayList<>();
     private Closeable[] onStop;
 
     @Override
@@ -131,23 +133,27 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
         {
             return;
         }
-        extensionContext.getTestInstance().ifPresent(instance ->
+        extensionContext.getTestInstances().ifPresent(testInstances ->
         {
-            final BeanManager manager = (container == null ? reusableContainer : container).getBeanManager();
-            final AnnotatedType<?> annotatedType = manager.createAnnotatedType(instance.getClass());
-            final InjectionTarget injectionTarget = manager.createInjectionTarget(annotatedType);
-            creationalContext = manager.createCreationalContext(null);
-            injectionTarget.inject(instance, creationalContext);
+            testInstances.getAllInstances().stream().distinct().forEach(instance ->
+            {
+                final BeanManager manager = (container == null ? reusableContainer : container).getBeanManager();
+                final AnnotatedType<?> annotatedType = manager.createAnnotatedType(instance.getClass());
+                final InjectionTarget injectionTarget = manager.createInjectionTarget(annotatedType);
+                final CreationalContext<Object> creationalContext = manager.createCreationalContext(null);
+                creationalContexts.add(creationalContext);
+                injectionTarget.inject(instance, creationalContext);
+            });
         });
     }
 
     @Override
     public void afterEach(final ExtensionContext extensionContext)
     {
-        if (creationalContext != null)
+        if (!creationalContexts.isEmpty())
         {
-            creationalContext.release();
-            creationalContext = null;
+            creationalContexts.forEach(CreationalContext::release);
+            creationalContexts.clear();
         }
     }
 
