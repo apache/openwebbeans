@@ -32,6 +32,8 @@ import java.util.logging.Logger;
 // mainly from cxf
 class Slf4jLogger extends Logger
 {
+    private static final String FQN = System.getProperty("org.apache.openwebbeans.slf4j.fqn", Logger.class.getName());
+
     private final org.slf4j.Logger logger;
     private final LocationAwareLogger locationAwareLogger;
 
@@ -521,7 +523,7 @@ class Slf4jLogger extends Logger
             }
             else
             {
-                locationAwareLogger.log(null, Logger.class.getName(), LocationAwareLogger.DEBUG_INT, msg, null, t);
+                locationAwareLogger.log(null, FQN, LocationAwareLogger.DEBUG_INT, msg, null, t);
             }
         }
         else if (Level.INFO.equals(level))
@@ -532,7 +534,7 @@ class Slf4jLogger extends Logger
             }
             else
             {
-                locationAwareLogger.log(null, Logger.class.getName(), LocationAwareLogger.INFO_INT, msg, null, t);
+                locationAwareLogger.log(null, FQN, LocationAwareLogger.INFO_INT, msg, null, t);
             }
         }
         else if (Level.WARNING.equals(level))
@@ -543,7 +545,7 @@ class Slf4jLogger extends Logger
             }
             else
             {
-                locationAwareLogger.log(null, Logger.class.getName(), LocationAwareLogger.WARN_INT, msg, null, t);
+                locationAwareLogger.log(null, FQN, LocationAwareLogger.WARN_INT, msg, null, t);
             }
         }
         else if (Level.FINER.equals(level))
@@ -554,7 +556,7 @@ class Slf4jLogger extends Logger
             }
             else
             {
-                locationAwareLogger.log(null, Logger.class.getName(), LocationAwareLogger.DEBUG_INT, msg, null, t);
+                locationAwareLogger.log(null, FQN, LocationAwareLogger.DEBUG_INT, msg, null, t);
             }
         }
         else if (Level.FINEST.equals(level))
@@ -565,7 +567,7 @@ class Slf4jLogger extends Logger
             }
             else
             {
-                locationAwareLogger.log(null, Logger.class.getName(), LocationAwareLogger.TRACE_INT, msg, null, t);
+                locationAwareLogger.log(null, FQN, LocationAwareLogger.TRACE_INT, msg, null, t);
             }
         }
         else if (Level.ALL.equals(level))
@@ -576,7 +578,7 @@ class Slf4jLogger extends Logger
             }
             else
             {
-                locationAwareLogger.log(null, Logger.class.getName(), LocationAwareLogger.ERROR_INT, msg, null, t);
+                locationAwareLogger.log(null, FQN, LocationAwareLogger.ERROR_INT, msg, null, t);
             }
         }
         else if (Level.SEVERE.equals(level))
@@ -587,7 +589,7 @@ class Slf4jLogger extends Logger
             }
             else
             {
-                locationAwareLogger.log(null, Logger.class.getName(), LocationAwareLogger.ERROR_INT, msg, null, t);
+                locationAwareLogger.log(null, FQN, LocationAwareLogger.ERROR_INT, msg, null, t);
             }
         }
         else if (Level.CONFIG.equals(level))
@@ -598,7 +600,7 @@ class Slf4jLogger extends Logger
             }
             else
             {
-                locationAwareLogger.log(null, Logger.class.getName(), LocationAwareLogger.DEBUG_INT, msg, null, t);
+                locationAwareLogger.log(null, FQN, LocationAwareLogger.DEBUG_INT, msg, null, t);
             }
         }
     }
