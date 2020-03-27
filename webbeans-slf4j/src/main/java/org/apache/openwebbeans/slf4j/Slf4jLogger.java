@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 // mainly from cxf
 class Slf4jLogger extends Logger
 {
-    private static final String FQN = System.getProperty("org.apache.openwebbeans.slf4j.fqn", Logger.class.getName());
+    private static final String FQN = System.getProperty("org.apache.openwebbeans.slf4j.fqn", Slf4jLogger.class.getName());
 
     private final org.slf4j.Logger logger;
     private final LocationAwareLogger locationAwareLogger;
