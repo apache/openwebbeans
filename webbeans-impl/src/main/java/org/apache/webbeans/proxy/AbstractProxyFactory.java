@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.proxy;
 
-import static org.apache.xbean.asm7.ClassReader.SKIP_CODE;
-import static org.apache.xbean.asm7.ClassReader.SKIP_DEBUG;
-import static org.apache.xbean.asm7.ClassReader.SKIP_FRAMES;
+import static org.apache.xbean.asm8.ClassReader.SKIP_CODE;
+import static org.apache.xbean.asm8.ClassReader.SKIP_DEBUG;
+import static org.apache.xbean.asm8.ClassReader.SKIP_FRAMES;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -33,12 +33,12 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.spi.DefiningClassService;
-import org.apache.xbean.asm7.ClassReader;
-import org.apache.xbean.asm7.ClassWriter;
-import org.apache.xbean.asm7.MethodVisitor;
-import org.apache.xbean.asm7.Opcodes;
-import org.apache.xbean.asm7.Type;
-import org.apache.xbean.asm7.shade.commons.EmptyVisitor;
+import org.apache.xbean.asm8.ClassReader;
+import org.apache.xbean.asm8.ClassWriter;
+import org.apache.xbean.asm8.MethodVisitor;
+import org.apache.xbean.asm8.Opcodes;
+import org.apache.xbean.asm8.Type;
+import org.apache.xbean.asm8.shade.commons.EmptyVisitor;
 
 /**
  * Base class for all OWB Proxy factories
