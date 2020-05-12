@@ -83,7 +83,7 @@
         <osgi.el.range>2.2</osgi.el.range>
         <osgi.faces.range>2.0</osgi.faces.range>
 
-        <maven-shade-plugin.version>3.2.2</maven-shade-plugin.version>
+        <maven-shade-plugin.version>3.2.3</maven-shade-plugin.version>
     </properties>
     
     <mailingLists>

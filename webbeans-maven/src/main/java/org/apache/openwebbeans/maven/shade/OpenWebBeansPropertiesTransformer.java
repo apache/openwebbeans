@@ -45,7 +45,7 @@ public class OpenWebBeansPropertiesTransformer implements ResourceTransformer
     }
 
     @Override
-    public void processResource(String s, InputStream inputStream, List<Relocator> list) throws IOException
+    public void processResource(String s, InputStream inputStream, List<Relocator> list, long time) throws IOException
     {
         Properties p = new Properties();
         p.load(inputStream);
