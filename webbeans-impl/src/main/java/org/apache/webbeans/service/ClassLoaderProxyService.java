@@ -19,6 +19,8 @@
 package org.apache.webbeans.service;
 
 import java.security.ProtectionDomain;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -31,7 +33,15 @@ public class ClassLoaderProxyService implements DefiningClassService
 
     public ClassLoaderProxyService(final WebBeansContext context)
     {
-        this.loader = new ProxiesClassLoader(context.getApplicationBoundaryService().getApplicationClassLoader());
+        this.loader = new ProxiesClassLoader(
+                context,
+                Boolean.parseBoolean(context.getOpenWebBeansConfiguration()
+                        .getProperty(getClass().getName() + ".skipPackages")));
+    }
+
+    protected ClassLoaderProxyService(final ProxiesClassLoader loader)
+    {
+        this.loader = loader;
     }
 
     @Override
@@ -47,13 +57,38 @@ public class ClassLoaderProxyService implements DefiningClassService
                 name, bytecode, proxiedClass.getPackage(), proxiedClass.getProtectionDomain());
     }
 
+    // for build tools - @Experimental
+    public static class Spy extends ClassLoaderProxyService
+    {
+        private final Map<String, byte[]> proxies = new HashMap<>();
+
+        public Spy(final WebBeansContext context)
+        {
+            super(new ProxiesClassLoader(context, true));
+        }
+
+        public Map<String, byte[]> getProxies()
+        {
+            return proxies;
+        }
+
+        @Override
+        public <T> Class<T> defineAndLoad(final String name, final byte[] bytecode, final Class<T> proxiedClass)
+        {
+            proxies.put(name, bytecode);
+            return super.defineAndLoad(name, bytecode, proxiedClass);
+        }
+    }
+
     private static class ProxiesClassLoader extends ClassLoader
     {
+        private final boolean skipPackages;
         private final ConcurrentMap<String, Class<?>> classes = new ConcurrentHashMap<>();
 
-        private ProxiesClassLoader(final ClassLoader applicationClassLoader)
+        private ProxiesClassLoader(final WebBeansContext context, boolean skipPackages)
         {
-            super(applicationClassLoader);
+            super(context.getApplicationBoundaryService().getApplicationClassLoader());
+            this.skipPackages = skipPackages;
         }
 
 
@@ -80,7 +115,10 @@ public class ClassLoaderProxyService implements DefiningClassService
                     existing = classes.get(key);
                     if (existing == null)
                     {
-                        definePackageFor(pck, protectionDomain);
+                        if (!skipPackages)
+                        {
+                            definePackageFor(pck, protectionDomain);
+                        }
                         existing = super.defineClass(proxyClassName, proxyBytes, 0, proxyBytes.length);
                         resolveClass(existing);
                         classes.put(key, existing);
