@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.DefiningClassService;
 
 public class ClassLoaderProxyService implements DefiningClassService
@@ -77,6 +78,34 @@ public class ClassLoaderProxyService implements DefiningClassService
         {
             proxies.put(name, bytecode);
             return super.defineAndLoad(name, bytecode, proxiedClass);
+        }
+    }
+
+    // runtim companion of Spy - @Experimental
+    public static class LoadFirst extends ClassLoaderProxyService
+    {
+        public LoadFirst(final WebBeansContext context)
+        {
+            super(context);
+        }
+
+        @Override
+        public <T> Class<T> defineAndLoad(final String name, final byte[] bytecode, final Class<T> proxiedClass)
+        {
+            ClassLoader proxyClassLoader = getProxyClassLoader(proxiedClass);
+            if (proxyClassLoader == null)
+            {
+                proxyClassLoader = Thread.currentThread().getContextClassLoader();
+            }
+            try
+            {
+                return (Class<T>) proxyClassLoader.loadClass(name);
+            }
+            catch (final ClassNotFoundException e)
+            {
+                WebBeansLoggerFacade.getLogger(getClass()).warning(e.getMessage());
+                return super.defineAndLoad(name, bytecode, proxiedClass);
+            }
         }
     }
 
