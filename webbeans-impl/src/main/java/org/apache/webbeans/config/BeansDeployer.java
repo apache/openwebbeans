@@ -145,30 +145,6 @@ public class BeansDeployer
     private static final Logger logger = WebBeansLoggerFacade.getLogger(BeansDeployer.class);
     public static final String JAVAX_ENTERPRISE_PACKAGE = "javax.enterprise.";
 
-    private static final Method GET_PACKAGE;
-    static
-    {
-        Method getPackage;
-        try
-        {
-            getPackage = ClassLoader.class.getDeclaredMethod("getDefinedPackage", String.class);
-            getPackage.setAccessible(true);
-        }
-        catch (NoSuchMethodException e)
-        {
-            try
-            {
-                getPackage = ClassLoader.class.getDeclaredMethod("getPackage", String.class);
-                getPackage.setAccessible(true);
-            }
-            catch (NoSuchMethodException ex)
-            {
-                throw new IllegalStateException(ex);
-            }
-        }
-        GET_PACKAGE = getPackage;
-    }
-
 
     /**Deployment is started or not*/
     protected boolean deployed;
@@ -1443,13 +1419,32 @@ public class BeansDeployer
                 {
                     return result;
                 }
-                try // this is related to classloader and not to Package actually :( so we need reflection
+                while (true)
                 {
-                    pckge = Package.class.cast(GET_PACKAGE.invoke(classLoader, previousPackage));
-                }
-                catch (Exception e)
-                {
-                    throw new IllegalStateException(e);
+                    try // not always existing but enables to go further when getPackage is not available (graal)
+                    {
+                        pckge = classLoader.loadClass(previousPackage +
+                                (previousPackage.isEmpty() ? "" :".") + "package-info").getPackage();
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        if (previousPackage.isEmpty())
+                        {
+                            pckge = null;
+                            break;
+                        }
+                        packageVetoCache.put(previousPackage, false);
+                        idx = previousPackage.lastIndexOf('.');
+                        if (idx > 0)
+                        {
+                            previousPackage = previousPackage.substring(0, idx);
+                        }
+                        else
+                        {
+                            previousPackage = "";
+                        }
+                    }
                 }
             }
             else

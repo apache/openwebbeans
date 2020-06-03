@@ -58,6 +58,8 @@ public abstract class AbstractProxyFactory
 
     private final DefiningClassService definingService;
 
+    private final boolean useStaticNames;
+
     protected WebBeansContext webBeansContext;
 
     private final int javaVersion;
@@ -76,6 +78,8 @@ public abstract class AbstractProxyFactory
         this.webBeansContext = webBeansContext;
         javaVersion = determineDefaultJavaVersion();
         definingService = webBeansContext.getService(DefiningClassService.class);
+        useStaticNames = Boolean.parseBoolean(webBeansContext.getOpenWebBeansConfiguration()
+                .getProperty("org.apache.webbeans.proxy.useStaticNames"));
         unsafe = definingService == null ? new Unsafe() : null;
     }
 
@@ -192,6 +196,10 @@ public abstract class AbstractProxyFactory
         proxyClassName = fixPreservedPackages(proxyClassName);
 
         String finalName = proxyClassName;
+        if (useStaticNames)  // todo: refine
+        {
+            return proxyClassName + 0;
+        }
 
         for (int i = 0; i < MAX_CLASSLOAD_TRIES; i++)
         {
