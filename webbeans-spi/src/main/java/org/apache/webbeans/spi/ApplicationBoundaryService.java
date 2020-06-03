@@ -38,6 +38,6 @@ public interface ApplicationBoundaryService
     /**
      * @return the ClassLoader which shall get used to e.g. proxy that very class.
      */
-    ClassLoader getBoundaryClassLoader(Class classToProxy);
+    ClassLoader getBoundaryClassLoader(Class<?> classToProxy);
 
 }

@@ -146,7 +146,7 @@ public abstract class AbstractProxyFactory
     /**
      * @return the marker interface which should be used for this proxy.
      */
-    protected abstract Class getMarkerInterface();
+    protected abstract Class<?> getMarkerInterface();
 
     /**
      * generate the bytecode for creating the instance variables of the class
