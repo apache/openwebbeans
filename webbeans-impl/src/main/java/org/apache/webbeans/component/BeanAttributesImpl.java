@@ -131,6 +131,7 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
     /**
      * Since CDI-1.1 we do not rely on isNullable for a bean as this information is really determined through other facts.
      * @return always {@code false}
+     * @deprecated
      */
     public boolean isNullable()
     {
