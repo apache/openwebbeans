@@ -47,7 +47,6 @@ public class ExtensionBean<T> extends BuiltInOwbBean<T>
               AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION_SET,
               ApplicationScoped.class),
               returnType,
-              false,
               new ExtensionProducerFactory<>(webBeansContext.getAnnotatedElementFactory().getAnnotatedType(returnType), webBeansContext));
     }
 

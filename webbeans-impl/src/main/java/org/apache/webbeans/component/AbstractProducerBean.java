@@ -53,7 +53,7 @@ public class AbstractProducerBean<T> extends AbstractOwbBean<T>
                                 Class<T> returnType,
                                 ProducerFactory<?> producerFactory)
     {
-        super(ownerComponent.webBeansContext, webBeansType, beanAttributes, ownerComponent.getBeanClass(), !returnType.isPrimitive());
+        super(ownerComponent.webBeansContext, webBeansType, beanAttributes, ownerComponent.getBeanClass());
         this.returnType = returnType;
         this.ownerComponent = ownerComponent;
         producer = producerFactory.createProducer(this);

@@ -33,10 +33,9 @@ public class ProducerAwareInjectionTargetBean<T> extends AbstractOwbBean<T> impl
 
     public ProducerAwareInjectionTargetBean(WebBeansContext webBeansContext, WebBeansType webBeansType,
                                             BeanAttributes<T> beanAttributes, Class<?> beanClass,
-                                            boolean nullable,
                                             ProducerFactory<?> factory)
     {
-        super(webBeansContext, webBeansType, beanAttributes, beanClass, nullable);
+        super(webBeansContext, webBeansType, beanAttributes, beanClass);
         this.producer = factory.createProducer(this);
 
         String id = super.getId();

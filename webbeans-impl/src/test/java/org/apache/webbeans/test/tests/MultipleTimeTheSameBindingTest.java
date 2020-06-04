@@ -70,7 +70,7 @@ public class MultipleTimeTheSameBindingTest extends AbstractUnitTest
             annotations.add(new TheQualifierLitereal(1));
             annotations.add(new TheQualifierLitereal(2));
 
-            pba.setBeanAttributes(new BeanAttributesImpl<TheClass>(pba.getBeanAttributes(), false) {
+            pba.setBeanAttributes(new BeanAttributesImpl<TheClass>(pba.getBeanAttributes()) {
                 public Set<Annotation> getQualifiers() {
                     return annotations;
                 }

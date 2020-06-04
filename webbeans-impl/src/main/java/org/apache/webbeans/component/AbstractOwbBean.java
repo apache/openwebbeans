@@ -82,10 +82,9 @@ public abstract class AbstractOwbBean<T>
     protected AbstractOwbBean(WebBeansContext webBeansContext,
                               WebBeansType webBeansType,
                               BeanAttributes<T> beanAttributes,
-                              Class<?> beanClass,
-                              boolean nullable)
+                              Class<?> beanClass)
     {
-        super(beanAttributes, nullable);
+        super(beanAttributes);
         this.webBeansType = webBeansType;
         this.beanClass = beanClass;
         this.webBeansContext = webBeansContext;

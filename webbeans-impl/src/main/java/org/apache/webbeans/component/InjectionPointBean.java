@@ -46,7 +46,6 @@ public class InjectionPointBean extends BuiltInOwbBean<InjectionPoint>
               WebBeansType.INJECTIONPOINT,
               new BeanAttributesImpl<>(CollectionUtil.<Type>unmodifiableSet(InjectionPoint.class, Object.class)),
               InjectionPoint.class,
-              false,
               new SimpleProducerFactory<>(new InjectionPointProducer()));
     }
 

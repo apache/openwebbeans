@@ -38,7 +38,6 @@ public class RequestContextControllerBean extends BuiltInOwbBean<RequestContextC
                 new BeanAttributesImpl<>(CollectionUtil.unmodifiableSet(RequestContextController.class, Object.class),
                         AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION_SET),
                 RequestContextController.class,
-                false,
                 new SimpleProducerFactory<>(new RequestContextControllerProducer(webBeansContext)));
     }
 

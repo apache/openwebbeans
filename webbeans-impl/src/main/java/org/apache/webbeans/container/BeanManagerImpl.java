@@ -1156,7 +1156,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             WebBeansType.THIRDPARTY,
             attributes,
             findClass(factory, type),
-            false,
             factory);
     }
 

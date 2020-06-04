@@ -85,8 +85,6 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
 
     protected String name;
 
-    protected boolean nullable;
-
     protected Set<Class<? extends Annotation>> stereotypes;
 
     protected Boolean alternative;
@@ -128,9 +126,8 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         defineTypes();
         defineName();
         defineQualifiers();
-        defineNullable();
         defineAlternative();
-        return new BeanAttributesImpl<>(types, qualifiers, scope, name, nullable, stereotypes, alternative);
+        return new BeanAttributesImpl<>(types, qualifiers, scope, name, stereotypes, alternative);
     }
 
     protected A getAnnotated()
@@ -545,13 +542,6 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
      */
     protected abstract Annotated getSuperAnnotated();
 
-    protected abstract void defineNullable();
-    
-    protected void defineNullable(boolean nullable)
-    {
-        this.nullable = nullable;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -673,13 +663,6 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
                 }
             }
         }
-        
-        @Override
-        protected void defineNullable()
-        {
-            defineNullable(false);
-        }
-
 
         @Override
         protected AnnotatedType<? super C> getSuperAnnotated()
@@ -718,12 +701,6 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
         protected void defineName()
         {
             defineName(getAnnotated(), () -> getProducerDefaultName(getAnnotated()));
-        }
-        
-        @Override
-        protected void defineNullable()
-        {
-            defineNullable(!getAnnotated().getJavaMember().getType().isPrimitive());
         }
 
         @Override
@@ -777,12 +754,6 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
                             + " may not explicitly declare a bean name");
                 }
             }
-        }
-        
-        @Override
-        protected void defineNullable()
-        {
-            defineNullable(!getAnnotated().getJavaMember().getReturnType().isPrimitive());
         }
 
         @Override

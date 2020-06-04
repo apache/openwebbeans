@@ -36,7 +36,6 @@ public class InstanceBean<T> extends BuiltInOwbBean<Instance<T>>
             WebBeansType.INSTANCE,
             new BeanAttributesImpl(CollectionUtil.unmodifiableSet(Instance.class, Provider.class, Object.class)),
             new TypeLiteral<Instance<T>>(){}.getRawType(),
-            false,
             new SimpleProducerFactory(new InstanceProducer(webBeansContext)));
     }
 
