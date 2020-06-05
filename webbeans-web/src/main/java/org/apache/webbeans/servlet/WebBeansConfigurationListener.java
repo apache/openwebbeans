@@ -80,9 +80,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         contextsService = webBeansContext.getContextsService();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void contextInitialized(ServletContextEvent event)
     {
@@ -90,9 +87,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void requestInitialized(ServletRequestEvent event)
     {
@@ -116,9 +110,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void sessionCreated(HttpSessionEvent event)
     {
@@ -138,9 +129,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void contextDestroyed(ServletContextEvent event)
     {
@@ -153,9 +141,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         cleanupRequestThreadLocals();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void requestDestroyed(ServletRequestEvent event)
     {
@@ -177,9 +162,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void sessionDestroyed(HttpSessionEvent event)
     {
@@ -260,9 +242,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
      */
     public static class Auto implements ServletContainerInitializer
     {
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void onStartup(final Set<Class<?>> set, final ServletContext servletContext)
         {

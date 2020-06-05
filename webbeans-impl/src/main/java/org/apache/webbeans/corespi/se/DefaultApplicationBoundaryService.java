@@ -70,18 +70,12 @@ public class DefaultApplicationBoundaryService implements ApplicationBoundarySer
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ClassLoader getApplicationClassLoader()
     {
         return applicationClassLoader;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ClassLoader getBoundaryClassLoader(Class classToProxy)
     {
@@ -123,9 +117,6 @@ public class DefaultApplicationBoundaryService implements ApplicationBoundarySer
         return parentClassLoaders.contains(classToProxyClassLoader);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void close() throws IOException
     {
