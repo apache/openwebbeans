@@ -58,13 +58,17 @@ import java.util.logging.Logger;
  */
 public class WebBeansConfigurationListener implements ServletContextListener, ServletRequestListener, HttpSessionListener
 {
+    /**Logger instance*/
     private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansConfigurationListener.class);
 
 
     /**Manages the container lifecycle*/
     protected ContainerLifecycle lifeCycle;
 
+    /**Application {@link WebBeansContext} instance*/
     private WebBeansContext webBeansContext;
+    
+    /**Application {@link ContextsService}*/
     private ContextsService contextsService;
 
     /**
@@ -193,6 +197,10 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
     }
 
+    /**
+     * Initializing logic for initializing the context.
+     * @param event {@link ServletContextEvent}
+     */
     private void doStart(final ServletContextEvent event)
     {
         if (event.getServletContext().getAttribute(getClass().getName()) != null)
@@ -217,6 +225,11 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
     }
 
+    /**
+     * Returns true if the request must be destroyed false otherwise.
+     * Ensure that we have a {@link RequestScoped} context.
+     * @return true if the request must be destroyed false otherwise
+     */
     private boolean ensureRequestScope()
     {
         Context context = this.lifeCycle.getContextService().getCurrentContext(RequestScoped.class);
@@ -241,16 +254,25 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
     }
 
+    /**
+     * Auto initialization class for servers supporting
+     * the {@link ServletContainerInitializer}
+     */
     public static class Auto implements ServletContainerInitializer
     {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void onStartup(final Set<Class<?>> set, final ServletContext servletContext)
         {
             final String key = "openwebbeans.web.sci.active";
+            
             if (!Boolean.parseBoolean(System.getProperty(key, servletContext.getInitParameter(key))))
             {
                 return;
             }
+            
             final WebBeansConfigurationListener listener = new WebBeansConfigurationListener();
             listener.doStart(new ServletContextEvent(servletContext));
             servletContext.addListener(listener);
