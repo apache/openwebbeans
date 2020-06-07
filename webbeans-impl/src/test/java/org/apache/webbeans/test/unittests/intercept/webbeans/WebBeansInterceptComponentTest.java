@@ -42,7 +42,7 @@ public class WebBeansInterceptComponentTest extends AbstractUnitTest
         addInterceptor(TransactionalInterceptor2.class);
         startContainer(TransactionalInterceptor2.class, WInterceptorComponent.class);
 
-        WInterceptorComponent comp = getInstance(WInterceptorComponent.class);;
+        WInterceptorComponent comp = getInstance(WInterceptorComponent.class);
         int s = comp.hello();
 
         Assert.assertEquals(5, s);

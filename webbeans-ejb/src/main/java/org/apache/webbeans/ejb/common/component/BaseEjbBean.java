@@ -83,12 +83,7 @@ public abstract class BaseEjbBean<T> extends InjectionTargetBean<T> implements E
     @Override
     public boolean isPassivationCapable()
     {
-        if(getEjbType() == SessionBeanType.STATEFUL)
-        {
-            return true;
-        }
-        
-        return false;
+        return getEjbType() == SessionBeanType.STATEFUL;
     }
 
     /**

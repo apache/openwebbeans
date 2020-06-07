@@ -76,7 +76,7 @@ public class EJBInterceptComponentTest extends AbstractUnitTest
         Assert.assertEquals(2, arr.length);
         Assert.assertTrue("key".equals(arr[0]) && "key2".equals(arr[1]) || "key".equals(arr[1]) && "key2".equals(arr[0]));
 
-        shutDownContainer();;
+        shutDownContainer();
     }
 
     @Test
