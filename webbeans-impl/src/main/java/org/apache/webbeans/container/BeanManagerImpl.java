@@ -1252,15 +1252,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             {
                 webBeansContext.getWebBeansUtil().validate(injectionTarget.getInjectionPoints(), null);
             }
-            catch (InjectionException ie)
-            {
-                throw new IllegalArgumentException(ie);
-            }
-            catch (WebBeansConfigurationException ie)
-            {
-                throw new IllegalArgumentException(ie);
-            }
-            catch (DeploymentException ie)
+            catch (InjectionException | DeploymentException | WebBeansConfigurationException ie)
             {
                 throw new IllegalArgumentException(ie);
             }

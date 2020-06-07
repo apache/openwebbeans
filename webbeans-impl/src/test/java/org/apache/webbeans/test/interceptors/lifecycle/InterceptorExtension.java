@@ -197,9 +197,7 @@ public class InterceptorExtension implements Extension
             try {
                 this.declaringType = declaringType;
                 this.javaMember = declaringType.getJavaClass().getConstructor();
-            } catch (SecurityException e) {
-                ExceptionUtil.throwAsRuntimeException(e);
-            } catch (NoSuchMethodException e) {
+            } catch (SecurityException | NoSuchMethodException e) {
                 ExceptionUtil.throwAsRuntimeException(e);
             }
         }

@@ -177,15 +177,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         {
             throw new WebBeansConfigurationException("Configured InterceptorHandler " + className +" cannot be found", e);
         }
-        catch (InvocationTargetException e)
-        {
-            throw new WebBeansConfigurationException("Configured InterceptorHandler " + className +" creation exception", e);
-        }
-        catch (InstantiationException e)
-        {
-            throw new WebBeansConfigurationException("Configured InterceptorHandler " + className +" creation exception", e);
-        }
-        catch (IllegalAccessException e)
+        catch (InvocationTargetException | IllegalAccessException | InstantiationException e)
         {
             throw new WebBeansConfigurationException("Configured InterceptorHandler " + className +" creation exception", e);
         }

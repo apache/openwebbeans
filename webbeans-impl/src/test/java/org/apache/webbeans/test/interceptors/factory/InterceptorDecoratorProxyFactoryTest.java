@@ -252,11 +252,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
             {
                 return method.invoke(instance, args);
             }
-            catch (IllegalAccessException e)
-            {
-                throw new WebBeansException(e);
-            }
-            catch (InvocationTargetException e)
+            catch (IllegalAccessException | InvocationTargetException e)
             {
                 throw new WebBeansException(e);
             }

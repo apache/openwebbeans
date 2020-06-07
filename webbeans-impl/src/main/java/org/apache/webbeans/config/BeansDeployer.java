@@ -330,19 +330,11 @@ public class BeansDeployer
                 webBeansContext.getAnnotationManager().clearCaches();
             }
         }
-        catch (UnsatisfiedResolutionException e)
+        catch (UnsatisfiedResolutionException | UnproxyableResolutionException | AmbiguousResolutionException e)
         {
             throw new WebBeansDeploymentException(e);
         }
-        catch (AmbiguousResolutionException e)
-        {
-            throw new WebBeansDeploymentException(e);
-        }
-        catch (UnproxyableResolutionException e)
-        {
-            // the tck expects a DeploymentException, but it really should be a DefinitionException, see i.e. https://issues.jboss.org/browse/CDITCK-346
-            throw new WebBeansDeploymentException(e);
-        }
+        // the tck expects a DeploymentException, but it really should be a DefinitionException, see i.e. https://issues.jboss.org/browse/CDITCK-346
         catch (IllegalArgumentException e)
         {
             throw new WebBeansConfigurationException(e);
