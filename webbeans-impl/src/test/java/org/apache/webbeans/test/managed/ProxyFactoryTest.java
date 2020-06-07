@@ -19,6 +19,11 @@
 
 package org.apache.webbeans.test.managed;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -26,9 +31,22 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.Typed;
+import javax.enterprise.inject.literal.NamedLiteral;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.InterceptionFactory;
+import javax.enterprise.util.AnnotationLiteral;
+import javax.inject.Named;
+import javax.inject.Qualifier;
+import javax.interceptor.Interceptor;
+import javax.interceptor.InterceptorBinding;
+import javax.interceptor.InvocationContext;
 
+import org.apache.webbeans.test.discovery.InterceptorAnnotatedDiscoveryTest;
 import org.junit.Assert;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -37,8 +55,80 @@ import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.managed.multipleinterfaces.MyEntityServiceImpl;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class ProxyFactoryTest extends AbstractUnitTest
 {
+    @InterceptorBinding
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.TYPE})
+    public @interface Foo
+    {
+    }
+
+    @Interceptor
+    @Foo
+    public static class FooInterceptor
+    {
+        public Object foo(InvocationContext ctx) throws Exception
+        {
+            return ctx.proceed();
+        }
+    }
+
+    public static class ABean
+    {
+        public String foo()
+        {
+            return "foo";
+        }
+
+        public String bar()
+        {
+            return "bar";
+        }
+    }
+
+    @ApplicationScoped
+    public static class ABeanFactories
+    {
+        @Produces
+        @Named("bean1")
+        @ApplicationScoped
+        public ABean bean1()
+        {
+            return new ABean();
+        }
+
+        @Foo
+        @Named("bean2")
+        @Produces
+        public ABean bean2(final InterceptionFactory<ABean> factory)
+        {
+            factory.configure()
+                    .methods()
+                    .iterator().next().add(new AnnotationLiteral<Foo>()
+            {
+            });
+            return factory.createInterceptedInstance(new ABean());
+        }
+    }
+
+    @Test
+    public void stableNameMultipleTypes()
+    {
+        addConfiguration("org.apache.webbeans.proxy.useStaticNames", "true");
+        addConfiguration("org.apache.webbeans.proxy.staticNames.useXxHash64", "true");
+        startContainer(ABeanFactories.class, FooInterceptor.class);
+        final ABean bean1 = getInstance("bean1");
+        final ABean bean2 = getInstance("bean2");
+        assertEquals(
+                "org.apache.webbeans.test.managed.ProxyFactoryTest$ABean$$OwbNormalScopeProxy8050522010792129812",
+                bean1.getClass().getName());
+        assertEquals(
+                "org.apache.webbeans.test.managed.ProxyFactoryTest$ABean$$OwbInterceptProxy5751833139562769786",
+                bean2.getClass().getName());
+    }
 
     @SuppressWarnings("unchecked")
     @Test
