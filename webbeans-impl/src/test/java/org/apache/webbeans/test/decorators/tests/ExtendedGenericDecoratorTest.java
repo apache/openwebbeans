@@ -28,7 +28,6 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**

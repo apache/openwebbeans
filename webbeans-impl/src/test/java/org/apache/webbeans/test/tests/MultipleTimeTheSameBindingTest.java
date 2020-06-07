@@ -18,10 +18,8 @@
  */
 package org.apache.webbeans.test.tests;
 
-import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.test.AbstractUnitTest;
-import org.apache.webbeans.test.interceptors.extension.BeforeBeanDiscoveryImplTest;
 import org.junit.Test;
 
 import javax.enterprise.event.Observes;
