@@ -187,14 +187,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
             Set<String> ignored = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
             if (!ignored.isEmpty())
             {
-                for (Iterator<Type> i = this.types.iterator(); i.hasNext(); )
-                {
-                    Type t = i.next();
-                    if (t instanceof Class && ignored.contains(((Class<?>) t).getName()))
-                    {
-                        i.remove();
-                    }
-                }
+                this.types.removeIf(t -> t instanceof Class && ignored.contains(((Class<?>) t).getName()));
             }
         }
     }

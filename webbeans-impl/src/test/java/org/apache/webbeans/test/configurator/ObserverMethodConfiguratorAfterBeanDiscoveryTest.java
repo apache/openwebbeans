@@ -82,9 +82,7 @@ public class ObserverMethodConfiguratorAfterBeanDiscoveryTest extends AbstractUn
                 .observedType(MyEvent.class)
                 .priority(100)
                 .notifyWith(eventContext ->
-                {
-                    observedEvents.add("event1");
-                });
+                    observedEvents.add("event1"));
 
             ObserverMethodConfigurator<MyEvent> observerCfg2 = abd.<MyEvent>addObserverMethod();
             Assert.assertNotNull(observerCfg2);
@@ -92,9 +90,7 @@ public class ObserverMethodConfiguratorAfterBeanDiscoveryTest extends AbstractUn
                 .observedType(MyEvent.class)
                 // with default prio
                 .notifyWith(eventContext ->
-                {
-                    observedEvents.add("event2");
-                });
+                    observedEvents.add("event2"));
 
             ObserverMethodConfigurator<MyEvent> observerCfg3 = abd.<MyEvent>addObserverMethod();
             Assert.assertNotNull(observerCfg3);
@@ -105,9 +101,7 @@ public class ObserverMethodConfiguratorAfterBeanDiscoveryTest extends AbstractUn
                     { // with @MyQualifier
                     })
                 .notifyWith(eventContext ->
-                {
-                    observedEvents.add("event3");
-                });
+                    observedEvents.add("event3"));
         }
     }
 

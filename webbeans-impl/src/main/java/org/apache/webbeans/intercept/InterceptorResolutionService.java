@@ -204,10 +204,10 @@ public class InterceptorResolutionService
                 failOnFinal);
 
         List<Interceptor<?>> cdiInterceptors = new ArrayList<>(allUsedCdiInterceptors);
-        Collections.sort(cdiInterceptors, new InterceptorComparator(webBeansContext));
+        cdiInterceptors.sort(new InterceptorComparator(webBeansContext));
 
         List<Interceptor<?>> cdiConstructorInterceptors = new ArrayList<>(allUsedConstructorCdiInterceptors);
-        Collections.sort(cdiConstructorInterceptors, new InterceptorComparator(webBeansContext));
+        cdiConstructorInterceptors.sort(new InterceptorComparator(webBeansContext));
 
         boolean interceptedBean = !annotatedType.getJavaClass().isInterface() && (
                                       allUsedEjbInterceptors.size() > 0 ||

@@ -587,15 +587,7 @@ public class BeansDeployer
      */
     private void removeDisabledBeans()
     {
-        Iterator<Bean<?>> beans = webBeansContext.getBeanManagerImpl().getBeans().iterator();
-        while(beans.hasNext())
-        {
-            Bean<?> bean = beans.next();
-            if (!((OwbBean) bean).isEnabled())
-            {
-                beans.remove();
-            }
-        }
+        webBeansContext.getBeanManagerImpl().getBeans().removeIf(bean -> !((OwbBean) bean).isEnabled());
     }
 
     private void registerAlternativesDecoratorsAndInterceptorsWithPriority(List<AnnotatedType<?>> annotatedTypes)

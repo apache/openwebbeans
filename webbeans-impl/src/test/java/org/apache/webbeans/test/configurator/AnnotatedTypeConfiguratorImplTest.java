@@ -149,13 +149,11 @@ public class AnnotatedTypeConfiguratorImplTest extends AbstractUnitTest
     {
         checkAnnotatedType(
             pat ->
-            {
                 pat.configureAnnotatedType()
                     .filterMethods(m -> m.getJavaMember().getName().equals("method1"))
                     .findFirst()
                     .get()
-                    .add(new TheQualifierLiteral("Method1"));
-            },
+                    .add(new TheQualifierLiteral("Method1")),
             pba ->
             {
                 Assert.assertTrue(pba.getAnnotated() instanceof AnnotatedType);
@@ -198,13 +196,11 @@ public class AnnotatedTypeConfiguratorImplTest extends AbstractUnitTest
     {
         checkAnnotatedType(
             pat ->
-            {
                 pat.configureAnnotatedType()
                     .filterFields(m -> m.getJavaMember().getName().equals("field1"))
                     .findFirst()
                     .get()
-                    .add(new TheQualifierLiteral("Field1"));
-            },
+                    .add(new TheQualifierLiteral("Field1")),
             pba ->
             {
                 Assert.assertTrue(pba.getAnnotated() instanceof AnnotatedType);

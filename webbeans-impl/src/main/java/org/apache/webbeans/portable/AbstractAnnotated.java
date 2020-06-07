@@ -23,7 +23,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -220,14 +219,7 @@ public abstract class AbstractAnnotated implements Annotated
             Set<String> ignoredInterfaces = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
             if (!ignoredInterfaces.isEmpty())
             {
-                for (Iterator<Type> i = typeClosures.iterator(); i.hasNext(); )
-                {
-                    Type t = i.next();
-                    if (t instanceof Class && ignoredInterfaces.contains(((Class<?>) t).getName()))
-                    {
-                        i.remove();
-                    }
-                }
+                typeClosures.removeIf(t -> t instanceof Class && ignoredInterfaces.contains(((Class<?>) t).getName()));
             }
         }
     }

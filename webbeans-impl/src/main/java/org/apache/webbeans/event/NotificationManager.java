@@ -181,12 +181,7 @@ public final class NotificationManager
     {
         webBeansContext.getAnnotationManager().checkQualifierConditions(observer.getObservedQualifiers());
 
-        Set<ObserverMethod<?>> set = observers.get(observer.getObservedType());
-        if (set == null)
-        {
-            set = new HashSet<>();
-            observers.put(observer.getObservedType(), set);
-        }
+        Set<ObserverMethod<?>> set = observers.computeIfAbsent(observer.getObservedType(), k -> new HashSet<>());
 
         set.add(observer);
     }
