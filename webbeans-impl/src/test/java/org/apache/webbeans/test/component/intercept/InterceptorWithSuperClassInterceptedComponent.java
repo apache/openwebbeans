@@ -48,10 +48,7 @@ public class InterceptorWithSuperClassInterceptedComponent
         java.util.List<String> s = new ArrayList<String>();
         Map<String, Object> map = context.getContextData();
         Set<Entry<String, Object>> set = map.entrySet();
-        Iterator<Entry<String, Object>> it = set.iterator();
-        while (it.hasNext())
-        {
-            Entry<String, Object> s2 = it.next();
+        for (Entry<String, Object> s2 : set) {
             s.add(s2.getKey());
 
         }

@@ -1617,12 +1617,9 @@ public class BeansDeployer
         logger.fine("Deploying configurations from XML files has started.");
 
         Set<URL> bdaLocations = scanner.getBeanXmls();
-        Iterator<URL> it = bdaLocations.iterator();
 
-        while (it.hasNext())
+        for (URL url : bdaLocations)
         {
-            URL url = it.next();
-
             logger.fine("OpenWebBeans BeansDeployer configuring: " + url.toExternalForm());
 
             BeanArchiveInformation beanArchiveInformation = beanArchiveService.getBeanArchiveInformation(url);
