@@ -36,7 +36,8 @@ import org.apache.webbeans.portable.events.discovery.ExtensionAware;
  * @param <X> declared bean class
  * @param <T> event type
  */
-public class ProcessObserverMethodImpl<T,X> extends EventBase implements ProcessObserverMethod<T, X>, ExtensionAware
+public class ProcessObserverMethodImpl<T,X> extends EventBase implements ProcessObserverMethod<T, X>, ExtensionAware,
+        AfterObserver
 {
     private final WebBeansContext webBeansContext;
 
@@ -46,6 +47,7 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
     /**ObserverMethod instance*/
     private ObserverMethod<T> observerMethod;
     private boolean vetoed;
+    private boolean set;
     private ObserverMethodConfiguratorImpl observerMethodConfigurator;
 
     private Extension extension;
@@ -78,6 +80,10 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
     public ObserverMethodConfigurator<T> configureObserverMethod()
     {
         checkState();
+        if (set)
+        {
+            throw new IllegalStateException("You can't call setObserverMethod() and configureObserverMethod()");
+        }
 
         if (observerMethodConfigurator == null)
         {
@@ -114,8 +120,13 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
     public void setObserverMethod(ObserverMethod<T> observerMethod)
     {
         checkState();
+        if (observerMethodConfigurator != null)
+        {
+            throw new IllegalStateException("You can't call " +
+                    "setObserverMethod() and configureObserverMethod()");
+        }
+        set = true;
         this.observerMethod = observerMethod;
-        this.observerMethodConfigurator = null;
     }
 
     @Override
@@ -128,5 +139,19 @@ public class ProcessObserverMethodImpl<T,X> extends EventBase implements Process
     public boolean isVetoed()
     {
         return vetoed;
+    }
+
+    @Override
+    public void afterObserver()
+    {
+        if (observerMethodConfigurator != null)
+        {
+            observerMethod = observerMethodConfigurator.getObserverMethod();
+            observerMethodConfigurator = null;
+        }
+        else if (set)
+        {
+            set = false;
+        }
     }
 }

@@ -1321,11 +1321,12 @@ public class BeansDeployer
                     }
 
                     // trigger a NoClassDefFoundError here, otherwise it would be thrown in observer methods
-                    annotatedType.getJavaClass().getDeclaredMethods();
-                    annotatedType.getJavaClass().getDeclaredFields();
+                    Class<?> javaClass = annotatedType.getJavaClass();
+                    javaClass.getDeclaredMethods();
+                    javaClass.getDeclaredFields();
 
                     // Fires ProcessAnnotatedType
-                    if (!annotatedType.getJavaClass().isAnnotation())
+                    if (!javaClass.isAnnotation())
                     {
                         GProcessAnnotatedType processAnnotatedEvent = webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
                         if (!processAnnotatedEvent.isVeto())
