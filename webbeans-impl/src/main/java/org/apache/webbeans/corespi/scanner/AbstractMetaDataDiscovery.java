@@ -286,7 +286,8 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             {
                 // we could check for META-INF/maven/org.apache.geronimo.specs presence there but this is faster
                 File file = Files.toFile(url);
-                if(file!= null && file.exists()) {
+                if(file!= null && file.exists()) 
+                {
                     final String filename = file.getName();
                     if (filename.startsWith("geronimo-") && filename.contains("_spec"))
                     {
