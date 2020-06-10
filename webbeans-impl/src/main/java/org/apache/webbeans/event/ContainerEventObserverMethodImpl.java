@@ -20,6 +20,7 @@ package org.apache.webbeans.event;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.portable.events.AfterObserver;
 import org.apache.webbeans.portable.events.discovery.ExtensionAware;
 
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -86,6 +87,10 @@ public class ContainerEventObserverMethodImpl<T> extends ObserverMethodImpl<T>
         if (extensionAware != null)
         {
             ExtensionAware.class.cast(extensionAware).setExtension(null);
+        }
+        if (args.length > 0 && AfterObserver.class.isInstance(args[0]))
+        {
+            AfterObserver.class.cast(args[0]).afterObserver();
         }
     }
 

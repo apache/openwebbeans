@@ -600,11 +600,7 @@ public class WebBeansContext
                 throw new WebBeansException("No suitable constructor : " + clazz.getName(), e.getCause());
             }
         }
-        catch (InstantiationException e)
-        {
-            throw new WebBeansException("Unable to instantiate class : " + clazz.getName(), e.getCause());
-        }
-        catch (InvocationTargetException e)
+        catch (InstantiationException | InvocationTargetException e)
         {
             throw new WebBeansException("Unable to instantiate class : " + clazz.getName(), e.getCause());
         }

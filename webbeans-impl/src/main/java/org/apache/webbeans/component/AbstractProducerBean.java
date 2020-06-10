@@ -118,12 +118,7 @@ public class AbstractProducerBean<T> extends AbstractOwbBean<T>
 
     protected boolean isPassivationCapable(Class<?> returnType, Integer modifiers)
     {
-        if(Modifier.isFinal(modifiers) && !(Serializable.class.isAssignableFrom(returnType)))
-        {
-            return false;
-        }
-
-        return true;
+        return !Modifier.isFinal(modifiers) || Serializable.class.isAssignableFrom(returnType);
     }
 
 }

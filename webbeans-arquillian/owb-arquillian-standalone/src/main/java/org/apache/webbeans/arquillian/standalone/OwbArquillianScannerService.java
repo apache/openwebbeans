@@ -225,12 +225,7 @@ public class OwbArquillianScannerService implements BdaScannerService
     private void scanClasses(BeanArchiveService.BeanArchiveInformation info,
                              Map<ArchivePath, Node> classes, String classBasePath)
     {
-        Set<Class<?>> bdaClasses = beanClassesPerBda.get(info);
-        if (bdaClasses == null)
-        {
-            bdaClasses = new HashSet<>();
-            beanClassesPerBda.put(info, bdaClasses);
-        }
+        Set<Class<?>> bdaClasses = beanClassesPerBda.computeIfAbsent(info, k -> new HashSet<>());
         if (info != null && info.getBeanDiscoveryMode() == BeanArchiveService.BeanDiscoveryMode.NONE)
         {
             // this jar should not get scanned at all.

@@ -45,12 +45,7 @@ public class ResourceReference<X,T extends Annotation> implements Serializable
     
     public boolean supports(Class<?> resourceAnnoation)
     {
-        if(this.annotation.annotationType().equals(resourceAnnoation))
-        {
-            return true;
-        }
-        
-        return false;
+        return this.annotation.annotationType().equals(resourceAnnoation);
     }
     
     public <Y extends Annotation> Y getAnnotation(Class<Y> resourceAnnoation)

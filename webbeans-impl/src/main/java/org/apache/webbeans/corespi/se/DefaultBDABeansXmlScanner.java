@@ -89,12 +89,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
         }
         synchronized (interceptorsPerBDA)
         {
-            Set<Class<?>> interceptorClasses = interceptorsPerBDA.get(beansXMLFilePath);
-            if (interceptorClasses == null)
-            {
-                interceptorClasses = new HashSet<>();
-                interceptorsPerBDA.put(beansXMLFilePath, interceptorClasses);
-            }
+            Set<Class<?>> interceptorClasses = interceptorsPerBDA.computeIfAbsent(beansXMLFilePath, k -> new HashSet<>());
             return interceptorClasses.add(interceptorClass);
         }
     }
@@ -161,12 +156,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
         }
         synchronized (decoratorsPerBDA)
         {
-            Set<Class<?>> decoratorClasses = decoratorsPerBDA.get(beansXMLFilePath);
-            if (decoratorClasses == null)
-            {
-                decoratorClasses = new HashSet<>();
-                decoratorsPerBDA.put(beansXMLFilePath, decoratorClasses);
-            }
+            Set<Class<?>> decoratorClasses = decoratorsPerBDA.computeIfAbsent(beansXMLFilePath, k -> new HashSet<>());
             return decoratorClasses.add(decoratorClass);
         }
 
@@ -188,12 +178,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
         }
         synchronized (alternativesPerBDA)
         {
-            Set<Class<?>> alternativeClasses = alternativesPerBDA.get(beansXMLFilePath);
-            if (alternativeClasses == null)
-            {
-                alternativeClasses = new HashSet<>();
-                alternativesPerBDA.put(beansXMLFilePath, alternativeClasses);
-            }
+            Set<Class<?>> alternativeClasses = alternativesPerBDA.computeIfAbsent(beansXMLFilePath, k -> new HashSet<>());
             return alternativeClasses.add(alternativeClass);
         }
     }
@@ -214,12 +199,7 @@ public class DefaultBDABeansXmlScanner implements BDABeansXmlScanner
         }
         synchronized (stereotypesPerBDA)
         {
-            Set<Class<? extends Annotation>> stereoTypeClasses = stereotypesPerBDA.get(beansXMLFilePath);
-            if (stereoTypeClasses == null)
-            {
-                stereoTypeClasses = new HashSet<>();
-                stereotypesPerBDA.put(beansXMLFilePath, stereoTypeClasses);
-            }
+            Set<Class<? extends Annotation>> stereoTypeClasses = stereotypesPerBDA.computeIfAbsent(beansXMLFilePath, k -> new HashSet<>());
             return stereoTypeClasses.add(stereoTypeClass);
         }
     }

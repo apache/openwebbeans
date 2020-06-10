@@ -32,7 +32,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.DefaultConversationService;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.decorators.common.ConversationDecorator;
-import org.apache.webbeans.spi.ConversationService;
 import org.junit.Ignore;
 import org.junit.Test;
 

@@ -141,11 +141,7 @@ public class ContextLifecycleListener implements LifecycleListener, ServletConte
                 StandardContext context = (StandardContext) getContext(servletContextAttributeEvent.getServletContext());
                 wrapInstanceManager(context);
             }
-            catch (NoSuchFieldException e)
-            {
-                throw new WebBeansException(e.getMessage(), e);
-            }
-            catch (IllegalAccessException e)
+            catch (NoSuchFieldException | IllegalAccessException e)
             {
                 throw new WebBeansException(e.getMessage(), e);
             }

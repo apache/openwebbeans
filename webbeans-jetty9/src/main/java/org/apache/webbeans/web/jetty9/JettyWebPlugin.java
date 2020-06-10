@@ -84,12 +84,7 @@ public class JettyWebPlugin extends AbstractOwbPlugin
     @Override
     public boolean supportsJavaEeComponentInjections(Class<?> clazz)
     {
-        if (isServletSpecClass(clazz))
-        {
-            return true;
-        }
-
-        return false;
+        return isServletSpecClass(clazz);
     }
 
     private boolean isServletSpecClass(Class<?> clazz)
@@ -121,12 +116,7 @@ public class JettyWebPlugin extends AbstractOwbPlugin
     @Override
     public boolean supportService(Class<?> serviceClass)
     {
-        if (serviceClass.equals(SecurityService.class))
-        {
-            return true;
-        }
-
-        return false;
+        return serviceClass.equals(SecurityService.class);
     }
 
 }

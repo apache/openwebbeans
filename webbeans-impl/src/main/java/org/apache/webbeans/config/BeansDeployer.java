@@ -330,19 +330,11 @@ public class BeansDeployer
                 webBeansContext.getAnnotationManager().clearCaches();
             }
         }
-        catch (UnsatisfiedResolutionException e)
+        catch (UnsatisfiedResolutionException | UnproxyableResolutionException | AmbiguousResolutionException e)
         {
             throw new WebBeansDeploymentException(e);
         }
-        catch (AmbiguousResolutionException e)
-        {
-            throw new WebBeansDeploymentException(e);
-        }
-        catch (UnproxyableResolutionException e)
-        {
-            // the tck expects a DeploymentException, but it really should be a DefinitionException, see i.e. https://issues.jboss.org/browse/CDITCK-346
-            throw new WebBeansDeploymentException(e);
-        }
+        // the tck expects a DeploymentException, but it really should be a DefinitionException, see i.e. https://issues.jboss.org/browse/CDITCK-346
         catch (IllegalArgumentException e)
         {
             throw new WebBeansConfigurationException(e);
@@ -595,15 +587,7 @@ public class BeansDeployer
      */
     private void removeDisabledBeans()
     {
-        Iterator<Bean<?>> beans = webBeansContext.getBeanManagerImpl().getBeans().iterator();
-        while(beans.hasNext())
-        {
-            Bean<?> bean = beans.next();
-            if (!((OwbBean) bean).isEnabled())
-            {
-                beans.remove();
-            }
-        }
+        webBeansContext.getBeanManagerImpl().getBeans().removeIf(bean -> !((OwbBean) bean).isEnabled());
     }
 
     private void registerAlternativesDecoratorsAndInterceptorsWithPriority(List<AnnotatedType<?>> annotatedTypes)
@@ -1337,11 +1321,12 @@ public class BeansDeployer
                     }
 
                     // trigger a NoClassDefFoundError here, otherwise it would be thrown in observer methods
-                    annotatedType.getJavaClass().getDeclaredMethods();
-                    annotatedType.getJavaClass().getDeclaredFields();
+                    Class<?> javaClass = annotatedType.getJavaClass();
+                    javaClass.getDeclaredMethods();
+                    javaClass.getDeclaredFields();
 
                     // Fires ProcessAnnotatedType
-                    if (!annotatedType.getJavaClass().isAnnotation())
+                    if (!javaClass.isAnnotation())
                     {
                         GProcessAnnotatedType processAnnotatedEvent = webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
                         if (!processAnnotatedEvent.isVeto())
@@ -1617,12 +1602,9 @@ public class BeansDeployer
         logger.fine("Deploying configurations from XML files has started.");
 
         Set<URL> bdaLocations = scanner.getBeanXmls();
-        Iterator<URL> it = bdaLocations.iterator();
 
-        while (it.hasNext())
+        for (URL url : bdaLocations)
         {
-            URL url = it.next();
-
             logger.fine("OpenWebBeans BeansDeployer configuring: " + url.toExternalForm());
 
             BeanArchiveInformation beanArchiveInformation = beanArchiveService.getBeanArchiveInformation(url);

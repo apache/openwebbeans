@@ -32,9 +32,10 @@ import javax.enterprise.inject.spi.configurator.InjectionPointConfigurator;
  * @param <T> bean class
  * @param <X> declared type
  */
-public class ProcessInjectionPointImpl<T, X> extends EventBase implements ProcessInjectionPoint<T, X>
+public class ProcessInjectionPointImpl<T, X> extends EventBase implements ProcessInjectionPoint<T, X>, AfterObserver
 {
 
+    private boolean set;
     private InjectionPoint injectionPoint;
     private InjectionPointConfiguratorImpl injectionPointConfigurator;
 
@@ -66,8 +67,12 @@ public class ProcessInjectionPointImpl<T, X> extends EventBase implements Proces
     public void setInjectionPoint(InjectionPoint injectionPoint)
     {
         checkState();
+        if (injectionPointConfigurator != null)
+        {
+            throw new IllegalStateException("You can't set and configure the injection point at the same time");
+        }
+        set = true;
         this.injectionPoint = injectionPoint;
-        this.injectionPointConfigurator = null;
     }
 
     /**
@@ -84,11 +89,29 @@ public class ProcessInjectionPointImpl<T, X> extends EventBase implements Proces
     public InjectionPointConfigurator configureInjectionPoint()
     {
         checkState();
+        if (set)
+        {
+            throw new IllegalStateException("You can't set and configure the injection point at the same time");
+        }
 
         if (injectionPointConfigurator == null)
         {
             this.injectionPointConfigurator = new InjectionPointConfiguratorImpl(injectionPoint);
         }
         return injectionPointConfigurator;
+    }
+
+    @Override
+    public void afterObserver()
+    {
+        if (injectionPointConfigurator != null)
+        {
+            injectionPoint = injectionPointConfigurator.getInjectionPoint();
+            injectionPointConfigurator = null;
+        }
+        else if (set)
+        {
+            set = false;
+        }
     }
 }

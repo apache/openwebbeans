@@ -730,9 +730,10 @@ public final class WebBeansUtil
         //Fires ProcessAnnotatedType
         webBeansContext.getBeanManagerImpl().fireEvent(processAnnotatedEvent, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
 
-        if (processAnnotatedEvent.isModifiedAnnotatedType())
+        AnnotatedType newAt = processAnnotatedEvent.getAnnotatedType();
+        if (newAt != annotatedType)
         {
-            webBeansContext.getAnnotatedElementFactory().setAnnotatedType(processAnnotatedEvent.getAnnotatedType());
+            webBeansContext.getAnnotatedElementFactory().setAnnotatedType(newAt);
         }
 
         return processAnnotatedEvent;

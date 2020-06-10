@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -394,14 +393,7 @@ public final class ClassUtil
         List<Method> methods = getNonPrivateMethods(clazz, true);
         if (!methods.isEmpty())
         {
-            Iterator<Method> iterator = methods.iterator();
-            while (iterator.hasNext())
-            {
-                if (!Modifier.isAbstract(iterator.next().getModifiers()))
-                {
-                    iterator.remove();
-                }
-            }
+            methods.removeIf(method -> !Modifier.isAbstract(method.getModifiers()));
         }
 
         return methods;

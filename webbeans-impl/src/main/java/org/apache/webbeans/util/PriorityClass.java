@@ -45,7 +45,7 @@ public class PriorityClass implements Comparable<PriorityClass>
         if (priority != o.priority)
         {
             // sort descending
-            return (priority > o.priority) ? -1 : ((priority == o.priority) ? 0 : 1);
+            return Integer.compare(o.priority, priority);
         }
 
         // we additionally sort according to the class name to at least

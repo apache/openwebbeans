@@ -39,7 +39,7 @@ public class AnnotatedConstructorConfiguratorImpl<T> implements AnnotatedConstru
         this.annotatedConstructor = annotatedConstructor;
 
         annotatedParameterConfigurators = annotatedConstructor.getParameters().stream()
-            .map(m -> new AnnotatedParameterConfiguratorImpl<>(m))
+            .map(AnnotatedParameterConfiguratorImpl::new)
             .collect(Collectors.toList());
     }
 

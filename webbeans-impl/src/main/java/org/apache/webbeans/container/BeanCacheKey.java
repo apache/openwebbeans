@@ -40,7 +40,7 @@ public final class BeanCacheKey
     private final Type type;
     private final String path;
     private final Annotation qualifier;
-    private final Annotation qualifiers[];
+    private final Annotation[] qualifiers;
     private final int hashCode;
     private volatile LazyAnnotatedTypes lazyAnnotatedTypes; // only needed for the "main" key
     private final Function<Class<?>, AnnotatedType<?>> lazyAtLoader;

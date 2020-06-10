@@ -38,14 +38,10 @@ public class BeanAttributesConfiguratorImplTest extends AbstractUnitTest
     {
         checkBeanAttributes(
             pba ->
-            {
                 pba.configureBeanAttributes()
-                    .scope(ApplicationScoped.class);
-            },
+                    .scope(ApplicationScoped.class),
             pb ->
-            {
-                assertEquals(ApplicationScoped.class, pb.getBean().getScope());
-            },
+                assertEquals(ApplicationScoped.class, pb.getBean().getScope()),
             EmptyBean.class);
     }
 

@@ -377,11 +377,9 @@ public class InjectionResolver
         resolvedComponents = new HashSet<>();
         Set<Bean<?>> deployedComponents = webBeansContext.getBeanManagerImpl().getBeans();
 
-        Iterator<Bean<?>> it = deployedComponents.iterator();
         //Finding all beans with given name
-        while (it.hasNext())
+        for (Bean<?> component : deployedComponents)
         {
-            Bean<?> component = it.next();
             if (component.getName() != null)
             {
                 if (component.getName().equals(name))
@@ -802,10 +800,8 @@ public class InjectionResolver
             int i = 0;
             for (Annotation annot : annotations)
             {
-                Iterator<Annotation> itQualifiers = qTypes.iterator();
-                while (itQualifiers.hasNext())
+                for (Annotation qualifier : qTypes)
                 {
-                    Annotation qualifier = itQualifiers.next();
                     if (annot.annotationType().equals(qualifier.annotationType()))
                     {
                         AnnotatedType<?> at = findQualifierModel(qualifier.annotationType());
@@ -817,7 +813,7 @@ public class InjectionResolver
                             }
                         }
                         else
-                        {
+                            {
                             if (AnnotationUtil.isCdiAnnotationEqual(at, qualifier, annot))
                             {
                                 i++;

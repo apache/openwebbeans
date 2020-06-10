@@ -37,7 +37,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -151,14 +150,7 @@ public class DecoratorBeanBuilder<T> extends AbstractBeanBuilder
     private void defineDecoratedTypes()
     {
         decoratedTypes.remove(Serializable.class); /* 8.1 */
-        for (Iterator<Type> i = decoratedTypes.iterator(); i.hasNext(); )
-        {
-            Type t = i.next();
-            if (!ClassUtil.getClass(t).isInterface() || (t instanceof Class<?> && ignoredDecoratorInterfaces.contains(((Class) t).getName())))
-            {
-                i.remove();
-            }
-        }
+        decoratedTypes.removeIf(t -> !ClassUtil.getClass(t).isInterface() || (t instanceof Class<?> && ignoredDecoratorInterfaces.contains(((Class) t).getName())));
     }
 
     private void defineDelegate(Set<InjectionPoint> injectionPoints)

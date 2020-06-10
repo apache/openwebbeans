@@ -50,17 +50,15 @@ public class ErrorStack
     {
         if(!errorStack.isEmpty())
         {
-            Iterator<Throwable> it = errorStack.iterator();
-            while(it.hasNext())
+            for (Throwable t : errorStack)
             {
-                Throwable t = it.next();
                 String message = t.getMessage();
                 if (message != null && message.length() > 0)
                 {
                     logger.log(Level.SEVERE, t.getMessage(), t);
                 }
                 else
-                {
+                    {
                     logger.log(Level.SEVERE, "unknown error", t);
                 }
             }
