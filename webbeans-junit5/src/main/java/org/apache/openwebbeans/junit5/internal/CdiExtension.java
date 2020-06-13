@@ -24,6 +24,9 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.util.AnnotationUtils;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -34,19 +37,22 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 // todo: enhance the setup to be thread safe? see Meecrowave ClassLoaderLock class and friends
-public class CdiExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback
+public class CdiExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver
 {
     private static SeContainer reusableContainer;
 
-    private SeContainer container;
+    private SeContainer testInstanceContainer;
     private Collection<CreationalContext<Object>> creationalContexts = new ArrayList<>();
     private Closeable[] onStop;
 
@@ -104,32 +110,34 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
                 .peek(Supplier::get)
                 .filter(Objects::nonNull)
                 .toArray(Closeable[]::new);
+        SeContainer container = initializer.initialize();
         if (reusable)
         {
-            reusableContainer = initializer.initialize();
+            reusableContainer = container;
             Runtime.getRuntime().addShutdownHook(new Thread(
                 () -> doClose(reusableContainer), getClass().getName() + "-shutdown"));
         }
         else
         {
-            container = initializer.initialize();
+            testInstanceContainer = container;
         }
     }
 
     @Override
     public void afterAll(final ExtensionContext extensionContext)
     {
-        if (container != null)
+        if (testInstanceContainer != null)
         {
-            doClose(container);
-            container = null;
+            doClose(testInstanceContainer);
+            testInstanceContainer = null;
         }
     }
 
     @Override
     public void beforeEach(final ExtensionContext extensionContext)
     {
-        if (container == null && reusableContainer == null)
+        SeContainer container = getContainer();
+        if (container == null)
         {
             return;
         }
@@ -137,7 +145,7 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
         {
             testInstances.getAllInstances().stream().distinct().forEach(instance ->
             {
-                final BeanManager manager = (container == null ? reusableContainer : container).getBeanManager();
+                final BeanManager manager = container.getBeanManager();
                 final AnnotatedType<?> annotatedType = manager.createAnnotatedType(instance.getClass());
                 final InjectionTarget injectionTarget = manager.createInjectionTarget(annotatedType);
                 final CreationalContext<Object> creationalContext = manager.createCreationalContext(null);
@@ -172,4 +180,43 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
             }
         });
     }
+
+    private SeContainer getContainer()
+    {
+        return (testInstanceContainer == null ? reusableContainer : testInstanceContainer);
+    }
+
+    @Override
+    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+            throws ParameterResolutionException
+    {
+        SeContainer container = getContainer();
+        if (container == null)
+        {
+            return false;
+        }
+        return container.select(
+                parameterContext.getParameter().getType(),
+                getQualifiers(parameterContext.getParameter())
+        ).isResolvable();
+    }
+
+    @Override
+    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+            throws ParameterResolutionException
+    {
+        return getContainer().select(
+                parameterContext.getParameter().getType(),
+                getQualifiers(parameterContext.getParameter())
+        ).get();
+    }
+
+    private Annotation[] getQualifiers(Parameter parameter)
+    {
+        SeContainer container = getContainer();
+        return Arrays.stream(parameter.getAnnotations())
+                .filter(annotation -> container.getBeanManager().isQualifier(annotation.annotationType()))
+                .toArray(Annotation[]::new);
+    }
+
 }
