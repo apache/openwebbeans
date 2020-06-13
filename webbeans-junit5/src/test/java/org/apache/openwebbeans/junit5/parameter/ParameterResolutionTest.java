@@ -24,11 +24,11 @@ import org.apache.openwebbeans.junit5.Cdi;
 import org.apache.openwebbeans.junit5.bean.MyService;
 import org.junit.jupiter.api.Test;
 
-@Cdi(disableDiscovery = true, classes = MyService.class)
+@Cdi(classes = MyService.class)
 class ParameterResolutionTest
 {
     @Test
-    void test1(MyService service)
+    void testThatParameterGetsInjected(MyService service)
     {
         assertEquals("ok", service.ok());
     }

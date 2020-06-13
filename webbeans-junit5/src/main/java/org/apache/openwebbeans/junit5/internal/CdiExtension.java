@@ -59,7 +59,7 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
     @Override
     public void beforeAll(final ExtensionContext extensionContext)
     {
-        final Cdi config = AnnotationUtils.findAnnotation(extensionContext.getElement(), Cdi.class).orElse(null);
+        final Cdi config = getCdiConfig(extensionContext);
         if (config == null)
         {
             return;
@@ -136,7 +136,7 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
     @Override
     public void beforeEach(final ExtensionContext extensionContext)
     {
-        SeContainer container = getContainer();
+        final SeContainer container = getContainer();
         if (container == null)
         {
             return;
@@ -181,20 +181,39 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
         });
     }
 
+    private Cdi getCdiConfig(ExtensionContext extensionContext)
+    {
+        return AnnotationUtils.findAnnotation(extensionContext.getElement(), Cdi.class).orElse(null);
+    }
+
     private SeContainer getContainer()
     {
-        return (testInstanceContainer == null ? reusableContainer : testInstanceContainer);
+        if (testInstanceContainer != null)
+        {
+            return testInstanceContainer;
+        }
+        else
+        {
+            return reusableContainer;
+        }
     }
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
             throws ParameterResolutionException
     {
-        SeContainer container = getContainer();
+        final Cdi config = extensionContext.getParent().map(this::getCdiConfig).orElse(null);
+        if (config == null || !config.injectParameters())
+        {
+            return false;
+        }
+
+        final SeContainer container = getContainer();
         if (container == null)
         {
             return false;
         }
+
         return container.select(
                 parameterContext.getParameter().getType(),
                 getQualifiers(parameterContext.getParameter())
@@ -213,9 +232,9 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
 
     private Annotation[] getQualifiers(Parameter parameter)
     {
-        SeContainer container = getContainer();
+        final BeanManager beanManager = getContainer().getBeanManager();
         return Arrays.stream(parameter.getAnnotations())
-                .filter(annotation -> container.getBeanManager().isQualifier(annotation.annotationType()))
+                .filter(annotation -> beanManager.isQualifier(annotation.annotationType()))
                 .toArray(Annotation[]::new);
     }
 

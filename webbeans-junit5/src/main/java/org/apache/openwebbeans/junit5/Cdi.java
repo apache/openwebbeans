@@ -81,6 +81,11 @@ public @interface Cdi
     boolean disableDiscovery() default false;
 
     /**
+     * @return {@code true} to enable JUnit parameter resolution with CDI beans or {@code false} otherwise.
+     */
+    boolean injectParameters() default true;
+
+    /**
      * @return an array of callback to call before the container starts.
      */
     Class<? extends OnStart>[] onStarts() default {};
