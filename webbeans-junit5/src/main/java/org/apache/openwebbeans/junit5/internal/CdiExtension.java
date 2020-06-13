@@ -33,6 +33,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.se.SeContainer;
 import javax.enterprise.inject.se.SeContainerInitializer;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
 import java.io.Closeable;
@@ -44,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -53,7 +55,7 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
     private static SeContainer reusableContainer;
 
     private SeContainer testInstanceContainer;
-    private Collection<CreationalContext<Object>> creationalContexts = new ArrayList<>();
+    private Collection<CreationalContext<?>> creationalContexts = new ArrayList<>();
     private Closeable[] onStop;
 
     @Override
@@ -214,20 +216,34 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
             return false;
         }
 
-        return container.select(
-                parameterContext.getParameter().getType(),
-                getQualifiers(parameterContext.getParameter())
-        ).isResolvable();
+        Bean<?> bean = resolveParameterBean(container, parameterContext, extensionContext);
+        return bean != null;
     }
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
             throws ParameterResolutionException
     {
-        return getContainer().select(
+        final SeContainer container = getContainer();
+        if (container == null)
+        {
+            return false;
+        }
+
+        Bean<?> bean = resolveParameterBean(container, parameterContext, extensionContext);
+        BeanManager beanManager = container.getBeanManager();
+        CreationalContext<?> creationalContext = beanManager.createCreationalContext(bean);
+        creationalContexts.add(creationalContext);
+        return beanManager.getReference(bean, parameterContext.getParameter().getType(), creationalContext);
+    }
+
+    private Bean<?> resolveParameterBean(SeContainer container, ParameterContext parameterContext, ExtensionContext extensionContext)
+    {
+        BeanManager beanManager = container.getBeanManager();
+        Set<Bean<?>> beans = beanManager.getBeans(
                 parameterContext.getParameter().getType(),
-                getQualifiers(parameterContext.getParameter())
-        ).get();
+                getQualifiers(parameterContext.getParameter()));
+        return beanManager.resolve(beans);
     }
 
     private Annotation[] getQualifiers(Parameter parameter)
