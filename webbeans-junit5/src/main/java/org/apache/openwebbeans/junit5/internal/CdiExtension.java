@@ -24,30 +24,38 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.util.AnnotationUtils;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.se.SeContainer;
 import javax.enterprise.inject.se.SeContainerInitializer;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 // todo: enhance the setup to be thread safe? see Meecrowave ClassLoaderLock class and friends
-public class CdiExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback
+public class CdiExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver
 {
     private static SeContainer reusableContainer;
 
-    private SeContainer container;
-    private Collection<CreationalContext<Object>> creationalContexts = new ArrayList<>();
+    private SeContainer testInstanceContainer;
+    private Collection<CreationalContext<?>> creationalContexts = new ArrayList<>();
     private Closeable[] onStop;
 
     @Override
@@ -104,32 +112,34 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
                 .peek(Supplier::get)
                 .filter(Objects::nonNull)
                 .toArray(Closeable[]::new);
+        SeContainer container = initializer.initialize();
         if (reusable)
         {
-            reusableContainer = initializer.initialize();
+            reusableContainer = container;
             Runtime.getRuntime().addShutdownHook(new Thread(
                 () -> doClose(reusableContainer), getClass().getName() + "-shutdown"));
         }
         else
         {
-            container = initializer.initialize();
+            testInstanceContainer = container;
         }
     }
 
     @Override
     public void afterAll(final ExtensionContext extensionContext)
     {
-        if (container != null)
+        if (testInstanceContainer != null)
         {
-            doClose(container);
-            container = null;
+            doClose(testInstanceContainer);
+            testInstanceContainer = null;
         }
     }
 
     @Override
     public void beforeEach(final ExtensionContext extensionContext)
     {
-        if (container == null && reusableContainer == null)
+        final SeContainer container = getContainer();
+        if (container == null)
         {
             return;
         }
@@ -137,7 +147,7 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
         {
             testInstances.getAllInstances().stream().distinct().forEach(instance ->
             {
-                final BeanManager manager = (container == null ? reusableContainer : container).getBeanManager();
+                final BeanManager manager = container.getBeanManager();
                 final AnnotatedType<?> annotatedType = manager.createAnnotatedType(instance.getClass());
                 final InjectionTarget injectionTarget = manager.createInjectionTarget(annotatedType);
                 final CreationalContext<Object> creationalContext = manager.createCreationalContext(null);
@@ -172,4 +182,65 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
             }
         });
     }
+
+    private SeContainer getContainer()
+    {
+        if (testInstanceContainer != null)
+        {
+            return testInstanceContainer;
+        }
+        else
+        {
+            return reusableContainer;
+        }
+    }
+
+    @Override
+    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+            throws ParameterResolutionException
+    {
+        final SeContainer container = getContainer();
+        if (container == null)
+        {
+            return false;
+        }
+
+        Bean<?> bean = resolveParameterBean(container, parameterContext, extensionContext);
+        return bean != null;
+    }
+
+    @Override
+    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+            throws ParameterResolutionException
+    {
+        final SeContainer container = getContainer();
+        if (container == null)
+        {
+            return false;
+        }
+
+        Bean<?> bean = resolveParameterBean(container, parameterContext, extensionContext);
+        BeanManager beanManager = container.getBeanManager();
+        CreationalContext<?> creationalContext = beanManager.createCreationalContext(bean);
+        creationalContexts.add(creationalContext);
+        return beanManager.getReference(bean, parameterContext.getParameter().getType(), creationalContext);
+    }
+
+    private Bean<?> resolveParameterBean(SeContainer container, ParameterContext parameterContext, ExtensionContext extensionContext)
+    {
+        BeanManager beanManager = container.getBeanManager();
+        Set<Bean<?>> beans = beanManager.getBeans(
+                parameterContext.getParameter().getType(),
+                getQualifiers(parameterContext.getParameter()));
+        return beanManager.resolve(beans);
+    }
+
+    private Annotation[] getQualifiers(Parameter parameter)
+    {
+        final BeanManager beanManager = getContainer().getBeanManager();
+        return Arrays.stream(parameter.getAnnotations())
+                .filter(annotation -> beanManager.isQualifier(annotation.annotationType()))
+                .toArray(Annotation[]::new);
+    }
+
 }

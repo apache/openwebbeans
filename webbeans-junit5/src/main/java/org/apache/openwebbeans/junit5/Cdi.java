@@ -23,11 +23,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.Closeable;
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.function.Supplier;
+import javax.inject.Qualifier;
 
 import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
@@ -79,6 +82,17 @@ public @interface Cdi
      * @return if the automatic scanning must be disabled.
      */
     boolean disableDiscovery() default false;
+
+    /**
+     * When present on a test method parameter, it will <em>not</em> be attempted to be resolved with a CDI bean.
+     */
+    @Qualifier
+    @Target(PARAMETER)
+    @Retention(RUNTIME)
+    @Documented
+    @interface DontInject
+    {
+    }
 
     /**
      * @return an array of callback to call before the container starts.
