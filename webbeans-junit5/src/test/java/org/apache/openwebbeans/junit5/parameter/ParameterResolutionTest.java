@@ -18,18 +18,8 @@
  */
 package org.apache.openwebbeans.junit5.parameter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import javax.inject.Inject;
-import javax.inject.Qualifier;
 import org.apache.openwebbeans.junit5.Cdi;
+import org.apache.openwebbeans.junit5.SkipInject;
 import org.apache.openwebbeans.junit5.bean.MyService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +27,12 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+
+import javax.inject.Inject;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @Cdi(classes = MyService.class)
 class ParameterResolutionTest
@@ -72,14 +68,14 @@ class ParameterResolutionTest
 
     @Test
     @ExtendWith(OnlyFirstParameterResolver.class)
-    void testThatParameterDoesNotGetInjectedWithDontInject(@Cdi.DontInject MyService service)
+    void testThatParameterDoesNotGetInjectedWithDontInject(@SkipInject MyService service)
     {
         assertNull(service); // OnlyFirstParameterResolver.resolveParameter resolves service to null
     }
 
     @Test
     @ExtendWith(OnlyFirstParameterResolver.class)
-    void testMixedCdiAndOtherParameterResolver(@Cdi.DontInject MyService service1, MyService service2)
+    void testMixedCdiAndOtherParameterResolver(@SkipInject MyService service1, MyService service2)
     {
         // OnlyFirstParameterResolver.resolveParameter resolves service1 to null
         assertNull(service1);

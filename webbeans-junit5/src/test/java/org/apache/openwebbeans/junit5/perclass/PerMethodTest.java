@@ -46,13 +46,15 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(PER_CLASS)
-class PerMethodTest {
+class PerMethodTest
+{
     private BeanManager bm1;
 
     @Test
     @Order(1)
     @ExtendWith(CustomExtension.class)
-    void cdiRuns() {
+    void cdiRuns()
+    {
         bm1 = CDI.current().getBeanManager();
         assertNotNull(bm1);
     }
@@ -60,7 +62,8 @@ class PerMethodTest {
     @Test
     @Order(2)
     @ExtendWith(CustomExtension.class)
-    void cdiReRuns() {
+    void cdiReRuns()
+    {
         final BeanManager bm2 = CDI.current().getBeanManager();
         assertNotNull(bm2);
         assertNotEquals(bm1, bm2);
@@ -68,13 +71,17 @@ class PerMethodTest {
     }
 
     private BeanManager getRealBm(final BeanManager wrapper) {
-        try {
+        try
+        {
             final Field bm = InjectableBeanManager.class.getDeclaredField("bm");
-            if (!bm.isAccessible()) {
+            if (!bm.isAccessible())
+            {
                 bm.setAccessible(true);
             }
             return BeanManager.class.cast(bm.get(wrapper));
-        } catch (final Exception e) {
+        }
+        catch (final Exception e)
+        {
             return fail(e);
         }
     }
@@ -83,15 +90,21 @@ class PerMethodTest {
     // here we just virtually set @Cdi on the method and move the class lifecycle to the method
     // note 1: in real, this kind of impl is not "inline" but this tests the use case more than the impl
     // note 2: by itself this use case is not terrible but sometimes requires by another jupiter extension
-    public static class CustomExtension extends CdiExtension {
+    public static class CustomExtension extends CdiExtension
+    {
         @Override
-        public void beforeEach(final ExtensionContext extensionContext) {
-            super.beforeAll(new ExtensionContext() {
+        public void beforeEach(final ExtensionContext extensionContext)
+        {
+            super.beforeAll(new ExtensionContext()
+            {
                 @Override
-                public Optional<AnnotatedElement> getElement() {
-                    return of(new AnnotatedElement() {
+                public Optional<AnnotatedElement> getElement()
+                {
+                    return of(new AnnotatedElement()
+                    {
                         @Override
-                        public <T extends Annotation> T getAnnotation(final Class<T> annotationClass) {
+                        public <T extends Annotation> T getAnnotation(final Class<T> annotationClass)
+                        {
                             return Stream.of(getAnnotations())
                                     .filter(it -> it.annotationType() == annotationClass)
                                     .map(annotationClass::cast)
@@ -99,66 +112,86 @@ class PerMethodTest {
                         }
 
                         @Override
-                        public Annotation[] getAnnotations() {
+                        public Annotation[] getAnnotations()
+                        {
                             return getDeclaredAnnotations();
                         }
 
                         @Override
-                        public Annotation[] getDeclaredAnnotations() {
-                            return new Annotation[]{
+                        public Annotation[] getDeclaredAnnotations()
+                        {
+                            return new Annotation[]
+                            {
                                     new Cdi() {
                                         @Override
-                                        public Class<? extends Annotation> annotationType() {
+                                        public Class<? extends Annotation> annotationType()
+                                        {
                                             return Cdi.class;
                                         }
 
                                         @Override
-                                        public Class<?>[] classes() {
+                                        public Class<?>[] classes()
+                                        {
                                             return new Class[0];
                                         }
 
                                         @Override
-                                        public Class<?>[] decorators() {
+                                        public Class<?>[] decorators()
+                                        {
                                             return new Class[0];
                                         }
 
                                         @Override
-                                        public Class<?>[] interceptors() {
+                                        public Class<?>[] interceptors()
+                                        {
                                             return new Class[0];
                                         }
 
                                         @Override
-                                        public Class<?>[] alternatives() {
+                                        public Class<?>[] alternatives()
+                                        {
                                             return new Class[0];
                                         }
 
                                         @Override
-                                        public Class<? extends Annotation>[] alternativeStereotypes() {
+                                        public Class<? extends Annotation>[] alternativeStereotypes()
+                                        {
                                             return new Class[0];
                                         }
 
                                         @Override
-                                        public Class<?>[] packages() {
+                                        public Class<?>[] packages()
+                                        {
                                             return new Class[0];
                                         }
 
                                         @Override
-                                        public Class<?>[] recursivePackages() {
+                                        public Class<?>[] recursivePackages()
+                                        {
                                             return new Class[0];
                                         }
 
                                         @Override
-                                        public boolean disableDiscovery() {
+                                        public Property[] properties()
+                                        {
+                                            return new Property[0];
+                                        }
+
+                                        @Override
+                                        public boolean disableDiscovery()
+                                        {
                                             return false;
                                         }
 
                                         @Override
-                                        public Class<? extends OnStart>[] onStarts() {
+                                        public Class<? extends OnStart>[] onStarts()
+                                        {
                                             return new Class[0];
                                         }
 
                                         @Override
-                                        public boolean reusable() {
+                                        public boolean reusable()
+                                        {
                                             return false;
                                         }
                                     }
@@ -168,102 +201,122 @@ class PerMethodTest {
                 }
 
                 @Override
-                public Optional<ExtensionContext> getParent() {
+                public Optional<ExtensionContext> getParent()
+                {
                     return extensionContext.getParent();
                 }
 
                 @Override
-                public ExtensionContext getRoot() {
+                public ExtensionContext getRoot()
+                {
                     return extensionContext.getRoot();
                 }
 
                 @Override
-                public String getUniqueId() {
+                public String getUniqueId()
+                {
                     return extensionContext.getUniqueId();
                 }
 
                 @Override
-                public String getDisplayName() {
+                public String getDisplayName()
+                {
                     return extensionContext.getDisplayName();
                 }
 
                 @Override
-                public Set<String> getTags() {
+                public Set<String> getTags()
+                {
                     return extensionContext.getTags();
                 }
 
                 @Override
-                public Optional<Class<?>> getTestClass() {
+                public Optional<Class<?>> getTestClass()
+                {
                     return extensionContext.getTestClass();
                 }
 
                 @Override
-                public Class<?> getRequiredTestClass() {
+                public Class<?> getRequiredTestClass()
+                {
                     return extensionContext.getRequiredTestClass();
                 }
 
                 @Override
-                public Optional<TestInstance.Lifecycle> getTestInstanceLifecycle() {
+                public Optional<TestInstance.Lifecycle> getTestInstanceLifecycle()
+                {
                     return extensionContext.getTestInstanceLifecycle();
                 }
 
                 @Override
-                public Optional<Object> getTestInstance() {
+                public Optional<Object> getTestInstance()
+                {
                     return extensionContext.getTestInstance();
                 }
 
                 @Override
-                public Object getRequiredTestInstance() {
+                public Object getRequiredTestInstance()
+                {
                     return extensionContext.getRequiredTestInstance();
                 }
 
                 @Override
-                public Optional<TestInstances> getTestInstances() {
+                public Optional<TestInstances> getTestInstances()
+                {
                     return extensionContext.getTestInstances();
                 }
 
                 @Override
-                public TestInstances getRequiredTestInstances() {
+                public TestInstances getRequiredTestInstances()
+                {
                     return extensionContext.getRequiredTestInstances();
                 }
 
                 @Override
-                public Optional<Method> getTestMethod() {
+                public Optional<Method> getTestMethod()
+                {
                     return extensionContext.getTestMethod();
                 }
 
                 @Override
-                public Method getRequiredTestMethod() {
+                public Method getRequiredTestMethod()
+                {
                     return extensionContext.getRequiredTestMethod();
                 }
 
                 @Override
-                public Optional<Throwable> getExecutionException() {
+                public Optional<Throwable> getExecutionException()
+                {
                     return extensionContext.getExecutionException();
                 }
 
                 @Override
-                public Optional<String> getConfigurationParameter(final String key) {
+                public Optional<String> getConfigurationParameter(final String key)
+                {
                     return extensionContext.getConfigurationParameter(key);
                 }
 
                 @Override
-                public void publishReportEntry(final Map<String, String> map) {
+                public void publishReportEntry(final Map<String, String> map)
+                {
                     extensionContext.publishReportEntry(map);
                 }
 
                 @Override
-                public void publishReportEntry(final String key, final String value) {
+                public void publishReportEntry(final String key, final String value)
+                {
                     extensionContext.publishReportEntry(key, value);
                 }
 
                 @Override
-                public void publishReportEntry(final String value) {
+                public void publishReportEntry(final String value)
+                {
                     extensionContext.publishReportEntry(value);
                 }
 
                 @Override
-                public Store getStore(final Namespace namespace) {
+                public Store getStore(final Namespace namespace)
+                {
                     return extensionContext.getStore(namespace);
                 }
             });
@@ -271,7 +324,8 @@ class PerMethodTest {
         }
 
         @Override
-        public void afterEach(final ExtensionContext extensionContext) {
+        public void afterEach(final ExtensionContext extensionContext)
+        {
             super.afterEach(extensionContext);
             super.afterAll(extensionContext);
         }
