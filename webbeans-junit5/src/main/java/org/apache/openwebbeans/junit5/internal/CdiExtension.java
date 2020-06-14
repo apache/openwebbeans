@@ -199,12 +199,6 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
             throws ParameterResolutionException
     {
-        Cdi.DontInject dontInject = AnnotationUtils.findAnnotation(parameterContext.getParameter(), Cdi.DontInject.class).orElse(null);
-        if (dontInject != null)
-        {
-            return false;
-        }
-
         final SeContainer container = getContainer();
         if (container == null)
         {

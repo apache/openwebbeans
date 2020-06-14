@@ -70,30 +70,16 @@ class ParameterResolutionTest
         }
     }
 
-    @Qualifier
-    @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD })
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @interface NotResolvedAsCdiBeanIntoJunitParameter {
-    }
-
     @Test
     @ExtendWith(OnlyFirstParameterResolver.class)
-    void testThatParameterDoesNotGetInjectedDueToQualifier(@NotResolvedAsCdiBeanIntoJunitParameter MyService service)
+    void testThatParameterDoesNotGetInjectedWithDontInject(@Cdi.DontInject MyService service)
     {
         assertNull(service); // OnlyFirstParameterResolver.resolveParameter resolves service to null
     }
 
     @Test
     @ExtendWith(OnlyFirstParameterResolver.class)
-    void testThatParameterDoesNotGetInjectedDueToDontInject(@Cdi.DontInject MyService service)
-    {
-        assertNull(service); // OnlyFirstParameterResolver.resolveParameter resolves service to null
-    }
-
-    @Test
-    @ExtendWith(OnlyFirstParameterResolver.class)
-    void testMixedCdiAndOtherParameterResolver(@NotResolvedAsCdiBeanIntoJunitParameter MyService service1, MyService service2)
+    void testMixedCdiAndOtherParameterResolver(@Cdi.DontInject MyService service1, MyService service2)
     {
         // OnlyFirstParameterResolver.resolveParameter resolves service1 to null
         assertNull(service1);
