@@ -20,12 +20,14 @@ package org.apache.openwebbeans.junit5.parameter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import javax.inject.Inject;
 import javax.inject.Qualifier;
 import org.apache.openwebbeans.junit5.Cdi;
 import org.apache.openwebbeans.junit5.bean.MyService;
@@ -39,10 +41,18 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 @Cdi(classes = MyService.class)
 class ParameterResolutionTest
 {
+    @Inject MyService service;
+
     @Test
     void testThatParameterGetsInjected(MyService service)
     {
         assertEquals("ok", service.ok());
+    }
+
+    @Test
+    void testThatParameterGetsInjectedSameScopedBeanInstance(MyService service)
+    {
+        assertSame(service, this.service);
     }
 
     static class AnotherParameterResolver implements ParameterResolver
