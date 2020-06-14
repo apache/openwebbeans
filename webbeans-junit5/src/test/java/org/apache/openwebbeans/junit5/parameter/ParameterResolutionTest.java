@@ -55,18 +55,18 @@ class ParameterResolutionTest
         assertSame(service, this.service);
     }
 
-    static class AnotherParameterResolver implements ParameterResolver
+    static class OnlyFirstParameterResolver implements ParameterResolver
     {
         @Override
         public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
                 throws ParameterResolutionException {
-            return true;
+            return parameterContext.getIndex() == 0;
         }
 
         @Override
-        public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+        public MyService resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
                 throws ParameterResolutionException {
-            return null;
+            return null; // a different value than a MyService instance CDI resolves that can be distinguished in the tests
         }
     }
 
@@ -78,16 +78,29 @@ class ParameterResolutionTest
     }
 
     @Test
-    @ExtendWith(AnotherParameterResolver.class)
+    @ExtendWith(OnlyFirstParameterResolver.class)
     void testThatParameterDoesNotGetInjectedDueToQualifier(@NotResolvedAsCdiBeanIntoJunitParameter MyService service)
     {
-        assertNull(service);
+        assertNull(service); // OnlyFirstParameterResolver.resolveParameter resolves service to null
     }
 
     @Test
-    @ExtendWith(AnotherParameterResolver.class)
+    @ExtendWith(OnlyFirstParameterResolver.class)
     void testThatParameterDoesNotGetInjectedDueToDontInject(@Cdi.DontInject MyService service)
     {
-        assertNull(service);
+        assertNull(service); // OnlyFirstParameterResolver.resolveParameter resolves service to null
+    }
+
+    @Test
+    @ExtendWith(OnlyFirstParameterResolver.class)
+    void testMixedCdiAndOtherParameterResolver(@NotResolvedAsCdiBeanIntoJunitParameter MyService service1, MyService service2)
+    {
+        // OnlyFirstParameterResolver.resolveParameter resolves service1 to null
+        assertNull(service1);
+
+        // Cdi/CdiExtension resolves service2 to a MyService instance and OnlyFirstParameterResolver knows
+        // not to resolve it because it is not the first method parameter. This way the test here can assert that
+        // both parameters are resolved by the right parameter resolver.
+        assertEquals("ok", service2.ok());
     }
 }
