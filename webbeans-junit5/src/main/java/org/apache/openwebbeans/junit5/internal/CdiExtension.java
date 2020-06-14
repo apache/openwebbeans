@@ -61,7 +61,7 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
     @Override
     public void beforeAll(final ExtensionContext extensionContext)
     {
-        final Cdi config = getCdiConfig(extensionContext);
+        final Cdi config = AnnotationUtils.findAnnotation(extensionContext.getElement(), Cdi.class).orElse(null);
         if (config == null)
         {
             return;
@@ -183,11 +183,6 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
         });
     }
 
-    private Cdi getCdiConfig(ExtensionContext extensionContext)
-    {
-        return AnnotationUtils.findAnnotation(extensionContext.getElement(), Cdi.class).orElse(null);
-    }
-
     private SeContainer getContainer()
     {
         if (testInstanceContainer != null)
@@ -204,8 +199,8 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
             throws ParameterResolutionException
     {
-        final Cdi config = extensionContext.getParent().map(this::getCdiConfig).orElse(null);
-        if (config == null || !config.injectParameters())
+        Cdi.DontInject dontInject = AnnotationUtils.findAnnotation(parameterContext.getParameter(), Cdi.DontInject.class).orElse(null);
+        if (dontInject != null)
         {
             return false;
         }

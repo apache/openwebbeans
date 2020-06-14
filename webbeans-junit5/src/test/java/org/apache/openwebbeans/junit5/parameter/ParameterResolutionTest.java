@@ -19,10 +19,16 @@
 package org.apache.openwebbeans.junit5.parameter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.apache.openwebbeans.junit5.Cdi;
 import org.apache.openwebbeans.junit5.bean.MyService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 
 @Cdi(classes = MyService.class)
 class ParameterResolutionTest
@@ -31,5 +37,27 @@ class ParameterResolutionTest
     void testThatParameterGetsInjected(MyService service)
     {
         assertEquals("ok", service.ok());
+    }
+
+    static class AnotherParameterResolver implements ParameterResolver
+    {
+        @Override
+        public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+                throws ParameterResolutionException {
+            return true;
+        }
+
+        @Override
+        public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+                throws ParameterResolutionException {
+            return null;
+        }
+    }
+
+    @Test
+    @ExtendWith(AnotherParameterResolver.class)
+    void testThatParameterDoesNotGetInjected(@Cdi.DontInject MyService service)
+    {
+        assertNull(service);
     }
 }

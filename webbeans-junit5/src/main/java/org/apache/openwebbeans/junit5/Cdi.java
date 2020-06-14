@@ -28,6 +28,7 @@ import java.lang.annotation.Target;
 import java.util.function.Supplier;
 
 import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
@@ -81,9 +82,13 @@ public @interface Cdi
     boolean disableDiscovery() default false;
 
     /**
-     * @return {@code true} to enable JUnit parameter resolution with CDI beans or {@code false} otherwise.
+     * When present on a test method parameter, it will <em>not</em> be attempted to be resolved with a CDI bean.
      */
-    boolean injectParameters() default true;
+    @Target(PARAMETER)
+    @Retention(RUNTIME)
+    @interface DontInject
+    {
+    }
 
     /**
      * @return an array of callback to call before the container starts.
