@@ -284,24 +284,19 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             }
             else
             {
-                // we could check for META-INF/maven/org.apache.geronimo.specs presence there but this is faster
-                File file = Files.toFile(url);
-                if (file == null)
+                if (path.contains("geronimo-"))
                 {
-                    throw new IllegalArgumentException(
-                            "URL not supported (only jar and file are supported by this impl): " + url + ". " +
-                            "Ensure to use a compatible implementation of " +
-                            BdaScannerService.class.getName() + " or " +
-                            "add the url to org.apache.webbeans.scanExclusionPaths in openwebbeans.properties.");
-                }
-                if (file.exists())
-                {
-                    final String filename = file.getName();
-                    if (filename.startsWith("geronimo-") && filename.contains("_spec"))
+                    // we could check for META-INF/maven/org.apache.geronimo.specs presence there but this is faster
+                    final File file = Files.toFile(url);
+                    if (file != null)
                     {
-                        it.remove();
+                        final String filename = file.getName();
+                        if (filename.startsWith("geronimo-") && filename.contains("_spec"))
+                        {
+                            it.remove();
+                        }
                     }
-                }                
+                }
             }
         }
     }
