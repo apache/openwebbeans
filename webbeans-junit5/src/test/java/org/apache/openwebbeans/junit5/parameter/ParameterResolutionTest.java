@@ -21,6 +21,12 @@ package org.apache.openwebbeans.junit5.parameter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import javax.inject.Qualifier;
 import org.apache.openwebbeans.junit5.Cdi;
 import org.apache.openwebbeans.junit5.bean.MyService;
 import org.junit.jupiter.api.Test;
@@ -54,9 +60,23 @@ class ParameterResolutionTest
         }
     }
 
+    @Qualifier
+    @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD })
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @interface NotResolvedAsCdiBeanIntoJunitParameter {
+    }
+
     @Test
     @ExtendWith(AnotherParameterResolver.class)
-    void testThatParameterDoesNotGetInjected(@Cdi.DontInject MyService service)
+    void testThatParameterDoesNotGetInjectedDueToQualifier(@NotResolvedAsCdiBeanIntoJunitParameter MyService service)
+    {
+        assertNull(service);
+    }
+
+    @Test
+    @ExtendWith(AnotherParameterResolver.class)
+    void testThatParameterDoesNotGetInjectedDueToDontInject(@Cdi.DontInject MyService service)
     {
         assertNull(service);
     }
