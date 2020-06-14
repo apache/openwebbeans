@@ -24,33 +24,24 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ParameterContext;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.util.AnnotationUtils;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.se.SeContainer;
 import javax.enterprise.inject.se.SeContainerInitializer;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
 import java.io.Closeable;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 // todo: enhance the setup to be thread safe? see Meecrowave ClassLoaderLock class and friends
-public class CdiExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver
+public class CdiExtension extends CdiParametersResolverExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback
 {
     private static SeContainer reusableContainer;
 
@@ -93,6 +84,7 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
                 Stream.of(config.packages()).map(Class::getPackage).toArray(Package[]::new));
         initializer.addPackages(true,
                 Stream.of(config.recursivePackages()).map(Class::getPackage).toArray(Package[]::new));
+        Stream.of(config.properties()).forEach(property -> initializer.addProperty(property.name(), property.value()));
         onStop = Stream.of(config.onStarts())
                 .map(it ->
                 {
@@ -110,7 +102,6 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
                     }
                 })
                 .peek(Supplier::get)
-                .filter(Objects::nonNull)
                 .toArray(Closeable[]::new);
         SeContainer container = initializer.initialize();
         if (reusable)
@@ -160,6 +151,7 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
     @Override
     public void afterEach(final ExtensionContext extensionContext)
     {
+        super.afterEach(extensionContext);
         if (!creationalContexts.isEmpty())
         {
             creationalContexts.forEach(CreationalContext::release);
@@ -194,53 +186,4 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
             return reusableContainer;
         }
     }
-
-    @Override
-    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
-            throws ParameterResolutionException
-    {
-        final SeContainer container = getContainer();
-        if (container == null)
-        {
-            return false;
-        }
-
-        Bean<?> bean = resolveParameterBean(container, parameterContext, extensionContext);
-        return bean != null;
-    }
-
-    @Override
-    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
-            throws ParameterResolutionException
-    {
-        final SeContainer container = getContainer();
-        if (container == null)
-        {
-            return false;
-        }
-
-        Bean<?> bean = resolveParameterBean(container, parameterContext, extensionContext);
-        BeanManager beanManager = container.getBeanManager();
-        CreationalContext<?> creationalContext = beanManager.createCreationalContext(bean);
-        creationalContexts.add(creationalContext);
-        return beanManager.getReference(bean, parameterContext.getParameter().getType(), creationalContext);
-    }
-
-    private Bean<?> resolveParameterBean(SeContainer container, ParameterContext parameterContext, ExtensionContext extensionContext)
-    {
-        BeanManager beanManager = container.getBeanManager();
-        Set<Bean<?>> beans = beanManager.getBeans(
-                parameterContext.getParameter().getType(),
-                getQualifiers(parameterContext.getParameter()));
-        return beanManager.resolve(beans);
-    }
-
-    private Annotation[] getQualifiers(Parameter parameter)
-    {
-        final BeanManager beanManager = getContainer().getBeanManager();
-        return Arrays.stream(parameter.getAnnotations())
-                .filter(annotation -> beanManager.isQualifier(annotation.annotationType()))
-                .toArray(Annotation[]::new);
-    }
-
 }
