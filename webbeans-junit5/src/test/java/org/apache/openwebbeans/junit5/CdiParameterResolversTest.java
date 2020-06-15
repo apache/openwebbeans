@@ -18,6 +18,8 @@
  */
 package org.apache.openwebbeans.junit5;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -26,15 +28,33 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.se.SeContainer;
+import javax.enterprise.inject.se.SeContainerInitializer;
 import javax.enterprise.inject.spi.CDI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Cdi(classes = CdiParameterResolversTest.SomeBean.class, disableDiscovery = true)
 class CdiParameterResolversTest
 {
+    private static SeContainer container;
+
+    @BeforeAll
+    static void start() {
+        // simulate another way than @Cdi to bootstrap the container,
+        // can be another server (meecrowave, tomee, playx, ...) or just a custom preconfigured setup
+        container = SeContainerInitializer.newInstance()
+                .disableDiscovery()
+                .addBeanClasses(CdiParameterResolversTest.SomeBean.class)
+                .initialize();
+    }
+
+    @AfterAll
+    static void stop() {
+        container.close();
+    }
+
     @Test
     void noParam()
     {
