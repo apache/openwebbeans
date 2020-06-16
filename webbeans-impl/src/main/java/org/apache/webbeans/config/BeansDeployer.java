@@ -1378,21 +1378,22 @@ public class BeansDeployer
         {
             // yes we cache result with potentially different classloader but this is not portable by spec
             String name = pckge.getName();
+            Boolean packageVetoed = packageVetoCache.get(name);
+            if (packageVetoed == null)
             {
-                Boolean result = packageVetoCache.get(name);
-                if (result != null && result)
+                if (pckge.getAnnotation(Vetoed.class) != null)
                 {
-                    return result;
+                    packageVetoCache.put(pckge.getName(), true);
+                    return true;
+                }
+                else
+                {
+                    packageVetoCache.put(pckge.getName(), false);
                 }
             }
-            if (pckge.getAnnotation(Vetoed.class) != null)
+            else if (packageVetoed)
             {
-                packageVetoCache.put(pckge.getName(), true);
                 return true;
-            }
-            else
-            {
-                packageVetoCache.put(pckge.getName(), false);
             }
 
             int idx = name.lastIndexOf('.');
