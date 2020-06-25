@@ -32,8 +32,6 @@ import javax.enterprise.inject.se.SeContainerInitializer;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
-import java.io.Closeable;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +45,7 @@ public class CdiExtension extends CdiParametersResolverExtension implements Befo
 
     private SeContainer testInstanceContainer;
     private Collection<CreationalContext<?>> creationalContexts = new ArrayList<>();
-    private Closeable[] onStop;
+    private AutoCloseable[] onStop;
 
     @Override
     public void beforeAll(final ExtensionContext extensionContext)
@@ -101,8 +99,8 @@ public class CdiExtension extends CdiParametersResolverExtension implements Befo
                         throw new IllegalStateException(e.getTargetException());
                     }
                 })
-                .peek(Supplier::get)
-                .toArray(Closeable[]::new);
+                .map(Supplier::get)
+                .toArray(AutoCloseable[]::new);
         SeContainer container = initializer.initialize();
         if (reusable)
         {
@@ -168,7 +166,7 @@ public class CdiExtension extends CdiParametersResolverExtension implements Befo
             {
                 it.close();
             }
-            catch (final IOException e)
+            catch (final Exception e)
             {
                 throw new IllegalStateException(e);
             }
