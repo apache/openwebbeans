@@ -714,7 +714,7 @@ public final class NotificationManager
             {
                 TransactionPhase phase = observer.getTransactionPhase();
 
-                if (phase == null || phase != TransactionPhase.IN_PROGRESS)
+                if (phase == null || phase == TransactionPhase.IN_PROGRESS)
                 {
                     invokeObserverMethod(context, observer);
                 }
