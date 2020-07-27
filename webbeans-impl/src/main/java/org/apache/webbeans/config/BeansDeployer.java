@@ -1407,11 +1407,6 @@ public class BeansDeployer
                 }
                 while (true)
                 {
-                    result = packageVetoCache.get(previousPackage);
-                    if (result != null)
-                    {
-                        return result;
-                    }
                     try // not always existing but enables to go further when getPackage is not available (graal)
                     {
                         pckge = classLoader.loadClass(previousPackage +
