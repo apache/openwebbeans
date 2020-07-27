@@ -1400,14 +1400,9 @@ public class BeansDeployer
             if (idx > 0)
             {
                 String previousPackage = name.substring(0, idx);
-                Boolean result = packageVetoCache.get(previousPackage);
-                if (result != null)
-                {
-                    return result;
-                }
                 while (true)
                 {
-                    result = packageVetoCache.get(previousPackage);
+                    Boolean result = packageVetoCache.get(previousPackage);
                     if (result != null)
                     {
                         return result;
