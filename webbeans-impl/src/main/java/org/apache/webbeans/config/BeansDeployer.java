@@ -1401,12 +1401,16 @@ public class BeansDeployer
             {
                 String previousPackage = name.substring(0, idx);
                 Boolean result = packageVetoCache.get(previousPackage);
-                if (result != null && result)
+                if (result != null)
                 {
                     return result;
                 }
                 while (true)
                 {
+                    if (!previousPackage.isEmpty() && packageVetoCache.containsKey(previousPackage))
+                    {
+                        return packageVetoCache.get(previousPackage);
+                    }
                     try // not always existing but enables to go further when getPackage is not available (graal)
                     {
                         pckge = classLoader.loadClass(previousPackage +
