@@ -1407,9 +1407,10 @@ public class BeansDeployer
                 }
                 while (true)
                 {
-                    if (!previousPackage.isEmpty() && packageVetoCache.containsKey(previousPackage))
+                    result = packageVetoCache.get(previousPackage);
+                    if (result != null)
                     {
-                        return packageVetoCache.get(previousPackage);
+                        return result;
                     }
                     try // not always existing but enables to go further when getPackage is not available (graal)
                     {
