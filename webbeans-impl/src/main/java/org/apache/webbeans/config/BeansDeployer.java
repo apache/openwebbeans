@@ -1401,7 +1401,7 @@ public class BeansDeployer
             {
                 String previousPackage = name.substring(0, idx);
                 Boolean result = packageVetoCache.get(previousPackage);
-                if (result != null && result)
+                if (result != null)
                 {
                     return result;
                 }
