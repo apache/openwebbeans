@@ -162,6 +162,8 @@ public class BeansDeployer
 
     private final Map<String, Boolean> packageVetoCache = new HashMap<>();
 
+    protected boolean skipVetoedOnPackages;
+
     /**
      * This BdaInfo is used for all manually added annotated types or in case
      * a non-Bda-aware ScannerService got configured.
@@ -183,6 +185,8 @@ public class BeansDeployer
 
         String usage = this.webBeansContext.getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_EJB_DISCOVERY);
         discoverEjb = Boolean.parseBoolean(usage);
+        skipVetoedOnPackages = Boolean.parseBoolean(this.webBeansContext.getOpenWebBeansConfiguration().getProperty(
+                "org.apache.webbeans.spi.deployer.skipVetoedOnPackages"));
 
         defaultBeanArchiveInformation = new DefaultBeanArchiveInformation("default");
         defaultBeanArchiveInformation.setBeanDiscoveryMode(BeanDiscoveryMode.ALL);
@@ -1363,17 +1367,12 @@ public class BeansDeployer
             return true;
         }
 
-        ClassLoader classLoader = implClass.getClassLoader();
-        if (classLoader == null)
-        {
-            classLoader = BeansDeployer.class.getClassLoader();
-        }
-
         Package pckge = implClass.getPackage();
         if (pckge == null)
         {
             return false;
         }
+
         do
         {
             // yes we cache result with potentially different classloader but this is not portable by spec
@@ -1394,6 +1393,17 @@ public class BeansDeployer
             else if (packageVetoed)
             {
                 return true;
+            }
+
+            if (skipVetoedOnPackages) // we want to avoid loadClass with this property, not cached reflection
+            {
+                return false;
+            }
+
+            ClassLoader classLoader = implClass.getClassLoader();
+            if (classLoader == null)
+            {
+                classLoader = BeansDeployer.class.getClassLoader();
             }
 
             int idx = name.lastIndexOf('.');
