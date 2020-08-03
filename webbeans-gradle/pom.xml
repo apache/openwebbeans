@@ -17,7 +17,8 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>openwebbeans</artifactId>
     <groupId>org.apache.openwebbeans</groupId>
@@ -38,26 +39,28 @@
     <dependency>
       <groupId>com.github.jengelman.gradle.plugins</groupId>
       <artifactId>shadow</artifactId>
-      <version>5.2.0</version>
+      <version>6.0.0</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.groovy</groupId>
+          <artifactId>groovy-backports-compat23</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>2.4.7</version>
+      <version>2.4.19</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jdom</groupId>
-      <artifactId>jdom2</artifactId>
-      <version>2.0.6</version>
-      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>2.11.0</version>
+      <version>2.13.3</version>
       <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     <!-- no openwebbeans-impl there please to not pollute gradle buildscript classpath -->
   </dependencies>

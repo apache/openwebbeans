@@ -40,22 +40,22 @@ public class OpenWebBeansPropertiesTransformer implements Transformer
     private boolean reverseOrder;
 
     @Override
-    public boolean canTransformResource(FileTreeElement s)
+    public boolean canTransformResource(final FileTreeElement s)
     {
         String path = s.getRelativePath().getPathString();
-        if (resource != null && resource.equalsIgnoreCase(path)) {
-            return true;
-        }
-
-        return false;
+        return resource != null && resource.equalsIgnoreCase(path);
     }
 
     @Override
-    public void transform(TransformerContext transformerContext) {
+    public void transform(final TransformerContext transformerContext)
+    {
         Properties p = new Properties();
-        try {
+        try
+        {
             p.load(transformerContext.getIs());
-        } catch (IOException e) {
+        }
+        catch (final IOException e)
+        {
             throw new IllegalStateException(e);
         }
         configurations.add(p);
@@ -68,13 +68,17 @@ public class OpenWebBeansPropertiesTransformer implements Transformer
     }
 
     @Override
-    public void modifyOutputStream(ZipOutputStream zipOutputStream, boolean preserveFileTimestamps) {
+    public void modifyOutputStream(final ZipOutputStream zipOutputStream, final boolean preserveFileTimestamps)
+    {
         Properties out = mergeProperties(sortProperties(configurations));
-        try {
+        try
+        {
             zipOutputStream.putNextEntry(new shadow.org.apache.tools.zip.ZipEntry(resource));
             out.store(zipOutputStream, "# gradle " + resource + " merge");
             zipOutputStream.closeEntry();
-        } catch (IOException ioe) {
+        }
+        catch (final IOException ioe)
+        {
             throw new IllegalStateException(ioe);
         }
     }
@@ -95,17 +99,17 @@ public class OpenWebBeansPropertiesTransformer implements Transformer
         return resource;
     }
 
-    public void setOrdinalKey(String ordinalKey)
+    public void setOrdinalKey(final String ordinalKey)
     {
         this.ordinalKey = ordinalKey;
     }
 
-    public void setDefaultOrdinal(int defaultOrdinal)
+    public void setDefaultOrdinal(final int defaultOrdinal)
     {
         this.defaultOrdinal = defaultOrdinal;
     }
 
-    private List<Properties> sortProperties(List<Properties> allProperties)
+    private List<Properties> sortProperties(final List<Properties> allProperties)
     {
         List<Properties> sortedProperties = new ArrayList<>();
         for (Properties p : allProperties)
