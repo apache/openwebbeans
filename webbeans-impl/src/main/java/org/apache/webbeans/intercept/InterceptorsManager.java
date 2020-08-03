@@ -215,7 +215,7 @@ public class InterceptorsManager
             }
         }
 
-        Collections.sort(interceptorList, new InterceptorComparator(webBeansContext));
+        interceptorList.sort(new InterceptorComparator(webBeansContext));
 
         return interceptorList;
     }
@@ -312,12 +312,7 @@ public class InterceptorsManager
 
     public void addInterceptorBindingType(Class<? extends Annotation> bindingType, Annotation... inheritsArray)
     {
-        Set<Annotation> inherits = additionalInterceptorBindingTypes.get(bindingType);
-        if (inherits == null)
-        {
-            inherits = new HashSet<>();
-            additionalInterceptorBindingTypes.put(bindingType, inherits);
-        }
+        Set<Annotation> inherits = additionalInterceptorBindingTypes.computeIfAbsent(bindingType, k -> new HashSet<>());
         Collections.addAll(inherits, inheritsArray);
     }
 

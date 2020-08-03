@@ -26,7 +26,7 @@ import javax.enterprise.inject.spi.configurator.BeanAttributesConfigurator;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.configurator.BeanAttributesConfiguratorImpl;
 
-public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBeanAttributes<T>
+public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBeanAttributes<T>, AfterObserver
 {
     private final WebBeansContext webBeansContext;
     private Annotated annotated;
@@ -34,6 +34,7 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
     private boolean veto;
     private Throwable definitionError;
     private boolean ignoreFinalMethods;
+    private boolean set;
     private BeanAttributesConfiguratorImpl beanAttributesConfigurator;
 
     public ProcessBeanAttributesImpl(WebBeansContext webBeansContext, Annotated annotated, BeanAttributes<T> attributes)
@@ -61,8 +62,12 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
     public void setBeanAttributes(BeanAttributes<T> tBeanAttributes)
     {
         checkState();
+        if (beanAttributesConfigurator != null)
+        {
+            throw new IllegalStateException("you can't configure and set the bean attributes in the same extension");
+        }
+        set = true;
         attributes = tBeanAttributes;
-        beanAttributesConfigurator = null;
     }
 
     @Override
@@ -89,6 +94,10 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
     public BeanAttributesConfigurator<T> configureBeanAttributes()
     {
         checkState();
+        if (set)
+        {
+            throw new IllegalStateException("you can't configure and set the bean attributes in the same extension");
+        }
 
         if (beanAttributesConfigurator == null)
         {
@@ -122,5 +131,17 @@ public class ProcessBeanAttributesImpl<T> extends EventBase implements ProcessBe
         return definitionError;
     }
 
-
+    @Override
+    public void afterObserver()
+    {
+        if (beanAttributesConfigurator != null)
+        {
+            attributes = beanAttributesConfigurator.getBeanAttributes();
+            beanAttributesConfigurator = null;
+        }
+        else if (set)
+        {
+            set = false;
+        }
+    }
 }

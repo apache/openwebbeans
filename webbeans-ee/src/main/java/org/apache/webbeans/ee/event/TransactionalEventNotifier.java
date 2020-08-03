@@ -119,14 +119,7 @@ public final class TransactionalEventNotifier
         {
             transaction.registerSynchronization(synchronization);
         }
-        catch (RollbackException re)
-        {
-            if (immediateOnError)
-            {
-                synchronization.notifyObserver();
-            }
-        }
-        catch (IllegalStateException ise)
+        catch (RollbackException | IllegalStateException re)
         {
             if (immediateOnError)
             {

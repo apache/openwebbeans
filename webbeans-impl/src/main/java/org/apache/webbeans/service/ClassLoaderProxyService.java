@@ -19,10 +19,13 @@
 package org.apache.webbeans.service;
 
 import java.security.ProtectionDomain;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.DefiningClassService;
 
 public class ClassLoaderProxyService implements DefiningClassService
@@ -31,7 +34,15 @@ public class ClassLoaderProxyService implements DefiningClassService
 
     public ClassLoaderProxyService(final WebBeansContext context)
     {
-        this.loader = new ProxiesClassLoader(context.getApplicationBoundaryService().getApplicationClassLoader());
+        this.loader = new ProxiesClassLoader(
+                context,
+                Boolean.parseBoolean(context.getOpenWebBeansConfiguration()
+                        .getProperty(getClass().getName() + ".skipPackages")));
+    }
+
+    protected ClassLoaderProxyService(final ProxiesClassLoader loader)
+    {
+        this.loader = loader;
     }
 
     @Override
@@ -47,13 +58,66 @@ public class ClassLoaderProxyService implements DefiningClassService
                 name, bytecode, proxiedClass.getPackage(), proxiedClass.getProtectionDomain());
     }
 
+    // for build tools - @Experimental
+    public static class Spy extends ClassLoaderProxyService
+    {
+        private final Map<String, byte[]> proxies = new HashMap<>();
+
+        public Spy(final WebBeansContext context)
+        {
+            super(new ProxiesClassLoader(context, true));
+        }
+
+        public Map<String, byte[]> getProxies()
+        {
+            return proxies;
+        }
+
+        @Override
+        public <T> Class<T> defineAndLoad(final String name, final byte[] bytecode, final Class<T> proxiedClass)
+        {
+            proxies.put(name, bytecode);
+            return super.defineAndLoad(name, bytecode, proxiedClass);
+        }
+    }
+
+    // runtim companion of Spy - @Experimental
+    public static class LoadFirst extends ClassLoaderProxyService
+    {
+        public LoadFirst(final WebBeansContext context)
+        {
+            super(context);
+        }
+
+        @Override
+        public <T> Class<T> defineAndLoad(final String name, final byte[] bytecode, final Class<T> proxiedClass)
+        {
+            ClassLoader proxyClassLoader = getProxyClassLoader(proxiedClass);
+            if (proxyClassLoader == null)
+            {
+                proxyClassLoader = Thread.currentThread().getContextClassLoader();
+            }
+            try
+            {
+                return (Class<T>) proxyClassLoader.loadClass(name);
+            }
+            catch (final ClassNotFoundException e)
+            {
+                WebBeansLoggerFacade.getLogger(getClass()).warning(e.getMessage());
+                return super.defineAndLoad(name, bytecode, proxiedClass);
+            }
+        }
+    }
+
     private static class ProxiesClassLoader extends ClassLoader
     {
+        private final boolean skipPackages;
         private final ConcurrentMap<String, Class<?>> classes = new ConcurrentHashMap<>();
 
-        private ProxiesClassLoader(final ClassLoader applicationClassLoader)
+        private ProxiesClassLoader(final WebBeansContext context, boolean skipPackages)
         {
-            super(applicationClassLoader);
+            super(context.getApplicationBoundaryService().getApplicationClassLoader());
+            this.skipPackages = skipPackages;
         }
 
 
@@ -80,7 +144,10 @@ public class ClassLoaderProxyService implements DefiningClassService
                     existing = classes.get(key);
                     if (existing == null)
                     {
-                        definePackageFor(pck, protectionDomain);
+                        if (!skipPackages)
+                        {
+                            definePackageFor(pck, protectionDomain);
+                        }
                         existing = super.defineClass(proxyClassName, proxyBytes, 0, proxyBytes.length);
                         resolveClass(existing);
                         classes.put(key, existing);

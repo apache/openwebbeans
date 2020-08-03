@@ -516,7 +516,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         webBeansContext.getAnnotationManager().checkQualifiersParams(types, bindingTypes); // checkDecoratorResolverParams is too restrictive for repeatable bindings
         Set<Decorator<?>> intsSet = webBeansContext.getDecoratorsManager().findDeployedWebBeansDecorator(types, bindingTypes);
         List<Decorator<?>> decoratorList = new ArrayList<>(intsSet);
-        Collections.sort(decoratorList, new DecoratorComparator(webBeansContext));
+        decoratorList.sort(new DecoratorComparator(webBeansContext));
         return decoratorList;
     }
 
@@ -1156,7 +1156,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             WebBeansType.THIRDPARTY,
             attributes,
             findClass(factory, type),
-            false,
             factory);
     }
 
@@ -1253,15 +1252,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             {
                 webBeansContext.getWebBeansUtil().validate(injectionTarget.getInjectionPoints(), null);
             }
-            catch (InjectionException ie)
-            {
-                throw new IllegalArgumentException(ie);
-            }
-            catch (WebBeansConfigurationException ie)
-            {
-                throw new IllegalArgumentException(ie);
-            }
-            catch (DeploymentException ie)
+            catch (InjectionException | DeploymentException | WebBeansConfigurationException ie)
             {
                 throw new IllegalArgumentException(ie);
             }
@@ -1285,7 +1276,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             = new LinkedList<>(webBeansContext.getNotificationManager().resolveObservers(event, metadata, false));
 
         // new in CDI-2.0: sort observers
-        Collections.sort(observerMethods, Comparator.comparingInt(ObserverMethod::getPriority));
+        observerMethods.sort(Comparator.comparingInt(ObserverMethod::getPriority));
 
         return new LinkedHashSet<>(observerMethods);
     }

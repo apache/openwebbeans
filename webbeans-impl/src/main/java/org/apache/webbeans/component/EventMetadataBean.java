@@ -40,7 +40,6 @@ public class EventMetadataBean extends BuiltInOwbBean<EventMetadata>
               WebBeansType.METADATA,
               new BeanAttributesImpl<>(CollectionUtil.<Type>unmodifiableSet(EventMetadata.class, Object.class)),
               EventMetadata.class,
-              false,
               new SimpleProducerFactory<>(new EventMetadataProducer()));
     }
     

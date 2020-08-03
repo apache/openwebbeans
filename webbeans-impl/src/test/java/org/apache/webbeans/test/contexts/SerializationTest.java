@@ -62,7 +62,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Properties;
 import java.util.Set;
 
 

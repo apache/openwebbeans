@@ -1,5 +1,5 @@
 ﻿-------------------------------
-Apache OpenWebBeans 2.0.8
+Apache OpenWebBeans 2.0.17
 -------------------------------
 
 Welcome!
@@ -24,7 +24,7 @@ https://openwebbeans.apache.org
 
 
 --------------------------------
-OpenWebBeans 2.0.8 Release Features
+OpenWebBeans 2.0.17 Release Features
 --------------------------------
 
 - The 2.0.8 release supports the following features
@@ -61,6 +61,20 @@ only effective for this very bean archive but for the whole BeanManager in contr
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.17
+-------------------------------------------
+Bug
+    [OWB-1214] - Package annotation access is fragile
+
+Task
+    [OWB-1322] - SLF4J integration workaround for log4j2-slf4j implementation which can fail in NPE on java >= 9
+    [OWB-1323] - Upgrade to asm8
+    [OWB-1324] - Support maven shade 3.2.3
+    [OWB-1325] - Provide a spy flavor of ClassDefiningService
+    [OWB-1326] - Bean#isNullable is ignored since CDI-1.1.
 
 
 -------------------------------------------

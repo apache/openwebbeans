@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -177,15 +176,7 @@ public class SpecializationUtil
     {
         for (Map<AnnotatedType<?>, BeansDeployer.ExtendedBeanAttributes<?>> beanAttributeMap : beanAttributesPerBda.values())
         {
-            Iterator<Map.Entry<AnnotatedType<?>, BeansDeployer.ExtendedBeanAttributes<?>>> beanAttributeEntryIterator = beanAttributeMap.entrySet().iterator();
-            while (beanAttributeEntryIterator.hasNext())
-            {
-                Map.Entry<AnnotatedType<?>, BeansDeployer.ExtendedBeanAttributes<?>> beanAttributesEntry = beanAttributeEntryIterator.next();
-                if (disabledClasses.contains(beanAttributesEntry.getKey().getJavaClass()))
-                {
-                    beanAttributeEntryIterator.remove();
-                }
-            }
+            beanAttributeMap.entrySet().removeIf(beanAttributesEntry -> disabledClasses.contains(beanAttributesEntry.getKey().getJavaClass()));
         }
     }
 

@@ -56,69 +56,43 @@ public final class JmsUtil
     public static boolean isJmsResourceClass(Class<?> clazz)
     {
         Asserts.assertNotNull(clazz,"clazz parameter");
-        
-        if(ConnectionFactory.class.isAssignableFrom(clazz) ||
-                Connection.class.isAssignableFrom(clazz) || 
-                Queue.class.isAssignableFrom(clazz) || 
-                Topic.class.isAssignableFrom(clazz) || 
+
+        return ConnectionFactory.class.isAssignableFrom(clazz) ||
+                Connection.class.isAssignableFrom(clazz) ||
+                Queue.class.isAssignableFrom(clazz) ||
+                Topic.class.isAssignableFrom(clazz) ||
                 MessageProducer.class.isAssignableFrom(clazz) ||
                 MessageConsumer.class.isAssignableFrom(clazz) ||
-                Session.class.isAssignableFrom(clazz))
-        {
-            return true;
-        }
-        
-        return false;
-        
+                Session.class.isAssignableFrom(clazz);
     }
     
     public static boolean isJmsQueueTypeResource(Class<?> clazz)
     {
-        if(QueueConnectionFactory.class.isAssignableFrom(clazz) ||
-                QueueConnection.class.isAssignableFrom(clazz) ||                 
+        return QueueConnectionFactory.class.isAssignableFrom(clazz) ||
+                QueueConnection.class.isAssignableFrom(clazz) ||
                 QueueSender.class.isAssignableFrom(clazz) ||
                 QueueReceiver.class.isAssignableFrom(clazz) ||
-                QueueSession.class.isAssignableFrom(clazz))
-        {
-            return true;
-        }
-        
-        return false;
+                QueueSession.class.isAssignableFrom(clazz);
     }
     
     public static boolean isJmsQueueResource(Class<?> clazz)
     {
-        if(Queue.class.isAssignableFrom(clazz))
-        {
-            return true;
-        }
-        
-        return false;
+        return Queue.class.isAssignableFrom(clazz);
     }
     
     public static boolean isJmsTopicResource(Class<?> clazz)
     {
-        if(Topic.class.isAssignableFrom(clazz))
-        {
-            return true;
-        }
-        
-        return false;
+        return Topic.class.isAssignableFrom(clazz);
     }
     
     
     public static boolean isJmsTopicTypeResource(Class<?> clazz)
     {
-        if(TopicConnectionFactory.class.isAssignableFrom(clazz) ||
-                TopicConnection.class.isAssignableFrom(clazz) ||   
+        return TopicConnectionFactory.class.isAssignableFrom(clazz) ||
+                TopicConnection.class.isAssignableFrom(clazz) ||
                 TopicSubscriber.class.isAssignableFrom(clazz) ||
                 TopicPublisher.class.isAssignableFrom(clazz) ||
-                TopicSession.class.isAssignableFrom(clazz))
-        {
-            return true;
-        }
-        
-        return false;
+                TopicSession.class.isAssignableFrom(clazz);
     }
     
     private static JNDIService getJNDIService()

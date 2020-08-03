@@ -177,15 +177,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         {
             throw new WebBeansConfigurationException("Configured InterceptorHandler " + className +" cannot be found", e);
         }
-        catch (InvocationTargetException e)
-        {
-            throw new WebBeansConfigurationException("Configured InterceptorHandler " + className +" creation exception", e);
-        }
-        catch (InstantiationException e)
-        {
-            throw new WebBeansConfigurationException("Configured InterceptorHandler " + className +" creation exception", e);
-        }
-        catch (IllegalAccessException e)
+        catch (InvocationTargetException | IllegalAccessException | InstantiationException e)
         {
             throw new WebBeansConfigurationException("Configured InterceptorHandler " + className +" creation exception", e);
         }
@@ -232,10 +224,6 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
     public <T> Class<T> createProxyClass(ClassLoader classLoader, Class<T> classToProxy)
             throws ProxyGenerationException
     {
-        String proxyClassName = getUnusedProxyClassName(
-                classLoader,
-                (classToProxy.getSigners() != null ? getSignedClassProxyName(classToProxy) : classToProxy.getName()) + "$$OwbNormalScopeProxy");
-
         Method[] nonInterceptedMethods;
         Method[] interceptedMethods = null;
         if (classToProxy.isInterface())
@@ -267,6 +255,11 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             nonInterceptedMethods = methods.toArray(new Method[methods.size()]);
             interceptedMethods = protectedMethods.toArray(new Method[protectedMethods.size()]);
         }
+
+        String proxyClassName = getUnusedProxyClassName(
+                classLoader,
+                (classToProxy.getSigners() != null ? getSignedClassProxyName(classToProxy) : classToProxy.getName()) + "$$OwbNormalScopeProxy",
+                interceptedMethods, nonInterceptedMethods);
 
         Class<T> clazz = createProxyClass(classLoader, proxyClassName, classToProxy, interceptedMethods, nonInterceptedMethods);
 

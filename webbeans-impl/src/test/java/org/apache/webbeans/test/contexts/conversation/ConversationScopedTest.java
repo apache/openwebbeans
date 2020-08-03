@@ -20,7 +20,6 @@ package org.apache.webbeans.test.contexts.conversation;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 
 import org.junit.Assert;

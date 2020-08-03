@@ -145,30 +145,6 @@ public class BeansDeployer
     private static final Logger logger = WebBeansLoggerFacade.getLogger(BeansDeployer.class);
     public static final String JAVAX_ENTERPRISE_PACKAGE = "javax.enterprise.";
 
-    private static final Method GET_PACKAGE;
-    static
-    {
-        Method getPackage;
-        try
-        {
-            getPackage = ClassLoader.class.getDeclaredMethod("getDefinedPackage", String.class);
-            getPackage.setAccessible(true);
-        }
-        catch (NoSuchMethodException e)
-        {
-            try
-            {
-                getPackage = ClassLoader.class.getDeclaredMethod("getPackage", String.class);
-                getPackage.setAccessible(true);
-            }
-            catch (NoSuchMethodException ex)
-            {
-                throw new IllegalStateException(ex);
-            }
-        }
-        GET_PACKAGE = getPackage;
-    }
-
 
     /**Deployment is started or not*/
     protected boolean deployed;
@@ -185,6 +161,8 @@ public class BeansDeployer
     private final InterceptorsManager interceptorsManager;
 
     private final Map<String, Boolean> packageVetoCache = new HashMap<>();
+
+    protected boolean skipVetoedOnPackages;
 
     /**
      * This BdaInfo is used for all manually added annotated types or in case
@@ -207,6 +185,8 @@ public class BeansDeployer
 
         String usage = this.webBeansContext.getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_EJB_DISCOVERY);
         discoverEjb = Boolean.parseBoolean(usage);
+        skipVetoedOnPackages = Boolean.parseBoolean(this.webBeansContext.getOpenWebBeansConfiguration().getProperty(
+                "org.apache.webbeans.spi.deployer.skipVetoedOnPackages"));
 
         defaultBeanArchiveInformation = new DefaultBeanArchiveInformation("default");
         defaultBeanArchiveInformation.setBeanDiscoveryMode(BeanDiscoveryMode.ALL);
@@ -354,19 +334,11 @@ public class BeansDeployer
                 webBeansContext.getAnnotationManager().clearCaches();
             }
         }
-        catch (UnsatisfiedResolutionException e)
+        catch (UnsatisfiedResolutionException | UnproxyableResolutionException | AmbiguousResolutionException e)
         {
             throw new WebBeansDeploymentException(e);
         }
-        catch (AmbiguousResolutionException e)
-        {
-            throw new WebBeansDeploymentException(e);
-        }
-        catch (UnproxyableResolutionException e)
-        {
-            // the tck expects a DeploymentException, but it really should be a DefinitionException, see i.e. https://issues.jboss.org/browse/CDITCK-346
-            throw new WebBeansDeploymentException(e);
-        }
+        // the tck expects a DeploymentException, but it really should be a DefinitionException, see i.e. https://issues.jboss.org/browse/CDITCK-346
         catch (IllegalArgumentException e)
         {
             throw new WebBeansConfigurationException(e);
@@ -619,15 +591,7 @@ public class BeansDeployer
      */
     private void removeDisabledBeans()
     {
-        Iterator<Bean<?>> beans = webBeansContext.getBeanManagerImpl().getBeans().iterator();
-        while(beans.hasNext())
-        {
-            Bean<?> bean = beans.next();
-            if (!((OwbBean) bean).isEnabled())
-            {
-                beans.remove();
-            }
-        }
+        webBeansContext.getBeanManagerImpl().getBeans().removeIf(bean -> !((OwbBean) bean).isEnabled());
     }
 
     private void registerAlternativesDecoratorsAndInterceptorsWithPriority(List<AnnotatedType<?>> annotatedTypes)
@@ -1361,11 +1325,12 @@ public class BeansDeployer
                     }
 
                     // trigger a NoClassDefFoundError here, otherwise it would be thrown in observer methods
-                    annotatedType.getJavaClass().getDeclaredMethods();
-                    annotatedType.getJavaClass().getDeclaredFields();
+                    Class<?> javaClass = annotatedType.getJavaClass();
+                    javaClass.getDeclaredMethods();
+                    javaClass.getDeclaredFields();
 
                     // Fires ProcessAnnotatedType
-                    if (!annotatedType.getJavaClass().isAnnotation())
+                    if (!javaClass.isAnnotation())
                     {
                         GProcessAnnotatedType processAnnotatedEvent = webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
                         if (!processAnnotatedEvent.isVeto())
@@ -1402,36 +1367,43 @@ public class BeansDeployer
             return true;
         }
 
-        ClassLoader classLoader = implClass.getClassLoader();
-        if (classLoader == null)
-        {
-            classLoader = BeansDeployer.class.getClassLoader();
-        }
-
         Package pckge = implClass.getPackage();
         if (pckge == null)
         {
             return false;
         }
+
         do
         {
             // yes we cache result with potentially different classloader but this is not portable by spec
             String name = pckge.getName();
+            Boolean packageVetoed = packageVetoCache.get(name);
+            if (packageVetoed == null)
             {
-                Boolean result = packageVetoCache.get(name);
-                if (result != null && result)
+                if (pckge.getAnnotation(Vetoed.class) != null)
                 {
-                    return result;
+                    packageVetoCache.put(pckge.getName(), true);
+                    return true;
+                }
+                else
+                {
+                    packageVetoCache.put(pckge.getName(), false);
                 }
             }
-            if (pckge.getAnnotation(Vetoed.class) != null)
+            else if (packageVetoed)
             {
-                packageVetoCache.put(pckge.getName(), true);
                 return true;
             }
-            else
+
+            if (skipVetoedOnPackages) // we want to avoid loadClass with this property, not cached reflection
             {
-                packageVetoCache.put(pckge.getName(), false);
+                return false;
+            }
+
+            ClassLoader classLoader = implClass.getClassLoader();
+            if (classLoader == null)
+            {
+                classLoader = BeansDeployer.class.getClassLoader();
             }
 
             int idx = name.lastIndexOf('.');
@@ -1439,17 +1411,36 @@ public class BeansDeployer
             {
                 String previousPackage = name.substring(0, idx);
                 Boolean result = packageVetoCache.get(previousPackage);
-                if (result != null && result)
+                if (result != null)
                 {
                     return result;
                 }
-                try // this is related to classloader and not to Package actually :( so we need reflection
+                while (true)
                 {
-                    pckge = Package.class.cast(GET_PACKAGE.invoke(classLoader, previousPackage));
-                }
-                catch (Exception e)
-                {
-                    throw new IllegalStateException(e);
+                    try // not always existing but enables to go further when getPackage is not available (graal)
+                    {
+                        pckge = classLoader.loadClass(previousPackage +
+                                (previousPackage.isEmpty() ? "" :".") + "package-info").getPackage();
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        if (previousPackage.isEmpty())
+                        {
+                            pckge = null;
+                            break;
+                        }
+                        packageVetoCache.put(previousPackage, false);
+                        idx = previousPackage.lastIndexOf('.');
+                        if (idx > 0)
+                        {
+                            previousPackage = previousPackage.substring(0, idx);
+                        }
+                        else
+                        {
+                            previousPackage = "";
+                        }
+                    }
                 }
             }
             else
@@ -1622,12 +1613,9 @@ public class BeansDeployer
         logger.fine("Deploying configurations from XML files has started.");
 
         Set<URL> bdaLocations = scanner.getBeanXmls();
-        Iterator<URL> it = bdaLocations.iterator();
 
-        while (it.hasNext())
+        for (URL url : bdaLocations)
         {
-            URL url = it.next();
-
             logger.fine("OpenWebBeans BeansDeployer configuring: " + url.toExternalForm());
 
             BeanArchiveInformation beanArchiveInformation = beanArchiveService.getBeanArchiveInformation(url);

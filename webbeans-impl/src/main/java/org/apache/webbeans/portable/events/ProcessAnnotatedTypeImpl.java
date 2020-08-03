@@ -30,9 +30,8 @@ import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
  * 
  * @param <X> bean class info
  */
-public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnnotatedType<X>
+public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnnotatedType<X>, AfterObserver
 {
-
     private final WebBeansContext webBeansContext;
 
 
@@ -90,12 +89,14 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
     public void setAnnotatedType(AnnotatedType<X> type)
     {
         checkState();
+        if (configurator != null)
+        {
+            throw new IllegalStateException("You can't call " +
+                    "setAnnotatedType() and configureAnnotatedType()");
+        }
 
         annotatedType = type;
         modifiedAnnotatedType = true;
-
-        // reset configurator
-        configurator = null;
     }
     
     /**
@@ -123,6 +124,11 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
     public AnnotatedTypeConfigurator<X> configureAnnotatedType()
     {
         checkState();
+        if (modifiedAnnotatedType)
+        {
+            throw new IllegalStateException("You can't call " +
+                    "setAnnotatedType() and configureAnnotatedType()");
+        }
 
         if (configurator == null)
         {
@@ -142,4 +148,17 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
         return veto;
     }
 
+    @Override
+    public void afterObserver()
+    {
+        if (configurator != null)
+        {
+            annotatedType = configurator.getNewAnnotatedType();
+            configurator = null;
+        }
+        else if (modifiedAnnotatedType)
+        {
+            modifiedAnnotatedType = false;
+        }
+    }
 }

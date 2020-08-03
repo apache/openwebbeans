@@ -367,11 +367,7 @@ public class ManagedSecurityService implements SecurityService
             {
                 return clazz.newInstance();
             }
-            catch (InstantiationException e)
-            {
-                throw e;
-            }
-            catch (IllegalAccessException e)
+            catch (InstantiationException | IllegalAccessException e)
             {
                 throw e;
             }

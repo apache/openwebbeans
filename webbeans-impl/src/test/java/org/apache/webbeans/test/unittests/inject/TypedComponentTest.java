@@ -47,7 +47,7 @@ public class TypedComponentTest extends AbstractUnitTest
                 = injectionResolver.implResolveByType(false, TypedComponentTest.class.getDeclaredField("s").getGenericType(),
                                                       DefaultLiteral.INSTANCE);
 
-        Assert.assertTrue(beans.size() == 1 ? true : false);
+        Assert.assertTrue(beans.size() == 1);
     }
 
 }

@@ -35,7 +35,6 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
     private final Set<Annotation> qualifiers;
     private final Class<? extends Annotation> scope;
     private final String name;
-    private final boolean nullable;
     private final Set<Class<? extends Annotation>> stereotypes;
     private final boolean alternative;
 
@@ -49,37 +48,35 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
              bean.getQualifiers(),
              bean.getScope(),
              bean.getName(),
-             bean.isNullable(),
              bean.getStereotypes(),
              bean.isAlternative());
     }
 
-    public BeanAttributesImpl(BeanAttributes<T> beanAttributes, boolean nullable)
+    public BeanAttributesImpl(BeanAttributes<T> beanAttributes)
     {
         this(beanAttributes.getTypes(),
              beanAttributes.getQualifiers(),
              beanAttributes.getScope(),
              beanAttributes.getName(),
-             nullable,
              beanAttributes.getStereotypes(),
              beanAttributes.isAlternative());
     }
 
     public BeanAttributesImpl(Set<Type> types)
     {
-        this(types, AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION_SET, Dependent.class, null, false, Collections.<Class<? extends Annotation>>emptySet(), false);
+        this(types, AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION_SET, Dependent.class, null, Collections.<Class<? extends Annotation>>emptySet(), false);
     }
 
     public BeanAttributesImpl(Set<Type> types, Set<Annotation> qualifiers)
     {
-        this(types, qualifiers, Dependent.class, null, false, Collections.<Class<? extends Annotation>>emptySet(), false);
+        this(types, qualifiers, Dependent.class, null, Collections.<Class<? extends Annotation>>emptySet(), false);
     }
 
     public BeanAttributesImpl(Set<Type> types,
                         Set<Annotation> qualifiers,
                         Class<? extends Annotation> scope)
     {
-        this(types, qualifiers, scope, null, false, Collections.<Class<? extends Annotation>>emptySet(), false);
+        this(types, qualifiers, scope, null, Collections.<Class<? extends Annotation>>emptySet(), false);
     }
 
     public BeanAttributesImpl(Set<Type> types,
@@ -87,14 +84,13 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
                         Class<? extends Annotation> scope,
                         Set<Class<? extends Annotation>> stereotypes)
     {
-        this(types, qualifiers, scope, null, false, stereotypes, false);
+        this(types, qualifiers, scope, null, stereotypes, false);
     }
 
     public BeanAttributesImpl(Set<Type> types,
                         Set<Annotation> qualifiers,
                         Class<? extends Annotation> scope,
                         String name,
-                        boolean nullable,
                         Set<Class<? extends Annotation>> stereotypes,
                         boolean alternative)
     {
@@ -102,7 +98,6 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
         this.qualifiers = qualifiers == null? Collections.<Annotation>emptySet(): Collections.unmodifiableSet(new HashSet<>(qualifiers));
         this.scope = scope;
         this.name = name;
-        this.nullable = nullable;
         this.stereotypes = stereotypes == null
                 ? Collections.<Class<? extends Annotation>>emptySet()
                 : Collections.unmodifiableSet(new HashSet<>(stereotypes));
@@ -133,9 +128,14 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
         return name;
     }
 
+    /**
+     * Since CDI-1.1 we do not rely on isNullable for a bean as this information is really determined through other facts.
+     * @return always {@code false}
+     * @deprecated
+     */
     public boolean isNullable()
     {
-        return nullable;
+        return false;
     }
 
     @Override

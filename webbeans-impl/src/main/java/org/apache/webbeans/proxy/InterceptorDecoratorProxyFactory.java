@@ -23,7 +23,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorResolutionService;
-import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.xbean.asm8.ClassWriter;
@@ -42,7 +41,6 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Logger;
 
 /**
  * Generate a dynamic subclass which has exactly 1 delegation point instance
@@ -55,9 +53,6 @@ import java.util.logging.Logger;
  */
 public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
 {
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(InterceptorDecoratorProxyFactory.class);
-
-
     /** the name of the field which stores the proxied instance */
     public static final String FIELD_PROXIED_INSTANCE = "owbIntDecProxiedInstance";
 
@@ -206,7 +201,8 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
     {
         String proxyClassName = getUnusedProxyClassName(
                 classLoader,
-                (classToProxy.getSigners() != null ? getSignedClassProxyName(classToProxy) : classToProxy.getName()) + "$$OwbInterceptProxy");
+                (classToProxy.getSigners() != null ? getSignedClassProxyName(classToProxy) : classToProxy.getName()) + "$$OwbInterceptProxy",
+                interceptedMethods, nonInterceptedMethods);
 
 
         Class<T> clazz = createProxyClass(classLoader, proxyClassName, classToProxy, interceptedMethods, nonInterceptedMethods);

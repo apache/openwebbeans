@@ -18,10 +18,8 @@
  */
 package org.apache.webbeans.test.tests;
 
-import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.test.AbstractUnitTest;
-import org.apache.webbeans.test.interceptors.extension.BeforeBeanDiscoveryImplTest;
 import org.junit.Test;
 
 import javax.enterprise.event.Observes;
@@ -70,7 +68,7 @@ public class MultipleTimeTheSameBindingTest extends AbstractUnitTest
             annotations.add(new TheQualifierLitereal(1));
             annotations.add(new TheQualifierLitereal(2));
 
-            pba.setBeanAttributes(new BeanAttributesImpl<TheClass>(pba.getBeanAttributes(), false) {
+            pba.setBeanAttributes(new BeanAttributesImpl<TheClass>(pba.getBeanAttributes()) {
                 public Set<Annotation> getQualifiers() {
                     return annotations;
                 }

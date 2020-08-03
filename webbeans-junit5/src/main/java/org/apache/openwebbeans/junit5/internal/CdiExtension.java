@@ -32,23 +32,20 @@ import javax.enterprise.inject.se.SeContainerInitializer;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
-import java.io.Closeable;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 // todo: enhance the setup to be thread safe? see Meecrowave ClassLoaderLock class and friends
-public class CdiExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback
+public class CdiExtension extends CdiParametersResolverExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback
 {
     private static SeContainer reusableContainer;
 
-    private SeContainer container;
-    private Collection<CreationalContext<Object>> creationalContexts = new ArrayList<>();
-    private Closeable[] onStop;
+    private SeContainer testInstanceContainer;
+    private Collection<CreationalContext<?>> creationalContexts = new ArrayList<>();
+    private AutoCloseable[] onStop;
 
     @Override
     public void beforeAll(final ExtensionContext extensionContext)
@@ -85,6 +82,7 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
                 Stream.of(config.packages()).map(Class::getPackage).toArray(Package[]::new));
         initializer.addPackages(true,
                 Stream.of(config.recursivePackages()).map(Class::getPackage).toArray(Package[]::new));
+        Stream.of(config.properties()).forEach(property -> initializer.addProperty(property.name(), property.value()));
         onStop = Stream.of(config.onStarts())
                 .map(it ->
                 {
@@ -101,35 +99,36 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
                         throw new IllegalStateException(e.getTargetException());
                     }
                 })
-                .peek(Supplier::get)
-                .filter(Objects::nonNull)
-                .toArray(Closeable[]::new);
+                .map(Supplier::get)
+                .toArray(AutoCloseable[]::new);
+        SeContainer container = initializer.initialize();
         if (reusable)
         {
-            reusableContainer = initializer.initialize();
+            reusableContainer = container;
             Runtime.getRuntime().addShutdownHook(new Thread(
                 () -> doClose(reusableContainer), getClass().getName() + "-shutdown"));
         }
         else
         {
-            container = initializer.initialize();
+            testInstanceContainer = container;
         }
     }
 
     @Override
     public void afterAll(final ExtensionContext extensionContext)
     {
-        if (container != null)
+        if (testInstanceContainer != null)
         {
-            doClose(container);
-            container = null;
+            doClose(testInstanceContainer);
+            testInstanceContainer = null;
         }
     }
 
     @Override
     public void beforeEach(final ExtensionContext extensionContext)
     {
-        if (container == null && reusableContainer == null)
+        final SeContainer container = getContainer();
+        if (container == null)
         {
             return;
         }
@@ -137,7 +136,7 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
         {
             testInstances.getAllInstances().stream().distinct().forEach(instance ->
             {
-                final BeanManager manager = (container == null ? reusableContainer : container).getBeanManager();
+                final BeanManager manager = container.getBeanManager();
                 final AnnotatedType<?> annotatedType = manager.createAnnotatedType(instance.getClass());
                 final InjectionTarget injectionTarget = manager.createInjectionTarget(annotatedType);
                 final CreationalContext<Object> creationalContext = manager.createCreationalContext(null);
@@ -150,6 +149,7 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
     @Override
     public void afterEach(final ExtensionContext extensionContext)
     {
+        super.afterEach(extensionContext);
         if (!creationalContexts.isEmpty())
         {
             creationalContexts.forEach(CreationalContext::release);
@@ -166,10 +166,22 @@ public class CdiExtension implements BeforeAllCallback, AfterAllCallback, Before
             {
                 it.close();
             }
-            catch (final IOException e)
+            catch (final Exception e)
             {
                 throw new IllegalStateException(e);
             }
         });
+    }
+
+    private SeContainer getContainer()
+    {
+        if (testInstanceContainer != null)
+        {
+            return testInstanceContainer;
+        }
+        else
+        {
+            return reusableContainer;
+        }
     }
 }

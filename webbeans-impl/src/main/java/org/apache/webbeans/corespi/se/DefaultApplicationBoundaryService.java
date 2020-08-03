@@ -45,15 +45,22 @@ public class DefaultApplicationBoundaryService implements ApplicationBoundarySer
      */
     private Set<ClassLoader> parentClassLoaders;
 
+    /**
+     * Contructs a new {@link DefaultApplicationBoundaryService}
+     */
     public DefaultApplicationBoundaryService()
     {
         init();
     }
 
+    /**
+     * Initialise the instance.
+     */
     protected void init()
     {
         applicationClassLoader = BeanManagerImpl.class.getClassLoader();
         parentClassLoaders = new HashSet<>();
+
         ClassLoader cl = applicationClassLoader;
         while (cl.getParent() != null)
         {
@@ -99,10 +106,15 @@ public class DefaultApplicationBoundaryService implements ApplicationBoundarySer
         return classToProxyCl;
     }
 
-    protected boolean isOutsideOfApplicationClassLoader(ClassLoader classToProxyCl)
+    /**
+     * 
+     * @param classToProxyClassLoader
+     * @return
+     */
+    protected boolean isOutsideOfApplicationClassLoader(ClassLoader classToProxyClassLoader)
     {
 
-        return parentClassLoaders.contains(classToProxyCl);
+        return parentClassLoaders.contains(classToProxyClassLoader);
     }
 
     @Override

@@ -40,7 +40,7 @@ public class AnnotatedMethodConfiguratorImpl<T> implements AnnotatedMethodConfig
         this.annotatedMethod = annotatedMethod;
 
         annotatedParameterConfigurators = annotatedMethod.getParameters().stream()
-            .map(m -> new AnnotatedParameterConfiguratorImpl<>(m))
+            .map(AnnotatedParameterConfiguratorImpl::new)
             .collect(Collectors.toList());
     }
 

@@ -19,20 +19,22 @@
 package org.apache.webbeans.portable;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.Annotated;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.GenericsUtil;
 
@@ -46,6 +48,8 @@ import static java.util.stream.Collectors.toList;
  */
 public abstract class AbstractAnnotated implements Annotated
 {
+    private static final Logger logger = WebBeansLoggerFacade.getLogger(AbstractAnnotated.class);
+
     /**Base type of an annotated element*/
     private final Type baseType;
     
@@ -94,27 +98,35 @@ public abstract class AbstractAnnotated implements Annotated
         {
             return;
         }
-        List<Annotation> repeatables = annotations.stream()
-                .map(a -> {
-                    Class<?> type = a.annotationType();
-                    try
+
+        List<Annotation> repeatables = null;
+        for (Annotation annotation : annotations)
+        {
+            Class<?> type = annotation.annotationType();
+            Optional<Method> repeatableMethod = webBeansContext.getAnnotationManager().getRepeatableMethod(type);
+            if (repeatableMethod.isPresent())
+            {
+                try
+                {
+                    if (repeatables == null)
                     {
-                        Optional<Method> repeatableMethod =
-                                webBeansContext.getAnnotationManager().getRepeatableMethod(type);
-                        if (!repeatableMethod.isPresent())
-                        {
-                            return null;
-                        }
-                        return (Annotation[]) repeatableMethod.orElseThrow(IllegalStateException::new).invoke(a);
+                        repeatables = new ArrayList<>();
                     }
-                    catch (Exception e)
+                    Annotation[] repeatableAnns =
+                        (Annotation[]) repeatableMethod.orElseThrow(IllegalStateException::new).invoke(annotation);
+                    for (Annotation repeatableAnn : repeatableAnns)
                     {
-                        return null;
+                        repeatables.add(repeatableAnn);
                     }
-                }).filter(Objects::nonNull)
-                .flatMap(Stream::of)
-                .collect(toList());
-        if (!repeatables.isEmpty())
+                }
+                catch (IllegalAccessException | InvocationTargetException e)
+                {
+                    logger.log(Level.FINER, "Problem while handling repeatable Annotations "
+                        + annotation.annotationType());
+                }
+            }
+        }
+        if (repeatables != null && !repeatables.isEmpty())
         {
             this.repeatables.addAll(repeatables.stream().map(Annotation::annotationType).collect(toList()));
             this.annotations.addAll(repeatables);
@@ -220,14 +232,7 @@ public abstract class AbstractAnnotated implements Annotated
             Set<String> ignoredInterfaces = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
             if (!ignoredInterfaces.isEmpty())
             {
-                for (Iterator<Type> i = typeClosures.iterator(); i.hasNext(); )
-                {
-                    Type t = i.next();
-                    if (t instanceof Class && ignoredInterfaces.contains(((Class<?>) t).getName()))
-                    {
-                        i.remove();
-                    }
-                }
+                typeClosures.removeIf(t -> t instanceof Class && ignoredInterfaces.contains(((Class<?>) t).getName()));
             }
         }
     }

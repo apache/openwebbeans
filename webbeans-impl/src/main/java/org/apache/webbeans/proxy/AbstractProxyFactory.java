@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.proxy;
 
+import static java.util.stream.Collectors.joining;
 import static org.apache.xbean.asm8.ClassReader.SKIP_CODE;
 import static org.apache.xbean.asm8.ClassReader.SKIP_DEBUG;
 import static org.apache.xbean.asm8.ClassReader.SKIP_FRAMES;
@@ -28,10 +29,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.hash.XxHash64;
 import org.apache.webbeans.spi.DefiningClassService;
 import org.apache.xbean.asm8.ClassReader;
 import org.apache.xbean.asm8.ClassWriter;
@@ -58,6 +61,9 @@ public abstract class AbstractProxyFactory
 
     private final DefiningClassService definingService;
 
+    private final boolean useStaticNames;
+    private final boolean useXXhash64;
+
     protected WebBeansContext webBeansContext;
 
     private final int javaVersion;
@@ -76,6 +82,10 @@ public abstract class AbstractProxyFactory
         this.webBeansContext = webBeansContext;
         javaVersion = determineDefaultJavaVersion();
         definingService = webBeansContext.getService(DefiningClassService.class);
+        useStaticNames = Boolean.parseBoolean(webBeansContext.getOpenWebBeansConfiguration()
+                .getProperty("org.apache.webbeans.proxy.useStaticNames"));
+        useXXhash64 = Boolean.parseBoolean(webBeansContext.getOpenWebBeansConfiguration()
+                .getProperty("org.apache.webbeans.proxy.staticNames.useXxHash64"));
         unsafe = definingService == null ? new Unsafe() : null;
     }
 
@@ -146,7 +156,7 @@ public abstract class AbstractProxyFactory
     /**
      * @return the marker interface which should be used for this proxy.
      */
-    protected abstract Class getMarkerInterface();
+    protected abstract Class<?> getMarkerInterface();
 
     /**
      * generate the bytecode for creating the instance variables of the class
@@ -186,12 +196,18 @@ public abstract class AbstractProxyFactory
      * Detect a free classname based on the given one
      * @param proxyClassName
      * @return
+     * @deprecated use {@link #getUnusedProxyClassName(ClassLoader, String, Method[], Method[])}.
      */
+    @Deprecated
     protected String getUnusedProxyClassName(ClassLoader classLoader, String proxyClassName)
     {
         proxyClassName = fixPreservedPackages(proxyClassName);
 
         String finalName = proxyClassName;
+        if (useStaticNames)  // todo: refine
+        {
+            return proxyClassName + 0;
+        }
 
         for (int i = 0; i < MAX_CLASSLOAD_TRIES; i++)
         {
@@ -209,6 +225,34 @@ public abstract class AbstractProxyFactory
         }
 
         throw new WebBeansException("Unable to detect a free proxy class name based on: " + proxyClassName);
+    }
+
+    protected String getUnusedProxyClassName(ClassLoader classLoader, String proxyClassName,
+                                             Method[] proxiedMethods, Method[] notProxiedMethods)
+    {
+        proxyClassName = fixPreservedPackages(proxyClassName);
+
+
+        if (useStaticNames)
+        {
+            return proxyClassName + uniqueHash(proxiedMethods, notProxiedMethods);
+        }
+        return getUnusedProxyClassName(classLoader, proxyClassName);
+    }
+
+    protected String uniqueHash(Method[] proxiedMethods, Method[] notProxiedMethods)
+    {
+        if (useXXhash64)
+        {
+            // xxhash64 has very low collision so for this kind of has it is safe enough
+            // and enables to avoid a big concatenation for names
+            return Long.toString(Math.abs(XxHash64.apply(Stream.concat(
+                    Stream.of(proxiedMethods).map(Method::toGenericString).sorted(),
+                    Stream.of(notProxiedMethods).map(Method::toGenericString).map(it -> "<NOT>" + it).sorted()
+            ).collect(joining("_")))));
+        }
+        // else unsafe - 1 proxy per class max!
+        return "0";
     }
 
     protected  <T> String getSignedClassProxyName(final Class<T> classToProxy)

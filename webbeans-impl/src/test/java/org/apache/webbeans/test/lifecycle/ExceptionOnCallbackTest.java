@@ -19,7 +19,6 @@
 package org.apache.webbeans.test.lifecycle;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;

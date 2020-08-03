@@ -23,19 +23,31 @@ import javax.el.ExpressionFactory;
 
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 
+/**
+ * OWB {@link ELAdaptor} implementation for EL22
+ */
 public class EL22Adaptor implements ELAdaptor
 {
+    /**
+     * Default constructor.
+     */
     public EL22Adaptor()
     {
         
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ELResolver getOwbELResolver()
     {        
         return new WebBeansELResolver();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ExpressionFactory getOwbWrappedExpressionFactory(ExpressionFactory expressionFactroy)
     {

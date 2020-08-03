@@ -23,5 +23,5 @@ package org.apache.webbeans.test.injection.generics;
  */
 public enum BazEnum
 {
-    YES, NO;
+    YES, NO
 }

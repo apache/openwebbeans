@@ -49,7 +49,6 @@ public class EventBean<T> extends BuiltInOwbBean<Event<T>>
               {
               }.getRawType(), Object.class)),
               new TypeLiteral<Event<T>>(){}.getRawType(),
-              false,
               new SimpleProducerFactory<>(new EventProducer<T>(webBeansContext)));
     }
     

@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.test.injection.generics;
 
-import org.apache.webbeans.component.InstanceBean;
-
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 

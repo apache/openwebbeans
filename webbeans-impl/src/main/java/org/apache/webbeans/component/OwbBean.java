@@ -96,5 +96,10 @@ public interface OwbBean<T> extends Bean<T>
      */
     boolean isDependent();
     
+    
+    /**
+     * Gets the context instance in which this bean belongs to.
+     * @return the {@link WebBeansContext} instance
+     */
     WebBeansContext getWebBeansContext();
 }

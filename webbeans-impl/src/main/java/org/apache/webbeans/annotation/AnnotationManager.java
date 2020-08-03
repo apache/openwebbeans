@@ -62,7 +62,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Manages annotation usage by classes in this application.
@@ -74,8 +74,7 @@ public final class AnnotationManager
     private Map<Class<? extends Annotation>, Boolean> checkedStereotypeAnnotations =
         new ConcurrentHashMap<>();
 
-    private CopyOnWriteArraySet<Class<?>> repeatableMethodCheckedTypes = new CopyOnWriteArraySet<>();
-    private Map<Class<?>, Optional<Method>> repeatableMethodCache = new ConcurrentHashMap<>();
+    private ConcurrentMap<Class<?>, Optional<Method>> repeatableMethodCache = new ConcurrentHashMap<>();
 
     private final BeanManagerImpl beanManagerImpl;
     private final WebBeansContext webBeansContext;
@@ -938,23 +937,12 @@ public final class AnnotationManager
     
     public void clearCaches()
     {
-        repeatableMethodCheckedTypes.clear();
         repeatableMethodCache.clear();
     }
 
     public Optional<Method> getRepeatableMethod(Class<?> type)
     {
-        if (repeatableMethodCheckedTypes.contains(type))
-        {
-            return repeatableMethodCache.get(type);
-        }
-
-        Optional<Method> method = Optional.ofNullable(resolveRepeatableMethod(type));
-        
-        repeatableMethodCheckedTypes.add(type);
-        repeatableMethodCache.put(type, method); // don't put null here!
-        
-        return method;
+        return repeatableMethodCache.computeIfAbsent(type, it -> Optional.ofNullable(resolveRepeatableMethod(it)));
     }
         
     protected Method resolveRepeatableMethod(Class<?> type)

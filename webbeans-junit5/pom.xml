@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>2.0.17-SNAPSHOT</version>
+        <version>2.0.18-SNAPSHOT</version>
     </parent>
 
     <artifactId>openwebbeans-junit5</artifactId>
@@ -76,17 +76,9 @@
                     <execution>
                         <id>default-test</id>
                         <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>perclass</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <includes>**/perclass/*</includes>
+                            <excludes>
+                                <exclude>**/reusable/*</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                     <execution>
@@ -96,7 +88,9 @@
                             <goal>test</goal>
                         </goals>
                         <configuration>
-                            <includes>**/reusable/*</includes>
+                            <includes>
+                                <include>**/reusable/*</include>
+                            </includes>
                         </configuration>
                     </execution>
                 </executions>

@@ -105,13 +105,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
         ClassLoader classLoader = new URLClassLoader(new URL[0]);
 
         List<Method> methods = ClassUtil.getNonPrivateMethods(ExtendedSpecificClass.class, true);
-        for (Iterator<Method> i = methods.iterator(); i.hasNext();)
-        {
-            if (i.next().isBridge())
-            {
-                i.remove();
-            }
-        }
+        methods.removeIf(Method::isBridge);
 
         Method[] interceptedMethods = methods.toArray(new Method[methods.size()]);
         Method[] nonInterceptedMethods = null;
@@ -252,11 +246,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
             {
                 return method.invoke(instance, args);
             }
-            catch (IllegalAccessException e)
-            {
-                throw new WebBeansException(e);
-            }
-            catch (InvocationTargetException e)
+            catch (IllegalAccessException | InvocationTargetException e)
             {
                 throw new WebBeansException(e);
             }

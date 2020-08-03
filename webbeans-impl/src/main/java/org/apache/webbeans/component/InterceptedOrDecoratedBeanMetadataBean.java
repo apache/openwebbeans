@@ -53,7 +53,6 @@ public class InterceptedOrDecoratedBeanMetadataBean<T> extends BuiltInOwbBean<Be
                 {
                 })),
             new TypeLiteral<Bean<T>>(){}.getRawType(),
-            false,
             new SimpleProducerFactory<>(new BeanMetadataProducer<Bean<T>>()));
     }
     

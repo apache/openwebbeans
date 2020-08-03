@@ -29,7 +29,7 @@
     <artifactId>openwebbeans</artifactId>
     <name>Apache OpenWebBeans</name>
     <packaging>pom</packaging>
-    <version>2.0.17-SNAPSHOT</version>
+    <version>2.0.18-SNAPSHOT</version>
 
     <url>openwebbeans.apache.org</url>
 
@@ -62,13 +62,13 @@
         <geronimo_servlet.version>1.0</geronimo_servlet.version>
         <geronimo_ejb.version>1.0.2</geronimo_ejb.version>
         <geronimo_el.version>1.1</geronimo_el.version>
-        <geronimo_annotation.version>1.2</geronimo_annotation.version>
+        <geronimo_annotation.version>1.3</geronimo_annotation.version>
         <geronimo_jpa.version>1.1</geronimo_jpa.version>
         <geronimo_jta.version>1.1.1</geronimo_jta.version>
         <geronimo_jsp.version>1.0.1</geronimo_jsp.version>
-        <geronimo_cdi.version>1.1</geronimo_cdi.version>
-        <geronimo_atinject.version>1.1</geronimo_atinject.version>
-        <geronimo_interceptor.version>1.1</geronimo_interceptor.version>
+        <geronimo_cdi.version>1.2</geronimo_cdi.version>
+        <geronimo_atinject.version>1.2</geronimo_atinject.version>
+        <geronimo_interceptor.version>1.2</geronimo_interceptor.version>
         <geronimo_validation.version>1.1</geronimo_validation.version>
         <tomcat7.version>7.0.99</tomcat7.version>
         <!-- jetty 9.4.13+ broke session persistence: https://github.com/eclipse/jetty.project/issues/3597 -->
@@ -83,7 +83,7 @@
         <osgi.el.range>2.2</osgi.el.range>
         <osgi.faces.range>2.0</osgi.faces.range>
 
-        <maven-shade-plugin.version>3.2.3</maven-shade-plugin.version>
+        <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
     </properties>
     
     <mailingLists>
@@ -469,7 +469,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M3</version>
+                <version>3.0.0-M4</version>
                 <configuration>
                     <includes>
                         <include>**/*Test.java</include>
@@ -643,8 +643,8 @@
         <module>samples</module>
         <module>atinject-tck</module>
         <module>webbeans-tck</module>
+        <module>webbeans-tck-jakarta</module>
         <module>distribution</module>
-        <module>webbeans-maven</module>
         <module>webbeans-gradle</module>
         <module>webbeans-se</module>
         <module>webbeans-junit5</module>

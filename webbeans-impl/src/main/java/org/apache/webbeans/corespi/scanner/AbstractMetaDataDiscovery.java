@@ -43,6 +43,8 @@ import org.apache.xbean.finder.util.Files;
 
 import javax.decorator.Decorator;
 import javax.interceptor.Interceptor;
+
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
@@ -282,11 +284,18 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             }
             else
             {
-                // we could check for META-INF/maven/org.apache.geronimo.specs presence there but this is faster
-                final String filename = Files.toFile(url).getName();
-                if (filename.startsWith("geronimo-") && filename.contains("_spec"))
+                if (path.contains("geronimo-"))
                 {
-                    it.remove();
+                    // we could check for META-INF/maven/org.apache.geronimo.specs presence there but this is faster
+                    final File file = Files.toFile(url);
+                    if (file != null)
+                    {
+                        final String filename = file.getName();
+                        if (filename.startsWith("geronimo-") && filename.contains("_spec"))
+                        {
+                            it.remove();
+                        }
+                    }
                 }
             }
         }

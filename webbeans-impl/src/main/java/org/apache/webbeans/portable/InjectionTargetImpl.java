@@ -34,6 +34,7 @@ import org.apache.webbeans.intercept.LifecycleInterceptorInvocationContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.InterceptorHandler;
+import org.apache.webbeans.proxy.NormalScopeProxyFactory;
 import org.apache.webbeans.proxy.OwbInterceptorProxy;
 import org.apache.webbeans.proxy.OwbNormalScopeProxy;
 import org.apache.webbeans.spi.ResourceInjectionService;
@@ -330,7 +331,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     {
         if (instance instanceof OwbNormalScopeProxy)
         {
-            instance = webBeansContext.getNormalScopeProxyFactory().unwrapInstance(instance);
+            instance = NormalScopeProxyFactory.unwrapInstance(instance);
         }
 
         Map<Interceptor<?>, ?> interceptorInstances = null;

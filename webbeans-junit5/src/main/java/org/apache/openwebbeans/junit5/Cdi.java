@@ -21,7 +21,6 @@ package org.apache.openwebbeans.junit5;
 import org.apache.openwebbeans.junit5.internal.CdiExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.io.Closeable;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -76,6 +75,11 @@ public @interface Cdi
     Class<?>[] recursivePackages() default {};
 
     /**
+     * @return SeContainer properties.
+     */
+    Property[] properties() default {};
+
+    /**
      * @return if the automatic scanning must be disabled.
      */
     boolean disableDiscovery() default false;
@@ -96,7 +100,16 @@ public @interface Cdi
     /**
      * Will be execute before the container starts and can return a closeable called after the container stops.
      */
-    interface OnStart extends Supplier<Closeable>
+    interface OnStart extends Supplier<AutoCloseable>
     {
+    }
+
+    /**
+     * A property set in SeContainer (as String).
+     */
+    @interface Property
+    {
+        String name();
+        String value();
     }
 }

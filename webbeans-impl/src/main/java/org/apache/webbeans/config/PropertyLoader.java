@@ -133,26 +133,17 @@ public final class PropertyLoader
         while (propertyUrls.hasMoreElements())
         {
             URL propertyUrl = propertyUrls.nextElement();
-            InputStream is = null;
-            try
+            try (InputStream is = propertyUrl.openStream())
             {
-                is = propertyUrl.openStream();
                 Properties prop = new Properties();
                 prop.load(is);
                 properties.add(prop);
 
                 // a bit debugging output
                 int ordinal = getConfigurationOrdinal(prop);
-                if(logger.isLoggable(Level.FINE))
+                if (logger.isLoggable(Level.FINE))
                 {
                     logger.fine("loading properties with ordinal " + ordinal + " from file " + propertyUrl.getFile());
-                }
-            }
-            finally
-            {
-                if (is != null)
-                {
-                    is.close();
                 }
             }
         }

@@ -42,7 +42,6 @@ public class DecoratorMetadataBean<T> extends BuiltInOwbBean<Decorator<T>>
               WebBeansType.METADATA,
               new BeanAttributesImpl<>(CollectionUtil.<Type>unmodifiableSet(Decorator.class, Object.class)),
               new TypeLiteral<Decorator<T>>(){}.getRawType(),
-              false,
               new SimpleProducerFactory<>(new MetadataProducer<Decorator<T>>()));
     }
     

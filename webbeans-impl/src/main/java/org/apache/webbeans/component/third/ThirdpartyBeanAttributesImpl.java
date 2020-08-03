@@ -33,7 +33,7 @@ class ThirdpartyBeanAttributesImpl<T> extends BeanAttributesImpl<T>
 
     ThirdpartyBeanAttributesImpl(BeanAttributes<T> beanAttributes)
     {
-        super(beanAttributes, false);
+        super(beanAttributes);
         this.qualifiers = calculateQualifiers(beanAttributes);
     }
 
