@@ -18,13 +18,13 @@
  */
 package org.apache.openwebbeans.gradle.shadow;
 
-import com.github.jengelman.gradle.plugins.shadow.relocation.Relocator;
 import com.github.jengelman.gradle.plugins.shadow.transformers.Transformer;
-import org.apache.tools.zip.ZipOutputStream;
+import com.github.jengelman.gradle.plugins.shadow.transformers.TransformerContext;
 import org.gradle.api.file.FileTreeElement;
+import org.gradle.api.tasks.Input;
+import shadow.org.apache.tools.zip.ZipOutputStream;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -40,20 +40,21 @@ public class OpenWebBeansPropertiesTransformer implements Transformer
     private boolean reverseOrder;
 
     @Override
-    public boolean canTransformResource(FileTreeElement s)
+    public boolean canTransformResource(final FileTreeElement s)
     {
-        return resource.equals(s.getPath());
+        String path = s.getRelativePath().getPathString();
+        return resource != null && resource.equalsIgnoreCase(path);
     }
 
     @Override
-    public void transform(String s, InputStream inputStream, List<Relocator> list)
+    public void transform(final TransformerContext transformerContext)
     {
         Properties p = new Properties();
         try
         {
-            p.load(inputStream);
+            p.load(transformerContext.getIs());
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             throw new IllegalStateException(e);
         }
@@ -67,16 +68,16 @@ public class OpenWebBeansPropertiesTransformer implements Transformer
     }
 
     @Override
-    public void modifyOutputStream(ZipOutputStream zipOutputStream)
+    public void modifyOutputStream(final ZipOutputStream zipOutputStream, final boolean preserveFileTimestamps)
     {
         Properties out = mergeProperties(sortProperties(configurations));
         try
         {
-            zipOutputStream.putNextEntry(new org.apache.tools.zip.ZipEntry(resource));
+            zipOutputStream.putNextEntry(new shadow.org.apache.tools.zip.ZipEntry(resource));
             out.store(zipOutputStream, "# gradle " + resource + " merge");
             zipOutputStream.closeEntry();
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
             throw new IllegalStateException(ioe);
         }
@@ -92,17 +93,23 @@ public class OpenWebBeansPropertiesTransformer implements Transformer
         this.resource = resource;
     }
 
-    public void setOrdinalKey(String ordinalKey)
+    @Input
+    public String getResource()
+    {
+        return resource;
+    }
+
+    public void setOrdinalKey(final String ordinalKey)
     {
         this.ordinalKey = ordinalKey;
     }
 
-    public void setDefaultOrdinal(int defaultOrdinal)
+    public void setDefaultOrdinal(final int defaultOrdinal)
     {
         this.defaultOrdinal = defaultOrdinal;
     }
 
-    private List<Properties> sortProperties(List<Properties> allProperties)
+    private List<Properties> sortProperties(final List<Properties> allProperties)
     {
         List<Properties> sortedProperties = new ArrayList<>();
         for (Properties p : allProperties)
