@@ -43,6 +43,8 @@ import org.apache.xbean.asm8.Opcodes;
 import org.apache.xbean.asm8.Type;
 import org.apache.xbean.asm8.shade.commons.EmptyVisitor;
 
+import javax.enterprise.inject.Vetoed;
+
 /**
  * Base class for all OWB Proxy factories
  */
@@ -395,6 +397,9 @@ public abstract class AbstractProxyFactory
 
         cw.visit(findJavaVersion(classToProxy), Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER + Opcodes.ACC_SYNTHETIC, proxyClassFileName, null, superClassName, interfaceNames);
         cw.visitSource(classFileName + ".java", null);
+
+        // proxies are already available in a native environment when scanning is enabled -> lets skip proxies
+        cw.visitAnnotation(Type.getDescriptor(Vetoed.class), true).visitEnd();
 
         createInstanceVariables(cw, classToProxy, classFileName);
         createSerialisation(cw, proxyClassFileName, classToProxy, classFileName);
