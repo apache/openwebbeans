@@ -458,6 +458,10 @@ public class BeansDeployer
                 {
                     logger.info("Skipping deployment of Class " + beanClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
                 }
+                catch (UnsatisfiedLinkError ule)
+                {
+                    logger.info("Skipping deployment of Class " + beanClass + "due to a UnsatisfiedLinkError: " + ule.getMessage());
+                }
             }
 
             beanAttributesPerBda.put(bdaInfo, bdaBeanAttributes);
@@ -1348,6 +1352,10 @@ public class BeansDeployer
                 {
                     logger.info("Skipping deployment of Class " + implClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
                 }
+                catch (UnsatisfiedLinkError ule)
+                {
+                    logger.info("Skipping deployment of Class " + implClass + "due to a UnsatisfiedLinkError: " + ule.getMessage());
+                }
             }
         }
 
@@ -1518,6 +1526,10 @@ public class BeansDeployer
                 {
                     logger.info("Skipping deployment of Class " + key.getJavaClass() + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
                 }
+                catch (UnsatisfiedLinkError ule)
+                {
+                    logger.info("Skipping deployment of Class " + key.getJavaClass() + "due to a UnsatisfiedLinkError: " + ule.getMessage());
+                }
 
                 // if the implClass already gets processed as part of the
                 // standard BDA scanning, then we don't need to 'additionally'
@@ -1562,6 +1574,10 @@ public class BeansDeployer
             catch (NoClassDefFoundError ncdfe)
             {
                 logger.warning("Skipping deployment of Class " + beanClass + " due to a NoClassDefFoundError: " + ncdfe.getMessage());
+            }
+            catch (UnsatisfiedLinkError ule)
+            {
+                logger.info("Skipping deployment of Class " + beanClass + "due to a UnsatisfiedLinkError: " + ule.getMessage());
             }
         }
     }
