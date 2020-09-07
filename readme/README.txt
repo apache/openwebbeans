@@ -63,6 +63,34 @@ of the Application. This is especially the case for <alternatives>, <decorators>
 for the whole Application.
 
 
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.18
+-------------------------------------------
+
+Sub-task
+    [OWB-1346] - prevent scanning of generated proxies
+
+Bug
+    [OWB-1281] - java.lang.UnsatisfiedLinkError in scanner stops application deployment
+    [OWB-1328] - NPE in AbstractMetaDataFactory
+    [OWB-1332] - BeansDeployer#packageVetoCache does not work for negative hits
+    [OWB-1333] - [junit5] @Cdi#onStart not working
+    [OWB-1341] - Event bus: IN_PROGRESS phase should not be sent to transactionService
+    [OWB-1342] - Improve startup performance
+    [OWB-1344] - Ensure creating annotatedtype is thread safe at runtime
+
+Task
+    [OWB-1327] - Run TCK for jakarta packaging
+    [OWB-1329] - Remove openwebbeans-maven module
+    [OWB-1330] - Junit5 parameter resolver companion for @Cdi
+    [OWB-1331] - Create ajunit5 @Scopes extension to be able to control a bit more the started scopes
+    [OWB-1343] - Add a property to skip @Vetoed check on packages
+    [OWB-1345] - Upgrade gradle shadow plugin support to v6.0.0
+    [OWB-1347] - upgrade to apache-parent 23
+
+
+
 -------------------------------------------
 Release Notes - OpenWebBeans - Version 2.0.17
 -------------------------------------------
