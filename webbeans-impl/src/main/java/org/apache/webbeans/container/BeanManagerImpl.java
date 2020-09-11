@@ -1442,7 +1442,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public <T> Iterable<AnnotatedType<T>> getAnnotatedTypes(Class<T> type)
     {
         final Collection<AnnotatedType<T>> types = new ArrayList<>(2);
-        types.add(annotatedElementFactory.getAnnotatedType(type));
+        AnnotatedType<T> annotatedType = annotatedElementFactory.getAnnotatedType(type);
+        if (annotatedType != null)
+        {
+            types.add(annotatedType);
+        }
         final Collection<AnnotatedType<T>> userAnnotatedTypes = getUserAnnotatedTypes(type);
         if (userAnnotatedTypes != null)
         {

@@ -20,7 +20,6 @@ package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -42,7 +41,6 @@ import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.util.Nonbinding;
 import javax.inject.Named;
 import javax.inject.Scope;
 import javax.interceptor.Interceptor;
@@ -217,21 +215,7 @@ public abstract class BeanAttributesBuilder<T, A extends Annotated>
 
             if (annotationManager.isQualifierAnnotation(type))
             {
-                Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(type);
-
-                for (Method method : methods)
-                {
-                    Class<?> clazz = method.getReturnType();
-                    if (clazz.isArray() || clazz.isAnnotation())
-                    {
-                        if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), Nonbinding.class))
-                        {
-                            throw new WebBeansConfigurationException("WebBeans definition class : " + method.getDeclaringClass().getName() + " @Qualifier : "
-                                                                     + annotation.annotationType().getName()
-                                                                     + " must have @NonBinding valued members for its array-valued and annotation valued members");
-                        }
-                    }
-                }
+                annotationManager.checkQualifierConditions(annotation);
 
                 if (qualifiedTypes.contains(annotation.annotationType()) && !isRepetable(annotated, annotation))
                 {

@@ -28,6 +28,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ArrayUtil;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
 
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.Any;
@@ -57,6 +58,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -459,7 +461,7 @@ public final class AnnotationManager
         }
     }
 
-    private void checkQualifierConditions(Annotation ann)
+    public void checkQualifierConditions(Annotation ann)
     {
         if (ann == DefaultLiteral.INSTANCE || ann == AnyLiteral.INSTANCE ||
             ann.annotationType().equals(Default.class) || ann.annotationType().equals(Any.class) ||
@@ -469,17 +471,49 @@ public final class AnnotationManager
             return;
         }
 
-        Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(ann.annotationType());
-
-        for (Method method : methods)
+        AnnotatedType annotatedType = webBeansContext.getBeanManagerImpl().getAdditionalAnnotatedTypeQualifiers().get(ann.annotationType());
+        if (annotatedType == null)
         {
-            Class<?> clazz = method.getReturnType();
-            if (clazz.isArray() || clazz.isAnnotation())
+            Iterator<AnnotatedType> annotatedTypes = (Iterator)webBeansContext.getBeanManagerImpl().getAnnotatedTypes(ann.annotationType()).iterator();
+            if (annotatedTypes.hasNext())
             {
-                if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), Nonbinding.class))
+                annotatedType = annotatedTypes.next();
+                // TODO what to do here, if we have more than one?
+            }
+        }
+        if (annotatedType != null)
+        {
+            Set<AnnotatedMethod> methods = annotatedType.getMethods();
+
+            for (AnnotatedMethod method : methods)
+            {
+                Type baseType = method.getBaseType();
+                Class<?> clazz = ClassUtil.getClass(baseType);
+                if (clazz.isArray() || clazz.isAnnotation())
                 {
-                    throw new WebBeansConfigurationException("@Qualifier : " + ann.annotationType().getName()
+                    if (!AnnotationUtil.hasAnnotation(method.getAnnotations(), Nonbinding.class))
+                    {
+                        throw new WebBeansConfigurationException("WebBeans definition class : " + method.getJavaMember().getDeclaringClass().getName() + " @Qualifier : "
+                                                                 + ann.annotationType().getName()
+                                                                 + " must have @NonBinding valued members for its array-valued and annotation valued members");
+                    }
+                }
+            }
+        }
+        else
+        {
+            Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(ann.annotationType());
+
+            for (Method method : methods)
+            {
+                Class<?> clazz = method.getReturnType();
+                if (clazz.isArray() || clazz.isAnnotation())
+                {
+                    if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), Nonbinding.class))
+                    {
+                        throw new WebBeansConfigurationException("@Qualifier : " + ann.annotationType().getName()
                                                              + " must have @NonBinding valued members for its array-valued and annotation valued members");
+                    }
                 }
             }
         }

@@ -479,6 +479,11 @@ public final class AnnotationUtil
         return getAnnotation(anns, annotation) != null;
     }
 
+    public static boolean hasAnnotation(Set<Annotation> anns, Class<? extends Annotation> annotation)
+    {
+        return getAnnotation(anns, annotation) != null;
+    }
+
     /**
      * get the annotation of the given type from the array. 
      * @param anns
