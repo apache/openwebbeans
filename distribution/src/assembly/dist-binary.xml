@@ -73,7 +73,7 @@ under the License.
             <includes>
                 <include>org.apache.openwebbeans:openwebbeans-impl:jar</include>
                 <include>org.apache.xbean:xbean-finder-shaded:jar</include>
-                <include>org.apache.xbean:xbean-asm8-shaded:jar</include>
+                <include>org.apache.xbean:xbean-asm9-shaded:jar</include>
             </includes>
         </dependencySet>
 

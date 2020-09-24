@@ -27,10 +27,10 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.xbean.asm8.ClassWriter;
-import org.apache.xbean.asm8.MethodVisitor;
-import org.apache.xbean.asm8.Opcodes;
-import org.apache.xbean.asm8.Type;
+import org.apache.xbean.asm9.ClassWriter;
+import org.apache.xbean.asm9.MethodVisitor;
+import org.apache.xbean.asm9.Opcodes;
+import org.apache.xbean.asm9.Type;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedType;

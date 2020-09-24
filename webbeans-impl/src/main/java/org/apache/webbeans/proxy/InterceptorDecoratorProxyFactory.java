@@ -25,11 +25,11 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorResolutionService;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ExceptionUtil;
-import org.apache.xbean.asm8.ClassWriter;
-import org.apache.xbean.asm8.Label;
-import org.apache.xbean.asm8.MethodVisitor;
-import org.apache.xbean.asm8.Opcodes;
-import org.apache.xbean.asm8.Type;
+import org.apache.xbean.asm9.ClassWriter;
+import org.apache.xbean.asm9.Label;
+import org.apache.xbean.asm9.MethodVisitor;
+import org.apache.xbean.asm9.Opcodes;
+import org.apache.xbean.asm9.Type;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;

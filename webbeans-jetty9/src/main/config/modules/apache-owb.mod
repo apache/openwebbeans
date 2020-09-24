@@ -17,7 +17,7 @@ maven://org.apache.geronimo.specs/geronimo-jcdi_2.0_spec/${geronimo-cdi.version}
 maven://org.apache.geronimo.specs/geronimo-atinject_1.0_spec/${geronimo-atinject.version}|lib/apache-owb/geronimo-atinject_1.0_spec-${geronimo-atinject.version}.jar
 maven://org.apache.geronimo.specs/geronimo-interceptor_1.2_spec/${geronimo-interceptor.version}|lib/apache-owb/geronimo-interceptor_1.2_spec-${geronimo-interceptor.version}.jar
 maven://org.apache.xbean/xbean-finder-shaded/${xbean.version}|lib/apache-owb/xbean-finder-shaded-${xbean.version}.jar
-maven://org.apache.xbean/xbean-asm8-shaded/${xbean.version}|lib/apache-owb/xbean-asm8-shaded-${xbean.version}.jar
+maven://org.apache.xbean/xbean-asm9-shaded/${xbean.version}|lib/apache-owb/xbean-asm9-shaded-${xbean.version}.jar
 
 [lib]
 lib/apache-owb/*.jar

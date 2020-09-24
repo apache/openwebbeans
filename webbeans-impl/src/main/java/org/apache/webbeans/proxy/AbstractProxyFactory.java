@@ -19,9 +19,9 @@
 package org.apache.webbeans.proxy;
 
 import static java.util.stream.Collectors.joining;
-import static org.apache.xbean.asm8.ClassReader.SKIP_CODE;
-import static org.apache.xbean.asm8.ClassReader.SKIP_DEBUG;
-import static org.apache.xbean.asm8.ClassReader.SKIP_FRAMES;
+import static org.apache.xbean.asm9.ClassReader.SKIP_CODE;
+import static org.apache.xbean.asm9.ClassReader.SKIP_DEBUG;
+import static org.apache.xbean.asm9.ClassReader.SKIP_FRAMES;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -36,12 +36,12 @@ import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.hash.XxHash64;
 import org.apache.webbeans.spi.DefiningClassService;
-import org.apache.xbean.asm8.ClassReader;
-import org.apache.xbean.asm8.ClassWriter;
-import org.apache.xbean.asm8.MethodVisitor;
-import org.apache.xbean.asm8.Opcodes;
-import org.apache.xbean.asm8.Type;
-import org.apache.xbean.asm8.shade.commons.EmptyVisitor;
+import org.apache.xbean.asm9.ClassReader;
+import org.apache.xbean.asm9.ClassWriter;
+import org.apache.xbean.asm9.MethodVisitor;
+import org.apache.xbean.asm9.Opcodes;
+import org.apache.xbean.asm9.Type;
+import org.apache.xbean.asm9.shade.commons.EmptyVisitor;
 
 import javax.enterprise.inject.Vetoed;
 
