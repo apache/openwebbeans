@@ -1,14 +1,12 @@
 ﻿-------------------------------
-Apache OpenWebBeans 2.0.17
+Apache OpenWebBeans README
 -------------------------------
 
 Welcome!
 
-Thanks for downloading and using OpenWebBeans.
-
-This document is a "Getting Started Guide" for OpenWebBeans.
-
-This document is based on the 2.0.8 release of Apache OpenWebBeans.
+Thanks for downloading and using Apache OpenWebBeans.
+In short OWB
+This document is a "Getting Started Guide" for the latest release OWB.
 
 --------------------------------
 What is Apache OpenWebBeans?
@@ -21,13 +19,17 @@ CDI-2.0 is backward compatible to JSR-346 CDI-1.2 and JSR-299 CDI-1.0.
 Our project's web page can be found at:
 https://openwebbeans.apache.org
 
+We also support the Jakarta EE specifications by providing shaded libraries.
+
+The latest Java Version we support is Java-16.
+The minimum Java Version is Java-8.
 
 
 --------------------------------
-OpenWebBeans 2.0.17 Release Features
+OpenWebBeans 2.0.19 Release Features
 --------------------------------
 
-- The 2.0.8 release supports the following features
+- The latest OWB release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Producer Method Support
@@ -62,6 +64,16 @@ of the Application. This is especially the case for <alternatives>, <decorators>
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
 
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.19
+-------------------------------------------
+Bug
+    [OWB-1349] - Respect configuration that is made via BeforeBeanDiscovery#configureQualifier
+
+Task
+    [OWB-1350] - upgrade to xbean-asm9-shaded for Java16 support
+    [OWB-1351] - update various dependencies
 
 
 -------------------------------------------
