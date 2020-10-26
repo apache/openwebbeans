@@ -103,8 +103,7 @@ public final class PropertyLoader
 
     private static void onMissingConfiguration(final String propertyFileName)
     {
-        final Logger logger = getLogger();
-        if (logger.isLoggable(Level.INFO))
+        if (logger != null && logger.isLoggable(Level.INFO))
         {
             logger.info("could not find any property files with name " + propertyFileName);
         }
@@ -119,7 +118,6 @@ public final class PropertyLoader
     public static List<Properties> loadAllProperties(String propertyFileName, Runnable onMissing)
             throws IOException
     {
-        final Logger logger = getLogger();
         ClassLoader cl = WebBeansUtil.getCurrentClassLoader();
         Enumeration<URL> propertyUrls = cl.getResources(propertyFileName);
         if (propertyUrls == null || !propertyUrls.hasMoreElements())
@@ -141,7 +139,7 @@ public final class PropertyLoader
 
                 // a bit debugging output
                 int ordinal = getConfigurationOrdinal(prop);
-                if (logger.isLoggable(Level.FINE))
+                if (logger != null && logger.isLoggable(Level.FINE))
                 {
                     logger.fine("loading properties with ordinal " + ordinal + " from file " + propertyUrl.getFile());
                 }
