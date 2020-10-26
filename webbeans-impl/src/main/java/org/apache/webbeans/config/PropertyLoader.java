@@ -44,10 +44,7 @@ public final class PropertyLoader
     public static final int CONFIGURATION_ORDINAL_DEFAULT_VALUE = 100;
 
     public static final String CONFIGURATION_ORDINAL_PROPERTY_NAME = "configuration.ordinal";
-
-
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(PropertyLoader.class);
-
+    private static Logger logger; // don't eager init it otherwise properlyloader can't be reused (meecrowave)
 
     private PropertyLoader()
     {
@@ -92,7 +89,8 @@ public final class PropertyLoader
         }
         catch (IOException e)
         {
-            logger.log(Level.SEVERE, "Error while loading the propertyFile " + propertyFileName, e);
+            getLogger()
+                    .log(Level.SEVERE, "Error while loading the propertyFile " + propertyFileName, e);
             return null;
         }
     }
@@ -105,6 +103,7 @@ public final class PropertyLoader
 
     private static void onMissingConfiguration(final String propertyFileName)
     {
+        final Logger logger = getLogger();
         if (logger.isLoggable(Level.INFO))
         {
             logger.info("could not find any property files with name " + propertyFileName);
@@ -120,6 +119,7 @@ public final class PropertyLoader
     public static List<Properties> loadAllProperties(String propertyFileName, Runnable onMissing)
             throws IOException
     {
+        final Logger logger = getLogger();
         ClassLoader cl = WebBeansUtil.getCurrentClassLoader();
         Enumeration<URL> propertyUrls = cl.getResources(propertyFileName);
         if (propertyUrls == null || !propertyUrls.hasMoreElements())
@@ -200,12 +200,23 @@ public final class PropertyLoader
             }
             catch(NumberFormatException nfe)
             {
-                logger.severe(CONFIGURATION_ORDINAL_PROPERTY_NAME + " must be an integer value!");
+                getLogger()
+                        .severe(CONFIGURATION_ORDINAL_PROPERTY_NAME + " must be an integer value!");
                 throw nfe;
             }
         }
 
         return configOrder;
+    }
+
+    // we don't care to synchronize here, we just don't want to do it again and again after some init
+    private static Logger getLogger()
+    {
+        if (logger == null)
+        {
+            logger = WebBeansLoggerFacade.getLogger(PropertyLoader.class);
+        }
+        return logger;
     }
 
     /**
