@@ -142,6 +142,9 @@ public class InterceptorResolutionService
         Map<Method, BusinessMethodInterceptorInfo> businessMethodInterceptorInfos = new HashMap<>();
         Map<Constructor<?>, BusinessMethodInterceptorInfo> constructorInterceptorInfos = new HashMap<>();
 
+        List<Interceptor<?>> classCdiInterceptors = new ArrayList<>(allUsedCdiInterceptors);
+        classCdiInterceptors.sort(new InterceptorComparator(webBeansContext));
+
         List<Method> nonInterceptedMethods = new ArrayList<>();
 
         SelfInterceptorBean<T> selfInterceptorBean = resolveSelfInterceptorBean(annotatedType);
@@ -245,7 +248,8 @@ public class InterceptorResolutionService
                                        cdiInterceptors, cdiConstructorInterceptors,
                                        selfInterceptorBean,
                                        constructorInterceptorInfos, businessMethodInterceptorInfos,
-                                       nonInterceptedMethods, lifecycleMethodInterceptorInfos);
+                                       nonInterceptedMethods, lifecycleMethodInterceptorInfos,
+                                       classCdiInterceptors);
     }
 
     /**
@@ -877,11 +881,13 @@ public class InterceptorResolutionService
                                    Map<Constructor<?>, BusinessMethodInterceptorInfo> constructorInterceptorInfos,
                                    Map<Method, BusinessMethodInterceptorInfo> businessMethodsInfo,
                                    List<Method> nonInterceptedMethods,
-                                   Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos)
+                                   Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos,
+                                   List<Interceptor<?>> classCdiInterceptors)
         {
             this.decorators = decorators;
             this.ejbInterceptors = ejbInterceptors;
             this.cdiInterceptors = cdiInterceptors;
+            this.classCdiInterceptors = classCdiInterceptors;
             this.constructorCdiInterceptors = constructorCdiInterceptors;
             this.selfInterceptorBean = selfInterceptorBean;
             this.businessMethodsInfo = businessMethodsInfo;
@@ -902,6 +908,11 @@ public class InterceptorResolutionService
          * The Interceptors are not sorted according to beans.xml .
          */
         private List<Interceptor<?>> cdiInterceptors;
+
+        /**
+         * Class only interceptors (for lifecycle methods).
+         */
+        private List<Interceptor<?>> classCdiInterceptors;
 
         private final List<Interceptor<?>> constructorCdiInterceptors;
 
@@ -938,6 +949,11 @@ public class InterceptorResolutionService
         public List<Decorator<?>> getDecorators()
         {
             return decorators;
+        }
+
+        public List<Interceptor<?>> getClassCdiInterceptors()
+        {
+            return classCdiInterceptors;
         }
 
         public LinkedHashSet<Interceptor<?>> getEjbInterceptors()

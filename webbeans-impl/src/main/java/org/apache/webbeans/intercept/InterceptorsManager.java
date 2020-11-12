@@ -40,8 +40,6 @@ import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.EjbInterceptorBeanBuilder;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
-import javax.annotation.Priority;
-
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -359,7 +357,7 @@ public class InterceptorsManager
         return priorityInterceptors.getSorted();
     }
 
-    public void addPriorityClazzInterceptor(Class<?> javaClass, Priority priority)
+    public void addPriorityClazzInterceptor(Class<?> javaClass, int priority)
     {
         priorityInterceptors.add(javaClass, priority);
     }

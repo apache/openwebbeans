@@ -55,6 +55,7 @@ import org.apache.webbeans.config.OwbWildcardTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.container.InjectionResolver;
+import org.apache.webbeans.context.control.ActivateRequestContextInterceptorBean;
 import org.apache.webbeans.context.control.RequestContextControllerBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 
@@ -492,6 +493,15 @@ public final class WebBeansUtil
     public RequestContextControllerBean getRequestContextControllerBean()
     {
         return new RequestContextControllerBean(webBeansContext);
+    }
+
+    /**
+     * Creates a new bean for Request Context Interceptor.
+     * @return new request context interceptor bean instance
+     */
+    public Interceptor<?> getRequestContextInterceptorBean()
+    {
+        return new ActivateRequestContextInterceptorBean(webBeansContext);
     }
 
     /**

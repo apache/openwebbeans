@@ -43,6 +43,7 @@ import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
+import org.apache.webbeans.context.control.ActivateRequestContextInterceptorBean;
 import org.apache.webbeans.corespi.se.DefaultJndiService;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.deployment.StereoTypeManager;
@@ -228,6 +229,10 @@ public class BeansDeployer
                 webBeansContext.getBeanManagerImpl().addInternalBean(webBeansContext.getWebBeansUtil().getManagerBean());
                 // Register built-in RequestContextController
                 webBeansContext.getBeanManagerImpl().addInternalBean(webBeansContext.getWebBeansUtil().getRequestContextControllerBean());
+                webBeansContext.getInterceptorsManager().addCdiInterceptor(webBeansContext.getWebBeansUtil().getRequestContextInterceptorBean());
+                webBeansContext.getInterceptorsManager().addPriorityClazzInterceptor(
+                        ActivateRequestContextInterceptorBean.InterceptorClass.class,
+                        javax.interceptor.Interceptor.Priority.PLATFORM_BEFORE + 100);
 
                 //Fire Event
                 fireBeforeBeanDiscoveryEvent();
@@ -618,7 +623,7 @@ public class BeansDeployer
                 if (priority != null)
                 {
                     Class<?> javaClass = annotatedType.getJavaClass();
-                    interceptorsManager.addPriorityClazzInterceptor(javaClass, priority);
+                    interceptorsManager.addPriorityClazzInterceptor(javaClass, priority.value());
                 }
             }
             if (annotatedType.getAnnotation(javax.decorator.Decorator.class) != null)
