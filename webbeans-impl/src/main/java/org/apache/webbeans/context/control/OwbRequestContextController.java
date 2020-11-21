@@ -40,7 +40,7 @@ public class OwbRequestContextController implements RequestContextController
     @Override
     public boolean activate()
     {
-        final Context ctx = contextsService.getCurrentContext(RequestScoped.class);
+        final Context ctx = contextsService.getCurrentContext(RequestScoped.class, false);
         if (ctx == null || !ctx.isActive())
         {
             contextsService.startContext(RequestScoped.class, null);
