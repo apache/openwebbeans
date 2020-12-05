@@ -18,14 +18,18 @@
  */
 package org.apache.webbeans.corespi.scanner.xbean;
 
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.BeanArchiveService.BeanArchiveInformation;
 import org.apache.xbean.finder.archive.Archive;
+import org.apache.xbean.finder.archive.ClassesArchive;
 import org.apache.xbean.finder.archive.ClasspathArchive;
 import org.apache.xbean.finder.archive.CompositeArchive;
 import org.apache.xbean.finder.archive.FilteredArchive;
 import org.apache.xbean.finder.filter.Filter;
+import org.apache.xbean.finder.util.Files;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -35,6 +39,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * this delegate pattern is interesting
@@ -53,7 +61,7 @@ public class CdiArchive implements Archive
     private final Archive delegate;
 
     public CdiArchive(BeanArchiveService beanArchiveService, ClassLoader loader, Map<String, URL> urls,
-                      Filter userFilter, Archive customArchive)
+                      Filter userFilter, Archive customArchive, OpenWebBeansConfiguration config)
     {
         Collection<Archive> archives = new ArrayList<>();
         boolean customAdded = false;
@@ -64,7 +72,9 @@ public class CdiArchive implements Archive
             BeanArchiveInformation beanArchiveInfo = beanArchiveService.getBeanArchiveInformation(url);
             final boolean custom = "openwebbeans".equals(url.getProtocol());
             Archive archive = new FilteredArchive(
-                    custom ? customArchive : ClasspathArchive.archive(loader, url),
+                    custom ?
+                            customArchive :
+                            createArchive(loader, url, config),
                     new BeanArchiveFilter(beanArchiveInfo, urlClasses, userFilter));
             if (!customAdded && custom)
             {
@@ -78,7 +88,42 @@ public class CdiArchive implements Archive
         {
             archives.add(userFilter != null ? new FilteredArchive(customArchive, userFilter) : customArchive);
         }
+        if (config != null)
+        {
+            config.cleanBuiltTimeScanning();
+        }
         delegate = new CompositeArchive(archives);
+    }
+
+    private Archive createArchive(final ClassLoader loader, final URL url, final OpenWebBeansConfiguration config)
+    {
+        if (config != null)
+        {
+            final File file = Files.toFile(url);
+            if (!file.isDirectory()) // see ScanMojo
+            {
+                final String classes = config.getProperty(
+                        "openwebbeans.buildtime.scanning." + file.getName() + ".classes");
+                if (classes != null)
+                {
+                    return new ClassesArchive(Stream.of(classes.split(","))
+                        .map(it ->
+                        {
+                            try
+                            {
+                                return loader.loadClass(it);
+                            }
+                            catch (final ClassNotFoundException e)
+                            {
+                                return null;
+                            }
+                        })
+                        .filter(Objects::nonNull)
+                        .collect(toList()));
+                }
+            }
+        }
+        return ClasspathArchive.archive(loader, url);
     }
 
     public Map<String, FoundClasses> classesByUrl()

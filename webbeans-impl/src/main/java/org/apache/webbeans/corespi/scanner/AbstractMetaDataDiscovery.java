@@ -129,7 +129,8 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         }
         archive = new CdiArchive(
                 beanArchiveService, WebBeansUtil.getCurrentClassLoader(),
-                beanDeploymentUrls, userFilter, getAdditionalArchive());
+                beanDeploymentUrls, userFilter, getAdditionalArchive(),
+                webBeansContext.getOpenWebBeansConfiguration());
         finder = new OwbAnnotationFinder(archive);
 
         return finder;

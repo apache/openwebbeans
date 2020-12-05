@@ -556,4 +556,11 @@ public class OpenWebBeansConfiguration
 
         return generatorJavaVersion;
     }
+
+    public void cleanBuiltTimeScanning()
+    {
+        configProperties.stringPropertyNames().stream()
+                .filter(it -> it.startsWith("openwebbeans.buildtime.scanning."))
+                .forEach(configProperties::remove);
+    }
 }

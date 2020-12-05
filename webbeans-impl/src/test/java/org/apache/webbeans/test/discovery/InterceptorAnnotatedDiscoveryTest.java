@@ -75,7 +75,9 @@ public class InterceptorAnnotatedDiscoveryTest extends AbstractUnitTest
                 }
 
                 super.initFinder();
-                archive = new CdiArchive(webBeansContext().getBeanArchiveService(), WebBeansUtil.getCurrentClassLoader(), emptyMap(), null, null)
+                archive = new CdiArchive(
+                        webBeansContext().getBeanArchiveService(), WebBeansUtil.getCurrentClassLoader(), emptyMap(),
+                        null, null, null)
                 {
                     @Override
                     public Map<String, FoundClasses> classesByUrl()

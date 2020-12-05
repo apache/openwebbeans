@@ -504,6 +504,7 @@
                   </execution>
                 </executions>
                 <configuration>
+                    <excludes>**/HelpMojo.java</excludes>
                     <configLocation>openwebbeans/owb-checks-default.xml</configLocation>
                     <headerLocation>openwebbeans/owb-header.txt</headerLocation>
                     <consoleOutput>true</consoleOutput>
@@ -649,6 +650,7 @@
         <module>webbeans-se</module>
         <module>webbeans-junit5</module>
         <module>webbeans-slf4j</module>
+      <module>webbeans-maven-plugin</module>
     </modules>
 
     <dependencyManagement>
